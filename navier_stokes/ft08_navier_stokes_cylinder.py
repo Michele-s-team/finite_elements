@@ -15,8 +15,8 @@ import meshio
 import ufl as ufl
 
 
-T = 0.1        # final time
-num_steps = 1000  # number of time steps
+T = 1       # final time
+num_steps = 10000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.005         # dynamic viscosity
 rho = 1            # density
@@ -57,13 +57,13 @@ V = VectorFunctionSpace(mesh, 'P', 2)
 Q = FunctionSpace(mesh, 'P', 1)
 
 # Define boundaries
-inflow   = 'on_boundary && (x[0] < -0.5 + 0.01)'
-outflow   =  'on_boundary && (x[0] > 0.5-0.01)'
-walls    = 'near(x[1], -1.0) || near(x[1], 1.0)'
+inflow   = 'on_boundary && (x[0] < -1.0 + 0.01)'
+outflow   =  'on_boundary && (x[0] > 1.0-0.01)'
+walls    = 'near(x[1], -2.0) || near(x[1], 2.0)'
 cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
 # Define inflow profile
-inflow_profile = ('-2.0*(x[0]-0.5)', '-2.0*(x[1]-0.0)')
+inflow_profile = ('1.0', '0.0')
 # outflow_profile = ('4.0*1.5*x[1]*(2.0 - x[1]) / pow(2.0, 2)', '0')
 
 # Define boundary conditions
