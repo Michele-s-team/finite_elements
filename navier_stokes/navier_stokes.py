@@ -64,14 +64,15 @@ cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
 # Define inflow profile
 inflow_profile = ('1.0', '0.0')
-# outflow_profile = ('4.0*1.5*x[1]*(2.0 - x[1]) / pow(2.0, 2)', '0')
+outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
 bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
+bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
 bcu_walls = DirichletBC(V, Constant((0, 0)), walls)
 bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
 bcp_outflow = DirichletBC(Q, Constant(0), outflow)
-bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
+bcu = [bcu_inflow, bcu_outflow, bcu_walls, bcu_cylinder]
 bcp = [bcp_outflow]
 
 # Define trial and test functions
