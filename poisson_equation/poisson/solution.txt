@@ -1,0 +1,94 @@
+vtkUnstructuredGrid (0x2846ab000)
+  Debug: Off
+  Modified Time: 1351120
+  Reference Count: 2
+  Registered Events: (none)
+  Information: 0x60000f7b8b40
+  Data Released: False
+  Global Release Data: Off
+  UpdateTime: 0
+  Field Data:
+    Debug: Off
+    Modified Time: 1351092
+    Reference Count: 1
+    Registered Events: (none)
+    Number Of Arrays: 0
+    Number Of Components: 0
+    Number Of Tuples: 0
+  Number Of Points: 6288
+  Number Of Cells: 12025
+  Cell Data:
+    Debug: Off
+    Modified Time: 1351117
+    Reference Count: 1
+    Registered Events: 
+      Registered Observers:
+        vtkObserver (0x6000011176c0)
+          Event: 33
+          EventName: ModifiedEvent
+          Command: 0x600003a22d00
+          Priority: 0
+          Tag: 1
+    Number Of Arrays: 0
+    Number Of Components: 0
+    Number Of Tuples: 0
+    Copy Tuple Flags: ( 1 1 1 1 1 0 1 1 1 1 1 1 )
+    Interpolate Flags: ( 1 1 1 1 1 0 0 1 1 1 1 0 )
+    Pass Through Flags: ( 1 1 1 1 1 1 1 1 1 1 1 1 )
+    Scalars: (none)
+    Vectors: (none)
+    Normals: (none)
+    TCoords: (none)
+    Tensors: (none)
+    GlobalIds: (none)
+    PedigreeIds: (none)
+    EdgeFlag: (none)
+    Tangents: (none)
+    RationalWeights: (none)
+    HigherOrderDegrees: (none)
+    ProcessIds: (none)
+  Point Data:
+    Debug: Off
+    Modified Time: 1351119
+    Reference Count: 1
+    Registered Events: 
+      Registered Observers:
+        vtkObserver (0x600001114930)
+          Event: 33
+          EventName: ModifiedEvent
+          Command: 0x600003a22d00
+          Priority: 0
+          Tag: 1
+    Number Of Arrays: 0
+    Number Of Components: 0
+    Number Of Tuples: 0
+    Copy Tuple Flags: ( 1 1 1 1 1 0 1 1 1 1 1 1 )
+    Interpolate Flags: ( 1 1 1 1 1 0 0 1 1 1 1 0 )
+    Pass Through Flags: ( 1 1 1 1 1 1 1 1 1 1 1 1 )
+    Scalars: (none)
+    Vectors: (none)
+    Normals: (none)
+    TCoords: (none)
+    Tensors: (none)
+    GlobalIds: (none)
+    PedigreeIds: (none)
+    EdgeFlag: (none)
+    Tangents: (none)
+    RationalWeights: (none)
+    HigherOrderDegrees: (none)
+    ProcessIds: (none)
+  Bounds: 
+    Xmin,Xmax: (-1.99976, 2)
+    Ymin,Ymax: (-1.99994, 1.99994)
+    Zmin,Zmax: (0, 0)
+  Compute Time: 1087818
+  Editable: false
+  Number Of Points: 6288
+  Point Coordinates: 0x600002f68bd0
+  PointLocator: 0x0
+  CellLocator: 0x0
+  Number Of Pieces: 1
+  Piece: -1
+  Ghost Level: 0
+
+
