@@ -15,8 +15,8 @@ import meshio
 import ufl as ufl
 
 
-T = 0.1      # final time
-num_steps = 100  # number of time steps
+T = 1      # final time
+num_steps = 1000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.005         # dynamic viscosity
 rho = 1            # density
@@ -57,22 +57,22 @@ V = VectorFunctionSpace(mesh, 'P', 2)
 Q = FunctionSpace(mesh, 'P', 1)
 
 # Define boundaries
-inflow   = 'on_boundary && (x[0] < -1.0 + 0.01)'
-outflow   =  'on_boundary && (x[0] > 1.0-0.01)'
+inflow   = 'on_boundary && near(x[0], -1.0)'
+outflow   =  'on_boundary && near(x[0], 1.0)'
 walls    = 'near(x[1], -1.0) || near(x[1], 1.0)'
 cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
 # Define inflow profile
 inflow_profile = ('1.0', '0.0')
-outflow_profile = ('1.0', '0.0')
+# outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
 bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
-bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
+# bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
 bcu_walls = DirichletBC(V, Constant((0, 0)), walls)
 bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
 bcp_outflow = DirichletBC(Q, Constant(0), outflow)
-bcu = [bcu_inflow, bcu_outflow, bcu_walls, bcu_cylinder]
+bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
 bcp = [bcp_outflow]
 
 # Define trial and test functions
@@ -137,15 +137,15 @@ A3 = assemble(a3)
 [bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('navier_stokes_cylinder/velocity.xdmf')
-xdmffile_p = XDMFFile('navier_stokes_cylinder/pressure.xdmf')
+xdmffile_u = XDMFFile('solution/velocity.xdmf')
+xdmffile_p = XDMFFile('solution/pressure.xdmf')
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('navier_stokes_cylinder/velocity_series')
-timeseries_p = TimeSeries('navier_stokes_cylinder/pressure_series')
+timeseries_u = TimeSeries('solution/velocity_series')
+timeseries_p = TimeSeries('solution/pressure_series')
 
 # Save mesh to file (for use in reaction_system.py)
-File('navier_stokes_cylinder/cylinder.xml.gz') << mesh
+File('solution/cylinder.xml.gz') << mesh
 
 # Create progress bar
 #progress = Progress('Time-stepping')
