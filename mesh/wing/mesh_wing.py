@@ -10,7 +10,7 @@ L = 10.
 H = 2.
 c = [0.0, 0.0, 0.0]
 
-theta = np.radians(1)
+theta = np.radians(10)
 cos = np.cos(theta)
 sin = np.sin(theta)
 R = [[cos,-sin],[sin,cos]]
@@ -22,28 +22,6 @@ geometry = pygmsh.geo.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-
-# Add circle
-# circle_r = model.add_circle(c, r, mesh_size=resolution)
-# circle_R = model.add_circle(c, R, mesh_size=resolution)
-
-# o_in = geometry.add_point([-L/2,0,0])
-# o_out = geometry.add_point([L/2,0,0])
-
-#
-# p1 = geometry.add_point([-L/2,R,0])
-# p2 = geometry.add_point([-L/2-R,0,0])
-# p3 = geometry.add_point([-L/2,-R,0])
-#
-# arc_R_in_up = model.add_circle_arc(p1,o_in,p2)
-# arc_R_in_down = model.add_circle_arc(p2,o_in,p3)
-#
-# p4 = geometry.add_point([L/2,-R,0])
-# p5 = geometry.add_point([L/2+R,0,0])
-# p6 = geometry.add_point([L/2,R,0])
-#
-# arc_R_out_down = model.add_circle_arc(p4,o_out,p5)
-# arc_R_out_up = model.add_circle_arc(p5,o_out,p6)
 
 r=[[1.3, 1.0], [1.7, 0.7], [2.5, 0.6], [4.2, 1.1], [3.0, 1.3], [1.7, 1.3]]
 for i in range(0, len(r)):
