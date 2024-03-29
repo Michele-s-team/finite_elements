@@ -45,15 +45,19 @@ model = geometry.__enter__()
 # arc_R_out_down = model.add_circle_arc(p4,o_out,p5)
 # arc_R_out_up = model.add_circle_arc(p5,o_out,p6)
 
+r=[[1.3, 1.0, 0], [1.7, 0.7, 0], [2.5, 0.6, 0], [4.2, 1.1, 0], [3.0, 1.3, 0], [1.7, 1.3, 0]]
+
 
 # wing profile
-my_points = [ model.add_point((1.3, 1.0, 0), mesh_size=resolution),
-             model.add_point((1.7, 0.7, 0), mesh_size=resolution),
-             model.add_point((2.5, 0.6, 0), mesh_size=resolution),
-             model.add_point((4.2, 1.1, 0), mesh_size=resolution),
-             model.add_point((3.0, 1.3, 0), mesh_size=resolution),
-             model.add_point((1.7, 1.3, 0), mesh_size=resolution),
+my_points = [ model.add_point(r[0], mesh_size=resolution),
+             model.add_point(r[1], mesh_size=resolution),
+             model.add_point(r[2], mesh_size=resolution),
+             model.add_point(r[3], mesh_size=resolution),
+             model.add_point(r[4], mesh_size=resolution),
+             model.add_point(r[5], mesh_size=resolution),
              ]
+
+# print(np.dot(R, r))
 
 # print(circle_R)
 # print(circle_r)
