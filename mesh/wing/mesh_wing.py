@@ -4,14 +4,14 @@ import numpy as np
 import meshio
 import gmsh
 import pygmsh
-resolution = 0.08
+resolution = 0.04
 # Channel parameters
-L = 10.
-H = 2.
+L = 2.
+H = 1.
 #scaling factor of the wing
-s = 0.5
+s = 0.05
 #rotation angle of the wing with respect to the z axis
-theta = np.radians(45)
+theta = np.radians(90)
 #the center about which the wing will be rotated
 c = [L/4.0, H/2.0]
 
@@ -28,11 +28,20 @@ model = geometry.__enter__()
 
 #points defining the coordinates of the non-rotated wing
 r=[[1.3, 1.0], [1.7, 0.7], [2.5, 0.6], [4.2, 1.1], [3.0, 1.3], [1.7, 1.3]]
+#r_av is the center of masss of the points in r
+r_av = [0,0]
 for i in range(0, len(r)):
-    r[i] = c + np.multiply(np.dot(R, np.subtract(r[i], c)), s)
+    r_av = np.add(r_av, r[i])
+r_av = np.divide(r_av, float(len(r)))
+
+print("<r>:", r_av)
+
+
+for i in range(0, len(r)):
+    r[i] = c + np.multiply(np.dot(R, np.subtract(r[i], r_av)), s)
 
 # wing profile
-my_points = [model.add_point([r[i][0], r[i][1], 0.0], mesh_size=resolution)
+my_points = [model.add_point([r[i][0], r[i][1], 0.0], mesh_size=resolution/4.)
                  for i in range(0, len(r))]
 
 # my_points = [ model.add_point(r[0], mesh_size=resolution),

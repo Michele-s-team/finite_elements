@@ -16,7 +16,7 @@ import ufl as ufl
 
 
 T = 10     # final time
-num_steps = 10000  # number of time steps
+num_steps = 100000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.001         # dynamic viscosity
 rho = 1            # density
@@ -137,12 +137,12 @@ A3 = assemble(a3)
 [bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('solution/velocity.xdmf')
-xdmffile_p = XDMFFile('solution/pressure.xdmf')
+xdmffile_u = XDMFFile('solution_theta_90//velocity.xdmf')
+xdmffile_p = XDMFFile('solution_theta_90//pressure.xdmf')
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('solution/velocity_series')
-timeseries_p = TimeSeries('solution/pressure_series')
+timeseries_u = TimeSeries('solution_theta_90//velocity_series')
+timeseries_p = TimeSeries('solution_theta_90//pressure_series')
 
 # Save mesh to file (for use in reaction_system.py)
 File('solution/cylinder.xml.gz') << mesh
