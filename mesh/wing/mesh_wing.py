@@ -128,7 +128,7 @@ gmsh.write("mesh_wing.msh")
 gmsh.clear()
 geometry.__exit__()
 #
-mesh_from_file = meshio.read("mesh.msh")
+mesh_from_file = meshio.read("mesh_wing.msh")
 #
 ## Now that we have loaded the mesh, we need to extract the cells and physical data. We need to create a separate file for the facets (lines), which we will use when we define boundary conditions in DOLFIN/DOLFINx. We do this with the following convenience function. Note that as we would like a 2 dimensional mesh, we need to remove the z-values in the mesh coordinates.
 #
