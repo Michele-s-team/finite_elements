@@ -8,8 +8,10 @@ resolution = 0.08
 # Channel parameters
 L = 10.
 H = 2.
+#scaling factor of the wing
 s = 0.5
-theta = np.radians(-40)
+#rotation angle of the wing with respect to the z axis
+theta = np.radians(0)
 #the center about which the wing will be rotated
 c = [L/4.0, H/2.0]
 
@@ -24,7 +26,7 @@ geometry = pygmsh.geo.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-
+#points defining the coordinates of the non-rotated wing
 r=[[1.3, 1.0], [1.7, 0.7], [2.5, 0.6], [4.2, 1.1], [3.0, 1.3], [1.7, 1.3]]
 for i in range(0, len(r)):
     r[i] = c + np.multiply(np.dot(R, np.subtract(r[i], c)), s)

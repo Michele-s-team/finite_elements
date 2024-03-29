@@ -43,8 +43,8 @@ import pygmsh
 resolution = 0.08
 # Channel parameters
 L = 1.
-# H = 2.
-R = 1.0
+H = 2.
+# R = 1.0
 r = 0.25
 c = [0.0, 0.0, 0.0]
 #c2 = [0.7, 0.12, 0]
@@ -61,23 +61,23 @@ model = geometry.__enter__()
 circle_r = model.add_circle(c, r, mesh_size=resolution)
 # circle_R = model.add_circle(c, R, mesh_size=resolution)
 
-o_in = geometry.add_point([-L/2,0,0])
-o_out = geometry.add_point([L/2,0,0])
+# o_in = geometry.add_point([-L/2,0,0])
+# o_out = geometry.add_point([L/2,0,0])
 
 
-p1 = geometry.add_point([-L/2,R,0])
-p2 = geometry.add_point([-L/2-R,0,0])
-p3 = geometry.add_point([-L/2,-R,0])
+# p1 = geometry.add_point([-L/2,R,0])
+# p2 = geometry.add_point([-L/2-R,0,0])
+# p3 = geometry.add_point([-L/2,-R,0])
 
-arc_R_in_up = model.add_circle_arc(p1,o_in,p2)
-arc_R_in_down = model.add_circle_arc(p2,o_in,p3)
+# arc_R_in_up = model.add_circle_arc(p1,o_in,p2)
+# arc_R_in_down = model.add_circle_arc(p2,o_in,p3)
 
-p4 = geometry.add_point([L/2,-R,0])
-p5 = geometry.add_point([L/2+R,0,0])
-p6 = geometry.add_point([L/2,R,0])
+# p4 = geometry.add_point([L/2,-R,0])
+# p5 = geometry.add_point([L/2+R,0,0])
+# p6 = geometry.add_point([L/2,R,0])
 
-arc_R_out_down = model.add_circle_arc(p4,o_out,p5)
-arc_R_out_up = model.add_circle_arc(p5,o_out,p6)
+# arc_R_out_down = model.add_circle_arc(p4,o_out,p5)
+# arc_R_out_up = model.add_circle_arc(p5,o_out,p6)
 
 
 #
@@ -107,16 +107,16 @@ print(circle_r)
 
 # +
 # Add points with finer resolution on left side
-# points = [model.add_point((-L/2, -R, 0), mesh_size=resolution),
-#           model.add_point((L/2, -R, 0), mesh_size=5*resolution),
-#           model.add_point((L/2, R, 0), mesh_size=5*resolution),
-#           model.add_point((-L/2, R, 0), mesh_size=resolution)]
-# #
-## Add lines between all points creating the rectangle
-# channel_lines = [model.add_line(points[i], points[i+1])
-#                  for i in range(-1, len(points)-1)]
+points = [model.add_point((-L/2, -H/2, 0), mesh_size=resolution),
+          model.add_point((L/2, -H/2, 0), mesh_size=5*resolution),
+          model.add_point((L/2, H/2, 0), mesh_size=5*resolution),
+          model.add_point((-L/2, H/2, 0), mesh_size=resolution)]
 
-channel_lines = [arc_R_in_up, arc_R_in_down, model.add_line(p3, p4), arc_R_out_down, arc_R_out_up, model.add_line(p6,p1)]
+# Add lines between all points creating the rectangle
+channel_lines = [model.add_line(points[i], points[i+1])
+                 for i in range(-1, len(points)-1)]
+
+# channel_lines = [arc_R_in_up, arc_R_in_down, model.add_line(p3, p4), arc_R_out_down, arc_R_out_up, model.add_line(p6,p1)]
 
 
 print("channel lines : ")
@@ -151,7 +151,7 @@ model.add_physical(circle_r.curve_loop.curves, "Obstacle")
 ## We generate the mesh using the pygmsh function `generate_mesh`. Generate mesh returns a `meshio.Mesh`. However, this mesh is tricky to extract physical tags from. Therefore we write the mesh to file using the `gmsh.write` function.
 #
 geometry.generate_mesh(dim=2)
-gmsh.write("mesh.msh")
+gmsh.write("mesh_membrane.msh")
 gmsh.clear()
 geometry.__exit__()
 #
@@ -159,7 +159,7 @@ geometry.__exit__()
 ## Now that we have save the mesh to a `msh` file, we would like to convert it to a format that interfaces with DOLFIN and DOLFINx.
 ## For this I suggest using the `XDMF`-format as it supports parallel IO.
 #
-mesh_from_file = meshio.read("mesh.msh")
+mesh_from_file = meshio.read("mesh_membrane.msh")
 #
 ## Now that we have loaded the mesh, we need to extract the cells and physical data. We need to create a separate file for the facets (lines), which we will use when we define boundary conditions in DOLFIN/DOLFINx. We do this with the following convenience function. Note that as we would like a 2 dimensional mesh, we need to remove the z-values in the mesh coordinates.
 #
