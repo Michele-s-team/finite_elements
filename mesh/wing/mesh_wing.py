@@ -8,7 +8,8 @@ resolution = 0.08
 # Channel parameters
 L = 10.
 H = 2.
-c = [0.0, 0.0, 0.0]
+#the center about which the wing will be rotated
+c = [2.3, 1.0]
 
 theta = np.radians(10)
 cos = np.cos(theta)
