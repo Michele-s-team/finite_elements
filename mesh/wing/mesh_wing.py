@@ -49,13 +49,16 @@ r=[[1.3, 1.0, 0], [1.7, 0.7, 0], [2.5, 0.6, 0], [4.2, 1.1, 0], [3.0, 1.3, 0], [1
 
 
 # wing profile
-my_points = [ model.add_point(r[0], mesh_size=resolution),
-             model.add_point(r[1], mesh_size=resolution),
-             model.add_point(r[2], mesh_size=resolution),
-             model.add_point(r[3], mesh_size=resolution),
-             model.add_point(r[4], mesh_size=resolution),
-             model.add_point(r[5], mesh_size=resolution),
-             ]
+my_points = [model.add_point(r[i])
+                 for i in range(0, len(r))]
+
+# my_points = [ model.add_point(r[0], mesh_size=resolution),
+#              model.add_point(r[1], mesh_size=resolution),
+#              model.add_point(r[2], mesh_size=resolution),
+#              model.add_point(r[3], mesh_size=resolution),
+#              model.add_point(r[4], mesh_size=resolution),
+#              model.add_point(r[5], mesh_size=resolution),
+#              ]
 
 # print(np.dot(R, r))
 
