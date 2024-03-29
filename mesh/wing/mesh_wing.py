@@ -8,10 +8,11 @@ resolution = 0.08
 # Channel parameters
 L = 10.
 H = 2.
+s = 0.5
+theta = np.radians(-40)
 #the center about which the wing will be rotated
-c = [2.3, 1.0]
+c = [L/4.0, H/2.0]
 
-theta = np.radians(10)
 cos = np.cos(theta)
 sin = np.sin(theta)
 R = [[cos,-sin],[sin,cos]]
@@ -26,7 +27,7 @@ model = geometry.__enter__()
 
 r=[[1.3, 1.0], [1.7, 0.7], [2.5, 0.6], [4.2, 1.1], [3.0, 1.3], [1.7, 1.3]]
 for i in range(0, len(r)):
-    r[i] = np.dot(R, r[i])
+    r[i] = c + np.multiply(np.dot(R, np.subtract(r[i], c)), s)
 
 # wing profile
 my_points = [model.add_point([r[i][0], r[i][1], 0.0], mesh_size=resolution)
