@@ -18,7 +18,7 @@ import ufl as ufl
 T = 10     # final time
 num_steps = 10000  # number of time steps
 dt = T / num_steps # time step size
-mu = 0.01         # dynamic viscosity
+mu = 0.001         # dynamic viscosity
 rho = 1            # density
 L = 10.0
 H = 2.0

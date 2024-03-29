@@ -42,9 +42,9 @@ import gmsh
 import pygmsh
 resolution = 0.08
 # Channel parameters
-L = 1.
-H = 2.
-# R = 1.0
+# L = 1.
+# H = 2.
+R = 1.0
 r = 0.25
 c = [0.0, 0.0, 0.0]
 #c2 = [0.7, 0.12, 0]
@@ -59,7 +59,7 @@ model = geometry.__enter__()
 
 # Add circle
 circle_r = model.add_circle(c, r, mesh_size=resolution)
-# circle_R = model.add_circle(c, R, mesh_size=resolution)
+circle_R = model.add_circle(c, R, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
 # o_out = geometry.add_point([L/2,0,0])
@@ -89,7 +89,7 @@ circle_r = model.add_circle(c, r, mesh_size=resolution)
 #              model.add_point((1.7, 1.3, 0), mesh_size=resolution),
 #              ]
 
-# print(circle_R)
+print(circle_R)
 print(circle_r)
 
 # print("Points defining the spline:")
@@ -107,28 +107,28 @@ print(circle_r)
 
 # +
 # Add points with finer resolution on left side
-points = [model.add_point((-L/2, -H/2, 0), mesh_size=resolution),
-          model.add_point((L/2, -H/2, 0), mesh_size=5*resolution),
-          model.add_point((L/2, H/2, 0), mesh_size=5*resolution),
-          model.add_point((-L/2, H/2, 0), mesh_size=resolution)]
+# points = [model.add_point((-L/2, -H/2, 0), mesh_size=resolution),
+#           model.add_point((L/2, -H/2, 0), mesh_size=5*resolution),
+#           model.add_point((L/2, H/2, 0), mesh_size=5*resolution),
+#           model.add_point((-L/2, H/2, 0), mesh_size=resolution)]
 
 # Add lines between all points creating the rectangle
-channel_lines = [model.add_line(points[i], points[i+1])
-                 for i in range(-1, len(points)-1)]
+# channel_lines = [model.add_line(points[i], points[i+1])
+#                  for i in range(-1, len(points)-1)]
 
 # channel_lines = [arc_R_in_up, arc_R_in_down, model.add_line(p3, p4), arc_R_out_down, arc_R_out_up, model.add_line(p6,p1)]
 
 
-print("channel lines : ")
-print(channel_lines)
+# print("channel lines : ")
+# print(channel_lines)
 # #
 ## Create a line loop and plane surface for meshing
-channel_loop = model.add_curve_loop(channel_lines)
+# channel_loop = model.add_curve_loop(channel_lines)
 #spline_loop = model.add_curve_loop(spline)
 # my_surface = model.add_plane_surface(my_loop)
 
-# plane_surface = model.add_plane_surface(     circle_R.curve_loop, holes=[circle_r.curve_loop])
-plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
+plane_surface = model.add_plane_surface(     circle_R.curve_loop, holes=[circle_r.curve_loop])
+# plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
 
 
 

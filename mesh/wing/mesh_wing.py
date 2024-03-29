@@ -11,7 +11,7 @@ H = 2.
 #scaling factor of the wing
 s = 0.5
 #rotation angle of the wing with respect to the z axis
-theta = np.radians(0)
+theta = np.radians(45)
 #the center about which the wing will be rotated
 c = [L/4.0, H/2.0]
 
