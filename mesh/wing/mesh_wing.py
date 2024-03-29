@@ -1,6 +1,6 @@
 
 # +
-import numpy
+import numpy as np
 import meshio
 import gmsh
 import pygmsh
@@ -8,11 +8,13 @@ resolution = 0.08
 # Channel parameters
 L = 10.
 H = 2.
-# R = 1.0
-# r = 0.25
 c = [0.0, 0.0, 0.0]
-#c2 = [0.7, 0.12, 0]
-#r = 0.07
+
+theta = np.radians(30)
+cos = np.cos(theta)
+sin = np.sin(theta)
+R = [[cos,-sin],[sin,cos]]
+print("Rotation matrix: ",R)
 
 
 # Initialize empty geometry using the build in kernel in GMSH
