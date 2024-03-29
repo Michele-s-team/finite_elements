@@ -20,9 +20,7 @@ num_steps = 1000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.005         # dynamic viscosity
 rho = 1            # density
-# L = 10.0
-# H = 2.0
-R = 1.0
+H = 2.0
 L = 1.0
 r = 0.25
 #
@@ -57,8 +55,8 @@ V = VectorFunctionSpace(mesh, 'P', 2)
 Q = FunctionSpace(mesh, 'P', 1)
 
 # Define boundaries
-inflow   = 'on_boundary && near(x[0], -1.0)'
-outflow   =  'on_boundary && near(x[0], 1.0)'
+inflow   = 'on_boundary && near(x[0], -0.5)'
+outflow   =  'on_boundary && near(x[0], 0.5)'
 walls    = 'near(x[1], -1.0) || near(x[1], 1.0)'
 cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
