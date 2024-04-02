@@ -1,0 +1,12 @@
+<<<<<<< HEAD
+#!/bin/bash
+#SBATCH --job-name=test_abacus
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --mem=1gb
+#SBATCH --time=00:00:10
+#SBATCH --account=recherche_prod #SBATCH --partition=recherche_prod #SBATCH --output=test_abacus_%j.log
+srun "hostname"
+=======
+  
+>>>>>>> data_analysis
