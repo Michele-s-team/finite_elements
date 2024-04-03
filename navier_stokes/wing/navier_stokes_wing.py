@@ -15,13 +15,13 @@ import meshio
 import ufl as ufl
 
 
-T = 10     # final time
-num_steps = 100000  # number of time steps
+T = 1.0     # final time
+num_steps = 10000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.001         # dynamic viscosity
 rho = 1            # density
-L = 10.0
-H = 2.0
+L = 2.0
+H = 1.0
 # R = 1.0
 # L = 1.0
 # r = 0.25
@@ -36,10 +36,10 @@ H = 2.0
 
 #create mesh with new method
 mesh=Mesh()
-with XDMFFile("/home/fenics/shared/mesh/wing/triangle_mesh.xdmf") as infile:
+with XDMFFile("/mnt/beegfs/home/mcastel1/navier_stokes/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile("/home/fenics/shared/mesh/wing/line_mesh.xdmf") as infile:
+with XDMFFile("/mnt/beegfs/home/mcastel1/navier_stokes/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
@@ -58,9 +58,9 @@ Q = FunctionSpace(mesh, 'P', 1)
 
 # Define boundaries
 inflow   = 'on_boundary && near(x[0], 0.0)'
-outflow   =  'on_boundary && near(x[0], 10.0)'
-walls    = 'near(x[1], 0.0) || near(x[1], 2.0)'
-cylinder = 'on_boundary && ((x[0]>1.0) && (x[0]<5.0) && (x[1]>0.1) && (x[1]<1.9))'
+outflow   =  'on_boundary && near(x[0], 2.0)'
+walls    = 'near(x[1], 0.0) || near(x[1], 1.0)'
+cylinder = 'on_boundary && ((x[0]>0.1) && (x[0]<1.9) && (x[1]>0.1) && (x[1]<0.9))'
 
 # Define inflow profile
 inflow_profile = ('1.0', '0.0')
@@ -137,15 +137,15 @@ A3 = assemble(a3)
 [bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('solution_theta_90//velocity.xdmf')
-xdmffile_p = XDMFFile('solution_theta_90//pressure.xdmf')
+xdmffile_u = XDMFFile('/mnt/beegfs/home/mcastel1/navier_stokes/results/velocity.xdmf')
+xdmffile_p = XDMFFile('/mnt/beegfs/home/mcastel1/navier_stokes/results/pressure.xdmf')
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('solution_theta_90//velocity_series')
-timeseries_p = TimeSeries('solution_theta_90//pressure_series')
+timeseries_u = TimeSeries('/mnt/beegfs/home/mcastel1/navier_stokes/results/velocity_series')
+timeseries_p = TimeSeries('/mnt/beegfs/home/mcastel1/navier_stokes/results/pressure_series')
 
 # Save mesh to file (for use in reaction_system.py)
-File('solution/cylinder.xml.gz') << mesh
+File('/mnt/beegfs/home/mcastel1/navier_stokes/cylinder.xml.gz') << mesh
 
 # Create progress bar
 #progress = Progress('Time-stepping')
