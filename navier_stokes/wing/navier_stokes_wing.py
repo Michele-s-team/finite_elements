@@ -15,8 +15,8 @@ import meshio
 import ufl as ufl
 
 
-T = 1.0     # final time
-num_steps = 10000  # number of time steps
+T = 0.01     # final time
+num_steps = 100  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.001         # dynamic viscosity
 rho = 1            # density
@@ -25,7 +25,15 @@ H = 1.0
 # R = 1.0
 # L = 1.0
 # r = 0.25
-#
+
+#paths for abacus
+# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
+# output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
+
+#paths for mac
+input_directory = "/home/fenics/shared/mesh/wing"
+output_directory = "/home/fenics/shared/navier_stokes/wing/solution"
+
 
 # def norm(x):
 #     return(x[0]*x[0] + x[1]*x[1])
@@ -36,10 +44,10 @@ H = 1.0
 
 #create mesh with new method
 mesh=Mesh()
-with XDMFFile("/mnt/beegfs/home/mcastel1/navier_stokes/triangle_mesh.xdmf") as infile:
+with XDMFFile(input_directory + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile("/mnt/beegfs/home/mcastel1/navier_stokes/line_mesh.xdmf") as infile:
+with XDMFFile(input_directory + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
@@ -137,15 +145,15 @@ A3 = assemble(a3)
 [bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('/mnt/beegfs/home/mcastel1/navier_stokes/results/velocity.xdmf')
-xdmffile_p = XDMFFile('/mnt/beegfs/home/mcastel1/navier_stokes/results/pressure.xdmf')
+xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
+xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('/mnt/beegfs/home/mcastel1/navier_stokes/results/velocity_series')
-timeseries_p = TimeSeries('/mnt/beegfs/home/mcastel1/navier_stokes/results/pressure_series')
+timeseries_u = TimeSeries(output_directory + "/velocity_series")
+timeseries_p = TimeSeries(output_directory + "/pressure_series")
 
 # Save mesh to file (for use in reaction_system.py)
-File('/mnt/beegfs/home/mcastel1/navier_stokes/cylinder.xml.gz') << mesh
+File(output_directory + "/cylinder.xml.gz") << mesh
 
 # Create progress bar
 #progress = Progress('Time-stepping')
