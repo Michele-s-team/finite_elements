@@ -77,7 +77,7 @@ inflow_profile = ('1.0', '0.0')
 # Define boundary conditions
 bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcu_walls = DirichletBC(V, Constant((0, 0)), walls)
+bcu_walls = DirichletBC(V, Constant((1.0, 0)), walls)
 bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
 bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
@@ -158,6 +158,11 @@ File(output_directory + "/cylinder.xml.gz") << mesh
 # Create progress bar
 #progress = Progress('Time-stepping')
 #set_log_level(PROGRESS)
+
+
+# set the initial condition for u and p
+u_n.assign(Expression(inflow_profile, degree=2))
+p_n.assign(Expression('0.0', degree=0))
 
 # Time-stepping
 t = 0
