@@ -15,10 +15,10 @@ import meshio
 import ufl as ufl
 
 
-T = 1      # final time
-num_steps = 1000  # number of time steps
+T = 10     # final time
+num_steps = 10000  # number of time steps
 dt = T / num_steps # time step size
-mu = 0.005         # dynamic viscosity
+mu = 0.001         # dynamic viscosity
 rho = 1            # density
 R = 1.0
 r = 0.25
@@ -74,13 +74,16 @@ external_boundary_profile = ('1.0', '0.0')
 # outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
+#boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
 bcu_external_boundary = DirichletBC(V, Expression(external_boundary_profile, degree=0), external_boundary)
 bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
+#boundary conditions for the pressure p
 bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bcu = [bcu_external_boundary, bcu_cylinder]
-bcp = [bcp_outflow]
+# bcp = [bcp_outflow]
+bcp = []
 
 # Define trial and test functions
 u = TrialFunction(V)
@@ -121,13 +124,15 @@ def sigma(u, p):
 F1 = rho*dot((u - u_n) / k, v)*dx \
    + rho*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
-   + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
+   + dot(p_n*n, v)*ds - dot(mu*
+                            (U)*n, v)*ds \
    - dot(f, v)*dx
 a1 = lhs(F1)
 L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(p), nabla_grad(q))*dx
+#ERROR: 1/k -> rho / k
 L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx
 
 # Define variational problem for step 3
