@@ -173,15 +173,18 @@ for n in range(num_steps):
     # Step 1: Tentative velocity step
     b1 = assemble(L1)
     [bc.apply(b1) for bc in bcu]
+    #this line solves for u^* and stores u^* in u_
     solve(A1, u_.vector(), b1, 'bicgstab', 'hypre_amg')
 
     # Step 2: Pressure correction step
     b2 = assemble(L2)
     [bc.apply(b2) for bc in bcp]
+    #this step solves for p^{n+1} and stores the solution in p_
     solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
     b3 = assemble(L3)
+    #this step solves for u^{n+1} and stores the solution in u_. In A3, u_ = u^* from `solve(A1, u_.vector(), b1, 'bicgstab', 'hypre_amg')` and p_n = p_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
     solve(A3, u_.vector(), b3, 'cg', 'sor')
 
     # Plot solution
@@ -189,7 +192,9 @@ for n in range(num_steps):
 #    plot(p_, title='Pressure')
 
     # Save solution to file (XDMF/HDF5)
+    #here u_ = u_{n+1}
     xdmffile_u.write(u_, t)
+    #here p_ is p_{n+1}
     xdmffile_p.write(p_, t)
 
     # Save nodal values to file
