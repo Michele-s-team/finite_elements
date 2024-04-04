@@ -119,10 +119,11 @@ def sigma(u, p):
     return as_tensor(2*mu*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
 
 # Define variational problem for step 1
+#  changed this line to correct error
 F1 = rho*dot((u - u_n) / k, v)*dx \
    + rho*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
-   + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
++ dot(p_n*n, v)*ds - dot(mu*epsilon(U)*n, v)*ds \
    - dot(f, v)*dx
 a1 = lhs(F1)
 L1 = rhs(F1)

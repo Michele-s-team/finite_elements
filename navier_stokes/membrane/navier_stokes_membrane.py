@@ -15,8 +15,8 @@ import meshio
 import ufl as ufl
 
 
-T = 10     # final time
-num_steps = 10000  # number of time steps
+T = 1     # final time
+num_steps = 1000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.001         # dynamic viscosity
 rho = 1            # density
@@ -121,10 +121,10 @@ def sigma(u, p):
     return as_tensor(2*mu*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
 
 # Define variational problem for step 1
+#  changed this line to correct error
 F1 = rho*dot((u - u_n) / k, v)*dx \
    + rho*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
-   #  changed this line to correct error
    + dot(p_n*n, v)*ds - dot(mu*epsilon(U)*n, v)*ds \
    - dot(f, v)*dx
 a1 = lhs(F1)
