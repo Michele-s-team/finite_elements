@@ -20,9 +20,9 @@ num_steps = 1000  # number of time steps
 dt = T / num_steps # time step size
 mu = 0.005         # dynamic viscosity
 rho = 1            # density
-H = 2.0
-L = 1.0
+R = 1.0
 r = 0.25
+
 #
 
 # def norm(x):
@@ -32,12 +32,17 @@ r = 0.25
 # print(norm([1,2]))
 
 
+#paths for mac
+input_directory = "/home/fenics/shared/mesh/membrane"
+output_directory = "/home/fenics/shared/navier_stokes/membrane/solution"
+
+
 #create mesh with new method
 mesh=Mesh()
-with XDMFFile("../mesh/triangle_mesh.xdmf") as infile:
+with XDMFFile(input_directory + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile("../mesh/line_mesh.xdmf") as infile:
+with XDMFFile(input_directory + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
@@ -55,22 +60,26 @@ V = VectorFunctionSpace(mesh, 'P', 2)
 Q = FunctionSpace(mesh, 'P', 1)
 
 # Define boundaries
-inflow   = 'on_boundary && near(x[0], -0.5)'
-outflow   =  'on_boundary && near(x[0], 0.5)'
-walls    = 'near(x[1], -1.0) || near(x[1], 1.0)'
+#a semi-circle given by the left half of circle_R
+inflow   = 'on_boundary && (x[0] < 0.01) && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
+#a semi-circle given by the right half of circle_R
+outflow   =  'on_boundary && (x[0] > 0.01) && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
+#the whole circle_R
+external_boundary    = 'on_boundary && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
+#the obstacle
 cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
-# Define inflow profile
-inflow_profile = ('1.0', '0.0')
+# Define velocity profile on the external boundary
+external_boundary_profile = ('1.0', '0.0')
 # outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
-bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
+# bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcu_walls = DirichletBC(V, Constant((0, 0)), walls)
+bcu_external_boundary = DirichletBC(V, Expression(external_boundary_profile, degree=0), external_boundary)
 bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
 bcp_outflow = DirichletBC(Q, Constant(0), outflow)
-bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
+bcu = [bcu_external_boundary, bcu_cylinder]
 bcp = [bcp_outflow]
 
 # Define trial and test functions
@@ -135,15 +144,15 @@ A3 = assemble(a3)
 [bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('solution/velocity.xdmf')
-xdmffile_p = XDMFFile('solution/pressure.xdmf')
+xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
+xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('solution/velocity_series')
-timeseries_p = TimeSeries('solution/pressure_series')
+timeseries_u = TimeSeries(output_directory + "/velocity_series")
+timeseries_p = TimeSeries(output_directory + "/pressure_series")
 
 # Save mesh to file (for use in reaction_system.py)
-File('solution/cylinder.xml.gz') << mesh
+File(output_directory + "/membrane.xml.gz") << mesh
 
 # Create progress bar
 #progress = Progress('Time-stepping')
