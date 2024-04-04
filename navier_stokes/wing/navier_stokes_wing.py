@@ -27,12 +27,12 @@ H = 1.0
 # r = 0.25
 
 #paths for abacus
-# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
-# output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
+input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
+output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
 
 #paths for mac
-input_directory = "/home/fenics/shared/mesh/wing"
-output_directory = "/home/fenics/shared/navier_stokes/wing/solution"
+# input_directory = "/home/fenics/shared/mesh/wing"
+# output_directory = "/home/fenics/shared/navier_stokes/wing/solution"
 
 
 # def norm(x):
