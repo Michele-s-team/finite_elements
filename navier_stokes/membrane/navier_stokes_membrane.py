@@ -18,8 +18,7 @@ import ufl as ufl
 T = 10    # final time
 num_steps = 10000  # number of time steps
 dt = T / num_steps # time step size
-mu = 0.001         # dynamic viscosity
-rho = 1            # density
+#the Reynolds number, R = \rho U l / \mu
 R = 1.0
 r = 0.25
 
@@ -86,7 +85,7 @@ external_boundary_profile = ('1.0', '0.0')
 bcu_external_boundary = DirichletBC(V, Expression(external_boundary_profile, degree=0), external_boundary)
 bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
 #boundary conditions for the pressure p
-bcp_outflow = DirichletBC(Q, Constant(0), outflow)
+# bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bcu = [bcu_external_boundary, bcu_cylinder]
 # bcp = [bcp_outflow]
 bcp = []
@@ -104,12 +103,13 @@ p_n = Function(Q)
 p_  = Function(Q)
 
 # Define expressions used in variational forms
+#U = u^{n+1/2}|_{notes fenics}
 U  = 0.5*(u_n + u)
 n  = FacetNormal(mesh)
-f  = Constant((0, 0))
+# f  = Constant((0, 0))
 k  = Constant(dt)
-mu = Constant(mu)
-rho = Constant(rho)
+# mu = Constant(mu)
+# rho = Constant(rho)
 
 i, j = ufl.indices(2)
 Aij = u[i].dx(j)
@@ -120,11 +120,11 @@ def epsilon(u):
     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
     #sym(nabla_grad(u)) =  nabla_grad(u)_{i,j} + nabla_grad(u)_{j,i}
     # return sym(nabla_grad(u))
-    return as_tensor(u[i].dx(j) + u[j].dx(i), (i,j))
+    return as_tensor(0.5*(u[i].dx(j) + u[j].dx(i)), (i,j))
 
 # Define stress tensor
 def sigma(u, p):
-    return as_tensor(2*mu*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
+    return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
 
 # Define variational problem for step 1
 #  changed this line to correct error
