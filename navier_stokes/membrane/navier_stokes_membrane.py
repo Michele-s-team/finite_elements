@@ -138,7 +138,6 @@ L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(p), nabla_grad(q))*dx
-#ERROR: 1/k -> rho / k
 L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx
 
 # Define variational problem for step 3
