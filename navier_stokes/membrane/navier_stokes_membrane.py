@@ -20,6 +20,7 @@ num_steps = 10000  # number of time steps
 dt = T / num_steps # time step size
 #the Reynolds number, R = \rho U l / \mu
 R = 1.0
+# this is a dimensionless radius r = r_{dimensional}/l_{notes fenics}
 r = 0.25
 
 #
@@ -32,13 +33,13 @@ r = 0.25
 
 
 #paths for mac
-# input_directory = "/home/fenics/shared/mesh/membrane"
-# output_directory = "/home/fenics/shared/navier_stokes/membrane/solution"
+input_directory = "/home/fenics/shared/mesh/membrane"
+output_directory = "/home/fenics/shared/navier_stokes/membrane/solution"
 
 
 #paths for abacus
-input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
-output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
+# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
+# output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
 
 
 
@@ -106,8 +107,7 @@ p_  = Function(Q)
 #U = u^{n+1/2}|_{notes fenics}
 U  = 0.5*(u_n + u)
 n  = FacetNormal(mesh)
-# f  = Constant((0, 0))
-k  = Constant(dt)
+dt  = Constant(dt)
 # mu = Constant(mu)
 # rho = Constant(rho)
 
@@ -128,21 +128,20 @@ def sigma(u, p):
 
 # Define variational problem for step 1
 #  changed this line to correct error
-F1 = rho*dot((u - u_n) / k, v)*dx \
+F1 = dot((u - u_n) / dt, v)*dx \
    + R*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
-   + dot(p_n*n, v)*ds - dot(2*epsilon(U)*n, v)*ds \
-   - dot(f, v)*dx
+   + dot(p_n*n, v)*ds - dot(2*epsilon(U)*n, v)*ds
 a1 = lhs(F1)
 L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(p), nabla_grad(q))*dx
-L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx
+L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/dt)*div(u_)*q*dx
 
 # Define variational problem for step 3
 a3 = dot(u, v)*dx
-L3 = dot(u_, v)*dx - k*dot(nabla_grad(p_ - p_n), v)*dx
+L3 = dot(u_, v)*dx - dt*dot(nabla_grad(p_ - p_n), v)*dx
 
 # Assemble matrices
 A1 = assemble(a1)
