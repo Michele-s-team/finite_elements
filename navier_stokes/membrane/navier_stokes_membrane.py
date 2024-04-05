@@ -107,7 +107,7 @@ p_  = Function(Q)
 #U = u^{n+1/2}|_{notes fenics}
 U  = 0.5*(u_n + u)
 n  = FacetNormal(mesh)
-dt  = Constant(dt)
+Deltat  = Constant(dt)
 # mu = Constant(mu)
 # rho = Constant(rho)
 
@@ -128,7 +128,7 @@ def sigma(u, p):
 
 # Define variational problem for step 1
 #  changed this line to correct error
-F1 = dot((u - u_n) / dt, v)*dx \
+F1 = dot((u - u_n) / Deltat, v)*dx \
    + R*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
    + dot(p_n*n, v)*ds - dot(2*epsilon(U)*n, v)*ds
@@ -137,11 +137,11 @@ L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(p), nabla_grad(q))*dx
-L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/dt)*div(u_)*q*dx
+L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/Deltat)*div(u_)*q*dx
 
 # Define variational problem for step 3
 a3 = dot(u, v)*dx
-L3 = dot(u_, v)*dx - dt*dot(nabla_grad(p_ - p_n), v)*dx
+L3 = dot(u_, v)*dx - Deltat*dot(nabla_grad(p_ - p_n), v)*dx
 
 # Assemble matrices
 A1 = assemble(a1)
