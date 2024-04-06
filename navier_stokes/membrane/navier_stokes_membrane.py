@@ -15,11 +15,11 @@ import meshio
 import ufl as ufl
 
 
-T = 10    # final time
-num_steps = 10000  # number of time steps
+T = 1    # final time
+num_steps = 5000  # number of time steps
 dt = T / num_steps # time step size
 #the Reynolds number, R = \rho U l / \mu
-R = 1.0
+R = 50.0
 # this is a dimensionless radius r = r_{dimensional}/l_{notes fenics}
 r = 0.25
 
@@ -92,10 +92,18 @@ bcu = [bcu_external_boundary, bcu_cylinder]
 bcp = []
 
 # Define trial and test functions
+#u[i] = v^i_{notes} (tangential velocity)
 u = TrialFunction(V)
 v = TestFunction(V)
+#w = w_notes (normal velocity)
+w = TrialFunction(V)
+o = TestFunction(V)
+#p = \sigma_{notes}
 p = TrialFunction(Q)
 q = TestFunction(Q)
+#z = z_notes
+z = TrialFunction(Q)
+x = TestFunction(Q)
 
 # Define functions for solutions at previous and current time steps
 u_n = Function(V)
