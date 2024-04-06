@@ -58,7 +58,7 @@ model = geometry.__enter__()
 
 
 # Add circle
-circle_r = model.add_circle(c, r, mesh_size=resolution)
+circle_r = model.add_circle([0,-0.1,0], r, mesh_size=resolution)
 circle_R = model.add_circle(c, R, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
@@ -151,7 +151,7 @@ model.add_physical(circle_r.curve_loop.curves, "Obstacle")
 ## We generate the mesh using the pygmsh function `generate_mesh`. Generate mesh returns a `meshio.Mesh`. However, this mesh is tricky to extract physical tags from. Therefore we write the mesh to file using the `gmsh.write` function.
 #
 geometry.generate_mesh(dim=2)
-gmsh.write("mesh_membrane.msh")
+gmsh.write("membrane_mesh.msh")
 gmsh.clear()
 geometry.__exit__()
 #
@@ -159,7 +159,7 @@ geometry.__exit__()
 ## Now that we have save the mesh to a `msh` file, we would like to convert it to a format that interfaces with DOLFIN and DOLFINx.
 ## For this I suggest using the `XDMF`-format as it supports parallel IO.
 #
-mesh_from_file = meshio.read("mesh_membrane.msh")
+mesh_from_file = meshio.read("membrane_mesh.msh")
 #
 ## Now that we have loaded the mesh, we need to extract the cells and physical data. We need to create a separate file for the facets (lines), which we will use when we define boundary conditions in DOLFIN/DOLFINx. We do this with the following convenience function. Note that as we would like a 2 dimensional mesh, we need to remove the z-values in the mesh coordinates.
 #

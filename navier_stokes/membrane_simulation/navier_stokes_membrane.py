@@ -33,8 +33,8 @@ r = 0.25
 
 
 #paths for mac
-input_directory = "/home/fenics/shared/mesh/membrane"
-output_directory = "/home/fenics/shared/navier_stokes/membrane/solution"
+input_directory = "/home/fenics/shared/mesh/membrane_mesh"
+output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
 
 
 #paths for abacus
