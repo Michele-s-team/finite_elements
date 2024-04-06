@@ -108,8 +108,14 @@ x = TestFunction(Q)
 # Define functions for solutions at previous and current time steps
 u_n = Function(V)
 u_  = Function(V)
+w_n = Function(Q)
+w_  = Function(Q)
 p_n = Function(Q)
 p_  = Function(Q)
+z_n = Function(Q)
+z_  = Function(Q)
+
+
 
 # Define expressions used in variational forms
 #U = u^{n+1/2}|_{notes fenics}
