@@ -96,6 +96,7 @@ xdmffile_geometry.write(project(z_, Q), 0)
 xdmffile_geometry.write(project(grad_z(z_), V), 0)
 xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
 xdmffile_geometry.write(project(detg(z_), Q), 0)
+xdmffile_geometry.write(project(H(z_), Q), 0)
 xdmffile_z.write(z_, t)
 ###
 

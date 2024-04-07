@@ -89,8 +89,6 @@ x = TestFunction(Q)
 
 
 #definition of scalar, vectorial and tensorial quantities
-#greek indexes run on 3d coordinates
-mu = ufl.Index
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 Aij = u[i].dx(j)
@@ -110,7 +108,8 @@ def normal(z):
 
 #b(z) = b_{ij}_{al-izzi2020shear}
 def b(z):
-    return as_tensor(normal(z)[mu] * (e(z)[i,mu]).dx(j), (i,j))
+    return as_tensor((normal(z))[k] * (e(z)[i,k]).dx(j), (i,j))
+
 
 #the gradient of z(x,y)
 def grad_z(z):
@@ -124,10 +123,17 @@ def my_vector_field(z):
 def g(z):
     return as_tensor([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])
 
+def g_c(z):
+    return ufl.inv(g(z))
+
 # def g(z):
 #     return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
 def detg(z):
     return ufl.det(g(z))
+
+
+def H(z):
+    return (2.0 * g_c(z)[i, j] * b(z)[i, j])
 
 # Define symmetric gradient
 def epsilon(u):
