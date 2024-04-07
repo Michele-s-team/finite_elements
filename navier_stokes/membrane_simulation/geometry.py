@@ -91,16 +91,14 @@ A = as_tensor(Aij, (i,j))
 def X(z):
     return as_tensor([x[0], x[1], z(x)])
 
-#e_i = \partial_i X
-def e(z):
-    return as_matrix([[z.dx(0),2],[3,4]])
-
 #g_{ij}
 def g(z):
-    return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
+    return as_matrix([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])
 
-def dete(z):
-    return ufl.det(e(z))
+# def g(z):
+#     return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
+def detg(z):
+    return ufl.det(g(z))
 
 # Define symmetric gradient
 def epsilon(u):
