@@ -138,6 +138,10 @@ def detg(z):
 def H(z):
     return (0.5 * g_c(z)[i, j]*b(z)[j, i])
 
+#K(z) = K_{al-izzi2020shear}
+def K(z):
+    return(ufl.det(as_tensor(b(z)[i,k]*g_c(z)[k,j], (i, j))))
+
 # Define symmetric gradient
 def epsilon(u):
     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
