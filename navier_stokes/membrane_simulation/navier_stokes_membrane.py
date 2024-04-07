@@ -16,7 +16,8 @@ import ufl as ufl
 
 
 T = 1    # final time
-num_steps = 5000  # number of time steps
+# num_steps = 5000  # number of time steps
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 50.0
@@ -145,7 +146,7 @@ class MyVectorFunctionExpression(UserExpression):
 #analytical expression for a function
 class MyScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = (norm(np.subtract(x, c_r)) - r)*(norm(np.subtract(x, c_R)) - R)
+        values[0] = sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
     def value_shape(self):
         return (1,)
 t=0
