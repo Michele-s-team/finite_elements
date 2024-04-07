@@ -87,12 +87,12 @@ i, j = ufl.indices(2)
 Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
-def X(z, x):
+def X(z):
     return as_tensor([x[0], x[1], z(x)])
 
 #e_i = \partial_i X
 def e(z):
-    return as_tensor(X(z, x).dx(i), (i))
+    return as_tensor(X(z).dx(i), (i))
 
 #g_{ij}
 def g(z):
