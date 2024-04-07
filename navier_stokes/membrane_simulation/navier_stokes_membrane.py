@@ -36,11 +36,19 @@ r = 0.25
 input_directory = "/home/fenics/shared/mesh/membrane_mesh"
 output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
 
-
 #paths for abacus
 # input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
 # output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
 
+# Create XDMF files for visualization output
+xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
+xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
+xdmffile_z = XDMFFile(output_directory + "/z.xdmf")
+
+# Create time series (for use in reaction_system.py)
+timeseries_u = TimeSeries(output_directory + "/velocity_series")
+timeseries_p = TimeSeries(output_directory + "/pressure_series")
+timeseries_z = TimeSeries(output_directory + "/shape_series")
 
 
 #create mesh with new method
@@ -171,15 +179,7 @@ A3 = assemble(a3)
 [bc.apply(A1) for bc in bcu]
 [bc.apply(A2) for bc in bcp]
 
-# Create XDMF files for visualization output
-xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
-xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
-xdmffile_z = XDMFFile(output_directory + "/z.xdmf")
 
-# Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries(output_directory + "/velocity_series")
-timeseries_p = TimeSeries(output_directory + "/pressure_series")
-timeseries_z = TimeSeries(output_directory + "/shape_series")
 
 # Save mesh to file (for use in reaction_system.py)
 File(output_directory + "/membrane.xml.gz") << mesh
