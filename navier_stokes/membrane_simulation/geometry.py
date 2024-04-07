@@ -66,8 +66,8 @@ class MyVectorFunctionExpression(UserExpression):
 #analytical expression for a function
 class MyScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        # values[0] = sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        values[0] = sin(4*(norm(np.subtract(x, c_r)) - r))*sin(4*(norm(np.subtract(x, c_R)) - R))
+        # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 t=0
@@ -109,7 +109,7 @@ def normal(z):
 
 #b(z) = b_{ij}_{al-izzi2020shear}
 def b(z):
-    return as_tensor((normal(z))[0] * (e(z)[i, 0]).dx(j) + (normal(z))[1] * (e(z)[i, 1]).dx(j) + (normal(z))[2] * (e(z)[i, 2]).dx(j), (i,j))
+    return as_tensor((normal(z))[k] * (e(z)[i, k]).dx(j), (i,j))
 
 
 #the gradient of z(x,y)
@@ -133,8 +133,9 @@ def detg(z):
     return ufl.det(g(z))
 
 
+#H(z) = H_{al-izzi2020shear}
 def H(z):
-    return (g_c(z)[i, j]*b(z)[j, i])
+    return (0.5 * g_c(z)[i, j]*b(z)[j, i])
 
 # Define symmetric gradient
 def epsilon(u):
