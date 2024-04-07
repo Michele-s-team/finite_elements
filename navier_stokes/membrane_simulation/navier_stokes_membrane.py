@@ -12,43 +12,29 @@ from __future__ import print_function
 from geometry import *
 
 
-T = 1    # final time
+T = 0.1    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 1000
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 50.0
 
-#paths for mac
-input_directory = "/home/fenics/shared/mesh/membrane_mesh"
+#path for mac
 output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
-
-#paths for abacus
-# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
+#path for abacus
 # output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
 xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
 xdmffile_z = XDMFFile(output_directory + "/z.xdmf")
-
 xdmffile_test = XDMFFile(output_directory + "/test.xdmf")
-
 
 # Create time series (for use in reaction_system.py)
 timeseries_u = TimeSeries(output_directory + "/velocity_series")
 timeseries_p = TimeSeries(output_directory + "/pressure_series")
 timeseries_z = TimeSeries(output_directory + "/shape_series")
 
-
-#create mesh with new method
-mesh=Mesh()
-with XDMFFile(input_directory + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile(input_directory + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-#sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
 
@@ -59,19 +45,8 @@ with XDMFFile(input_directory + "/line_mesh.xdmf") as infile:
 #domain = channel - cylinder - cylinder2
 #mesh = generate_mesh(domain, 64)
 
-# Define function spaces
-V = VectorFunctionSpace(mesh, 'P', 2)
-Q = FunctionSpace(mesh, 'P', 1)
 
-# Define boundaries
-#a semi-circle given by the left half of circle_R
-inflow   = 'on_boundary && (x[0] < 0.01) && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
-#a semi-circle given by the right half of circle_R
-outflow   =  'on_boundary && (x[0] > 0.01) && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
-#the whole circle_R
-external_boundary = 'on_boundary && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
-#the obstacle
-cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
+
 
 # Define velocity profile on the external boundary
 external_boundary_profile = ('1.0', '0.0')
@@ -89,19 +64,7 @@ bcu = [bcu_external_boundary, bcu_cylinder]
 # bcp = [bcp_outflow]
 bcp = []
 
-# Define trial and test functions
-#u[i] = v^i_{notes} (tangential velocity)
-u = TrialFunction(V)
-v = TestFunction(V)
-#w = w_notes (normal velocity)
-w = TrialFunction(Q)
-o = TestFunction(Q)
-#p = \sigma_{notes}
-p = TrialFunction(Q)
-q = TestFunction(Q)
-#z = z_notes
-z = TrialFunction(Q)
-x = TestFunction(Q)
+
 
 # Define functions for solutions at previous and current time steps
 u_n = Function(V)
@@ -130,20 +93,9 @@ Deltat  = Constant(dt)
 # mu = Constant(mu)
 # rho = Constant(rho)
 
-i, j = ufl.indices(2)
-Aij = u[i].dx(j)
-A = as_tensor(Aij, (i,j))
 
-# Define symmetric gradient
-def epsilon(u):
-    # nabla_grad(u)_{i,j} = (u[j]).dx[i]
-    #sym(nabla_grad(u)) =  nabla_grad(u)_{i,j} + nabla_grad(u)_{j,i}
-    # return sym(nabla_grad(u))
-    return as_tensor(0.5*(u[i].dx(j) + u[j].dx(i)), (i,j))
 
-# Define stress tensor
-def sigma(u, p):
-    return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
+
 
 # Define variational problem for step 1
 #  changed this line to correct error
