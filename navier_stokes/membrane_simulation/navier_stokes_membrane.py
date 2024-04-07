@@ -84,6 +84,7 @@ z_  = Function(Q)
 z_ = interpolate(MyScalarFunctionExpression(element=Q.ufl_element()), Q)
 z_plot = project(z_, Q)
 grad_z_plot = project(grad_z(z_), V)
+my_vector_field_plot = project(my_vector_field(z_), V)
 detg_plot = project(detg(z_), Q)
 
 xdmffile_geometry.parameters.update(
@@ -93,6 +94,7 @@ xdmffile_geometry.parameters.update(
     })
 xdmffile_geometry.write(z_plot, 0)
 xdmffile_geometry.write(grad_z_plot, 0)
+xdmffile_geometry.write(my_vector_field_plot, 0)
 xdmffile_geometry.write(detg_plot, 0)
 xdmffile_z.write(z_, t)
 ###

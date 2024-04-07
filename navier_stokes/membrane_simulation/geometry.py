@@ -87,7 +87,7 @@ x = TestFunction(Q)
 
 
 #definition of scalar, vectorial and tensorial quantities
-i, j = ufl.indices(2)
+i, j, k = ufl.indices(3)
 Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
@@ -98,6 +98,9 @@ def X(z):
 #the gradient of z(x,y)
 def grad_z(z):
     return as_vector(z.dx(i), (i))
+
+def my_vector_field(z):
+    return as_vector(grad_z(z)[j]*g(z)[i,k]*g(z)[k, j], (i))
 
 #g_{ij}
 def g(z):
