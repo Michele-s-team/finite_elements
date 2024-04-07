@@ -93,7 +93,7 @@ def X(z):
 
 #e_i = \partial_i X
 def e(z):
-    return as_matrix([[1,2],[3,4]])
+    return as_matrix([[z.dx(0),2],[3,4]])
 
 #g_{ij}
 def g(z):
