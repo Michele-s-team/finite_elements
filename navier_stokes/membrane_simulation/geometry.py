@@ -66,7 +66,7 @@ class MyVectorFunctionExpression(UserExpression):
 #analytical expression for a function
 class MyScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = sin(4*(norm(np.subtract(x, c_r)) - r))*sin(4*(norm(np.subtract(x, c_R)) - R))
+        values[0] = x[0]*x[1]*sin(4*(norm(np.subtract(x, c_r)) - r))*sin(4*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
@@ -124,6 +124,7 @@ def my_vector_field(z):
 def g(z):
     return as_tensor([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])
 
+#g^{ij}
 def g_c(z):
     return ufl.inv(g(z))
 
