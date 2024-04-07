@@ -93,11 +93,14 @@ def X(z):
 
 #e_i = \partial_i X
 def e(z):
-    return as_tensor(z.dx(i), (i,))
+    return as_matrix(z.dx(i).dx(j), (i,j))
 
 #g_{ij}
 def g(z):
     return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
+
+def dete(z):
+    return ufl.det(e(z))
 
 # Define symmetric gradient
 def epsilon(u):
