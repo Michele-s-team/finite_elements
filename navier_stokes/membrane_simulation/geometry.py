@@ -31,8 +31,9 @@ n  = FacetNormal(mesh)
 
 
 # Define function spaces
+#the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
 V = VectorFunctionSpace(mesh, 'P', 2)
-Q = FunctionSpace(mesh, 'P', 1)
+Q = FunctionSpace(mesh, 'P', 2)
 
 
 # Define boundaries
@@ -108,7 +109,7 @@ def normal(z):
 
 #b(z) = b_{ij}_{al-izzi2020shear}
 def b(z):
-    return as_tensor((normal(z))[k] * (e(z)[i,k]).dx(j), (i,j))
+    return as_tensor((normal(z))[0] * (e(z)[i, 0]).dx(j) + (normal(z))[1] * (e(z)[i, 1]).dx(j) + (normal(z))[2] * (e(z)[i, 2]).dx(j), (i,j))
 
 
 #the gradient of z(x,y)
@@ -133,7 +134,7 @@ def detg(z):
 
 
 def H(z):
-    return (2.0 * g_c(z)[i, j] * b(z)[i, j])
+    return ( (e(z)[0, 2]).dx(0))
 
 # Define symmetric gradient
 def epsilon(u):
