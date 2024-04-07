@@ -86,6 +86,10 @@ i, j = ufl.indices(2)
 Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
+#e_i = \partial_i X
+def e(z):
+    return as_tensor(z.dx(i), (i))
+
 # Define symmetric gradient
 def epsilon(u):
     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
