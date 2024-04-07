@@ -1,4 +1,3 @@
-import numpy as np
 from fenics import *
 from mshr import *
 import numpy as np
@@ -99,6 +98,7 @@ def X(z):
 def grad_z(z):
     return as_vector(z.dx(i), (i))
 
+#an example of a vector field obatined by contracting indexes
 def my_vector_field(z):
     return as_vector(grad_z(z)[j]*g(z)[i,k]*g(z)[k, j], (i))
 
