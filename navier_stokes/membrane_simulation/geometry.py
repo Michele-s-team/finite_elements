@@ -89,6 +89,9 @@ x = TestFunction(Q)
 
 
 #definition of scalar, vectorial and tensorial quantities
+#greek indexes run on 3d coordinates
+mu = ufl.Index
+#latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
@@ -104,6 +107,10 @@ def e(z):
 def normal(z):
     return as_tensor(cross(e(z)[0], e(z)[1]) /  ufl_norm(cross(e(z)[0], e(z)[1])) )
 
+
+#b(z) = b_{ij}_{al-izzi2020shear}
+def b(z):
+    return as_tensor(normal(z)[mu] * (e(z)[i,mu]).dx(j), (i,j))
 
 #the gradient of z(x,y)
 def grad_z(z):
