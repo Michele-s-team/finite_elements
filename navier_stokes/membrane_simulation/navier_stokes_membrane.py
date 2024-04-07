@@ -18,11 +18,14 @@ import ufl as ufl
 T = 1    # final time
 num_steps = 5000  # number of time steps
 dt = T / num_steps # time step size
-#the Reynolds number, R = \rho U l / \mu
-R = 50.0
-# this is a dimensionless radius r = r_{dimensional}/l_{notes fenics}
+#the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
+Re = 50.0
+#r, R must be the same as in generate_mesh.py
+R = 1.0
 r = 0.25
-
+#these must be the same c_R, c_r as in generate_mesh.py, with the third component dropped
+c_R = [0.0, 0.0]
+c_r = [0.0, -0.1]
 #
 
 # def norm(x):
@@ -127,6 +130,10 @@ z_n = Function(Q)
 z_  = Function(Q)
 
 
+# Define norm of x
+def norm(x):
+    return (sqrt(x[0]**2 + x[1]**2))
+
 ###
 #analytical expression for a vector
 class MyVectorFunctionExpression(UserExpression):
@@ -138,7 +145,7 @@ class MyVectorFunctionExpression(UserExpression):
 #analytical expression for a function
 class MyScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
+        values[0] = (norm(np.subtract(x, c_r)) - r)*(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 t=0
@@ -175,7 +182,7 @@ def sigma(u, p):
 # Define variational problem for step 1
 #  changed this line to correct error
 F1 = dot((u - u_n) / Deltat, v)*dx \
-   + R*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
+   + Re*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
    + dot(p_n*n, v)*ds - dot(2*epsilon(U)*n, v)*ds
 a1 = lhs(F1)
