@@ -59,7 +59,8 @@ class MyVectorFunctionExpression(UserExpression):
 #analytical expression for a function
 class MyScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+        # values[0] = sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+        values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 t=0
