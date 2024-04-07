@@ -94,6 +94,10 @@ def X(z, x):
 def e(z):
     return as_tensor(X(z, x).dx(i), (i))
 
+#g_{ij}
+def g(z):
+    return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
+
 # Define symmetric gradient
 def epsilon(u):
     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
