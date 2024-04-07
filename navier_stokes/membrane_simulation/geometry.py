@@ -134,7 +134,7 @@ def detg(z):
 
 
 def H(z):
-    return ( (e(z)[0, 2]).dx(0))
+    return (g_c(z)[i, j]*b(z)[j, i])
 
 # Define symmetric gradient
 def epsilon(u):
