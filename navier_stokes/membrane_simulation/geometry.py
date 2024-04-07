@@ -87,9 +87,12 @@ i, j = ufl.indices(2)
 Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
+def X(z, x):
+    return as_tensor([x[0], x[1], z(x)])
+
 #e_i = \partial_i X
 def e(z):
-    return as_tensor(z.dx(i), (i))
+    return as_tensor(X(z, x).dx(i), (i))
 
 # Define symmetric gradient
 def epsilon(u):
