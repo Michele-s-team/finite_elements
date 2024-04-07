@@ -28,7 +28,7 @@ output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/soluti
 xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
 xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
 xdmffile_z = XDMFFile(output_directory + "/z.xdmf")
-xdmffile_test = XDMFFile(output_directory + "/test.xdmf")
+xdmffile_geometry = XDMFFile(output_directory + "/geometry.xdmf")
 
 # Create time series (for use in reaction_system.py)
 timeseries_u = TimeSeries(output_directory + "/velocity_series")
@@ -83,7 +83,7 @@ z_  = Function(Q)
 # u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
 z_ = interpolate(MyScalarFunctionExpression(element=Q.ufl_element()), Q)
 detg_plot = project(detg(z_), Q)
-xdmffile_test.write(detg_plot, t)
+xdmffile_geometry.write(detg_plot, t)
 xdmffile_z.write(z_, t)
 ###
 
