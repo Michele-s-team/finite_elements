@@ -128,18 +128,24 @@ z_  = Function(Q)
 
 
 ###
-class MyFunctionExpression(UserExpression):
+#analytical expression for a vector
+class MyVectorFunctionExpression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
         values[1] = -x[1]
     def value_shape(self):
         return (2,)
-
+#analytical expression for a function
+class MyScalarFunctionExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[0]
+    def value_shape(self):
+        return (1,)
 t=0
-# z_ = Expression('1', degree=2)
-# V2 = VectorFunctionSpace(mesh, "Lagrange", 1)
-u_ = interpolate(MyFunctionExpression(element=V.ufl_element()) ,V)
-xdmffile_test.write(u_, t)
+#the vector  or function is interpolated  and written into a Function() object
+# u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
+z_ = interpolate(MyScalarFunctionExpression(element=Q.ufl_element()), Q)
+xdmffile_test.write(z_, t)
 ###
 
 
