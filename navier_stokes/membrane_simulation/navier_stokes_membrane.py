@@ -45,6 +45,9 @@ xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
 xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
 xdmffile_z = XDMFFile(output_directory + "/z.xdmf")
 
+xdmffile_test = XDMFFile(output_directory + "/test.xdmf")
+
+
 # Create time series (for use in reaction_system.py)
 timeseries_u = TimeSeries(output_directory + "/velocity_series")
 timeseries_p = TimeSeries(output_directory + "/pressure_series")
@@ -125,8 +128,18 @@ z_  = Function(Q)
 
 
 ###
-z = Expression('x[0]*x[1]', degree=2)
+class MyFunctionExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 1+((x[0]**2 +x[1]**2)**0.5 - 0.5)**2
+        values[1] = 1+((x[0]**2 +x[1]**2)**0.5 - 0.5)**2
+    def value_shape(self):
+        return (2,)
 
+t=0
+# z_ = Expression('1', degree=2)
+# V2 = VectorFunctionSpace(mesh, "Lagrange", 1)
+u_ = interpolate(MyFunctionExpression(element=V.ufl_element()) ,V)
+xdmffile_test.write(u_, t)
 ###
 
 
