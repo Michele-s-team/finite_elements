@@ -13,6 +13,7 @@ from mshr import *
 import numpy as np
 import meshio
 import ufl as ufl
+from geometry import *
 
 
 T = 1    # final time
@@ -21,20 +22,6 @@ num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 50.0
-#r, R must be the same as in generate_mesh.py
-R = 1.0
-r = 0.25
-#these must be the same c_R, c_r as in generate_mesh.py, with the third component dropped
-c_R = [0.0, 0.0]
-c_r = [0.0, -0.1]
-#
-
-# def norm(x):
-#     return(x[0]*x[0] + x[1]*x[1])
-#
-# print("****")
-# print(norm([1,2]))
-
 
 #paths for mac
 input_directory = "/home/fenics/shared/mesh/membrane_mesh"
@@ -131,9 +118,6 @@ z_n = Function(Q)
 z_  = Function(Q)
 
 
-# Define norm of x
-def norm(x):
-    return (sqrt(x[0]**2 + x[1]**2))
 
 ###
 #analytical expression for a vector
