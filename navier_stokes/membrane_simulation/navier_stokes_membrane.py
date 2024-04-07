@@ -87,6 +87,9 @@ xdmffile_test.write(e_plot, t)
 xdmffile_z.write(z_, t)
 ###
 
+#example of how to compute the determinant of a matrix
+A = np.array([[1, 2], [2, 3]])   # Identity tensor
+print("determinant = ", np.linalg.det(A), ".")
 
 # Define expressions used in variational forms
 #U = u^{n+1/2}|_{notes fenics}
