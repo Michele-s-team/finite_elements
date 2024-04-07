@@ -94,6 +94,11 @@ A = as_tensor(Aij, (i,j))
 def X(z):
     return as_tensor([x[0], x[1], z(x)])
 
+
+#the gradient of z(x,y)
+def grad_z(z):
+    return as_vector(z.dx(i), (i))
+
 #g_{ij}
 def g(z):
     return as_tensor([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])

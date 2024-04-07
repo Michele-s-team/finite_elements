@@ -83,6 +83,7 @@ z_  = Function(Q)
 # u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
 z_ = interpolate(MyScalarFunctionExpression(element=Q.ufl_element()), Q)
 z_plot = project(z_, Q)
+grad_z_plot = project(grad_z(z_), V)
 detg_plot = project(detg(z_), Q)
 
 xdmffile_geometry.parameters.update(
@@ -91,6 +92,7 @@ xdmffile_geometry.parameters.update(
         "rewrite_function_mesh": False
     })
 xdmffile_geometry.write(z_plot, 0)
+xdmffile_geometry.write(grad_z_plot, 0)
 xdmffile_geometry.write(detg_plot, 0)
 xdmffile_z.write(z_, t)
 ###
