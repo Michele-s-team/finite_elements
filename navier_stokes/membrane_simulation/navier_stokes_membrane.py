@@ -82,8 +82,16 @@ z_  = Function(Q)
 #the vector  or function is interpolated  and written into a Function() object
 # u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
 z_ = interpolate(MyScalarFunctionExpression(element=Q.ufl_element()), Q)
+z_plot = project(z_, Q)
 detg_plot = project(detg(z_), Q)
-xdmffile_geometry.write(detg_plot, t)
+
+xdmffile_geometry.parameters.update(
+    {
+        "functions_share_mesh": True,
+        "rewrite_function_mesh": False
+    })
+xdmffile_geometry.write(z_plot, 0)
+xdmffile_geometry.write(detg_plot, 0)
 xdmffile_z.write(z_, t)
 ###
 

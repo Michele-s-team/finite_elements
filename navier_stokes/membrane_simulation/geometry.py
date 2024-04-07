@@ -93,7 +93,7 @@ def X(z):
 
 #g_{ij}
 def g(z):
-    return as_matrix([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])
+    return as_tensor([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])
 
 # def g(z):
 #     return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
