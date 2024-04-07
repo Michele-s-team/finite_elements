@@ -45,7 +45,7 @@ cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
 # Define norm of x
 def norm(x):
-    return (np.sqrt(x[0]**2 + x[1]**2))
+    return (np.sqrt(np.dot(x, x)))
 
 
 
@@ -92,7 +92,7 @@ def X(z):
 
 #e_i = \partial_i X
 def e(z):
-    return as_tensor(X(z).dx(i), (i))
+    return as_tensor(z.dx(i), (i,))
 
 #g_{ij}
 def g(z):

@@ -78,11 +78,12 @@ z_  = Function(Q)
 
 
 
+
 #the vector  or function is interpolated  and written into a Function() object
 # u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
 z_ = interpolate(MyScalarFunctionExpression(element=Q.ufl_element()), Q)
-# e_plot = project(e(z_), V)
-# xdmffile_test.write(e_plot, t)
+e_plot = project(e(z_), V)
+xdmffile_test.write(e_plot, t)
 xdmffile_z.write(z_, t)
 ###
 
