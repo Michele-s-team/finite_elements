@@ -46,10 +46,13 @@ external_boundary = 'on_boundary && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
 cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
 
-# Define norm of x
+#  norm of vector x
 def norm(x):
     return (np.sqrt(np.dot(x, x)))
 
+#norm for UFL vectors
+def ufl_norm(x):
+    return(sqrt(ufl.dot(x, x)))
 
 
 #analytical expression for a vector
@@ -86,12 +89,20 @@ x = TestFunction(Q)
 
 
 #definition of scalar, vectorial and tensorial quantities
-i, j, k = ufl.indices(3)
+i, j, k, l = ufl.indices(4)
 Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
 def X(z):
     return as_tensor([x[0], x[1], z(x)])
+
+#e(z)[i] = e_i_{al-izzi2020shear}
+def e(z):
+    return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
+
+#normal(z) = \hat{n}_{al-izzi2020shear}
+def normal(z):
+    return as_tensor(cross(e(z)[0], e(z)[1]) /  ufl_norm(cross(e(z)[0], e(z)[1])) )
 
 
 #the gradient of z(x,y)
@@ -100,7 +111,7 @@ def grad_z(z):
 
 #an example of a vector field obatined by contracting indexes
 def my_vector_field(z):
-    return as_vector(grad_z(z)[j]*g(z)[i,k]*g(z)[k, j], (i))
+    return as_vector(grad_z(z)[j]*g(z)[i,k]*g(z)[k, j] * dot(e(z)[0], normal(z)), (i))
 
 #g_{ij}
 def g(z):
