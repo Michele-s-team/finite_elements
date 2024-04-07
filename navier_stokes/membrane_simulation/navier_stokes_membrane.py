@@ -102,7 +102,6 @@ print("determinant = ", np.linalg.det(A), ".")
 # Define expressions used in variational forms
 #U = u^{n+1/2}|_{notes fenics}
 U  = 0.5*(u_n + u)
-n  = FacetNormal(mesh)
 Deltat  = Constant(dt)
 # mu = Constant(mu)
 # rho = Constant(rho)

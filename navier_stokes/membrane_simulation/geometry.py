@@ -28,6 +28,9 @@ with XDMFFile(input_directory + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
+n  = FacetNormal(mesh)
+
+
 # Define function spaces
 V = VectorFunctionSpace(mesh, 'P', 2)
 Q = FunctionSpace(mesh, 'P', 1)
