@@ -130,8 +130,8 @@ z_  = Function(Q)
 ###
 class MyFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1+((x[0]**2 +x[1]**2)**0.5 - 0.5)**2
-        values[1] = 1+((x[0]**2 +x[1]**2)**0.5 - 0.5)**2
+        values[0] = x[0]
+        values[1] = -x[1]
     def value_shape(self):
         return (2,)
 
