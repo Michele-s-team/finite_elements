@@ -110,9 +110,11 @@ def X(z):
 def e(z):
     return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
 
+#MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
 def normal(z):
     return as_tensor(cross(e(z)[0], e(z)[1]) /  ufl_norm(cross(e(z)[0], e(z)[1])) )
+#MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
 
 #b(z) = b_{ij}_{al-izzi2020shear}
@@ -169,13 +171,13 @@ def Nabla_omega(omega, z):
     return as_tensor((omega[i]).dx(j) - omega[k]*Gamma(z)[k, i, j], (i, j))
 
 
-#Nabla_LB(f) = {\Nabla_{LB} f}_{al-izzi2020shear}
+#Laplace beltrami operator on a scalar function f: Nabla_LB(f) = {\Nabla_{LB} f}_{al-izzi2020shear}
 def Nabla_LB(f, z):
     return (-g_c(z)[k,j]*Nabla_omega(as_tensor(f.dx(i), (i)), z)[k, j])
 
-#second definition of Laplace beltrami operator
-def Nabla_LB2(f, z):
-    return (-1.0/sqrt_abs_detg(z) * (sqrt_abs_detg(z)*g_c(z)[i, j]*(f.dx(j))).dx(i))
+#second definition of Laplace beltrami operator, equivalent to Nabla_LB
+# def Nabla_LB2(f, z):
+#     return (-1.0/sqrt_abs_detg(z) * (sqrt_abs_detg(z)*g_c(z)[i, j]*(f.dx(j))).dx(i))
 
 
 
