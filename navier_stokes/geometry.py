@@ -13,9 +13,9 @@ c_R = [0.0, 0.0]
 c_r = [0.0, -0.1]
 
 #paths for mac
-input_directory = "/home/fenics/shared/mesh/membrane_mesh"
+# input_directory = "/home/fenics/shared/mesh/membrane_mesh"
 #paths for abacus
-# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
+input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
 
 
 #create mesh
@@ -33,7 +33,6 @@ n  = FacetNormal(mesh)
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
 V = VectorFunctionSpace(mesh, 'P', 2)
-W = VectorFunctionSpace(mesh, 'P', 2, dim=3)
 Q = FunctionSpace(mesh, 'P', 2)
 
 
@@ -97,8 +96,7 @@ Aij = u[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
 def X(z):
-    x = ufl.SpatialCoordinate(mesh)
-    return as_tensor([x[0], x[1], z])
+    return as_tensor([x[0], x[1], z(x)])
 
 #e(z)[i] = e_i_{al-izzi2020shear}
 def e(z):
