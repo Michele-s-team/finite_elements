@@ -85,7 +85,7 @@ p = TrialFunction(Q)
 q = TestFunction(Q)
 #z = z_notes
 z = TrialFunction(Q)
-x = TestFunction(Q)
+zeta = TestFunction(Q)
 
 
 

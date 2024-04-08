@@ -32,7 +32,7 @@ class MyScalarFunctionExpression(UserExpression):
 i, j, k, l = ufl.indices(4)
 
 def X(z):
-    return as_tensor([x[0], x[1], z(x)])
+    return as_tensor([zeta[0], zeta[1], z(zeta)])
 
 def e(z):
     return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
