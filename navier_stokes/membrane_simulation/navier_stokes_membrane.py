@@ -93,13 +93,14 @@ xdmffile_geometry.parameters.update(
         "rewrite_function_mesh": False
     })
 xdmffile_geometry.write(project(z_, Q), 0)
-xdmffile_geometry.write(project(grad_z(z_), V), 0)
-xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
-xdmffile_geometry.write(project(detg(z_), Q), 0)
-xdmffile_geometry.write(project(H(z_), Q), 0)
-xdmffile_geometry.write(project(K(z_), Q), 0)
-xdmffile_geometry.write(project(Nabla_v(u_, z_)[0,0], Q), 0)
-xdmffile_geometry.write(project(X(z_), W), 0)
+# xdmffile_geometry.write(project(X(z_), V3d), 0)
+# xdmffile_geometry.write(project(grad_z(z_), V), 0)
+# xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
+# xdmffile_geometry.write(project(detg(z_), Q), 0)
+# xdmffile_geometry.write(project(H(z_), Q), 0)
+# xdmffile_geometry.write(project(K(z_), Q), 0)
+# xdmffile_geometry.write(project(Nabla_v(u_, z_)[0,0], Q), 0)
+xdmffile_geometry.write(project(Nabla_omega(u_, z_)[0,1], Q), 0)
 
 xdmffile_z.write(z_, t)
 ###

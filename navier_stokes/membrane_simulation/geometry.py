@@ -33,7 +33,7 @@ n  = FacetNormal(mesh)
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
 V = VectorFunctionSpace(mesh, 'P', 2)
-W = VectorFunctionSpace(mesh, 'P', 2, dim=3)
+V3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
 Q = FunctionSpace(mesh, 'P', 2)
 
 
@@ -149,9 +149,14 @@ def K(z):
 def Gamma(z):
     return as_tensor(0.5 * g_c(z)[i,l] * ( (g(z)[l, k]).dx(j) + (g(z)[j, l]).dx(k) - (g(z)[j, k]).dx(l) ), (i, j, k))
 
-#covariant derivative of vector u with respect to \partial/partial x: Nabla_v(u, z)[i, j] = {\Nabla_j u^i}_{al-izzi2020shear}
-def Nabla_v(u, z):
-    return as_tensor((u[i]).dx(j) + u[k]*Gamma(z)[i, k, j], (i, j))
+#covariant derivative of vector v with respect to \partial/partial x: Nabla_v(v, z)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
+def Nabla_v(v, z):
+    return as_tensor((v[i]).dx(j) + v[k]*Gamma(z)[i, k, j], (i, j))
+
+#covariant derivative of one-form omega with respect to \partial/partial x: Nabla_omega(omega, z)[i, j] = {\Nabla_j omega_i}_{al-izzi2020shear}
+def Nabla_omega(omega, z):
+    return as_tensor((omega[i]).dx(j) - omega[k]*Gamma(z)[k, i, j], (i, j))
+
 
 
 # Define symmetric gradient
