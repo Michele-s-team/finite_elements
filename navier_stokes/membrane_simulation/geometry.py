@@ -56,6 +56,8 @@ def norm(x):
 def ufl_norm(x):
     return(sqrt(ufl.dot(x, x)))
 
+epsilon = ufl.PermutationSymbol(2)
+
 
 #analytical expression for a vector
 class MyVectorFunctionExpression(UserExpression):
@@ -178,6 +180,11 @@ def Nabla_LB(f, z):
 #second definition of Laplace beltrami operator, equivalent to Nabla_LB
 # def Nabla_LB2(f, z):
 #     return (-1.0/sqrt_abs_detg(z) * (sqrt_abs_detg(z)*g_c(z)[i, j]*(f.dx(j))).dx(i))
+
+def Nabla_LB_omega(omega, z):
+    return as_tensor(- sqrt_abs_detg(z)*g_c(z)[j,k]*epsilon[j,i] * ( ( sqrt_abs_detg(z)*g_c(z)[l,m]*g_c(z)[n,o]*epsilon[l,n] * ((omega[o]).dx(m)) ).dx(k)) , (i))
+
+
 
 
 
