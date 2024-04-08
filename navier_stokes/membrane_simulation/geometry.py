@@ -158,6 +158,12 @@ def Nabla_omega(omega, z):
     return as_tensor((omega[i]).dx(j) - omega[k]*Gamma(z)[k, i, j], (i, j))
 
 
+#Nabla_LB(f) = {\Nabla_{LB} f}_{al-izzi2020shear}
+def Nabla_LB(f, z):
+    return (-g_c(z)[k,j]*Nabla_omega(as_tensor(f.dx(i), (i)), z)[k, j])
+
+
+
 
 # Define symmetric gradient
 def epsilon(u):
