@@ -13,9 +13,9 @@ c_R = [0.0, 0.0]
 c_r = [0.0, -0.1]
 
 #paths for mac
-input_directory = "/home/fenics/shared/mesh/membrane_mesh"
+# input_directory = "/home/fenics/shared/mesh/membrane_mesh"
 #paths for abacus
-# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
+input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
 
 
 #create mesh
