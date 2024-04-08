@@ -142,6 +142,11 @@ def H(z):
 def K(z):
     return(ufl.det(as_tensor(b(z)[i,k]*g_c(z)[k,j], (i, j))))
 
+
+#christoffel symbols: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
+def Gamma(z):
+    return as_tensor(0.5 * g_c(z)[i,l] * ( (g(z)[l, k]).dx(j) + (g(z)[j, l]).dx(k) - (g(z)[j, k]).dx(l) ), (i, j, k))
+
 # Define symmetric gradient
 def epsilon(u):
     # nabla_grad(u)_{i,j} = (u[j]).dx[i]

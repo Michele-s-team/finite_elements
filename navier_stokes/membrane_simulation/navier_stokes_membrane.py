@@ -98,12 +98,14 @@ xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
 xdmffile_geometry.write(project(detg(z_), Q), 0)
 xdmffile_geometry.write(project(H(z_), Q), 0)
 xdmffile_geometry.write(project(K(z_), Q), 0)
+xdmffile_geometry.write(project(Gamma(z_)[0,0,0], Q), 0)
+
 xdmffile_z.write(z_, t)
 ###
 
 #example of how to compute the determinant of a matrix
-A = np.array([[1, 2], [2, 3]])   # Identity tensor
-print("determinant = ", np.linalg.det(A), ".")
+# A = np.array([[1, 2], [2, 3]])   # Identity tensor
+# print("determinant = ", np.linalg.det(A), ".")
 
 # Define expressions used in variational forms
 #U = u^{n+1/2}|_{notes fenics}
