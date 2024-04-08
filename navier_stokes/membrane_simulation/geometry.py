@@ -147,6 +147,11 @@ def K(z):
 def Gamma(z):
     return as_tensor(0.5 * g_c(z)[i,l] * ( (g(z)[l, k]).dx(j) + (g(z)[j, l]).dx(k) - (g(z)[j, k]).dx(l) ), (i, j, k))
 
+#covariant derivative of vector u with respect to \partial/partial x: Nabla_v(u, z)[i, j] = {\Nabla_j u^i}_{al-izzi2020shear}
+def Nabla_v(u, z):
+    return as_tensor((u[i]).dx(j) + u[k]*Gamma(z)[i, k, j], (i, j))
+
+
 # Define symmetric gradient
 def epsilon(u):
     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
