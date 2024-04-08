@@ -65,10 +65,16 @@ class MyVectorFunctionExpression(UserExpression):
     def value_shape(self):
         return (2,)
 #analytical expression for a function
-class MyScalarFunctionExpression(UserExpression):
+class MyScalarFunctionExpression_1(UserExpression):
     def eval(self, values, x):
-        values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+        values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+    def value_shape(self):
+        return (1,)
+#analytical expression for a function
+class MyScalarFunctionExpression_2(UserExpression):
+    def eval(self, values, x):
+        values[0] = cos(norm(np.subtract(x, c_r)) - r) * cos(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 t=0
@@ -135,6 +141,11 @@ def g_c(z):
 def detg(z):
     return ufl.det(g(z))
 
+def abs_detg(z):
+    return np.abs(ufl.det(g(z)))
+
+def sqrt_abs_detg(z):
+    return sqrt(abs_detg(z))
 
 #H(z) = H_{al-izzi2020shear}
 def H(z):
@@ -162,6 +173,9 @@ def Nabla_omega(omega, z):
 def Nabla_LB(f, z):
     return (-g_c(z)[k,j]*Nabla_omega(as_tensor(f.dx(i), (i)), z)[k, j])
 
+#second definition of Laplace beltrami operator
+def Nabla_LB2(f, z):
+    return (-1.0/sqrt_abs_detg(z) * (sqrt_abs_detg(z)*g_c(z)[i, j]*(f.dx(j))).dx(i))
 
 
 
