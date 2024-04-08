@@ -12,9 +12,9 @@ from __future__ import print_function
 from geometry import *
 
 
-T = 0.001    # final time
+T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 100
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 50.0
@@ -121,7 +121,7 @@ u_n[j]*((u_n[i]).dx(j))*v[i]
 # Define variational problem for step 1
 #  changed this line to correct error
 F1 = dot((u - u_n) / Deltat, v)*dx \
-   + Re*(u_n[j]*((u_n[i]).dx(j))*v[i])*dx \
+   + Re*(u_n[j]*Nabla_v(u_n, z_)[i, j]*v[i])*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
    + dot(p_n*n, v)*ds - dot(2*epsilon(U)*n, v)*ds
 a1 = lhs(F1)
