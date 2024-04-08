@@ -12,9 +12,9 @@ from __future__ import print_function
 from geometry import *
 
 
-T = 0.01    # final time
+T = 0.1    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 100
+num_steps = 1000
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 50.0
