@@ -12,17 +12,17 @@ from __future__ import print_function
 from geometry import *
 
 
-T = 0.001    # final time
+T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 1000
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
-Re = 50.0
+Re = 150.0
 
 #path for mac
-output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
+# output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
 #path for abacus
-# output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
+output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
