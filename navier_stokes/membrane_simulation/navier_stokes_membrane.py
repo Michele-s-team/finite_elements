@@ -69,21 +69,21 @@ bcp = []
 # Define functions for solutions at previous and current time steps
 u_n = Function(V)
 u_  = Function(V)
-w_n = Function(Q)
-w_  = Function(Q)
-p_n = Function(Q)
-p_  = Function(Q)
-z_n = Function(Q)
-z_  = Function(Q)
+w_n = Function(Q2)
+w_  = Function(Q2)
+p_n = Function(Q2)
+p_  = Function(Q2)
+z_n = Function(Q4)
+z_  = Function(Q4)
 #a function used to make tests (test the differential operators etc)
-f_  = Function(Q)
+f_  = Function(Q4)
 
 
 
 #the vector  or function is interpolated  and written into a Function() object
 u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
-z_ = interpolate(MyScalarFunctionExpression_1(element=Q.ufl_element()), Q)
-f_ = interpolate(MyScalarFunctionExpression_2(element=Q.ufl_element()), Q)
+z_ = interpolate(SurfaceExpression(element=Q2.ufl_element()), Q2)
+f_ = interpolate(MyScalarFunctionExpression_2(element=Q2.ufl_element()), Q4)
 # z_plot = project(z_, Q)
 # grad_z_plot = project(grad_z(z_), V)
 # my_vector_field_plot = project(my_vector_field(z_), V)
@@ -94,17 +94,18 @@ xdmffile_geometry.parameters.update(
         "functions_share_mesh": True,
         "rewrite_function_mesh": False
     })
-xdmffile_geometry.write(project(z_, Q), 0)
+xdmffile_geometry.write(project(z_, Q4), 0)
 xdmffile_geometry.write(project(normal(z_), V3d), 0)
 # xdmffile_geometry.write(project(grad_z(z_), V), 0)
 # xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
-# xdmffile_geometry.write(project(detg(z_), Q), 0)
-# xdmffile_geometry.write(project(H(z_), Q), 0)
-# xdmffile_geometry.write(project(K(z_), Q), 0)
-# xdmffile_geometry.write(project(Nabla_v(u_, z_)[0,0], Q), 0)
-# xdmffile_geometry.write(project(Nabla_omega(u_, z_)[0,1], Q), 0)
-# xdmffile_geometry.write(project(Nabla_LB(f_, z_), Q), 0)
-# xdmffile_geometry.write(project(Nabla_LB2(f_, z_), Q), 0)
+# xdmffile_geometry.write(project(detg(z_), Q2), 0)
+# xdmffile_geometry.write(project(H(z_), Q4), 0)
+# xdmffile_geometry.write(project(K(z_), Q4), 0)
+# xdmffile_geometry.write(project(Nabla_v(u_, z_)[0,0], Q2), 0)
+# xdmffile_geometry.write(project(Nabla_omega(u_, z_)[0,1], Q2), 0)
+#here I project Nabla_LB(H,z) on Q4 and not on Q2 because Nabla_LB involves fourth-order derivatives
+xdmffile_geometry.write(project(Nabla_LB(H(z_), z_), Q4), 0)
+# xdmffile_geometry.write(project(Nabla_LB2(f_, z_), Q4), 0)
 
 xdmffile_z.write(z_, t)
 ###

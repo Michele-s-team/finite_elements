@@ -34,7 +34,9 @@ n  = FacetNormal(mesh)
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
 V = VectorFunctionSpace(mesh, 'P', 2)
 V3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
-Q = FunctionSpace(mesh, 'P', 2)
+Q2 = FunctionSpace(mesh, 'P', 2)
+#I will use Q4 for functions which involve high order derivatives
+Q4 = FunctionSpace(mesh, 'P', 4)
 
 
 # Define boundaries
@@ -67,7 +69,7 @@ class MyVectorFunctionExpression(UserExpression):
     def value_shape(self):
         return (2,)
 #analytical expression for a function
-class MyScalarFunctionExpression_1(UserExpression):
+class SurfaceExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
@@ -86,14 +88,14 @@ t=0
 u = TrialFunction(V)
 v = TestFunction(V)
 #w = w_notes (normal velocity)
-w = TrialFunction(Q)
-o = TestFunction(Q)
+w = TrialFunction(Q2)
+o = TestFunction(Q2)
 #p = \sigma_{notes}
-p = TrialFunction(Q)
-q = TestFunction(Q)
+p = TrialFunction(Q2)
+q = TestFunction(Q2)
 #z = z_notes
-z = TrialFunction(Q)
-zeta = TestFunction(Q)
+z = TrialFunction(Q2)
+zeta = TestFunction(Q2)
 
 
 
@@ -183,9 +185,6 @@ def Nabla_LB(f, z):
 
 def Nabla_LB_omega(omega, z):
     return as_tensor(- sqrt_abs_detg(z)*g_c(z)[j,k]*epsilon[j,i] * ( ( sqrt_abs_detg(z)*g_c(z)[l,m]*g_c(z)[n,o]*epsilon[l,n] * ((omega[o]).dx(m)) ).dx(k)) , (i))
-
-
-
 
 
 # Define symmetric gradient
