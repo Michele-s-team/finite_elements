@@ -12,17 +12,17 @@ from __future__ import print_function
 from geometry import *
 
 
-T = 0.01    # final time
+T = 0.0001    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 1000
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 150.0
 
 #path for mac
-# output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
+output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
 #path for abacus
-output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
+# output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
@@ -159,6 +159,8 @@ File(output_directory + "/membrane.xml.gz") << mesh
 #progress = Progress('Time-stepping')
 #set_log_level(PROGRESS)
 
+
+print("Starting time iteration ...")
 # Time-stepping
 t = 0
 for n in range(num_steps):
@@ -203,7 +205,9 @@ for n in range(num_steps):
 
     # Update progress bar
 #    progress.update(t / T)
-    print("%.2f %%" % (100.0*(t/T)))
+    print("\t%.2f %%" % (100.0*(t/T)))
 
 # Hold plot
 #interactive()
+
+print("... done.")
