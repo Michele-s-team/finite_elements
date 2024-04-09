@@ -71,8 +71,8 @@ u_n = Function(V)
 u_  = Function(V)
 w_n = Function(Q2)
 w_  = Function(Q2)
-p_n = Function(Q2)
-p_  = Function(Q2)
+sigma_n = Function(Q2)
+sigma_  = Function(Q2)
 z_n = Function(Q4)
 z_  = Function(Q4)
 #a function used to make tests (test the differential operators etc)
@@ -105,8 +105,10 @@ xdmffile_geometry.write(project(normal(z_), V3d), 0)
 # xdmffile_geometry.write(project(Nabla_v(u_, z_)[0,0], Q2), 0)
 # xdmffile_geometry.write(project(Nabla_omega(u_, z_)[0,1], Q2), 0)
 #here I project Nabla_LB(H,z) on Q4 and not on Q2 because Nabla_LB involves fourth-order derivatives
-xdmffile_geometry.write(project(Nabla_LB(H(z_), z_), Q4), 0)
+# xdmffile_geometry.write(project(Nabla_LB(H(z_), z_), Q4), 0)
 # xdmffile_geometry.write(project(Nabla_LB2(f_, z_), Q4), 0)
+xdmffile_geometry.write(project(w_, Q2), 0)
+
 
 xdmffile_z.write(z_, t)
 ###
@@ -128,20 +130,20 @@ u_n[j]*((u_n[i]).dx(j))*v[i]
 
 # Define variational problem for step 1
 #  changed this line to correct error
-F1 = dot((u - u_n) / Deltat, v)*dx \
-   + Re*(u_n[j]*Nabla_v(u_n, z_)[i, j]*v[i])*dx \
-   + inner(sigma(U, p_n), epsilon(v))*dx \
-   + dot(p_n*n, v)*ds - dot(2*epsilon(U)*n, v)*ds
+F1 = dot((u - u_n) / Deltat, v) * dx \
+     + Re * (u_n[j]*Nabla_v(u_n, z_)[i, j]*v[i]) * dx \
+     + inner(tensor_sigma(U, sigma_n), epsilon(v)) * dx \
+     + dot(sigma_n * n, v) * ds - dot(2 * epsilon(U) * n, v) * ds
 a1 = lhs(F1)
 L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(p), nabla_grad(q))*dx
-L2 = dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/Deltat)*div(u_)*q*dx
+L2 = dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (1 / Deltat) * div(u_) * q * dx
 
 # Define variational problem for step 3
 a3 = dot(u, v)*dx
-L3 = dot(u_, v)*dx - Deltat*dot(nabla_grad(p_ - p_n), v)*dx
+L3 = dot(u_, v) * dx - Deltat * dot(nabla_grad(sigma_ - sigma_n), v) * dx
 
 # Assemble matrices
 A1 = assemble(a1)
@@ -180,7 +182,7 @@ for n in range(num_steps):
     b2 = assemble(L2)
     [bc.apply(b2) for bc in bcp]
     #this step solves for p^{n+1} and stores the solution in p_
-    solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
+    solve(A2, sigma_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
     b3 = assemble(L3)
@@ -195,15 +197,15 @@ for n in range(num_steps):
     #here u_ = u_{n+1}
     xdmffile_u.write(u_, t)
     #here p_ is p_{n+1}
-    xdmffile_p.write(p_, t)
+    xdmffile_p.write(sigma_, t)
 
     # Save nodal values to file
     timeseries_u.store(u_.vector(), t)
-    timeseries_p.store(p_.vector(), t)
+    timeseries_p.store(sigma_.vector(), t)
 
     # Update previous solution
     u_n.assign(u_)
-    p_n.assign(p_)
+    sigma_n.assign(sigma_)
 
     # Update progress bar
 #    progress.update(t / T)

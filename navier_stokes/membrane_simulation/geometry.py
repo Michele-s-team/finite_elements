@@ -80,7 +80,7 @@ class SurfaceExpression(UserExpression):
 #trial analytical expression for w
 class NormalVelocityExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        values[0] = (np.subtract(x, c_r)[0])*(np.subtract(x, c_r)[1])*cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 
@@ -205,5 +205,5 @@ def epsilon(u):
     return as_tensor(0.5*(u[i].dx(j) + u[j].dx(i)), (i,j))
 
 # Define stress tensor
-def sigma(u, p):
+def tensor_sigma(u, p):
     return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
