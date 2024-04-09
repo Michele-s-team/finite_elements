@@ -61,22 +61,32 @@ def ufl_norm(x):
 epsilon = ufl.PermutationSymbol(2)
 
 
-#analytical expression for a vector
+#trial analytical expression for a vector
 class MyVectorFunctionExpression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
         values[1] = -x[1]
     def value_shape(self):
         return (2,)
-#analytical expression for a function
+
+#trial analytical expression for the height function z(x,y)
 class SurfaceExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
-#analytical expression for a function
-class MyScalarFunctionExpression_2(UserExpression):
+
+#trial analytical expression for w
+class NormalVelocityExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+    def value_shape(self):
+        return (1,)
+
+
+#analytical expression for a general scalar function
+class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
         values[0] = cos(norm(np.subtract(x, c_r)) - r) * cos(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
