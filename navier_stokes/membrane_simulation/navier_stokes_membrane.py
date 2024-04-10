@@ -164,7 +164,7 @@ File(output_directory + "/membrane.xml.gz") << mesh
 #set_log_level(PROGRESS)
 
 
-print("Starting time iteration ...")
+print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 for n in range(num_steps):
@@ -209,9 +209,9 @@ for n in range(num_steps):
 
     # Update progress bar
 #    progress.update(t / T)
-    print("\t%.2f %%" % (100.0*(t/T)))
+    print("\t%.2f %%" % (100.0*(t/T)), flush=True)
 
 # Hold plot
 #interactive()
 
-print("... done.")
+print("... done.", flush=True)
