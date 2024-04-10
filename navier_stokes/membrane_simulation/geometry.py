@@ -4,6 +4,13 @@ import numpy as np
 # from dolfin import *
 import meshio
 import ufl as ufl
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("input_directory")
+parser.add_argument("output_directory")
+args = parser.parse_args()
+
 
 #r, R must be the same as in generate_mesh.py
 R = 1.0
@@ -12,18 +19,14 @@ r = 0.25
 c_R = [0.0, 0.0]
 c_r = [0.0, -0.1]
 
-#paths for mac
-input_directory = "/home/fenics/shared/mesh/membrane_mesh"
-#paths for abacus
-# input_directory = "/mnt/beegfs/home/mcastel1/navier_stokes"
 
 
 #create mesh
 mesh=Mesh()
-with XDMFFile(input_directory + "/triangle_mesh.xdmf") as infile:
+with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile(input_directory + "/line_mesh.xdmf") as infile:
+with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 

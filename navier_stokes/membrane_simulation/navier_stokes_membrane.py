@@ -6,11 +6,16 @@ Scheme (IPCS).
   u' + u . nabla(u)) - div(sigma(u, p)) = f
                                  div(u) = 0
 """
+#run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
+#ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane_simulation/solution
+#ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results
 
 from __future__ import print_function
-
 from geometry import *
 
+
+print("Input directory", args.input_directory)
+print("Output directory", args.output_directory)
 
 T = 0.0001    # final time
 # num_steps = 5000  # number of time steps
@@ -19,21 +24,16 @@ dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 150.0
 
-#path for mac
-output_directory = "/home/fenics/shared/navier_stokes/membrane_simulation/solution"
-#path for abacus
-# output_directory = "/mnt/beegfs/home/mcastel1/navier_stokes/results"
-
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile(output_directory + "/velocity.xdmf")
-xdmffile_p = XDMFFile(output_directory + "/pressure.xdmf")
-xdmffile_z = XDMFFile(output_directory + "/z.xdmf")
-xdmffile_geometry = XDMFFile(output_directory + "/geometry.xdmf")
+xdmffile_u = XDMFFile((args.output_directory) + "/velocity.xdmf")
+xdmffile_p = XDMFFile((args.output_directory) + "/pressure.xdmf")
+xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
+xdmffile_geometry = XDMFFile((args.output_directory) + "/geometry.xdmf")
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries(output_directory + "/velocity_series")
-timeseries_p = TimeSeries(output_directory + "/pressure_series")
-timeseries_z = TimeSeries(output_directory + "/shape_series")
+timeseries_u = TimeSeries((args.output_directory) + "/velocity_series")
+timeseries_p = TimeSeries((args.output_directory) + "/pressure_series")
+timeseries_z = TimeSeries((args.output_directory) + "/shape_series")
 
 
 
@@ -157,7 +157,7 @@ A3 = assemble(a3)
 
 
 # Save mesh to file (for use in reaction_system.py)
-File(output_directory + "/membrane.xml.gz") << mesh
+File((args.output_directory) + "/membrane.xml.gz") << mesh
 
 # Create progress bar
 #progress = Progress('Time-stepping')
