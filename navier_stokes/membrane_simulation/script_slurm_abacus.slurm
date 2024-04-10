@@ -9,11 +9,12 @@
 
 echo "Cantami o diva ... l'ira di Achille ... "
 
-RUN="/mnt/beegfs/home/mcastel1/navier_stokes/"
+IN="/mnt/beegfs/home/mcastel1/navier_stokes"
+RUN="/mnt/beegfs/home/mcastel1/navier_stokes"
 OUT=$RUN"/results/"
 
 rm -rf $OUT
 mkdir $OUT
 
 cd $RUN
-apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 navier_stokes_membrane.py
+apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 navier_stokes_membrane.py $IN $OUT
