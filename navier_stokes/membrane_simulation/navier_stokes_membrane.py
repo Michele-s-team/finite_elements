@@ -49,7 +49,8 @@ timeseries_z = TimeSeries((args.output_directory) + "/shape_series")
 
 
 # Define velocity profile on the external boundary
-external_boundary_profile = ('1.0', '0.0')
+# external_boundary_profile = ('1.0', '0.0')
+external_boundary_profile = ('2.0*(x[1]-1.0)*(x[1]-1.0)', '0.0')
 # outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
