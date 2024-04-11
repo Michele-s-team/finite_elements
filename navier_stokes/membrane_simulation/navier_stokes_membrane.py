@@ -17,9 +17,9 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 0.0001    # final time
+T = 0.1    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 1000
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 150.0
@@ -50,7 +50,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/shape_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-external_boundary_profile = ('2.0*(x[1]-1.0)*(x[1]-1.0)', '0.0')
+external_boundary_profile = ('2.0*(1.0-x[1]*x[1])', '0.0')
 # outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
