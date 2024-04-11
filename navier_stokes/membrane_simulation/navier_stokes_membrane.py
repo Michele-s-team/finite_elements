@@ -17,9 +17,9 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 0.1    # final time
+T = 0.001    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 1000
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 150.0
@@ -68,8 +68,8 @@ bcp = []
 
 
 # Define functions for solutions at previous and current time steps
-u_n = Function(V)
-u_  = Function(V)
+v_n = Function(V)
+v_  = Function(V)
 w_n = Function(Q2)
 w_  = Function(Q2)
 sigma_n = Function(Q2)
@@ -82,7 +82,7 @@ f_  = Function(Q4)
 
 
 #the vector  or function is interpolated  and written into a Function() object
-u_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()) ,V)
+v_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()), V)
 z_ = interpolate(SurfaceExpression(element=Q2.ufl_element()), Q2)
 w_ = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
 f_ = interpolate(ScalarFunctionExpression(element=Q2.ufl_element()), Q4)
@@ -120,30 +120,30 @@ xdmffile_z.write(z_, t)
 
 # Define expressions used in variational forms
 #U = u^{n+1/2}|_{notes fenics}
-U  = 0.5*(u_n + u)
+U  = 0.5*(v_n + v)
 Deltat  = Constant(dt)
 # mu = Constant(mu)
 # rho = Constant(rho)
 
 
-u_n[j]*((u_n[i]).dx(j))*v[i]
+v_n[j] * ((v_n[i]).dx(j)) * nu[i]
 
 
 # Define variational problem for step 1
-F1 = Re * ( dot((u - u_n) / Deltat, v) * dx \
-     + (u_n[j]*Nabla_v(u_n, z_)[i, j]*v[i]) * dx ) \
-     + inner(tensor_sigma(U, sigma_n), epsilon(v)) * dx \
-     + dot(sigma_n * n, v) * ds - dot(2 * epsilon(U) * n, v) * ds
+F1 = Re * (dot((v - v_n) / Deltat, nu) * dx \
+           + (v_n[j] * Nabla_v(v_n, z_)[i, j] * nu[i]) * dx) \
+     + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx \
+     + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
 a1 = lhs(F1)
 L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(sigma), nabla_grad(q))*dx
-L2 = dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (Re / Deltat) * div(u_) * q * dx
+L2 = dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (Re / Deltat) * div(v_) * q * dx
 
 # Define variational problem for step 3
-a3 = dot(u, v)*dx
-L3 = dot(u_, v) * dx - ( Deltat / Re ) * dot(nabla_grad(sigma_ - sigma_n), v) * dx
+a3 = dot(v, nu) * dx
+L3 = dot(v_, nu) * dx - (Deltat / Re) * dot(nabla_grad(sigma_ - sigma_n), nu) * dx
 
 # Assemble matrices
 A1 = assemble(a1)
@@ -176,7 +176,7 @@ for n in range(num_steps):
     b1 = assemble(L1)
     [bc.apply(b1) for bc in bcu]
     #this line solves for u^* and stores u^* in u_
-    solve(A1, u_.vector(), b1, 'bicgstab', 'hypre_amg')
+    solve(A1, v_.vector(), b1, 'bicgstab', 'hypre_amg')
 
     # Step 2: Pressure correction step
     b2 = assemble(L2)
@@ -187,7 +187,7 @@ for n in range(num_steps):
     # Step 3: Velocity correction step
     b3 = assemble(L3)
     #this step solves for u^{n+1} and stores the solution in u_. In A3, u_ = u^* from `solve(A1, u_.vector(), b1, 'bicgstab', 'hypre_amg')` and p_n = p_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
-    solve(A3, u_.vector(), b3, 'cg', 'sor')
+    solve(A3, v_.vector(), b3, 'cg', 'sor')
 
     # Plot solution
 #    plot(u_, title='Velocity')
@@ -195,16 +195,16 @@ for n in range(num_steps):
 
     # Save solution to file (XDMF/HDF5)
     #here u_ = u_{n+1}
-    xdmffile_u.write(u_, t)
+    xdmffile_u.write(v_, t)
     #here p_ is p_{n+1}
     xdmffile_p.write(sigma_, t)
 
     # Save nodal values to file
-    timeseries_u.store(u_.vector(), t)
+    timeseries_u.store(v_.vector(), t)
     timeseries_p.store(sigma_.vector(), t)
 
     # Update previous solution
-    u_n.assign(u_)
+    v_n.assign(v_)
     sigma_n.assign(sigma_)
 
     # Update progress bar

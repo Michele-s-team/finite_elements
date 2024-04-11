@@ -98,8 +98,8 @@ t=0
 
 # Define trial and test functions
 #u[i] = v^i_{notes} (tangential velocity)
-u = TrialFunction(V)
-v = TestFunction(V)
+v = TrialFunction(V)
+nu = TestFunction(V)
 #w = w_notes (normal velocity)
 w = TrialFunction(Q2)
 o = TestFunction(Q2)
@@ -116,7 +116,7 @@ zeta = TestFunction(Q2)
 #definition of scalar, vectorial and tensorial quantities
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
-Aij = u[i].dx(j)
+Aij = v[i].dx(j)
 A = as_tensor(Aij, (i,j))
 
 def X(z):
@@ -180,8 +180,8 @@ def Gamma(z):
     return as_tensor(0.5 * g_c(z)[i,l] * ( (g(z)[l, k]).dx(j) + (g(z)[j, l]).dx(k) - (g(z)[j, k]).dx(l) ), (i, j, k))
 
 #covariant derivative of vector v with respect to \partial/partial x: Nabla_v(v, z)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
-def Nabla_v(v, z):
-    return as_tensor((v[i]).dx(j) + v[k]*Gamma(z)[i, k, j], (i, j))
+def Nabla_v(u, z):
+    return as_tensor((u[i]).dx(j) + u[k] * Gamma(z)[i, k, j], (i, j))
 
 #covariant derivative of one-form omega with respect to \partial/partial x: Nabla_omega(omega, z)[i, j] = {\Nabla_j omega_i}_{al-izzi2020shear}
 def Nabla_omega(omega, z):
