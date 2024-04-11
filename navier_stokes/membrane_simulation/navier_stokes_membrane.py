@@ -130,21 +130,20 @@ u_n[j]*((u_n[i]).dx(j))*v[i]
 
 
 # Define variational problem for step 1
-#  changed this line to correct error
-F1 = dot((u - u_n) / Deltat, v) * dx \
-     + Re * (u_n[j]*Nabla_v(u_n, z_)[i, j]*v[i]) * dx \
+F1 = Re * ( dot((u - u_n) / Deltat, v) * dx \
+     + (u_n[j]*Nabla_v(u_n, z_)[i, j]*v[i]) * dx ) \
      + inner(tensor_sigma(U, sigma_n), epsilon(v)) * dx \
      + dot(sigma_n * n, v) * ds - dot(2 * epsilon(U) * n, v) * ds
 a1 = lhs(F1)
 L1 = rhs(F1)
 
 # Define variational problem for step 2
-a2 = dot(nabla_grad(p), nabla_grad(q))*dx
-L2 = dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (1 / Deltat) * div(u_) * q * dx
+a2 = dot(nabla_grad(sigma), nabla_grad(q))*dx
+L2 = dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (Re / Deltat) * div(u_) * q * dx
 
 # Define variational problem for step 3
 a3 = dot(u, v)*dx
-L3 = dot(u_, v) * dx - Deltat * dot(nabla_grad(sigma_ - sigma_n), v) * dx
+L3 = dot(u_, v) * dx - ( Deltat / Re ) * dot(nabla_grad(sigma_ - sigma_n), v) * dx
 
 # Assemble matrices
 A1 = assemble(a1)
@@ -182,7 +181,7 @@ for n in range(num_steps):
     # Step 2: Pressure correction step
     b2 = assemble(L2)
     [bc.apply(b2) for bc in bcp]
-    #this step solves for p^{n+1} and stores the solution in p_
+    #this step solves for sigma^{n+1} and stores the solution in sigma_
     solve(A2, sigma_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
