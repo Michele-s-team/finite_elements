@@ -26,8 +26,8 @@ Re = 1.0
 kappa = 1.0
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile((args.output_directory) + "/velocity.xdmf")
-xdmffile_p = XDMFFile((args.output_directory) + "/pressure.xdmf")
+xdmffile_v = XDMFFile((args.output_directory) + "/velocity.xdmf")
+xdmffile_sigma = XDMFFile((args.output_directory) + "/pressure.xdmf")
 xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
 xdmffile_geometry = XDMFFile((args.output_directory) + "/geometry.xdmf")
 
@@ -203,9 +203,9 @@ for n in range(num_steps):
 
     # Save solution to file (XDMF/HDF5)
     #here u_ = u_{n+1}
-    xdmffile_u.write(v_, t)
+    xdmffile_v.write(v_, t)
     #here p_ is p_{n+1}
-    xdmffile_p.write(sigma_, t)
+    xdmffile_sigma.write(sigma_, t)
 
     # Save nodal values to file
     timeseries_u.store(v_.vector(), t)
