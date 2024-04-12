@@ -108,7 +108,8 @@ xdmffile_geometry.write(project(normal(z_), V3d), 0)
 #here I project Nabla_LB(H,z) on Q4 and not on Q2 because Nabla_LB involves fourth-order derivatives
 # xdmffile_geometry.write(project(Nabla_LB(H(z_), z_), Q4), 0)
 # xdmffile_geometry.write(project(Nabla_LB2(f_, z_), Q4), 0)
-xdmffile_geometry.write(project(w_, Q2), 0)
+# xdmffile_geometry.write(project(w_, Q2), 0)
+xdmffile_geometry.write(project(d(v_, w_, z_)[0,1], Q4), 0)
 
 
 xdmffile_z.write(z_, t)

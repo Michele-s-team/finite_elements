@@ -75,8 +75,8 @@ class MyVectorFunctionExpression(UserExpression):
 #trial analytical expression for the height function z(x,y)
 class SurfaceExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+        values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 
@@ -134,7 +134,7 @@ def normal(z):
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
 
-#b(z) = b_{ij}_{al-izzi2020shear}
+#b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(z):
     return as_tensor((normal(z))[k] * (e(z)[i, k]).dx(j), (i,j))
 
@@ -210,3 +210,8 @@ def epsilon(u):
 # Define stress tensor
 def tensor_sigma(u, p):
     return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
+
+
+#rate-of_deformation tensor: d(u, un, z)[i, j] = {d_{ij}}_{alizzi2020shear}
+def d(u, un, z):
+    return as_tensor(0.5 * ( g(z)[i, k]*Nabla_v(u, z)[k, j] + g(z)[j, k]*Nabla_v(u, z)[k, i] ) - (b(z)[i,j]) * un, (i, j))
