@@ -96,15 +96,15 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # my_vector_field_plot = project(my_vector_field(z_), V)
 # detg_plot = project(detg(z_), Q)
 
-xdmffile_geometry.parameters.update(
-    {
-        "functions_share_mesh": True,
-        "rewrite_function_mesh": False
-    })
-xdmffile_geometry.write(project(v_n, W), 0)
-xdmffile_geometry.write(project(w_n, Q2), 0)
-xdmffile_geometry.write(project(sigma_n, Q2), 0)
-xdmffile_geometry.write(project(z_n, Q4), 0)
+# xdmffile_geometry.parameters.update(
+#     {
+#         "functions_share_mesh": True,
+#         "rewrite_function_mesh": False
+#     })
+# xdmffile_geometry.write(project(v_n, W), 0)
+# xdmffile_geometry.write(project(w_n, Q2), 0)
+# xdmffile_geometry.write(project(sigma_n, Q2), 0)
+# xdmffile_geometry.write(project(z_n, Q4), 0)
 # xdmffile_geometry.write(project(normal(z_), V3d), 0)
 # xdmffile_geometry.write(project(grad_z(z_), V), 0)
 # xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
@@ -215,6 +215,8 @@ for n in range(num_steps):
     xdmffile_v.write(v_, t)
     #here p_ is p_{n+1}
     xdmffile_sigma.write(sigma_, t)
+
+    xdmffile_geometry.write(z_n, t)
 
     # Save nodal values to file
     timeseries_u.store(v_.vector(), t)
