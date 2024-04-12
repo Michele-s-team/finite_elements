@@ -19,7 +19,7 @@ print("Output directory", args.output_directory)
 
 T = 0.1    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 100
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 10.0
@@ -162,8 +162,17 @@ L1w = rhs(F1w)
 
 
 # Define variational problem for step 2
-a2 = - dot(nabla_grad(sigma), nabla_grad(q))*dx
-L2 = - dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (Re / Deltat) * div(v_) * q * dx
+F2 = ( \
+         g_c(z_n)[i, j] * ( sigma_n.dx(i) - sigma.dx(i) ) * q.dx(j) \
+          + (Re / Deltat) * (  g_c(z_n)[i, j]*Nabla_omega(v_, z_n)[i, j] - 2.0 * H(z_n) * w_n ) * q
+         \
+         ) * dx
+a2 = lhs(F2)
+L2 = rhs(F2)
+
+# a2 = - dot(nabla_grad(sigma), nabla_grad(q))*dx
+# L2 = - dot(nabla_grad(sigma_n), nabla_grad(q)) * dx - (Re / Deltat) * div(v_) * q * dx
+
 
 # Define variational problem for step 3
 a3 = dot(v, nu) * dx
