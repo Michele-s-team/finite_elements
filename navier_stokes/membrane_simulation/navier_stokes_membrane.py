@@ -22,7 +22,8 @@ T = 0.001    # final time
 num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
-Re = 150.0
+Re = 1.0
+kappa = 1.0
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile((args.output_directory) + "/velocity.xdmf")
