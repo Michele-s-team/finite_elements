@@ -152,7 +152,7 @@ F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] * dx \
             + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j] * dx) \
       + g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j] * sigma_n * dx \
-      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_omega(nu, z_n)[i, j] * dx \
+      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_omega(nu, z_n)[i, j] * dx 
     # + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
 a1v = lhs(F1v)
