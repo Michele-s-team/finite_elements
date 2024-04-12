@@ -200,8 +200,10 @@ L4 = rhs(F4)
 
 # Assemble matrices
 A1v = assemble(a1v)
+A1w = assemble(a1w)
 A2 = assemble(a2)
 A3v = assemble(a3v)
+A3w = assemble(a3w)
 A4 = assemble(a4)
 
 # Apply boundary conditions to matrices
