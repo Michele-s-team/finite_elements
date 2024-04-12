@@ -17,9 +17,9 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 0.1    # final time
+T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 100
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -27,13 +27,15 @@ kappa = 1.0
 
 # Create XDMF files for visualization output
 xdmffile_v = XDMFFile((args.output_directory) + "/velocity.xdmf")
-xdmffile_sigma = XDMFFile((args.output_directory) + "/pressure.xdmf")
+xdmffile_w = XDMFFile((args.output_directory) + "/w.xdmf")
+xdmffile_sigma = XDMFFile((args.output_directory) + "/surface_tension.xdmf")
 xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
 xdmffile_geometry = XDMFFile((args.output_directory) + "/geometry.xdmf")
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries((args.output_directory) + "/velocity_series")
-timeseries_p = TimeSeries((args.output_directory) + "/pressure_series")
+timeseries_v = TimeSeries((args.output_directory) + "/velocity_series")
+timeseries_w = TimeSeries((args.output_directory) + "/w_series")
+timeseries_sigma = TimeSeries((args.output_directory) + "/surface_tension_series")
 timeseries_z = TimeSeries((args.output_directory) + "/shape_series")
 
 
@@ -51,7 +53,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/shape_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-external_boundary_profile = ('2.0*(1.0-x[1]*x[1])', '0.0')
+external_boundary_profile = ('1.0', '0.0')
 # outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
@@ -60,7 +62,7 @@ external_boundary_profile = ('2.0*(1.0-x[1]*x[1])', '0.0')
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
 bcu_external_boundary = DirichletBC(W, Expression(external_boundary_profile, degree=0), external_boundary)
 bcu_cylinder = DirichletBC(W, Constant((0, 0)), cylinder)
-#boundary conditions for the pressure p
+#boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bcu = [bcu_external_boundary, bcu_cylinder]
 # bcp = [bcp_outflow]
@@ -120,7 +122,7 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # xdmffile_geometry.write(project(d_c(v_, w_, z_)[0,1], Q4), 0)
 
 
-xdmffile_z.write(z_, t)
+# xdmffile_z.write(z_, t)
 ###
 
 #example of how to compute the determinant of a matrix
@@ -186,6 +188,12 @@ print("Starting time iteration ...", flush=True)
 t = 0
 for n in range(num_steps):
 
+    # Write the solution to file
+    xdmffile_v.write(v_n, t)
+    xdmffile_w.write(w_n, t)
+    xdmffile_sigma.write(sigma_n, t)
+    xdmffile_z.write(z_n, t)
+
     # Update current time
     t += dt
 
@@ -195,7 +203,7 @@ for n in range(num_steps):
     #this line solves for u^* and stores u^* in u_
     solve(A1, v_.vector(), b1, 'bicgstab', 'hypre_amg')
 
-    # Step 2: Pressure correction step
+    # Step 2: surface_tension correction step
     b2 = assemble(L2)
     [bc.apply(b2) for bc in bcp]
     #this step solves for sigma^{n+1} and stores the solution in sigma_
@@ -208,19 +216,15 @@ for n in range(num_steps):
 
     # Plot solution
 #    plot(u_, title='Velocity')
-#    plot(p_, title='Pressure')
+#    plot(p_, title='surface_tension')
 
-    # Save solution to file (XDMF/HDF5)
-    #here u_ = u_{n+1}
-    xdmffile_v.write(v_, t)
-    #here p_ is p_{n+1}
-    xdmffile_sigma.write(sigma_, t)
 
-    xdmffile_geometry.write(z_n, t)
 
     # Save nodal values to file
-    timeseries_u.store(v_.vector(), t)
-    timeseries_p.store(sigma_.vector(), t)
+    timeseries_v.store(v_.vector(), t)
+    timeseries_w.store(w_.vector(), t)
+    timeseries_sigma.store(sigma_.vector(), t)
+    timeseries_z.store(z_.vector(), t)
 
     # Update previous solution
     v_n.assign(v_)
