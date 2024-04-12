@@ -70,6 +70,7 @@ bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
 #boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bc_v = [bcv_external_boundary, bcv_cylinder]
+bc_w = [bcw_external_boundary, bcw_cylinder]
 # bcp = [bcp_outflow]
 bc_sigma = []
 
@@ -212,7 +213,7 @@ A4 = assemble(a4)
 [bc.apply(A2) for bc in bc_sigma]
 [bc.apply(A3v) for bc in bc_v]
 [bc.apply(A3w) for bc in bc_w]
-#MAYBE HERE I SHOULD ADD AN ANALOGOUS COMMAND FOR Z AND IT BOUNDARY CONDITIONS 
+#MAYBE HERE I SHOULD ADD AN ANALOGOUS COMMAND FOR Z AND IT BOUNDARY CONDITIONS
 
 
 
@@ -239,10 +240,17 @@ for n in range(num_steps):
     t += dt
 
     # Step 1: Tentative velocity step
-    b1 = assemble(L1v)
-    [bc.apply(b1) for bc in bc_v]
-    #this line solves for u^* and stores u^* in u_
-    solve(A1v, v_.vector(), b1, 'bicgstab', 'hypre_amg')
+    #step 1 for v
+    b1v = assemble(L1v)
+    [bc.apply(b1v) for bc in bc_v]
+    #this line solves for v^* and stores v^* in v_
+    solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')
+    #step 1 for w
+    b1w = assemble(L1w)
+    [bc.apply(b1w) for bc in bc_w]
+    #this line solves for w^* and stores w^* in w_
+    solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')
+
 
     # Step 2: surface_tension correction step
     b2 = assemble(L2)
