@@ -140,6 +140,7 @@ Deltat  = Constant(dt)
 
 
 # Define variational problem for step 1
+#step 3 for v
 F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] * dx \
@@ -150,7 +151,7 @@ F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
 a1v = lhs(F1v)
 L1v = rhs(F1v)
-
+#step 3 for w
 F1w = ( \
                   Re * ( (w - w_n) / Deltat * o - w_n * ( g_c(z_n)[i, j] * (o.dx(i)) * v_n[j] + o * g_c(z_n)[i, j] * Nabla_omega(v_n, z_n)[i, j] )  )  \
     + 2.0 * kappa * ( - g_c(z_n)[i, j] * H(z_n).dx(i) * o.dx(j) ) \
@@ -175,9 +176,15 @@ L2 = rhs(F2)
 
 
 # Define variational problem for step 3
+#step 3 for v
 F3v = ( g_c(z_n)[i,j] * (v_[i] - v[i]) * nu[j] - (Deltat / Re) * g_c(z_n)[i, j] * (sigma_n.dx(i) - sigma_.dx(i)) * nu[j] ) * dx
 a3v = lhs(F3v)
 L3v = rhs(F3v)
+#step 3 for w
+F3w = ( (w_ - w) * o - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * o ) * dx
+a3w = lhs(F3w)
+L3w = rhs(F3w)
+
 
 
 # Assemble matrices
