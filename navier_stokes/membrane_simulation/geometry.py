@@ -73,12 +73,21 @@ class MyVectorFunctionExpression(UserExpression):
         return (2,)
 
 #trial analytical expression for the height function z(x,y)
-class SurfaceExpression(UserExpression):
+class ManifoldExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
+
+# trial analytical expression for the  surface tension sigma(x,y)
+class SurfaceTensionExpression(UserExpression):
+        def eval(self, values, x):
+            # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+            values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+
+        def value_shape(self):
+            return (1,)
 
 #trial analytical expression for w
 class NormalVelocityExpression(UserExpression):
@@ -97,18 +106,21 @@ class ScalarFunctionExpression(UserExpression):
 t=0
 
 # Define trial and test functions
-#u[i] = v^i_{notes} (tangential velocity)
+#v[i] = v^i_{notes} (tangential velocity)
 v = TrialFunction(V)
+#nu is the test function related to nu
 nu = TestFunction(V)
 #w = w_notes (normal velocity)
 w = TrialFunction(Q2)
+#o = omega_{notes} is the test function related to w
 o = TestFunction(Q2)
 #sigma = \sigma_{notes}
 sigma = TrialFunction(Q2)
+#q  = q_{notes} is the test function related to sigma
 q = TestFunction(Q2)
 #z = z_notes
-z = TrialFunction(Q2)
-zeta = TestFunction(Q2)
+z = TrialFunction(Q4)
+# zeta = TestFunction(Q2)
 
 
 

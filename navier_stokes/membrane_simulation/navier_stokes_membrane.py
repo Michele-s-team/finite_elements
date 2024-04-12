@@ -82,10 +82,14 @@ f_  = Function(Q4)
 
 
 #the vector  or function is interpolated  and written into a Function() object
+#set the initial conditions for all fields
 v_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()), V)
-z_ = interpolate(SurfaceExpression(element=Q2.ufl_element()), Q2)
 w_ = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
-f_ = interpolate(ScalarFunctionExpression(element=Q2.ufl_element()), Q4)
+sigma_ = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
+z_ = interpolate(ManifoldExpression(element=Q2.ufl_element()), Q2)
+
+
+# f_ = interpolate(ScalarFunctionExpression(element=Q2.ufl_element()), Q4)
 # z_plot = project(z_, Q)
 # grad_z_plot = project(grad_z(z_), V)
 # my_vector_field_plot = project(my_vector_field(z_), V)
