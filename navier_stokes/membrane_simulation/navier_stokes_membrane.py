@@ -60,13 +60,13 @@ external_boundary_profile = ('1.0', '0.0')
 #boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcu_external_boundary = DirichletBC(W, Expression(external_boundary_profile, degree=0), external_boundary)
-bcu_cylinder = DirichletBC(W, Constant((0, 0)), cylinder)
+bcv_external_boundary = DirichletBC(W, Expression(external_boundary_profile, degree=0), external_boundary)
+bcv_cylinder = DirichletBC(W, Constant((0, 0)), cylinder)
 #boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
-bcu = [bcu_external_boundary, bcu_cylinder]
+bc_v = [bcv_external_boundary, bcv_cylinder]
 # bcp = [bcp_outflow]
-bcp = []
+bc_sigma = []
 
 
 
@@ -200,8 +200,8 @@ A3v = assemble(a3v)
 A4 = assemble(a4)
 
 # Apply boundary conditions to matrices
-[bc.apply(A1v) for bc in bcu]
-[bc.apply(A2) for bc in bcp]
+[bc.apply(A1v) for bc in bc_v]
+[bc.apply(A2) for bc in bc_sigma]
 
 
 
@@ -229,13 +229,13 @@ for n in range(num_steps):
 
     # Step 1: Tentative velocity step
     b1 = assemble(L1v)
-    [bc.apply(b1) for bc in bcu]
+    [bc.apply(b1) for bc in bc_v]
     #this line solves for u^* and stores u^* in u_
     solve(A1v, v_.vector(), b1, 'bicgstab', 'hypre_amg')
 
     # Step 2: surface_tension correction step
     b2 = assemble(L2)
-    [bc.apply(b2) for bc in bcp]
+    [bc.apply(b2) for bc in bc_sigma]
     #this step solves for sigma^{n+1} and stores the solution in sigma_
     solve(A2, sigma_.vector(), b2, 'bicgstab', 'hypre_amg')
 
