@@ -67,8 +67,8 @@ epsilon = ufl.PermutationSymbol(2)
 #trial analytical expression for a vector
 class MyVectorFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
-        values[1] = -x[1]
+        values[0] = 1.0
+        values[1] = 0.0
     def value_shape(self):
         return (2,)
 
@@ -76,7 +76,8 @@ class MyVectorFunctionExpression(UserExpression):
 class ManifoldExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        values[0] = 0.0
     def value_shape(self):
         return (1,)
 
@@ -84,7 +85,8 @@ class ManifoldExpression(UserExpression):
 class SurfaceTensionExpression(UserExpression):
         def eval(self, values, x):
             # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-            values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+            # values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+            values[0] = 0.0
 
         def value_shape(self):
             return (1,)
@@ -92,7 +94,8 @@ class SurfaceTensionExpression(UserExpression):
 #trial analytical expression for w
 class NormalVelocityExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = (np.subtract(x, c_r)[0])*(np.subtract(x, c_r)[1])*cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        # values[0] = (np.subtract(x, c_r)[0])*(np.subtract(x, c_r)[1])*cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        values[0] = 0.0
     def value_shape(self):
         return (1,)
 

@@ -17,9 +17,9 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 1    # final time
+T = 0.1    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 100
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -143,7 +143,9 @@ F1 = Re * ( dot((v - v_n) / Deltat, nu) * dx \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx \
             - 2.0 * v_n[j]*w_n*g_c(z_n)[i,k]*b(z_n)[k,j] * nu[i] * dx \
             + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j]  * dx  ) \
-     + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
+    + g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j] * sigma_n * dx \
+    + 2.0 * d_c(v_n, w_n, z_n)[i, j] * Nabla_omega(nu, z_n)[i, j] * dx
+     # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
 # \     + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
 a1 = lhs(F1)
 L1 = rhs(F1)
