@@ -185,12 +185,19 @@ F3w = ( (w_ - w) * o - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * o ) *
 a3w = lhs(F3w)
 L3w = rhs(F3w)
 
+# Define variational problem for step 4
+F4 = (normal(z_n)[2] * (z - z_n)  - w_n * Deltat)* zeta * dx
+a4 = lhs(F4)
+L4 = rhs(F4)
+
+
 
 
 # Assemble matrices
 A1v = assemble(a1v)
 A2 = assemble(a2)
 A3v = assemble(a3v)
+A4 = assemble(a4)
 
 # Apply boundary conditions to matrices
 [bc.apply(A1v) for bc in bcu]

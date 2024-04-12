@@ -123,7 +123,7 @@ sigma = TrialFunction(Q2)
 q = TestFunction(Q2)
 #z = z_notes
 z = TrialFunction(Q4)
-# zeta = TestFunction(Q2)
+zeta = TestFunction(Q4)
 
 
 
