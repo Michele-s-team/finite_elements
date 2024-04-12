@@ -33,10 +33,10 @@ xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
 xdmffile_geometry = XDMFFile((args.output_directory) + "/geo.xdmf")
 
 # Create time series (for use in reaction_system.py)
-timeseries_v = TimeSeries((args.output_directory) + "/velocity_series")
+timeseries_v = TimeSeries((args.output_directory) + "/v_series")
 timeseries_w = TimeSeries((args.output_directory) + "/w_series")
-timeseries_sigma = TimeSeries((args.output_directory) + "/surface_tension_series")
-timeseries_z = TimeSeries((args.output_directory) + "/shape_series")
+timeseries_sigma = TimeSeries((args.output_directory) + "/sigma_series")
+timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
 
 
