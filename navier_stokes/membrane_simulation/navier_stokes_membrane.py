@@ -139,7 +139,7 @@ v_n[j] * ((v_n[i]).dx(j)) * nu[i]
 
 
 # Define variational problem for step 1
-F1 = Re * ( dot((v - v_n) / Deltat, nu) * dx  + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx ) \
+F1 = Re * ( dot((v - v_n) / Deltat, nu) * dx  + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx  - 2.0 * v_n[j]*w_n*g_c(z_n)[i,k]*b(z_n)[k,j] * nu[i] * dx ) \
      + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx \
      + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
 a1 = lhs(F1)
