@@ -208,7 +208,11 @@ A4 = assemble(a4)
 
 # Apply boundary conditions to matrices
 [bc.apply(A1v) for bc in bc_v]
+[bc.apply(A1w) for bc in bc_w]
 [bc.apply(A2) for bc in bc_sigma]
+[bc.apply(A3v) for bc in bc_v]
+[bc.apply(A3w) for bc in bc_w]
+#MAYBE HERE I SHOULD ADD AN ANALOGOUS COMMAND FOR Z AND IT BOUNDARY CONDITIONS 
 
 
 
