@@ -17,7 +17,7 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 0.001    # final time
+T = 1    # final time
 # num_steps = 5000  # number of time steps
 num_steps = 10
 dt = T / num_steps # time step size
@@ -84,10 +84,10 @@ f_  = Function(Q4)
 
 #the vector  or function is interpolated  and written into a Function() object
 #set the initial conditions for all fields
-v_ = interpolate(MyVectorFunctionExpression(element=V.ufl_element()), V)
-w_ = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
-sigma_ = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
-z_ = interpolate(ManifoldExpression(element=Q2.ufl_element()), Q2)
+v_n = interpolate(MyVectorFunctionExpression(element=V.ufl_element()), V)
+w_n = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
+sigma_n = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
+z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 
 
 # f_ = interpolate(ScalarFunctionExpression(element=Q2.ufl_element()), Q4)
@@ -101,8 +101,11 @@ xdmffile_geometry.parameters.update(
         "functions_share_mesh": True,
         "rewrite_function_mesh": False
     })
-xdmffile_geometry.write(project(z_, Q4), 0)
-xdmffile_geometry.write(project(normal(z_), V3d), 0)
+xdmffile_geometry.write(project(v_n, V), 0)
+xdmffile_geometry.write(project(w_n, Q2), 0)
+xdmffile_geometry.write(project(sigma_n, Q2), 0)
+xdmffile_geometry.write(project(z_n, Q4), 0)
+# xdmffile_geometry.write(project(normal(z_), V3d), 0)
 # xdmffile_geometry.write(project(grad_z(z_), V), 0)
 # xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
 # xdmffile_geometry.write(project(detg(z_), Q2), 0)
@@ -114,7 +117,7 @@ xdmffile_geometry.write(project(normal(z_), V3d), 0)
 # xdmffile_geometry.write(project(Nabla_LB(H(z_), z_), Q4), 0)
 # xdmffile_geometry.write(project(Nabla_LB2(f_, z_), Q4), 0)
 # xdmffile_geometry.write(project(w_, Q2), 0)
-xdmffile_geometry.write(project(d_c(v_, w_, z_)[0,1], Q4), 0)
+# xdmffile_geometry.write(project(d_c(v_, w_, z_)[0,1], Q4), 0)
 
 
 xdmffile_z.write(z_, t)
@@ -136,8 +139,7 @@ v_n[j] * ((v_n[i]).dx(j)) * nu[i]
 
 
 # Define variational problem for step 1
-F1 = Re * (dot((v - v_n) / Deltat, nu) * dx \
-           + (v_n[j] * Nabla_v(v_n, z_)[i, j] * nu[i]) * dx) \
+F1 = Re * ( dot((v - v_n) / Deltat, nu) * dx  + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx ) \
      + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx \
      + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
 a1 = lhs(F1)

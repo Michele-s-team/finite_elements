@@ -84,7 +84,7 @@ class ManifoldExpression(UserExpression):
 class SurfaceTensionExpression(UserExpression):
         def eval(self, values, x):
             # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-            values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+            values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
 
         def value_shape(self):
             return (1,)
