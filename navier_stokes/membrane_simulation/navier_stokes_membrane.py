@@ -259,9 +259,15 @@ for n in range(num_steps):
     solve(A2, sigma_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
+    #step 3 for v
     b3v = assemble(L3v)
-    #this step solves for u^{n+1} and stores the solution in u_. In A3, u_ = u^* from `solve(A1, u_.vector(), b1, 'bicgstab', 'hypre_amg')` and p_n = p_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
+    #this step solves for v^{n+1} and stores the solution in v_. In A3v, v_ = v^* from `solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
     solve(A3v, v_.vector(), b3v, 'cg', 'sor')
+    # step 3 for w
+    b3w = assemble(L3w)
+    # this step solves for w^{n+1} and stores the solution in w_. In A3w, w_ = w^* from `solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
+    solve(A3w, w_.vector(), b3w, 'cg', 'sor')
+
 
     # Plot solution
 #    plot(u_, title='Velocity')
@@ -277,7 +283,9 @@ for n in range(num_steps):
 
     # Update previous solution
     v_n.assign(v_)
+    w_n.assign(w_)
     sigma_n.assign(sigma_)
+    # z_.assign(z_)
 
     # Update progress bar
 #    progress.update(t / T)
