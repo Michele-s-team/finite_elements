@@ -159,7 +159,7 @@ a1v = lhs(F1v)
 L1v = rhs(F1v)
 #step 3 for w
 F1w = ( \
-                  Re * ( (w - w_n) / Deltat * o - w_n * ( g_c(z_n)[i, j] * (o.dx(i)) * v_n[j] + o * g_c(z_n)[i, j] * Nabla_omega(v_n, z_n)[i, j] )  )  \
+                  Re * ( (w - w_n) / Deltat * o - w_n * ( (o.dx(i)) * v_n[i] + o * Nabla_v(v_n, z_n)[i, i] )  )  \
     + 2.0 * kappa * ( - g_c(z_n)[i, j] * H(z_n).dx(i) * o.dx(j) ) \
     + 4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[i, k] * g_c(z_n)[j, l] * Nabla_omega(v_n, z_n)[i, j] * b(z_n)[k, l] \
                                                                                         - 2.0 * w_n * (2.0 * ((H(z_n))**2) - K(z_n))  )  \
