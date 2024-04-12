@@ -234,3 +234,7 @@ def d(u, un, z):
 #2-contravariant rate-of_deformation tensor: d_c(u, un, z)[i, j] = {d^{ij}}_{alizzi2020shear}
 def d_c(u, un, z):
     return as_tensor(g_c(z)[i, k] * g_c(z)[j, l] * d(u, un, z)[k,l], (i,j))
+
+#return the arithmetic mean between vectors a and b
+def mean_v(a, b):
+    return as_tensor(0.5 * (a[i]+b[i]), (i))
