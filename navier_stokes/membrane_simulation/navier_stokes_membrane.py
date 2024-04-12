@@ -139,16 +139,16 @@ v_n[j] * ((v_n[i]).dx(j)) * nu[i]
 
 
 # Define variational problem for step 1
-F1 = Re * ( dot((v - v_n) / Deltat, nu) * dx \
+F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx \
-            - 2.0 * v_n[j]*w_n*g_c(z_n)[i,k]*b(z_n)[k,j] * nu[i] * dx \
-            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j]  * dx  ) \
-    + g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j] * sigma_n * dx \
-    + 2.0 * d_c(v_n, w_n, z_n)[i, j] * Nabla_omega(nu, z_n)[i, j] * dx
+            - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] * dx \
+            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j] * dx) \
+      + g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j] * sigma_n * dx \
+      + 2.0 * d_c(v_n, w_n, z_n)[i, j] * Nabla_omega(nu, z_n)[i, j] * dx \
+    # + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
-# \     + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
-a1 = lhs(F1)
-L1 = rhs(F1)
+a1v = lhs(F1v)
+L1v = rhs(F1v)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(sigma), nabla_grad(q))*dx
@@ -159,7 +159,7 @@ a3 = dot(v, nu) * dx
 L3 = dot(v_, nu) * dx - (Deltat / Re) * dot(nabla_grad(sigma_ - sigma_n), nu) * dx
 
 # Assemble matrices
-A1 = assemble(a1)
+A1 = assemble(a1v)
 A2 = assemble(a2)
 A3 = assemble(a3)
 
@@ -186,7 +186,7 @@ for n in range(num_steps):
     t += dt
 
     # Step 1: Tentative velocity step
-    b1 = assemble(L1)
+    b1 = assemble(L1v)
     [bc.apply(b1) for bc in bcu]
     #this line solves for u^* and stores u^* in u_
     solve(A1, v_.vector(), b1, 'bicgstab', 'hypre_amg')
