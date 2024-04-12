@@ -134,7 +134,7 @@ Deltat  = Constant(dt)
 # rho = Constant(rho)
 
 
-v_n[j] * ((v_n[i]).dx(j)) * nu[i]
+# v_n[j] * ((v_n[i]).dx(j)) * nu[i]
 
 
 # Define variational problem for step 1
@@ -148,6 +148,11 @@ F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
 a1v = lhs(F1v)
 L1v = rhs(F1v)
+
+F1w = Re * ( (w - w_n) / Deltat * o * dx - w_n * ( g_c(z_n)[i, j] * (o.dx(i)) * v_n[j] + o * g_c(z_n)[i, j] * Nabla_omega(v_n, z_n)[i, j] ) * dx  )
+a1w = lhs(F1w)
+L1w = rhs(F1w)
+
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(sigma), nabla_grad(q))*dx
