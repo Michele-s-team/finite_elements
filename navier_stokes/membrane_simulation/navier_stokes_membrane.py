@@ -175,16 +175,18 @@ L2 = rhs(F2)
 
 
 # Define variational problem for step 3
-a3 = dot(v, nu) * dx
-L3 = dot(v_, nu) * dx + (Deltat / Re) * dot(nabla_grad(sigma_ - sigma_n), nu) * dx
+F3v = ( g_c(z_n)[i,j] * (v_[i] - v[i]) * nu[j] - (Deltat / Re) * g_c(z_n)[i, j] * (sigma_n.dx(i) - sigma_.dx(i)) * nu[j] ) * dx
+a3v = lhs(F3v)
+L3v = rhs(F3v)
+
 
 # Assemble matrices
-A1 = assemble(a1v)
+A1v = assemble(a1v)
 A2 = assemble(a2)
-A3 = assemble(a3)
+A3v = assemble(a3v)
 
 # Apply boundary conditions to matrices
-[bc.apply(A1) for bc in bcu]
+[bc.apply(A1v) for bc in bcu]
 [bc.apply(A2) for bc in bcp]
 
 
@@ -215,7 +217,7 @@ for n in range(num_steps):
     b1 = assemble(L1v)
     [bc.apply(b1) for bc in bcu]
     #this line solves for u^* and stores u^* in u_
-    solve(A1, v_.vector(), b1, 'bicgstab', 'hypre_amg')
+    solve(A1v, v_.vector(), b1, 'bicgstab', 'hypre_amg')
 
     # Step 2: surface_tension correction step
     b2 = assemble(L2)
@@ -224,9 +226,9 @@ for n in range(num_steps):
     solve(A2, sigma_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
-    b3 = assemble(L3)
+    b3v = assemble(L3v)
     #this step solves for u^{n+1} and stores the solution in u_. In A3, u_ = u^* from `solve(A1, u_.vector(), b1, 'bicgstab', 'hypre_amg')` and p_n = p_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
-    solve(A3, v_.vector(), b3, 'cg', 'sor')
+    solve(A3v, v_.vector(), b3v, 'cg', 'sor')
 
     # Plot solution
 #    plot(u_, title='Velocity')
