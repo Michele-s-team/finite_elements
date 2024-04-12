@@ -151,7 +151,8 @@ F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
 a1v = lhs(F1v)
 L1v = rhs(F1v)
 
-F1w = Re * ( (w - w_n) / Deltat * o * dx - w_n * ( g_c(z_n)[i, j] * (o.dx(i)) * v_n[j] + o * g_c(z_n)[i, j] * Nabla_omega(v_n, z_n)[i, j] ) * dx  )
+F1w = Re * ( (w - w_n) / Deltat * o * dx - w_n * ( g_c(z_n)[i, j] * (o.dx(i)) * v_n[j] + o * g_c(z_n)[i, j] * Nabla_omega(v_n, z_n)[i, j] ) * dx  ) \
+    + 2.0 * kappa * ( - g_c(z_n)[i, j] * H(z_n).dx(i) * o.dx(j) * dx )
 a1w = lhs(F1w)
 L1w = rhs(F1w)
 
