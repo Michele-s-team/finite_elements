@@ -65,7 +65,7 @@ epsilon = ufl.PermutationSymbol(2)
 
 
 #trial analytical expression for a vector
-class MyVectorFunctionExpression(UserExpression):
+class TangentVelocityExpression(UserExpression):
     def eval(self, values, x):
         values[0] = 1.0
         values[1] = 0.0
@@ -75,9 +75,9 @@ class MyVectorFunctionExpression(UserExpression):
 #trial analytical expression for the height function z(x,y)
 class ManifoldExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
-        # values[0] = 0.0
+        values[0] = 0.0
     def value_shape(self):
         return (1,)
 

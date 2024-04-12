@@ -26,11 +26,11 @@ Re = 1.0
 kappa = 1.0
 
 # Create XDMF files for visualization output
-xdmffile_v = XDMFFile((args.output_directory) + "/velocity.xdmf")
+xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
 xdmffile_w = XDMFFile((args.output_directory) + "/w.xdmf")
-xdmffile_sigma = XDMFFile((args.output_directory) + "/surface_tension.xdmf")
+xdmffile_sigma = XDMFFile((args.output_directory) + "/sigma.xdmf")
 xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
-xdmffile_geometry = XDMFFile((args.output_directory) + "/geometry.xdmf")
+xdmffile_geometry = XDMFFile((args.output_directory) + "/geo.xdmf")
 
 # Create time series (for use in reaction_system.py)
 timeseries_v = TimeSeries((args.output_directory) + "/velocity_series")
@@ -86,7 +86,7 @@ f_  = Function(Q4)
 
 #the vector  or function is interpolated  and written into a Function() object
 #set the initial conditions for all fields
-v_n = interpolate(MyVectorFunctionExpression(element=W.ufl_element()), W)
+v_n = interpolate(TangentVelocityExpression(element=W.ufl_element()), W)
 w_n = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
 sigma_n = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
 z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
