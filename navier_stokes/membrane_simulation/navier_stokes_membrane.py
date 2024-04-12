@@ -61,8 +61,8 @@ external_boundary_profile_w = '0.0'
 #boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcv_external_boundary = DirichletBC(W, Expression(external_boundary_profile_v, degree=0), external_boundary)
-bcv_cylinder = DirichletBC(W, Constant((0, 0)), cylinder)
+bcv_external_boundary = DirichletBC(O, Expression(external_boundary_profile_v, degree=0), external_boundary)
+bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
 bcw_external_boundary = DirichletBC(Q2, Expression(external_boundary_profile_w, degree=0), external_boundary)
 bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
@@ -77,8 +77,8 @@ bc_sigma = []
 
 
 # Define functions for solutions at previous and current time steps
-v_n = Function(W)
-v_  = Function(W)
+v_n = Function(O)
+v_  = Function(O)
 w_n = Function(Q2)
 w_  = Function(Q2)
 sigma_n = Function(Q2)
@@ -92,7 +92,7 @@ f_  = Function(Q4)
 
 #the vector  or function is interpolated  and written into a Function() object
 #set the initial conditions for all fields
-v_n = interpolate(TangentVelocityExpression(element=W.ufl_element()), W)
+v_n = interpolate(TangentVelocityExpression(element=O.ufl_element()), O)
 w_n = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
 sigma_n = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
 z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)

@@ -35,8 +35,8 @@ n  = FacetNormal(mesh)
 
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
-W = VectorFunctionSpace(mesh, 'P', 4)
-W3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
+O = VectorFunctionSpace(mesh, 'P', 4)
+O3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
 Q2 = FunctionSpace(mesh, 'P', 2)
 #I will use Q4 for functions which involve high order derivatives
 Q4 = FunctionSpace(mesh, 'P', 4)
@@ -110,9 +110,9 @@ t=0
 
 # Define trial and test functions
 #v[i] = v^i_{notes} (tangential velocity)
-v = TrialFunction(W)
+v = TrialFunction(O)
 #nu is the test function related to nu
-nu = TestFunction(W)
+nu = TestFunction(O)
 #w = w_notes (normal velocity)
 w = TrialFunction(Q2)
 #o = omega_{notes} is the test function related to w
