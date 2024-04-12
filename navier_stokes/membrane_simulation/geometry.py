@@ -35,7 +35,7 @@ n  = FacetNormal(mesh)
 
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
-O = VectorFunctionSpace(mesh, 'P', 4, dim=2)
+O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
 O3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
 Q2 = FunctionSpace(mesh, 'P', 2)
 #I will use Q4 for functions which involve high order derivatives
