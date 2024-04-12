@@ -143,8 +143,8 @@ F1 = Re * ( dot((v - v_n) / Deltat, nu) * dx \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx \
             - 2.0 * v_n[j]*w_n*g_c(z_n)[i,k]*b(z_n)[k,j] * nu[i] * dx \
             + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_omega(nu, z_n)[i, j]  * dx  ) \
-     + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx \
-     + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
+     + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
+# \     + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
 a1 = lhs(F1)
 L1 = rhs(F1)
 
