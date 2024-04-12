@@ -58,8 +58,8 @@ external_boundary_profile = ('2.0*(1.0-x[1]*x[1])', '0.0')
 #boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcu_external_boundary = DirichletBC(V, Expression(external_boundary_profile, degree=0), external_boundary)
-bcu_cylinder = DirichletBC(V, Constant((0, 0)), cylinder)
+bcu_external_boundary = DirichletBC(W, Expression(external_boundary_profile, degree=0), external_boundary)
+bcu_cylinder = DirichletBC(W, Constant((0, 0)), cylinder)
 #boundary conditions for the pressure p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bcu = [bcu_external_boundary, bcu_cylinder]
@@ -69,8 +69,8 @@ bcp = []
 
 
 # Define functions for solutions at previous and current time steps
-v_n = Function(V)
-v_  = Function(V)
+v_n = Function(W)
+v_  = Function(W)
 w_n = Function(Q2)
 w_  = Function(Q2)
 sigma_n = Function(Q2)
@@ -84,7 +84,7 @@ f_  = Function(Q4)
 
 #the vector  or function is interpolated  and written into a Function() object
 #set the initial conditions for all fields
-v_n = interpolate(MyVectorFunctionExpression(element=V.ufl_element()), V)
+v_n = interpolate(MyVectorFunctionExpression(element=W.ufl_element()), W)
 w_n = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
 sigma_n = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
 z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
@@ -101,7 +101,7 @@ xdmffile_geometry.parameters.update(
         "functions_share_mesh": True,
         "rewrite_function_mesh": False
     })
-xdmffile_geometry.write(project(v_n, V), 0)
+xdmffile_geometry.write(project(v_n, W), 0)
 xdmffile_geometry.write(project(w_n, Q2), 0)
 xdmffile_geometry.write(project(sigma_n, Q2), 0)
 xdmffile_geometry.write(project(z_n, Q4), 0)
@@ -128,8 +128,7 @@ xdmffile_z.write(z_, t)
 # print("determinant = ", np.linalg.det(A), ".")
 
 # Define expressions used in variational forms
-#U = u^{n+1/2}|_{notes fenics}
-U  = 0.5*(v_n + v)
+V  = 0.5 * (v_n + v)
 Deltat  = Constant(dt)
 # mu = Constant(mu)
 # rho = Constant(rho)
