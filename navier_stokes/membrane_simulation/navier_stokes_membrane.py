@@ -224,6 +224,11 @@ File((args.output_directory) + "/membrane.xml.gz") << mesh
 #progress = Progress('Time-stepping')
 #set_log_level(PROGRESS)
 
+print("c_R = ", c_R)
+print("c_r = ", c_r)
+print("R = ", R)
+print("r = ", r)
+
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping
