@@ -116,7 +116,7 @@ nu = TestFunction(O)
 #w = w_notes (normal velocity)
 w = TrialFunction(Q2)
 #o = omega_{notes} is the test function related to w
-o = TestFunction(Q2)
+omega = TestFunction(Q2)
 #sigma = \sigma_{notes}
 sigma = TrialFunction(Q2)
 #q  = q_{notes} is the test function related to sigma
@@ -212,7 +212,7 @@ def Nabla_LB(f, z):
 #     return (-1.0/sqrt_abs_detg(z) * (sqrt_abs_detg(z)*g_c(z)[i, j]*(f.dx(j))).dx(i))
 
 def Nabla_LB_omega(omega, z):
-    return as_tensor(- sqrt_abs_detg(z)*g_c(z)[j,k]*epsilon[j,i] * ( ( sqrt_abs_detg(z)*g_c(z)[l,m]*g_c(z)[n,o]*epsilon[l,n] * ((omega[o]).dx(m)) ).dx(k)) , (i))
+    return as_tensor(- sqrt_abs_detg(z) * g_c(z)[j,k] * epsilon[j,i] * ((sqrt_abs_detg(z) * g_c(z)[l,m] * g_c(z)[n,omega] * epsilon[l,n] * ((omega[omega]).dx(m))).dx(k)), (i))
 
 
 # Define symmetric gradient

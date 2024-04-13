@@ -159,10 +159,10 @@ a1v = lhs(F1v)
 L1v = rhs(F1v)
 #step 3 for w
 F1w = ( \
-                  Re * ( (w - w_n) / Deltat * o - w_n * ( (o.dx(i)) * v_n[i] + o * Nabla_v(v_n, z_n)[i, i] )  )  \
-    + 2.0 * kappa * ( - g_c(z_n)[i, j] * H(z_n).dx(i) * o.dx(j) ) \
-    + (4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
-                                                                                        - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * o \
+                  Re * ((w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i])) \
+                  + 2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
+                  + (4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
+                                                                                        - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * omega \
         ) * dx
 a1w = lhs(F1w)
 L1w = rhs(F1w)
@@ -187,7 +187,7 @@ F3v = ( (v_[i] - v[i]) * nu[i] - (Deltat / Re) * g_c(z_n)[i, j] * ((sigma_n - si
 a3v = lhs(F3v)
 L3v = rhs(F3v)
 #step 3 for w
-F3w = ( (w_ - w) * o - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * o ) * dx
+F3w = ((w_ - w) * omega - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * omega) * dx
 a3w = lhs(F3w)
 L3w = rhs(F3w)
 
