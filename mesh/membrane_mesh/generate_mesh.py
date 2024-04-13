@@ -46,7 +46,8 @@ resolution = 0.08
 # H = 2.
 R = 1.0
 r = 0.25
-c = [0.0, 0.0, 0.0]
+c_R = [0.0, 0.0, 0.0]
+c_r = [0.0, -0.1, 0.0]
 #c2 = [0.7, 0.12, 0]
 #r = 0.07
 
@@ -58,8 +59,8 @@ model = geometry.__enter__()
 
 
 # Add circle
-circle_r = model.add_circle([0,-0.1,0], r, mesh_size=resolution)
-circle_R = model.add_circle(c, R, mesh_size=resolution)
+circle_R = model.add_circle(c_R, R, mesh_size=resolution)
+circle_r = model.add_circle(c_r, r, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
 # o_out = geometry.add_point([L/2,0,0])
