@@ -5,6 +5,10 @@ Scheme (IPCS).
 
   u' + u . nabla(u)) - div(sigma(u, p)) = f
                                  div(u) = 0
+
+notes
+- maybe it crashes because the surface z is not smooeth at the boundaries
+
 """
 #run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
 #ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane_simulation/solution
