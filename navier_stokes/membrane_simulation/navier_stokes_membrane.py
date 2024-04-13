@@ -33,13 +33,13 @@ kappa = 1.0
 xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
 xdmffile_w = XDMFFile((args.output_directory) + "/w.xdmf")
 xdmffile_sigma = XDMFFile((args.output_directory) + "/sigma.xdmf")
-xdmffile_geo = XDMFFile((args.output_directory) + "/geo.xdmf")
+xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
 #this is needed to write multiple data series to xdmffile_geo
-xdmffile_geo.parameters.update(
-    {
-        "functions_share_mesh": True,
-        "rewrite_function_mesh": False
-    })
+# xdmffile_geo.parameters.update(
+#     {
+#         "functions_share_mesh": True,
+#         "rewrite_function_mesh": False
+#     })
 
 
 # Create time series (for use in reaction_system.py)
@@ -241,17 +241,16 @@ t = 0
 for n in range(num_steps):
 
     # Write the solution to file
-    #write c
     xdmffile_v.write(v_n, t)
-    #write w
     xdmffile_w.write(w_n, t)
-    #write sigma
     xdmffile_sigma.write(sigma_n, t)
-    #write properties of the manifold
-    xdmffile_geo.write(z_n, t)
-    xdmffile_geo.write(project(normal(z_n), O3d), t)
-    xdmffile_geo.write(project(H(z_n), Q4), t)
-    xdmffile_geo.write(project(K(z_n), Q4), t)
+    xdmffile_z.write(z_n, t)
+
+    # Save nodal values to file
+    timeseries_v.store(v_n.vector(), t)
+    timeseries_w.store(w_n.vector(), t)
+    timeseries_sigma.store(sigma_n.vector(), t)
+    timeseries_z.store(z_n.vector(), t)
 
     # Update current time
     t += dt
@@ -292,11 +291,6 @@ for n in range(num_steps):
 
 
 
-    # Save nodal values to file
-    timeseries_v.store(v_.vector(), t)
-    timeseries_w.store(w_.vector(), t)
-    timeseries_sigma.store(sigma_.vector(), t)
-    timeseries_z.store(z_.vector(), t)
 
     # Update previous solution
     v_n.assign(v_)
