@@ -21,9 +21,9 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 0.1    # final time
+T = 0.001    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 3
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -33,8 +33,14 @@ kappa = 1.0
 xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
 xdmffile_w = XDMFFile((args.output_directory) + "/w.xdmf")
 xdmffile_sigma = XDMFFile((args.output_directory) + "/sigma.xdmf")
-xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
-xdmffile_geometry = XDMFFile((args.output_directory) + "/geo.xdmf")
+xdmffile_geo = XDMFFile((args.output_directory) + "/geo.xdmf")
+#this is needed to write multiple data series to xdmffile_geo
+xdmffile_geo.parameters.update(
+    {
+        "functions_share_mesh": True,
+        "rewrite_function_mesh": False
+    })
+
 
 # Create time series (for use in reaction_system.py)
 timeseries_v = TimeSeries((args.output_directory) + "/v_series")
@@ -108,11 +114,6 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # my_vector_field_plot = project(my_vector_field(z_), V)
 # detg_plot = project(detg(z_), Q)
 
-# xdmffile_geometry.parameters.update(
-#     {
-#         "functions_share_mesh": True,
-#         "rewrite_function_mesh": False
-#     })
 # xdmffile_geometry.write(project(v_n, W), 0)
 # xdmffile_geometry.write(project(w_n, Q2), 0)
 # xdmffile_geometry.write(project(sigma_n, Q2), 0)
@@ -240,10 +241,17 @@ t = 0
 for n in range(num_steps):
 
     # Write the solution to file
+    #write c
     xdmffile_v.write(v_n, t)
+    #write w
     xdmffile_w.write(w_n, t)
+    #write sigma
     xdmffile_sigma.write(sigma_n, t)
-    xdmffile_z.write(z_n, t)
+    #write properties of the manifold
+    xdmffile_geo.write(z_n, t)
+    xdmffile_geo.write(project(normal(z_n), O3d), t)
+    xdmffile_geo.write(project(H(z_n), Q4), t)
+    xdmffile_geo.write(project(K(z_n), Q4), t)
 
     # Update current time
     t += dt
