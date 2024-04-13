@@ -198,7 +198,7 @@ def Gamma(z):
 def Nabla_v(u, z):
     return as_tensor((u[i]).dx(j) + u[k] * Gamma(z)[i, k, j], (i, j))
 
-#covariant derivative of one-form omega with respect to \partial/partial x: Nabla_omega(omega, z)[i, j] = {\Nabla_j omega_i}_{al-izzi2020shear}
+#covariant derivative of one-form f with respect to \partial/partial x: Nabla_f(f, z)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
 def Nabla_f(f, z):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(z)[k, i, j], (i, j))
 
