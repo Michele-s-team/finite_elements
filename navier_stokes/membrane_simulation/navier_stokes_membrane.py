@@ -170,7 +170,7 @@ L1w = rhs(F1w)
 
 # Define variational problem for step 2
 F2 = ( \
-                 g_c(z_n)[i, j] * ( sigma_n - sigma ).dx(i) * q.dx(j) \
+                 g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q
          \
          ) * dx
@@ -183,7 +183,7 @@ L2 = rhs(F2)
 
 # Define variational problem for step 3
 #step 3 for v
-F3v = ( g_c(z_n)[i,j] * (v_[i] - v[i]) * nu[j] - (Deltat / Re) * g_c(z_n)[i, j] * (sigma_n.dx(i) - sigma_.dx(i)) * nu[j] ) * dx
+F3v = ( (v_[i] - v[i]) * nu[i] - (Deltat / Re) * g_c(z_n)[i, j] * ((sigma_n - sigma_).dx(i)) * nu[j] ) * dx
 a3v = lhs(F3v)
 L3v = rhs(F3v)
 #step 3 for w
