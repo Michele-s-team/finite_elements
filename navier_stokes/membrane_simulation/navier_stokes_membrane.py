@@ -170,8 +170,8 @@ L1w = rhs(F1w)
 
 # Define variational problem for step 2
 F2 = ( \
-                 g_c(z_n)[i, j] * ( sigma_n.dx(i) - sigma.dx(i) ) * q.dx(j) \
-                 + (Re / Deltat) * (g_c(z_n)[i, j] * Nabla_f(v_, z_n)[i, j] - 2.0 * H(z_n) * w_n) * q
+                 g_c(z_n)[i, j] * ( sigma_n - sigma ).dx(i) * q.dx(j) \
+                 + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q
          \
          ) * dx
 a2 = lhs(F2)
