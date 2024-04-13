@@ -199,13 +199,13 @@ def Nabla_v(u, z):
     return as_tensor((u[i]).dx(j) + u[k] * Gamma(z)[i, k, j], (i, j))
 
 #covariant derivative of one-form omega with respect to \partial/partial x: Nabla_omega(omega, z)[i, j] = {\Nabla_j omega_i}_{al-izzi2020shear}
-def Nabla_omega(omega, z):
-    return as_tensor((omega[i]).dx(j) - omega[k]*Gamma(z)[k, i, j], (i, j))
+def Nabla_f(f, z):
+    return as_tensor((f[i]).dx(j) - f[k] * Gamma(z)[k, i, j], (i, j))
 
 
 #Laplace beltrami operator on a scalar function f: Nabla_LB(f) = {\Nabla_{LB} f}_{al-izzi2020shear}
 def Nabla_LB(f, z):
-    return (-g_c(z)[k,j]*Nabla_omega(as_tensor(f.dx(i), (i)), z)[k, j])
+    return (-g_c(z)[k,j] * Nabla_f(as_tensor(f.dx(i), (i)), z)[k, j])
 
 #second definition of Laplace beltrami operator, equivalent to Nabla_LB
 # def Nabla_LB2(f, z):
