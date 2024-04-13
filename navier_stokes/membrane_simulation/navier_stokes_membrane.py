@@ -34,12 +34,14 @@ xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
 xdmffile_w = XDMFFile((args.output_directory) + "/w.xdmf")
 xdmffile_sigma = XDMFFile((args.output_directory) + "/sigma.xdmf")
 xdmffile_z = XDMFFile((args.output_directory) + "/z.xdmf")
-#this is needed to write multiple data series to xdmffile_geo
-# xdmffile_geo.parameters.update(
-#     {
-#         "functions_share_mesh": True,
-#         "rewrite_function_mesh": False
-#     })
+
+xdmffile_geo = XDMFFile((args.output_directory) + "/geo.xdmf")
+# this is needed to write multiple data series to xdmffile_geo
+xdmffile_geo.parameters.update(
+    {
+        "functions_share_mesh": True,
+        "rewrite_function_mesh": False
+    })
 
 
 # Create time series (for use in reaction_system.py)
@@ -114,23 +116,20 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # my_vector_field_plot = project(my_vector_field(z_), V)
 # detg_plot = project(detg(z_), Q)
 
-# xdmffile_geometry.write(project(v_n, W), 0)
-# xdmffile_geometry.write(project(w_n, Q2), 0)
-# xdmffile_geometry.write(project(sigma_n, Q2), 0)
-# xdmffile_geometry.write(project(z_n, Q4), 0)
-# xdmffile_geometry.write(project(normal(z_), V3d), 0)
-# xdmffile_geometry.write(project(grad_z(z_), V), 0)
-# xdmffile_geometry.write(project(my_vector_field(z_), V), 0)
-# xdmffile_geometry.write(project(detg(z_), Q2), 0)
-# xdmffile_geometry.write(project(H(z_), Q4), 0)
-# xdmffile_geometry.write(project(K(z_), Q4), 0)
-# xdmffile_geometry.write(project(Nabla_v(u_, z_)[0,0], Q2), 0)
-# xdmffile_geometry.write(project(Nabla_omega(u_, z_)[0,1], Q2), 0)
+xdmffile_geo.write(project(z_n, Q4), 0)
+xdmffile_geo.write(project(normal(z_n), O3d), 0)
+xdmffile_geo.write(project(detg(z_n), Q2), 0)
+xdmffile_geo.write(project(H(z_n), Q4), 0)
+xdmffile_geo.write(project(K(z_n), Q4), 0)
+# xdmffile_geo.write(project(grad_z(z_), V), 0)
+# xdmffile_geo.write(project(my_vector_field(z_), V), 0)
+# xdmffile_geo.write(project(Nabla_v(u_, z_)[0,0], Q2), 0)
+# xdmffile_geo.write(project(Nabla_omega(u_, z_)[0,1], Q2), 0)
 #here I project Nabla_LB(H,z) on Q4 and not on Q2 because Nabla_LB involves fourth-order derivatives
-# xdmffile_geometry.write(project(Nabla_LB(H(z_), z_), Q4), 0)
-# xdmffile_geometry.write(project(Nabla_LB2(f_, z_), Q4), 0)
-# xdmffile_geometry.write(project(w_, Q2), 0)
-# xdmffile_geometry.write(project(d_c(v_, w_, z_)[0,1], Q4), 0)
+# xdmffile_geo.write(project(Nabla_LB(H(z_), z_), Q4), 0)
+# xdmffile_geo.write(project(Nabla_LB2(f_, z_), Q4), 0)
+# xdmffile_geo.write(project(w_, Q2), 0)
+# xdmffile_geo.write(project(d_c(v_, w_, z_)[0,1], Q4), 0)
 
 
 # xdmffile_z.write(z_, t)
