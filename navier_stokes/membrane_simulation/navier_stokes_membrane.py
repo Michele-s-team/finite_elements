@@ -220,8 +220,8 @@ A4 = assemble(a4)
 [bc.apply(A1v) for bc in bc_v]
 [bc.apply(A1w) for bc in bc_w]
 [bc.apply(A2) for bc in bc_sigma]
-[bc.apply(A3v) for bc in bc_v]
-[bc.apply(A3w) for bc in bc_w]
+# [bc.apply(A3v) for bc in bc_v]
+# [bc.apply(A3w) for bc in bc_w]
 #MAYBE HERE I SHOULD ADD AN ANALOGOUS COMMAND FOR Z AND IT BOUNDARY CONDITIONS
 
 
@@ -233,9 +233,10 @@ File((args.output_directory) + "/membrane.xml.gz") << mesh
 #progress = Progress('Time-stepping')
 #set_log_level(PROGRESS)
 
-print("c_R = ", c_R)
+# print("c_R = ", c_R)
 print("c_r = ", c_r)
-print("R = ", R)
+print("L = ", L)
+print("H = ", H)
 print("r = ", r)
 
 
