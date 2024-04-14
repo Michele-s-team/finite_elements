@@ -52,7 +52,7 @@ outflow  = 'near(x[0], 2.2)'
 #the whole circle_R
 walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 #the obstacle
-cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
+cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] > (0.1*0.1))'
 
 
 #  norm of vector x
