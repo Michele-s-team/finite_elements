@@ -73,7 +73,8 @@ external_boundary_profile_w = '0.0'
 #boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), external_boundary)
+bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), inflow)
+bcv_walls = DirichletBC(V, Constant((0, 0)), walls)
 bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
 bcw_external_boundary = DirichletBC(Q2, Expression(external_boundary_profile_w, degree=0), external_boundary)
