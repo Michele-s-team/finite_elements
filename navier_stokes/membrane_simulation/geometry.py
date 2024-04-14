@@ -15,7 +15,7 @@ args = parser.parse_args()
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
 L = 2.2
-H = 0.41
+h = 0.41
 r = 0.05
 #these must be the same c_R, c_r as in generate_mesh.py, with the third component dropped
 # c_R = [0.0, 0.0]

@@ -236,7 +236,7 @@ File((args.output_directory) + "/membrane.xml.gz") << mesh
 # print("c_R = ", c_R)
 print("c_r = ", c_r)
 print("L = ", L)
-print("H = ", H)
+print("h = ", h)
 print("r = ", r)
 
 
