@@ -81,6 +81,8 @@ bcw_inflow = DirichletBC(Q2, Expression(inflow_profile_w, degree=0), inflow)
 bcw_walls = DirichletBC(V, Constant((0)), walls)
 bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
 
+bcsigma_outflow = DirichletBC(Q, Constant(0), outflow)
+
 #boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bc_v = [bcv_inflow, bcv_cylinder]
