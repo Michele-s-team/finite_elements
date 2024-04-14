@@ -145,6 +145,8 @@ xdmffile_geo.write(project(K(z_n), Q4), 0)
 # Define expressions used in variational forms
 V  = 0.5 * (v_n + v)
 Deltat  = Constant(dt)
+Re = Constant(Re)
+kappa = Constant (kappa)
 # mu = Constant(mu)
 # rho = Constant(rho)
 
