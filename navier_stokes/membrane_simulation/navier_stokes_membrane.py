@@ -155,7 +155,7 @@ kappa = Constant (kappa)
 
 
 # Define variational problem for step 1
-#step 3 for v
+#step 1 for v
 F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] * dx \
@@ -166,7 +166,7 @@ F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
 a1v = lhs(F1v)
 L1v = rhs(F1v)
-#step 3 for w
+#step 1 for w
 F1w = ( \
                   Re * ((w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i])) \
                   + 2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
@@ -177,7 +177,7 @@ a1w = lhs(F1w)
 L1w = rhs(F1w)
 
 
-# Define variational problem for step 2
+#step 2
 F2 = ( \
                  g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q
