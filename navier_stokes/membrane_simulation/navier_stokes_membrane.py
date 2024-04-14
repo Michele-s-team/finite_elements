@@ -65,7 +65,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-external_boundary_profile_v = ('1.0', '0.0')
+inflow_profile_v = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
 external_boundary_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 
@@ -73,7 +73,7 @@ external_boundary_profile_w = '0.0'
 #boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcv_external_boundary = DirichletBC(O, Expression(external_boundary_profile_v, degree=0), external_boundary)
+bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), external_boundary)
 bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
 bcw_external_boundary = DirichletBC(Q2, Expression(external_boundary_profile_w, degree=0), external_boundary)
@@ -81,7 +81,7 @@ bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
 
 #boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
-bc_v = [bcv_external_boundary, bcv_cylinder]
+bc_v = [bcv_inflow, bcv_cylinder]
 bc_w = [bcw_external_boundary, bcw_cylinder]
 # bcp = [bcp_outflow]
 bc_sigma = []

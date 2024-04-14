@@ -13,10 +13,12 @@ args = parser.parse_args()
 
 
 #r, R must be the same as in generate_mesh.py
-R = 1.0
-r = 0.25
+# R = 1.0
+L = 2.2
+H = 0.41
+r = 0.05
 #these must be the same c_R, c_r as in generate_mesh.py, with the third component dropped
-c_R = [0.0, 0.0]
+# c_R = [0.0, 0.0]
 c_r = [0.0, 0.0]
 
 
@@ -44,11 +46,11 @@ Q4 = FunctionSpace(mesh, 'P', 4)
 
 # Define boundaries
 #a semi-circle given by the left half of circle_R
-inflow   = 'on_boundary && (x[0] < 0.01) && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
+inflow   = 'near(x[0], 0)'
 #a semi-circle given by the right half of circle_R
-outflow   =  'on_boundary && (x[0] > 0.01) && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
+outflow  = 'near(x[0], 2.2)'
 #the whole circle_R
-external_boundary = 'on_boundary && (x[0]*x[0] + x[1]*x[1] > (0.5*0.5))'
+walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 #the obstacle
 cylinder = 'on_boundary && (x[0]*x[0] + x[1]*x[1] < (0.5*0.5))'
 
