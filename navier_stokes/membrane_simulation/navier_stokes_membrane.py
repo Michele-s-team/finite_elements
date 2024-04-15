@@ -29,7 +29,7 @@ print("Output directory", args.output_directory)
 
 T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 100
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -299,8 +299,9 @@ for n in range(num_steps):
     # this step solves for w^{n+1} and stores the solution in w_. In A3w, w_ = w^* from `solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
+    #step 4
+    z_n.assign(z_n + project(Deltat / normal(z_n)[2] * w_n, Q4) )
 
-   
 
     # Update previous solution
     v_n.assign(v_)
