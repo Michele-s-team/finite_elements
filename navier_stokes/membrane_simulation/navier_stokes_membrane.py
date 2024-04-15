@@ -21,9 +21,9 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
-T = 0.1    # final time
+T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 100
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -156,10 +156,12 @@ kappa = Constant (kappa)
 
 # Define variational problem for step 1
 #step 1 for v
-F1v = Re * ((dot((v - v_n) / Deltat, nu) \
+F1v = Re * ( \
+            (dot((v - v_n) / Deltat, nu) \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
-            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * dx) \
+            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * dx \
+            + ( - 0.5 * (w_n**2) * g_c(z_n)[i,j] * nu[j] * n[i]  ) * ds) \
       + g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n * dx \
       + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * dx
     # + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
