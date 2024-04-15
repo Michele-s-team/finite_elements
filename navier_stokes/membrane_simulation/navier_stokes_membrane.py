@@ -166,20 +166,20 @@ F1v = Re * ( \
             (dot((v - v_n) / Deltat, nu) \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
-            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * dx \
+            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
             + ( - 0.5 * (w_n**2) * g_c(z_n)[i,j] * nu[j] * n[i]  ) * ds ) \
       + (g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
-      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j])  * dx \
+      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j])  * sqrt_detg(z_n) * dx \
         + ( - sigma_n * g_c(z_n)[i,j] * nu[j] * n[i] - 2.0 * d_c(V, w_n, z_n)[i, j]*nu[j]*n[i] ) * ds
     # + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
-     # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
+     # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
 a1v = lhs(F1v)
 L1v = rhs(F1v)
 #step 1 for w
-F1w = ( Re * ( (w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i]) )  * dx +  (w_n * omega * v_n[i] * n[i]) * ds ) \
+F1w = ( Re * ( (w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i]) )  * sqrt_detg(z_n) * dx +  (w_n * omega * v_n[i] * n[i]) * ds ) \
                   + ( 2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
                   + (4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
-                 - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * omega )  * dx \
+                 - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * omega )  * sqrt_detg(z_n) * dx \
     + (  2.0 * kappa * omega * g_c(z_n)[i, j] * (H(z_n).dx(j)) * n[i]  ) * ds
 a1w = lhs(F1w)
 L1w = rhs(F1w)
@@ -189,7 +189,7 @@ L1w = rhs(F1w)
 F2 = ( \
                  g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
-         ) * dx
+         ) * sqrt_detg(z_n) * dx
 #THIS TERM MAKES THE CODE CRASH
      # - ( g_c(z_n)[i, j] * (( sigma_n - sigma ).dx(j)) * n[i] * q ) * ds
 #THIS TERM MAKES THE CODE CRASH
@@ -202,16 +202,16 @@ L2 = rhs(F2)
 
 # Define variational problem for step 3
 #step 3 for v
-F3v = ( (v_[i] - v[i]) * nu[i] - (Deltat / Re) * g_c(z_n)[i, j] * ((sigma_n - sigma_).dx(i)) * nu[j] ) * dx
+F3v = ( (v_[i] - v[i]) * nu[i] - (Deltat / Re) * g_c(z_n)[i, j] * ((sigma_n - sigma_).dx(i)) * nu[j] ) * sqrt_detg(z_n) * dx
 a3v = lhs(F3v)
 L3v = rhs(F3v)
 #step 3 for w
-F3w = ((w_ - w) * omega - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * omega) * dx
+F3w = ((w_ - w) * omega - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * omega) * sqrt_detg(z_n) * dx
 a3w = lhs(F3w)
 L3w = rhs(F3w)
 
 # Define variational problem for step 4
-F4 = (normal(z_n)[2] * (z - z_n)  - w_n * Deltat)* zeta * dx
+F4 = (normal(z_n)[2] * (z - z_n)  - w_n * Deltat)* zeta * sqrt_detg(z_n) * dx
 a4 = lhs(F4)
 L4 = rhs(F4)
 
