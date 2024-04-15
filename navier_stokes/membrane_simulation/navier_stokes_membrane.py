@@ -184,10 +184,8 @@ F2 = ( \
                  g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q
          \
-         ) * dx
-#this boundary term makes the code crash
-#     - ( g_c(z_n)[i, j] * (( sigma_n - sigma ).dx(j)) * n[i] * q ) * ds
-#this boundary term makes the code crash
+         ) * dx \
+     - ( g_c(z_n)[i, j] * (( sigma_n - sigma ).dx(j)) * n[i] * q ) * ds
 a2 = lhs(F2)
 L2 = rhs(F2)
 
