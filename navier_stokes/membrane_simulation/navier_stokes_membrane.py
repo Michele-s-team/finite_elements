@@ -71,7 +71,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-inflow_profile_v = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
+inflow_profile_v = ('4.0*1.5*x[1]*(2.2 - x[1]) / pow(2.2, 2)', '0')
 inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 
