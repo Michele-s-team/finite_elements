@@ -161,9 +161,10 @@ F1v = Re * ( \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
             + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * dx \
-            + ( - 0.5 * (w_n**2) * g_c(z_n)[i,j] * nu[j] * n[i]  ) * ds) \
-      + g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n * dx \
-      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * dx
+            + ( - 0.5 * (w_n**2) * g_c(z_n)[i,j] * nu[j] * n[i]  ) * ds ) \
+      + (g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
+      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j])  * dx \
+        + ( - sigma_n * g_c(z_n)[i,j] * nu[j] * n[i] ) * ds
     # + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * dx
 a1v = lhs(F1v)
