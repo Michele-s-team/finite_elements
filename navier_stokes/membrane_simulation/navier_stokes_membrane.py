@@ -156,10 +156,10 @@ kappa = Constant (kappa)
 
 # Define variational problem for step 1
 #step 1 for v
-F1v = Re * (dot((v - v_n) / Deltat, nu) * dx \
-            + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) * dx \
-            - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] * dx \
-            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * dx) \
+F1v = Re * ((dot((v - v_n) / Deltat, nu) \
+            + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
+            - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
+            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * dx) \
       + g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n * dx \
       + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * dx
     # + dot(sigma_n * n, nu) * ds - dot(2 * epsilon(U) * n, nu) * ds
