@@ -29,7 +29,7 @@ print("Output directory", args.output_directory)
 
 T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 100
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -300,7 +300,7 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     #step 4
-    z_n.assign(z_n + project(Deltat / normal(z_n)[2] * w_n, Q4) )
+    # z_n.assign(z_n + project(Deltat / normal(z_n)[2] * w_n, Q4) )
 
 
     # Update previous solution
