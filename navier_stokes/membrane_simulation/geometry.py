@@ -182,6 +182,9 @@ def detg(z):
 def abs_detg(z):
     return np.abs(ufl.det(g(z)))
 
+def sqrt_detg(z):
+    return sqrt(detg(z))
+
 def sqrt_abs_detg(z):
     return sqrt(abs_detg(z))
 
