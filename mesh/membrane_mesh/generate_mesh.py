@@ -44,7 +44,7 @@ resolution = 0.1
 # Channel parameters
 L = 2.2
 h = 2.2
-r = 0.05
+r = 0.15
 # c_R = [0.0, 0.0, 0.0]
 c_r = [L/2, h/2, 0.0]
 #c2 = [0.7, 0.12, 0]

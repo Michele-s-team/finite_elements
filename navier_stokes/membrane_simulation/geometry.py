@@ -16,7 +16,7 @@ args = parser.parse_args()
 # R = 1.0
 L = 2.2
 h = L
-r = 0.05
+r = 0.15
 #these must be the same c_R, c_r as in generate_mesh.py, with the third component dropped
 # c_R = [0.0, 0.0]
 c_r = [L/2, h/2]
@@ -52,7 +52,7 @@ outflow  = 'near(x[0], 2.2)'
 #the whole circle_R
 walls    = 'near(x[1], 0) || near(x[1], 2.2)'
 #the obstacle
-cylinder = 'on_boundary && ((x[0]-1.1)*(x[0]-1.1) + (x[1]-1.1)*(x[1]-1.1) < (0.1*0.1))'
+cylinder = 'on_boundary && ((x[0]-1.1)*(x[0]-1.1) + (x[1]-1.1)*(x[1]-1.1) < (0.2*0.2))'
 
 
 #  norm of vector x
