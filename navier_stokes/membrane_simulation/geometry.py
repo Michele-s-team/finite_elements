@@ -81,7 +81,7 @@ class ManifoldExpression(UserExpression):
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
         #         values[0] = ((norm(np.subtract(x, c_r)) - r)**4)  * ((norm(np.subtract(x, c_R)) - R)**4)
-        values[0] = 0.01 * x[1]*(0.41 - x[1])
+        values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
     def value_shape(self):
         return (1,)
 
