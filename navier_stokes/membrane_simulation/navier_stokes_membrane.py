@@ -21,6 +21,12 @@ from geometry import *
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
 
+print("\n\nLinear solver methods:")
+list_linear_solver_methods()
+print("\n\nPreconditioners")
+list_krylov_solver_preconditioners()
+
+
 T = 0.01    # final time
 # num_steps = 5000  # number of time steps
 num_steps = 10
