@@ -7,7 +7,7 @@ Scheme (IPCS).
                                  div(u) = 0
 
 notes
-- maybe it crashes because the surface z is not smooeth at the boundaries
+- here nu[i] = nu_i, w nu_i are to be regarded as the components of a one-form
 
 """
 #run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
