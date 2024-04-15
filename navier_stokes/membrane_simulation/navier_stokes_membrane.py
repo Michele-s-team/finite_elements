@@ -300,12 +300,7 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
 
-    # Plot solution
-#    plot(u_, title='Velocity')
-#    plot(p_, title='surface_tension')
-
-
-
+   
 
     # Update previous solution
     v_n.assign(v_)
