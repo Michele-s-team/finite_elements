@@ -300,7 +300,7 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     #step 4
-    # z_n.assign(z_n + project(Deltat / normal(z_n)[2] * w_n, Q4) )
+    z_n.assign(z_n + project(Deltat / normal(z_n)[2] * w_n, Q4) )
 
 
     # Update previous solution
