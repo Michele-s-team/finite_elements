@@ -14,6 +14,7 @@ args = parser.parse_args()
 
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
+tol = 10**(-2)
 L = 2.2
 h = L
 r = 0.15
@@ -211,7 +212,12 @@ def my_n(z):
     u = calc_normal_cg2(mesh)
     x = ufl.SpatialCoordinate(mesh)
     # normalization = dot(u, u)
-    return as_tensor(2*u[i]*x[0], (i))
+    zeta = g(z)[i,j]*u[i]*u[j]
+    c = conditional((abs(x[0] - 0.0) < tol), 1.0/sqrt(zeta), 1.0) \
+        * conditional((abs(x[0] - L) < tol), 1.0/sqrt(zeta), 1.0) \
+        * conditional((abs(x[1] - 0.0) < tol), 1.0 / sqrt(zeta), 1.0) \
+        * conditional((abs(x[1] - h) < tol), 1.0 / sqrt(zeta), 1.0)
+    return as_tensor(c*u[k], (k))
 
 #a normal vector pointing outwards the mesh
 def calc_normal_cg2(mesh):
