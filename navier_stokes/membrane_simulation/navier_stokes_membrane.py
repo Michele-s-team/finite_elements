@@ -180,7 +180,7 @@ F1w = ( Re * ( (w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omeg
                   + ( 2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
                   + (4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
                  - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * omega )  * sqrt_detg(z_n) * dx \
-    + (  2.0 * kappa * omega * g_c(z_n)[i, j] * (H(z_n).dx(j)) * n[i]  ) * sqrt_detg(z_n) * ds
+    + (  2.0 * kappa * omega * (H(z_n).dx(i)) * my_n[i]  ) * sqrt_deth(z_n) * ds
 a1w = lhs(F1w)
 L1w = rhs(F1w)
 
