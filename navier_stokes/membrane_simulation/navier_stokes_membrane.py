@@ -167,16 +167,16 @@ F1v = Re * ( \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
             + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-            + ( - 0.5 * (w_n**2) *  nu[i] * my_n[i]  ) * sqrt_deth_inout(z_n) * ds ) \
+            + ( - 0.5 * (w_n**2) *  nu[i] * my_n[i]  ) * sqrt_deth(z_n) * ds ) \
       + (g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
       + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j])  * sqrt_detg(z_n) * dx \
-        + ( - sigma_n * nu[i] * my_n[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i,k] * my_n[k] ) * sqrt_deth_inout(z_n) * ds
+        + ( - sigma_n * nu[i] * my_n[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i,k] * my_n[k] ) * sqrt_deth(z_n) * ds
     # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
 a1v = lhs(F1v)
 L1v = rhs(F1v)
 #step 1 for w
-F1w = ( Re * ( (w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i]) )  * sqrt_detg(z_n) * dx +  (w_n * omega * v_n[i] * n[i]) * sqrt_detg(z_n) * ds ) \
+F1w = ( Re * ( (w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i]) )  * sqrt_detg(z_n) * dx +  (w_n * omega * v_n[i] * g(z_n)[i,j] * my_n[j]) * sqrt_deth(z_n) * ds ) \
                   + ( 2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
                   + (4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
                  - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * omega )  * sqrt_detg(z_n) * dx \
