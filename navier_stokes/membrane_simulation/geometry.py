@@ -45,11 +45,8 @@ Q4 = FunctionSpace(mesh, 'P', 4)
 
 
 # Define boundaries
-#a semi-circle given by the left half of circle_R
 inflow   = 'near(x[0], 0)'
-#a semi-circle given by the right half of circle_R
 outflow  = 'near(x[0], 2.2)'
-#the whole circle_R
 walls    = 'near(x[1], 0) || near(x[1], 2.2)'
 #the obstacle
 cylinder = 'on_boundary && ((x[0]-1.1)*(x[0]-1.1) + (x[1]-1.1)*(x[1]-1.1) < (0.2*0.2))'
