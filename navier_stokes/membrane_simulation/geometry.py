@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
-tol = 10**(-2)
+tol = 10**(-3)
 L = 2.2
 h = L
 r = 0.15
@@ -70,7 +70,7 @@ cylinder = 'on_boundary && ((x[0]-1.1)*(x[0]-1.1) + (x[1]-1.1)*(x[1]-1.1) < (0.2
 
 #  norm of vector x
 def norm(x):
-    return (np.sqrt(np.dot(x, x)))
+    return (sqrt(np.dot(x, x)))
 
 #norm for UFL vectors
 def ufl_norm(x):
@@ -206,7 +206,12 @@ def sqrt_abs_detg(z):
     return sqrt(abs_detg(z))
 
 def sqrt_deth(z):
-    return 1
+    x = ufl.SpatialCoordinate(mesh)
+    c = conditional((abs(x[0] - 0.0) < tol), g(z)[1,1], 1.0) \
+        * conditional((abs(x[0] - L) < tol), g(z)[1,1], 1.0) \
+        * conditional((abs(x[1] - 0.0) < tol), g(z)[0,0], 1.0) \
+        * conditional((abs(x[1] - h) < tol), g(z)[0,0], 1.0)
+    return sqrt_detg(z)
 
 def my_n(z):
     u = calc_normal_cg2(mesh)
@@ -216,7 +221,8 @@ def my_n(z):
     c = conditional((abs(x[0] - 0.0) < tol), 1.0/sqrt(zeta), 1.0) \
         * conditional((abs(x[0] - L) < tol), 1.0/sqrt(zeta), 1.0) \
         * conditional((abs(x[1] - 0.0) < tol), 1.0 / sqrt(zeta), 1.0) \
-        * conditional((abs(x[1] - h) < tol), 1.0 / sqrt(zeta), 1.0)
+        * conditional((abs(x[1] - h) < tol), 1.0 / sqrt(zeta), 1.0) \
+        * conditional((norm(np.subtract(x, c_r)) - r < tol), 1.0 / sqrt(zeta), 1.0)
     return as_tensor(c*u[k], (k))
 
 #a normal vector pointing outwards the mesh
