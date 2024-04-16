@@ -34,6 +34,22 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 n  = FacetNormal(mesh)
 
+
+def calc_normal_cg2(mesh):
+    n = FacetNormal(mesh)
+    V = VectorFunctionSpace(mesh, "CG", 2)
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a = inner(u, v) * ds
+    l = inner(-n, v) * ds
+    A = assemble(a, keep_diagonal=True)
+    L = assemble(l)
+
+    A.ident_zeros()
+    nh = Function(V)
+    solve(A, nh.vector(), L)
+    return nh
+
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
 O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
@@ -60,6 +76,7 @@ def ufl_norm(x):
     return(sqrt(ufl.dot(x, x)))
 
 epsilon = ufl.PermutationSymbol(2)
+
 
 
 #trial analytical expression for a vector
@@ -186,6 +203,12 @@ def sqrt_detg(z):
 
 def sqrt_abs_detg(z):
     return sqrt(abs_detg(z))
+
+def sqrt_deth(z):
+    return 1
+
+def my_n(z):
+    return as_tensor([1.0, 1.0])
 
 #H(z) = H_{al-izzi2020shear}
 def H(z):
