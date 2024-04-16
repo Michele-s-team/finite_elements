@@ -127,7 +127,7 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
 # xdmffile_geo.write(project(normal(z_n), O3d), 0)
-xdmffile_geo.write(calc_normal_cg2(mesh), 0)
+# xdmffile_geo.write(my_n(z_n), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
 # xdmffile_geo.write(project(H(z_n), Q4), 0)
 # xdmffile_geo.write(project(K(z_n), Q4), 0)

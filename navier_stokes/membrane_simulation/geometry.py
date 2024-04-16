@@ -208,7 +208,8 @@ def sqrt_deth(z):
     return 1
 
 def my_n(z):
-    return as_tensor([1.0, 1.0])
+    u = calc_normal_cg2(mesh)
+    return as_tensor(u[i]/ sqrt( g(z)[j,k]*u[j]*u[k] ), (i))
 
 #a normal vector pointing outwards the mesh
 def calc_normal_cg2(mesh):
