@@ -189,10 +189,8 @@ L1w = rhs(F1w)
 F2 = ( \
                  g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
-         ) * sqrt_detg(z_n) * dx
-#THIS TERM MAKES THE CODE CRASH
-     # - ( g_c(z_n)[i, j] * (( sigma_n - sigma ).dx(j)) * n[i] * q ) * sqrt_detg(z_n) * ds
-#THIS TERM MAKES THE CODE CRASH
+         ) * sqrt_detg(z_n) * dx \
+      - ( g_c(z_n)[i, j] * (( sigma_n - sigma ).dx(j)) * n_outflow()[i] * q ) * sqrt_detg(z_n) * ds
 a2 = lhs(F2)
 L2 = rhs(F2)
 
