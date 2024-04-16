@@ -132,8 +132,6 @@ zeta = TestFunction(Q4)
 #definition of scalar, vectorial and tensorial quantities
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
-Aij = v[i].dx(j)
-A = as_tensor(Aij, (i,j))
 
 def X(z):
     x = ufl.SpatialCoordinate(mesh)
