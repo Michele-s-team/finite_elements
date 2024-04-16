@@ -209,8 +209,9 @@ def sqrt_deth(z):
 
 def my_n(z):
     u = calc_normal_cg2(mesh)
+    x = ufl.SpatialCoordinate(mesh)
     # normalization = dot(u, u)
-    return as_tensor(2*u[i], (i))
+    return as_tensor(2*u[i]*x[0], (i))
 
 #a normal vector pointing outwards the mesh
 def calc_normal_cg2(mesh):
