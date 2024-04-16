@@ -167,10 +167,10 @@ F1v = Re * ( \
             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
             - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
             + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-            + ( - 0.5 * (w_n**2) * g_c(z_n)[i,j] * nu[j] * n[i]  ) * sqrt_detg(z_n) * ds ) \
+            + ( - 0.5 * (w_n**2) *  nu[i] * my_n[i]  ) * sqrt_deth_inout(z_n) * ds ) \
       + (g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
       + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j])  * sqrt_detg(z_n) * dx \
-        + ( - sigma_n * g_c(z_n)[i,j] * nu[j] * n[i] - 2.0 * d_c(V, w_n, z_n)[i, j]*nu[j]*n[i] ) * sqrt_detg(z_n) * ds
+        + ( - sigma_n * nu[i] * my_n[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i,k] * my_n[k] ) * sqrt_deth_inout(z_n) * ds
     # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
      # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
 a1v = lhs(F1v)
