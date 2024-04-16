@@ -208,7 +208,7 @@ def sqrt_deth(z):
     return 1
 
 def my_n(z):
-    u = project(calc_normal_cg2(mesh), O)
+    u = calc_normal_cg2(mesh)
     # normalization = dot(u, u)
     return as_tensor(2*u[i], (i))
 
@@ -226,7 +226,7 @@ def calc_normal_cg2(mesh):
     A.ident_zeros()
     nh = Function(V)
     solve(A, nh.vector(), L)
-    return nh
+    return project(nh, O)
 
 
 #H(z) = H_{al-izzi2020shear}
