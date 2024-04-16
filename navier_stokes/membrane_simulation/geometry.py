@@ -210,6 +210,23 @@ def sqrt_deth(z):
 def my_n(z):
     return as_tensor([1.0, 1.0])
 
+#a normal vector pointing outwards the mesh
+def calc_normal_cg2(mesh):
+    n = FacetNormal(mesh)
+    V = VectorFunctionSpace(mesh, "CG", 2)
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    a = inner(u, v) * ds
+    l = inner(n, v) * ds
+    A = assemble(a, keep_diagonal=True)
+    L = assemble(l)
+
+    A.ident_zeros()
+    nh = Function(V)
+    solve(A, nh.vector(), L)
+    return nh
+
+
 #H(z) = H_{al-izzi2020shear}
 def H(z):
     return (0.5 * g_c(z)[i, j]*b(z)[j, i])
