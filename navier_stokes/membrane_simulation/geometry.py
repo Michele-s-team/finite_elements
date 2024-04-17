@@ -218,17 +218,14 @@ def sqrt_deth(z):
         * conditional((norm(np.subtract(x, c_r)) - r < tol), v[i]*v[j]*g(z)[i,j], 1.0)
     return sqrt(c)
 
+#normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
 def n(z):
     u = calc_normal_cg2(mesh)
-    x = ufl.SpatialCoordinate(mesh)
+    # x = ufl.SpatialCoordinate(mesh)
     # normalization = dot(u, u)
-    zeta = g(z)[i,j]*u[i]*u[j]
-    c = conditional((abs(x[0] - 0.0) < tol), 1.0/sqrt(zeta), 1.0) \
-        * conditional((abs(x[0] - L) < tol), 1.0/sqrt(zeta), 1.0) \
-        * conditional((abs(x[1] - 0.0) < tol), 1.0 / sqrt(zeta), 1.0) \
-        * conditional((abs(x[1] - h) < tol), 1.0 / sqrt(zeta), 1.0) \
-        * conditional((norm(np.subtract(x, c_r)) - r < tol), 1.0 / sqrt(zeta), 1.0)
-    return as_tensor(c*u[k], (k))
+    # zeta = g(z)[i,j]*u[i]*u[j]
+    c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
+    return as_tensor(c*u[i], (i))
 
 def n_outflow(z):
     u = as_tensor([1.0,0.0])
