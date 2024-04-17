@@ -238,6 +238,13 @@ def n(z):
     c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
     return as_tensor(c*u[i], (i))
 
+def n_e(z):
+
+    x = ufl.SpatialCoordinate(mesh)
+    output = conditional(gt(x[0], 0.5), 1, 0)
+    return as_tensor([output, 0])
+
+
 def n_outflow(z):
     u = as_tensor([1.0,0.0])
     return as_tensor(u[k]/sqrt(g(z)[0,0]), (k))

@@ -27,9 +27,9 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.02    # final time
+T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 100
+num_steps = 10
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -137,7 +137,7 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
 # xdmffile_geo.write(project(normal(z_n), O3d), 0)
-xdmffile_geo.write(project(n(z_n), O), 0)
+xdmffile_geo.write(project(n_e(z_n), O), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
 # xdmffile_geo.write(project(H(z_n), Q4), 0)
 # xdmffile_geo.write(project(K(z_n), Q4), 0)
