@@ -33,7 +33,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-n  = FacetNormal(mesh)
+# n  = FacetNormal(mesh)
 
 
 def calc_normal_cg2(mesh):
@@ -207,6 +207,9 @@ def sqrt_abs_detg(z):
 
 def sqrt_deth(z):
     x = ufl.SpatialCoordinate(mesh)
+    #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
+    v = [-(x[1]-c_r[1]), (x[0]-c_r[0])]
+
     c = conditional((abs(x[0] - 0.0) < tol), g(z)[1,1], 1.0) \
         * conditional((abs(x[0] - L) < tol), g(z)[1,1], 1.0) \
         * conditional((abs(x[1] - 0.0) < tol), g(z)[0,0], 1.0) \
