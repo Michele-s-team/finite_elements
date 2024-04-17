@@ -230,6 +230,12 @@ def n(z):
         * conditional((norm(np.subtract(x, c_r)) - r < tol), 1.0 / sqrt(zeta), 1.0)
     return as_tensor(c*u[k], (k))
 
+def n_outflow(z):
+    u = as_tensor([1.0,0.0])
+    return as_tensor(u[k]/sqrt(g(z)[0,0]), (k))
+
+
+
 #a normal vector pointing outwards the mesh
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)

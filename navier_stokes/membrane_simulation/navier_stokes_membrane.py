@@ -191,7 +191,7 @@ F2 = ( \
                  g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
          ) * sqrt_detg(z_n) * dx \
-     - ((( sigma_n - sigma ).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
+     - ((( sigma_n - sigma ).dx(i)) * n_outflow(z_n)[i] * q) * sqrt_deth(z_n) * ds
 a2 = lhs(F2)
 L2 = rhs(F2)
 
