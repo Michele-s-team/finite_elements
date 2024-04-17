@@ -241,7 +241,7 @@ def n(z):
 def n_e(z):
 
     x = ufl.SpatialCoordinate(mesh)
-    output = conditional(gt(x[0], 0.5), 1, 0)
+    output = conditional(gt(x[0], 0.5), 1, 0) *  conditional(gt(x[1], 0.5), 1, 0)
     return as_tensor([output, 0])
 
 
