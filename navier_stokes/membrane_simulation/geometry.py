@@ -208,13 +208,15 @@ def sqrt_abs_detg(z):
 def sqrt_deth(z):
     x = ufl.SpatialCoordinate(mesh)
     #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
-    v = [-(x[1]-c_r[1]), (x[0]-c_r[0])]
+    v = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
+
 
     c = conditional((abs(x[0] - 0.0) < tol), g(z)[1,1], 1.0) \
         * conditional((abs(x[0] - L) < tol), g(z)[1,1], 1.0) \
         * conditional((abs(x[1] - 0.0) < tol), g(z)[0,0], 1.0) \
-        * conditional((abs(x[1] - h) < tol), g(z)[0,0], 1.0)
-    return sqrt_detg(z)
+        * conditional((abs(x[1] - h) < tol), g(z)[0,0], 1.0) \
+        * conditional((norm(np.subtract(x, c_r)) - r < tol), v[i]*v[j]*g(z)[i,j], 1.0)
+    return sqrt(c)
 
 def my_n(z):
     u = calc_normal_cg2(mesh)
