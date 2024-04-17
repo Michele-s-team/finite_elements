@@ -42,11 +42,12 @@ import gmsh
 import pygmsh
 resolution = 0.1
 # Channel parameters
-L = 2.2
-h = 2.2
+# L = 2.2
+# h = 2.2
 r = 0.15
-# c_R = [0.0, 0.0, 0.0]
-c_r = [L/2, h/2, 0.0]
+R = 1.0
+c_R = [0, 0, 0]
+c_r = [0, 0, 0]
 #c2 = [0.7, 0.12, 0]
 #r = 0.07
 
@@ -58,9 +59,9 @@ model = geometry.__enter__()
 
 
 # Add circle
-# circle_R = model.add_circle(c_R, R, mesh_size=resolution)
+circle_R = model.add_circle(c_R, R, mesh_size=resolution)
 circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
-rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
+# rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
 # o_out = geometry.add_point([L/2,0,0])
@@ -90,7 +91,7 @@ rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 #              model.add_point((1.7, 1.3, 0), mesh_size=resolution),
 #              ]
 
-print(rectangle_Lh)
+print(circle_R)
 print(circle_r)
 
 # print("Points defining the spline:")
@@ -128,7 +129,7 @@ print(circle_r)
 #spline_loop = model.add_curve_loop(spline)
 # my_surface = model.add_plane_surface(my_loop)
 
-plane_surface = model.add_plane_surface(     rectangle_Lh.curve_loop, holes=[circle_r.curve_loop])
+plane_surface = model.add_plane_surface(     circle_R.curve_loop, holes=[circle_r.curve_loop])
 # plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
 
 
