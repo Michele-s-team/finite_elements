@@ -60,12 +60,13 @@ Q2 = FunctionSpace(mesh, 'P', 2)
 Q4 = FunctionSpace(mesh, 'P', 4)
 
 
-# Define boundaries
+# Define boundaries and obstacle
+#CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 2.2)'
 walls    = 'near(x[1], 0) || near(x[1], 2.2)'
-#the obstacle
-cylinder = 'on_boundary && ((x[0]-1.1)*(x[0]-1.1) + (x[1]-1.1)*(x[1]-1.1) < (0.2*0.2))'
+cylinder = 'on_boundary && ((x[0]-(2.2/2))*(x[0]-(2.2/2)) + (x[1]-(2.2/2))*(x[1]-(2.2/2)) < (0.2*0.2))'
+#CHANGE PARAMETERS HERE
 
 
 #  norm of vector x
