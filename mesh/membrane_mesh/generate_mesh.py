@@ -59,7 +59,7 @@ model = geometry.__enter__()
 
 # Add circle
 # circle_R = model.add_circle(c_R, R, mesh_size=resolution)
-circle_r = model.add_circle(c_r, r, mesh_size=resolution)
+circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
 rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
