@@ -29,7 +29,7 @@ print("Output directory", args.output_directory)
 
 T = 0.01    # final time
 # num_steps = 5000  # number of time steps
-num_steps = 10
+num_steps = 20
 dt = T / num_steps # time step size
 #the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -87,13 +87,14 @@ bcw_inflow = DirichletBC(Q2, Expression(inflow_profile_w, degree=0), inflow)
 bcw_walls = DirichletBC(Q2, Constant((0)), walls)
 bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
 
+bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q2, Constant(0), outflow)
 
 #boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
-bc_v = [bcv_inflow, bcv_walls, bcv_cylinder]
-bc_w = [bcw_inflow, bcw_walls, bcw_cylinder]
-bc_sigma = [bcsigma_outflow]
+bc_v = [bcv_inflow, bcv_cylinder]
+bc_w = [bcw_inflow, bcw_cylinder]
+bc_sigma = [bcsigma_outflow, bcsigma_walls]
 
 
 
