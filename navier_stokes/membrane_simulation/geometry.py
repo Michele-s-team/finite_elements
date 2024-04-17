@@ -218,7 +218,7 @@ def sqrt_deth(z):
         * conditional((norm(np.subtract(x, c_r)) - r < tol), v[i]*v[j]*g(z)[i,j], 1.0)
     return sqrt(c)
 
-def my_n(z):
+def n(z):
     u = calc_normal_cg2(mesh)
     x = ufl.SpatialCoordinate(mesh)
     # normalization = dot(u, u)
