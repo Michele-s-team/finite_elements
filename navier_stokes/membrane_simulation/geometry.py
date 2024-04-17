@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
-tol = 10**(-3)
+tol = 1E-3
 L = 2.2
 h = L
 r = 0.15
@@ -34,6 +34,16 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 # n  = FacetNormal(mesh)
+
+class LeftBoundary(SubDomain):
+    def inside(self, x, on_boundary):
+        return on_boundary and near(x[0], 0, tol)
+
+left_boundary = LeftBoundary()
+
+# Print all vertices that belong to the boundary parts
+for x in mesh.coordinates():
+    if left_boundary.inside(x, True): print('%s is on the left boundary' % x)
 
 
 def calc_normal_cg2(mesh):
