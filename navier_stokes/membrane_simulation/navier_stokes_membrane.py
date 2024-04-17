@@ -35,6 +35,15 @@ dt = T / num_steps # time step size
 Re = 1.0
 kappa = 1.0
 
+print("c_r = ", c_r)
+print("L = ", L)
+print("h = ", h)
+print("r = ", r)
+print("T = ", t)
+print("Number of steps = ", num_steps)
+print("Re = ", Re)
+print("kappa = ", kappa)
+
 # Create XDMF files for visualization output
 xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
 xdmffile_w = XDMFFile((args.output_directory) + "/w.xdmf")
@@ -243,11 +252,7 @@ File((args.output_directory) + "/membrane.xml.gz") << mesh
 #progress = Progress('Time-stepping')
 #set_log_level(PROGRESS)
 
-# print("c_R = ", c_R)
-print("c_r = ", c_r)
-print("L = ", L)
-print("h = ", h)
-print("r = ", r)
+
 
 
 print("Starting time iteration ...", flush=True)
