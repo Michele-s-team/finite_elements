@@ -36,9 +36,10 @@ Re = 1.0
 kappa = 1.0
 
 print("c_r = ", c_r)
-print("L = ", L)
-print("h = ", h)
+print("c_R = ", c_R)
+# print("L = ", L)
 print("r = ", r)
+print("R = ", R)
 print("T = ", t)
 print("Number of steps = ", num_steps)
 print("Re = ", Re)
@@ -80,7 +81,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-inflow_profile_v = ('1.0', '0')
+inflow_profile_v = ('1.0-x[1]*x[1]', '0')
 inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 
@@ -89,21 +90,21 @@ inflow_profile_w = '0.0'
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
 bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), inflow)
-bcv_walls = DirichletBC(O, Constant((0, 0)), walls)
+# bcv_walls = DirichletBC(O, Constant((0, 0)), walls)
 bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
 bcw_inflow = DirichletBC(Q2, Expression(inflow_profile_w, degree=0), inflow)
-bcw_walls = DirichletBC(Q2, Constant((0)), walls)
+# bcw_walls = DirichletBC(Q2, Constant((0)), walls)
 bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
 
-bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
+# bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q2, Constant(0), outflow)
 
 #boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bc_v = [bcv_inflow, bcv_cylinder]
 bc_w = [bcw_inflow, bcw_cylinder]
-bc_sigma = [bcsigma_outflow, bcsigma_walls]
+bc_sigma = [bcsigma_outflow]
 
 
 

@@ -70,9 +70,9 @@ Q4 = FunctionSpace(mesh, 'P', 4)
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
-inflow   = 'on_boundary && (x[0] < 0.0 + tol)'
-outflow  = 'on_boundary && (x[0] > 0.0 + tol)'
-cylinder = 'on_boundary && ((x[0]-c_r[0])*(x[0]-c_r[0]) + (x[1]-c_r[1])*(x[1]-c_r[1]) < (0.2*0.2))'
+inflow   = 'on_boundary && (x[0] < 0.0 + 0.001)'
+outflow  = 'on_boundary && (x[0] > 0.0 + 0.001)'
+cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2*0.2))'
 #CHANGE PARAMETERS HERE
 
 
@@ -104,7 +104,7 @@ class ManifoldExpression(UserExpression):
         #tentative smooth surface
         #         values[0] = ((norm(np.subtract(x, c_r)) - r)**4)  * ((norm(np.subtract(x, c_R)) - R)**4)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
-        values[0] = 10**(-3) * ((L - x[0])**3) * (x[0])**3
+        values[0] = 10**(-3) * ((R - x[0])**3) * (x[0])**3
     def value_shape(self):
         return (1,)
 
