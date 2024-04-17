@@ -17,8 +17,8 @@ args = parser.parse_args()
 tol = 1E-3
 r = 0.15
 R = 1.0
-c_R = [0, 0, 0]
-c_r = [0, 0, 0]
+c_R = [0, 0]
+c_r = [0, 0]
 
 
 
@@ -104,7 +104,7 @@ class ManifoldExpression(UserExpression):
         #tentative smooth surface
         #         values[0] = ((norm(np.subtract(x, c_r)) - r)**4)  * ((norm(np.subtract(x, c_R)) - R)**4)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
-        values[0] = 10**(-3) * ((R - x[0])**3) * (x[0])**3
+        values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
     def value_shape(self):
         return (1,)
 
@@ -216,14 +216,11 @@ def sqrt_abs_detg(z):
 def sqrt_deth(z):
     x = ufl.SpatialCoordinate(mesh)
     #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
-    v = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
+    v_r = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
+    v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
 
 
-    c = conditional((abs(x[0] - 0.0) < tol), g(z)[1,1], 1.0) \
-        * conditional((abs(x[0] - L) < tol), g(z)[1,1], 1.0) \
-        * conditional((abs(x[1] - 0.0) < tol), g(z)[0,0], 1.0) \
-        * conditional((abs(x[1] - h) < tol), g(z)[0,0], 1.0) \
-        * conditional((norm(np.subtract(x, c_r)) - r < tol), v[i]*v[j]*g(z)[i,j], 1.0)
+    c =  conditional((norm(np.subtract(x, c_r)) - r < tol), v_r[i]*v_r[j]*g(z)[i,j], 1.0) * conditional((norm(np.subtract(x, c_R)) - R < tol), v_R[i]*v_R[j]*g(z)[i,j], 1.0)
     return sqrt(c)
 
 #normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
@@ -235,11 +232,11 @@ def n(z):
     c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
     return as_tensor(c*u[i], (i))
 
-def n_e(z):
-
-    x = ufl.SpatialCoordinate(mesh)
-    output = conditional(gt(x[0], 0.5), 1, 0) *  conditional(gt(x[1], 0.5), 1, 0)
-    return as_tensor([output, 0])
+# def n_e(z):
+#
+#     x = ufl.SpatialCoordinate(mesh)
+#     output = conditional(gt(x[0], 0.5), 1, 0) *  conditional(gt(x[1], 0.5), 1, 0)
+#     return as_tensor([output, 0])
 
 
 def n_outflow(z):
