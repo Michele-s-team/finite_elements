@@ -298,6 +298,7 @@ for n in range(num_steps):
     #         print('\t%s' % v_(x))
 
     # moving the mesh
+
     print("Moving the followng mesh points :")
     for x in mesh.coordinates():
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
@@ -312,6 +313,17 @@ for n in range(num_steps):
             x+=[delta[0], delta[1]]
 
             print("\tdelta_x = ", delta)
+
+            # Find the matching vertex (if it exists)
+            vertex_idx = np.where((X_mesh == (x[0], x[1])).all(axis=1))[0]
+            if not vertex_idx:
+                print
+                'No matching vertex!'
+            else:
+                vertex_idx = vertex_idx[0]
+                dof_idx = vertex_2_dof[vertex_idx]
+                print("\tid of the vertex = ", dof_idx)
+                z_n.vector()[dof_idx] += delta[2]
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
 

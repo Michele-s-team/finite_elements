@@ -34,6 +34,8 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
+X_mesh = mesh.coordinates()
+
 # n  = FacetNormal(mesh)
 
 print("Mesh points:")
@@ -97,6 +99,18 @@ O3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
 Q2 = FunctionSpace(mesh, 'P', 2)
 #I will use Q4 for functions which involve high order derivatives
 Q4 = FunctionSpace(mesh, 'P', 4)
+
+dofmap = Q4.dofmap()
+nvertices = mesh.ufl_cell().num_vertices()
+
+# Set up a vertex_2_dof list
+indices = [dofmap.tabulate_entity_dofs(0, i)[0] for i in range(nvertices)]
+
+vertex_2_dof = dict()
+[vertex_2_dof.update(dict(vd for vd in zip(cell.entities(0),
+                                        dofmap.cell_dofs(cell.index())[indices])))
+                        for cell in cells(mesh)]
+
 
 
 # Define boundaries and obstacle
