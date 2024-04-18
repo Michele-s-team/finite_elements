@@ -292,12 +292,20 @@ for n in range(num_steps):
     # step 4
     # z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i,2] + normal(z_n)[2] * w_n ), Q4) )
 
+    # print("Velocity field on inner circle :")
+    # for x in mesh.coordinates():
+    #     if (circle_r.on(x) == True):
+    #         print('\t%s' % v_(x))
+
     # moving the mesh
     print("Moving the followng mesh points :")
     for x in mesh.coordinates():
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
-            print('\t%s' % x)
-            x[0] += 1E-2
+            print('\tx = %s' % x)
+            print('\tv(x) = ', v_(x))
+            print('\tw(x) = ', w_(x))
+
+            # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
 
     # Update previous solution
     v_n.assign(v_)

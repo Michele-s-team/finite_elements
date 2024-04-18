@@ -201,6 +201,10 @@ def z_shifted(z, delta_x):
     # np.subtract(x, delta_x)[0]
     return(z)
 
+# def delta_x(v, w, z):
+#     return as_tensor(v_(x)[j]*e(z_n)[j][i] + w_(x)*normal(z_n)[i], (i))
+# )
+
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
