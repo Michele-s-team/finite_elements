@@ -300,7 +300,9 @@ for n in range(num_steps):
     # moving the mesh
 
     # print("Moving the followng mesh points :")
-    for x in mesh.coordinates():
+    mesh_coordinates = mesh.coordinates()
+
+    for x in mesh_coordinates:
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
             # print('\tx = %s' % x)
             # print('\tz(x) = ', z_n(x))
@@ -314,10 +316,10 @@ for n in range(num_steps):
             # print("\tdelta_x = ", delta)
 
             # Find the matching vertex (if it exists)
-            vertex_idx = np.where((X_mesh == (x[0], x[1])).all(axis=1))[0]
+            vertex_idx = np.where((mesh_coordinates == (x[0], x[1])).all(axis=1))[0]
             if not vertex_idx:
-                print
-                'No matching vertex!'
+                print('No matching vertex!')
+
             else:
                 vertex_idx = vertex_idx[0]
                 dof_idx = vertex_2_dof[vertex_idx]

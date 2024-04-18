@@ -34,7 +34,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-X_mesh = mesh.coordinates()
+mesh_coordinates = mesh.coordinates()
 
 # n  = FacetNormal(mesh)
 
