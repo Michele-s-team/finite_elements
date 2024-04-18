@@ -27,7 +27,7 @@ print("Output directory", args.output_directory)
 
 
 T = 0.01  # final time
-num_steps = 1
+num_steps = 10
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -302,12 +302,15 @@ for n in range(num_steps):
     for x in mesh.coordinates():
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
             print('\tx = %s' % x)
+            print('\tz(x) = ', z_n(x))
             print('\tv(x) = ', v_(x))
             print('\tw(x) = ', w_(x))
             print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
             print("\tn = ", (project(normal(z_n), O3d))(x))
 
             delta = (v_(x)[0] * (project(e(z_n)[0], O3d))(x) + v_(x)[1] * (project(e(z_n)[1], O3d))(x) + w_(x) * (project(normal(z_n), O3d))(x)) * dt
+            x+=[delta[0], delta[1]]
+
             print("\tdelta_x = ", delta)
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
