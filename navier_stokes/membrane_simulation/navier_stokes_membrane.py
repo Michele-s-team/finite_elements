@@ -306,7 +306,6 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     #step 4
-    # z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i] + normal(z_n) * w_n )[2], Q4) )
     z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i,2] + normal(z_n)[2] * w_n ), Q4) )
 
 
