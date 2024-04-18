@@ -27,7 +27,7 @@ print("Output directory", args.output_directory)
 
 
 T = 0.01  # final time
-num_steps = 10
+num_steps = 1
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -181,8 +181,8 @@ F1w = (Re * ((w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega 
     z_n) * dx + (w_n * omega * v_n[i] * g(z_n)[i, j] * n(z_n)[j]) * sqrt_deth(z_n) * ds) \
       + (2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
          + (4.0 * kappa * H(z_n) * ((H(z_n) ** 2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * (
-                    g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
-                    - 2.0 * w_n * (2.0 * ((H(z_n)) ** 2) - K(z_n)))) * omega) * sqrt_detg(z_n) * dx \
+                g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
+                - 2.0 * w_n * (2.0 * ((H(z_n)) ** 2) - K(z_n)))) * omega) * sqrt_detg(z_n) * dx \
       + (2.0 * kappa * omega * (H(z_n).dx(i)) * n(z_n)[i]) * sqrt_deth(z_n) * ds
 a1w = lhs(F1w)
 L1w = rhs(F1w)
@@ -304,18 +304,20 @@ for n in range(num_steps):
             print('\tx = %s' % x)
             print('\tv(x) = ', v_(x))
             print('\tw(x) = ', w_(x))
+            print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
+            print("\tn = ", (project(normal(z_n), O3d))(x))
 
-            # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
+        # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
 
-    # Update previous solution
-    v_n.assign(v_)
-    w_n.assign(w_)
-    sigma_n.assign(sigma_)
-    # z_.assign(z_)
+# Update previous solution
+v_n.assign(v_)
+w_n.assign(w_)
+sigma_n.assign(sigma_)
+# z_.assign(z_)
 
-    # Update progress bar
-    #    progress.update(t / T)
-    print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
+# Update progress bar
+#    progress.update(t / T)
+print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
 # Hold plot
 # interactive()
