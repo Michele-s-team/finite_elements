@@ -33,6 +33,12 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 # n  = FacetNormal(mesh)
 
+print("Points of the mesh:")
+for x in mesh.coordinates():
+    print('%s' % x)
+
+
+
 class LeftBoundary(SubDomain):
     def inside(self, x, on_boundary):
         return on_boundary and near(x[0], 0, tol)
@@ -40,8 +46,8 @@ class LeftBoundary(SubDomain):
 left_boundary = LeftBoundary()
 
 # Print all vertices that belong to the boundary parts
-for x in mesh.coordinates():
-    if left_boundary.inside(x, True): print('%s is on the left boundary' % x)
+# for x in mesh.coordinates():
+#     if left_boundary.inside(x, True): print('%s is on the left boundary' % x)
 
 
 def calc_normal_cg2(mesh):
