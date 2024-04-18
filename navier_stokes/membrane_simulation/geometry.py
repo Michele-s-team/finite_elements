@@ -41,12 +41,24 @@ for x in mesh.coordinates():
     print('\t%s' % x)
 
 
-#this class has the method `on` that tells whether the coordiante x lies on the inner circle of the mesh
+# example of how to move the mesh:
+# for x in mesh.coordinates():
+#     x[0] *= 2.0
+# print("Mesh points after scaling:")
+# for x in mesh.coordinates():
+#     print('\t%s' % x)
+
+
+
+# this class has the method `on` that tells whether the coordiante x lies on the inner circle of the mesh
 class Circle_r(SubDomain):
     def on(self, x):
-        #here x is intended to be an ordinary array of floats
-        if (abs(my_norm(x) - r)/r) < tol: return True
-        else: return False
+        # here x is intended to be an ordinary array of floats
+        if (abs(my_norm(x) - r) / r) < tol:
+            return True
+        else:
+            return False
+
 
 circle_r = Circle_r()
 
