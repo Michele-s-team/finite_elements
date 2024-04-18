@@ -102,9 +102,9 @@ class ManifoldExpression(UserExpression):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
-        #         values[0] = ((norm(np.subtract(x, c_r)) - r)**4)  * ((norm(np.subtract(x, c_R)) - R)**4)
+        values[0] = sin((norm(np.subtract(x, c_r)) - r)/r)  * sin((norm(np.subtract(x, c_R)) - R)/R)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
-        values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
+        # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
     def value_shape(self):
         return (1,)
 
@@ -166,6 +166,12 @@ def X(z):
 #e(z)[i] = e_i_{al-izzi2020shear}
 def e(z):
     return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
+
+def z_shifted(z, delta_x):
+    x = ufl.SpatialCoordinate(mesh)
+    # np.subtract(x, delta_x)[0]
+    return(z)
+
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
