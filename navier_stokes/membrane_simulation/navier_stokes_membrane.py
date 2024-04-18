@@ -10,13 +10,12 @@ notes
 - here nu[i] = nu_i, w nu_i are to be regarded as the components of a one-form
 
 """
-#run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
-#ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane_simulation/solution
-#ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results
+# run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
+# ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane_simulation/solution
+# ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results
 
 from __future__ import print_function
 from geometry import *
-
 
 print("Input directory", args.input_directory)
 print("Output directory", args.output_directory)
@@ -27,10 +26,10 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.01    # final time
-num_steps = 1
-dt = T / num_steps # time step size
-#the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
+T = 0.01  # final time
+num_steps = 10
+dt = T / num_steps  # time step size
+# the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
 kappa = 1.0
 
@@ -58,24 +57,18 @@ xdmffile_geo.parameters.update(
         "rewrite_function_mesh": False
     })
 
-
 # Create time series (for use in reaction_system.py)
 timeseries_v = TimeSeries((args.output_directory) + "/v_series")
 timeseries_w = TimeSeries((args.output_directory) + "/w_series")
 timeseries_sigma = TimeSeries((args.output_directory) + "/sigma_series")
 timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
-
-
-
 # Create mesh
-#channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
-#cylinder = Ellipse(Point(0.5, 0.2), 0.05, 0.1)
-#cylinder2 = Ellipse(Point(1.5, 0.2), 0.05, 0.1)
-#domain = channel - cylinder - cylinder2
-#mesh = generate_mesh(domain, 64)
-
-
+# channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
+# cylinder = Ellipse(Point(0.5, 0.2), 0.05, 0.1)
+# cylinder2 = Ellipse(Point(1.5, 0.2), 0.05, 0.1)
+# domain = channel - cylinder - cylinder2
+# mesh = generate_mesh(domain, 64)
 
 
 # Define velocity profile on the external boundary
@@ -85,7 +78,7 @@ inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 
 # Define boundary conditions
-#boundary conditions for the velocity u
+# boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
 bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), inflow)
@@ -99,35 +92,30 @@ bcw_cylinder = DirichletBC(Q2, Constant((0)), cylinder)
 # bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q2, Constant(0), outflow)
 
-#boundary conditions for the surface_tension p
+# boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bc_v = [bcv_inflow, bcv_cylinder]
 bc_w = [bcw_inflow, bcw_cylinder]
 bc_sigma = [bcsigma_outflow]
 
-
-
 # Define functions for solutions at previous and current time steps
 v_n = Function(O)
-v_  = Function(O)
+v_ = Function(O)
 w_n = Function(Q2)
-w_  = Function(Q2)
+w_ = Function(Q2)
 sigma_n = Function(Q2)
-sigma_  = Function(Q2)
+sigma_ = Function(Q2)
 z_n = Function(Q4)
-z_  = Function(Q4)
-#a function used to make tests (test the differential operators etc)
-f_  = Function(Q4)
+z_ = Function(Q4)
+# a function used to make tests (test the differential operators etc)
+f_ = Function(Q4)
 
-
-
-#the vector  or function is interpolated  and written into a Function() object
-#set the initial conditions for all fields
+# the vector  or function is interpolated  and written into a Function() object
+# set the initial conditions for all fields
 v_n = interpolate(TangentVelocityExpression(element=O.ufl_element()), O)
 w_n = interpolate(NormalVelocityExpression(element=Q2.ufl_element()), Q2)
 sigma_n = interpolate(SurfaceTensionExpression(element=Q2.ufl_element()), Q2)
 z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
-
 
 # f_ = interpolate(ScalarFunctionExpression(element=Q2.ufl_element()), Q4)
 # z_plot = project(z_, Q)
@@ -136,7 +124,7 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # detg_plot = project(detg(z_), Q)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
-xdmffile_geo.write(project(z_shifted(z_n, [0.1,0.1]), Q4), 0)
+xdmffile_geo.write(project(z_shifted(z_n, [0.1, 0.1]), Q4), 0)
 # xdmffile_geo.write(project(normal(z_n), O3d), 0)
 # xdmffile_geo.write(project(n(z_n), O), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
@@ -146,7 +134,7 @@ xdmffile_geo.write(project(z_shifted(z_n, [0.1,0.1]), Q4), 0)
 # xdmffile_geo.write(project(my_vector_field(z_), V), 0)
 # xdmffile_geo.write(project(Nabla_v(u_, z_)[0,0], Q2), 0)
 # xdmffile_geo.write(project(Nabla_omega(u_, z_)[0,1], Q2), 0)
-#here I project Nabla_LB(H,z) on Q4 and not on Q2 because Nabla_LB involves fourth-order derivatives
+# here I project Nabla_LB(H,z) on Q4 and not on Q2 because Nabla_LB involves fourth-order derivatives
 # xdmffile_geo.write(project(Nabla_LB(H(z_), z_), Q4), 0)
 # xdmffile_geo.write(project(Nabla_LB2(f_, z_), Q4), 0)
 # xdmffile_geo.write(project(w_, Q2), 0)
@@ -156,15 +144,15 @@ xdmffile_geo.write(project(z_shifted(z_n, [0.1,0.1]), Q4), 0)
 # xdmffile_z.write(z_, t)
 ###
 
-#example of how to compute the determinant of a matrix
+# example of how to compute the determinant of a matrix
 # A = np.array([[1, 2], [2, 3]])   # Identity tensor
 # print("determinant = ", np.linalg.det(A), ".")
 
 # Define expressions used in variational forms
-V  = 0.5 * (v_n + v)
-Deltat  = Constant(dt)
+V = 0.5 * (v_n + v)
+Deltat = Constant(dt)
 Re = Constant(Re)
-kappa = Constant (kappa)
+kappa = Constant(kappa)
 # mu = Constant(mu)
 # rho = Constant(rho)
 
@@ -173,36 +161,38 @@ kappa = Constant (kappa)
 
 
 # Define variational problem for step 1
-#step 1 for v
+# step 1 for v
 F1v = Re * ( \
             (dot((v - v_n) / Deltat, nu) \
-            + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
-            - 2.0 * v_n[j] * w_n * g_c(z_n)[i,k] * b(z_n)[k,j] * nu[i] \
-            + 0.5 * (w_n**2) * g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-            + (- 0.5 * (w_n**2) * nu[i] * n(z_n)[i]) * sqrt_deth(z_n) * ds ) \
-      + (g_c(z_n)[i,j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
-      + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-      + (- sigma_n * nu[i] * n(z_n)[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i,k] * n(z_n)[k]) * sqrt_deth(z_n) * ds
-    # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
-     # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
+             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
+             - 2.0 * v_n[j] * w_n * g_c(z_n)[i, k] * b(z_n)[k, j] * nu[i] \
+             + 0.5 * (w_n ** 2) * g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
+            + (- 0.5 * (w_n ** 2) * nu[i] * n(z_n)[i]) * sqrt_deth(z_n) * ds) \
+      + (g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
+         + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
+      + (- sigma_n * nu[i] * n(z_n)[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i, k] * n(z_n)[k]) * sqrt_deth(
+    z_n) * ds
+# + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
+# + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
 a1v = lhs(F1v)
 L1v = rhs(F1v)
-#step 1 for w
-F1w = (Re * ( (w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i]) ) * sqrt_detg(z_n) * dx + (w_n * omega * v_n[i] * g(z_n)[i,j] * n(z_n)[j]) * sqrt_deth(z_n) * ds) \
-      + ( 2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
-                  + (4.0 * kappa * H(z_n) * ((H(z_n)**2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * ( g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
-                 - 2.0 * w_n * ( 2.0 * ((H(z_n))**2) - K(z_n) )  ) ) * omega ) * sqrt_detg(z_n) * dx \
+# step 1 for w
+F1w = (Re * ((w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i])) * sqrt_detg(
+    z_n) * dx + (w_n * omega * v_n[i] * g(z_n)[i, j] * n(z_n)[j]) * sqrt_deth(z_n) * ds) \
+      + (2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
+         + (4.0 * kappa * H(z_n) * ((H(z_n) ** 2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * (
+                    g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
+                    - 2.0 * w_n * (2.0 * ((H(z_n)) ** 2) - K(z_n)))) * omega) * sqrt_detg(z_n) * dx \
       + (2.0 * kappa * omega * (H(z_n).dx(i)) * n(z_n)[i]) * sqrt_deth(z_n) * ds
 a1w = lhs(F1w)
 L1w = rhs(F1w)
 
-
-#step 2
+# step 2
 F2 = ( \
-                 g_c(z_n)[i, j] *( ( sigma_n - sigma ).dx(i)) * q.dx(j) \
-                 + (Re / Deltat) * ( Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
+                 g_c(z_n)[i, j] * ((sigma_n - sigma).dx(i)) * q.dx(j) \
+                 + (Re / Deltat) * (Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
          ) * sqrt_detg(z_n) * dx \
-     - ((( sigma_n - sigma ).dx(i)) * n_outflow(z_n)[i] * q) * sqrt_deth(z_n) * ds
+     - (((sigma_n - sigma).dx(i)) * n_outflow(z_n)[i] * q) * sqrt_deth(z_n) * ds
 a2 = lhs(F2)
 L2 = rhs(F2)
 
@@ -211,22 +201,20 @@ L2 = rhs(F2)
 
 
 # Define variational problem for step 3
-#step 3 for v
-F3v = ( (v_[i] - v[i]) * nu[i] - (Deltat / Re) * g_c(z_n)[i, j] * ((sigma_n - sigma_).dx(i)) * nu[j] ) * sqrt_detg(z_n) * dx
+# step 3 for v
+F3v = ((v_[i] - v[i]) * nu[i] - (Deltat / Re) * g_c(z_n)[i, j] * ((sigma_n - sigma_).dx(i)) * nu[j]) * sqrt_detg(
+    z_n) * dx
 a3v = lhs(F3v)
 L3v = rhs(F3v)
-#step 3 for w
+# step 3 for w
 F3w = ((w_ - w) * omega - (Deltat / Re) * 2.0 * (sigma_n - sigma_) * H(z_n) * omega) * sqrt_detg(z_n) * dx
 a3w = lhs(F3w)
 L3w = rhs(F3w)
 
 # Define variational problem for step 4
-F4 = (normal(z_n)[2] * (z - z_n)  - w_n * Deltat)* zeta * sqrt_detg(z_n) * dx
+F4 = (normal(z_n)[2] * (z - z_n) - w_n * Deltat) * zeta * sqrt_detg(z_n) * dx
 a4 = lhs(F4)
 L4 = rhs(F4)
-
-
-
 
 # Assemble matrices
 A1v = assemble(a1v)
@@ -242,18 +230,15 @@ A4 = assemble(a4)
 [bc.apply(A2) for bc in bc_sigma]
 # [bc.apply(A3v) for bc in bc_v]
 # [bc.apply(A3w) for bc in bc_w]
-#MAYBE HERE I SHOULD ADD AN ANALOGOUS COMMAND FOR Z AND IT BOUNDARY CONDITIONS
-
+# MAYBE HERE I SHOULD ADD AN ANALOGOUS COMMAND FOR Z AND IT BOUNDARY CONDITIONS
 
 
 # Save mesh to file (for use in reaction_system.py)
 File((args.output_directory) + "/membrane.xml.gz") << mesh
 
 # Create progress bar
-#progress = Progress('Time-stepping')
-#set_log_level(PROGRESS)
-
-
+# progress = Progress('Time-stepping')
+# set_log_level(PROGRESS)
 
 
 print("Starting time iteration ...", flush=True)
@@ -277,37 +262,42 @@ for n in range(num_steps):
     t += dt
 
     # Step 1: Tentative velocity step
-    #step 1 for v
+    # step 1 for v
     b1v = assemble(L1v)
     [bc.apply(b1v) for bc in bc_v]
-    #this line solves for v^* and stores v^* in v_
+    # this line solves for v^* and stores v^* in v_
     solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')
-    #step 1 for w
+    # step 1 for w
     b1w = assemble(L1w)
     [bc.apply(b1w) for bc in bc_w]
-    #this line solves for w^* and stores w^* in w_
+    # this line solves for w^* and stores w^* in w_
     solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')
-
 
     # Step 2: surface_tension correction step
     b2 = assemble(L2)
     [bc.apply(b2) for bc in bc_sigma]
-    #this step solves for sigma^{n+1} and stores the solution in sigma_
+    # this step solves for sigma^{n+1} and stores the solution in sigma_
     solve(A2, sigma_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
-    #step 3 for v
+    # step 3 for v
     b3v = assemble(L3v)
-    #this step solves for v^{n+1} and stores the solution in v_. In A3v, v_ = v^* from `solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
+    # this step solves for v^{n+1} and stores the solution in v_. In A3v, v_ = v^* from `solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
     solve(A3v, v_.vector(), b3v, 'cg', 'sor')
     # step 3 for w
     b3w = assemble(L3w)
     # this step solves for w^{n+1} and stores the solution in w_. In A3w, w_ = w^* from `solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
-    #step 4
-    z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i,2] + normal(z_n)[2] * w_n ), Q4) )
+    # step 4
+    # z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i,2] + normal(z_n)[2] * w_n ), Q4) )
 
+    # moving the mesh
+    print("Moving the followng mesh points :")
+    for x in mesh.coordinates():
+        if (circle_r.on(x) == False) and (circle_R.on(x) == False):
+            print('\t%s' % x)
+            x[0] += 1E-2
 
     # Update previous solution
     v_n.assign(v_)
@@ -316,10 +306,10 @@ for n in range(num_steps):
     # z_.assign(z_)
 
     # Update progress bar
-#    progress.update(t / T)
-    print("\t%.2f %%" % (100.0*(t/T)), flush=True)
+    #    progress.update(t / T)
+    print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
 # Hold plot
-#interactive()
+# interactive()
 
 print("... done.", flush=True)
