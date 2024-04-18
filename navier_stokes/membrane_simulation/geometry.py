@@ -20,6 +20,9 @@ R = 1.0
 c_R = [0, 0]
 c_r = [0, 0]
 
+#  norm of vector x
+def my_norm(x):
+    return (sqrt(np.dot(x, x)))
 
 
 #create mesh
@@ -33,22 +36,24 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 # n  = FacetNormal(mesh)
 
-print("Points of the mesh:")
+print("Mesh points:")
 for x in mesh.coordinates():
-    print('%s' % x)
+    print('\t%s' % x)
 
 
+#this class has the method `on` that tells whether the coordiante x lies on the inner circle of the mesh
+class Circle_r(SubDomain):
+    def on(self, x):
+        #here x is intended to be an ordinary array of floats
+        if (abs(my_norm(x) - r)/r) < tol: return True
+        else: return False
 
-class LeftBoundary(SubDomain):
-    def inside(self, x):
-        return  near(x[0], 0, tol)
-
-left_boundary = LeftBoundary()
+circle_r = Circle_r()
 
 # Print all vertices that belong to the boundary parts
-print("Mesh points on the left boundary")
+print("Mesh points on circle_r: ")
 for x in mesh.coordinates():
-    if left_boundary.inside(x): print('%s' % x)
+    if circle_r.on(x): print('\t%s' % x)
 
 
 def calc_normal_cg2(mesh):
@@ -83,9 +88,7 @@ cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2
 #CHANGE PARAMETERS HERE
 
 
-#  norm of vector x
-def norm(x):
-    return (sqrt(np.dot(x, x)))
+
 
 #norm for UFL vectors
 def ufl_norm(x):
@@ -109,7 +112,7 @@ class ManifoldExpression(UserExpression):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
-        values[0] = sin((norm(np.subtract(x, c_r)) - r)/r)  * sin((norm(np.subtract(x, c_R)) - R)/R)
+        values[0] = sin((my_norm(np.subtract(x, c_r)) - r) / r) * sin((my_norm(np.subtract(x, c_R)) - R) / R)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
         # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
     def value_shape(self):
@@ -137,7 +140,7 @@ class NormalVelocityExpression(UserExpression):
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = cos(norm(np.subtract(x, c_r)) - r) * cos(norm(np.subtract(x, c_R)) - R)
+        values[0] = cos(my_norm(np.subtract(x, c_r)) - r) * cos(my_norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 t=0
@@ -233,7 +236,7 @@ def sqrt_deth(z):
     v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
 
 
-    c =  conditional((norm(np.subtract(x, c_r)) - r < tol), v_r[i]*v_r[j]*g(z)[i,j], 1.0) * conditional((norm(np.subtract(x, c_R)) - R < tol), v_R[i]*v_R[j]*g(z)[i,j], 1.0)
+    c = conditional((my_norm(np.subtract(x, c_r)) - r < tol), v_r[i] * v_r[j] * g(z)[i,j], 1.0) * conditional((my_norm(np.subtract(x, c_R)) - R < tol), v_R[i] * v_R[j] * g(z)[i,j], 1.0)
     return sqrt(c)
 
 #normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
