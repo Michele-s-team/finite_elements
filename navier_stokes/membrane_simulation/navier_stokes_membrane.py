@@ -38,7 +38,7 @@ print("c_R = ", c_R)
 # print("L = ", L)
 print("r = ", r)
 print("R = ", R)
-print("T = ", t)
+print("T = ", T)
 print("Number of steps = ", num_steps)
 print("Re = ", Re)
 print("kappa = ", kappa)
@@ -310,7 +310,6 @@ for n in range(num_steps):
             # print("\tn = ", (project(normal(z_n), O3d))(x))
 
             delta = (v_(x)[0] * (project(e(z_n)[0], O3d))(x) + v_(x)[1] * (project(e(z_n)[1], O3d))(x) + w_(x) * (project(normal(z_n), O3d))(x)) * dt
-            x+=[delta[0], delta[1]]
 
             # print("\tdelta_x = ", delta)
 
@@ -324,6 +323,8 @@ for n in range(num_steps):
                 dof_idx = vertex_2_dof[vertex_idx]
                 # print("\tid of the vertex = ", dof_idx)
                 z_n.vector()[dof_idx] += delta[2]
+
+            x += [delta[0], delta[1]]
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
 
