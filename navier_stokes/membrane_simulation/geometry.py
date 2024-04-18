@@ -40,14 +40,15 @@ for x in mesh.coordinates():
 
 
 class LeftBoundary(SubDomain):
-    def inside(self, x, on_boundary):
-        return on_boundary and near(x[0], 0, tol)
+    def inside(self, x):
+        return  near(x[0], 0, tol)
 
 left_boundary = LeftBoundary()
 
 # Print all vertices that belong to the boundary parts
-# for x in mesh.coordinates():
-#     if left_boundary.inside(x, True): print('%s is on the left boundary' % x)
+print("Mesh points on the left boundary")
+for x in mesh.coordinates():
+    if left_boundary.inside(x): print('%s' % x)
 
 
 def calc_normal_cg2(mesh):
