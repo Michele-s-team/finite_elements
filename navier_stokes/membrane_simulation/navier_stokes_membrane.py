@@ -124,7 +124,6 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # detg_plot = project(detg(z_), Q)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
-xdmffile_geo.write(project(z_shifted(z_n, [0.1, 0.1]), Q4), 0)
 # xdmffile_geo.write(project(normal(z_n), O3d), 0)
 # xdmffile_geo.write(project(n(z_n), O), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
