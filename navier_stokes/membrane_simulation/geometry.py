@@ -200,6 +200,9 @@ def e(z):
 def e_p(z, x):
     return ([(project(e(z)[0], O3d))(x), (project(e(z)[1], O3d))(x)])
 
+def normal_p(z, x):
+    return ((project(normal(z), O3d))(x))
+
 def z_shifted(z, delta_x):
     x = ufl.SpatialCoordinate(mesh)
     # np.subtract(x, delta_x)[0]

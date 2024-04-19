@@ -290,7 +290,6 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     # step 4
-    # z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i,2] + normal(z_n)[2] * w_n ), Q4) )
 
     # print("Velocity field on inner circle :")
     # for x in mesh.coordinates():
@@ -305,8 +304,10 @@ for n in range(num_steps):
             print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
             print("\tn = ", (project(normal(z_n), O3d))(x))
 
-            delta = (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1] + w_(x) * (project(normal(z_n), O3d))(x)) * dt
+            delta = (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1] + w_(x)*normal_p(z_n, x) ) * dt
             print("\tdelta_x = ", delta)
+
+        # z_n.assign(z_n + delta[2] - ( (z_n.dx(0))*delta[0] ) )
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
 
