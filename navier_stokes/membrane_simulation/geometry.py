@@ -213,9 +213,6 @@ def e_p(z, x):
 def normal_p(z, x):
     return ((project(normal(z), O3d))(x))
 
-def z_p(z, x):
-    return ((project(z, Q4))(x))
-
 # def delta_x(v, w, z):
 #     return as_tensor(v_(x)[j]*e(z_n)[j][i] + w_(x)*normal(z_n)[i], (i))
 # )

@@ -322,8 +322,7 @@ for n in range(num_steps):
                 vertex_idx = vertex_idx[0]
                 dof_idx = vertex_2_dof[vertex_idx]
                 # print("\tid of the vertex = ", dof_idx)
-                z_n.vector()[dof_idx] += (delta[2])
-                                          # - ( (z_n.dx(0))*delta[0] + (z_n.dx(1))*delta[1] )
+                z_n.vector()[dof_idx] += (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  )
 
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
