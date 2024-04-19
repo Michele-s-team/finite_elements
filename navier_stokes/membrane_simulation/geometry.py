@@ -374,5 +374,6 @@ def mean_v(a, b):
     return as_tensor(0.5 * (a[i]+b[i]), (i))
 
 
-def dXdt(v, w, z):
-    return as_tensor((  v[i]*(e(z))[i, j] + w*normal(z)[j] ), (j))
+#the varaiation of the manifold height z over dt
+def dzdt(v, w, z):
+    return( v[i]*(e(z))[i, 2] + w*(normal(z))[2]   - (z.dx(j))*(v[i]*(e(z))[i, j] + w*(normal(z))[j])   )

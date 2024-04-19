@@ -26,8 +26,8 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.001  # final time
-num_steps = 1
+T = 0.01  # final time
+num_steps = 10
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -289,49 +289,11 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     # step 4
-
-    # print("Velocity field on inner circle :")
-    # for x in mesh.coordinates():
-    #     if (circle_r.on(x) == True):
-    #         print('\t%s' % v_(x))
-
-
-
-
-
-
-    # for x in mesh.coordinates():
-    #
-    #     if (circle_r.on(x) == False) and (circle_R.on(x) == False):
-    #
-    #         # print('\tx = %s' % x)
-    #         # print('\t\tv(x) = ', v_(x))
-    #         # print('\t\tw(x) = ', w_(x))
-    #         # print("\t\te = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
-    #         # print("\t\tn = ", (project(normal(z_n), O3d))(x))
-    #
-    #         delta = (  (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1]) + w_(x)*normal_p(z_n, x) ) * dt
-    #         # print("\t\tdelta = ", delta)
-    #
-    #         # Find the matching vertex (if it exists)
-    #         vertex_idx = np.where((mesh.coordinates() == (x[0], x[1])).all(axis=1))[0]
-    #         if not vertex_idx:
-    #             print("\t\tNo matching vertex!")
-    #
-    #         else:
-    #             vertex_idx = vertex_idx[0]
-    #             dof_idx = vertex_2_dof[vertex_idx]
-    #             # print("\tdelta_z = ", (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  ))
-    #             z_n.vector()[dof_idx] += (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  )
-
-
-        # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
-
     # Update previous solution
     v_n.assign(v_)
     w_n.assign(w_)
     sigma_n.assign(sigma_)
-    dXdt(v_, w_, z_n)
+    z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
 
     print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
