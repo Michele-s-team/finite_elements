@@ -1,3 +1,5 @@
+import math
+
 from fenics import *
 from mshr import *
 import numpy as np
@@ -141,7 +143,7 @@ class ManifoldExpression(UserExpression):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
-        values[0] = 1E-3 * sin((my_norm(np.subtract(x, c_r)) - r) / r) * sin((my_norm(np.subtract(x, c_R)) - R) / R)
+        values[0] = 1E-3 * cos((math.pi) * (r - my_norm(x)) / (r-R))
         # values[0] = 1.23E-3 * x[0]
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
         # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
