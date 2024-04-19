@@ -372,3 +372,7 @@ def d_c(u, un, z):
 #return the arithmetic mean between vectors a and b
 def mean_v(a, b):
     return as_tensor(0.5 * (a[i]+b[i]), (i))
+
+
+def dXdt(v, w, z):
+    return as_tensor((  v[i]*(e(z))[i, j] + w*normal(z)[j] ), (j))
