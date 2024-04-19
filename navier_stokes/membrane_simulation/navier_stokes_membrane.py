@@ -27,7 +27,7 @@ print("Output directory", args.output_directory)
 
 
 T = 0.01  # final time
-num_steps = 10
+num_steps = 80
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -73,7 +73,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-inflow_profile_v = ('1.0-x[1]*x[1]', '0')
+inflow_profile_v = ('1.0', '0')
 inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 
@@ -81,7 +81,7 @@ inflow_profile_w = '0.0'
 # boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), inflow)
+bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=0), inflow)
 # bcv_walls = DirichletBC(O, Constant((0, 0)), walls)
 bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
