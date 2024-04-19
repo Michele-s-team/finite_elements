@@ -27,7 +27,7 @@ print("Output directory", args.output_directory)
 
 
 T = 0.01  # final time
-num_steps = 1
+num_steps = 10
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -304,14 +304,14 @@ for n in range(num_steps):
 
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
 
-            print('\tx = %s' % x)
-            print('\t\tv(x) = ', v_(x))
-            print('\t\tw(x) = ', w_(x))
-            print("\t\te = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
-            print("\t\tn = ", (project(normal(z_n), O3d))(x))
+            # print('\tx = %s' % x)
+            # print('\t\tv(x) = ', v_(x))
+            # print('\t\tw(x) = ', w_(x))
+            # print("\t\te = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
+            # print("\t\tn = ", (project(normal(z_n), O3d))(x))
 
-            delta = (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1] + w_(x)*normal_p(z_n, x) ) * dt
-            print("\t\tdelta = ", delta)
+            delta = (  (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1]) + w_(x)*normal_p(z_n, x) ) * dt
+            # print("\t\tdelta = ", delta)
 
             # Find the matching vertex (if it exists)
             vertex_idx = np.where((mesh.coordinates() == (x[0], x[1])).all(axis=1))[0]
@@ -327,17 +327,11 @@ for n in range(num_steps):
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
 
-# Update previous solution
-v_n.assign(v_)
-w_n.assign(w_)
-sigma_n.assign(sigma_)
-# z_.assign(z_)
+    # Update previous solution
+    v_n.assign(v_)
+    w_n.assign(w_)
+    sigma_n.assign(sigma_)
 
-# Update progress bar
-#    progress.update(t / T)
-print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
-
-# Hold plot
-# interactive()
+    print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
 print("... done.", flush=True)
