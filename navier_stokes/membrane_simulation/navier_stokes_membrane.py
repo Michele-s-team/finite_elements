@@ -305,7 +305,7 @@ for n in range(num_steps):
             print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
             print("\tn = ", (project(normal(z_n), O3d))(x))
 
-            delta = (v_(x)[0] * (project(e(z_n)[0], O3d))(x) + v_(x)[1] * (project(e(z_n)[1], O3d))(x) + w_(x) * (project(normal(z_n), O3d))(x)) * dt
+            delta = (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1] + w_(x) * (project(normal(z_n), O3d))(x)) * dt
             print("\tdelta_x = ", delta)
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]

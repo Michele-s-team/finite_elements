@@ -197,6 +197,9 @@ def X(z):
 def e(z):
     return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
 
+def e_p(z, x):
+    return ([(project(e(z)[0], O3d))(x), (project(e(z)[1], O3d))(x)])
+
 def z_shifted(z, delta_x):
     x = ufl.SpatialCoordinate(mesh)
     # np.subtract(x, delta_x)[0]
