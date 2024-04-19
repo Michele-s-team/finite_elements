@@ -27,7 +27,7 @@ print("Output directory", args.output_directory)
 
 
 T = 0.01  # final time
-num_steps = 10
+num_steps = 100
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -321,7 +321,7 @@ for n in range(num_steps):
             else:
                 vertex_idx = vertex_idx[0]
                 dof_idx = vertex_2_dof[vertex_idx]
-                # print("\tid of the vertex = ", dof_idx)
+                print("\tdelta_z = ", (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  ))
                 z_n.vector()[dof_idx] += (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  )
 
 
