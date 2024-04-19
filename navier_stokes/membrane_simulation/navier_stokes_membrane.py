@@ -297,30 +297,7 @@ for n in range(num_steps):
     #         print('\t%s' % v_(x))
 
 
-    for x in mesh_coordinates:
-            # print('\tx = %s' % x)
-            # print('\tz(x) = ', z_n(x))
-            # print('\tv(x) = ', v_(x))
-            # print('\tw(x) = ', w_(x))
-            # print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
-            # print("\tn = ", (project(normal(z_n), O3d))(x))
 
-            delta = (v_(x)[0] * (project(e(z_n)[0], O3d))(x) + v_(x)[1] * (project(e(z_n)[1], O3d))(x) + w_(x) * (project(normal(z_n), O3d))(x)) * dt
-
-            # print("\tdelta_x = ", delta)
-
-            # Find the matching vertex (if it exists)
-            vertex_idx = np.where((mesh_coordinates == (x[0], x[1])).all(axis=1))[0]
-            if not vertex_idx:
-                print('No matching vertex!')
-
-            else:
-                vertex_idx = vertex_idx[0]
-                dof_idx = vertex_2_dof[vertex_idx]
-                # print("\tid of the vertex = ", dof_idx)
-                z_n.vector()[dof_idx] += delta[2]
-
-            x += [delta[0], delta[1]]
 
 
 
@@ -329,24 +306,25 @@ for n in range(num_steps):
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
 
             print('\tx = %s' % x)
-            print('\tv(x) = ', v_(x))
-            print('\tw(x) = ', w_(x))
-            print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
-            print("\tn = ", (project(normal(z_n), O3d))(x))
+            print('\t\tv(x) = ', v_(x))
+            print('\t\tw(x) = ', w_(x))
+            print("\t\te = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
+            print("\t\tn = ", (project(normal(z_n), O3d))(x))
 
             delta = (v_(x)[0]*e_p(z_n, x)[0] + v_(x)[1]*e_p(z_n, x)[1] + w_(x)*normal_p(z_n, x) ) * dt
-            print("\tdelta = ", delta)
+            print("\t\tdelta = ", delta)
 
             # Find the matching vertex (if it exists)
             vertex_idx = np.where((mesh.coordinates() == (x[0], x[1])).all(axis=1))[0]
             if not vertex_idx:
-                print("No matching vertex!")
+                print("\t\tNo matching vertex!")
 
             else:
                 vertex_idx = vertex_idx[0]
                 dof_idx = vertex_2_dof[vertex_idx]
                 # print("\tid of the vertex = ", dof_idx)
-                z_n.vector()[dof_idx] += delta[2] - ( (z_n.dx(0))*delta[0] )
+                z_n.vector()[dof_idx] += (delta[2])
+                                          # - ( (z_n.dx(0))*delta[0] + (z_n.dx(1))*delta[1] )
 
 
         # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
