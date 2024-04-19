@@ -297,8 +297,6 @@ for n in range(num_steps):
     #     if (circle_r.on(x) == True):
     #         print('\t%s' % v_(x))
 
-    # moving the mesh
-    print("Moving the followng mesh points :")
     for x in mesh.coordinates():
         if (circle_r.on(x) == False) and (circle_R.on(x) == False):
             print('\tx = %s' % x)
