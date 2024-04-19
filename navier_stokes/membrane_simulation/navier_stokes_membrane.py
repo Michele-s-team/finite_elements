@@ -26,7 +26,7 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.01  # final time
+T = 0.001  # final time
 num_steps = 100
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
@@ -38,7 +38,7 @@ print("c_R = ", c_R)
 # print("L = ", L)
 print("r = ", r)
 print("R = ", R)
-print("T = ", t)
+print("T = ", T)
 print("Number of steps = ", num_steps)
 print("Re = ", Re)
 print("kappa = ", kappa)
@@ -321,7 +321,7 @@ for n in range(num_steps):
             else:
                 vertex_idx = vertex_idx[0]
                 dof_idx = vertex_2_dof[vertex_idx]
-                print("\tdelta_z = ", (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  ))
+                # print("\tdelta_z = ", (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  ))
                 z_n.vector()[dof_idx] += (delta[2]) - ( project((z_n.dx(0)), Q4)(x)*delta[0] +  project((z_n.dx(1)), Q4)(x)*delta[1]  )
 
 
