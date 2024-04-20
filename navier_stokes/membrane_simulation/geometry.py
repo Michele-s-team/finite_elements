@@ -104,19 +104,13 @@ Q4 = FunctionSpace(mesh, 'P', 4)
 
 dofmap = Q4.dofmap()
 nvertices = mesh.ufl_cell().num_vertices()
-<<<<<<< HEAD
 
-# Set up a vertex_2_dof list
-indices = [dofmap.tabulate_entity_dofs(0, i)[0] for i in range(nvertices)]
-
-=======
-# Set up a vertex_2_dof list
-indices = [dofmap.tabulate_entity_dofs(0, i)[0] for i in range(nvertices)]
->>>>>>> correct_dz
-vertex_2_dof = dict()
-[vertex_2_dof.update(dict(vd for vd in zip(cell.entities(0),
-                                        dofmap.cell_dofs(cell.index())[indices])))
-                        for cell in cells(mesh)]
+# # Set up a vertex_2_dof list
+# indices = [dofmap.tabulate_entity_dofs(0, i)[0] for i in range(nvertices)]
+# vertex_2_dof = dict()
+# [vertex_2_dof.update(dict(vd for vd in zip(cell.entities(0),
+#                                         dofmap.cell_dofs(cell.index())[indices])))
+#                         for cell in cells(mesh)]
 
 
 
