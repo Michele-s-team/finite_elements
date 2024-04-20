@@ -27,7 +27,11 @@ print("Output directory", args.output_directory)
 
 
 T = 0.01  # final time
+<<<<<<< HEAD
 num_steps = 10
+=======
+num_steps = 80
+>>>>>>> correct_dz
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -73,7 +77,7 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-inflow_profile_v = ('1.0-x[1]*x[1]', '0')
+inflow_profile_v = ('1.0', '0')
 inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 
@@ -81,7 +85,7 @@ inflow_profile_w = '0.0'
 # boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), inflow)
+bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=0), inflow)
 # bcv_walls = DirichletBC(O, Constant((0, 0)), walls)
 bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
@@ -124,7 +128,6 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # detg_plot = project(detg(z_), Q)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
-xdmffile_geo.write(project(z_shifted(z_n, [0.1, 0.1]), Q4), 0)
 # xdmffile_geo.write(project(normal(z_n), O3d), 0)
 # xdmffile_geo.write(project(n(z_n), O), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
@@ -290,8 +293,13 @@ for n in range(num_steps):
     solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     # step 4
-    # z_n.assign(z_n + project(Deltat * (v_[i]*e(z_n)[i,2] + normal(z_n)[2] * w_n ), Q4) )
+    # Update previous solution
+    v_n.assign(v_)
+    w_n.assign(w_)
+    sigma_n.assign(sigma_)
+    z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
 
+<<<<<<< HEAD
     # print("Velocity field on inner circle :")
     # for x in mesh.coordinates():
     #     if (circle_r.on(x) == True):
@@ -339,5 +347,8 @@ for n in range(num_steps):
 
 # Hold plot
 # interactive()
+=======
+    print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
+>>>>>>> correct_dz
 
 print("... done.", flush=True)

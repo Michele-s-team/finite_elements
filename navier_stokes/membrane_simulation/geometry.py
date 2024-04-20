@@ -1,3 +1,5 @@
+import math
+
 from fenics import *
 from mshr import *
 import numpy as np
@@ -102,10 +104,15 @@ Q4 = FunctionSpace(mesh, 'P', 4)
 
 dofmap = Q4.dofmap()
 nvertices = mesh.ufl_cell().num_vertices()
+<<<<<<< HEAD
 
 # Set up a vertex_2_dof list
 indices = [dofmap.tabulate_entity_dofs(0, i)[0] for i in range(nvertices)]
 
+=======
+# Set up a vertex_2_dof list
+indices = [dofmap.tabulate_entity_dofs(0, i)[0] for i in range(nvertices)]
+>>>>>>> correct_dz
 vertex_2_dof = dict()
 [vertex_2_dof.update(dict(vd for vd in zip(cell.entities(0),
                                         dofmap.cell_dofs(cell.index())[indices])))
@@ -145,7 +152,7 @@ class ManifoldExpression(UserExpression):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
-        values[0] = 1E-3 * sin((my_norm(np.subtract(x, c_r)) - r) / r) * sin((my_norm(np.subtract(x, c_R)) - R) / R)
+        values[0] = 1E-3 * cos((math.pi) * (r - my_norm(x)) / (r-R))
         # values[0] = 1.23E-3 * x[0]
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
         # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
@@ -211,10 +218,11 @@ def X(z):
 def e(z):
     return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
 
-def z_shifted(z, delta_x):
-    x = ufl.SpatialCoordinate(mesh)
-    # np.subtract(x, delta_x)[0]
-    return(z)
+def e_p(z, x):
+    return ([(project(e(z)[0], O3d))(x), (project(e(z)[1], O3d))(x)])
+
+def normal_p(z, x):
+    return ((project(normal(z), O3d))(x))
 
 # def delta_x(v, w, z):
 #     return as_tensor(v_(x)[j]*e(z_n)[j][i] + w_(x)*normal(z_n)[i], (i))
@@ -373,3 +381,8 @@ def d_c(u, un, z):
 #return the arithmetic mean between vectors a and b
 def mean_v(a, b):
     return as_tensor(0.5 * (a[i]+b[i]), (i))
+
+
+#the varaiation of the manifold height z over dt
+def dzdt(v, w, z):
+    return( v[i]*(e(z))[i, 2] + w*(normal(z))[2]   - (z.dx(j))*(v[i]*(e(z))[i, j] + w*(normal(z))[j])   )
