@@ -299,56 +299,6 @@ for n in range(num_steps):
     sigma_n.assign(sigma_)
     z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
 
-<<<<<<< HEAD
-    # print("Velocity field on inner circle :")
-    # for x in mesh.coordinates():
-    #     if (circle_r.on(x) == True):
-    #         print('\t%s' % v_(x))
-
-    # moving the mesh
-
-    # print("Moving the followng mesh points :")
-    mesh_coordinates = mesh.coordinates()
-
-    for x in mesh_coordinates:
-        if (circle_r.on(x) == False) and (circle_R.on(x) == False):
-            # print('\tx = %s' % x)
-            # print('\tz(x) = ', z_n(x))
-            # print('\tv(x) = ', v_(x))
-            # print('\tw(x) = ', w_(x))
-            # print("\tes = ", (project(e(z_n)[0], O3d))(x), " \t ", (project(e(z_n)[1], O3d))(x))
-            # print("\tn = ", (project(normal(z_n), O3d))(x))
-
-            delta = (v_(x)[0] * (project(e(z_n)[0], O3d))(x) + v_(x)[1] * (project(e(z_n)[1], O3d))(x) + w_(x) * (project(normal(z_n), O3d))(x)) * dt
-
-            # print("\tdelta_x = ", delta)
-
-            # Find the matching vertex (if it exists)
-            vertex_idx = np.where((mesh_coordinates == (x[0], x[1])).all(axis=1))[0]
-            if not vertex_idx:
-                print('No matching vertex!')
-
-            else:
-                vertex_idx = vertex_idx[0]
-                dof_idx = vertex_2_dof[vertex_idx]
-                # print("\tid of the vertex = ", dof_idx)
-                z_n.vector()[dof_idx] += delta[2]
-
-            x += [delta[0], delta[1]]
-
-        # v_(x)[0]*e(z_n)[0][0] + w_*normal(z_n)[0]
-
-    # Update previous solution
-    v_n.assign(v_)
-    w_n.assign(w_)
-    sigma_n.assign(sigma_)
-
     print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
-
-# Hold plot
-# interactive()
-=======
-    print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
->>>>>>> correct_dz
 
 print("... done.", flush=True)
