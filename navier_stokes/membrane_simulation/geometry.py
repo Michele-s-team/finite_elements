@@ -282,9 +282,13 @@ def sqrt_deth(z):
     # v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
     #
     #
-    # c = conditional((my_norm(np.subtract(x, c_r)) - r < tol), v_r[i] * v_r[j] * g(z)[i,j], 1.0) * conditional((my_norm(np.subtract(x, c_R)) - R < tol), v_R[i] * v_R[j] * g(z)[i,j], 1.0)
+    c = conditional(lt(abs(x[0] - 0.0), tol), g(z)[1,1], 1.0) * \
+        conditional(lt(abs(x[0] - L), tol), g(z)[1, 1], 1.0) * \
+        conditional(lt(abs(x[1] - 0.0), tol), g(z)[0, 0], 1.0) * \
+        conditional(lt(abs(x[1] - h), tol), g(z)[0, 0], 1.0)
+    return sqrt(c)
     # return sqrt(c)
-    return 1
+    # return 1
 
 #normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
 def n(z):

@@ -2,7 +2,6 @@
 things to fix:
 
     * write the correct xpression for n(z)
-    * writhe the correct expression for sqrt_deth(z)
 
 """
 # run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
@@ -289,7 +288,7 @@ for n in range(num_steps):
     v_n.assign(v_)
     w_n.assign(w_)
     sigma_n.assign(sigma_)
-    z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
+    # z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
 
     print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
