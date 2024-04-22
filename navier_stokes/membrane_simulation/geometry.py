@@ -304,9 +304,10 @@ def n(z):
 #     return as_tensor([output, 0])
 
 
-def n_outflow(z):
-    u = as_tensor([1.0,0.0])
-    return as_tensor(u[k]/sqrt(g(z)[0,0]), (k))
+#the normal vector on the inflow and outflow
+def n_inout(z):
+    u = as_tensor([ conditional(lt(abs(x[0] - 0.0), tol), -1.0, 1.0), 0.0])
+    return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
 
 
 
