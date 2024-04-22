@@ -153,7 +153,7 @@ class ManifoldExpression(UserExpression):
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
         # values[0] = 1E-3 * cos((math.pi) * (r - my_norm(x)) / (r-R))
-        values[0] = x[0]*(x[0]-h) *  x[1]*(x[1]-L)
+        values[0] = 1E-1 * x[0]*(x[0]-L) *  x[1]*(x[1]-h)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
         # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
     def value_shape(self):
@@ -309,6 +309,7 @@ def n_inout(z):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], L/2), -1.0, 1.0), 0.0] )
     return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
+
 
 
 

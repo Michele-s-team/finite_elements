@@ -1,7 +1,9 @@
 """
 things to fix:
 
-    * write the correct xpression for n(z)
+    * uncomment  - (((sigma_n - sigma).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
+    * put the right normal vector in      - (((sigma_n - sigma).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
+
 
 """
 # run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
@@ -20,8 +22,8 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.1  # final time
-num_steps = 10
+T = 1  # final time
+num_steps = 1000
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -161,10 +163,10 @@ F1v = Re * ( \
              + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
              - 2.0 * v_n[j] * w_n * g_c(z_n)[i, k] * b(z_n)[k, j] * nu[i] \
              + 0.5 * (w_n ** 2) * g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-            + (- 0.5 * (w_n ** 2) * nu[i] * n(z_n)[i]) * sqrt_deth(z_n) * ds) \
+            + (- 0.5 * (w_n ** 2) * nu[i] * n_inout(z_n)[i]) * sqrt_deth(z_n) * ds) \
       + (g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
          + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-      + (- sigma_n * nu[i] * n(z_n)[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i, k] * n(z_n)[k]) * sqrt_deth(
+      + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * d_c(V, w_n, z_n)[i, j] * nu[j] * g(z_n)[i, k] * n_inout(z_n)[k]) * sqrt_deth(
     z_n) * ds
 # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
 # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
@@ -172,12 +174,12 @@ a1v = lhs(F1v)
 L1v = rhs(F1v)
 # step 1 for w
 F1w = (Re * ((w - w_n) / Deltat * omega - w_n * ((omega.dx(i)) * v_n[i] + omega * Nabla_v(v_n, z_n)[i, i])) * sqrt_detg(
-    z_n) * dx + (w_n * omega * v_n[i] * g(z_n)[i, j] * n(z_n)[j]) * sqrt_deth(z_n) * ds) \
+    z_n) * dx + (w_n * omega * v_n[i] * g(z_n)[i, j] * n_inout(z_n)[j]) * sqrt_deth(z_n) * ds) \
       + (2.0 * kappa * (- g_c(z_n)[i, j] * H(z_n).dx(i) * omega.dx(j)) \
          + (4.0 * kappa * H(z_n) * ((H(z_n) ** 2) - K(z_n)) - 2.0 * sigma_n * H(z_n) - 2.0 * (
                 g_c(z_n)[k, i] * Nabla_v(v_n, z_n)[j, k] * b(z_n)[i, j] \
                 - 2.0 * w_n * (2.0 * ((H(z_n)) ** 2) - K(z_n)))) * omega) * sqrt_detg(z_n) * dx \
-      + (2.0 * kappa * omega * (H(z_n).dx(i)) * n(z_n)[i]) * sqrt_deth(z_n) * ds
+      + (2.0 * kappa * omega * (H(z_n).dx(i)) * n_inout(z_n)[i]) * sqrt_deth(z_n) * ds
 a1w = lhs(F1w)
 L1w = rhs(F1w)
 
@@ -185,8 +187,8 @@ L1w = rhs(F1w)
 F2 = ( \
                  g_c(z_n)[i, j] * ((sigma_n - sigma).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * (Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
-         ) * sqrt_detg(z_n) * dx \
-     - (((sigma_n - sigma).dx(i)) * n_inout(z_n)[i] * q) * sqrt_deth(z_n) * ds
+         ) * sqrt_detg(z_n) * dx
+     # - (((sigma_n - sigma).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
 a2 = lhs(F2)
 L2 = rhs(F2)
 
