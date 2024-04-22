@@ -17,10 +17,12 @@ args = parser.parse_args()
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
 tol = 1E-3
-r = 0.15
-R = 1.0
-c_R = [0, 0]
-c_r = [0, 0]
+L = 2.2
+h = 0.41
+r = 0.05
+# R = 1.0
+c_r = [0.2, 0.2]
+# c_r = [0, 0]
 
 #  norm of vector x
 def my_norm(x):
@@ -71,7 +73,7 @@ class MyCircle(SubDomain):
 
 
 circle_r = MyCircle(c_r, r)
-circle_R = MyCircle(c_R, R)
+# circle_R = MyCircle(c_R, R)
 
 # Print all vertices that belong to the boundary parts
 # print("Mesh points on circle_r: ")
@@ -116,9 +118,13 @@ nvertices = mesh.ufl_cell().num_vertices()
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
-inflow   = 'on_boundary && (x[0] < 0.0 + 0.001)'
-outflow  = 'on_boundary && (x[0] > 0.0 + 0.001)'
-cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2*0.2))'
+inflow   = 'near(x[0], 0)'
+outflow  = 'near(x[0], 2.2)'
+walls    = 'near(x[1], 0) || near(x[1], 0.41)'
+cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
+# inflow   = 'on_boundary && (x[0] < 0.0 + 0.001)'
+# outflow  = 'on_boundary && (x[0] > 0.0 + 0.001)'
+# cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2*0.2))'
 #CHANGE PARAMETERS HERE
 
 
@@ -146,8 +152,8 @@ class ManifoldExpression(UserExpression):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
-        values[0] = 1E-3 * cos((math.pi) * (r - my_norm(x)) / (r-R))
-        # values[0] = 1.23E-3 * x[0]
+        # values[0] = 1E-3 * cos((math.pi) * (r - my_norm(x)) / (r-R))
+        values[0] = x[0]*(x[0]-h) *  x[1]*(x[1]-L)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
         # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
     def value_shape(self):
@@ -186,13 +192,13 @@ v = TrialFunction(O)
 #nu is the test function related to nu
 nu = TestFunction(O)
 #w = w_notes (normal velocity)
-w = TrialFunction(Q2)
+w = TrialFunction(Q)
 #o = omega_{notes} is the test function related to w
-omega = TestFunction(Q2)
+omega = TestFunction(Q)
 #sigma = \sigma_{notes}
-sigma = TrialFunction(Q2)
+sigma = TrialFunction(Q)
 #q  = q_{notes} is the test function related to sigma
-q = TestFunction(Q2)
+q = TestFunction(Q)
 #z = z_notes
 z = TrialFunction(Q4)
 zeta = TestFunction(Q4)
@@ -270,14 +276,15 @@ def sqrt_abs_detg(z):
     return sqrt(abs_detg(z))
 
 def sqrt_deth(z):
-    x = ufl.SpatialCoordinate(mesh)
-    #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
-    v_r = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
-    v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
-
-
-    c = conditional((my_norm(np.subtract(x, c_r)) - r < tol), v_r[i] * v_r[j] * g(z)[i,j], 1.0) * conditional((my_norm(np.subtract(x, c_R)) - R < tol), v_R[i] * v_R[j] * g(z)[i,j], 1.0)
-    return sqrt(c)
+    # x = ufl.SpatialCoordinate(mesh)
+    # #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
+    # v_r = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
+    # v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
+    #
+    #
+    # c = conditional((my_norm(np.subtract(x, c_r)) - r < tol), v_r[i] * v_r[j] * g(z)[i,j], 1.0) * conditional((my_norm(np.subtract(x, c_R)) - R < tol), v_R[i] * v_R[j] * g(z)[i,j], 1.0)
+    # return sqrt(c)
+    return 1
 
 #normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
 def n(z):
