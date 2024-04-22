@@ -305,15 +305,10 @@ def n(z):
 
 
 #the normal vector on the inflow and outflow
-def n_circle_inout(z):
+def n_inout(z):
     x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor( \
-        [ \
-            conditional(lt(abs(x[0]-0.0), tol), 1, -(x[0]-c_r[0])), \
-            conditional(lt(abs(x[0]-0.0), tol), 0, -(x[1]-c_r[1])), \
-            ] \
-        )
-    return as_tensor(u[k]/sqrt(u[i]*u[i]), (k))
+    u = as_tensor([conditional(lt(x[0], L/2), -1.0, 1.0), 0.0] )
+    return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
 
 
 
