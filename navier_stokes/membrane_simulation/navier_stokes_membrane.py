@@ -21,7 +21,7 @@ print("Output directory", args.output_directory)
 
 
 T = 0.1  # final time
-num_steps = 1000
+num_steps = 10
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -119,7 +119,7 @@ z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 # detg_plot = project(detg(z_), Q)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
-# xdmffile_geo.write(project(normal(z_n), O3d), 0)
+xdmffile_geo.write(project(n_circle_inout(z_n), O), 0)
 # xdmffile_geo.write(project(n(z_n), O), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
 # xdmffile_geo.write(project(H(z_n), Q4), 0)
@@ -186,7 +186,7 @@ F2 = ( \
                  g_c(z_n)[i, j] * ((sigma_n - sigma).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * (Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
          ) * sqrt_detg(z_n) * dx \
-     - (((sigma_n - sigma).dx(i)) * n_inout(z_n)[i] * q) * sqrt_deth(z_n) * ds
+     - (((sigma_n - sigma).dx(i)) * n_circle_inout(z_n)[i] * q) * sqrt_deth(z_n) * ds
 a2 = lhs(F2)
 L2 = rhs(F2)
 
