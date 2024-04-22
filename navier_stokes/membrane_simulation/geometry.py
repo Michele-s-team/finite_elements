@@ -235,9 +235,7 @@ def normal(z):
     return as_tensor(cross(e(z)[0], e(z)[1]) /  ufl_norm(cross(e(z)[0], e(z)[1])) )
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
-#the normal to the two-dimensional manifold on the outflow
-def n_outflow():
-    return as_tensor([1.0, 0.0])
+
 
 
 #b(z)[i,j] = b_{ij}_{al-izzi2020shear}
