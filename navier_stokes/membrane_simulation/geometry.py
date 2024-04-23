@@ -42,9 +42,9 @@ mesh_coordinates = mesh.coordinates()
 
 # n  = FacetNormal(mesh)
 
-print("Mesh points:")
-for x in mesh.coordinates():
-    print('\t%s' % x)
+# print("Mesh points:")
+# for x in mesh.coordinates():
+#     print('\t%s' % x)
 
 
 # example of how to move the mesh:
