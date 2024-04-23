@@ -19,8 +19,8 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 1  # final time
-num_steps = 1000
+T = 0.1  # final time
+num_steps = 100
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -289,7 +289,7 @@ for n in range(num_steps):
     v_n.assign(v_)
     w_n.assign(w_)
     sigma_n.assign(sigma_)
-    # z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
+    z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
 
     print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
