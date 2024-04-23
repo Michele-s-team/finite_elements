@@ -91,7 +91,7 @@ bcsigma_outflow = DirichletBC(Q, Constant(0), outflow)
 # boundary conditions for the surface_tension p
 # bcp_outflow = DirichletBC(Q, Constant(0), outflow)
 bc_v = [bcv_inflow, bcv_walls, bcv_cylinder]
-bc_w = [bcw_inflow, bcw_cylinder, bcw_cylinder]
+bc_w = [bcw_inflow, bcw_walls, bcw_cylinder]
 bc_sigma = [bcsigma_outflow]
 
 # Define functions for solutions at previous and current time steps
