@@ -1,9 +1,6 @@
 """
 things to fix:
 
-    * uncomment  - (((sigma_n - sigma).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
-    * put the right normal vector in      - (((sigma_n - sigma).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
-
 
 """
 # run with clear; clear; python3 navier_stokes_membrane.py [input directory] [output directory]
@@ -188,7 +185,9 @@ F2 = ( \
                  g_c(z_n)[i, j] * ((sigma_n - sigma).dx(i)) * q.dx(j) \
                  + (Re / Deltat) * (Nabla_v(v_, z_n)[i, i] - 2.0 * H(z_n) * w_n) * q \
          ) * sqrt_detg(z_n) * dx
+    #THIS TERM IS ZERO BECAUSE WE ASSUME THAT ON THE BOUNDARIES WHERE v IS SPECIFIED, WE HAVE d sigma / d n  = 0
      # - (((sigma_n - sigma).dx(i)) * n(z_n)[i] * q) * sqrt_deth(z_n) * ds
+    # THIS TERM IS ZERO BECAUSE WE ASSUME THAT ON THE BOUNDARIES WHERE v IS SPECIFIED, WE HAVE d sigma / d n  = 0
 a2 = lhs(F2)
 L2 = rhs(F2)
 
