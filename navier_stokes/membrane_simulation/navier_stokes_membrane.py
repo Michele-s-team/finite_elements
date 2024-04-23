@@ -65,11 +65,13 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 # mesh = generate_mesh(domain, 64)
 
 
+#CHANGE PARAMETERS HERE
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-inflow_profile_v = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
+inflow_profile_v = ('4.0*1.5*x[1]*(1.0 - x[1]) / pow(1.0, 2)', '0')
 inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
+#CHANGE PARAMETERS HERE
 
 # Define boundary conditions
 # boundary conditions for the velocity u

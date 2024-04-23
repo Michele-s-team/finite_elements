@@ -13,16 +13,17 @@ parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-
+#CHANGE PARAMETERS HERE
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
 tol = 1E-3
 L = 2.2
-h = 0.41
+h = 1.0
 r = 0.05
 # R = 1.0
-c_r = [0.2, 0.2]
+c_r = [0.2, h/2]
 # c_r = [0, 0]
+#CHANGE PARAMETERS HERE
 
 #  norm of vector x
 def my_norm(x):
@@ -120,8 +121,8 @@ nvertices = mesh.ufl_cell().num_vertices()
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 2.2)'
-walls    = 'near(x[1], 0) || near(x[1], 0.41)'
-cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
+walls    = 'near(x[1], 0) || near(x[1], 1.0)'
+cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.4 && x[1]<0.6'
 # inflow   = 'on_boundary && (x[0] < 0.0 + 0.001)'
 # outflow  = 'on_boundary && (x[0] > 0.0 + 0.001)'
 # cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2*0.2))'

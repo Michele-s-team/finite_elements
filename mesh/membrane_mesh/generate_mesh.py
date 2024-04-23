@@ -43,11 +43,11 @@ import pygmsh
 resolution = 0.1
 # Channel parameters
 L = 2.2
-h = 0.41
+h = 1.0
 r = 0.05
 # R = 1.0
 # c_R = [0, 0, 0]
-c_r = [0.2, 0.2, 0]
+c_r = [0.2, h/2, 0]
 #c2 = [0.7, 0.12, 0]
 #r = 0.07
 
