@@ -274,7 +274,7 @@ def sqrt_abs_detg(z):
     return sqrt(abs_detg(z))
 
 def sqrt_deth(z):
-    # x = ufl.SpatialCoordinate(mesh)
+    x = ufl.SpatialCoordinate(mesh)
     # #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
     # v_r = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
     # v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
