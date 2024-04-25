@@ -19,7 +19,7 @@ print("Output directory", args.output_directory)
 
 
 T = 1E-2  # final time
-num_steps = 10
+num_steps = 2
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -64,6 +64,26 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 # mesh = generate_mesh(domain, 64)
 
 
+# Define functions for solutions at previous and current time steps
+v_n = Function(O)
+v_ = Function(O)
+w_n = Function(Q)
+w_ = Function(Q)
+sigma_n = Function(Q)
+sigma_ = Function(Q)
+z_n = Function(Q4)
+z_ = Function(Q4)
+# a function used to make tests (test the differential operators etc)
+f_ = Function(Q4)
+
+# the vector  or function is interpolated  and written into a Function() object
+# set the initial conditions for all fields
+v_n = interpolate(TangentVelocityExpression(element=O.ufl_element()), O)
+w_n = interpolate(NormalVelocityExpression(element=Q.ufl_element()), Q)
+sigma_n = interpolate(SurfaceTensionExpression(element=Q.ufl_element()), Q)
+z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
+
+
 #CHANGE PARAMETERS HERE
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
@@ -84,7 +104,8 @@ bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
 bcw_inflow = DirichletBC(Q, Expression(inflow_profile_w, degree=0), inflow)
 bcw_walls = DirichletBC(Q, Constant((0)), walls)
-bcw_cylinder = DirichletBC(Q, Constant((0)), cylinder)
+#here is how to impose a boundary condition that depends on another variable: here the boundary condition for w depends on z_n
+bcw_cylinder = DirichletBC(Q, -10*z_n, cylinder)
 
 # bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q, Constant(0), outflow)
@@ -95,24 +116,7 @@ bc_v = [bcv_inflow, bcv_walls, bcv_cylinder]
 bc_w = [bcw_inflow, bcw_walls, bcw_cylinder]
 bc_sigma = [bcsigma_outflow]
 
-# Define functions for solutions at previous and current time steps
-v_n = Function(O)
-v_ = Function(O)
-w_n = Function(Q)
-w_ = Function(Q)
-sigma_n = Function(Q)
-sigma_ = Function(Q)
-z_n = Function(Q4)
-z_ = Function(Q4)
-# a function used to make tests (test the differential operators etc)
-f_ = Function(Q4)
 
-# the vector  or function is interpolated  and written into a Function() object
-# set the initial conditions for all fields
-v_n = interpolate(TangentVelocityExpression(element=O.ufl_element()), O)
-w_n = interpolate(NormalVelocityExpression(element=Q.ufl_element()), Q)
-sigma_n = interpolate(SurfaceTensionExpression(element=Q.ufl_element()), Q)
-z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 
 # f_ = interpolate(ScalarFunctionExpression(element=Q2.ufl_element()), Q4)
 # z_plot = project(z_, Q)

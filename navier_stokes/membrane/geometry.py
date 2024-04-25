@@ -152,7 +152,7 @@ class TangentVelocityExpression(UserExpression):
 class ManifoldExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 0
-        values[0] =  1E-3 * (x[0]*(x[0]-L)/L**2) *  (x[1]*(x[1]-h)/h**2) * (my_norm(np.subtract(x, c_r)) - r)/r
+        values[0] =   (x[0]*(x[0]-L)/L**2) *  (x[1]*(x[1]-h)/h**2)
     def value_shape(self):
         return (1,)
 
