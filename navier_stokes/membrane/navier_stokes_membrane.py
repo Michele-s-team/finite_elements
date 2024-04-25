@@ -18,8 +18,10 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 2E-2  # final time
-num_steps = 400
+T = 1E-2  # final time
+num_steps = 2048
+
+ 
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
