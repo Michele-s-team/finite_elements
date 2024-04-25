@@ -18,7 +18,7 @@ args = parser.parse_args()
 # R = 1.0
 tol = 1E-3
 L = 2.2
-h = 1.0
+h = 10.0
 r = 0.05
 # R = 1.0
 c_r = [0.2, h/2]
@@ -122,8 +122,8 @@ nvertices = mesh.ufl_cell().num_vertices()
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 2.2)'
-walls    = 'near(x[1], 0) || near(x[1], 1.0)'
-cylinder = 'on_boundary && x[0]>0.0 && x[0]<0.4 && x[1]>0.4 && x[1]<0.6'
+walls    = 'near(x[1], 0) || near(x[1], 10.0)'
+cylinder = 'on_boundary && x[0]>0.0 && x[0]<0.4 && x[1]>4.0 && x[1]<6.0'
 # inflow   = 'on_boundary && (x[0] < 0.0 + 0.001)'
 # outflow  = 'on_boundary && (x[0] > 0.0 + 0.001)'
 # cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2*0.2))'
@@ -152,7 +152,7 @@ class TangentVelocityExpression(UserExpression):
 class ManifoldExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 0
-        values[0] =   (x[0]*(x[0]-L)/L**2) *  (x[1]*(x[1]-h)/h**2)
+        values[0] =  1E-3 * (x[0]*(x[0]-L)/L**2) *  (x[1]*(x[1]-h)/h**2)
     def value_shape(self):
         return (1,)
 

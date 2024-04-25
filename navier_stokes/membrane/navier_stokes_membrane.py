@@ -19,7 +19,7 @@ print("Output directory", args.output_directory)
 
 
 T = 1E-2  # final time
-num_steps = 2
+num_steps = 10
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -84,15 +84,10 @@ sigma_n = interpolate(SurfaceTensionExpression(element=Q.ufl_element()), Q)
 z_n = interpolate(ManifoldExpression(element=Q4.ufl_element()), Q4)
 
 
-#CHANGE PARAMETERS HERE
-# Define velocity profile on the external boundary
-# external_boundary_profile = ('1.0', '0.0')
 inflow_profile_v = Expression(('4.0*1.5*x[1]*(h - x[1]) / pow(1.0, 2)', '0'), degree=2, h=h)
 #to change the value of h in inflow_provile_v, do 
 # inflow_profile_v.h = h
 inflow_profile_w = '0.0'
-# outflow_profile = ('1.0', '0.0')
-#CHANGE PARAMETERS HERE
 
 # Define boundary conditions
 # boundary conditions for the velocity u
@@ -274,6 +269,7 @@ for n in range(num_steps):
     # step 1 for w
     b1w = assemble(L1w)
     [bc.apply(b1w) for bc in bc_w]
+    [bc.apply(A1w) for bc in bc_w]
     # this line solves for w^* and stores w^* in w_
     solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')
 

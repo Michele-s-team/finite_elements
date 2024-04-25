@@ -1,7 +1,0 @@
-/tmp/tmp22z0lumi/dolfin_expression_2fa1535fd9be9b9eae337eb229b15a07.cpp: In member function ‘virtual void dolfin::dolfin_expression_2fa1535fd9be9b9eae337eb229b15a07::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
-/tmp/tmp22z0lumi/dolfin_expression_2fa1535fd9be9b9eae337eb229b15a07.cpp:61:50: error: ‘z’ was not declared in this scope
-           values[0] = 4.0*1.5*x[1]*(1.0 - x[1]) *z(x) * / pow(1.0, 2);
-                                                  ^
-/tmp/tmp22z0lumi/dolfin_expression_2fa1535fd9be9b9eae337eb229b15a07.cpp:61:57: error: expected primary-expression before ‘/’ token
-           values[0] = 4.0*1.5*x[1]*(1.0 - x[1]) *z(x) * / pow(1.0, 2);
-                                                         ^
