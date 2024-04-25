@@ -105,7 +105,7 @@ bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 bcw_inflow = DirichletBC(Q, Expression(inflow_profile_w, degree=0), inflow)
 bcw_walls = DirichletBC(Q, Constant((0)), walls)
 #here is how to impose a boundary condition that depends on another variable: here the boundary condition for w depends on z_n
-bcw_cylinder = DirichletBC(Q, 1, cylinder)
+bcw_cylinder = DirichletBC(Q,  dot(normal(z_n), hat_r()), cylinder)
 
 # bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q, Constant(0), outflow)
@@ -125,8 +125,8 @@ bc_sigma = [bcsigma_outflow]
 # detg_plot = project(detg(z_), Q)
 
 xdmffile_geo.write(project(z_n, Q4), 0)
-xdmffile_geo.write(project(n_inout(z_n), O), 0)
-# xdmffile_geo.write(project(n(z_n), O), 0)
+# xdmffile_geo.write(project(n_inout(z_n), O), 0)
+xdmffile_geo.write(project(dot(normal(z_n), hat_r()), Q4), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
 # xdmffile_geo.write(project(H(z_n), Q4), 0)
 # xdmffile_geo.write(project(K(z_n), Q4), 0)

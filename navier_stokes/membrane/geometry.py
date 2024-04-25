@@ -224,7 +224,7 @@ def normal_p(z, x):
 #radial vector in the x,y plane for polar coordinates with origin at c_r
 def hat_r():
     x = ufl.SpatialCoordinate(mesh)
-    return as_tensor([x[0]-c_r[0], x[1]-c_r[1], 0.0]/ufl_norm(np.subtract(x, c_r)))
+    return as_tensor(np.divide([x[0]-c_r[0], x[1]-c_r[1], 0.0], my_norm(np.subtract(x, c_r))))
 
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
