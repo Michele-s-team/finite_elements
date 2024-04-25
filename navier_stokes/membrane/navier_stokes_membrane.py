@@ -105,7 +105,7 @@ bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 bcw_inflow = DirichletBC(Q, Expression(inflow_profile_w, degree=0), inflow)
 bcw_walls = DirichletBC(Q, Constant((0)), walls)
 #here is how to impose a boundary condition that depends on another variable: here the boundary condition for w depends on z_n
-bcw_cylinder = DirichletBC(Q, -10*z_n, cylinder)
+bcw_cylinder = DirichletBC(Q, 1, cylinder)
 
 # bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q, Constant(0), outflow)

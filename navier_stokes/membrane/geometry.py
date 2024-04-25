@@ -221,9 +221,10 @@ def e_p(z, x):
 def normal_p(z, x):
     return ((project(normal(z), O3d))(x))
 
-# def delta_x(v, w, z):
-#     return as_tensor(v_(x)[j]*e(z_n)[j][i] + w_(x)*normal(z_n)[i], (i))
-# )
+#radial vector in the x,y plane for polar coordinates with origin at c_r
+def hat_r():
+    x = ufl.SpatialCoordinate(mesh)
+    return as_tensor([x[0]-c_r[0], x[1]-c_r[1], 0.0]/ufl_norm(np.subtract(x, c_r)))
 
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
