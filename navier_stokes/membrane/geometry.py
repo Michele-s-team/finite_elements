@@ -151,13 +151,8 @@ class TangentVelocityExpression(UserExpression):
 #trial analytical expression for the height function z(x,y)
 class ManifoldExpression(UserExpression):
     def eval(self, values, x):
-        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
-        #tentative smooth surface
         # values[0] = 0
-        values[0] =  x[0]*(x[0]-L) *  x[1]*(x[1]-h)
-        # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
-        # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
+        values[0] =  1E-3 * (x[0]*(x[0]-L)/L**2) *  (x[1]*(x[1]-h)/h**2) * (my_norm(np.subtract(x, c_r)) - r)/r
     def value_shape(self):
         return (1,)
 
