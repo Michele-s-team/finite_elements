@@ -1,8 +1,0 @@
-/tmp/tmpsumys7of/dolfin_subdomain_a583264ed6141b817da6de3fc4db08bb.cpp: In member function ‘virtual bool dolfin::dolfin_subdomain_a583264ed6141b817da6de3fc4db08bb::inside(Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, bool) const’:
-/tmp/tmpsumys7of/dolfin_subdomain_a583264ed6141b817da6de3fc4db08bb.cpp:63:46: error: ‘tol’ was not declared in this scope
-          return on_boundary && (x[0] < 0.0 + tol);
-                                              ^~~
-/tmp/tmpsumys7of/dolfin_subdomain_a583264ed6141b817da6de3fc4db08bb.cpp:63:46: note: suggested alternative: ‘atol’
-          return on_boundary && (x[0] < 0.0 + tol);
-                                              ^~~
-                                              atol

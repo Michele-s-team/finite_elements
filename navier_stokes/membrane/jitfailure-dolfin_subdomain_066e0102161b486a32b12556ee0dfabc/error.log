@@ -1,4 +1,0 @@
-/tmp/tmp8xklhjjl/dolfin_subdomain_066e0102161b486a32b12556ee0dfabc.cpp: In member function ‘virtual bool dolfin::dolfin_subdomain_066e0102161b486a32b12556ee0dfabc::inside(Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, bool) const’:
-/tmp/tmp8xklhjjl/dolfin_subdomain_066e0102161b486a32b12556ee0dfabc.cpp:63:39: error: ‘c_r’ was not declared in this scope
-          return on_boundary && ((x[0]-c_r[0])*(x[0]-c_r[0]) + (x[1]-c_r[1])*(x[1]-c_r[1]) < (0.2*0.2));
-                                       ^~~
