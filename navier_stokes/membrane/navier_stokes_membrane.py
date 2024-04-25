@@ -18,7 +18,7 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 1  # final time
+T = 0.1  # final time
 num_steps = 100
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
@@ -156,6 +156,7 @@ kappa = Constant(kappa)
 
 # Define variational problem for step 1
 # step 1 for v
+#HERE I HAVE SET THE SECOND TERM IN d_{ij} TO ZERO
 F1v = Re * ( \
             (dot((v - v_n) / Deltat, nu) \
              + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
@@ -166,6 +167,7 @@ F1v = Re * ( \
          + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
       + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + 0 * g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
     z_n) * ds
+#HERE I HAVE SET THE SECOND TERM IN d_{ij} TO ZERO
 # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
 # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
 a1v = lhs(F1v)
@@ -264,10 +266,10 @@ for n in range(num_steps):
     # this line solves for v^* and stores v^* in v_
     solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')
     # step 1 for w
-    # b1w = assemble(L1w)
-    # [bc.apply(b1w) for bc in bc_w]
-    # # this line solves for w^* and stores w^* in w_
-    # solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')
+    b1w = assemble(L1w)
+    [bc.apply(b1w) for bc in bc_w]
+    # this line solves for w^* and stores w^* in w_
+    solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')
 
     # Step 2: surface_tension correction step
     b2 = assemble(L2)
@@ -280,10 +282,10 @@ for n in range(num_steps):
     b3v = assemble(L3v)
     # this step solves for v^{n+1} and stores the solution in v_. In A3v, v_ = v^* from `solve(A1v, v_.vector(), b1v, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
     solve(A3v, v_.vector(), b3v, 'cg', 'sor')
-    # # step 3 for w
-    # b3w = assemble(L3w)
-    # # this step solves for w^{n+1} and stores the solution in w_. In A3w, w_ = w^* from `solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
-    # solve(A3w, w_.vector(), b3w, 'cg', 'sor')
+    # step 3 for w
+    b3w = assemble(L3w)
+    # this step solves for w^{n+1} and stores the solution in w_. In A3w, w_ = w^* from `solve(A1w, w_.vector(), b1w, 'bicgstab', 'hypre_amg')` and sigma_n = sigma_{n+1} from `solve(A2, p_.vector(), b2, 'bicgstab', 'hypre_amg')
+    solve(A3w, w_.vector(), b3w, 'cg', 'sor')
 
     # step 4
     # Update previous solution
