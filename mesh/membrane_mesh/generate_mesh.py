@@ -40,10 +40,10 @@ import numpy
 import meshio
 import gmsh
 import pygmsh
-resolution = 0.1
+resolution = 0.3
 # Channel parameters
 L = 2.2
-h = 1.0
+h = 10.0
 r = 0.05
 # R = 1.0
 # c_R = [0, 0, 0]

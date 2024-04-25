@@ -19,7 +19,7 @@ print("Output directory", args.output_directory)
 
 
 T = 1E-2  # final time
-num_steps = 10
+num_steps = 100
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
