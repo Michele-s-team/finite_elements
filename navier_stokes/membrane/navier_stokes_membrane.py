@@ -3,8 +3,8 @@ things to fix:
 
 
 """
-# ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane/solution
-# ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results
+# ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane/solution/
+# ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results/
 
 from __future__ import print_function
 from geometry import *
@@ -18,12 +18,12 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.1  # final time
-num_steps = 10
+T = 1  # final time
+num_steps = 100
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
-kappa = 0.0
+kappa = 1.0
 
 print("c_r = ", c_r)
 # print("c_R = ", c_R)
@@ -164,7 +164,7 @@ F1v = Re * ( \
             + (- 0.5 * (w_n ** 2) * nu[i] * n_inout(z_n)[i]) * sqrt_deth(z_n) * ds) \
       + (g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
          + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-      + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
+      + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + 0 * g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
     z_n) * ds
 # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
 # + inner(tensor_sigma(U, sigma_n), epsilon(nu)) * sqrt_detg(z_n) * dx
@@ -288,9 +288,9 @@ for n in range(num_steps):
     # step 4
     # Update previous solution
     v_n.assign(v_)
-    # w_n.assign(w_)
+    w_n.assign(w_)
     sigma_n.assign(sigma_)
-    # z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
+    z_n.assign(z_n + project(dzdt(v_, w_, z_n) * Deltat, Q4))
 
     print("\t%.2f %%" % (100.0 * (t / T)), flush=True)
 
