@@ -18,8 +18,8 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 0.1  # final time
-num_steps = 100
+T = 1E-2  # final time
+num_steps = 10
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
 Re = 1.0
@@ -67,7 +67,9 @@ timeseries_z = TimeSeries((args.output_directory) + "/z_series")
 #CHANGE PARAMETERS HERE
 # Define velocity profile on the external boundary
 # external_boundary_profile = ('1.0', '0.0')
-inflow_profile_v = ('4.0*1.5*x[1]*(1.0 - x[1]) / pow(1.0, 2)', '0')
+inflow_profile_v = Expression(('4.0*1.5*x[1]*(h - x[1]) / pow(1.0, 2)', '0'), degree=2, h=h)
+#to change the value of h in inflow_provile_v, do 
+# inflow_profile_v.h = h
 inflow_profile_w = '0.0'
 # outflow_profile = ('1.0', '0.0')
 #CHANGE PARAMETERS HERE
@@ -76,7 +78,7 @@ inflow_profile_w = '0.0'
 # boundary conditions for the velocity u
 # bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
 # bcu_outflow = DirichletBC(V, Expression(outflow_profile, degree=2), inflow)
-bcv_inflow = DirichletBC(O, Expression(inflow_profile_v, degree=2), inflow)
+bcv_inflow = DirichletBC(O, inflow_profile_v, inflow)
 bcv_walls = DirichletBC(O, Constant((0, 0)), walls)
 bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 
