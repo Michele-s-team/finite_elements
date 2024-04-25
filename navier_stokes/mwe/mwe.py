@@ -5,6 +5,9 @@ Scheme (IPCS).
 
   u' + u . nabla(u)) - div(sigma(u, p)) = f
                                  div(u) = 0
+
+                                 run with python3 mwe.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/mwe/solution/
+
 """
 
 from __future__ import print_function
@@ -128,12 +131,12 @@ A3 = assemble(a3)
 [bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('velocity.xdmf')
-xdmffile_p = XDMFFile('pressure.xdmf')
+xdmffile_u = XDMFFile((args.output_directory) +  'v_mwe.xdmf')
+xdmffile_p = XDMFFile((args.output_directory) + 'p_mwe.xdmf')
 
 # Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('velocity_series')
-timeseries_p = TimeSeries('pressure_series')
+timeseries_u = TimeSeries((args.output_directory) + 'v_mwe_series')
+timeseries_p = TimeSeries((args.output_directory) + 'p_mwe_series')
 
 # Save mesh to file (for use in reaction_system.py)
 File('cylinder.xml.gz') << mesh
@@ -169,8 +172,8 @@ for n in range(num_steps):
     solve(A3, u_.vector(), b3, 'cg', 'sor')
 
     # Plot solution
-    plot(u_, title='Velocity')
-    plot(p_, title='Pressure')
+    plot(u_, title='v_mwe')
+    plot(p_, title='p_mwe')
 
 
 

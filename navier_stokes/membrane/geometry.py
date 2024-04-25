@@ -40,6 +40,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 mesh_coordinates = mesh.coordinates()
+# ds = ds(metadata={'quadrature_degree': 2})
 
 # n  = FacetNormal(mesh)
 
@@ -153,8 +154,8 @@ class ManifoldExpression(UserExpression):
         # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
         # values[0] = sin(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         #tentative smooth surface
-        # values[0] = 1E-3 * cos((math.pi) * (r - my_norm(x)) / (r-R))
-        values[0] = 1E-3 * x[0]*(x[0]-L) *  x[1]*(x[1]-h)
+        values[0] = 0
+        # values[0] =  1E1 * x[0]*(x[0]-L) *  x[1]*(x[1]-h)
         # values[0] = 0.1 * x[0]*(8.0 - (6.0 * x[0])/L + (x[0]**3)/(L**3))
         # values[0] = 10**(-3) * (1 - (x[0]**2 + x[1]**2))
     def value_shape(self):
