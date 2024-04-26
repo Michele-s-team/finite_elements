@@ -3,8 +3,8 @@ things to fix:
 
 
 """
-# ron on mac: clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane/solution/
-# ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results/
+# ron on mac:  clear; clear; python3 navier_stokes_membrane.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/membrane/solution 1E-2 128
+# ron on abacus: clear; clear; python3 navier_stokes_membrane.py /mnt/beegfs/home/mcastel1/navier_stokes /mnt/beegfs/home/mcastel1/navier_stokes/results/  1E-2 128
 
 from __future__ import print_function
 from geometry import *
@@ -18,9 +18,10 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
-T = 1E-2  # final time
-num_steps = 2048
-
+# T = 1E-2  # final time
+# num_steps = 128
+T = (float)(args.T)
+num_steps = (int)(args.N)
  
 dt = T / num_steps  # time step size
 # the Reynolds number, Re = \rho U l / \mu, Re_here = R_{notes fenics}
@@ -34,7 +35,7 @@ print("h = ", h)
 print("r = ", r)
 # print("R = ", R)
 print("T = ", T)
-print("Number of steps = ", num_steps)
+print("N = ", num_steps)
 print("Re = ", Re)
 print("kappa = ", kappa)
 
@@ -102,7 +103,8 @@ bcv_cylinder = DirichletBC(O, Constant((0, 0)), cylinder)
 bcw_inflow = DirichletBC(Q, Expression(inflow_profile_w, degree=0), inflow)
 bcw_walls = DirichletBC(Q, Constant((0)), walls)
 #here is how to impose a boundary condition that depends on another variable: here the boundary condition for w depends on z_n
-bcw_cylinder = DirichletBC(Q,  - dot(v_n[0]*(e(z_n))[0]+v_n[1]*(e(z_n))[1], hat_r()) / dot(normal(z_n), hat_r()), cylinder)
+# bcw_cylinder = DirichletBC(Q,  - dot(v_n[0]*(e(z_n))[0]+v_n[1]*(e(z_n))[1], hat_r()) / dot(normal(z_n), hat_r()), cylinder)
+bcw_cylinder = DirichletBC(Q,  Constant((0)), cylinder)
 
 # bcsigma_walls = DirichletBC(Q2, Constant(0), walls)
 bcsigma_outflow = DirichletBC(Q, Constant(0), outflow)
