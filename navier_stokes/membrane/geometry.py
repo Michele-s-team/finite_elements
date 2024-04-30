@@ -43,8 +43,10 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 mesh_coordinates = mesh.coordinates()
 
+#read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 ds_inner = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 inner_circumference = assemble(1*ds_inner)
 print("Inner circumference = ", inner_circumference/(2*np.pi))
 
