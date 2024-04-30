@@ -47,11 +47,6 @@ mesh_coordinates = mesh.coordinates()
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
 ds_rectangle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-circle_perimeter = assemble(1*ds_circle)
-rectangle_perimeter = assemble(1*ds_rectangle)
-print("Circle perimeter = ", circle_perimeter/(2.0*(np.pi)))
-print("Rectangle perimeter = ", rectangle_perimeter)
 
 # ds = ds(metadata={'quadrature_degree': 2})
 
@@ -219,6 +214,10 @@ zeta = TestFunction(Q4)
 #definition of scalar, vectorial and tensorial quantities
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
+
+def my_function():
+    x = ufl.SpatialCoordinate(mesh)
+    return(((x[0]-c_r[0])/my_norm(np.subtract(x, c_r)))**2)
 
 def X(z):
     x = ufl.SpatialCoordinate(mesh)

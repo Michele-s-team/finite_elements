@@ -18,6 +18,13 @@ print("Output directory", args.output_directory)
 # list_krylov_solver_preconditioners()
 
 
+#here I integrate \int my_function * ds  over the circle and store the result of the integral as a double in inner_circumference, and similarly for rectangle_integral
+circle_integral = assemble(my_function()*ds_circle)
+rectangle_integral = assemble(1*ds_rectangle)
+print("Circle integral = ", circle_integral)
+print("Rectangle integral = ", rectangle_integral)
+
+
 # T = 1E-2  # final time
 # num_steps = 128
 T = (float)(args.T)
