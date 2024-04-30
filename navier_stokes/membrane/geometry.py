@@ -45,10 +45,13 @@ mesh_coordinates = mesh.coordinates()
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
-ds_inner = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_rectangle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-inner_circumference = assemble(1*ds_inner)
-print("Rectangle perimeter = ", inner_circumference)
+circle_perimeter = assemble(1*ds_circle)
+rectangle_perimeter = assemble(1*ds_rectangle)
+print("Circle perimeter = ", circle_perimeter/(2.0*(np.pi)))
+print("Rectangle perimeter = ", rectangle_perimeter)
 
 # ds = ds(metadata={'quadrature_degree': 2})
 
