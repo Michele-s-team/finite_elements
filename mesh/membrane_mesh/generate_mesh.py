@@ -2,16 +2,35 @@ import numpy
 import meshio
 import gmsh
 import pygmsh
-resolution = 0.3
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("resolution")
+args = parser.parse_args()
+
+
+#mesh resolution
+resolution = (float)(args.resolution)
+#resolution = 0.3
+
+
 # Channel parameters
 L = 2.2
 h = 10.0
 r = 0.05
+c_r = [0.2, h/2, 0]
 # R = 1.0
 # c_R = [0, 0, 0]
-c_r = [0.2, h/2, 0]
 #c2 = [0.7, 0.12, 0]
 #r = 0.07
+
+
+print("L = ", L)
+print("h = ", h)
+print("r = ", r)
+print("c_r = ", c_r)
+print("resolution = ", resolution)
 
 
 # Initialize empty geometry using the build in kernel in GMSH
