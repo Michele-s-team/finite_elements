@@ -42,6 +42,10 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 mesh_coordinates = mesh.coordinates()
+
+mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
+ds_inner = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+
 # ds = ds(metadata={'quadrature_degree': 2})
 
 # n  = FacetNormal(mesh)
