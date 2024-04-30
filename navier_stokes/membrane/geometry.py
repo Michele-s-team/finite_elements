@@ -45,6 +45,8 @@ mesh_coordinates = mesh.coordinates()
 
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 ds_inner = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+inner_circumference = assemble(1*ds_inner)
+print("Inner circumference = ", inner_circumference/(2*np.pi))
 
 # ds = ds(metadata={'quadrature_degree': 2})
 
