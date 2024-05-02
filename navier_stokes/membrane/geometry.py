@@ -233,10 +233,15 @@ def e_p(z, x):
 def normal_p(z, x):
     return ((project(normal(z), O3d))(x))
 
-#radial vector in the x,y plane for polar coordinates with origin at c_r
+#radial vector for polar coordinates with origin at c_r (intended as a vector in R^3)
 def hat_r():
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor(np.divide([x[0]-c_r[0], x[1]-c_r[1], 0.0], my_norm(np.subtract(x, c_r))))
+    
+#tangent vector for polar coordinates with origin at c_r (intended as a vector in R^3)
+def hat_t():
+    x = ufl.SpatialCoordinate(mesh)
+    return as_tensor(np.divide([-(x[1]-c_r[1]), x[0]-c_r[0], 0.0], my_norm(np.subtract(x, c_r))))
 
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
