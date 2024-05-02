@@ -133,7 +133,7 @@ bc_sigma = [bcsigma_outflow]
 xdmffile_geo.write(project(z_n, Q4), 0)
 # xdmffile_geo.write(project(n_inout(z_n), O), 0)
 xdmffile_geo.write(project(n(z_n), O), 0)
-xdmffile_geo.write(project(n_new(z_n, hat_t()), O), 0)
+xdmffile_geo.write(project(n_new(z_n), O), 0)
 # xdmffile_geo.write(project(detg(z_n), Q2), 0)
 # xdmffile_geo.write(project(H(z_n), Q4), 0)
 # xdmffile_geo.write(project(K(z_n), Q4), 0)
