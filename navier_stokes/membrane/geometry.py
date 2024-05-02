@@ -304,17 +304,17 @@ def sqrt_deth(z):
     # return 1
 
 #normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
-def n(z):
-    u = calc_normal_cg2(mesh)
-    # x = ufl.SpatialCoordinate(mesh)
-    # normalization = dot(u, u)
-    # zeta = g(z)[i,j]*u[i]*u[j]
-    c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
-    return as_tensor(c*u[i], (i))
+#def n(z):
+#    u = calc_normal_cg2(mesh)
+#    # x = ufl.SpatialCoordinate(mesh)
+#    # normalization = dot(u, u)
+#    # zeta = g(z)[i,j]*u[i]*u[j]
+#    c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
+#    return as_tensor(c*u[i], (i))
 
 
 #normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
-def n_new(z):
+def n(z):
     u = calc_normal_cg2(mesh)
     hat_z = as_tensor([0, 0, 1])
     hat_n = as_tensor([u[0], u[1], 0])
