@@ -307,6 +307,12 @@ def n(z):
     c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
     return as_tensor(c*u[i], (i))
 
+
+#normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
+def n_new(z, t):
+    c = as_tensor([-(e(z))[1, i]*t[i], (e(z))[0, i]*t[i]])
+    return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
+
 # def n_e(z):
 #
 #     x = ufl.SpatialCoordinate(mesh)
