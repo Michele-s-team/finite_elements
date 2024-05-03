@@ -178,7 +178,7 @@ F1v = Re * ( \
             + (- 0.5 * (w_n ** 2) * nu[i] * n_inout(z_n)[i]) * sqrt_deth(z_n) * ds) \
       + (g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
          + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-      + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + 0 * g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
+      + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + 1 * g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
     z_n) * ds
 #HERE I HAVE SET THE SECOND TERM IN d_{ij} TO ZERO
 # + dot(sigma_n * n, nu) * sqrt_detg(z_n) * ds - dot(2 * epsilon(U) * n, nu) * sqrt_detg(z_n) * ds
