@@ -160,7 +160,7 @@ class TangentVelocityExpression(UserExpression):
 class ManifoldExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 0
-        values[0] =  1E-3 * (x[0]*(x[0]-L)/L**2) *  (x[1]*(x[1]-h)/h**2)
+        values[0] =  1E-3 * np.cos(x[0]/L * 2*(math.pi))
     def value_shape(self):
         return (1,)
 
