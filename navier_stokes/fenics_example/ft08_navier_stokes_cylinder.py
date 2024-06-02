@@ -22,6 +22,8 @@ args = parser.parse_args()
 
 #T = 1.0            # final time
 #N = 1024  # number of time steps
+T = (float)(args.T)
+N = (int)(args.N)
 dt = T / N # time step size
 mu = 0.001        # dynamic viscosity
 rho = 1            # density
