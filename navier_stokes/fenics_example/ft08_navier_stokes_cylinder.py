@@ -18,10 +18,10 @@ parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-T = 0.1            # final time
-num_steps = 10   # number of time steps
+T = 1.0            # final time
+num_steps = 1024  # number of time steps
 dt = T / num_steps # time step size
-mu = 1        # dynamic viscosity
+mu = 0.001        # dynamic viscosity
 rho = 1            # density
 
 # # Create mesh
@@ -31,10 +31,10 @@ rho = 1            # density
 # mesh = generate_mesh(domain, 64)
 
 L = 2.2
-h = 1.0
+h = 0.41
 r = 0.05
 # R = 1.0
-c_r = [0.2, h/2]
+c_r = [0.2, 0.2]
 
 #create mesh
 mesh=Mesh()
@@ -54,15 +54,15 @@ Q = FunctionSpace(mesh, 'P', 1)
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 2.2)'
-walls    = 'near(x[1], 0) || near(x[1], 1.0)'
-cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.4 && x[1]<0.6'
+walls    = 'near(x[1], 0) || near(x[1], 0.41)'
+cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 # inflow   = 'on_boundary && (x[0] < 0.0 + 0.001)'
 # outflow  = 'on_boundary && (x[0] > 0.0 + 0.001)'
 # cylinder = 'on_boundary && ((x[0]-0.0)*(x[0]-0.0) + (x[1]-0.0)*(x[1]-0.0) < (0.2*0.2))'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-inflow_profile = ('4.0*1.5*x[1]*(1.0 - x[1]) / pow(1.0, 2)', '0')
+inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
 
 # Define boundary conditions
 bcu_inflow = DirichletBC(V, Expression(inflow_profile, degree=2), inflow)
