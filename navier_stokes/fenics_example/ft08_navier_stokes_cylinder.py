@@ -59,6 +59,12 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 V = VectorFunctionSpace(mesh, 'P', 2)
 Q = FunctionSpace(mesh, 'P', 1)
 
+P_V = VectorElement('P', triangle, 2)
+P_Q = FiniteElement('P', triangle, 1)
+element = MixedElement([P_V, P_Q])
+VQ = FunctionSpace(mesh, element)
+
+
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
