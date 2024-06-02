@@ -94,12 +94,15 @@ v_single = TestFunctions(V)
 
 
 # Define functions for solutions at previous and current time steps
-u = Function(V)
-u_n = Function(V)
-u_  = Function(V)
-p = Function(Q)
-p_n = Function(Q)
-p_  = Function(Q)
+up = Function(VQ)
+u, p = split(up)
+
+up_n = Function(VQ)
+u_n, p_n = split(up_n)
+
+up_ = Function(VQ)
+u_, p_ = split(up_)
+
 
 # Define expressions used in variational forms
 U  = 0.5*(u_n + u_)
