@@ -89,8 +89,9 @@ bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
 bcp = [bcp_outflow]
 
 # Define trial and test functions
-v = TestFunction(V)
-q = TestFunction(Q)
+v, q= TestFunctions(VQ)
+v_single = TestFunctions(V)
+
 
 # Define functions for solutions at previous and current time steps
 u = Function(V)
