@@ -133,7 +133,7 @@ F1 = rho*dot((u_ - u_n) / k, v)*dx \
    + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
    - dot(f, v)*dx
 # Define variational problem for step 2
-F2 = dot(nabla_grad(p), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx)
+F2 = dot(nabla_grad(p_), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx)
 F12 = F1 + F2
 
 # Define variational problem for step 3
