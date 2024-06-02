@@ -90,7 +90,7 @@ bcp = [bcp_outflow]
 
 # Define trial and test functions
 v, q = TestFunctions(VQ)
-v_single = TestFunctions(V)
+v_single = TestFunction(V)
 
 
 # Define functions for solutions at previous and current time steps
@@ -102,6 +102,9 @@ u_n, p_n = split(up_n)
 
 up_ = Function(VQ)
 u_, p_ = split(up_)
+
+u_single = Function(V)
+p_single = Function(Q)
 
 
 # Define expressions used in variational forms
@@ -131,7 +134,7 @@ F2 = dot(nabla_grad(p), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q))
 F12 = F1 + F2
 
 # Define variational problem for step 3
-F3 = dot(u, v)*dx - (dot(u_, v)*dx - k*dot(nabla_grad(p - p_n), v)*dx)
+F3 = dot(u_single, v_single)*dx - (dot(u_, v_single)*dx - k*dot(nabla_grad(p_single - p_n), v_single)*dx)
 
 
 # Create XDMF files for visualization output
@@ -152,39 +155,28 @@ t = 0
 for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
-    xdmffile_u.write(u_n, t)
-    xdmffile_p.write(p_n, t)
+    _u_n, _p_n = up_n.split()
+
+    xdmffile_u.write(_u_n, t)
+    xdmffile_p.write(_p_n, t)
 
     # Update current time
     t += dt
 
-    # Step 1: Tentative velocity step
-#    b1 = assemble(L1)
-#    [bc.apply(b1) for bc in bcu]
-    solve(F1==0, u_, bcu)
-
-    # Step 2: Pressure correction step
-#    b2 = assemble(L2)
-#    [bc.apply(b2) for bc in bcp]
-    solve(F2==0, p, bcp)
+    # Step 1+2
+    solve(F12==0, up_, bc_up)
 
     # Step 3: Velocity correction step
-#    b3 = assemble(L3)
-    solve(F3==0, u)
-
-    # Plot solution
-    plot(u_, title='Velocity')
-    plot(p_, title='Pressure')
-
-
+    p_single.assign(p_)
+    solve(F3 == 0, u_single)
 
     # Save nodal values to file
-    timeseries_u.store(u_.vector(), t)
-    timeseries_p.store(p_.vector(), t)
+    timeseries_u.store(u_single.vector(), t)
+    timeseries_p.store(p_single.vector(), t)
 
     # Update previous solution
-    u_n.assign(u)
-    p_n.assign(p)
+    u_n.assign(u_single)
+    p_n.assign(p_single)
 
     # Update progress bar
     # progress.update(t / T)
