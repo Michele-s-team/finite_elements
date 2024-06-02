@@ -20,6 +20,9 @@ parser.add_argument("T")
 parser.add_argument("N")
 args = parser.parse_args()
 
+set_log_level(30)
+
+
 #T = 1.0            # final time
 #N = 1024  # number of time steps
 T = (float)(args.T)
