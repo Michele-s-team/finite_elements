@@ -86,7 +86,7 @@ p_n = Function(Q)
 p_  = Function(Q)
 
 # Define expressions used in variational forms
-U  = 0.5*(u_n + u)
+U  = 0.5*(u_n + u_)
 n  = FacetNormal(mesh)
 f  = Constant((0, 0))
 k  = Constant(dt)
@@ -102,7 +102,7 @@ def sigma(u, p):
     return 2*mu*epsilon(u) - p*Identity(len(u))
 
 # Define variational problem for step 1
-F1 = rho*dot((u - u_n) / k, v)*dx \
+F1 = rho*dot((u_ - u_n) / k, v)*dx \
    + rho*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
    + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
@@ -153,16 +153,16 @@ for n in range(num_steps):
     # Step 1: Tentative velocity step
 #    b1 = assemble(L1)
 #    [bc.apply(b1) for bc in bcu]
-    solve(F1==0, u, bcu)
+    solve(F1==0, u_, bcu)
 
     # Step 2: Pressure correction step
 #    b2 = assemble(L2)
 #    [bc.apply(b2) for bc in bcp]
-    solve(A2, p, bcp)
+    solve(F2==0, p, bcp)
 
     # Step 3: Velocity correction step
 #    b3 = assemble(L3)
-    solve(A3, u)
+    solve(F3==0, u)
 
     # Plot solution
     plot(u_, title='Velocity')
@@ -176,7 +176,7 @@ for n in range(num_steps):
 
     # Update previous solution
     u_n.assign(u_)
-    p_n.assign(p_)
+    p_n.assign(p)
 
     # Update progress bar
     # progress.update(t / T)
