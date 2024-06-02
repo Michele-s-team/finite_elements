@@ -181,7 +181,7 @@ for n in range(N):
     timeseries_p.store(p_.vector(), t)
 
     # Update previous solution
-    u_n.assign(u_)
+    u_n.assign(u)
     p_n.assign(p)
 
     # Update progress bar
