@@ -16,13 +16,18 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
+parser.add_argument("T")
+parser.add_argument("N")
 args = parser.parse_args()
 
-T = 1.0            # final time
-num_steps = 1024  # number of time steps
-dt = T / num_steps # time step size
+#T = 1.0            # final time
+#N = 1024  # number of time steps
+dt = T / N # time step size
 mu = 0.001        # dynamic viscosity
 rho = 1            # density
+
+print("T = ", T)
+print("N = ", N)
 
 # # Create mesh
 # channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
@@ -33,7 +38,6 @@ rho = 1            # density
 L = 2.2
 h = 0.41
 r = 0.05
-# R = 1.0
 c_r = [0.2, 0.2]
 
 #create mesh
@@ -141,7 +145,7 @@ File('cylinder.xml.gz') << mesh
 # Time-stepping
 print("Starting time iteration ...", flush=True)
 t = 0
-for n in range(num_steps):
+for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
     xdmffile_u.write(u_n, t)
