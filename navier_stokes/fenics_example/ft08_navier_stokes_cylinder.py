@@ -89,7 +89,7 @@ bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
 bcp = [bcp_outflow]
 
 # Define trial and test functions
-v, q= TestFunctions(VQ)
+v, q = TestFunctions(VQ)
 v_single = TestFunctions(V)
 
 
@@ -126,21 +126,13 @@ F1 = rho*dot((u_ - u_n) / k, v)*dx \
    + inner(sigma(U, p_n), epsilon(v))*dx \
    + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
    - dot(f, v)*dx
-
 # Define variational problem for step 2
 F2 = dot(nabla_grad(p), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx)
+F12 = F1 + F2
 
 # Define variational problem for step 3
 F3 = dot(u, v)*dx - (dot(u_, v)*dx - k*dot(nabla_grad(p - p_n), v)*dx)
 
-# Assemble matrices
-#A1 = assemble(a1)
-#A2 = assemble(a2)
-#A3 = assemble(a3)
-
-# Apply boundary conditions to matrices
-#[bc.apply(A1) for bc in bcu]
-#[bc.apply(A2) for bc in bcp]
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile('velocity.xdmf')
@@ -153,9 +145,6 @@ timeseries_p = TimeSeries('pressure_series')
 # Save mesh to file (for use in reaction_system.py)
 File('cylinder.xml.gz') << mesh
 
-# Create progress bar
-# progress = Progress('Time-stepping')
-# set_log_level(PROGRESS)
 
 # Time-stepping
 print("Starting time iteration ...", flush=True)
