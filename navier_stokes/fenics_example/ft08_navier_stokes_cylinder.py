@@ -118,7 +118,7 @@ F1 = rho*dot((u_ - u_n) / k, v)*dx \
 F2 = dot(nabla_grad(p), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx)
 
 # Define variational problem for step 3
-F3 = dot(u, v)*dx - (dot(u_, v)*dx - k*dot(nabla_grad(p_ - p_n), v)*dx)
+F3 = dot(u, v)*dx - (dot(u_, v)*dx - k*dot(nabla_grad(p - p_n), v)*dx)
 
 # Assemble matrices
 #A1 = assemble(a1)
