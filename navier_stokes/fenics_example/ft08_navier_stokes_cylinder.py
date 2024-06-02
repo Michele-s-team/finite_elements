@@ -170,7 +170,7 @@ for n in range(N):
     solve(F12==0, up_, bc_up)
 
     # Step 3: Velocity correction step
-    p_single.assign(p_)
+    p_single.assign(project(p_, Q))
     solve(F3 == 0, u_single)
 
     # Save nodal values to file
