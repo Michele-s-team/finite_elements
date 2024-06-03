@@ -169,8 +169,8 @@ t = 0
 for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
-    # xdmffile_u.write(u_n, t)
-    # xdmffile_p.write(p_n, t)
+    xdmffile_u.write(u_n, t)
+    xdmffile_p.write(p_n, t)
 
 
 
