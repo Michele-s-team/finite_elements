@@ -141,7 +141,7 @@ L12 = rhs(F12)
 
 
 # Define variational problem for step 3
-F3 = (dot(us, vs) - (dot(us, vs) - k*dot(nabla_grad(ps_ - p_n), vs))) * dx
+F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
 
 a3 = lhs(F3)
 L3 = rhs(F3)
