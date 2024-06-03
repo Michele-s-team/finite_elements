@@ -103,8 +103,8 @@ p_n = Function(Q)
 # _u_ = Function(V)
 # _p_ = Function(Q)
 
-# up_ = Function(VQ)
-# u_, p_ = split(up_)
+up_ = Function(VQ)
+u_, p_ = split(up_)
 
 us = TrialFunction(V)
 ps_ = Function(Q)
@@ -178,7 +178,12 @@ for n in range(N):
     t += dt
 
     # Step 1+2
-    solve(F12 == 0, up_, bc_up)
+    A12 = assemble(a12)
+    b12 = assemble(L12)
+    [bc.apply(A12) for bc in bc_up]
+    [bc.apply(b12) for bc in bc_up]
+
+    solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
     
     #write the numerical content of the solution from  solve(F12 == 0, up_, bc_up) into _u_ and _p_, so it will be used by solve(F3 == 0, us)
     _u_, _p_ = up_.split()
