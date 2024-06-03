@@ -194,7 +194,7 @@ for n in range(N):
 
 
     # Step 3: Velocity correction step
-    ps_.assign(project(p_, Q))
+    # ps_.assign(project(p_, Q))
     A3 = assemble(a3)
     b3 = assemble(L3)
  
