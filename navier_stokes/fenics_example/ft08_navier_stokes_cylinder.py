@@ -158,7 +158,6 @@ t = 0
 for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
-#    _u_n, _p_n = up_n.split()
 
     xdmffile_u.write(u_n, t)
     xdmffile_p.write(p_n, t)
@@ -168,6 +167,12 @@ for n in range(N):
 
     # Step 1+2
     solve(F12 == 0, up_, bc_up)
+    
+    # _u_, _p_ = up_.split()
+    # xdmffile_u.write(_u_, t)
+    # xdmffile_p.write(_p_, t)    
+    # print(_u_.vector())
+
 
     # Step 3: Velocity correction step
 #    p_single.assign(project(p_, Q))
