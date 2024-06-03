@@ -185,17 +185,14 @@ for n in range(N):
 
     solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
     
-    #write the numerical content of the solution from  solve(F12 == 0, up_, bc_up) into _u_ and _p_, so it will be used by solve(F3 == 0, us)
 
-    
-    # print(_u_.vector())
+      
 
 
     # Step 3: Velocity correction step
     # ps_.assign(project(p_, Q))
     A3 = assemble(a3)
     b3 = assemble(L3)
- 
     solve(A3, u_n.vector(), b3,  'cg', 'sor')
 
     # Save nodal values to file
@@ -203,9 +200,10 @@ for n in range(N):
     timeseries_p.store(p_n.vector(), t)
 
     # Update previous solution
-    _u_, _p_ = up_.split()
-    p_n.assign(_p_)
-
+    #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
+    #this step writes the numerical data of up_ into u_n, p_n -> I am interested only in writing into p_n with this line
+    _u_, p_n = up_.split()
+   
  
 
     print("\t%.2f %%" % (100.0*(t/T)), flush=True)
