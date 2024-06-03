@@ -144,6 +144,10 @@ F3 = (dot(us, vs) - (dot(_u_, vs) - k*dot(nabla_grad(_p_ - p_n), vs))) * dx
 xdmffile_u = XDMFFile('velocity.xdmf')
 xdmffile_p = XDMFFile('pressure.xdmf')
 
+# Create VTK files for visualization output
+vtkfile_u = File('v.pvd')
+vtkfile_p = File('p.pvd')
+
 # Create time series (for use in reaction_system.py)
 timeseries_u = TimeSeries('velocity_series')
 timeseries_p = TimeSeries('pressure_series')
@@ -158,8 +162,10 @@ t = 0
 for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
-    xdmffile_u.write(u_n, t)
-    xdmffile_p.write(p_n, t)
+    # xdmffile_u.write(u_n, t)
+    # xdmffile_p.write(p_n, t)
+
+
 
     # Update current time
     t += dt
@@ -169,8 +175,9 @@ for n in range(N):
     
     #write the numerical content of the solution from  solve(F12 == 0, up_, bc_up) into _u_ and _p_, so it will be used by solve(F3 == 0, us)
     _u_, _p_ = up_.split()
-    # xdmffile_u.write(_u_, t)
-    # xdmffile_p.write(_p_, t)    
+    xdmffile_u.write(_u_, t)
+    xdmffile_p.write(_p_, t)
+    
     # print(_u_.vector())
 
 
