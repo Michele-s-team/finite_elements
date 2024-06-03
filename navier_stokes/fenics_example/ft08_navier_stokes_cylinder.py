@@ -100,8 +100,8 @@ u, p = split(up)
 
 u_n = Function(V)
 p_n = Function(Q)
-#up_n = Function(VQ)
-#u_n, p_n = split(up_n)
+_u_ = Function(V)
+_p_ = Function(Q)
 
 up_ = Function(VQ)
 u_, p_ = split(up_)
@@ -137,7 +137,7 @@ F2 = (dot(nabla_grad(p_), nabla_grad(q)) - (dot(nabla_grad(p_n), nabla_grad(q)) 
 F12 = F1 + F2
 
 # Define variational problem for step 3
-F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
+F3 = (dot(us, vs) - (dot(_u_, vs) - k*dot(nabla_grad(_p_ - p_n), vs))) * dx
 
 
 # Create XDMF files for visualization output
@@ -168,14 +168,14 @@ for n in range(N):
     # Step 1+2
     solve(F12 == 0, up_, bc_up)
     
-    # _u_, _p_ = up_.split()
+    #write the numerical content of the solution from  solve(F12 == 0, up_, bc_up) into _u_ and _p_, so it will be used by solve(F3 == 0, us)
+    _u_, _p_ = up_.split()
     # xdmffile_u.write(_u_, t)
     # xdmffile_p.write(_p_, t)    
     # print(_u_.vector())
 
 
     # Step 3: Velocity correction step
-#    p_single.assign(project(p_, Q))
     solve(F3 == 0, us)
 
     # Save nodal values to file
@@ -183,7 +183,9 @@ for n in range(N):
     timeseries_p.store(p_n.vector(), t)
 
     # Update previous solution
+    #write p_ into p_n (also u_ into u_n but I don't care)
     u_n, p_n = up_.split()
+    #write us into u_n
     u_n.assign(us)
 
     # Update progress bar
