@@ -186,9 +186,7 @@ for n in range(N):
     solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
     
     #write the numerical content of the solution from  solve(F12 == 0, up_, bc_up) into _u_ and _p_, so it will be used by solve(F3 == 0, us)
-    _u_, _p_ = up_.split()
-    xdmffile_u.write(_u_, t)
-    xdmffile_p.write(_p_, t)
+
     
     # print(_u_.vector())
 
@@ -205,10 +203,10 @@ for n in range(N):
     timeseries_p.store(p_n.vector(), t)
 
     # Update previous solution
-    #write p_ into p_n (also u_ into u_n but I don't care)
-    u_n, p_n = up_.split()
-    #write us into u_n
-    u_n.assign(us)
+    _u_, _p_ = up_.split()
+    p_n.assign(_p_)
+
+ 
 
     print("\t%.2f %%" % (100.0*(t/T)), flush=True)
 
