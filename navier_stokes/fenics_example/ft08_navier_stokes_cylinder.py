@@ -158,7 +158,6 @@ t = 0
 for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
-
     xdmffile_u.write(u_n, t)
     xdmffile_p.write(p_n, t)
 
@@ -188,9 +187,6 @@ for n in range(N):
     #write us into u_n
     u_n.assign(us)
 
-    # Update progress bar
-    # progress.update(t / T)
-    # print('u max:', u_.vector().array().max())
     print("\t%.2f %%" % (100.0*(t/T)), flush=True)
 
 print("... done.", flush=True)
