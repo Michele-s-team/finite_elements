@@ -90,7 +90,7 @@ bc_up = [bcu_inflow, bcu_walls, bcu_cylinder, bcp_outflow]
 
 # Define trial and test functions
 v, q = TestFunctions(VQ)
-v_single = TestFunction(V)
+vs = TestFunction(V)
 
 
 # Define functions for solutions at previous and current time steps
@@ -106,8 +106,8 @@ p_n = Function(Q)
 up_ = Function(VQ)
 u_, p_ = split(up_)
 
-u_single = Function(V)
-p_single = Function(Q)
+us = Function(V)
+ps = Function(Q)
 
 
 # Define expressions used in variational forms
@@ -137,7 +137,7 @@ F2 = dot(nabla_grad(p_), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q)
 F12 = F1 + F2
 
 # Define variational problem for step 3
-F3 = dot(u_single, v_single)*dx - (dot(u_, v_single)*dx - k*dot(nabla_grad(p_ - p_n), v_single)*dx)
+F3 = dot(us, vs)*dx - (dot(u_, vs)*dx - k*dot(nabla_grad(p_ - p_n), vs)*dx)
 
 
 # Create XDMF files for visualization output
@@ -171,7 +171,7 @@ for n in range(N):
 
     # Step 3: Velocity correction step
 #    p_single.assign(project(p_, Q))
-    solve(F3 == 0, u_single)
+    solve(F3 == 0, us)
 
     # Save nodal values to file
     timeseries_u.store(u_n.vector(), t)
@@ -179,7 +179,7 @@ for n in range(N):
 
     # Update previous solution
     u_n, p_n = up_.split()
-    u_n.assign(u_single)
+    u_n.assign(us)
 
     # Update progress bar
     # progress.update(t / T)
