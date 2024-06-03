@@ -133,11 +133,11 @@ F1 = rho*dot((u_ - u_n) / k, v)*dx \
    + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
    - dot(f, v)*dx
 # Define variational problem for step 2
-F2 = dot(nabla_grad(p_), nabla_grad(q))*dx - (dot(nabla_grad(p_n), nabla_grad(q))*dx - (1/k)*div(u_)*q*dx)
+F2 = (dot(nabla_grad(p_), nabla_grad(q)) - (dot(nabla_grad(p_n), nabla_grad(q)) - (1/k)*div(u_)*q))*dx
 F12 = F1 + F2
 
 # Define variational problem for step 3
-F3 = dot(us, vs)*dx - (dot(u_, vs)*dx - k*dot(nabla_grad(p_ - p_n), vs)*dx)
+F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
 
 
 # Create XDMF files for visualization output
