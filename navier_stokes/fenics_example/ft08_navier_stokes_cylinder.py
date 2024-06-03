@@ -194,7 +194,11 @@ for n in range(N):
 
 
     # Step 3: Velocity correction step
-    solve(F3 == 0, us)
+    ps_.assign(project(p_, Q))
+    A3 = assemble(a3)
+    b3 = assemble(L3)
+ 
+    solve(A3, u_n.vector(), b3,  'cg', 'sor')
 
     # Save nodal values to file
     timeseries_u.store(u_n.vector(), t)
