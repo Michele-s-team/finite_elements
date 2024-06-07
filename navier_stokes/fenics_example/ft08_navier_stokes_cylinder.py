@@ -56,13 +56,13 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 
 # Define function spaces
-V = VectorFunctionSpace(mesh, 'P', 2)
-Q = FunctionSpace(mesh, 'P', 1)
-
 P_V = VectorElement('P', triangle, 2)
 P_Q = FiniteElement('P', triangle, 1)
 element = MixedElement([P_V, P_Q])
 VQ = FunctionSpace(mesh, element)
+V = VQ.sub(0).collapse()
+Q = VQ.sub(1).collapse()
+
 
 
 # Define boundaries and obstacle
@@ -75,9 +75,6 @@ cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 
 # Define inflow profile
 inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
-
-# Define boundary conditions
-#bc = DirichletBC(V.sub(1), u_D, boundary)
 
 
 bcu_inflow = DirichletBC(VQ.sub(0), Expression(inflow_profile, degree=2), inflow)
@@ -97,11 +94,8 @@ vs = TestFunction(V)
 up = TrialFunction(VQ)
 u, p = split(up)
 
-
 u_n = Function(V)
 p_n = Function(Q)
-# _u_ = Function(V)
-# _p_ = Function(Q)
 
 up_ = Function(VQ)
 u_, p_ = split(up_)
@@ -186,9 +180,6 @@ for n in range(N):
     solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
     
 
-      
-
-
     # Step 3: Velocity correction step
     # ps_.assign(project(p_, Q))
     A3 = assemble(a3)
@@ -202,13 +193,10 @@ for n in range(N):
     # Update previous solution
     #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
     #this step writes the numerical data of up_ into u_n, p_n -> I am interested only in writing into p_n with this line
-    _u_, p_n = up_.split()
+    _u_, p_n = up_.split(deepcopy=True)
    
  
 
     print("\t%.2f %%" % (100.0*(t/T)), flush=True)
 
 print("... done.", flush=True)
-
-# Hold plot
-# interactive()
