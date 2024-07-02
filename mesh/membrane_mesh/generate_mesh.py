@@ -35,24 +35,22 @@ my_points = [ model.add_point((0, 0, 0), mesh_size=resolution),
              model.add_point((L, h, 0), mesh_size=resolution),
              model.add_point((0, h, 0), mesh_size=resolution)]
 
-# Add lines between all points creating the rectangle
-channel_lines = [model.add_line(my_points[i], my_points[i+1])
-                  for i in range(-1, len(my_points)-1)]
+channel_lines = [model.add_line(my_points[0], my_points[1]),
+                   model.add_line(my_points[1], my_points[2]),
+                   model.add_line(my_points[2], my_points[3]),
+                   model.add_line(my_points[3], my_points[0])]
 
 channel_loop = model.add_curve_loop(channel_lines)
-plane_surface = model.add_plane_surface(
-    channel_loop)
+plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
 
 model.synchronize()
-
 model.add_physical([plane_surface], "Volume")
-model.add_physical([channel_lines[0]], "Inflow")
-model.add_physical([channel_lines[2]], "Outflow")
-model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
-# model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
-# model.add_physical(channel_loop.curves, "Boundary")
-#model.add_physical(circle2.curve_loop.curves, "Obstacle 2")
+model.add_physical([channel_lines[3]], "Inflow")
+model.add_physical([channel_lines[1]], "Outflow")
+model.add_physical([channel_lines[2]], "TopWall")
+model.add_physical([channel_lines[0]], "BottomWall")
+# model.add_physical(circle_r.curve_loop.curves, "Circle")
 
 geometry.generate_mesh(dim=2)
 gmsh.write("membrane_mesh.msh")
