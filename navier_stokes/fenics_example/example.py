@@ -40,7 +40,8 @@ mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
     
-
+def Nabla(u):
+    return (u.dx(i).dx(i))
 
     
     
@@ -156,7 +157,7 @@ u, v = split(uv)
 uv_ = Function(UV)
 u_ = Function(U)
 v_ = Function(V)
-# h = Function(V)
+error = Function(V)
 
 H = Constant(H)
 L = Constant(L)
@@ -170,7 +171,7 @@ a = lhs(Fuv)
 L = rhs(Fuv)
 
 
-xdmffile_check.write(f, 0)
+# xdmffile_check.write(f, 0)
 # xdmffile_check.write(h, 0)
 
 
@@ -184,6 +185,11 @@ b = assemble(L)
 solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
     
 u_, v_ = uv_.split(deepcopy=True)
+
+# error.assign(project(Nabla(u_)-v_, U))
+xdmffile_check.write(project(Nabla(u_)-v_, U), 0)
+xdmffile_check.write(project(Nabla(v_)-f, U), 0)
+
    
 # Save solution to file (XDMF/HDF5)
 xdmffile_u.write(u_, 0)
