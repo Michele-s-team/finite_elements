@@ -52,7 +52,13 @@ UV = FunctionSpace(mesh, element)
 U = UV.sub(0).collapse()
 V = UV.sub(1).collapse()
 
-
+#trial analytical expression for w
+class h_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0.0
+        
+    def value_shape(self):
+        return (1,)
 
 
 # Define boundaries and obstacle
