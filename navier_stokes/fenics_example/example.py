@@ -75,20 +75,9 @@ u, v = split(uv)
 
 
 # Define expressions used in variational forms
-U  = 0.5*(u_n + u)
-n  = FacetNormal(mesh)
-f  = Constant((0, 0))
-k  = Constant(dt)
-mu = Constant(mu)
 rho = Constant(rho)
 
-# Define symmetric gradient
-def epsilon(u):
-    return sym(nabla_grad(u))
 
-# Define stress tensor
-def sigma(u, p):
-    return 2*mu*epsilon(u) - p*Identity(len(u))
 
 # Define variational problem for step 1
 F1 = rho*dot((u - u_n) / k, nu_u)*dx \
