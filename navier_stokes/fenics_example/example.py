@@ -55,10 +55,10 @@ V = UV.sub(1).collapse()
 #trial analytical expression for w
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = conditional(lt(abs(x[0] - 0.0), tol), , 1.0) * \
-                    conditional(lt(abs(x[0] - L), tol), , 1.0) * \
-                    conditional(lt(abs(x[1] - 0.0), tol), , 1.0) * \
-                    conditional(lt(abs(x[1] - h), tol), , 1.0)
+        values[0] = conditional(lt(abs(x[0] - 0.0), tol), 0.0, 1.0) * \
+                    conditional(lt(abs(x[0] - L), tol), (L**3)/12.0, 1.0) * \
+                    conditional(lt(abs(x[1] - 0.0), tol), 0.0, 1.0) * \
+                    conditional(lt(abs(x[1] - h), tol), (H**3)/12.0, 1.0)
         
     def value_shape(self):
         return (1,)
