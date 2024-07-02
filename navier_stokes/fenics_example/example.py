@@ -105,9 +105,6 @@ L = rhs(Fuv)
 
 
 
-# Create XDMF files for visualization output
-xdmffile_u = XDMFFile('u.xdmf')
-xdmffile_v = XDMFFile('v.xdmf')
 
 
 # Step 1+2
