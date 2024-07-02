@@ -53,10 +53,10 @@ walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
+g = ('(x[0]*x[0]*x[0]*x[0] + x[1]*x[1]*x[1]*x[1])/48.0')
 
 
-bcu_inflow = DirichletBC(UV.sub(0), Expression(inflow_profile, degree=2), inflow)
+bcu_inflow = DirichletBC(UV.sub(0), Expression(g, degree=2), inflow)
 bcu_walls = DirichletBC(UV.sub(0), Constant((0, 0)), walls)
 bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
