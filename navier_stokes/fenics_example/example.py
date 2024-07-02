@@ -159,7 +159,7 @@ f = Constant(1.0)
 #    + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
 #    - dot(f, nu_u)*dx
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + - ( (L**3/12.0) * nu_v * ds_outflow + (H**3)/12.0 * nu_v * ds_top_wall )
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx - ( (L**3/12.0) * nu_v * ds_outflow + (H**3)/12.0 * nu_v * ds_top_wall )
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
