@@ -71,6 +71,9 @@ nu_u, nu_v = TestFunctions(UV)
 # Define functions for solutions at previous and current time steps
 uv = TrialFunction(UV)
 u, v = split(uv)
+uv_ = Function(UV)
+u_ = Function(U)
+v_ = Function(V)
 
 
 
@@ -86,73 +89,27 @@ Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + (- h*nu_v) * ds
 # Define variational problem for step 2
 Fuv = Fu + Fv
 
-a12 = lhs(Fuv)
-L12 = rhs(Fuv)
+a = lhs(Fuv)
+L = rhs(Fuv)
 
-
-# Define variational problem for step 3
-F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
-
-a3 = lhs(F3)
-L3 = rhs(F3)
 
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('velocity.xdmf')
-xdmffile_p = XDMFFile('pressure.xdmf')
-
-# Create VTK files for visualization output
-vtkfile_u = File('v.pvd')
-vtkfile_p = File('p.pvd')
-
-# Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('velocity_series')
-timeseries_p = TimeSeries('pressure_series')
-
-# Save mesh to file (for use in reaction_system.py)
-File('cylinder.xml.gz') << mesh
+xdmffile_u = XDMFFile('u.xdmf')
+xdmffile_v = XDMFFile('v.xdmf')
 
 
-# Time-stepping
-print("Starting time iteration ...", flush=True)
-t = 0
-for n in range(N):
+# Step 1+2
+A = assemble(a)
+b = assemble(L)
+[bc.apply(A) for bc in bc_u]
+[bc.apply(b) for bc in bc_u]
 
-    # Save solution to file (XDMF/HDF5)
-    xdmffile_u.write(u_n, t)
-    xdmffile_p.write(p_n, t)
-
-
-
-    # Update current time
-    t += dt
-
-    # Step 1+2
-    A12 = assemble(a12)
-    b12 = assemble(L12)
-    [bc.apply(A12) for bc in bc_u]
-    [bc.apply(b12) for bc in bc_u]
-
-    solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
+solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
     
-
-    # Step 3: Velocity correction step
-    # ps_.assign(project(p_, Q))
-    A3 = assemble(a3)
-    b3 = assemble(L3)
-    solve(A3, u_n.vector(), b3,  'cg', 'sor')
-
-    # Save nodal values to file
-    timeseries_u.store(u_n.vector(), t)
-    timeseries_p.store(p_n.vector(), t)
-
-    # Update previous solution
-    #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
-    #this step writes the numerical data of up_ into u_n, p_n -> I am interested only in writing into p_n with this line
-    _u_, p_n = up_.split(deepcopy=True)
+u_, v_ = uv_.split(deepcopy=True)
    
  
-
-    print("\t%.2f %%" % (100.0*(t/T)), flush=True)
-
-print("... done.", flush=True)
+# Save solution to file (XDMF/HDF5)
+xdmffile_u.write(u_, t)
+xdmffile_v.write(v_, t)
