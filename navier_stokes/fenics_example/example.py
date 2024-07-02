@@ -65,22 +65,13 @@ bcu_walls = DirichletBC(UV.sub(0), Expression(g, degree=4), walls)
 bc_u = [bcu_inflow, bcu_walls, bcu_outflow]
 
 # Define trial and test functions
-v, q = TestFunctions(UV)
-vs = TestFunction(U)
+nu_u, nu_v = TestFunctions(UV)
 
 
 # Define functions for solutions at previous and current time steps
-up = TrialFunction(UV)
-u, p = split(up)
+uv = TrialFunction(UV)
+u, v = split(uv)
 
-u_n = Function(U)
-p_n = Function(V)
-
-up_ = Function(UV)
-u_, p_ = split(up_)
-
-us = TrialFunction(U)
-ps_ = Function(V)
 
 
 # Define expressions used in variational forms
@@ -100,13 +91,13 @@ def sigma(u, p):
     return 2*mu*epsilon(u) - p*Identity(len(u))
 
 # Define variational problem for step 1
-F1 = rho*dot((u - u_n) / k, v)*dx \
-   + rho*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
-   + inner(sigma(U, p_n), epsilon(v))*dx \
-   + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
-   - dot(f, v)*dx
+F1 = rho*dot((u - u_n) / k, nu_u)*dx \
+   + rho*dot(dot(u_n, nabla_grad(u_n)), nu_u)*dx \
+   + inner(sigma(U, p_n), epsilon(nu_u))*dx \
+   + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
+   - dot(f, nu_u)*dx
 # Define variational problem for step 2
-F2 = (dot(nabla_grad(p), nabla_grad(q)) - (dot(nabla_grad(p_n), nabla_grad(q)) - (1/k)*div(u)*q))*dx
+F2 = (dot(nabla_grad(v), nabla_grad(nu_v)) - (dot(nabla_grad(p_n), nabla_grad(nu_v)) - (1/k)*div(u)*nu_v))*dx
 F12 = F1 + F2
 
 a12 = lhs(F12)
