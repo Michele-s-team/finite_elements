@@ -67,7 +67,7 @@ V = UV.sub(1).collapse()
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] =  np.sin(x[1]/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
+        values[0] =  np.sin((x[1]+x[0])/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
     def value_shape(self):
         return (1,)
 
@@ -108,9 +108,9 @@ top_wall_integral = assemble(f_test_ds*ds_top_wall)
 bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
 # print("Circle length = ", circle_length, "exact value = 0.02756453133593419.")
 print("Inflow integral = ", inflow_integral, " exact value = -0.19296108663371084")
-print("Outflow integral = ", outflow_integral, " exact value = 0.1123082712601091")
-print("Top-wall integral = ", top_wall_integral, " exact value = 0.20313285886430058")
-print("Bottom-wall integral = ", bottom_wall_integral, " exact value = 0")
+print("Outflow integral = ", outflow_integral, " exact value = 0.07291330718050365")
+print("Top-wall integral = ", top_wall_integral, " exact value = 0.2506982061292486")
+print("Bottom-wall integral = ", bottom_wall_integral, " exact value = -0.322029857257521")
 
     
 
