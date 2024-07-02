@@ -23,6 +23,9 @@ set_log_level(30)
 # domain = channel - cylinder
 # mesh = generate_mesh(domain, 64)
 
+print("input directory = ", (args.input_directory))
+print("output directory = ", (args.output_directory))
+
 L = 1
 h = 1
 # r = 0.05
