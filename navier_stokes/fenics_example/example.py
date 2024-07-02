@@ -77,13 +77,13 @@ class test_function_expression(UserExpression):
 class f_expression(UserExpression):
     def eval(self, values, x):
         # values[0] =  sin(np.pi * x[0]/L)
-        values[0] =  0
+        values[0] =  2.0*(1.0/L + 1.0/H)
     def value_shape(self):
         return (1,)
 
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = 1
         
     def value_shape(self):
         return (1,)
@@ -132,10 +132,10 @@ boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-g = ('pow(x[0], 4) + pow(x[1], 4) - 6 * pow(x[0], 2)*pow(x[1], 2)')
+g = ('-(pow(x[0], 3)/6.0)+pow(x[0], 4)+(-6.0+1.0/(2.0*L)) * pow(x[0], 2) * pow(x[1], 2) - pow(x[1], 3)/6.0+1.0/12.0* (12.0+1.0/H-1.0/L) * pow(x[1], 4)')
 
 
-bcu = DirichletBC(UV.sub(0), Expression(g, degree=4), boundary)
+bcu = DirichletBC(UV.sub(0), Expression(g, degree=4, L=L, H=H), boundary)
 
 bc_uv = [bcu]
 
