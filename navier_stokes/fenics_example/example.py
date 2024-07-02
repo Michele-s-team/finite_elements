@@ -43,6 +43,13 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
 xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
+xdmffile_check = XDMFFile((args.output_directory) + "/geo.xdmf")
+# this is needed to write multiple data series to xdmffile_geo
+xdmffile_check.parameters.update(
+    {
+        "functions_share_mesh": True,
+        "rewrite_function_mesh": False
+    })
 
 
 # Define function spaces
@@ -116,6 +123,8 @@ a = lhs(Fuv)
 L = rhs(Fuv)
 
 
+xdmffile_check.write(f, 0)
+xdmffile_check.write(h, 0)
 
 
 
