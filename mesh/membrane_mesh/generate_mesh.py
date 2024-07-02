@@ -15,8 +15,8 @@ resolution = (float)(args.resolution)
 
 
 # Channel parameters
-L = 4.4
-h = 0.41
+L = 1
+h = 1
 
 
 
@@ -50,7 +50,6 @@ model.add_physical([plane_surface], "Volume")
 model.add_physical([channel_lines[0]], "Inflow")
 model.add_physical([channel_lines[2]], "Outflow")
 model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
-# model.add_physical(arc_R_out, "Outflow")
 # model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
 # model.add_physical(channel_loop.curves, "Boundary")
 #model.add_physical(circle2.curve_loop.curves, "Obstacle 2")
