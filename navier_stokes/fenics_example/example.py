@@ -65,7 +65,7 @@ U = UV.sub(0).collapse()
 V = UV.sub(1).collapse()
 
 #analytical expression for a general scalar function
-class ScalarFunctionExpression(UserExpression):
+class test_function_expression(UserExpression):
     def eval(self, values, x):
         values[0] =  np.sin((x[1]+x[0])/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
     def value_shape(self):
@@ -107,7 +107,7 @@ ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 
 #f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function(U)
-f_test_ds = interpolate(ScalarFunctionExpression(element=U.ufl_element()), U)
+f_test_ds = interpolate(test_function_expression(element=U.ufl_element()), U)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 # circle_length = assemble(f_test_ds*ds_circle)
