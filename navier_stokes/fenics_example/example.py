@@ -35,6 +35,10 @@ with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
 mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
+    
+# Create XDMF files for visualization output
+xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
+xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
 
 
 # Define function spaces
