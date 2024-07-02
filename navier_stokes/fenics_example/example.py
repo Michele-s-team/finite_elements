@@ -70,6 +70,14 @@ class ScalarFunctionExpression(UserExpression):
         values[0] =  np.sin((x[1]+x[0])/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
     def value_shape(self):
         return (1,)
+    
+
+#analytical expression for a general scalar function
+class f_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] =  1.0
+    def value_shape(self):
+        return (1,)
 
 # #trial analytical expression for w
 # class h_expression(UserExpression):
@@ -147,10 +155,9 @@ u_ = Function(U)
 v_ = Function(V)
 h = Function(V)
 
-f = Constant(1.0)
 H = Constant(H)
 L = Constant(L)
-# h = interpolate(h_expression(element=V.ufl_element()), V)
+f = interpolate(f_expression(element=V.ufl_element()), V)
 
 
 
