@@ -128,7 +128,8 @@ print("Bottom-wall integral = ", bottom_wall_integral, " exact value = -0.322029
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 1.0)'
-walls    = 'near(x[1], 0) || near(x[1], 1.0)'
+top_wall = 'near(x[1], 0)'
+bottom_wall = 'near(x[1], 1.0)'
 # cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 #CHANGE PARAMETERS HERE
 
@@ -138,11 +139,12 @@ g = ('(x[0]*x[0]*x[0]*x[0] + x[1]*x[1]*x[1]*x[1])/48.0')
 
 bcu_inflow = DirichletBC(UV.sub(0), Expression(g, degree=4), inflow)
 bcu_outflow = DirichletBC(UV.sub(0), Expression(g, degree=4), outflow)
-bcu_walls = DirichletBC(UV.sub(0), Expression(g, degree=4), walls)
+bcu_top_wall = DirichletBC(UV.sub(0), Expression(g, degree=4), top_wall)
+bcu_bottom_wall = DirichletBC(UV.sub(0), Expression(g, degree=4), bottom_wall)
 # bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
 
-bc_u = [bcu_inflow, bcu_walls, bcu_outflow]
+bc_u = [bcu_inflow, bcu_outflow, bcu_top_wall, bcu_bottom_wall]
 
 # Define trial and test functions
 nu_u, nu_v = TestFunctions(UV)
