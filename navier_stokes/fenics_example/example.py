@@ -47,6 +47,7 @@ V = UV.sub(1).collapse()
 
 
 
+
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
@@ -78,6 +79,7 @@ uv_ = Function(UV)
 u_ = Function(U)
 v_ = Function(V)
 
+f = Constant(1.0)
 
 
 
