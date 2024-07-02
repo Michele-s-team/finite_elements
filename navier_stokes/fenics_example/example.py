@@ -15,6 +15,7 @@ parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
+tol = 1E-3
 set_log_level(30)
 
 # Create mesh
@@ -58,7 +59,7 @@ class h_expression(UserExpression):
         values[0] = conditional(lt(abs(x[0] - 0.0), tol), 0.0, 1.0) * \
                     conditional(lt(abs(x[0] - L), tol), (L**3)/12.0, 1.0) * \
                     conditional(lt(abs(x[1] - 0.0), tol), 0.0, 1.0) * \
-                    conditional(lt(abs(x[1] - h), tol), (H**3)/12.0, 1.0)
+                    conditional(lt(abs(x[1] - H), tol), (H**3)/12.0, 1.0)
         
     def value_shape(self):
         return (1,)
