@@ -148,6 +148,8 @@ v_ = Function(V)
 h = Function(V)
 
 f = Constant(1.0)
+H = Constant(H)
+L = Constant(L)
 # h = interpolate(h_expression(element=V.ufl_element()), V)
 
 
