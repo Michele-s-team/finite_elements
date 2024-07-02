@@ -76,11 +76,13 @@ u, v = split(uv)
 
 
 # Define variational problem for step 1
-Fu = rho*dot((u - u_n) / k, nu_u)*dx \
-   + rho*dot(dot(u_n, nabla_grad(u_n)), nu_u)*dx \
-   + inner(sigma(U, p_n), epsilon(nu_u))*dx \
-   + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
-   - dot(f, nu_u)*dx
+# Fu = rho*dot((u - u_n) / k, nu_u)*dx \
+#    + rho*dot(dot(u_n, nabla_grad(u_n)), nu_u)*dx \
+#    + inner(sigma(U, p_n), epsilon(nu_u))*dx \
+#    + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
+#    - dot(f, nu_u)*dx
+Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + (- h*nu_v) * ds
 # Define variational problem for step 2
 Fv = (dot(nabla_grad(v), nabla_grad(nu_v)) - (dot(nabla_grad(p_n), nabla_grad(nu_v)) - (1/k)*div(u)*nu_v))*dx
 Fuv = Fu + Fv
