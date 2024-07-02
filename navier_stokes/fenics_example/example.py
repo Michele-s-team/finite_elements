@@ -47,9 +47,9 @@ V = UV.sub(1).collapse()
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
-outflow  = 'near(x[0], 2.2)'
-walls    = 'near(x[1], 0) || near(x[1], 0.41)'
-cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
+outflow  = 'near(x[0], 1.0)'
+walls    = 'near(x[1], 0) || near(x[1], 1.0)'
+# cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
