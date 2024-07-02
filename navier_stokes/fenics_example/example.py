@@ -56,9 +56,10 @@ walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 g = ('(x[0]*x[0]*x[0]*x[0] + x[1]*x[1]*x[1]*x[1])/48.0')
 
 
-bcu_inflow = DirichletBC(UV.sub(0), Expression(g, degree=2), inflow)
-bcu_walls = DirichletBC(UV.sub(0), Constant((0, 0)), walls)
-bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
+bcu_inflow = DirichletBC(UV.sub(0), Expression(g, degree=4), inflow)
+bcu_outflow = DirichletBC(UV.sub(0), Expression(g, degree=4), outflow)
+bcu_walls = DirichletBC(UV.sub(0), Expression(g, degree=4), walls)
+# bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
 bcp_outflow = DirichletBC(UV.sub(1), Constant(0), outflow)
 
