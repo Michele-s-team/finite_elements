@@ -85,6 +85,7 @@ u, v = split(uv)
 uv_ = Function(UV)
 u_ = Function(U)
 v_ = Function(V)
+h = Function(V)
 
 f = Constant(1.0)
 
