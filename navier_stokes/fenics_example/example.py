@@ -1,12 +1,3 @@
-"""
-FEniCS tutorial demo program: Incompressible Navier-Stokes equations
-for flow around a cylinder using the Incremental Pressure Correction
-Scheme (IPCS).
-
-  u' + u . nabla(u)) - div(sigma(u, p)) = f
-                                 div(u) = 0
-"""
-
 from __future__ import print_function
 from fenics import *
 from mshr import *
@@ -16,34 +7,23 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
-parser.add_argument("T")
-parser.add_argument("N")
 args = parser.parse_args()
 
 set_log_level(30)
 
 
-#T = 1.0            # final time
-#N = 1024  # number of time steps
-T = (float)(args.T)
-N = (int)(args.N)
-dt = T / N # time step size
-mu = 0.001        # dynamic viscosity
 rho = 1            # density
 
-print("T = ", T)
-print("N = ", N)
-
-# # Create mesh
+# Create mesh
 # channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
 # cylinder = Circle(Point(0.2, 0.2), 0.05)
 # domain = channel - cylinder
 # mesh = generate_mesh(domain, 64)
 
-L = 2.2
-h = 0.41
-r = 0.05
-c_r = [0.2, 0.2]
+L = 1
+h = 1
+# r = 0.05
+# c_r = [0.2, 0.2]
 
 #create mesh
 mesh=Mesh()
