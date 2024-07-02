@@ -75,7 +75,7 @@ class ScalarFunctionExpression(UserExpression):
 #analytical expression for a general scalar function
 class f_expression(UserExpression):
     def eval(self, values, x):
-        values[0] =  1.0
+        values[0] =  sin(np.pi * x[0]/L)
     def value_shape(self):
         return (1,)
 
