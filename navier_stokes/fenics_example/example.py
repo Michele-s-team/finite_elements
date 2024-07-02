@@ -97,7 +97,7 @@ f = Constant(1.0)
 #    + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
 #    - dot(f, nu_u)*dx
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + (- H*nu_v) * ds
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + (- h*nu_v) * ds
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
