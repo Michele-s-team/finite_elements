@@ -3,6 +3,12 @@ from fenics import *
 from mshr import *
 import numpy as np
 import argparse
+import ufl as ufl
+
+
+
+i, j, k, l = ufl.indices(4)
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
