@@ -160,14 +160,6 @@ H = Constant(H)
 L = Constant(L)
 f = interpolate(f_expression(element=V.ufl_element()), V)
 
-
-
-# Define variational problem for step 1
-# Fu = rho*dot((u - u_n) / k, nu_u)*dx \
-#    + rho*dot(dot(u_n, nabla_grad(u_n)), nu_u)*dx \
-#    + inner(sigma(U, p_n), epsilon(nu_u))*dx \
-#    + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
-#    - dot(f, nu_u)*dx
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
 Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx - ( (L**3)/12.0 * nu_v * ds_outflow + (H**3)/12.0 * nu_v * ds_top_wall )
 Fuv = Fu + Fv
