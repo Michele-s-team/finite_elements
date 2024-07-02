@@ -168,8 +168,8 @@ a = lhs(Fuv)
 L = rhs(Fuv)
 
 
-# xdmffile_check.write(f, 0)
-xdmffile_check.write(h, 0)
+xdmffile_check.write(f, 0)
+# xdmffile_check.write(h, 0)
 
 
 
