@@ -84,7 +84,6 @@ u, v = split(uv)
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
 Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + (- h*nu_v) * ds
 # Define variational problem for step 2
-Fv = (dot(nabla_grad(v), nabla_grad(nu_v)) - (dot(nabla_grad(p_n), nabla_grad(nu_v)) - (1/k)*div(u)*nu_v))*dx
 Fuv = Fu + Fv
 
 a12 = lhs(Fuv)
