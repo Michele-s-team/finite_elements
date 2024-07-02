@@ -74,23 +74,19 @@ u, v = split(uv)
 
 
 
-# Define expressions used in variational forms
-rho = Constant(rho)
-
-
 
 # Define variational problem for step 1
-F1 = rho*dot((u - u_n) / k, nu_u)*dx \
+Fu = rho*dot((u - u_n) / k, nu_u)*dx \
    + rho*dot(dot(u_n, nabla_grad(u_n)), nu_u)*dx \
    + inner(sigma(U, p_n), epsilon(nu_u))*dx \
    + dot(p_n*n, nu_u)*ds - dot(mu*nabla_grad(U)*n, nu_u)*ds \
    - dot(f, nu_u)*dx
 # Define variational problem for step 2
-F2 = (dot(nabla_grad(v), nabla_grad(nu_v)) - (dot(nabla_grad(p_n), nabla_grad(nu_v)) - (1/k)*div(u)*nu_v))*dx
-F12 = F1 + F2
+Fv = (dot(nabla_grad(v), nabla_grad(nu_v)) - (dot(nabla_grad(p_n), nabla_grad(nu_v)) - (1/k)*div(u)*nu_v))*dx
+Fuv = Fu + Fv
 
-a12 = lhs(F12)
-L12 = rhs(F12)
+a12 = lhs(Fuv)
+L12 = rhs(Fuv)
 
 
 # Define variational problem for step 3
