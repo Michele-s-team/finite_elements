@@ -40,6 +40,10 @@ mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
     
+
+
+    
+    
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
 xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
@@ -60,6 +64,13 @@ UV = FunctionSpace(mesh, element)
 U = UV.sub(0).collapse()
 V = UV.sub(1).collapse()
 
+#analytical expression for a general scalar function
+class ScalarFunctionExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] =  np.sin(x[1]/L) * np.cos((x[0]/H)**2)
+    def value_shape(self):
+        return (1,)
+
 #trial analytical expression for w
 class h_expression(UserExpression):
     def eval(self, values, x):
@@ -70,6 +81,32 @@ class h_expression(UserExpression):
         
     def value_shape(self):
         return (1,)
+    
+    
+    
+
+
+#read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
+mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
+
+# ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+
+
+#f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
+f_test_ds = Function(U)
+f_test_ds = interpolate(ScalarFunctionExpression(element=U.ufl_element()), U)
+
+#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
+# circle_length = assemble(f_test_ds*ds_circle)
+inflow_length = assemble(f_test_ds*ds_inflow)
+outflow_length = assemble(f_test_ds*ds_outflow)
+# print("Circle length = ", circle_length, "exact value = 0.02756453133593419.")
+print("Inflow length = ", inflow_length, " exact value = 0.03681588614337836.")
+print("Outflow length = ", outflow_length, " exact value = -0.004619303506436677")
+
+    
 
 
 # Define boundaries and obstacle
