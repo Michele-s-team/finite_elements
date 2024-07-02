@@ -92,6 +92,8 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
 ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
 ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+ds_top_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
+ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 
 
 #f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
@@ -102,9 +104,13 @@ f_test_ds = interpolate(ScalarFunctionExpression(element=U.ufl_element()), U)
 # circle_length = assemble(f_test_ds*ds_circle)
 inflow_integral = assemble(f_test_ds*ds_inflow)
 outflow_integral = assemble(f_test_ds*ds_outflow)
+top_wall_integral = assemble(f_test_ds*ds_top_wall)
+bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
 # print("Circle length = ", circle_length, "exact value = 0.02756453133593419.")
 print("Inflow integral = ", inflow_integral, " exact value = -0.19296108663371084")
 print("Outflow integral = ", outflow_integral, " exact value = 0.1123082712601091")
+print("Top-wall integral = ", top_wall_integral, " exact value = 0.20313285886430058")
+print("Bottom-wall integral = ", bottom_wall_integral, " exact value = 0")
 
     
 
