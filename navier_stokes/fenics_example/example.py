@@ -163,7 +163,7 @@ L = Constant(L)
 f = interpolate(f_expression(element=V.ufl_element()), V)
 
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx - ( (L**3)/12.0 * nu_v * ds_outflow + (H**3)/12.0 * nu_v * ds_top_wall )
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx - ( (L)/2.0 * nu_v * ds_outflow + (H)/2.0 * nu_v * ds_top_wall )
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
