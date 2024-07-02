@@ -32,16 +32,15 @@ with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
 mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-#sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
 # Define function spaces
-P_V = VectorElement('P', triangle, 2)
-P_Q = FiniteElement('P', triangle, 1)
-element = MixedElement([P_V, P_Q])
-VQ = FunctionSpace(mesh, element)
-V = VQ.sub(0).collapse()
-Q = VQ.sub(1).collapse()
+P_U = VectorElement('P', triangle, 4)
+P_V = FiniteElement('P', triangle, 4)
+element = MixedElement([P_U, P_V])
+UV = FunctionSpace(mesh, element)
+U = UV.sub(0).collapse()
+V = UV.sub(1).collapse()
 
 
 
@@ -57,31 +56,31 @@ cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
 
 
-bcu_inflow = DirichletBC(VQ.sub(0), Expression(inflow_profile, degree=2), inflow)
-bcu_walls = DirichletBC(VQ.sub(0), Constant((0, 0)), walls)
-bcu_cylinder = DirichletBC(VQ.sub(0), Constant((0, 0)), cylinder)
+bcu_inflow = DirichletBC(UV.sub(0), Expression(inflow_profile, degree=2), inflow)
+bcu_walls = DirichletBC(UV.sub(0), Constant((0, 0)), walls)
+bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
-bcp_outflow = DirichletBC(VQ.sub(1), Constant(0), outflow)
+bcp_outflow = DirichletBC(UV.sub(1), Constant(0), outflow)
 
 bc_up = [bcu_inflow, bcu_walls, bcu_cylinder, bcp_outflow]
 
 # Define trial and test functions
-v, q = TestFunctions(VQ)
-vs = TestFunction(V)
+v, q = TestFunctions(UV)
+vs = TestFunction(U)
 
 
 # Define functions for solutions at previous and current time steps
-up = TrialFunction(VQ)
+up = TrialFunction(UV)
 u, p = split(up)
 
-u_n = Function(V)
-p_n = Function(Q)
+u_n = Function(U)
+p_n = Function(V)
 
-up_ = Function(VQ)
+up_ = Function(UV)
 u_, p_ = split(up_)
 
-us = TrialFunction(V)
-ps_ = Function(Q)
+us = TrialFunction(U)
+ps_ = Function(V)
 
 
 # Define expressions used in variational forms
