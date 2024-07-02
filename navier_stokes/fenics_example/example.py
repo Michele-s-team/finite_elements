@@ -71,16 +71,16 @@ class ScalarFunctionExpression(UserExpression):
     def value_shape(self):
         return (1,)
 
-#trial analytical expression for w
-class h_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = conditional(lt(abs(x[0] - 0.0), tol), 0.0, 1.0) * \
-                    conditional(lt(abs(x[0] - L), tol), (L**3)/12.0, 1.0) * \
-                    conditional(lt(abs(x[1] - 0.0), tol), 0.0, 1.0) * \
-                    conditional(lt(abs(x[1] - H), tol), (H**3)/12.0, 1.0)
+# #trial analytical expression for w
+# class h_expression(UserExpression):
+#     def eval(self, values, x):
+#         values[0] = conditional(lt(abs(x[0] - 0.0), tol), 0.0, 1.0) * \
+#                     conditional(lt(abs(x[0] - L), tol), (L**3)/12.0, 1.0) * \
+#                     conditional(lt(abs(x[1] - 0.0), tol), 0.0, 1.0) * \
+#                     conditional(lt(abs(x[1] - H), tol), (H**3)/12.0, 1.0)
         
-    def value_shape(self):
-        return (1,)
+#     def value_shape(self):
+#         return (1,)
     
     
     
@@ -148,7 +148,7 @@ v_ = Function(V)
 h = Function(V)
 
 f = Constant(1.0)
-h = interpolate(h_expression(element=V.ufl_element()), V)
+# h = interpolate(h_expression(element=V.ufl_element()), V)
 
 
 
