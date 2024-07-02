@@ -61,9 +61,8 @@ bcu_outflow = DirichletBC(UV.sub(0), Expression(g, degree=4), outflow)
 bcu_walls = DirichletBC(UV.sub(0), Expression(g, degree=4), walls)
 # bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
-bcp_outflow = DirichletBC(UV.sub(1), Constant(0), outflow)
 
-bc_up = [bcu_inflow, bcu_walls, bcu_cylinder, bcp_outflow]
+bc_u = [bcu_inflow, bcu_walls, bcu_outflow]
 
 # Define trial and test functions
 v, q = TestFunctions(UV)
@@ -154,8 +153,8 @@ for n in range(N):
     # Step 1+2
     A12 = assemble(a12)
     b12 = assemble(L12)
-    [bc.apply(A12) for bc in bc_up]
-    [bc.apply(b12) for bc in bc_up]
+    [bc.apply(A12) for bc in bc_u]
+    [bc.apply(b12) for bc in bc_u]
 
     solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
     
