@@ -11,9 +11,6 @@ args = parser.parse_args()
 
 set_log_level(30)
 
-
-rho = 1            # density
-
 # Create mesh
 # channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
 # cylinder = Circle(Point(0.2, 0.2), 0.05)
@@ -86,7 +83,6 @@ v_ = Function(V)
 #    - dot(f, nu_u)*dx
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
 Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx + (- h*nu_v) * ds
-# Define variational problem for step 2
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
@@ -109,7 +105,6 @@ solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
     
 u_, v_ = uv_.split(deepcopy=True)
    
- 
 # Save solution to file (XDMF/HDF5)
 xdmffile_u.write(u_, t)
 xdmffile_v.write(v_, t)
