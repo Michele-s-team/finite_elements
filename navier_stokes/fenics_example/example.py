@@ -32,7 +32,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 
 # Define function spaces
-P_U = VectorElement('P', triangle, 4)
+P_U = FiniteElement('P', triangle, 4)
 P_V = FiniteElement('P', triangle, 4)
 element = MixedElement([P_U, P_V])
 UV = FunctionSpace(mesh, element)
