@@ -100,11 +100,11 @@ f_test_ds = interpolate(ScalarFunctionExpression(element=U.ufl_element()), U)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 # circle_length = assemble(f_test_ds*ds_circle)
-inflow_length = assemble(f_test_ds*ds_inflow)
-outflow_length = assemble(f_test_ds*ds_outflow)
+inflow_integral = assemble(f_test_ds*ds_inflow)
+outflow_integral = assemble(f_test_ds*ds_outflow)
 # print("Circle length = ", circle_length, "exact value = 0.02756453133593419.")
-print("Inflow length = ", inflow_length, " exact value = 0.03681588614337836.")
-print("Outflow length = ", outflow_length, " exact value = -0.004619303506436677")
+print("Inflow integral = ", inflow_integral, " exact value = 0.4596976941318607")
+print("Outflow integral = ", outflow_integral, " exact value = 0.2483757241417112")
 
     
 
