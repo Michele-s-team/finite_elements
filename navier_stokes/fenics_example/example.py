@@ -77,20 +77,16 @@ class test_function_expression(UserExpression):
 class f_expression(UserExpression):
     def eval(self, values, x):
         # values[0] =  sin(np.pi * x[0]/L)
-        values[0] =  1.0
+        values[0] =  0
     def value_shape(self):
         return (1,)
 
-# #trial analytical expression for w
-# class h_expression(UserExpression):
-#     def eval(self, values, x):
-#         values[0] = conditional(lt(abs(x[0] - 0.0), tol), 0.0, 1.0) * \
-#                     conditional(lt(abs(x[0] - L), tol), (L**3)/12.0, 1.0) * \
-#                     conditional(lt(abs(x[1] - 0.0), tol), 0.0, 1.0) * \
-#                     conditional(lt(abs(x[1] - H), tol), (H**3)/12.0, 1.0)
+class h_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
         
-#     def value_shape(self):
-#         return (1,)
+    def value_shape(self):
+        return (1,)
     
     
     
@@ -136,16 +132,12 @@ boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-g = ('(x[0]*x[0]*x[0]*x[0] + x[1]*x[1]*x[1]*x[1])/48.0')
-Lg = ('(x[0]*x[0] + x[1]*x[1])/4.0')
+g = ('pow(x[0], 4) + pow(x[1], 4) - 6 * pow(x[0], 2)*pow(x[1], 2)')
 
 
 bcu = DirichletBC(UV.sub(0), Expression(g, degree=4), boundary)
-bcv = DirichletBC(UV.sub(1), Expression(Lg, degree=4), boundary)
-# bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
-
-bc_uv = [bcu, bcv]
+bc_uv = [bcu]
 
 # Define trial and test functions
 nu_u, nu_v = TestFunctions(UV)
@@ -157,14 +149,17 @@ u, v = split(uv)
 uv_ = Function(UV)
 u_ = Function(U)
 v_ = Function(V)
+h = Function(V)
 error = Function(V)
 
 H = Constant(H)
 L = Constant(L)
 f = interpolate(f_expression(element=V.ufl_element()), V)
+h = interpolate(h_expression(element=V.ufl_element()), V)
 
-Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx 
+
+Fu = ( (u.dx(i)) * (nu_u.dx(i)) + v*nu_u ) * dx
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v ) * dx - h * nu_v * ds
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
