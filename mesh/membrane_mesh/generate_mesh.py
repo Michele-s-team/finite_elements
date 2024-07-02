@@ -28,8 +28,8 @@ c_r = [0.2, 0.2, 0]
 
 print("L = ", L)
 print("h = ", h)
-print("r = ", r)
-print("c_r = ", c_r)
+# print("r = ", r)
+# print("c_r = ", c_r)
 print("resolution = ", resolution)
 
 
@@ -40,96 +40,23 @@ model = geometry.__enter__()
 
 
 # Add circle
-# circle_R = model.add_circle(c_R, R, mesh_size=resolution)
-circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
+# circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
 rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
-# o_in = geometry.add_point([-L/2,0,0])
-# o_out = geometry.add_point([L/2,0,0])
-
-
-# p1 = geometry.add_point([-L/2,R,0])
-# p2 = geometry.add_point([-L/2-R,0,0])
-# p3 = geometry.add_point([-L/2,-R,0])
-
-# arc_R_in_up = model.add_circle_arc(p1,o_in,p2)
-# arc_R_in_down = model.add_circle_arc(p2,o_in,p3)
-
-# p4 = geometry.add_point([L/2,-R,0])
-# p5 = geometry.add_point([L/2+R,0,0])
-# p6 = geometry.add_point([L/2,R,0])
-
-# arc_R_out_down = model.add_circle_arc(p4,o_out,p5)
-# arc_R_out_up = model.add_circle_arc(p5,o_out,p6)
-
-
-#
-# my_points = [ model.add_point((1.3, 1.0, 0), mesh_size=resolution),
-#              model.add_point((1.7, 0.7, 0), mesh_size=resolution),
-#              model.add_point((2.5, 0.6, 0), mesh_size=resolution),
-#              model.add_point((4.2, 1.1, 0), mesh_size=resolution),
-#              model.add_point((3.0, 1.3, 0), mesh_size=resolution),
-#              model.add_point((1.7, 1.3, 0), mesh_size=resolution),
-#              ]
-
-# print(circle_R)
 # print(circle_r)
 print(rectangle_Lh)
 
-# print("Points defining the spline:")
-# for point in my_points:
-#     print(point)
-             
-# spline1 = model.add_spline([my_points[0], my_points[1], my_points[2], my_points[3], my_points[4], my_points[5], my_points[0]])
-#spline2 = model.add_spline([my_points[2], my_points[3], my_points[0]])
 
-# my_loop = model.add_curve_loop([spline1])
-
-# -
-
-# The next step is to create the channel with the circle as a hole.
-
-# +
-# Add points with finer resolution on left side
-# points = [model.add_point((-L/2, -h/2, 0), mesh_size=resolution),
-#           model.add_point((L/2, -h/2, 0), mesh_size=5*resolution),
-#           model.add_point((L/2, h/2, 0), mesh_size=5*resolution),
-#           model.add_point((-L/2, h/2, 0), mesh_size=resolution)]
-
-# Add lines between all points creating the rectangle
-# channel_lines = [model.add_line(points[i], points[i+1])
-#                  for i in range(-1, len(points)-1)]
-
-# channel_lines = [arc_R_in_up, arc_R_in_down, model.add_line(p3, p4), arc_R_out_down, arc_R_out_up, model.add_line(p6,p1)]
-
-
-# print("channel lines : ")
-# print(channel_lines)
-# #
-## Create a line loop and plane surface for meshing
-# channel_loop = model.add_curve_loop(channel_lines)
-#spline_loop = model.add_curve_loop(spline)
-# my_surface = model.add_plane_surface(my_loop)
-
-plane_surface = model.add_plane_surface(     rectangle_Lh.curve_loop, holes=[circle_r.curve_loop])
-# plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
+# plane_surface = model.add_plane_surface(     rectangle_Lh.curve_loop, holes=[circle_r.curve_loop])
+plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
 
 
 ## Call gmsh kernel before add physical entities
 model.synchronize()
-## -
-#
-## The final step before mesh generation is to mark the different boundaries and the volume mesh. Note that with pygmsh, boundaries with the same tag has to be added simultaneously. In this example this means that we have to add the top and
-##  bottom wall in one function call.
-#
-#volume_marker = 6
+
 model.add_physical([plane_surface], "Volume")
-# model.add_physical(arc_R_in_up, "Inflow")
-# model.add_physical(arc_R_out, "Outflow")
-# model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
-model.add_physical(circle_r.curve_loop.curves, "Obstacle")
-#model.add_physical(circle2.curve_loop.curves, "Obstacle 2")
+# model.add_physical(circle_r.curve_loop.curves, "Obstacle")
 
 #
 ## We generate the mesh using the pygmsh function `generate_mesh`. Generate mesh returns a `meshio.Mesh`. However, this mesh is tricky to extract physical tags from. Therefore we write the mesh to file using the `gmsh.write` function.
