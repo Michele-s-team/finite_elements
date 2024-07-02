@@ -114,5 +114,5 @@ solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
 u_, v_ = uv_.split(deepcopy=True)
    
 # Save solution to file (XDMF/HDF5)
-xdmffile_u.write(u_, t)
-xdmffile_v.write(v_, t)
+xdmffile_u.write(u_, 0)
+xdmffile_v.write(v_, 0)
