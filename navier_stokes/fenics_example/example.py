@@ -131,6 +131,7 @@ outflow  = 'near(x[0], 1.0)'
 top_wall = 'near(x[1], 0)'
 bottom_wall = 'near(x[1], 1.0)'
 # cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
+boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
@@ -138,20 +139,12 @@ g = ('(x[0]*x[0]*x[0]*x[0] + x[1]*x[1]*x[1]*x[1])/48.0')
 Lg = ('(x[0]*x[0] + x[1]*x[1])/4.0')
 
 
-bcu_inflow = DirichletBC(UV.sub(0), Expression(g, degree=4), inflow)
-bcu_outflow = DirichletBC(UV.sub(0), Expression(g, degree=4), outflow)
-bcu_top_wall = DirichletBC(UV.sub(0), Expression(g, degree=4), top_wall)
-bcu_bottom_wall = DirichletBC(UV.sub(0), Expression(g, degree=4), bottom_wall)
-
-bcv_inflow = DirichletBC(UV.sub(1), Expression(Lg, degree=4), inflow)
-bcv_outflow = DirichletBC(UV.sub(1), Expression(Lg, degree=4), outflow)
-bcv_top_wall = DirichletBC(UV.sub(1), Expression(Lg, degree=4), top_wall)
-bcv_bottom_wall = DirichletBC(UV.sub(1), Expression(Lg, degree=4), bottom_wall)
-
+bcu = DirichletBC(UV.sub(0), Expression(g, degree=4), boundary)
+bcv = DirichletBC(UV.sub(1), Expression(Lg, degree=4), boundary)
 # bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
 
-bc_uv = [bcu_inflow, bcu_outflow, bcu_top_wall, bcu_bottom_wall, bcv_inflow, bcv_outflow, bcv_top_wall, bcv_bottom_wall]
+bc_uv = [bcu, bcv]
 
 # Define trial and test functions
 nu_u, nu_v = TestFunctions(UV)
