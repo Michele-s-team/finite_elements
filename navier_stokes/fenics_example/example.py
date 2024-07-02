@@ -57,8 +57,8 @@ xdmffile_check.parameters.update(
 
 
 # Define function spaces
-P_U = FiniteElement('P', triangle, 4)
-P_V = FiniteElement('P', triangle, 4)
+P_U = FiniteElement('P', triangle, 2)
+P_V = FiniteElement('P', triangle, 2)
 element = MixedElement([P_U, P_V])
 UV = FunctionSpace(mesh, element)
 U = UV.sub(0).collapse()
@@ -135,16 +135,23 @@ bottom_wall = 'near(x[1], 1.0)'
 
 # Define inflow profile
 g = ('(x[0]*x[0]*x[0]*x[0] + x[1]*x[1]*x[1]*x[1])/48.0')
+Lg = ('(x[0]*x[0] + x[1]*x[1])/4.0')
 
 
 bcu_inflow = DirichletBC(UV.sub(0), Expression(g, degree=4), inflow)
 bcu_outflow = DirichletBC(UV.sub(0), Expression(g, degree=4), outflow)
 bcu_top_wall = DirichletBC(UV.sub(0), Expression(g, degree=4), top_wall)
 bcu_bottom_wall = DirichletBC(UV.sub(0), Expression(g, degree=4), bottom_wall)
+
+bcv_inflow = DirichletBC(UV.sub(1), Expression(Lg, degree=4), inflow)
+bcv_outflow = DirichletBC(UV.sub(1), Expression(Lg, degree=4), outflow)
+bcv_top_wall = DirichletBC(UV.sub(1), Expression(Lg, degree=4), top_wall)
+bcv_bottom_wall = DirichletBC(UV.sub(1), Expression(Lg, degree=4), bottom_wall)
+
 # bcu_cylinder = DirichletBC(UV.sub(0), Constant((0, 0)), cylinder)
 
 
-bc_u = [bcu_inflow, bcu_outflow, bcu_top_wall, bcu_bottom_wall]
+bc_uv = [bcu_inflow, bcu_outflow, bcu_top_wall, bcu_bottom_wall, bcv_inflow, bcv_outflow, bcv_top_wall, bcv_bottom_wall]
 
 # Define trial and test functions
 nu_u, nu_v = TestFunctions(UV)
@@ -163,7 +170,7 @@ L = Constant(L)
 f = interpolate(f_expression(element=V.ufl_element()), V)
 
 Fu = ( (u.dx(i))*(nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx - ( (L)/2.0 * nu_v * ds_outflow + (H)/2.0 * nu_v * ds_top_wall )
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v) * dx 
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
@@ -178,8 +185,8 @@ xdmffile_check.write(f, 0)
 # Step 1+2
 A = assemble(a)
 b = assemble(L)
-[bc.apply(A) for bc in bc_u]
-[bc.apply(b) for bc in bc_u]
+[bc.apply(A) for bc in bc_uv]
+[bc.apply(b) for bc in bc_uv]
 
 solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
     
