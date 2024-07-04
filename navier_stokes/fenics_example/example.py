@@ -25,14 +25,18 @@ O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
+        # values[0] = 2.0*x[0]
+        # values[1] = 4.0*x[1]
         values[0] = 2.0*x[0]
-        values[1] = 4.0*x[1]
+        values[1] = 6.0*((x[1])**2)
     def value_shape(self):
         return (2,)
     
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 6.0
+        # values[0] = 6.0
+        values[0] = 2.0 + 12.0 * x[1]
+        
     def value_shape(self):
         return (1,)
 
