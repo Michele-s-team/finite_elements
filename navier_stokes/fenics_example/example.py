@@ -27,7 +27,7 @@ class grad_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 2.0*x[0]
         # values[1] = 4.0*x[1]
-        values[0] = 8.0 * ((x[0])**7)
+        values[0] = - sin(x[0])
         values[1] = 9.0 * ((x[1])**8)
     def value_shape(self):
         return (2,)
@@ -35,7 +35,7 @@ class grad_u_expression(UserExpression):
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 6.0
-        values[0] = 8.0 *(7.0* ((x[0])**6) + 9.0 * ((x[1]**7)))
+        values[0] = 72.0 * ((x[1]**7)) - cos(x[0])
         
     def value_shape(self):
         return (1,)
