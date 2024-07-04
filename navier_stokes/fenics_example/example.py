@@ -83,15 +83,15 @@ class test_function_expression(UserExpression):
 #analytical expression for a general scalar function
 class f_expression(UserExpression):
     def eval(self, values, x):
-        values[0] =  1.0
+        values[0] =  7.0/6.0
     def value_shape(self):
         return (1,)
 
 #trial analytical expression for a vector
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]/2.0
-        values[1] = x[1]/2.0
+        values[0] = 7.0*x[0]/12.0
+        values[1] = 7.0*x[1]/12.0
     def value_shape(self):
         return (2,)
     
@@ -139,7 +139,7 @@ boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-g = ('(pow(x[0], 4) + pow(x[1], 4))/48.0')
+g = ('(pow(x[0], 4) + pow(x[1], 4) + pow(x[0], 2)*pow(x[1], 2) + x[0])/48.0')
 
 
 # bcu = DirichletBC(UV.sub(0), Expression(g, degree=4, L=L, H=H), boundary)
