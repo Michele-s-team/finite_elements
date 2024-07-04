@@ -77,14 +77,13 @@ class test_function_expression(UserExpression):
 #analytical expression for a general scalar function
 class f_expression(UserExpression):
     def eval(self, values, x):
-        # values[0] =  sin(np.pi * x[0]/L)
-        values[0] =  2.0*(1.0/L + 1.0/H)
+        values[0] =  1.0
     def value_shape(self):
         return (1,)
 
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1
+        values[0] = sqrt((x[0])**2 + (x[1])**2)/2.0
         
     def value_shape(self):
         return (1,)
@@ -166,11 +165,6 @@ Fuv = Fu + Fv
 
 a = lhs(Fuv)
 L = rhs(Fuv)
-
-
-# xdmffile_check.write(f, 0)
-# xdmffile_check.write(h, 0)
-
 
 
 # Step 1+2
