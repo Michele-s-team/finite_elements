@@ -136,7 +136,8 @@ g = ('(pow(x[0], 4) + pow(x[1], 4))/48.0')
 
 
 # bcu = DirichletBC(UV.sub(0), Expression(g, degree=4, L=L, H=H), boundary)
-bcu = DirichletBC(UV.sub(0), Expression(g, element = UV.sub(0).ufl_element(), L=L, H=H), boundary)
+# bcu = DirichletBC(UV.sub(0), Expression(g, element = UV.sub(0).ufl_element(), L=L, H=H), boundary)
+bcu = DirichletBC(UV.sub(0), Expression(g, element = UV.sub(0).ufl_element(), r=r), boundary)
 
 bc_uv = [bcu]
 
@@ -153,8 +154,9 @@ v_ = Function(V)
 h = Function(V)
 error = Function(V)
 
-H = Constant(H)
-L = Constant(L)
+# H = Constant(H)
+# L = Constant(L)
+r = Constant(r)
 f = interpolate(f_expression(element=V.ufl_element()), V)
 h = interpolate(h_expression(element=V.ufl_element()), V)
 
