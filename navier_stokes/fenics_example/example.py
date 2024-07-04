@@ -20,22 +20,22 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 n = FacetNormal(mesh)
 
-V = FunctionSpace(mesh, 'P', 1)
-O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
+V = FunctionSpace(mesh, 'P', 8)
+O = VectorFunctionSpace(mesh, 'P', 8, dim=2)
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 2.0*x[0]
         # values[1] = 4.0*x[1]
-        values[0] = 2.0*x[0]
-        values[1] = 6.0*((x[1])**2)
+        values[0] = 8.0 * ((x[0])**7)
+        values[1] = 9.0 * ((x[1])**8)
     def value_shape(self):
         return (2,)
     
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 6.0
-        values[0] = 2.0 + 12.0 * x[1]
+        values[0] = 8.0 *(7.0* ((x[0])**6) + 9.0 * ((x[1]**7)))
         
     def value_shape(self):
         return (1,)
