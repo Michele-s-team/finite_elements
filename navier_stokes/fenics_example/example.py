@@ -13,6 +13,7 @@ from __future__ import print_function
 from fenics import *
 import matplotlib.pyplot as plt
 import argparse
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -52,14 +53,8 @@ h = Function(O)
 h = interpolate(h_expression(element=O.ufl_element()), O)
 
 
-
-# Define boundary condition
-u_D = Expression('1 + x[0]*x[0] + 2*x[1]*x[1]', degree=2)
-
 def boundary(x, on_boundary):
     return on_boundary
-
-# bc = DirichletBC(V, u_D, boundary)
  
 # Define variational problem
 u = TrialFunction(V)
@@ -71,21 +66,6 @@ L = f*v*dx + dot(n,h)*v*ds
 # Compute solution
 u = Function(V)
 solve(a == L, u)
-
-
-
-# Compute error in L2 norm
-error_L2 = errornorm(u_D, u, 'L2')
-
-# Compute maximum error at vertices
-vertex_values_u_D = u_D.compute_vertex_values(mesh)
-vertex_values_u = u.compute_vertex_values(mesh)
-import numpy as np
-error_max = np.max(np.abs(vertex_values_u_D - vertex_values_u))
-
-# Print errors
-print('error_L2  =', error_L2)
-print('error_max =', error_max)
 
 xdmffile_u.write(u, 0)
 
