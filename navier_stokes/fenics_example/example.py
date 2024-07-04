@@ -12,8 +12,15 @@ Test problem is chosen to give an exact solution at all nodes of the mesh.
 from __future__ import print_function
 from fenics import *
 import matplotlib.pyplot as plt
+import argparse
 
-xdmffile_u = XDMFFile("u.xdmf")
+parser = argparse.ArgumentParser()
+parser.add_argument("input_directory")
+parser.add_argument("output_directory")
+args = parser.parse_args()
+
+
+xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
 
 
 # Create mesh and define function space
