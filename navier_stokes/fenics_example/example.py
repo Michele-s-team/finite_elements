@@ -132,7 +132,7 @@ boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-g = ('   (L * pow(x[1], 4) + H * ( pow(x[0], 4) - 2.0 * L * (pow(x[0], 3) * (3.0 + x[0]) - 6.0 * pow(x[0],2) * x[1] - 6.0 * x[0] * (1.0 + x[0]) * pow(x[1], 2) + 3.0 * pow(x[1], 3) + pow(x[1], 4) ))) / (12.0 * H*L)  ')
+g = ('(pow(x[0], 4) + pow(x[1], 4))/48.0')
 
 
 # bcu = DirichletBC(UV.sub(0), Expression(g, degree=4, L=L, H=H), boundary)
