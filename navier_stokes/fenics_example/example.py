@@ -27,10 +27,10 @@ set_log_level(30)
 print("input directory = ", (args.input_directory))
 print("output directory = ", (args.output_directory))
 
-L = 1
-H = 1
-# r = 0.05
-# c_r = [0.2, 0.2]
+# L = 1
+# H = 1
+r = 1.0
+c_r = [0, 0]
 
 #create mesh
 mesh=Mesh()
@@ -68,7 +68,8 @@ V = UV.sub(1).collapse()
 #analytical expression for a general scalar function
 class test_function_expression(UserExpression):
     def eval(self, values, x):
-        values[0] =  np.sin((x[1]+x[0])/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
+        # values[0] =  np.sin((x[1]+x[0])/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
+        values[0] =  np.sin((x[1]+x[0])/r) * np.cos(((x[0]+x[1]**2+1)/r)**2)
     def value_shape(self):
         return (1,)
     
@@ -112,7 +113,7 @@ circle_integral = assemble(f_test_ds*ds_circle)
 # outflow_integral = assemble(f_test_ds*ds_outflow)
 # top_wall_integral = assemble(f_test_ds*ds_top_wall)
 # bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
-print("Circle integral = ", circle_integral, "exact value = 0.02756453133593419.")
+print("Circle integral = ", circle_integral, "exact value = -1.4712872358920872")
 # print("Inflow integral = ", inflow_integral, " exact value = -0.19296108663371084")
 # print("Outflow integral = ", outflow_integral, " exact value = 0.07291330718050365")
 # print("Top-wall integral = ", top_wall_integral, " exact value = 0.2506982061292486")
