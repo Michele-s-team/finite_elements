@@ -185,11 +185,13 @@ solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
     
 u_, v_ = uv_.split(deepcopy=True)
 
+# Save solution to file (XDMF/HDF5)
+xdmffile_u.write(u_, 0)
+xdmffile_v.write(v_, 0)
+
 # error.assign(project(Nabla(u_)-v_, U))
 xdmffile_check.write(project(Nabla(u_)-v_, U), 0)
 xdmffile_check.write(project(Nabla(v_)-f, U), 0)
 
    
-# Save solution to file (XDMF/HDF5)
-xdmffile_u.write(u_, 0)
-xdmffile_v.write(v_, 0)
+
