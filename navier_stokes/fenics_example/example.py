@@ -25,6 +25,8 @@ mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 
+n = FacetNormal(mesh)
+
 
 V = FunctionSpace(mesh, 'P', 1)
 O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
@@ -33,8 +35,8 @@ O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
 #trial analytical expression for a vector
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+        values[0] = 2.0*x[0]
+        values[1] = 4.0*x[1]
     def value_shape(self):
         return (2,)
 
@@ -50,18 +52,18 @@ u_D = Expression('1 + x[0]*x[0] + 2*x[1]*x[1]', degree=2)
 def boundary(x, on_boundary):
     return on_boundary
 
-bc = DirichletBC(V, u_D, boundary)
+# bc = DirichletBC(V, u_D, boundary)
  
 # Define variational problem
 u = TrialFunction(V)
 v = TestFunction(V)
 f = Constant(-6.0)
 a = dot(grad(u), grad(v))*dx
-L = f*v*dx - g*v*ds
+L = f*v*dx + dot(n,g)*v*ds
 
 # Compute solution
 u = Function(V)
-solve(a == L, u, bc)
+solve(a == L, u)
 
 
 
