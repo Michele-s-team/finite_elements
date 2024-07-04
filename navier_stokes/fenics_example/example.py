@@ -20,8 +20,8 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 n = FacetNormal(mesh)
 
-V = FunctionSpace(mesh, 'P', 8)
-O = VectorFunctionSpace(mesh, 'P', 8, dim=2)
+V = FunctionSpace(mesh, 'P', 10)
+O = VectorFunctionSpace(mesh, 'P', 10, dim=2)
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
