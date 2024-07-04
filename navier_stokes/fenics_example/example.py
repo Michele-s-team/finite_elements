@@ -84,12 +84,13 @@ class f_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+#trial analytical expression for a vector
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = sqrt((x[0])**2 + (x[1])**2)/2.0
-        
+        values[0] = 21.4235246
+        values[1] = 122.43254
     def value_shape(self):
-        return (1,)
+        return (2,)
     
     
     
@@ -162,7 +163,8 @@ error = Function(V)
 # L = Constant(L)
 r = Constant(r)
 f = interpolate(f_expression(element=V.ufl_element()), V)
-h = interpolate(h_expression(element=V.ufl_element()), V)
+h = interpolate(h_expression(element=W.ufl_element()), W)
+
 
 
 Fu = ( (u.dx(i)) * (nu_u.dx(i)) + v*nu_u ) * dx
