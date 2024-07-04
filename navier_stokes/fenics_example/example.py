@@ -27,15 +27,15 @@ class grad_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 2.0*x[0]
         # values[1] = 4.0*x[1]
-        values[0] =  -x[1]**2 * sin(x[0] * x[1]**2)
-        values[1] =9 * x[1]**8-2 * x[0] * x[1] * sin(x[0] * x[1]**2)
+        values[0] =  2 *(np.pi) *cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        values[1] = 2 * (np.pi) * cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * sin(2 * (np.pi)*  ((x[0]) + (x[1])))
     def value_shape(self):
         return (2,)
     
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 6.0
-        values[0] = 72 * x[1]**7 - x[1]**2 * (4 * x[0]**2 + x[1]**2) * cos(x[0] * x[1]**2) - 2 * x[0] * sin(x[0] * x[1]**2)
+        values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
         
     def value_shape(self):
         return (1,)
