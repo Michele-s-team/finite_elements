@@ -87,8 +87,8 @@ class f_expression(UserExpression):
 #trial analytical expression for a vector
 class h_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 21.4235246
-        values[1] = 122.43254
+        values[0] = x[0]/2.0
+        values[1] = x[1]/2.0
     def value_shape(self):
         return (2,)
     
