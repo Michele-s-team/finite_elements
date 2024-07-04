@@ -13,6 +13,9 @@ from __future__ import print_function
 from fenics import *
 import matplotlib.pyplot as plt
 
+xdmffile_u = XDMFFile("u.xdmf")
+
+
 # Create mesh and define function space
 mesh = UnitSquareMesh(8, 8)
 V = FunctionSpace(mesh, 'P', 1)
@@ -36,13 +39,7 @@ L = f*v*dx
 u = Function(V)
 solve(a == L, u, bc)
 
-# Plot solution and mesh
-plot(u)
-plot(mesh)
 
-# Save solution to file in VTK format
-vtkfile = File('poisson/solution.pvd')
-vtkfile << u
 
 # Compute error in L2 norm
 error_L2 = errornorm(u_D, u, 'L2')
@@ -57,5 +54,6 @@ error_max = np.max(np.abs(vertex_values_u_D - vertex_values_u))
 print('error_L2  =', error_L2)
 print('error_max =', error_max)
 
-# Hold plot
-plt.show()
+xdmffile_u.write(u, 0)
+
+
