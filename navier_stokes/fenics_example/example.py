@@ -143,7 +143,7 @@ bc_uv = [bcu]
 
 # Define trial and test functions
 nu_u, nu_v = TestFunctions(UV)
-
+ 
 
 # Define functions for solutions at previous and current time steps
 uv = TrialFunction(UV)
