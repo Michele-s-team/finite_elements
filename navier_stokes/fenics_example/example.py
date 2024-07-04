@@ -1,205 +1,61 @@
+"""
+FEniCS tutorial demo program: Poisson equation with Dirichlet conditions.
+Test problem is chosen to give an exact solution at all nodes of the mesh.
+
+  -Laplace(u) = f    in the unit square
+            u = u_D  on the boundary
+
+  u_D = 1 + x^2 + 2y^2
+    f = -6
+"""
+
 from __future__ import print_function
 from fenics import *
-from mshr import *
+import matplotlib.pyplot as plt
+
+# Create mesh and define function space
+mesh = UnitSquareMesh(8, 8)
+V = FunctionSpace(mesh, 'P', 1)
+
+# Define boundary condition
+u_D = Expression('1 + x[0]*x[0] + 2*x[1]*x[1]', degree=2)
+
+def boundary(x, on_boundary):
+    return on_boundary
+
+bc = DirichletBC(V, u_D, boundary)
+
+# Define variational problem
+u = TrialFunction(V)
+v = TestFunction(V)
+f = Constant(-6.0)
+a = dot(grad(u), grad(v))*dx
+L = f*v*dx
+
+# Compute solution
+u = Function(V)
+solve(a == L, u, bc)
+
+# Plot solution and mesh
+plot(u)
+plot(mesh)
+
+# Save solution to file in VTK format
+vtkfile = File('poisson/solution.pvd')
+vtkfile << u
+
+# Compute error in L2 norm
+error_L2 = errornorm(u_D, u, 'L2')
+
+# Compute maximum error at vertices
+vertex_values_u_D = u_D.compute_vertex_values(mesh)
+vertex_values_u = u.compute_vertex_values(mesh)
 import numpy as np
-import argparse
-import ufl as ufl
+error_max = np.max(np.abs(vertex_values_u_D - vertex_values_u))
 
+# Print errors
+print('error_L2  =', error_L2)
+print('error_max =', error_max)
 
-
-i, j, k, l = ufl.indices(4)
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-args = parser.parse_args()
-
-tol = 1E-3
-set_log_level(30)
-
-# Create mesh
-# channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
-# cylinder = Circle(Point(0.2, 0.2), 0.05)
-# domain = channel - cylinder
-# mesh = generate_mesh(domain, 64)
-
-print("input directory = ", (args.input_directory))
-print("output directory = ", (args.output_directory))
-
-# L = 1
-# H = 1
-r = 1.0
-c_r = [0, 0]
-
-#create mesh
-mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-    
-def Nabla(u):
-    return (u.dx(i).dx(i))
-
-    
-    
-# Create XDMF files for visualization output
-xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
-xdmffile_v = XDMFFile((args.output_directory) + "/v.xdmf")
-xdmffile_check = XDMFFile((args.output_directory) + "/check.xdmf")
-# this is needed to write multiple data series to xdmffile_geo
-xdmffile_check.parameters.update(
-    {
-        "functions_share_mesh": True,
-        "rewrite_function_mesh": False
-    })
-
-
-# Define function spaces
-P_U = FiniteElement('P', triangle, 2)
-P_V = FiniteElement('P', triangle, 2)
-element = MixedElement([P_U, P_V])
-UV = FunctionSpace(mesh, element)
-U = UV.sub(0).collapse()
-V = UV.sub(1).collapse()
-
-W = VectorFunctionSpace(mesh, 'P', 2, dim=2)
-
-n = FacetNormal(mesh)
-
-
-
-#analytical expression for a general scalar function
-class test_function_expression(UserExpression):
-    def eval(self, values, x):
-        # values[0] =  np.sin((x[1]+x[0])/L) * np.cos(((x[0]+x[1]**2+1)/H)**2)
-        values[0] =  np.sin((x[1]+x[0])/r) * np.cos(((x[0]+x[1]**2+1)/r)**2)
-    def value_shape(self):
-        return (1,)
-    
-
-#analytical expression for a general scalar function
-class f_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] =  7.0/6.0
-    def value_shape(self):
-        return (1,)
-
-#trial analytical expression for a vector
-class h_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 7.0*x[0]/12.0
-        values[1] = 7.0*x[1]/12.0
-    def value_shape(self):
-        return (2,)
-    
-    
-    
-
-
-#read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
-
-ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-# ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-# ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-# ds_top_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
-# ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
-
-
-#f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
-f_test_ds = Function(U)
-f_test_ds = interpolate(test_function_expression(element=U.ufl_element()), U)
-
-#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-circle_integral = assemble(f_test_ds*ds_circle)
-# inflow_integral = assemble(f_test_ds*ds_inflow)
-# outflow_integral = assemble(f_test_ds*ds_outflow)
-# top_wall_integral = assemble(f_test_ds*ds_top_wall)
-# bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
-print("Circle integral = ", circle_integral, "exact value = -1.4712872358920872")
-# print("Inflow integral = ", inflow_integral, " exact value = -0.19296108663371084")
-# print("Outflow integral = ", outflow_integral, " exact value = 0.07291330718050365")
-# print("Top-wall integral = ", top_wall_integral, " exact value = 0.2506982061292486")
-# print("Bottom-wall integral = ", bottom_wall_integral, " exact value = -0.322029857257521")
-
-    
-
-
-# Define boundaries and obstacle
-#CHANGE PARAMETERS HERE
-# inflow   = 'near(x[0], 0)'
-# outflow  = 'near(x[0], 1.0)'
-# top_wall = 'near(x[1], 0)'
-# bottom_wall = 'near(x[1], 1.0)'
-# cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
-boundary = 'on_boundary'
-#CHANGE PARAMETERS HERE
-
-# Define inflow profile
-g = ('(pow(x[0], 4) + pow(x[1], 4) + pow(x[0], 2)*pow(x[1], 2) + x[0])/48.0')
-
-
-# bcu = DirichletBC(UV.sub(0), Expression(g, degree=4, L=L, H=H), boundary)
-# bcu = DirichletBC(UV.sub(0), Expression(g, element = UV.sub(0).ufl_element(), L=L, H=H), boundary)
-bcu = DirichletBC(UV.sub(0), Expression(g, element = UV.sub(0).ufl_element(), r=r), boundary)
-
-bc_uv = [bcu]
-
-# Define trial and test functions
-nu_u, nu_v = TestFunctions(UV)
- 
-
-# Define functions for solutions at previous and current time steps
-uv = TrialFunction(UV)
-u, v = split(uv)
-uv_ = Function(UV)
-u_ = Function(U)
-v_ = Function(V)
-
-h = Function(W)
-error = Function(V)
-
-# H = Constant(H)
-# L = Constant(L)
-r = Constant(r)
-f = interpolate(f_expression(element=V.ufl_element()), V)
-h = interpolate(h_expression(element=W.ufl_element()), W)
-
-
-
-Fu = ( (u.dx(i)) * (nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v ) * dx - n[i]*h[i] * nu_v * ds
-Fuv = Fu + Fv
-
-a = lhs(Fuv)
-L = rhs(Fuv)
-
-
-# Step 1+2
-A = assemble(a)
-b = assemble(L)
-[bc.apply(A) for bc in bc_uv]
-[bc.apply(b) for bc in bc_uv]
-
-solve(A, uv_.vector(), b, 'bicgstab', 'hypre_amg')
-    
-u_, v_ = uv_.split(deepcopy=True)
-
-# Save solution to file (XDMF/HDF5)
-xdmffile_u.write(u_, 0)
-xdmffile_v.write(v_, 0)
-
-
-
-# xdmffile_check.write(project(h[0], U), 0)
-# xdmffile_check.write(project(h[1], U), 0)
-xdmffile_check.write(project(Nabla(u_)-v_, U), 0)
-xdmffile_check.write(project(Nabla(v_)-f, U), 0)
-# error.assign(project(Nabla(u_)-v_, U))
-# xdmffile_check.write(project(Nabla(v_)-f, U), 0)
-
-   
-
+# Hold plot
+plt.show()
