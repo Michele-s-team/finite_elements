@@ -165,7 +165,7 @@ r = Constant(r)
 f = interpolate(f_expression(element=V.ufl_element()), V)
 h = interpolate(h_expression(element=W.ufl_element()), W)
 
-
+'''
 
 Fu = ( (u.dx(i)) * (nu_u.dx(i)) + v*nu_u ) * dx
 Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v ) * dx - h * nu_v * ds
@@ -188,6 +188,8 @@ u_, v_ = uv_.split(deepcopy=True)
 # Save solution to file (XDMF/HDF5)
 xdmffile_u.write(u_, 0)
 xdmffile_v.write(v_, 0)
+
+'''
 
 # error.assign(project(Nabla(u_)-v_, U))
 xdmffile_check.write(project(Nabla(u_)-v_, U), 0)
