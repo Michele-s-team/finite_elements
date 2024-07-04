@@ -67,6 +67,9 @@ V = UV.sub(1).collapse()
 
 W = VectorFunctionSpace(mesh, 'P', 2, dim=2)
 
+n = FacetNormal(mesh)
+
+
 
 #analytical expression for a general scalar function
 class test_function_expression(UserExpression):
@@ -165,10 +168,10 @@ r = Constant(r)
 f = interpolate(f_expression(element=V.ufl_element()), V)
 h = interpolate(h_expression(element=W.ufl_element()), W)
 
-'''
+
 
 Fu = ( (u.dx(i)) * (nu_u.dx(i)) + v*nu_u ) * dx
-Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v ) * dx - h * nu_v * ds
+Fv = ( (v.dx(i)) * (nu_v.dx(i)) + f*nu_v ) * dx - n[i]*h[i] * nu_v * ds
 Fuv = Fu + Fv
 
 a = lhs(Fuv)
@@ -189,7 +192,7 @@ u_, v_ = uv_.split(deepcopy=True)
 xdmffile_u.write(u_, 0)
 xdmffile_v.write(v_, 0)
 
-'''
+
 
 # error.assign(project(Nabla(u_)-v_, U))
 xdmffile_check.write(project(h[0], U), 0)
