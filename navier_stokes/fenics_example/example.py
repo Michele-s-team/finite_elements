@@ -29,15 +29,28 @@ class grad_u_expression(UserExpression):
         values[1] = 4.0*x[1]
     def value_shape(self):
         return (2,)
+    
+class laplacian_u_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 6.0
+    def value_shape(self):
+        return (1,)
 
 
-grad_u = Function(O)
-grad_u = interpolate(grad_u_expression(element=O.ufl_element()), O)
+
  
 # Define variational problem
 u = TrialFunction(V)
 v = TestFunction(V)
-f = Constant(6.0)
+f = Function(V)
+grad_u = Function(O)
+
+grad_u = interpolate(grad_u_expression(element=O.ufl_element()), O)
+f = interpolate(laplacian_u_expression(element=V.ufl_element()), V)
+
+
+
+
 a = dot(grad(u), grad(v))*dx
 L = -f*v*dx + dot(n,grad_u)*v*ds
 
