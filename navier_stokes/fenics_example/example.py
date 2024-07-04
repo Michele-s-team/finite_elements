@@ -19,6 +19,22 @@ xdmffile_u = XDMFFile("u.xdmf")
 # Create mesh and define function space
 mesh = UnitSquareMesh(8, 8)
 V = FunctionSpace(mesh, 'P', 1)
+O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
+
+
+#trial analytical expression for a vector
+class h_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0.0
+        values[1] = 0.0
+    def value_shape(self):
+        return (2,)
+
+
+h = Function(O)
+h = interpolate(h_expression(element=O.ufl_element()), O)
+
+
 
 # Define boundary condition
 u_D = Expression('1 + x[0]*x[0] + 2*x[1]*x[1]', degree=2)
