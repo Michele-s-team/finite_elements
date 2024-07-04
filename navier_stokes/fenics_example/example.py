@@ -33,7 +33,7 @@ u = TrialFunction(V)
 v = TestFunction(V)
 f = Constant(-6.0)
 a = dot(grad(u), grad(v))*dx
-L = f*v*dx
+L = f*v*dx - g*v*ds
 
 # Compute solution
 u = Function(V)
