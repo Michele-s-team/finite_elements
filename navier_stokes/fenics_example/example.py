@@ -194,9 +194,11 @@ xdmffile_v.write(v_, 0)
 
 
 
+# xdmffile_check.write(project(h[0], U), 0)
+# xdmffile_check.write(project(h[1], U), 0)
+xdmffile_check.write(project(Nabla(u_)-v_, U), 0)
+xdmffile_check.write(project(Nabla(v_)-f, U), 0)
 # error.assign(project(Nabla(u_)-v_, U))
-xdmffile_check.write(project(h[0], U), 0)
-xdmffile_check.write(project(h[1], U), 0)
 # xdmffile_check.write(project(Nabla(v_)-f, U), 0)
 
    
