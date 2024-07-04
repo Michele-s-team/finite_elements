@@ -120,14 +120,14 @@ print("Circle integral = ", circle_integral, "exact value = -1.4712872358920872"
 # print("Bottom-wall integral = ", bottom_wall_integral, " exact value = -0.322029857257521")
 
     
-'''
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
-inflow   = 'near(x[0], 0)'
-outflow  = 'near(x[0], 1.0)'
-top_wall = 'near(x[1], 0)'
-bottom_wall = 'near(x[1], 1.0)'
+# inflow   = 'near(x[0], 0)'
+# outflow  = 'near(x[0], 1.0)'
+# top_wall = 'near(x[1], 0)'
+# bottom_wall = 'near(x[1], 1.0)'
 # cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
@@ -191,4 +191,3 @@ xdmffile_check.write(project(Nabla(v_)-f, U), 0)
 # Save solution to file (XDMF/HDF5)
 xdmffile_u.write(u_, 0)
 xdmffile_v.write(v_, 0)
-'''
