@@ -27,7 +27,7 @@ def boundary(x, on_boundary):
     return on_boundary
 
 bc = DirichletBC(V, u_D, boundary)
-
+ 
 # Define variational problem
 u = TrialFunction(V)
 v = TestFunction(V)
