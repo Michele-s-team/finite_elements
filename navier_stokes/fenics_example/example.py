@@ -95,11 +95,11 @@ class h_expression(UserExpression):
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-# ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-ds_top_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
-ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
+ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+# ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+# ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+# ds_top_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
+# ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 
 
 #f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
@@ -107,19 +107,19 @@ f_test_ds = Function(U)
 f_test_ds = interpolate(test_function_expression(element=U.ufl_element()), U)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-# circle_length = assemble(f_test_ds*ds_circle)
-inflow_integral = assemble(f_test_ds*ds_inflow)
-outflow_integral = assemble(f_test_ds*ds_outflow)
-top_wall_integral = assemble(f_test_ds*ds_top_wall)
-bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
-# print("Circle length = ", circle_length, "exact value = 0.02756453133593419.")
-print("Inflow integral = ", inflow_integral, " exact value = -0.19296108663371084")
-print("Outflow integral = ", outflow_integral, " exact value = 0.07291330718050365")
-print("Top-wall integral = ", top_wall_integral, " exact value = 0.2506982061292486")
-print("Bottom-wall integral = ", bottom_wall_integral, " exact value = -0.322029857257521")
+circle_integral = assemble(f_test_ds*ds_circle)
+# inflow_integral = assemble(f_test_ds*ds_inflow)
+# outflow_integral = assemble(f_test_ds*ds_outflow)
+# top_wall_integral = assemble(f_test_ds*ds_top_wall)
+# bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
+print("Circle integral = ", circle_integral, "exact value = 0.02756453133593419.")
+# print("Inflow integral = ", inflow_integral, " exact value = -0.19296108663371084")
+# print("Outflow integral = ", outflow_integral, " exact value = 0.07291330718050365")
+# print("Top-wall integral = ", top_wall_integral, " exact value = 0.2506982061292486")
+# print("Bottom-wall integral = ", bottom_wall_integral, " exact value = -0.322029857257521")
 
     
-
+'''
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
@@ -190,3 +190,4 @@ xdmffile_check.write(project(Nabla(v_)-f, U), 0)
 # Save solution to file (XDMF/HDF5)
 xdmffile_u.write(u_, 0)
 xdmffile_v.write(v_, 0)
+'''

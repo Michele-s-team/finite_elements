@@ -18,7 +18,7 @@ resolution = (float)(args.resolution)
 # L = 2.2
 # h = 0.41
 r = 1
-c_r = [0.2, 0.2, 0]
+c_r = [0, 0, 0]
 
 
 
