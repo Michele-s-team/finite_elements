@@ -65,6 +65,9 @@ UV = FunctionSpace(mesh, element)
 U = UV.sub(0).collapse()
 V = UV.sub(1).collapse()
 
+W = VectorFunctionSpace(mesh, 'P', 2, dim=2)
+
+
 #analytical expression for a general scalar function
 class test_function_expression(UserExpression):
     def eval(self, values, x):
@@ -151,7 +154,8 @@ u, v = split(uv)
 uv_ = Function(UV)
 u_ = Function(U)
 v_ = Function(V)
-h = Function(V)
+
+h = Function(W)
 error = Function(V)
 
 # H = Constant(H)
