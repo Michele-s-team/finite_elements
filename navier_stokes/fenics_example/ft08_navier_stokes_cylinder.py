@@ -109,7 +109,7 @@ xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
 
-solve(F == 0, z_omega, bc_up)
+solve(F == 0, z_omega, bc_z_omega)
     
 z_, omega_ = z_omega.split(deepcopy=True)
 
