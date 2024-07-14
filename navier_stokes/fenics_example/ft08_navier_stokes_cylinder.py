@@ -89,7 +89,6 @@ bc_up = [bcu_inflow, bcu_walls, bcu_cylinder, bcp_outflow]
 v, q = TestFunctions(VQ)
 vs = TestFunction(V)
 
-
 # Define functions for solutions at previous and current time steps
 up = Function(VQ)
 u, p = split(up)
