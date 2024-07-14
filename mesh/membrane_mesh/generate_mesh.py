@@ -41,7 +41,7 @@ model = geometry.__enter__()
 
 # Add circle
 # circle_R = model.add_circle(c_R, R, mesh_size=resolution)
-circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
+circle_r = model.add_circle(c_r, r, mesh_size=resolution)
 rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
@@ -91,14 +91,14 @@ print(rectangle_Lh)
 
 # +
 # Add points with finer resolution on left side
-# points = [model.add_point((-L/2, -h/2, 0), mesh_size=resolution),
-#           model.add_point((L/2, -h/2, 0), mesh_size=5*resolution),
-#           model.add_point((L/2, h/2, 0), mesh_size=5*resolution),
-#           model.add_point((-L/2, h/2, 0), mesh_size=resolution)]
+points = [model.add_point((0, 0, 0), mesh_size=resolution),
+           model.add_point((L, 0, 0), mesh_size=resolution),
+           model.add_point((L, h, 0), mesh_size=resolution),
+           model.add_point((0, h, 0), mesh_size=resolution)]
 
 # Add lines between all points creating the rectangle
-# channel_lines = [model.add_line(points[i], points[i+1])
-#                  for i in range(-1, len(points)-1)]
+channel_lines = [model.add_line(points[i], points[i+1])
+                  for i in range(-1, len(points)-1)]
 
 # channel_lines = [arc_R_in_up, arc_R_in_down, model.add_line(p3, p4), arc_R_out_down, arc_R_out_up, model.add_line(p6,p1)]
 
@@ -107,12 +107,12 @@ print(rectangle_Lh)
 # print(channel_lines)
 # #
 ## Create a line loop and plane surface for meshing
-# channel_loop = model.add_curve_loop(channel_lines)
+channel_loop = model.add_curve_loop(channel_lines)
 #spline_loop = model.add_curve_loop(spline)
 # my_surface = model.add_plane_surface(my_loop)
 
-plane_surface = model.add_plane_surface(     rectangle_Lh.curve_loop, holes=[circle_r.curve_loop])
-# plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
+#plane_surface = model.add_plane_surface(     rectangle_Lh.curve_loop, holes=[circle_r.curve_loop])
+plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
 
 
 
@@ -125,9 +125,9 @@ model.synchronize()
 #
 #volume_marker = 6
 model.add_physical([plane_surface], "Volume")
-# model.add_physical(arc_R_in_up, "Inflow")
-# model.add_physical(arc_R_out, "Outflow")
-# model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
+model.add_physical([channel_lines[0]], "Inflow")
+model.add_physical([channel_lines[2]], "Outflow")
+model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
 model.add_physical(circle_r.curve_loop.curves, "Obstacle")
 #model.add_physical(circle2.curve_loop.curves, "Obstacle 2")
 
@@ -165,3 +165,4 @@ meshio.write("line_mesh.xdmf", line_mesh)
 #
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write("triangle_mesh.xdmf", triangle_mesh)
+
