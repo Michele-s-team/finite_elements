@@ -61,20 +61,17 @@ walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-# inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
+# z_profile = 'x[1]'
+# omega_profile = 'x[1]'
 
 
-bcu_inflow = DirichletBC(Q_z_omega.sub(0), Expression(inflow_profile, degree=2), inflow)
-bcu_walls = DirichletBC(Q_z_omega.sub(0), Constant((0, 0)), walls)
-bcu_cylinder = DirichletBC(Q_z_omega.sub(0), Constant((0, 0)), cylinder)
+bc_z_walls = DirichletBC(Q_z_omega.sub(0), Expression('x[1]', degree=1), walls)
+bc_omega_walls = DirichletBC(Q_z_omega.sub(1), Expression('x[1]', degree=1), walls)
 
-bcp_outflow = DirichletBC(Q_z_omega.sub(1), Constant(0), outflow)
-
-bc_up = [bcu_inflow, bcu_walls, bcu_cylinder, bcp_outflow]
+bc_z_omega = [bc_z_walls, bc_omega_walls]
 
 # Define trial and test functions
-v, q = TestFunctions(Q_z_omega)
-vs = TestFunction(Q_z)
+nu_z, nu_omega = TestFunctions(Q_z_omega)
 
 # Define functions for solutions at previous and current time steps
 up = Function(Q_z_omega)
@@ -107,13 +104,13 @@ def sigma(u, p):
     return 2*mu*epsilon(u) - p*Identity(len(u))
 
 # Define variational problem for step 1
-F1 = rho*dot((u - u_n) / k, v)*dx \
-   + rho*dot(dot(u_n, nabla_grad(u_n)), v)*dx \
-   + inner(sigma(U, p_n), epsilon(v))*dx \
-   + dot(p_n*n, v)*ds - dot(mu*nabla_grad(U)*n, v)*ds \
-   - dot(f, v)*dx
+F1 = rho*dot((u - u_n) / k, nu_z)*dx \
+   + rho*dot(dot(u_n, nabla_grad(u_n)), nu_z)*dx \
+   + inner(sigma(U, p_n), epsilon(nu_z))*dx \
+   + dot(p_n*n, nu_z)*ds - dot(mu*nabla_grad(U)*n, nu_z)*ds \
+   - dot(f, nu_z)*dx
 # Define variational problem for step 2
-F2 = (dot(nabla_grad(p), nabla_grad(q)) - (dot(nabla_grad(p_n), nabla_grad(q)) - (1/k)*div(u)*q))*dx
+F2 = (dot(nabla_grad(p), nabla_grad(nu_omega)) - (dot(nabla_grad(p_n), nabla_grad(nu_omega)) - (1/k)*div(u)*nu_omega))*dx
 F12 = F1 + F2
 
 # Define variational problem for step 3
