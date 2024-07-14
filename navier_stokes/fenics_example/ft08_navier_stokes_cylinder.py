@@ -140,9 +140,6 @@ xdmffile_p = XDMFFile((args.output_directory) + '/p.xdmf')
 vtkfile_u = File('v.pvd')
 vtkfile_p = File('p.pvd')
 
-# Create time series (for use in reaction_system.py)
-timeseries_u = TimeSeries('velocity_series')
-timeseries_p = TimeSeries('pressure_series')
 
 # Save mesh to file (for use in reaction_system.py)
 File('cylinder.xml.gz') << mesh
@@ -174,10 +171,6 @@ for n in range(N):
     # A3 = assemble(a3)
     # b3 = assemble(L3)
     solve(F3 == 0, us)
-
-    # Save nodal values to file
-    timeseries_u.store(u_n.vector(), t)
-    timeseries_p.store(p_n.vector(), t)
 
     # Update previous solution
     #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
