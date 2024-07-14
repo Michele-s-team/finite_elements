@@ -88,18 +88,14 @@ kappa = Constant(kappa)
 # Define variational problem for step 1
 F_z = ( -1.0/(2.0*sqrt_detg(z))* atan(z.dx(1)) * (nu_z.dx(1)) - omega * nu_z ) * dx
 F_omega = ( kappa * (1.0/detg(z)) * (omega.dx(1))* (nu_omega.dx(1)) - 2 * (omega**3) * nu_omega ) * dx
-F12 = F_z + F_omega
+F = F_z + F_omega
 
-# Define variational problem for step 3
-F3 = (dot(us, vs) - (dot(z, vs) - k*dot(nabla_grad(omega - p_n), vs))) * dx
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile((args.output_directory) + '/v.xdmf')
-xdmffile_p = XDMFFile((args.output_directory) + '/p.xdmf')
+xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
+xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
-# Create VTK files for visualization output
-vtkfile_u = File('v.pvd')
-vtkfile_p = File('p.pvd')
+
 
 
 # Save mesh to file (for use in reaction_system.py)
@@ -112,8 +108,8 @@ t = 0
 for n in range(N):
 
     # Save solution to file (XDMF/HDF5)
-    xdmffile_u.write(u_n, t)
-    xdmffile_p.write(p_n, t)
+    xdmffile_z.write(u_n, t)
+    xdmffile_omega.write(p_n, t)
 
     # Update current time
     t += dt
@@ -124,7 +120,7 @@ for n in range(N):
     # [bc.apply(A12) for bc in bc_up]
     # [bc.apply(b12) for bc in bc_up]
 
-    solve(F12 == 0, z_omega, bc_up)
+    solve(F == 0, z_omega, bc_up)
     
 
     # Step 3: Velocity correction step
