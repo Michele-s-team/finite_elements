@@ -96,45 +96,9 @@ xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
 
-
-
-# Save mesh to file (for use in reaction_system.py)
-File('cylinder.xml.gz') << mesh
-
-
-# Time-stepping
-print("Starting time iteration ...", flush=True)
-t = 0
-for n in range(N):
-
-    # Save solution to file (XDMF/HDF5)
-    xdmffile_z.write(u_n, t)
-    xdmffile_omega.write(p_n, t)
-
-    # Update current time
-    t += dt
-
-    # Step 1+2
-    # A12 = assemble(a12)
-    # b12 = assemble(L12)
-    # [bc.apply(A12) for bc in bc_up]
-    # [bc.apply(b12) for bc in bc_up]
-
-    solve(F == 0, z_omega, bc_up)
+solve(F == 0, z_omega, bc_up)
     
+z_, omega_ = z_omega.split(deepcopy=True)
 
-    # Step 3: Velocity correction step
-    # ps_.assign(project(p_, Q))
-    # A3 = assemble(a3)
-    # b3 = assemble(L3)
-    solve(F3 == 0, us)
-
-    # Update previous solution
-    #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
-    #this step writes the numerical data of up_ into u_n, p_n -> I am interested only in writing into p_n with this line
-    u_n.assign(us)
-    _u_, p_n = z_omega.split(deepcopy=True)
-
-    print("\t%.2f %%" % (100.0*(t/T)), flush=True)
-
-print("... done.", flush=True)
+xdmffile_z.write(z_, 0)
+xdmffile_omega.write(omega_, 0)
