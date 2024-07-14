@@ -62,9 +62,19 @@ outflow  = 'near(x[0], 2.2)'
 walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 #CHANGE PARAMETERS HERE
 
-# Define inflow profile
-# z_profile = 'x[1]'
-# omega_profile = 'x[1]'
+#trial analytical expression for the height function z(x,y)
+class z_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0.1 * x[1]
+    def value_shape(self):
+        return (1,)
+
+
+class omega_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0.1 * x[1]
+    def value_shape(self):
+        return (1,)
 
 #g_{ij}
 def g(z):
