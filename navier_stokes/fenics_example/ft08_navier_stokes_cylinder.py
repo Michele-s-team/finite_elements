@@ -78,8 +78,8 @@ def sqrt_detg(z):
 
 
 
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('x[1]', degree=1), walls)
-bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('x[1]', degree=1), walls)
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('0.1 * x[1]', degree=1), walls)
+bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('0.1 * x[1]', degree=1), walls)
 
 bc_z_omega = [bc_z, bc_omega]
 
