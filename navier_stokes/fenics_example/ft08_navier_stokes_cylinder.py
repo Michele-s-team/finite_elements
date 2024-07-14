@@ -91,7 +91,7 @@ vs = TestFunction(V)
 
 
 # Define functions for solutions at previous and current time steps
-up = TrialFunction(VQ)
+up = Function(VQ)
 u, p = split(up)
 
 u_n = Function(V)
@@ -100,7 +100,7 @@ p_n = Function(Q)
 up_ = Function(VQ)
 u_, p_ = split(up_)
 
-us = TrialFunction(V)
+us = Function(V)
 ps_ = Function(Q)
 
 
@@ -130,16 +130,8 @@ F1 = rho*dot((u - u_n) / k, v)*dx \
 F2 = (dot(nabla_grad(p), nabla_grad(q)) - (dot(nabla_grad(p_n), nabla_grad(q)) - (1/k)*div(u)*q))*dx
 F12 = F1 + F2
 
-a12 = lhs(F12)
-L12 = rhs(F12)
-
-
 # Define variational problem for step 3
 F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
-
-a3 = lhs(F3)
-L3 = rhs(F3)
-
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile('velocity.xdmf')
@@ -166,25 +158,23 @@ for n in range(N):
     xdmffile_u.write(u_n, t)
     xdmffile_p.write(p_n, t)
 
-
-
     # Update current time
     t += dt
 
     # Step 1+2
-    A12 = assemble(a12)
-    b12 = assemble(L12)
-    [bc.apply(A12) for bc in bc_up]
-    [bc.apply(b12) for bc in bc_up]
+    # A12 = assemble(a12)
+    # b12 = assemble(L12)
+    # [bc.apply(A12) for bc in bc_up]
+    # [bc.apply(b12) for bc in bc_up]
 
-    solve(A12, up_.vector(), b12, 'bicgstab', 'hypre_amg')
+    solve(F12 == 0, up, bc_up)
     
 
     # Step 3: Velocity correction step
     # ps_.assign(project(p_, Q))
-    A3 = assemble(a3)
-    b3 = assemble(L3)
-    solve(A3, u_n.vector(), b3,  'cg', 'sor')
+    # A3 = assemble(a3)
+    # b3 = assemble(L3)
+    solve(F3 == 0, us)
 
     # Save nodal values to file
     timeseries_u.store(u_n.vector(), t)
@@ -193,9 +183,8 @@ for n in range(N):
     # Update previous solution
     #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
     #this step writes the numerical data of up_ into u_n, p_n -> I am interested only in writing into p_n with this line
-    _u_, p_n = up_.split(deepcopy=True)
-   
- 
+    u_n.assign(us)
+    _u_, p_n = up.split(deepcopy=True)
 
     print("\t%.2f %%" % (100.0*(t/T)), flush=True)
 
