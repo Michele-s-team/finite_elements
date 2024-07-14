@@ -23,7 +23,7 @@ args = parser.parse_args()
 set_log_level(30)
 
 
-kappa = 1.0
+kappa = 1E-1
 
 
 # # Create mesh
@@ -65,14 +65,14 @@ walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.1 * x[1]
+        values[0] = -0.5*x[1]
     def value_shape(self):
         return (1,)
 
 
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.1 * x[1]
+        values[0] = -x[1]
     def value_shape(self):
         return (1,)
     
@@ -94,8 +94,8 @@ def sqrt_detg(z):
 
 
 
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('0.1 * x[1]', degree=1), walls)
-bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('0.1 * x[1]', degree=1), walls)
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('-0.5*x[1]', degree=1), walls)
+bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('-x[1]', degree=1), walls)
 
 bc_z_omega = [bc_z, bc_omega]
 
