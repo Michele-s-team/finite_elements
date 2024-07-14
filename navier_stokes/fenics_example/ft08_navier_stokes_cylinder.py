@@ -65,10 +65,10 @@ walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 # omega_profile = 'x[1]'
 
 
-bc_z_walls = DirichletBC(Q_z_omega.sub(0), Expression('x[1]', degree=1), walls)
-bc_omega_walls = DirichletBC(Q_z_omega.sub(1), Expression('x[1]', degree=1), walls)
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('x[1]', degree=1), walls)
+bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('x[1]', degree=1), walls)
 
-bc_z_omega = [bc_z_walls, bc_omega_walls]
+bc_z_omega = [bc_z, bc_omega]
 
 # Define trial and test functions
 nu_z, nu_omega = TestFunctions(Q_z_omega)
