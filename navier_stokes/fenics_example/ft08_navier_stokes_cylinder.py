@@ -74,47 +74,29 @@ bc_z_omega = [bc_z_walls, bc_omega_walls]
 nu_z, nu_omega = TestFunctions(Q_z_omega)
 
 # Define functions for solutions at previous and current time steps
-up = Function(Q_z_omega)
-u, p = split(up)
-
-u_n = Function(Q_z)
-p_n = Function(Q_omega)
-
-# up_ = Function(VQ)
-# u_, p_ = split(up_)
-
-us = Function(Q_z)
-ps_ = Function(Q_omega)
+z_omega = Function(Q_z_omega)
+z, omega = split(z_omega)
 
 
 # Define expressions used in variational forms
-U  = 0.5*(u_n + u)
 n  = FacetNormal(mesh)
-f  = Constant((0, 0))
-k  = Constant(dt)
-mu = Constant(mu)
-rho = Constant(rho)
+kappa = Constant(kappa)
 
-# Define symmetric gradient
-def epsilon(u):
-    return sym(nabla_grad(u))
 
-# Define stress tensor
-def sigma(u, p):
-    return 2*mu*epsilon(u) - p*Identity(len(u))
+
 
 # Define variational problem for step 1
-F1 = rho*dot((u - u_n) / k, nu_z)*dx \
+F1 = rho*dot((z - u_n) / k, nu_z)*dx \
    + rho*dot(dot(u_n, nabla_grad(u_n)), nu_z)*dx \
    + inner(sigma(U, p_n), epsilon(nu_z))*dx \
    + dot(p_n*n, nu_z)*ds - dot(mu*nabla_grad(U)*n, nu_z)*ds \
    - dot(f, nu_z)*dx
 # Define variational problem for step 2
-F2 = (dot(nabla_grad(p), nabla_grad(nu_omega)) - (dot(nabla_grad(p_n), nabla_grad(nu_omega)) - (1/k)*div(u)*nu_omega))*dx
+F2 = (dot(nabla_grad(omega), nabla_grad(nu_omega)) - (dot(nabla_grad(p_n), nabla_grad(nu_omega)) - (1/k)*div(z)*nu_omega))*dx
 F12 = F1 + F2
 
 # Define variational problem for step 3
-F3 = (dot(us, vs) - (dot(u, vs) - k*dot(nabla_grad(p - p_n), vs))) * dx
+F3 = (dot(us, vs) - (dot(z, vs) - k*dot(nabla_grad(omega - p_n), vs))) * dx
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile((args.output_directory) + '/v.xdmf')
@@ -147,7 +129,7 @@ for n in range(N):
     # [bc.apply(A12) for bc in bc_up]
     # [bc.apply(b12) for bc in bc_up]
 
-    solve(F12 == 0, up, bc_up)
+    solve(F12 == 0, z_omega, bc_up)
     
 
     # Step 3: Velocity correction step
@@ -160,7 +142,7 @@ for n in range(N):
     #u_n has been already updated by  solve(A3, u_n.vector(), b3,  'cg', 'sor')
     #this step writes the numerical data of up_ into u_n, p_n -> I am interested only in writing into p_n with this line
     u_n.assign(us)
-    _u_, p_n = up.split(deepcopy=True)
+    _u_, p_n = z_omega.split(deepcopy=True)
 
     print("\t%.2f %%" % (100.0*(t/T)), flush=True)
 
