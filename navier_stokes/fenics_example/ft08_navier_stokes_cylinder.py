@@ -16,23 +16,13 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
-parser.add_argument("T")
-parser.add_argument("N")
 args = parser.parse_args()
 
 set_log_level(30)
 
 
-#T = 1.0            # final time
-#N = 1024  # number of time steps
-T = (float)(args.T)
-N = (int)(args.N)
-dt = T / N # time step size
-mu = 0.001        # dynamic viscosity
-rho = 1            # density
+kappa = 1.0
 
-print("T = ", T)
-print("N = ", N)
 
 # # Create mesh
 # channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
@@ -42,8 +32,6 @@ print("N = ", N)
 
 L = 2.2
 h = 0.41
-r = 0.05
-c_r = [0.2, 0.2]
 
 #create mesh
 mesh=Mesh()
@@ -56,12 +44,12 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 
 # Define function spaces
-P_V = VectorElement('P', triangle, 2)
-P_Q = FiniteElement('P', triangle, 1)
-element = MixedElement([P_V, P_Q])
-VQ = FunctionSpace(mesh, element)
-V = VQ.sub(0).collapse()
-Q = VQ.sub(1).collapse()
+P_z = FiniteElement('P', triangle, 2)
+P_omega = FiniteElement('P', triangle, 1)
+element = MixedElement([P_z, P_omega])
+Q_z_omega = FunctionSpace(mesh, element)
+Q_z = Q_z_omega.sub(0).collapse()
+Q_omega = Q_z_omega.sub(1).collapse()
 
 
 
@@ -70,37 +58,36 @@ Q = VQ.sub(1).collapse()
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 2.2)'
 walls    = 'near(x[1], 0) || near(x[1], 0.41)'
-cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 #CHANGE PARAMETERS HERE
 
 # Define inflow profile
-inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
+# inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
 
 
-bcu_inflow = DirichletBC(VQ.sub(0), Expression(inflow_profile, degree=2), inflow)
-bcu_walls = DirichletBC(VQ.sub(0), Constant((0, 0)), walls)
-bcu_cylinder = DirichletBC(VQ.sub(0), Constant((0, 0)), cylinder)
+bcu_inflow = DirichletBC(Q_z_omega.sub(0), Expression(inflow_profile, degree=2), inflow)
+bcu_walls = DirichletBC(Q_z_omega.sub(0), Constant((0, 0)), walls)
+bcu_cylinder = DirichletBC(Q_z_omega.sub(0), Constant((0, 0)), cylinder)
 
-bcp_outflow = DirichletBC(VQ.sub(1), Constant(0), outflow)
+bcp_outflow = DirichletBC(Q_z_omega.sub(1), Constant(0), outflow)
 
 bc_up = [bcu_inflow, bcu_walls, bcu_cylinder, bcp_outflow]
 
 # Define trial and test functions
-v, q = TestFunctions(VQ)
-vs = TestFunction(V)
+v, q = TestFunctions(Q_z_omega)
+vs = TestFunction(Q_z)
 
 # Define functions for solutions at previous and current time steps
-up = Function(VQ)
+up = Function(Q_z_omega)
 u, p = split(up)
 
-u_n = Function(V)
-p_n = Function(Q)
+u_n = Function(Q_z)
+p_n = Function(Q_omega)
 
 # up_ = Function(VQ)
 # u_, p_ = split(up_)
 
-us = Function(V)
-ps_ = Function(Q)
+us = Function(Q_z)
+ps_ = Function(Q_omega)
 
 
 # Define expressions used in variational forms
