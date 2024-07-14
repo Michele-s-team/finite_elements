@@ -75,6 +75,12 @@ class omega_Expression(UserExpression):
         values[0] = 0.1 * x[1]
     def value_shape(self):
         return (1,)
+    
+class sigma_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[1]*(h-x[1])
+    def value_shape(self):
+        return (1,)
 
 #g_{ij}
 def g(z):
@@ -99,7 +105,7 @@ nu_z, nu_omega = TestFunctions(Q_z_omega)
 # Define functions for solutions at previous and current time steps
 z_omega = Function(Q_z_omega)
 z, omega = split(z_omega)
-
+sigma = Function(Q_omega)
 
 # Define expressions used in variational forms
 n  = FacetNormal(mesh)
@@ -110,7 +116,7 @@ kappa = Constant(kappa)
 
 # Define variational problem for step 1
 F_z = ( -1.0/(2.0*sqrt_detg(z))* atan(z.dx(1)) * (nu_z.dx(1)) - omega * nu_z ) * dx
-F_omega = ( kappa * (1.0/detg(z)) * (omega.dx(1))* (nu_omega.dx(1)) - 2 * (omega**3) * nu_omega ) * dx
+F_omega = ( kappa * ( (1.0/detg(z)) * (omega.dx(1))* (nu_omega.dx(1)) - 2 * (omega**3) * nu_omega ) + sigma * omega * nu_omega ) * dx
 F = F_z + F_omega
 
 
@@ -120,6 +126,7 @@ xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
 z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
 omega = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+sigma = interpolate(sigma_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
