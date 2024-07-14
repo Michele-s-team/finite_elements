@@ -134,8 +134,8 @@ F12 = F1 + F2
 F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile('velocity.xdmf')
-xdmffile_p = XDMFFile('pressure.xdmf')
+xdmffile_u = XDMFFile((args.output_directory) + '/v.xdmf')
+xdmffile_p = XDMFFile((args.output_directory) + '/p.xdmf')
 
 # Create VTK files for visualization output
 vtkfile_u = File('v.pvd')
