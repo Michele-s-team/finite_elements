@@ -118,6 +118,10 @@ F = F_z + F_omega
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
+z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
+omega = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+
+
 
 solve(F == 0, z_omega, bc_z_omega)
     
