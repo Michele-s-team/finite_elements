@@ -12,6 +12,8 @@ from fenics import *
 from mshr import *
 import numpy as np
 import argparse
+import ufl as ufl
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -63,6 +65,17 @@ walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 # Define inflow profile
 # z_profile = 'x[1]'
 # omega_profile = 'x[1]'
+
+#g_{ij}
+def g(z):
+    return as_tensor([[1, 0],[0, 1+ (z.dx(1))**2]])
+
+def detg(z):
+    return ufl.det(g(z))
+
+def sqrt_detg(z):
+    return sqrt(detg(z))
+
 
 
 bc_z = DirichletBC(Q_z_omega.sub(0), Expression('x[1]', degree=1), walls)
