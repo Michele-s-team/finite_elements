@@ -86,14 +86,9 @@ kappa = Constant(kappa)
 
 
 # Define variational problem for step 1
-F1 = rho*dot((z - u_n) / k, nu_z)*dx \
-   + rho*dot(dot(u_n, nabla_grad(u_n)), nu_z)*dx \
-   + inner(sigma(U, p_n), epsilon(nu_z))*dx \
-   + dot(p_n*n, nu_z)*ds - dot(mu*nabla_grad(U)*n, nu_z)*ds \
-   - dot(f, nu_z)*dx
-# Define variational problem for step 2
-F2 = (dot(nabla_grad(omega), nabla_grad(nu_omega)) - (dot(nabla_grad(p_n), nabla_grad(nu_omega)) - (1/k)*div(z)*nu_omega))*dx
-F12 = F1 + F2
+F_z = ( -1.0/(2.0*sqrt_detg(z))* atan(z.dx(1)) * (nu_z.dx(1)) - omega * nu_z ) * dx
+F_omega = ( kappa * (1.0/detg(z)) * (omega.dx(1))* (nu_omega.dx(1)) - 2 * (omega**3) * nu_omega ) * dx
+F12 = F_z + F_omega
 
 # Define variational problem for step 3
 F3 = (dot(us, vs) - (dot(z, vs) - k*dot(nabla_grad(omega - p_n), vs))) * dx
