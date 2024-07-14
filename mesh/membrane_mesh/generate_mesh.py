@@ -18,18 +18,14 @@ resolution = (float)(args.resolution)
 # Channel parameters
 L = 2.2
 h = 0.41
-r = 0.05
-c_r = [0.2, 0.2, 0]
-# R = 1.0
-# c_R = [0, 0, 0]
-#c2 = [0.7, 0.12, 0]
-#r = 0.07
+# r = 0.05
+# c_r = [0.2, 0.2, 0]
 
 
 print("L = ", L)
 print("h = ", h)
-print("r = ", r)
-print("c_r = ", c_r)
+# print("r = ", r)
+# print("c_r = ", c_r)
 print("resolution = ", resolution)
 
 
@@ -41,7 +37,7 @@ model = geometry.__enter__()
 
 # Add circle
 # circle_R = model.add_circle(c_R, R, mesh_size=resolution)
-circle_r = model.add_circle(c_r, r, mesh_size=resolution)
+# circle_r = model.add_circle(c_r, r, mesh_size=resolution)
 rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 # o_in = geometry.add_point([-L/2,0,0])
@@ -112,7 +108,7 @@ channel_loop = model.add_curve_loop(channel_lines)
 # my_surface = model.add_plane_surface(my_loop)
 
 #plane_surface = model.add_plane_surface(     rectangle_Lh.curve_loop, holes=[circle_r.curve_loop])
-plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
+plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
 
 
@@ -128,7 +124,7 @@ model.add_physical([plane_surface], "Volume")
 model.add_physical([channel_lines[0]], "Inflow")
 model.add_physical([channel_lines[2]], "Outflow")
 model.add_physical([channel_lines[1], channel_lines[3]], "Walls")
-model.add_physical(circle_r.curve_loop.curves, "Obstacle")
+# model.add_physical(circle_r.curve_loop.curves, "Obstacle")
 #model.add_physical(circle2.curve_loop.curves, "Obstacle 2")
 
 #
