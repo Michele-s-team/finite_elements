@@ -97,8 +97,8 @@ u, p = split(up)
 u_n = Function(V)
 p_n = Function(Q)
 
-up_ = Function(VQ)
-u_, p_ = split(up_)
+# up_ = Function(VQ)
+# u_, p_ = split(up_)
 
 us = Function(V)
 ps_ = Function(Q)
@@ -131,7 +131,7 @@ F2 = (dot(nabla_grad(p), nabla_grad(q)) - (dot(nabla_grad(p_n), nabla_grad(q)) -
 F12 = F1 + F2
 
 # Define variational problem for step 3
-F3 = (dot(us, vs) - (dot(u_, vs) - k*dot(nabla_grad(p_ - p_n), vs))) * dx
+F3 = (dot(us, vs) - (dot(u, vs) - k*dot(nabla_grad(p - p_n), vs))) * dx
 
 # Create XDMF files for visualization output
 xdmffile_u = XDMFFile((args.output_directory) + '/v.xdmf')
