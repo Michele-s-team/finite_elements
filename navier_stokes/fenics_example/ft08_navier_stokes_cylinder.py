@@ -26,6 +26,8 @@ set_log_level(30)
 kappa = 1E-1
 
 
+
+
 # # Create mesh
 # channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
 # cylinder = Circle(Point(0.2, 0.2), 0.05)
@@ -60,6 +62,12 @@ Q_omega = Q_z_omega.sub(1).collapse()
 inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 2.2)'
 walls    = 'near(x[1], 0) || near(x[1], 0.41)'
+
+z_bottom  = 0.0
+z_top = 1.0
+
+omega_bottom = 0.0
+omega_top = 1.0
 #CHANGE PARAMETERS HERE
 
 #trial analytical expression for the height function z(x,y)
@@ -94,8 +102,8 @@ def sqrt_detg(z):
 
 
 
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('-0.5*x[1]', degree=1), walls)
-bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('-x[1]', degree=1), walls)
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('z_bottom + (z_top - z_bottom)*x[1]/h', degree=1, h = h, z_top = z_top, z_bottom = z_bottom), walls)
+bc_omega = DirichletBC(Q_z_omega.sub(0), Expression('omega_bottom + (omega_top - omega_bottom)*x[1]/h', degree=1, h = h, omega_top = omega_top, omega_bottom = omega_bottom), walls)
 
 bc_z_omega = [bc_z, bc_omega]
 
