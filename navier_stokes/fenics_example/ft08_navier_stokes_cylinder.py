@@ -103,7 +103,7 @@ def sqrt_detg(z):
 
 
 bc_z = DirichletBC(Q_z_omega.sub(0), Expression('z_bottom + (z_top - z_bottom)*x[1]/h', degree=1, h = h, z_top = z_top, z_bottom = z_bottom), walls)
-bc_omega = DirichletBC(Q_z_omega.sub(0), Expression('omega_bottom + (omega_top - omega_bottom)*x[1]/h', degree=1, h = h, omega_top = omega_top, omega_bottom = omega_bottom), walls)
+bc_omega = DirichletBC(Q_z_omega.sub(1), Expression('omega_bottom + (omega_top - omega_bottom)*x[1]/h', degree=1, h = h, omega_top = omega_top, omega_bottom = omega_bottom), walls)
 
 bc_z_omega = [bc_z, bc_omega]
 
