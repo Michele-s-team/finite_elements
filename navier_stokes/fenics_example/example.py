@@ -1,3 +1,12 @@
+'''
+run with 
+
+python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution
+
+
+'''
+
+
 from __future__ import print_function
 from fenics import *
 from mshr import *
