@@ -66,7 +66,7 @@ walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 z_bottom  = 0.0
 z_top = 0.5
 
-omega_bottom = 0.0
+omega_bottom = -1.5
 omega_top = 1.0
 #CHANGE PARAMETERS HERE
 
