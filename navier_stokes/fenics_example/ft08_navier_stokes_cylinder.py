@@ -115,8 +115,8 @@ kappa = Constant(kappa)
 
 
 # Define variational problem for step 1
-F_z = ( -1.0/(2.0*sqrt_detg(z))* atan(z.dx(1)) * (nu_z.dx(1)) - omega * nu_z ) * dx
-F_omega = ( kappa * ( (1.0/detg(z)) * (omega.dx(1))* (nu_omega.dx(1)) - 2 * (omega**3) * nu_omega ) + sigma * omega * nu_omega ) * dx
+F_z = ( -1.0/(2.0*sqrt_detg(z))* atan(z.dx(1)) * (nu_z.dx(1)) - omega * nu_z ) * sqrt_detg(z) * dx
+F_omega = ( kappa * ( (1.0/detg(z)) * (omega.dx(1))* (nu_omega.dx(1)) - 2 * (omega**3) * nu_omega ) + sigma * omega * nu_omega ) *  sqrt_detg(z) * dx
 F = F_z + F_omega
 
 
