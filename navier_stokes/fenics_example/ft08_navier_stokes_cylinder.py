@@ -29,13 +29,13 @@ kappa = 1E-1
 
 
 # # Create mesh
-# channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
+# channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
 # cylinder = Circle(Point(0.2, 0.2), 0.05)
 # domain = channel - cylinder
 # mesh = generate_mesh(domain, 64)
 
-L = 2.2
-h = 0.41
+L = 1.0
+h = 1.0
 
 #create mesh
 mesh=Mesh()
@@ -60,8 +60,8 @@ Q_omega = Q_z_omega.sub(1).collapse()
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
-outflow  = 'near(x[0], 2.2)'
-walls    = 'near(x[1], 0) || near(x[1], 0.41)'
+outflow  = 'near(x[0], 1.0)'
+walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 
 z_bottom  = 0.0
 z_top = 0.5
