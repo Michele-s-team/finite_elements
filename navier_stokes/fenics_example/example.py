@@ -118,7 +118,7 @@ sigma = Function(Q_omega)
 # Define expressions used in variational forms
 n  = FacetNormal(mesh)
 kappa = Constant(kappa)
-
+sigma = interpolate(sigma_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
@@ -134,7 +134,6 @@ xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
 z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
 omega = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
-sigma = interpolate(sigma_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
