@@ -23,7 +23,6 @@ args = parser.parse_args()
 set_log_level(20)
 
 
-kappa = 1E-1
 
 
 
@@ -63,6 +62,9 @@ inflow   = 'near(x[0], 0)'
 outflow  = 'near(x[0], 1.0)'
 walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 
+kappa = 1.0
+sigma0 = 10.0
+
 z_bottom  = 0.0
 z_top = 0.5
 
@@ -86,7 +88,7 @@ class omega_Expression(UserExpression):
     
 class sigma_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[1]*(h-x[1])
+        values[0] = sigma0 * x[1]*(h-x[1])/(h**2)
     def value_shape(self):
         return (1,)
 
