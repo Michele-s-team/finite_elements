@@ -20,7 +20,7 @@ parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-set_log_level(30)
+set_log_level(20)
 
 
 kappa = 1E-1
