@@ -64,7 +64,7 @@ outflow  = 'near(x[0], 2.2)'
 walls    = 'near(x[1], 0) || near(x[1], 0.41)'
 
 z_bottom  = 0.0
-z_top = 1.0
+z_top = 0.5
 
 omega_bottom = 0.0
 omega_top = 1.0
@@ -73,14 +73,14 @@ omega_top = 1.0
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = -0.5*x[1]
+        values[0] = z_bottom + (z_top - z_bottom)*x[1]/h
     def value_shape(self):
         return (1,)
 
 
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = -x[1]
+        values[0] = omega_bottom + (omega_top - omega_bottom)*x[1]/h
     def value_shape(self):
         return (1,)
     
