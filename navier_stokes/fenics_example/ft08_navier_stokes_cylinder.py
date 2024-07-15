@@ -1,12 +1,3 @@
-"""
-FEniCS tutorial demo program: Incompressible Navier-Stokes equations
-for flow around a cylinder using the Incremental Pressure Correction
-Scheme (IPCS).
-
-  u' + u . nabla(u)) - div(sigma(u, p)) = f
-                                 div(u) = 0
-"""
-
 from __future__ import print_function
 from fenics import *
 from mshr import *
