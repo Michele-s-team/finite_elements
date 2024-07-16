@@ -55,6 +55,42 @@ Q_z = Q_z_omega.sub(0).collapse()
 Q_omega = Q_z_omega.sub(1).collapse()
 
 
+#  norm of vector x
+def my_norm(x):
+    return (sqrt(np.dot(x, x)))
+
+
+#analytical expression for a general scalar function
+class ScalarFunctionExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] =  np.sin(x[1]/L) * np.cos((x[0]/h)**2)
+    def value_shape(self):
+        return (1,)
+
+
+#read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
+mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
+
+
+#here I read the tagged element declared as model.add_physical([channel_lines_1[1]], "Inflow")
+ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+#here I read the tagged element declared as model.add_physical([channel_lines_1[3]], "Outflow")
+ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+
+#f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
+f_test_ds = Function(Q_z)
+f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
+
+#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
+inflow_integral = assemble(f_test_ds*ds_inflow)
+outflow_integral = assemble(f_test_ds*ds_outflow)
+print("Inflow integral = ", inflow_integral, " exact value = 0.03681588614337836.")
+print("Outflow integral = ", outflow_integral, " exact value = -0.004619303506436677")
+
+'''
+
+
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
@@ -145,3 +181,4 @@ z_, omega_ = z_omega.split(deepcopy=True)
 
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
+'''
