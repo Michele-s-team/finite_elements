@@ -72,12 +72,12 @@ nu_z, nu_omega = TestFunctions(Q_z_omega)
 # Define functions for solutions at previous and current time steps
 z_omega = Function(Q_z_omega)
 z, omega = split(z_omega)
-sigma = Function(Q_omega)
+sigma = Function(Q_z)
 
 # Define expressions used in variational forms
 n  = FacetNormal(mesh)
 kappa = Constant(kappa)
-sigma = interpolate(sigma_Expression(element=Q_omega.ufl_element()), Q_omega)
+sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 
 
 
