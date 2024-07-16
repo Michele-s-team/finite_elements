@@ -94,7 +94,6 @@ print("Outflow integral = ", outflow_integral, " exact value = 0.227646")
 print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
 print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
-'''
 
 
 
@@ -107,6 +106,7 @@ walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 
 kappa = 1.0
 sigma0 = 10.0
+'''
 
 z_bottom  = 0.0
 z_top = 0.5
