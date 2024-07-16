@@ -88,8 +88,8 @@ top_wall_integral = assemble(f_test_ds*ds_top_wall)
 bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
 print("Inflow integral = ", inflow_integral, " exact value = 0.45969769413186073")
 print("Outflow integral = ", outflow_integral, " exact value = 0.248376")
-print("Top wall integral = ", top_wall_integral, " exact value = 0.248376")
-print("Bottom integral = ", bottom_wall_integral, " exact value = 0.248376")
+print("Top wall integral = ", top_wall_integral, " exact value = 0.761131")
+print("Bottom integral = ", bottom_wall_integral, " exact value = 0.0")
 
 '''
 
