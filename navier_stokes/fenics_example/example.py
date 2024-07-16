@@ -66,7 +66,7 @@ class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
         c_r = [0.2, 0.2]
         r = 0.05
-        values[0] = cos(my_norm(np.subtract(x, c_r)) - r)**2.0 * np.sin(x[1]/L) * np.cos((x[0]/h)**2)
+        values[0] = cos(my_norm(np.subtract(x, c_r)) - r)**2.0 * np.sin((x[1]+1)/L) * np.cos((x[0]/h)**2)
     def value_shape(self):
         return (1,)
 
@@ -89,10 +89,10 @@ inflow_integral = assemble(f_test_ds*ds_inflow)
 outflow_integral = assemble(f_test_ds*ds_outflow)
 top_wall_integral = assemble(f_test_ds*ds_top_wall)
 bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
-print("Inflow integral = ", inflow_integral, " exact value = 0.45969769413186073")
-print("Outflow integral = ", outflow_integral, " exact value = 0.248376")
-print("Top wall integral = ", top_wall_integral, " exact value = 0.761131")
-print("Bottom integral = ", bottom_wall_integral, " exact value = 0.0")
+print("Inflow integral = ", inflow_integral, " exact value = 0.807055")
+print("Outflow integral = ", outflow_integral, " exact value = 0.227646")
+print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
+print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
 '''
 
