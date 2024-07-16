@@ -84,8 +84,8 @@ f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 inflow_integral = assemble(f_test_ds*ds_inflow)
 outflow_integral = assemble(f_test_ds*ds_outflow)
-print("Inflow integral = ", inflow_integral, " exact value = 0.03681588614337836.")
-print("Outflow integral = ", outflow_integral, " exact value = -0.004619303506436677")
+print("Inflow integral = ", inflow_integral, " exact value = 0.45969769413186073")
+print("Outflow integral = ", outflow_integral, " exact value = 0.248376")
 
 '''
 
