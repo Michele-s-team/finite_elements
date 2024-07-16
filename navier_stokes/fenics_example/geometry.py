@@ -139,9 +139,6 @@ t=0
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 
-def my_function():
-    x = ufl.SpatialCoordinate(mesh)
-    return(((x[0]-c_r[0])/my_norm(np.subtract(x, c_r)))**2)
 
 def X(z):
     x = ufl.SpatialCoordinate(mesh)
