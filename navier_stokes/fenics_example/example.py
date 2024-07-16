@@ -40,20 +40,20 @@ sigma0 = 10.0
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-ds_top_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
-ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
+ds_in = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_out = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+ds_top = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
+ds_bottom = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 
 #f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function(Q_z)
 f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-inflow_integral = assemble(f_test_ds*ds_inflow)
-outflow_integral = assemble(f_test_ds*ds_outflow)
-top_wall_integral = assemble(f_test_ds*ds_top_wall)
-bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
+inflow_integral = assemble(f_test_ds*ds_in)
+outflow_integral = assemble(f_test_ds*ds_out)
+top_wall_integral = assemble(f_test_ds*ds_top)
+bottom_wall_integral = assemble(f_test_ds*ds_bottom)
 print("Inflow integral = ", inflow_integral, " exact value = 0.807055")
 print("Outflow integral = ", outflow_integral, " exact value = 0.227646")
 print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
@@ -84,7 +84,8 @@ sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 # Define variational problem for step 1
 F_z = ( kappa * ( g_c(z)[i, j] * (H(z).dx(j)) * (nu_z.dx(i)) - 2.0 * H(z) * ( (H(z))**2 - K(z) ) * nu_z ) + sigma * H(z) * nu_z ) * sqrt_detg(z) * dx
 F_omega = ( - z * Nabla_v(nu_omega, z)[i, i] ) *  sqrt_detg(z) * dx + \
-          ( n_inout(z)[i] * g(z)[i, 1] * z * nu_omega[1] ) * sqrt_deth(z) * ds_inflow
+          ( n_inout(z)[i] * g(z)[i, 1] * z * nu_omega[1] ) * sqrt_deth(z) * (ds_in + ds_out) + \
+          ( n_topbottom(z)[i] * g(z)[i, 0] * z * nu_omega[0] ) * sqrt_deth(z) * (ds_top + ds_bottom)
 F = F_z + F_omega
 
 
