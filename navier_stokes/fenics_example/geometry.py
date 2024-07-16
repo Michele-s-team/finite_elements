@@ -36,7 +36,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 # Define function spaces
 P_z = FiniteElement('P', triangle, 1)
-P_omega = VectorElement('P', triangle, 2)
+P_omega = VectorElement('P', triangle, 3)
 element = MixedElement([P_z, P_omega])
 Q_z_omega = FunctionSpace(mesh, element)
 Q_z = Q_z_omega.sub(0).collapse()
