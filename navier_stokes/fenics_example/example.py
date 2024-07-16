@@ -132,15 +132,7 @@ class sigma_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
-#g_{ij}
-def g(z):
-    return as_tensor([[1, 0],[0, 1+ (z.dx(1))**2]])
 
-def detg(z):
-    return ufl.det(g(z))
-
-def sqrt_detg(z):
-    return sqrt(detg(z))
 
 
 
