@@ -1,8 +1,7 @@
 '''
 run with 
 
-python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution
-
+python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/
 
 '''
 
@@ -34,7 +33,7 @@ set_log_level(20)
 L = 1.0
 h = 1.0
 kappa = 1.0
-sigma0 = 10.0
+sigma0 = 1.0
 
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`

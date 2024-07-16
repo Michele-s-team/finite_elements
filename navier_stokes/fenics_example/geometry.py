@@ -254,27 +254,3 @@ def Nabla_v(u, omega):
 #covariant derivative of one-form f with respect to \partial/partial x: Nabla_f(f, z)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
 def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
-
-# def Nabla_LB_omega(omega, z):
-#     return as_tensor(- sqrt_abs_detg(z) * g_c(z)[j,k] * epsilon[j,i] * ((sqrt_abs_detg(z) * g_c(z)[l,m] * g_c(z)[n,omega] * epsilon[l,n] * ((omega[omega]).dx(m))).dx(k)), (i))
-
-
-# # Define symmetric gradient
-# def epsilon(u):
-#     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
-#     #sym(nabla_grad(u)) =  nabla_grad(u)_{i,j} + nabla_grad(u)_{j,i}
-#     # return sym(nabla_grad(u))
-#     return as_tensor(0.5*(u[i].dx(j) + u[j].dx(i)), (i,j))
-
-# # Define stress tensor
-# def tensor_sigma(u, p):
-#     return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
-
-
-#rate-of_deformation tensor: d(u, un, z)[i, j] = {d_{ij}}_{alizzi2020shear}
-def d(u, un, omega):
-    return as_tensor(0.5 * ( g(omega)[i, k]*Nabla_v(u, omega)[k, j] + g(omega)[j, k]*Nabla_v(u, omega)[k, i] ) - (b(omega)[i,j]) * un, (i, j))
-
-#2-contravariant rate-of_deformation tensor: d_c(u, un, z)[i, j] = {d^{ij}}_{alizzi2020shear}
-def d_c(u, un, omega):
-    return as_tensor(g_c(omega)[i, k] * g_c(omega)[j, l] * d(u, un, omega)[k,l], (i,j))
