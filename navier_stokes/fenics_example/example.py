@@ -13,6 +13,8 @@ from mshr import *
 import numpy as np
 import argparse
 import ufl as ufl
+from geometry import *
+
 
 
 parser = argparse.ArgumentParser()
