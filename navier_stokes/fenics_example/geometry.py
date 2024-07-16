@@ -102,7 +102,7 @@ epsilon = ufl.PermutationSymbol(2)
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[1]/h
+        values[0] = x[0]/L * x[1]/h
     def value_shape(self):
         return (1,)
 
