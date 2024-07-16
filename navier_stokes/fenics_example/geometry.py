@@ -85,9 +85,10 @@ def calc_normal_cg2(mesh):
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
-inflow   = 'near(x[0], 0)'
-outflow  = 'near(x[0], 1.0)'
-walls    = 'near(x[1], 0) || near(x[1], 1.0)'
+in_flow   = 'near(x[0], 0)'
+out_flow  = 'near(x[0], 1.0)'
+top_wall    = 'near(x[1], 1.0)'
+bottom_wall   = 'near(x[1], 0)'
 #CHANGE PARAMETERS HERE
 
 
