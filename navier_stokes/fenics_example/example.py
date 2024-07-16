@@ -118,11 +118,13 @@ class z_Expression(UserExpression):
         return (1,)
 
 
+#trial analytical expression for a vector
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = omega_bottom + (omega_top - omega_bottom)*x[1]/h
+        values[0] = 1.0
+        values[1] = 0.0
     def value_shape(self):
-        return (1,)
+        return (2,)
     
 class sigma_Expression(UserExpression):
     def eval(self, values, x):
