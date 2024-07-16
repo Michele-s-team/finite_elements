@@ -162,15 +162,15 @@ def b(omega):
 
 
 #g_{ij}
-def g(z):
-    return as_tensor([[1+ (z.dx(0))**2, (z.dx(0))*(z.dx(1))],[(z.dx(0))*(z.dx(1)), 1+ (z.dx(1))**2]])
+def g(omega):
+    return as_tensor([[1+ (omega[0])**2, (omega[0])*(omega[1])],[(omega[0])*(omega[1]), 1+ (omega[1])**2]])
 
 #g^{ij}
-def g_c(z):
-    return ufl.inv(g(z))
+def g_c(omega):
+    return ufl.inv(g(omega))
 
-def detg(z):
-    return ufl.det(g(z))
+def detg(omega):
+    return ufl.det(g(omega))
 
 def abs_detg(z):
     return np.abs(ufl.det(g(z)))
