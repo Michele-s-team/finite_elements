@@ -145,47 +145,21 @@ def X(z):
     return as_tensor([x[0], x[1], z])
 
 #e(z)[i] = e_i_{al-izzi2020shear}
-def e(z):
-    return as_tensor([[1, 0, z.dx(0)], [0, 1, z.dx(1)]])
-
-def e_p(z, x):
-    return ([(project(e(z)[0], O3d))(x), (project(e(z)[1], O3d))(x)])
-
-def normal_p(z, x):
-    return ((project(normal(z), O3d))(x))
-
-#radial vector for polar coordinates with origin at c_r (intended as a vector in R^3)
-def hat_r():
-    x = ufl.SpatialCoordinate(mesh)
-    return as_tensor(np.divide([x[0]-c_r[0], x[1]-c_r[1], 0.0], my_norm(np.subtract(x, c_r))))
-    
-#tangent vector for polar coordinates with origin at c_r (intended as a vector in R^3)
-def hat_t():
-    x = ufl.SpatialCoordinate(mesh)
-    return as_tensor(np.divide([-(x[1]-c_r[1]), x[0]-c_r[0], 0.0], my_norm(np.subtract(x, c_r))))
+def e(omega):
+    return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
 
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
-def normal(z):
-    return as_tensor(cross(e(z)[0], e(z)[1]) /  ufl_norm(cross(e(z)[0], e(z)[1])) )
+def normal(omega):
+    return as_tensor(cross(e(omega)[0], e(omega)[1]) /  ufl_norm(cross(e(omega)[0], e(omega)[1])) )
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
 
-
-
 #b(z)[i,j] = b_{ij}_{al-izzi2020shear}
-def b(z):
-    return as_tensor((normal(z))[k] * (e(z)[i, k]).dx(j), (i,j))
+def b(omega):
+    return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i,j))
 
-
-#the gradient of z(x,y)
-def grad_z(z):
-    return as_vector(z.dx(i), (i))
-
-#an example of a vector field obatined by contracting indexes
-def my_vector_field(z):
-    return as_vector(grad_z(z)[j]*g(z)[i,k]*g(z)[k, j] * dot(e(z)[0], normal(z)), (i))
 
 #g_{ij}
 def g(z):
