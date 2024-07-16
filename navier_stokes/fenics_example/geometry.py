@@ -233,12 +233,17 @@ def n(z):
     return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
 
 
-#the normal vector on the inflow and outflow
-def n_inout(z):
+#the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
+def n_in_out(z):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], L/2), -1.0, 1.0), 0.0] )
     return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
 
+#the normal vector on the top  and bottom wall normalized according to g and pointing outside Omega
+def n_top_bottom(z):
+    x = ufl.SpatialCoordinate(mesh)
+    u = as_tensor([0.0, conditional(lt(x[1], h/2), -1.0, 1.0)] )
+    return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
 
 #a normal vector pointing outwards the mesh
 def calc_normal_cg2(mesh):
