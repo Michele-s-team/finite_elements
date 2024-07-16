@@ -63,30 +63,6 @@ print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
 
 
-#trial analytical expression for the height function z(x,y)
-class z_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = x[1]/h
-    def value_shape(self):
-        return (1,)
-
-
-#trial analytical expression for a vector
-class omega_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
-    def value_shape(self):
-        return (2,)
-    
-class sigma_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = sigma0 * x[1]*(h-x[1])/(h**2)
-    def value_shape(self):
-        return (1,)
-
-
-
 
 
 bc_z = DirichletBC(Q_z_omega.sub(0), Expression('z_bottom + (z_top - z_bottom)*x[1]/h', degree=1, h = h, z_top = z_top, z_bottom = z_bottom), walls)
