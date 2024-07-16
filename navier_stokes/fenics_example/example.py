@@ -36,6 +36,7 @@ set_log_level(20)
 L = 1.0
 h = 1.0
 
+
 #create mesh
 mesh=Mesh()
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
@@ -63,7 +64,9 @@ def my_norm(x):
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] =  np.sin(x[1]/L) * np.cos((x[0]/h)**2)
+        c_r = [0.2, 0.2]
+        r = 0.05
+        values[0] = cos(my_norm(np.subtract(x, c_r)) - r)**2.0 * np.sin(x[1]/L) * np.cos((x[0]/h)**2)
     def value_shape(self):
         return (1,)
 
