@@ -19,6 +19,7 @@ args = parser.parse_args()
 tol = 1E-3
 L = 1.0
 h = 1.0
+sigma0 = 10.0
 # r = 0.05
 # c_r = [0.2, 0.2]
 #CHANGE PARAMETERS HERE
