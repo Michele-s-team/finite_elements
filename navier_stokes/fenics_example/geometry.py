@@ -178,20 +178,16 @@ def abs_detg(omega):
 def sqrt_detg(omega):
     return sqrt(detg(omega))
 
-def sqrt_abs_detg(z):
-    return sqrt(abs_detg(z))
+def sqrt_abs_detg(omega):
+    return sqrt(abs_detg(omega))
 
-def sqrt_deth(z):
+def sqrt_deth(omega):
     x = ufl.SpatialCoordinate(mesh)
-    # #v = {\partial y^1/\partial x^\mu, \partial y^2/\partial x^\mu}_notesreall2013general
-    # v_r = as_tensor([-(x[1]-c_r[1]), (x[0]-c_r[0])])
-    # v_R = as_tensor([-(x[1]-c_R[1]), (x[0]-c_R[0])])
-    #
-    #
-    c = conditional(lt(abs(x[0] - 0.0), tol), g(z)[1,1], 1.0) * \
-        conditional(lt(abs(x[0] - L), tol), g(z)[1, 1], 1.0) * \
-        conditional(lt(abs(x[1] - 0.0), tol), g(z)[0, 0], 1.0) * \
-        conditional(lt(abs(x[1] - h), tol), g(z)[0, 0], 1.0)
+
+    c = conditional(lt(abs(x[0] - 0.0), tol), g(omega)[1,1], 1.0) * \
+        conditional(lt(abs(x[0] - L), tol), g(omega)[1, 1], 1.0) * \
+        conditional(lt(abs(x[1] - 0.0), tol), g(omega)[0, 0], 1.0) * \
+        conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
     return sqrt(c)
     # return sqrt(c)
     # return 1
