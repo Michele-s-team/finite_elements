@@ -234,64 +234,46 @@ def calc_normal_cg2(mesh):
 
 
 #H(z) = H_{al-izzi2020shear}
-def H(z):
-    return (0.5 * g_c(z)[i, j]*b(z)[j, i])
+def H(omega):
+    return (0.5 * g_c(omega)[i, j]*b(omega)[j, i])
 
 #K(z) = K_{al-izzi2020shear}
-def K(z):
-    return(ufl.det(as_tensor(b(z)[i,k]*g_c(z)[k,j], (i, j))))
+def K(omega):
+    return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
 
 
 #christoffel symbols: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
-def Gamma(z):
-    return as_tensor(0.5 * g_c(z)[i,l] * ( (g(z)[l, k]).dx(j) + (g(z)[j, l]).dx(k) - (g(z)[j, k]).dx(l) ), (i, j, k))
+def Gamma(omega):
+    return as_tensor(0.5 * g_c(omega)[i,l] * ( (g(omega)[l, k]).dx(j) + (g(omega)[j, l]).dx(k) - (g(omega)[j, k]).dx(l) ), (i, j, k))
 
 #covariant derivative of vector v with respect to \partial/partial x: Nabla_v(v, z)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
-def Nabla_v(u, z):
-    return as_tensor((u[i]).dx(j) + u[k] * Gamma(z)[i, k, j], (i, j))
+def Nabla_v(u, omega):
+    return as_tensor((u[i]).dx(j) + u[k] * Gamma(omega)[i, k, j], (i, j))
 
 #covariant derivative of one-form f with respect to \partial/partial x: Nabla_f(f, z)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
-def Nabla_f(f, z):
-    return as_tensor((f[i]).dx(j) - f[k] * Gamma(z)[k, i, j], (i, j))
+def Nabla_f(f, omega):
+    return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
+
+# def Nabla_LB_omega(omega, z):
+#     return as_tensor(- sqrt_abs_detg(z) * g_c(z)[j,k] * epsilon[j,i] * ((sqrt_abs_detg(z) * g_c(z)[l,m] * g_c(z)[n,omega] * epsilon[l,n] * ((omega[omega]).dx(m))).dx(k)), (i))
 
 
-#Laplace beltrami operator on a scalar function f: Nabla_LB(f) = {\Nabla_{LB} f}_{al-izzi2020shear}
-def Nabla_LB(f, z):
-    return (-g_c(z)[k,j] * Nabla_f(as_tensor(f.dx(i), (i)), z)[k, j])
+# # Define symmetric gradient
+# def epsilon(u):
+#     # nabla_grad(u)_{i,j} = (u[j]).dx[i]
+#     #sym(nabla_grad(u)) =  nabla_grad(u)_{i,j} + nabla_grad(u)_{j,i}
+#     # return sym(nabla_grad(u))
+#     return as_tensor(0.5*(u[i].dx(j) + u[j].dx(i)), (i,j))
 
-#second definition of Laplace beltrami operator, equivalent to Nabla_LB
-# def Nabla_LB2(f, z):
-#     return (-1.0/sqrt_abs_detg(z) * (sqrt_abs_detg(z)*g_c(z)[i, j]*(f.dx(j))).dx(i))
-
-def Nabla_LB_omega(omega, z):
-    return as_tensor(- sqrt_abs_detg(z) * g_c(z)[j,k] * epsilon[j,i] * ((sqrt_abs_detg(z) * g_c(z)[l,m] * g_c(z)[n,omega] * epsilon[l,n] * ((omega[omega]).dx(m))).dx(k)), (i))
-
-
-# Define symmetric gradient
-def epsilon(u):
-    # nabla_grad(u)_{i,j} = (u[j]).dx[i]
-    #sym(nabla_grad(u)) =  nabla_grad(u)_{i,j} + nabla_grad(u)_{j,i}
-    # return sym(nabla_grad(u))
-    return as_tensor(0.5*(u[i].dx(j) + u[j].dx(i)), (i,j))
-
-# Define stress tensor
-def tensor_sigma(u, p):
-    return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
+# # Define stress tensor
+# def tensor_sigma(u, p):
+#     return as_tensor(2*epsilon(u)[i,j] - p*Identity(len(u))[i,j], (i, j))
 
 
 #rate-of_deformation tensor: d(u, un, z)[i, j] = {d_{ij}}_{alizzi2020shear}
-def d(u, un, z):
-    return as_tensor(0.5 * ( g(z)[i, k]*Nabla_v(u, z)[k, j] + g(z)[j, k]*Nabla_v(u, z)[k, i] ) - (b(z)[i,j]) * un, (i, j))
+def d(u, un, omega):
+    return as_tensor(0.5 * ( g(omega)[i, k]*Nabla_v(u, omega)[k, j] + g(omega)[j, k]*Nabla_v(u, omega)[k, i] ) - (b(omega)[i,j]) * un, (i, j))
 
 #2-contravariant rate-of_deformation tensor: d_c(u, un, z)[i, j] = {d^{ij}}_{alizzi2020shear}
-def d_c(u, un, z):
-    return as_tensor(g_c(z)[i, k] * g_c(z)[j, l] * d(u, un, z)[k,l], (i,j))
-
-#return the arithmetic mean between vectors a and b
-def mean_v(a, b):
-    return as_tensor(0.5 * (a[i]+b[i]), (i))
-
-
-#the varaiation of the manifold height z over dt
-def dzdt(v, w, z):
-    return( v[i]*(e(z))[i, 2] + w*(normal(z))[2]   - (z.dx(j))*(v[i]*(e(z))[i, j] + w*(normal(z))[j])   )
+def d_c(u, un, omega):
+    return as_tensor(g_c(omega)[i, k] * g_c(omega)[j, l] * d(u, un, omega)[k,l], (i,j))
