@@ -194,27 +194,27 @@ def sqrt_deth(omega):
 
 
 #normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
-def n(z):
-    u = calc_normal_cg2(mesh)
-    hat_z = as_tensor([0, 0, 1])
-    hat_n = as_tensor([u[0], u[1], 0])
+# def n(z):
+#     u = calc_normal_cg2(mesh)
+#     hat_z = as_tensor([0, 0, 1])
+#     hat_n = as_tensor([u[0], u[1], 0])
     
-    t = as_tensor(cross(hat_n, hat_z))
-    c = as_tensor([-(e(z))[1, i]*t[i], (e(z))[0, i]*t[i]])
-    return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
+#     t = as_tensor(cross(hat_n, hat_z))
+#     c = as_tensor([-(e(z))[1, i]*t[i], (e(z))[0, i]*t[i]])
+#     return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
 
 
 #the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
-def n_in_out(z):
+def n_in_out(omega):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], L/2), -1.0, 1.0), 0.0] )
-    return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
+    return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #the normal vector on the top  and bottom wall normalized according to g and pointing outside Omega
-def n_top_bottom(z):
+def n_top_bottom(omega):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([0.0, conditional(lt(x[1], h/2), -1.0, 1.0)] )
-    return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
+    return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #a normal vector pointing outwards the mesh
 def calc_normal_cg2(mesh):
