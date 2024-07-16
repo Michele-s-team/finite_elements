@@ -84,7 +84,7 @@ sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 # Define variational problem for step 1
 F_z = ( kappa * ( g_c(z)[i, j] * (H(z).dx(j)) * (nu_z.dx(i)) - 2.0 * H(z) * ( (H(z))**2 - K(z) ) * nu_z ) + sigma * H(z) * nu_z ) * sqrt_detg(z) * dx
 F_omega = ( - z * Nabla_v(nu_omega, z)[i, i] ) *  sqrt_detg(z) * dx + \
-          (  ) * sqrt_deth(z) * ds_inflow
+          ( n_inout(z)[i] * g(z)[i, 1] * z * nu_omega[1] ) * sqrt_deth(z) * ds_inflow
 F = F_z + F_omega
 
 
