@@ -72,10 +72,10 @@ class ScalarFunctionExpression(UserExpression):
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
-#here I read the tagged element declared as model.add_physical([channel_lines_1[1]], "Inflow")
 ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-#here I read the tagged element declared as model.add_physical([channel_lines_1[3]], "Outflow")
 ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+ds_top_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
+ds_bottom_wall = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 
 #f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function(Q_z)
@@ -84,8 +84,12 @@ f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 inflow_integral = assemble(f_test_ds*ds_inflow)
 outflow_integral = assemble(f_test_ds*ds_outflow)
+top_wall_integral = assemble(f_test_ds*ds_top_wall)
+bottom_wall_integral = assemble(f_test_ds*ds_bottom_wall)
 print("Inflow integral = ", inflow_integral, " exact value = 0.45969769413186073")
 print("Outflow integral = ", outflow_integral, " exact value = 0.248376")
+print("Top wall integral = ", top_wall_integral, " exact value = 0.248376")
+print("Bottom integral = ", bottom_wall_integral, " exact value = 0.248376")
 
 '''
 
