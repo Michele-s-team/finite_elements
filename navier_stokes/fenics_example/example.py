@@ -106,19 +106,14 @@ walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 
 kappa = 1.0
 sigma0 = 10.0
-'''
 
-z_bottom  = 0.0
-z_top = 0.5
 
-omega_bottom = -1.5
-omega_top = 1.0
 #CHANGE PARAMETERS HERE
 
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = z_bottom + (z_top - z_bottom)*x[1]/h
+        values[0] = x[1]/h
     def value_shape(self):
         return (1,)
 
@@ -188,4 +183,3 @@ z_, omega_ = z_omega.split(deepcopy=True)
 
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
-'''
