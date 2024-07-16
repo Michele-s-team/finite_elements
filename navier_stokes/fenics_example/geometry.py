@@ -89,6 +89,7 @@ in_flow   = 'near(x[0], 0)'
 out_flow  = 'near(x[0], 1.0)'
 top_wall    = 'near(x[1], 1.0)'
 bottom_wall   = 'near(x[1], 0)'
+boundary = 'on_boundary'
 #CHANGE PARAMETERS HERE
 
 
