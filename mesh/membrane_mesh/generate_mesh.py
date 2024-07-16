@@ -65,11 +65,10 @@ model.add_physical([plane_surface], "Volume")
 #I will read this tagged element with `ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)`
 # model.add_physical(circle_r.curve_loop.curves, "Circle")
 
-#I will read this tagged element with `ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)`
 model.add_physical([channel_lines[3]], "Inflow")
-
-#I will read this tagged element with `ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)`
 model.add_physical([channel_lines[1]], "Outflow")
+model.add_physical([channel_lines[2]], "Top Wall")
+model.add_physical([channel_lines[0]], "Bottom Wall")
 
 
 geometry.generate_mesh(64)
