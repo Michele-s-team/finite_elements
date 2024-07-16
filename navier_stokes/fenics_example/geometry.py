@@ -172,11 +172,11 @@ def g_c(omega):
 def detg(omega):
     return ufl.det(g(omega))
 
-def abs_detg(z):
-    return np.abs(ufl.det(g(z)))
+def abs_detg(omega):
+    return np.abs(ufl.det(g(omega)))
 
-def sqrt_detg(z):
-    return sqrt(detg(z))
+def sqrt_detg(omega):
+    return sqrt(detg(omega))
 
 def sqrt_abs_detg(z):
     return sqrt(abs_detg(z))
