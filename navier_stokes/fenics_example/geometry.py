@@ -17,16 +17,11 @@ args = parser.parse_args()
 #r, R must be the same as in generate_mesh.py
 # R = 1.0
 tol = 1E-3
-L = 4.4
-h = 0.41
-r = 0.05
+L = 1.0
+h = 1.0
+# r = 0.05
 # c_r = [0.2, 0.2]
 #CHANGE PARAMETERS HERE
-
-#  norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
-
 
 #create mesh
 mesh=Mesh()
@@ -37,7 +32,31 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-mesh_coordinates = mesh.coordinates()
+
+# Define function spaces
+P_z = FiniteElement('P', triangle, 1)
+P_omega = VectorElement('P', triangle, 2)
+element = MixedElement([P_z, P_omega])
+Q_z_omega = FunctionSpace(mesh, element)
+Q_z = Q_z_omega.sub(0).collapse()
+Q_omega = Q_z_omega.sub(1).collapse()
+
+#analytical expression for a general scalar function
+class ScalarFunctionExpression(UserExpression):
+    def eval(self, values, x):
+        c_r = [0.2, 0.2]
+        r = 0.05
+        values[0] = cos(my_norm(np.subtract(x, c_r)) - r)**2.0 * np.sin((x[1]+1)/L) * np.cos((x[0]/h)**2)
+    def value_shape(self):
+        return (1,)
+
+
+#  norm of vector x
+def my_norm(x):
+    return (sqrt(np.dot(x, x)))
+
+
+
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
@@ -58,12 +77,7 @@ def calc_normal_cg2(mesh):
     solve(A, nh.vector(), L)
     return nh
 
-# Define function spaces
-#the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
-O = VectorFunctionSpace(mesh, 'P', 2, dim=2)
-O3d = VectorFunctionSpace(mesh, 'P', 2, dim=3)
-Q = FunctionSpace(mesh, 'P', 1)
-Q4 = FunctionSpace(mesh, 'P', 4)
+
 
 
 
@@ -71,9 +85,8 @@ Q4 = FunctionSpace(mesh, 'P', 4)
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 inflow   = 'near(x[0], 0)'
-outflow  = 'near(x[0], 4.4)'
-walls    = 'near(x[1], 0) || near(x[1], 0.41)'
-# cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
+outflow  = 'near(x[0], 1.0)'
+walls    = 'near(x[1], 0) || near(x[1], 1.0)'
 #CHANGE PARAMETERS HERE
 
 
@@ -84,49 +97,31 @@ def ufl_norm(x):
 
 epsilon = ufl.PermutationSymbol(2)
 
+
+
+#trial analytical expression for the height function z(x,y)
+class z_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[1]/h
+    def value_shape(self):
+        return (1,)
+
+
 #trial analytical expression for a vector
-class TangentVelocityExpression(UserExpression):
+class omega_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0.0
         values[1] = 0.0
     def value_shape(self):
         return (2,)
-
-#trial analytical expression for the height function z(x,y)
-class ManifoldExpression(UserExpression):
+    
+class sigma_Expression(UserExpression):
     def eval(self, values, x):
-#         values[0] = 0
-        values[0] =  2E0 * (x[1]*(h-x[1]))/(h**2) * (x[1]-h/24.0)/h
-    def value_shape(self):
-        return (1,)
-
-# trial analytical expression for the  surface tension sigma(x,y)
-class SurfaceTensionExpression(UserExpression):
-        def eval(self, values, x):
-            # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-            # values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
-            values[0] = 0.0
-
-        def value_shape(self):
-            return (1,)
-
-#trial analytical expression for w
-class NormalVelocityExpression(UserExpression):
-    def eval(self, values, x):
-        # values[0] = (np.subtract(x, c_r)[0])*(np.subtract(x, c_r)[1])*cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
-        values[0] = 0.0
-        
+        values[0] = sigma0 * x[1]*(h-x[1])/(h**2)
     def value_shape(self):
         return (1,)
 
 
-#trial analytical expression for the height function z(x,y)
-class ScalarFunctionExpression(UserExpression):
-    def eval(self, values, x):
-        # values[0] = 0
-        values[0] =  cos((x[0])**2)*cos((x[1])**3)
-    def value_shape(self):
-        return (1,)
         
         
 t=0
@@ -198,8 +193,6 @@ def g(z):
 def g_c(z):
     return ufl.inv(g(z))
 
-# def g(z):
-#     return as_tensor(dot((e(z))[i], (e(z))[j]), (i, j))
 def detg(z):
     return ufl.det(g(z))
 
@@ -227,15 +220,6 @@ def sqrt_deth(z):
     # return sqrt(c)
     # return 1
 
-#normal vector to the manifold pointing outwards the manifold. This vector field is defined everywhere in the manifold, but it makes sense only at the edges (and it should be used only at the edges)
-#def n(z):
-#    u = calc_normal_cg2(mesh)
-#    # x = ufl.SpatialCoordinate(mesh)
-#    # normalization = dot(u, u)
-#    # zeta = g(z)[i,j]*u[i]*u[j]
-#    c = 1.0/sqrt(g(z)[i,j]*u[i]*u[j])
-#    return as_tensor(c*u[i], (i))
-
 
 #normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
 def n(z):
@@ -247,20 +231,12 @@ def n(z):
     c = as_tensor([-(e(z))[1, i]*t[i], (e(z))[0, i]*t[i]])
     return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
 
-# def n_e(z):
-#
-#     x = ufl.SpatialCoordinate(mesh)
-#     output = conditional(gt(x[0], 0.5), 1, 0) *  conditional(gt(x[1], 0.5), 1, 0)
-#     return as_tensor([output, 0])
-
 
 #the normal vector on the inflow and outflow
 def n_inout(z):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], L/2), -1.0, 1.0), 0.0] )
     return as_tensor(u[k]/sqrt(g(z)[i,j]*u[i]*u[j]), (k))
-
-
 
 
 #a normal vector pointing outwards the mesh

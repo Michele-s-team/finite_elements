@@ -25,10 +25,6 @@ args = parser.parse_args()
 set_log_level(20)
 
 
-
-
-
-
 # # Create mesh
 # channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
 # cylinder = Circle(Point(0.2, 0.2), 0.05)
@@ -37,45 +33,12 @@ set_log_level(20)
 
 L = 1.0
 h = 1.0
-
-
-#create mesh
-mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-#sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-
-
-# Define function spaces
-P_z = FiniteElement('P', triangle, 1)
-P_omega = VectorElement('P', triangle, 2)
-element = MixedElement([P_z, P_omega])
-Q_z_omega = FunctionSpace(mesh, element)
-Q_z = Q_z_omega.sub(0).collapse()
-Q_omega = Q_z_omega.sub(1).collapse()
-
-
-#  norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
-
-
-#analytical expression for a general scalar function
-class ScalarFunctionExpression(UserExpression):
-    def eval(self, values, x):
-        c_r = [0.2, 0.2]
-        r = 0.05
-        values[0] = cos(my_norm(np.subtract(x, c_r)) - r)**2.0 * np.sin((x[1]+1)/L) * np.cos((x[0]/h)**2)
-    def value_shape(self):
-        return (1,)
+kappa = 1.0
+sigma0 = 10.0
 
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
-
 
 ds_inflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
 ds_outflow = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
@@ -100,18 +63,6 @@ print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
 
 
-# Define boundaries and obstacle
-#CHANGE PARAMETERS HERE
-inflow   = 'near(x[0], 0)'
-outflow  = 'near(x[0], 1.0)'
-walls    = 'near(x[1], 0) || near(x[1], 1.0)'
-
-kappa = 1.0
-sigma0 = 10.0
-
-
-#CHANGE PARAMETERS HERE
-
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
@@ -123,7 +74,7 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1.0
+        values[0] = 0.0
         values[1] = 0.0
     def value_shape(self):
         return (2,)
