@@ -8,23 +8,25 @@ import meshio
 import ufl as ufl
 import argparse
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 parser.add_argument("number_of_steps")
 args = parser.parse_args()
 
+
 #CHANGE PARAMETERS HERE
 tol = 1E-3
 L = 1.0
 h = 1.0
+N = (int)(args.number_of_steps)
 sigma0 = 1.0
-C = 0.07
-
-
-# r = 0.05
-# c_r = [0.2, 0.2]
+C_min = 0.01
+C_max = 0.1
 #CHANGE PARAMETERS HERE
+
+C = C_min
 
 #create mesh
 mesh=Mesh()
@@ -59,6 +61,8 @@ def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
 
+def C_n(i):
+    return( C_min + (C_max-C_min)*i/(N-1))
 
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`

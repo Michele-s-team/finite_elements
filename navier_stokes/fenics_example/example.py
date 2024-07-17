@@ -16,11 +16,6 @@ from geometry import *
 
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-parser.add_argument("number_of_steps")
-args = parser.parse_args()
 
 
 set_log_level(20)
@@ -34,7 +29,6 @@ set_log_level(20)
 
 L = 1.0
 h = 1.0
-N = (int)(args.number_of_steps)
 kappa = 1.0
 sigma0 = 1.0
 
@@ -124,6 +118,11 @@ for n in range(N):
     
     print("Step #", n)    
     
+    C = C_n(n)
+    
+    print("C = ", C)    
+
+    
     assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
     assigner.assign(z_omega, [z_0, omega_0])
 
@@ -137,10 +136,11 @@ for n in range(N):
     solve(F == 0, z_omega, bc_z_omega)
     
     z_, omega_ = z_omega.split(deepcopy=True)
-    z_0.assign(project(z_, Q_z))
-    omega_0.assign(project(omega_, Q_omega))
-    # xdmffile_z.write(z_0, n)
-    # xdmffile_omega.write(omega_0, n)
+    z_0.assign(project(C_n(n+1)/C_n(n)*z_, Q_z))
+    omega_0.assign(project(C_n(n+1)/C_n(n)*omega_, Q_omega))
+    
+    xdmffile_z.write(z_, n)
+    xdmffile_omega.write(omega_, n)
 
 
 
