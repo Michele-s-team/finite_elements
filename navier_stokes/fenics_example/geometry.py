@@ -18,7 +18,8 @@ tol = 1E-3
 L = 1.0
 h = 1.0
 sigma0 = 1.0
-C = 0.05
+C = 0.07
+
 
 # r = 0.05
 # c_r = [0.2, 0.2]
@@ -114,7 +115,7 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = - C * sin(2*pi*x[0]/L)*2*pi/L * ((x[1])**2)/2.0
+        values[0] = -C * sin(2*pi*x[0]/L) * 2 *pi/L * ((x[1])**2)/2.0
         values[1] = C * cos(2*pi*x[0]/L) * x[1]
     def value_shape(self):
         return (2,)
