@@ -60,9 +60,9 @@ print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
 
 #CHANGE PARAMETERS HERE
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('x[0]*x[0]/2.0', degree=2, L = L, h = h), boundary)
-bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('x[0]', degree = 1), in_out_flow)
-bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('0.0', degree=0), top_bottom_wall)
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * pow(x[0], 2)/2.0 * pow(x[1], 2)/2.0', degree = 4, C = C), boundary)
+bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * x[0] * pow(x[1], 2)/2.0', degree = 3, C = C), in_out_flow)
+bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * x[1] * pow(x[0], 2)/2.0', degree= 3, C = C), top_bottom_wall)
 #CHANGE PARAMETERS HERE
 
 bc_z_omega = [bc_z, bc_omega_in_out, bc_omega_top_bottom]

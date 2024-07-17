@@ -18,6 +18,8 @@ tol = 1E-3
 L = 1.0
 h = 1.0
 sigma0 = 1.0
+C = 0.1
+
 # r = 0.05
 # c_r = [0.2, 0.2]
 #CHANGE PARAMETERS HERE
@@ -103,7 +105,7 @@ epsilon = ufl.PermutationSymbol(2)
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = ((x[0])**2)/2.0
+        values[0] = C * ((x[0])**2)/2.0 * ((x[1])**2)/2.0
         # values[0] = 0
     def value_shape(self):
         return (1,)
@@ -112,8 +114,8 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
-        values[1] = 0.0
+        values[0] = C * x[0] * ((x[1])**2)/2.0
+        values[1] = C * x[1] * ((x[0])**2)/2.0
     def value_shape(self):
         return (2,)
     
