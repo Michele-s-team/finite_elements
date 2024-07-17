@@ -103,7 +103,7 @@ epsilon = ufl.PermutationSymbol(2)
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
+        values[0] = ((x[0])**2)/2.0
         # values[0] = 0
     def value_shape(self):
         return (1,)
@@ -112,7 +112,7 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1.0
+        values[0] = x[0]
         values[1] = 0.0
     def value_shape(self):
         return (2,)
