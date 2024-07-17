@@ -30,7 +30,6 @@ set_log_level(20)
 L = 1.0
 h = 1.0
 kappa = 1.0
-sigma0 = 1.0
 
 print("N = ", N)
 
