@@ -109,23 +109,23 @@ xdmffile_omega.write(omega_, 0)
 
 
 # Write `f` to a file:
-f = Function(Q_z)
-f = project(z_, Q_z)
+z_saved = Function(Q_z)
+z_saved = project(z_, Q_z)
 fFile = HDF5File(MPI.comm_world, "f.h5", "w")
-fFile.write(f, "/f")
+fFile.write(z_saved, "/f")
 fFile.close()
 
 
 # Read the contents of the file back into a new function, `f2`:
-f2 = Function(Q_z)
+z_read = Function(Q_z)
 fFile = HDF5File(MPI.comm_world,"f.h5","r")
-fFile.read(f2,"/f")
+fFile.read(z_read,"/f")
 fFile.close()
 
 
 #write 2 x f2 to output.xdmf
-f3 = Function(Q_z)
-f3 = project(2*f2, Q_z)
+z_write = Function(Q_z)
+z_write = project(3*z_read, Q_z)
 xdmffile_f = XDMFFile('output.xdmf')
-xdmffile_f.write(f3, 0)
+xdmffile_f.write(z_write, 0)
 
