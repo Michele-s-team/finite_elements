@@ -59,10 +59,11 @@ print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
 print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
 
-
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('x[0]', degree=1, L=L, h = h), boundary)
-bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('1.0', degree=0), in_out_flow)
+#CHANGE PARAMETERS HERE
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('0.0', degree=1, L=L, h = h), boundary)
+bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('0.0', degree=0), in_out_flow)
 bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('0.0', degree=0), top_bottom_wall)
+#CHANGE PARAMETERS HERE
 
 bc_z_omega = [bc_z, bc_omega_in_out, bc_omega_top_bottom]
 
@@ -83,7 +84,7 @@ sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 
 # Define variational problem for step 1
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx
-F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] ) *  sqrt_detg(omega) * dx + \
+F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( n_in_out(omega)[i] * g(omega)[i, 1] * z * nu_omega[1] ) * sqrt_deth(omega) * (ds_in + ds_out) + \
           ( n_top_bottom(omega)[i] * g(omega)[i, 0] * z * nu_omega[0] ) * sqrt_deth(omega) * (ds_top + ds_bottom)
 F = F_z + F_omega

@@ -14,8 +14,6 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-#r, R must be the same as in generate_mesh.py
-# R = 1.0
 tol = 1E-3
 L = 1.0
 h = 1.0
@@ -103,11 +101,12 @@ def ufl_norm(x):
 epsilon = ufl.PermutationSymbol(2)
 
 
+#CHANGE PARAMETERS HERE
 
 #trial analytical expression for the height function z(x,y)
 class z_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
+        values[0] = 0.0
         # values[0] = 0
     def value_shape(self):
         return (1,)
@@ -116,7 +115,7 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class omega_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1.0
+        values[0] = 0.0
         values[1] = 0.0
     def value_shape(self):
         return (2,)
@@ -127,13 +126,7 @@ class sigma_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
-
-        
-        
-t=0
-
-
-
+#CHANGE PARAMETERS HERE
 
 
 #definition of scalar, vectorial and tensorial quantities
