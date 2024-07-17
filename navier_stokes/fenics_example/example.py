@@ -95,17 +95,8 @@ xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
 #set initial profile of z from analytical expression
-# z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-
-# load initial profile of z from file
-z_load = Function(Q_z)
-load_file = HDF5File(MPI.comm_world, (args.output_directory) + "z_saved.h5", "r")
-load_file.read(z_load, "/f")
-load_file.close()
-z = project(z_load, Q_z)
-
+z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
 omega = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
-
 
 
 solve(F == 0, z_omega, bc_z_omega)
@@ -115,6 +106,26 @@ z_, omega_ = z_omega.split(deepcopy=True)
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
 
-save_file = HDF5File(MPI.comm_world, (args.output_directory) + "z_saved.h5", "w")
-save_file.write(z_, "/f")
-save_file.close()
+
+
+# Write `f` to a file:
+f = Function(Q_z)
+f = project(z_, Q_z)
+fFile = HDF5File(MPI.comm_world, "f.h5", "w")
+fFile.write(f, "/f")
+fFile.close()
+
+
+# Read the contents of the file back into a new function, `f2`:
+f2 = Function(Q_z)
+fFile = HDF5File(MPI.comm_world,"f.h5","r")
+fFile.read(f2,"/f")
+fFile.close()
+
+
+#write 2 x f2 to output.xdmf
+f3 = Function(Q_z)
+f3 = project(2*f2, Q_z)
+xdmffile_f = XDMFFile('output.xdmf')
+xdmffile_f.write(f3, 0)
+
