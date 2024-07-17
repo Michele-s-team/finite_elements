@@ -101,33 +101,49 @@ assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
 assigner.assign(z_omega, [z_0, omega_0])
 
 
-solve(F == 0, z_omega, bc_z_omega)
+# solve(F == 0, z_omega, bc_z_omega)
     
 z_, omega_ = z_omega.split(deepcopy=True)
-
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
 
 
 
-# Write `f` to a file:
+# Write `z_` to a file:
 z_saved = Function(Q_z)
 z_saved = project(z_, Q_z)
-fFile = HDF5File(MPI.comm_world, "z_saved.h5", "w")
-fFile.write(z_saved, "/f")
-fFile.close()
+file_write = HDF5File(MPI.comm_world, "z_saved.h5", "w")
+file_write.write(z_saved, "/f")
+file_write.close()
+# Write `omega_` to a file:
+omega_saved = Function(Q_omega)
+omega_saved = project(omega_, Q_omega)
+file_write = HDF5File(MPI.comm_world, "omega_saved.h5", "w")
+file_write.write(omega_saved, "/f")
+file_write.close()
 
 
-# Read the contents of the file back into a new function, `f2`:
+
+# Read the contents of the file back into a new function, `z_read`:
 z_read = Function(Q_z)
-fFile = HDF5File(MPI.comm_world,"z_saved.h5","r")
-fFile.read(z_read,"/f")
-fFile.close()
+file_read = HDF5File(MPI.comm_world, "z_saved.h5", "r")
+file_read.read(z_read, "/f")
+file_read.close()
+# Read the contents of the file back into a new function, `omega_read`:
+omega_read = Function(Q_omega)
+file_read = HDF5File(MPI.comm_world, "omega_saved.h5", "r")
+file_read.read(omega_read, "/f")
+file_read.close()
 
 
-#write 2 x f2 to output.xdmf
+#write const x z to output.xdmf
 z_write = Function(Q_z)
 z_write = project(3*z_read, Q_z)
-xdmffile_f = XDMFFile('output.xdmf')
+xdmffile_f = XDMFFile('output_z.xdmf')
 xdmffile_f.write(z_write, 0)
+#write const x omega to output.xdmf
+omega_write = Function(Q_omega)
+omega_write = project(3*omega_read, Q_omega)
+xdmffile_f = XDMFFile('output_omega.xdmf')
+xdmffile_f.write(omega_write, 0)
 
