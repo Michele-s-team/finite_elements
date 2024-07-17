@@ -94,7 +94,16 @@ F = F_z + F_omega
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
-z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
+#set initial profile of z from analytical expression
+# z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
+
+# load initial profile of z from file
+z_load = Function(Q_z)
+load_file = HDF5File(MPI.comm_world, (args.output_directory) + "z_saved.h5", "r")
+load_file.read(z_load, "/f")
+load_file.close()
+z = project(z_load, Q_z)
+
 omega = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
@@ -105,3 +114,7 @@ z_, omega_ = z_omega.split(deepcopy=True)
 
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
+
+save_file = HDF5File(MPI.comm_world, (args.output_directory) + "z_saved.h5", "w")
+save_file.write(z_, "/f")
+save_file.close()
