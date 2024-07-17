@@ -89,42 +89,41 @@ F = F_z + F_omega
 
 
 # Read the contents of the file back into a new function, `z_read`:
-z_read = Function(Q_z)
-file_read = HDF5File(MPI.comm_world, "z_saved.h5", "r")
-file_read.read(z_read, "/f")
-file_read.close()
-# Read the contents of the file back into a new function, `omega_read`:
-omega_read = Function(Q_omega)
-file_read = HDF5File(MPI.comm_world, "omega_saved.h5", "r")
-file_read.read(omega_read, "/f")
-file_read.close()
-assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
-assigner.assign(z_omega, [z_read, omega_read])
+# z_read = Function(Q_z)
+# file_read = HDF5File(MPI.comm_world, "z_saved.h5", "r")
+# file_read.read(z_read, "/f")
+# file_read.close()
+# # Read the contents of the file back into a new function, `omega_read`:
+# omega_read = Function(Q_omega)
+# file_read = HDF5File(MPI.comm_world, "omega_saved.h5", "r")
+# file_read.read(omega_read, "/f")
+# file_read.close()
+
+# assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
+# assigner.assign(z_omega, [z_read, omega_read])
 
 #rescale the solution for the next iteration
-z_read.assign(7./6.*z_read)
-omega_read.assign(7./6.*omega_read)
+# z_read.assign(7./6.*z_read)
+# omega_read.assign(7./6.*omega_read)
 
-# #set initial profile of z from analytical expression
-# z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-# omega_0 = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
-# assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
-# assigner.assign(z_omega, [z_0, omega_0])
+#set initial profile of z from analytical expression
+z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
+omega_0 = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
+assigner.assign(z_omega, [z_0, omega_0])
 
 #CHANGE PARAMETERS HERE
 bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(0).ufl_element(), C = C, L = L), boundary)
 bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('-C * sin(2*pi*x[0]/L)*2*pi/L * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L = L), in_out_flow)
 bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * cos(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L = L), top_bottom_wall)
 #CHANGE PARAMETERS HERE
-
 bc_z_omega = [bc_z, bc_omega_in_out, bc_omega_top_bottom]
-
 
 solve(F == 0, z_omega, bc_z_omega)
     
-z_, omega_ = z_omega.split(deepcopy=True)
-xdmffile_z.write(z_, 0)
-xdmffile_omega.write(omega_, 0)
+z_0, omega_0 = z_omega.split(deepcopy=True)
+xdmffile_z.write(z_0, 0)
+xdmffile_omega.write(omega_0, 0)
 
 
 
