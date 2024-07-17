@@ -95,11 +95,13 @@ xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 
 #set initial profile of z from analytical expression
-z = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-omega = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
+omega_0 = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
+assigner.assign(z_omega, [z_0, omega_0])
 
 
-solve(F == 0, z_omega, bc_z_omega)
+# solve(F == 0, z_omega, bc_z_omega)
     
 z_, omega_ = z_omega.split(deepcopy=True)
 
