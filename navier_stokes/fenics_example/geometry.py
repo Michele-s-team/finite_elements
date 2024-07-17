@@ -115,7 +115,7 @@ class z_Expression(UserExpression):
 class omega_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = - C * sin(2*pi*x[0]/L)*2*pi/L * ((x[1])**2)/2.0
-        values[1] = C * (cos(2*pi*x[0]/L))**3 * (x[1])**2
+        values[1] = C * cos(2*pi*x[0]/L) * x[1]
     def value_shape(self):
         return (2,)
     
