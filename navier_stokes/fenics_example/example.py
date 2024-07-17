@@ -19,7 +19,9 @@ from geometry import *
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
+parser.add_argument("number_of_steps")
 args = parser.parse_args()
+
 
 set_log_level(20)
 
@@ -32,8 +34,11 @@ set_log_level(20)
 
 L = 1.0
 h = 1.0
+N = (int)(args.number_of_steps)
 kappa = 1.0
 sigma0 = 1.0
+
+print("N = ", N)
 
 # Create XDMF files for visualization output
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
@@ -115,7 +120,7 @@ z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
 omega_0 = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
-for n in range(10):
+for n in range(N):
     
     print("Step #", n)    
     
