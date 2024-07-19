@@ -23,7 +23,7 @@ h = 1.0
 N = (int)(args.number_of_steps)
 sigma0 = 1.0
 C_min = 0.01
-C_max = 0.1
+C_max = 0.2
 #CHANGE PARAMETERS HERE
 
 C = C_min
@@ -67,23 +67,6 @@ def C_n(i):
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
-
-
-def calc_normal_cg2(mesh):
-    n = FacetNormal(mesh)
-    V = VectorFunctionSpace(mesh, "CG", 2)
-    u = TrialFunction(V)
-    v = TestFunction(V)
-    a = inner(u, v) * ds
-    l = inner(-n, v) * ds
-    A = assemble(a, keep_diagonal=True)
-    L = assemble(l)
-
-    A.ident_zeros()
-    nh = Function(V)
-    solve(A, nh.vector(), L)
-    return nh
-
 
 
 # Define boundaries and obstacle
@@ -132,9 +115,7 @@ class sigma_Expression(UserExpression):
         values[0] = sigma0
     def value_shape(self):
         return (1,)
-
 #CHANGE PARAMETERS HERE
-
 
 #definition of scalar, vectorial and tensorial quantities
 #latin indexes run on 2d curvilinear coordinates
@@ -149,18 +130,15 @@ def X(z):
 def e(omega):
     return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
 
-
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
 def normal(omega):
     return as_tensor(cross(e(omega)[0], e(omega)[1]) /  ufl_norm(cross(e(omega)[0], e(omega)[1])) )
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
-
 #b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):
     return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i,j))
-
 
 #g_{ij}
 def g(omega):
@@ -192,18 +170,6 @@ def sqrt_deth(omega):
     return sqrt(c)
     # return sqrt(c)
     # return 1
-
-
-#normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
-# def n(z):
-#     u = calc_normal_cg2(mesh)
-#     hat_z = as_tensor([0, 0, 1])
-#     hat_n = as_tensor([u[0], u[1], 0])
-    
-#     t = as_tensor(cross(hat_n, hat_z))
-#     c = as_tensor([-(e(z))[1, i]*t[i], (e(z))[0, i]*t[i]])
-#     return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
-
 
 #the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
 def n_in_out(omega):
@@ -241,7 +207,6 @@ def H(omega):
 #K(z) = K_{al-izzi2020shear}
 def K(omega):
     return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
-
 
 #christoffel symbols: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
 def Gamma(omega):
