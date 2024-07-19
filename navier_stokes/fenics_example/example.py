@@ -126,11 +126,17 @@ for n in range(N):
     
     assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
     assigner.assign(z_omega, [z_0, omega_0])
+    
+    '''
+    bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(sin(2*pi*x[1]/h), 2)', element = Q_z_omega.sub(0).ufl_element(), C = C, L=L, h=h), boundary)
+    bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L=L, h=h), in_out_flow)
+    bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L=L, h=h), top_bottom_wall)
+    '''
 
     #CHANGE PARAMETERS HERE
-    bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(sin(2*pi*(x[1]+x[0])/h), 2)', element = Q_z_omega.sub(0).ufl_element(), C = C, L=L, h=h), boundary)
-    bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L=L, h=h), in_out_flow)
-    bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * cos(pi*x[1]/h)', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L=L, h=h), top_bottom_wall)
+    bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(sin(2*pi*x[1]/h), 2)', element = Q_z_omega.sub(0).ufl_element(), C = C, L = L, h = h), boundary)
+    bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L = L, h = h), in_out_flow)
+    bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L = L, h = h), top_bottom_wall)
     #CHANGE PARAMETERS HERE
     bc_z_omega = [bc_z, bc_omega_in_out, bc_omega_top_bottom]
 
