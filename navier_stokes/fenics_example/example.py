@@ -84,10 +84,9 @@ sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
     - ( kappa * (n_in_out(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_in + ds_out) \
     - ( kappa * (n_top_bottom(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_top + ds_bottom)
-    
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
-          ( n_in_out(omega)[i] * g(omega)[i, 1] * z * nu_omega[1] ) * sqrt_deth(omega) * (ds_in + ds_out) + \
-          ( n_top_bottom(omega)[i] * g(omega)[i, 0] * z * nu_omega[0] ) * sqrt_deth(omega) * (ds_top + ds_bottom)
+          ( n_in_out(omega)[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * (ds_in + ds_out) + \
+          ( n_top_bottom(omega)[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * (ds_top + ds_bottom)
 F = F_z + F_omega
 
 
