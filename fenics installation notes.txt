@@ -1,2 +1,7 @@
- - to install fenics do 'docker pull ghcr.io/scientificcomputing/fenics-gmsh:2024-05-30'
+ - to install fenics do
+    * 'docker pull ghcr.io/scientificcomputing/fenics-gmsh:2024-05-30'
+    * cd into the directory which you want to share with the fenics container
+    * do 'docker run -ti -v $(pwd):/home/fenics/shared ghcr.io/scientificcomputing/fenics-gmsh:2024-05-30'
+    * you will be in the container
+    * to access the shared folder, do 'cd /home/fenics/shared/'
  - to install with pip3 run 'sudo pip install meshio --trusted-host="pypi.python.org"'
