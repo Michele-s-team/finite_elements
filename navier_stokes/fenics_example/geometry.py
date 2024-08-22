@@ -165,15 +165,12 @@ def sqrt_abs_detg(omega):
 
 #the vector used to define the pull-back of the metric, h
 def w():
+    x = ufl.SpatialCoordinate(mesh)
     return as_tensor([-x[1], x[0]])
 
-# def sqrt_deth(omega):
-#     x = ufl.SpatialCoordinate(mesh)
+def sqrt_deth(omega):
+    return(sqrt(w[i]*w[j]*g(omega)[i, j]))
 
-#     c = conditional(lt(abs(x[0] - 0.0), tol), g(omega)[1,1], 1.0) * \
-#         conditional(lt(abs(x[0] - L), tol), g(omega)[1, 1], 1.0) * \
-#         conditional(lt(abs(x[1] - 0.0), tol), g(omega)[0, 0], 1.0) * \
-#         conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
 #     return sqrt(c)
 #     # return sqrt(c)
 #     # return 1
