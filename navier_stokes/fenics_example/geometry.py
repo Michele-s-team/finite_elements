@@ -103,8 +103,8 @@ class grad_z_Expression(UserExpression):
     def eval(self, values, x):
         # values[0] = -C * sin(2*pi*x[0]/L) * 2 *pi/L * ((x[1])**2)/2.0
         # values[1] = C * cos(2*pi*x[0]/L) * x[1]
-        values[0] = 0
-        values[1] = 0
+        values[0] = 0.0
+        values[1] = 0.0
     def value_shape(self):
         return (2,)
     
