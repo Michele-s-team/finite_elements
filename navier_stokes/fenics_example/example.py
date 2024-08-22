@@ -117,5 +117,5 @@ solve(F == 0, z_omega, bcs)
     
 z_, omega_ = z_omega.split(deepcopy=True)
     
-xdmffile_z.write(z_, n)
-xdmffile_omega.write(omega_, n)
+xdmffile_z.write(z_, 0)
+xdmffile_omega.write(omega_, 0)
