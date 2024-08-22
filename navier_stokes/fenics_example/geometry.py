@@ -22,11 +22,9 @@ L = 1.0
 h = 1.0
 N = (int)(args.number_of_steps)
 sigma0 = 1.0
-C_min = 0.01
-C_max = 0.2
+C = 0.1
 #CHANGE PARAMETERS HERE
 
-C = C_min
 
 #create mesh
 mesh=Mesh()
