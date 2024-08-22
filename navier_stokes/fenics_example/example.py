@@ -27,9 +27,7 @@ set_log_level(20)
 # domain = channel - cylinder
 # mesh = generate_mesh(domain, 64)
 
-L = 1.0
-h = 1.0
-kappa = 1.0
+
 
 
 # Create XDMF files for visualization output

@@ -14,15 +14,16 @@ parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-
 #CHANGE PARAMETERS HERE
-tol = 1E-3
 # L = 1.0
 # h = 1.0
-# N = (int)(args.number_of_steps)
+kappa = 1.0
+eta = 10.0
 sigma0 = 1.0
 C = 0.1
+tol = 1E-3
 #CHANGE PARAMETERS HERE
+
 
 
 #create mesh
