@@ -12,15 +12,14 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
-parser.add_argument("number_of_steps")
 args = parser.parse_args()
 
 
 #CHANGE PARAMETERS HERE
 tol = 1E-3
-L = 1.0
-h = 1.0
-N = (int)(args.number_of_steps)
+# L = 1.0
+# h = 1.0
+# N = (int)(args.number_of_steps)
 sigma0 = 1.0
 C = 0.1
 #CHANGE PARAMETERS HERE

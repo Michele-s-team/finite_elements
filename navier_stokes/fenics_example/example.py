@@ -79,15 +79,16 @@ omega_0 = Function(Q_omega)
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
+g = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
 # Define variational problem for step 1
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
-    - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds \
+    - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( n[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
-F_N = eta * ( (n[i]*omega[i]  - g ) * (n[j]*omega[j])  ) * ds
+F_N = eta * ( (n[i]*omega[i]  - n[j]*g[j] ) * (n[j]*omega[j])  ) * ds
 F = F_z + F_omega + F_N
 
 
@@ -110,14 +111,14 @@ bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2
 
 #CHANGE PARAMETERS HERE
 bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(sin(2*pi*x[1]/h), 2)', element = Q_z_omega.sub(0).ufl_element(), C = C, L = L, h = h), boundary)
-bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L = L, h = h), in_out_flow)
-bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L = L, h = h), top_bottom_wall)
+# bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L = L, h = h), in_out_flow)
+# bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L = L, h = h), top_bottom_wall)
 #CHANGE PARAMETERS HERE
-bc_z_omega = [bc_z, bc_omega_in_out, bc_omega_top_bottom]
+bcs = [bc_z]
 
-solve(F == 0, z_omega, bc_z_omega)
+solve(F == 0, z_omega, bcs)
     
 z_, omega_ = z_omega.split(deepcopy=True)
     
 xdmffile_z.write(z_, n)
- xdmffile_omega.write(omega_, n)
+xdmffile_omega.write(omega_, n)
