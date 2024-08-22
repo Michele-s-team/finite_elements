@@ -76,7 +76,7 @@ omega_0 = Function(Q_omega)
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
-grad_z = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_z = interpolate(grad_z_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
@@ -92,7 +92,7 @@ F = F_z + F_omega + F_N
 #set initial profile of z from analytical expression
 
 z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-omega_0 = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+omega_0 = interpolate(grad_z_Expression(element=Q_omega.ufl_element()), Q_omega)
 
  
 
