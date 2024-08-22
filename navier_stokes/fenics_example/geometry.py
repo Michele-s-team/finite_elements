@@ -162,16 +162,21 @@ def sqrt_detg(omega):
 def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
 
-def sqrt_deth(omega):
-    x = ufl.SpatialCoordinate(mesh)
 
-    c = conditional(lt(abs(x[0] - 0.0), tol), g(omega)[1,1], 1.0) * \
-        conditional(lt(abs(x[0] - L), tol), g(omega)[1, 1], 1.0) * \
-        conditional(lt(abs(x[1] - 0.0), tol), g(omega)[0, 0], 1.0) * \
-        conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
-    return sqrt(c)
-    # return sqrt(c)
-    # return 1
+#the vector used to define the pull-back of the metric, h
+def w():
+    return as_tensor([-x[1], x[0]])
+
+# def sqrt_deth(omega):
+#     x = ufl.SpatialCoordinate(mesh)
+
+#     c = conditional(lt(abs(x[0] - 0.0), tol), g(omega)[1,1], 1.0) * \
+#         conditional(lt(abs(x[0] - L), tol), g(omega)[1, 1], 1.0) * \
+#         conditional(lt(abs(x[1] - 0.0), tol), g(omega)[0, 0], 1.0) * \
+#         conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
+#     return sqrt(c)
+#     # return sqrt(c)
+#     # return 1
 
 
 #normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
