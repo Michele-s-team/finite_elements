@@ -69,23 +69,6 @@ def C_n(i):
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
-def calc_normal_cg2(mesh):
-    n = FacetNormal(mesh)
-    V = VectorFunctionSpace(mesh, "CG", 2)
-    u = TrialFunction(V)
-    v = TestFunction(V)
-    a = inner(u, v) * ds
-    l = inner(-n, v) * ds
-    A = assemble(a, keep_diagonal=True)
-    L = assemble(l)
-
-    A.ident_zeros()
-    nh = Function(V)
-    solve(A, nh.vector(), L)
-    return nh
-
-
-
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 in_flow   = 'near(x[0], 0)'

@@ -42,25 +42,27 @@ xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-ds_in = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_out = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-ds_top = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
-ds_bottom = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
+# ds_in = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+# ds_out = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+# ds_top = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
+# ds_bottom = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 
 #f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
-f_test_ds = Function(Q_z)
-f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
+# f_test_ds = Function(Q_z)
+# f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-inflow_integral = assemble(f_test_ds*ds_in)
-outflow_integral = assemble(f_test_ds*ds_out)
-top_wall_integral = assemble(f_test_ds*ds_top)
-bottom_wall_integral = assemble(f_test_ds*ds_bottom)
-print("Inflow integral = ", inflow_integral, " exact value = 0.807055")
-print("Outflow integral = ", outflow_integral, " exact value = 0.227646")
-print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
-print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
+# inflow_integral = assemble(f_test_ds*ds_in)
+# outflow_integral = assemble(f_test_ds*ds_out)
+# top_wall_integral = assemble(f_test_ds*ds_top)
+# bottom_wall_integral = assemble(f_test_ds*ds_bottom)
+# print("Inflow integral = ", inflow_integral, " exact value = 0.807055")
+# print("Outflow integral = ", outflow_integral, " exact value = 0.227646")
+# print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
+# print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
 
+
+n = FacetNormal(mesh)
 
 
 # Define trial and test functions
@@ -82,11 +84,10 @@ sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 
 # Define variational problem for step 1
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
-    - ( kappa * (n_in_out(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_in + ds_out) \
-    - ( kappa * (n_top_bottom(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_top + ds_bottom)
+    - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds \
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
-          ( n_in_out(omega)[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * (ds_in + ds_out) + \
-          ( n_top_bottom(omega)[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * (ds_top + ds_bottom)
+          ( n[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
+F_N = eta * ( (n[i]*omega[i]  - g ) * (n[j]*omega[j])  ) * ds
 F = F_z + F_omega
 
 

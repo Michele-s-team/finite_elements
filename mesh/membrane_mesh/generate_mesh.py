@@ -14,10 +14,10 @@ resolution = (float)(args.resolution)
 
 
 # Channel parameters
-L = 1.0
-h = 1.0
-# r = 0.05
-# c_r = [0.2, 0.2, 0]
+# L = 1.0
+# h = 1.0
+r = 1.0
+c_r = [0, 0, 0]
 
 
 # Initialize empty geometry using the build in kernel in GMSH
@@ -25,7 +25,7 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 # Add circle
-# circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
+circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
 # rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 
@@ -39,23 +39,23 @@ model = geometry.__enter__()
 
 
 #add the points that define the boundary of the mesh
-points = [model.add_point((0, 0, 0), mesh_size=resolution),
-          model.add_point((L, 0, 0), mesh_size=resolution),
-          model.add_point((L, h, 0), mesh_size=resolution),
-          model.add_point((0, h, 0), mesh_size=resolution)
-          ]
+# points = [model.add_point((0, 0, 0), mesh_size=resolution),
+#           model.add_point((L, 0, 0), mesh_size=resolution),
+#           model.add_point((L, h, 0), mesh_size=resolution),
+#           model.add_point((0, h, 0), mesh_size=resolution)
+#           ]
 
 
-channel_lines = [model.add_line(points[0], points[1]),
-                   model.add_line(points[1], points[2]),
-                   model.add_line(points[2], points[3]),
-                   model.add_line(points[3], points[0])]
+# channel_lines = [model.add_line(points[0], points[1]),
+#                    model.add_line(points[1], points[2]),
+#                    model.add_line(points[2], points[3]),
+#                    model.add_line(points[3], points[0])]
 
 
-channel_loop = model.add_curve_loop(channel_lines)
+# channel_loop = model.add_curve_loop(channel_lines)
 
-# plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
-plane_surface = model.add_plane_surface(channel_loop, holes=[])
+plane_surface = model.add_plane_surface(circle_r.curve_loop, holes=[circle_r.curve_loop])
+# plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
 
 
@@ -63,12 +63,12 @@ model.synchronize()
 model.add_physical([plane_surface], "Volume")
 
 #I will read this tagged element with `ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)`
-# model.add_physical(circle_r.curve_loop.curves, "Circle")
+model.add_physical(circle_r.curve_loop.curves, "Circle")
 
-model.add_physical([channel_lines[3]], "Inflow")
-model.add_physical([channel_lines[1]], "Outflow")
-model.add_physical([channel_lines[2]], "Top Wall")
-model.add_physical([channel_lines[0]], "Bottom Wall")
+# model.add_physical([channel_lines[3]], "Inflow")
+# model.add_physical([channel_lines[1]], "Outflow")
+# model.add_physical([channel_lines[2]], "Top Wall")
+# model.add_physical([channel_lines[0]], "Bottom Wall")
 
 
 geometry.generate_mesh(64)
