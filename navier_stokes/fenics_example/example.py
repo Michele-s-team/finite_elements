@@ -31,7 +31,6 @@ L = 1.0
 h = 1.0
 kappa = 1.0
 
-print("N = ", N)
 
 # Create XDMF files for visualization output
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
