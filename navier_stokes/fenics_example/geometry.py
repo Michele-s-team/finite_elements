@@ -169,7 +169,7 @@ def w():
     return as_tensor([-x[1], x[0]])
 
 def sqrt_deth(omega):
-    return(sqrt(w[i]*w[j]*g(omega)[i, j]))
+    return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
 
 #     return sqrt(c)
 #     # return sqrt(c)

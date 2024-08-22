@@ -78,7 +78,7 @@ omega_0 = Function(Q_omega)
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
-g = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_z = interpolate(omega_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
@@ -87,7 +87,7 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
     - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( n[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
-F_N = eta * ( (n[i]*omega[i]  - n[j]*g[j] ) * (n[j]*omega[j])  ) * ds
+F_N = eta * ( (n[i]*omega[i]  - n[j]*grad_z[j] ) * (n[j]*omega[j])  ) * ds
 F = F_z + F_omega + F_N
 
 
