@@ -107,7 +107,7 @@ bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2
 '''
 
 #CHANGE PARAMETERS HERE
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]) * pow(sin(2*pi*x[1]), 2)', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
+bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
 # bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L = L, h = h), in_out_flow)
 # bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L = L, h = h), top_bottom_wall)
 #CHANGE PARAMETERS HERE
