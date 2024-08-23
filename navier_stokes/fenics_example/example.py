@@ -32,24 +32,18 @@ xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-# ds_in = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-# ds_out = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-# ds_top = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
-# ds_bottom = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
+ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_R = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
 
-#f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
-# f_test_ds = Function(Q_z)
-# f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
+# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
+f_test_ds = Function(Q_z)
+f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-# inflow_integral = assemble(f_test_ds*ds_in)
-# outflow_integral = assemble(f_test_ds*ds_out)
-# top_wall_integral = assemble(f_test_ds*ds_top)
-# bottom_wall_integral = assemble(f_test_ds*ds_bottom)
-# print("Inflow integral = ", inflow_integral, " exact value = 0.807055")
-# print("Outflow integral = ", outflow_integral, " exact value = 0.227646")
-# print("Top wall integral = ", top_wall_integral, " exact value = 0.373564")
-# print("Bottom integral = ", bottom_wall_integral, " exact value = 0.65747")
+integral_r = assemble(f_test_ds*ds_r)
+integral_R = assemble(f_test_ds*ds_R)
+print("Integral r = ", integral_r, " exact value = 0.807055")
+print("Integral R = ", integral_R, " exact value = 0.227646")
 
 
 n = FacetNormal(mesh)
