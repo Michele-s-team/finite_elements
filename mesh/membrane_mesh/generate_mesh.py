@@ -17,7 +17,9 @@ resolution = (float)(args.resolution)
 # L = 1.0
 # h = 1.0
 r = 1.0
+R = 2.0
 c_r = [0, 0, 0]
+c_R = [0, 0, 0]
 
 
 # Initialize empty geometry using the build in kernel in GMSH
@@ -26,6 +28,7 @@ model = geometry.__enter__()
 
 # Add circle
 circle_r = model.add_circle(c_r, r, mesh_size=resolution)
+circle_R = model.add_circle(c_R, R, mesh_size=resolution)
 # rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 
@@ -54,7 +57,7 @@ circle_r = model.add_circle(c_r, r, mesh_size=resolution)
 
 # channel_loop = model.add_curve_loop(channel_lines)
 
-plane_surface = model.add_plane_surface(circle_r.curve_loop, holes=[circle_r.curve_loop])
+plane_surface = model.add_plane_surface(circle_R.curve_loop, holes=[circle_r.curve_loop])
 # plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
 
@@ -63,7 +66,8 @@ model.synchronize()
 model.add_physical([plane_surface], "Volume")
 
 #I will read this tagged element with `ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)`
-model.add_physical(circle_r.curve_loop.curves, "Circle")
+model.add_physical(circle_r.curve_loop.curves, "Circle r")
+model.add_physical(circle_R.curve_loop.curves, "Circle R")
 
 # model.add_physical([channel_lines[3]], "Inflow")
 # model.add_physical([channel_lines[1]], "Outflow")
@@ -92,6 +96,3 @@ meshio.write("line_mesh.xdmf", line_mesh)
 
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write("triangle_mesh.xdmf", triangle_mesh)
-
-
-
