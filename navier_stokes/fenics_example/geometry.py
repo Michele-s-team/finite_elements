@@ -15,10 +15,10 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-# L = 1.0
-# h = 1.0
+r = 1.0
+R = 2.0
 kappa = 1.0
-eta = 20.0
+eta = 10.0
 sigma0 = 1.0
 C = 0.5
 tol = 1E-3
