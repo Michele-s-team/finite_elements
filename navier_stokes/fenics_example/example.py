@@ -14,10 +14,6 @@ import argparse
 import ufl as ufl
 from geometry import *
 
-
-
-
-
 set_log_level(20)
 
 
@@ -27,13 +23,10 @@ set_log_level(20)
 # domain = channel - cylinder
 # mesh = generate_mesh(domain, 64)
 
-
-
-
 # Create XDMF files for visualization output
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
-
+xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
@@ -112,3 +105,4 @@ z_, omega_ = z_omega.split(deepcopy=True)
     
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
+xdmffile_n.write(my_n(), 0)
