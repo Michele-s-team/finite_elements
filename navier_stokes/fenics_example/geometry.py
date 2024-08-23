@@ -184,7 +184,7 @@ def n_top_bottom(omega):
     u = as_tensor([0.0, conditional(lt(x[1], h/2), -1.0, 1.0)] )
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
-#a normal vector pointing outwards the mesh
+
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
@@ -198,7 +198,11 @@ def calc_normal_cg2(mesh):
     A.ident_zeros()
     nh = Function(V)
     solve(A, nh.vector(), L)
-    return project(nh, O)
+    return nh
+
+def my_n():
+    u = calc_normal_cg2(mesh)
+    return as_tensor(u[k], (k))
 
 
 #H(z) = H_{al-izzi2020shear}
