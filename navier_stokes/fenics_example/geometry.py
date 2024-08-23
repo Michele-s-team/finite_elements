@@ -20,7 +20,7 @@ args = parser.parse_args()
 kappa = 1.0
 eta = 10.0
 sigma0 = 1.0
-C = 0.1
+C = 0.5
 tol = 1E-3
 #CHANGE PARAMETERS HERE
 

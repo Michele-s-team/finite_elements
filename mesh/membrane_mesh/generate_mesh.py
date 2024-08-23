@@ -25,7 +25,7 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 # Add circle
-circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
+circle_r = model.add_circle(c_r, r, mesh_size=resolution)
 # rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
 
 
