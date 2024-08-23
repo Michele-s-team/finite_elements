@@ -85,7 +85,7 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
     - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( n[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
-F_N = eta * ( ( n[i]*omega[i] - n[j]*grad_z[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * sqrt_deth(omega) * ds
+F_N = eta * ( ( n[i]*omega[i] - n[j]*grad_z[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds
 F = F_z + F_omega + F_N
 
 
@@ -100,16 +100,9 @@ omega_0 = interpolate(grad_z_Expression(element=Q_omega.ufl_element()), Q_omega)
 assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
 assigner.assign(z_omega, [z_0, omega_0])
     
-'''
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * cos(2*pi*x[0]/L) * pow(sin(2*pi*x[1]/h), 2)', element = Q_z_omega.sub(0).ufl_element(), C = C, L=L, h=h), boundary)
-bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L=L, h=h), in_out_flow)
-bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L=L, h=h), top_bottom_wall)
-'''
 
 #CHANGE PARAMETERS HERE
 bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
-# bc_omega_in_out = DirichletBC(Q_z_omega.sub(1).sub(0), Expression('C * sin(2*pi*x[0]/L) * pow(x[1], 2)/2.0', element = Q_z_omega.sub(1).sub(0).ufl_element(), C = C, L = L, h = h), in_out_flow)
-# bc_omega_top_bottom = DirichletBC(Q_z_omega.sub(1).sub(1), Expression('C * sin(2*pi*x[0]/L) * x[1]', element = Q_z_omega.sub(1).sub(1).ufl_element(), C = C, L = L, h = h), top_bottom_wall)
 #CHANGE PARAMETERS HERE
 bcs = [bc_z]
 
