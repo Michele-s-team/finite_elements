@@ -172,22 +172,6 @@ def w():
 def sqrt_deth(omega):
     return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
 
-#     return sqrt(c)
-#     # return sqrt(c)
-#     # return 1
-
-
-#normal vector to Omega  at the boundary between Omega and a boundary surface with tangent vector t. This is a proper vector in T_p(Omega) and it is normalized to unity accordng to the metric g
-# def n(z):
-#     u = calc_normal_cg2(mesh)
-#     hat_z = as_tensor([0, 0, 1])
-#     hat_n = as_tensor([u[0], u[1], 0])
-    
-#     t = as_tensor(cross(hat_n, hat_z))
-#     c = as_tensor([-(e(z))[1, i]*t[i], (e(z))[0, i]*t[i]])
-#     return as_tensor(c[j]/sqrt(g_c(z)[k,l]*c[k]*c[l]), (j))
-
-
 #the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
 def n_in_out(omega):
     x = ufl.SpatialCoordinate(mesh)
