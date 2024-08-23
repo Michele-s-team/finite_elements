@@ -69,7 +69,7 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
-# in_flow   = 'near(x[0], 0)'
+# boundary_r   = 'on_boundary && near(x[0], 0)'
 # out_flow  = 'near(x[0], 1.0)'
 # in_out_flow    = 'near(x[0], 0) || near(x[0], 1.0)'
 # top_wall    = 'near(x[1], 1.0)'
@@ -99,10 +99,15 @@ class z_Expression(UserExpression):
 
 
 #trial analytical expression for a vector
-class grad_z_Expression(UserExpression):
+class grad_r_Expression(UserExpression):
     def eval(self, values, x):
-        # values[0] = -C * sin(2*pi*x[0]/L) * 2 *pi/L * ((x[1])**2)/2.0
-        # values[1] = C * cos(2*pi*x[0]/L) * x[1]
+        values[0] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[0]
+        values[1] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[1]
+    def value_shape(self):
+        return (2,)
+    
+class grad_R_Expression(UserExpression):
+    def eval(self, values, x):
         values[0] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[0]
         values[1] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[1]
     def value_shape(self):

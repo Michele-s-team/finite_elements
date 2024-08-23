@@ -63,7 +63,8 @@ omega_0 = Function(Q_omega)
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
-grad_z = interpolate(grad_z_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_r = interpolate(grad_r_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_R = interpolate(grad_R_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
@@ -72,14 +73,17 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
     - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( n[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
-F_N = eta * ( ( n[i]*omega[i] - n[j]*grad_z[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds
+F_N = eta * ( \
+    ( ( n[i]*omega[i] - n[j]*grad_r[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_r +\
+    ( ( n[i]*omega[i] - n[j]*grad_R[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_R
+    )
 F = F_z + F_omega + F_N
 
 
 #set initial profile of z from analytical expression
 
 z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-omega_0 = interpolate(grad_z_Expression(element=Q_omega.ufl_element()), Q_omega)
+omega_0 = interpolate(grad_r_Expression(element=Q_omega.ufl_element()), Q_omega)
 
  
 
@@ -89,9 +93,10 @@ assigner.assign(z_omega, [z_0, omega_0])
     
 
 #CHANGE PARAMETERS HERE
-bc_z = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
+bc_r = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
+bc_R = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
 #CHANGE PARAMETERS HERE
-bcs = [bc_z]
+bcs = [bc_r]
 
 solve(F == 0, z_omega, bcs)
     
