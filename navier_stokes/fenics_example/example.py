@@ -93,10 +93,10 @@ assigner.assign(z_omega, [z_0, omega_0])
     
 
 #CHANGE PARAMETERS HERE
-bc_r = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
-bc_R = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary)
+bc_r = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_r)
+bc_R = DirichletBC(Q_z_omega.sub(0), Expression('C * ( pow(x[0], 2) + 2*pow(x[1], 2) )', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_R)
 #CHANGE PARAMETERS HERE
-bcs = [bc_r]
+bcs = [bc_r, bc_R]
 
 solve(F == 0, z_omega, bcs)
     
