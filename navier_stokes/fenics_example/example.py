@@ -42,8 +42,8 @@ f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 integral_r = assemble(f_test_ds*ds_r)
 integral_R = assemble(f_test_ds*ds_R)
-print("Integral r = ", integral_r, " exact value = 0.807055")
-print("Integral R = ", integral_R, " exact value = 0.227646")
+print("Integral r = ", integral_r, " exact value = 4.945996685836095")
+print("Integral R = ", integral_R, " exact value = 4.258416795039979")
 
 
 n = FacetNormal(mesh)
