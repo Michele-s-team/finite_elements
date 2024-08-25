@@ -97,15 +97,14 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class grad_r_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[0]
-        values[1] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[1]
-    def value_shape(self):
+        values[0] = 0
+        values[1] = 0
         return (2,)
     
 class grad_R_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[0]
-        values[1] = C*x[0]/sqrt(x[0]**2+x[1]**2)*x[1]
+        values[0] = 0
+        values[1] = 0
     def value_shape(self):
         return (2,)
     
