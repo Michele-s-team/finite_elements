@@ -97,8 +97,8 @@ class z_Expression(UserExpression):
 #trial analytical expression for a vector
 class grad_r_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = C*x[0]
+        values[1] = C*x[1]
         return (2,)
     
 class grad_R_Expression(UserExpression):
