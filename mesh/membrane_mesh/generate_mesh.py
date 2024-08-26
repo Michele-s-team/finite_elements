@@ -54,11 +54,11 @@ plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop
 model.synchronize()
 
 model.add_physical([plane_surface], "Volume")
-model.add_physical([channel_lines[0]], "L")
-model.add_physical([channel_lines[2]], "R")
-model.add_physical([channel_lines[1]], "T")
-model.add_physical([channel_lines[3]], "B")
-model.add_physical(circle_r.curve_loop.curves, "C")
+model.add_physical([channel_lines[0]], "i")
+model.add_physical([channel_lines[2]], "o")
+model.add_physical([channel_lines[3]], "t")
+model.add_physical([channel_lines[1]], "b")
+model.add_physical(circle_r.curve_loop.curves, "c")
 
 geometry.generate_mesh(dim=2)
 gmsh.write("membrane_mesh.msh")
