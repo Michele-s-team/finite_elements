@@ -44,7 +44,10 @@ f_test_ds = Function(Q_z)
 f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
+integral_i = assemble(f_test_ds*ds_i)
 integral_r = assemble(f_test_ds*ds_r)
+
+print("Integral i = ", integral_i, " exact value = 1.2152967669784929")
 print("Integral R = ", integral_r, " exact value = 4.258416795039979")
 
 '''
