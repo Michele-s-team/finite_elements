@@ -15,8 +15,7 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-r = 1.0
-R = 2.0
+r = 0.5
 kappa = 1.0
 eta = 1000.0
 sigma0 = 1.0
