@@ -9,73 +9,58 @@ parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
 args = parser.parse_args()
 
+
 #mesh resolution
 resolution = (float)(args.resolution)
 
 
 # Channel parameters
-# L = 1.0
-# h = 1.0
-r = 1.0
-R = 2.0
+L = 2
+h = 2
+r = 0.5
 c_r = [0, 0, 0]
-c_R = [0, 0, 0]
+
+
+
+print("L = ", L)
+print("h = ", h)
+print("r = ", r)
+print("c_r = ", c_r)
+print("resolution = ", resolution)
 
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
+# Fetch model we would like to add data to
 model = geometry.__enter__()
 
-# Add circle
-circle_r = model.add_circle(c_r, r, mesh_size=resolution)
-circle_R = model.add_circle(c_R, R, mesh_size=resolution)
-# rectangle_Lh = model.add_rectangle(0, L, 0, h, 0, mesh_size=resolution)
+my_points = [ model.add_point((-L/2, -h/2, 0), mesh_size=resolution),
+             model.add_point((L/2, -h/2, 0), mesh_size=resolution),
+             model.add_point((L/2, h/2, 0), mesh_size=resolution),
+             model.add_point((-L/2, h/2, 0), mesh_size=resolution)]
+
+# Add lines between all points creating the rectangle
+channel_lines = [model.add_line(my_points[i], my_points[i+1])
+                  for i in range(-1, len(my_points)-1)]
+
+channel_loop = model.add_curve_loop(channel_lines)
+
+circle_r = model.add_circle(c_r, r, mesh_size=resolution/2)
 
 
-# my_points = [ model.add_point((1.3, 1.0, 0), mesh_size=resolution),
-#              model.add_point((1.7, 0.7, 0), mesh_size=resolution),
-#              model.add_point((2.5, 0.6, 0), mesh_size=resolution),
-#              model.add_point((4.2, 1.1, 0), mesh_size=resolution),
-#              model.add_point((3.0, 1.3, 0), mesh_size=resolution),
-#              model.add_point((1.7, 1.3, 0), mesh_size=resolution),
-#              ]
-
-
-#add the points that define the boundary of the mesh
-# points = [model.add_point((0, 0, 0), mesh_size=resolution),
-#           model.add_point((L, 0, 0), mesh_size=resolution),
-#           model.add_point((L, h, 0), mesh_size=resolution),
-#           model.add_point((0, h, 0), mesh_size=resolution)
-#           ]
-
-
-# channel_lines = [model.add_line(points[0], points[1]),
-#                    model.add_line(points[1], points[2]),
-#                    model.add_line(points[2], points[3]),
-#                    model.add_line(points[3], points[0])]
-
-
-# channel_loop = model.add_curve_loop(channel_lines)
-
-plane_surface = model.add_plane_surface(circle_R.curve_loop, holes=[circle_r.curve_loop])
-# plane_surface = model.add_plane_surface(channel_loop, holes=[])
-
+plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
 
 
 model.synchronize()
+
 model.add_physical([plane_surface], "Volume")
+model.add_physical([channel_lines[0]], "L")
+model.add_physical([channel_lines[2]], "R")
+model.add_physical([channel_lines[1]], "T")
+model.add_physical([channel_lines[3]], "B")
+model.add_physical(circle_r.curve_loop.curves, "C")
 
-#I will read this tagged element with `ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)`
-model.add_physical(circle_r.curve_loop.curves, "Circle r")
-model.add_physical(circle_R.curve_loop.curves, "Circle R")
-
-# model.add_physical([channel_lines[3]], "Inflow")
-# model.add_physical([channel_lines[1]], "Outflow")
-# model.add_physical([channel_lines[2]], "Top Wall")
-# model.add_physical([channel_lines[0]], "Bottom Wall")
-
-
-geometry.generate_mesh(64)
+geometry.generate_mesh(dim=2)
 gmsh.write("membrane_mesh.msh")
 gmsh.clear()
 geometry.__exit__()
@@ -89,7 +74,6 @@ def create_mesh(mesh, cell_type, prune_z=False):
     out_mesh = meshio.Mesh(points=points, cells={cell_type: cells}, cell_data={
                            "name_to_read": [cell_data]})
     return out_mesh
-
 
 line_mesh = create_mesh(mesh_from_file, "line", prune_z=True)
 meshio.write("line_mesh.xdmf", line_mesh)

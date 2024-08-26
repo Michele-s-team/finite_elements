@@ -32,8 +32,12 @@ xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_R = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+
+ds_i = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_o = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+ds_t = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
+ds_b = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
+ds_R = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=6)
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function(Q_z)
@@ -41,9 +45,7 @@ f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 integral_r = assemble(f_test_ds*ds_r)
-integral_R = assemble(f_test_ds*ds_R)
 print("Integral r = ", integral_r, " exact value = 4.945996685836095")
-print("Integral R = ", integral_R, " exact value = 4.258416795039979")
 
 
 n = FacetNormal(mesh)
