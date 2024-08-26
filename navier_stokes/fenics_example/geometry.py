@@ -46,7 +46,7 @@ Q_omega = Q_z_omega.sub(1).collapse()
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        cs = [0.5, 0.5]
+        cs = [0.1, 0.5]
         rs = 1.0
         values[0] = cos(my_norm(np.subtract(x, cs)) - rs)**2.0 
     def value_shape(self):

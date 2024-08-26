@@ -48,7 +48,7 @@ integral_i = assemble(f_test_ds*ds_i)
 integral_r = assemble(f_test_ds*ds_r)
 
 print("Integral i = ", integral_i, " exact value = 1.2152967669784929")
-print("Integral R = ", integral_r, " exact value = 4.258416795039979")
+print("Integral R = ", integral_r, " exact value = 2.561571268514012")
 
 '''
 n = FacetNormal(mesh)
