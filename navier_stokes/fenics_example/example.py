@@ -56,7 +56,7 @@ print("Integral t = ", integral_t, " exact value = 1.8015367030205052")
 print("Integral b = ", integral_b, " exact value = 1.3427663722292098")
 print("Integral R = ", integral_r, " exact value = 2.561571268514012")
 
-'''
+
 n = FacetNormal(mesh)
 
 
@@ -116,4 +116,3 @@ z_, omega_ = z_omega.split(deepcopy=True)
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
 xdmffile_n.write(my_n(), 0)
-'''
