@@ -100,7 +100,7 @@ assigner.assign(z_omega, [z_0, omega_0])
     
 
 #CHANGE PARAMETERS HERE
-bc_circle = DirichletBC(Q_z_omega.sub(0), Expression('C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_circle)
+bc_circle = DirichletBC(Q_z_omega.sub(0), Expression('0.5 * C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_circle)
 bc_square = DirichletBC(Q_z_omega.sub(0), Expression('C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_square)
 #CHANGE PARAMETERS HERE
 bcs = [bc_circle, bc_square]
