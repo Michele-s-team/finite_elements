@@ -56,10 +56,6 @@ print("Integral t = ", integral_t, " exact value = 1.8015367030205052")
 print("Integral b = ", integral_b, " exact value = 1.3427663722292098")
 print("Integral R = ", integral_r, " exact value = 2.561571268514012")
 
-
-n = FacetNormal(mesh)
-
-
 # Define trial and test functions
 nu_z, nu_omega = TestFunctions(Q_z_omega)
 
