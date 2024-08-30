@@ -200,7 +200,18 @@ def calc_normal_cg2(mesh):
     return nh
 
 
+def n(omega):
+    u = n_facet
+    return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
+def n_smooth(omega):
+    u = calc_normal_cg2(mesh)
+    return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
+
+
+def n_facet_smooth():
+    u = calc_normal_cg2(mesh)
+    return as_tensor(u[k], (k))
 
 #H(z) = H_{al-izzi2020shear}
 def H(omega):
