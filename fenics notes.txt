@@ -5,3 +5,7 @@
     * do 'docker run -ti -v $(pwd):/home/fenics/shared --name fe finite_elements'
     * if you need an additional package, say h5py, 'pip3 install --user h5py'
   - to install with pip3 run 'sudo pip install meshio --trusted-host="pypi.python.org"'
+
+
+- if you get the error '-------------------  End compiler output  ------------------------
+Compilation failed! Sources, command, and errors have been written to: /home/fenics/shared/navier_stokes/fenics_example/jitfailure-ffc_form_17852fbd14c5f68306bd045425549c0cd9aebf3b' then exit and kill the docker container and restart it 
