@@ -38,6 +38,7 @@ ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
 ds_t = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
 ds_b = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=6)
+ds_square = ds_l + ds_r + ds_t + ds_b
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function(Q_z)
@@ -70,8 +71,8 @@ omega_0 = Function(Q_omega)
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
-grad_r = interpolate(grad_r_Expression(element=Q_omega.ufl_element()), Q_omega)
-grad_R = interpolate(grad_R_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_circle = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
@@ -83,17 +84,14 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
     ) 
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
-F_N = eta * ( \
-    ( ( n_facet[i]*omega[i] - n_facet[i]*grad_r[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_r )
+F_N = eta * (  ( ( n_facet[i]*omega[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds )
 F = F_z + F_omega + F_N
 
 
 #set initial profile of z from analytical expression
 
 z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-omega_0 = interpolate(grad_r_Expression(element=Q_omega.ufl_element()), Q_omega)
-
- 
+omega_0 = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
 
     
 assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
