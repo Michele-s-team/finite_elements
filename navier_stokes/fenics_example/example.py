@@ -33,22 +33,22 @@ xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
-ds_i = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_o = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
+ds_l = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
+ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
 ds_t = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
 ds_b = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
-ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=6)
+ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=6)
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function(Q_z)
 f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_i = assemble(f_test_ds*ds_i)
-integral_o = assemble(f_test_ds*ds_o)
+integral_i = assemble(f_test_ds*ds_l)
+integral_o = assemble(f_test_ds*ds_r)
 integral_t = assemble(f_test_ds*ds_t)
 integral_b = assemble(f_test_ds*ds_b)
-integral_r = assemble(f_test_ds*ds_r)
+integral_r = assemble(f_test_ds*ds_circle)
 
 print("Integral i = ", integral_i, " exact value = 1.7302067729935349")
 print("Integral o = ", integral_o, " exact value = 1.8395435007455374")
@@ -88,9 +88,7 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
 F_N = eta * ( \
-    ( ( n_facet[i]*omega[i] - n_facet[i]*grad_r[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_r +\
-    ( ( n_facet[i]*omega[i] - n_facet[i]*grad_R[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_R
-    )
+    ( ( n_facet[i]*omega[i] - n_facet[i]*grad_r[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_r )
 F = F_z + F_omega + F_N
 
 
