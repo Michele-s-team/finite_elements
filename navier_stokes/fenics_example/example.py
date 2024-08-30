@@ -101,7 +101,7 @@ assigner.assign(z_omega, [z_0, omega_0])
 
 #CHANGE PARAMETERS HERE
 bc_circle = DirichletBC(Q_z_omega.sub(0), Expression('C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_circle)
-bc_square = DirichletBC(Q_z_omega.sub(0), Expression('2*C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_square)
+bc_square = DirichletBC(Q_z_omega.sub(0), Expression('C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_square)
 #CHANGE PARAMETERS HERE
 bcs = [bc_circle, bc_square]
 
@@ -111,4 +111,4 @@ z_, omega_ = z_omega.split(deepcopy=True)
     
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
-xdmffile_n.write(my_n(), 0)
+xdmffile_n.write(n_facet_smooth(), 0)
