@@ -44,17 +44,17 @@ f_test_ds = Function(Q_z)
 f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_i = assemble(f_test_ds*ds_l)
-integral_o = assemble(f_test_ds*ds_r)
+integral_l = assemble(f_test_ds*ds_l)
+integral_r = assemble(f_test_ds*ds_r)
 integral_t = assemble(f_test_ds*ds_t)
 integral_b = assemble(f_test_ds*ds_b)
-integral_r = assemble(f_test_ds*ds_circle)
+integral_circle = assemble(f_test_ds*ds_circle)
 
-print("Integral i = ", integral_i, " exact value = 1.7302067729935349")
-print("Integral o = ", integral_o, " exact value = 1.8395435007455374")
+print("Integral l = ", integral_l, " exact value = 1.7302067729935349")
+print("Integral r = ", integral_r, " exact value = 1.8395435007455374")
 print("Integral t = ", integral_t, " exact value = 1.8015367030205052")
 print("Integral b = ", integral_b, " exact value = 1.3427663722292098")
-print("Integral R = ", integral_r, " exact value = 2.561571268514012")
+print("Integral circle = ", integral_circle, " exact value = 2.561571268514012")
 
 # Define trial and test functions
 nu_z, nu_omega = TestFunctions(Q_z_omega)
