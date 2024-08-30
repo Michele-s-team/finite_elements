@@ -82,7 +82,12 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
         ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_t + ds_b) \
     ) 
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
-          ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
+          ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds_circle +\
+          ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * (ds_l + ds_r) +\
+          ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * (ds_t + ds_b)
+
+
+
 F_N = eta * (  ( ( n_facet[i]*omega[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds )
 F = F_z + F_omega + F_N
 
