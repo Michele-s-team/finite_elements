@@ -81,9 +81,12 @@ grad_R = interpolate(grad_R_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 # Define variational problem for step 1
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
-    - ( kappa * n[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * ds
+    - ( \
+        ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_l + ds_r) + \
+        ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth(omega) * (ds_t + ds_b) + \
+    ) 
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
-          ( n[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
+          ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth(omega) * ds
 F_N = eta * ( \
     ( ( n[i]*omega[i] - n[j]*grad_r[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_r +\
     ( ( n[i]*omega[i] - n[j]*grad_R[j] ) * ( n[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_R

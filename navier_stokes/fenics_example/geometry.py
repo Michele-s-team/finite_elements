@@ -173,13 +173,13 @@ def sqrt_deth(omega):
     return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
 
 #the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
-def n_in_out(omega):
+def n_lr(omega):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], 0.0), -1.0, 1.0), 0.0] )
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #the normal vector on the top  and bottom wall normalized according to g and pointing outside Omega
-def n_top_bottom(omega):
+def n_tb(omega):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([0.0, conditional(lt(x[1], 0.0), -1.0, 1.0)] )
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
