@@ -199,9 +199,7 @@ def calc_normal_cg2(mesh):
     solve(A, nh.vector(), L)
     return nh
 
-def my_n():
-    u = calc_normal_cg2(mesh)
-    return as_tensor(u[k], (k))
+
 
 
 #H(z) = H_{al-izzi2020shear}
