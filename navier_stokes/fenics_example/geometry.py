@@ -34,6 +34,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 #sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
+n_facet = FacetNormal(mesh)
 
 # Define function spaces
 P_z = FiniteElement('P', triangle, 1)
