@@ -128,12 +128,12 @@ sigma_0 = interpolate(sigma0_Expression(element=Q_sigma.ufl_element()), Q_sigma)
 v_0 = interpolate(v0_Expression(element=Q_v.ufl_element()), Q_v)
 z_0 = interpolate(z0_Expression(element=Q_z.ufl_element()), Q_z)
 omega_0 = interpolate(omega0_Expression(element=Q_omega.ufl_element()), Q_omega)
-'''
 
     
-assigner = FunctionAssigner(Q, [Q_z, Q_omega])
-assigner.assign(z_omega, [z_0, omega_0])
+assigner = FunctionAssigner(Q, [Q_sigma, Q_v, Q_z, Q_omega])
+assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
     
+'''
 
 #CHANGE PARAMETERS HERE
 bc_circle = DirichletBC(Q.sub(0), Expression('0.5 * C', element = Q.sub(0).ufl_element(), C = C), boundary_circle)
