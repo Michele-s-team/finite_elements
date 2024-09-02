@@ -15,8 +15,8 @@ resolution = (float)(args.resolution)
 
 
 # Channel parameters
-L = 2
-h = 2
+L = 2.0
+h = 2.0
 r = 0.5
 c_r = [0, 0, 0]
 

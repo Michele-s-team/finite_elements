@@ -15,6 +15,8 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
+L = 2.0
+h = 2.0
 r = 0.5
 kappa = 1.0
 eta = 1000.0
@@ -174,7 +176,7 @@ def sqrt_deth_circle(omega):
     return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
 
 #sqrt det h on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
-def sqrt_deth_rectangle(omega):
+def sqrt_deth_square(omega):
     x = ufl.SpatialCoordinate(mesh)
 
     c = conditional(lt(abs(x[0] - (-L/2.0)), tol), g(omega)[1,1], 1.0) * \
@@ -194,6 +196,17 @@ def n_tb(omega):
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([0.0, conditional(lt(x[1], 0.0), -1.0, 1.0)] )
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
+
+
+def n_facet_lr():
+    x = ufl.SpatialCoordinate(mesh)
+    u = as_tensor([conditional(lt(x[0], 0.0), -1.0, 1.0), 0.0] )
+    return as_tensor(u[k], (k))
+
+def n_facet_tb():
+    x = ufl.SpatialCoordinate(mesh)
+    u = as_tensor([0.0, conditional(lt(x[1], 0.0), -1.0, 1.0)] )
+    return as_tensor(u[k], (k))
 
 
 def calc_normal_cg2(mesh):
