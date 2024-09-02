@@ -84,13 +84,18 @@ grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()),
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
 F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
-       sigma * Nabla_f(nu_v, omega)[i, j]*g_c(omega)[i, j] +\
+       sigma * Nabla_f(nu_v, omega)[i, j]*g_c(omega)[i, j] + \
        2 * eta * d_c(v, omega)[j, i] * Nabla_f(nu_v, omega)[j, i] ) * sqrt_detg(omega) * dx - \
     ( \
         ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
         ( sigma * n_tb(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
         ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega) * ds_circle
-    ) 
+    )  - \
+    ( \
+        ( 2 * eta * d(v, omega)[i, j] * n_lr(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * ds_l + \
+        ( 2 * eta * d(v, omega)[i, j] * n_tb(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
+        ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega) * ds_circle
+    )
 
 '''
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
