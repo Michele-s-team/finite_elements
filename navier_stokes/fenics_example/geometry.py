@@ -24,6 +24,8 @@ kappa = 1.0
 rho = 1.0
 #viscosity
 eta = 1.0
+#Nitche's parameter
+alpha = 100.0
 sigma0 = 1.0
 C = 0.5
 tol = 1E-3
