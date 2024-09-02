@@ -87,9 +87,9 @@ F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
        sigma * Nabla_f(nu_v, omega)[i, j]*g_c(omega)[i, j] +\
        2 * eta * d_c(v, omega)[j, i] * Nabla_f(nu_v, omega)[j, i] ) * sqrt_detg(omega) * dx + \
     ( \
-        (  ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
-        (  ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        (   ) * sqrt_deth_circle(omega) * ds_circle
+        ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
+        ( sigma * n_tb(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
+        ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega) * ds_circle
     ) 
 
 '''
