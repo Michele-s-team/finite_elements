@@ -76,10 +76,12 @@ kappa = Constant(kappa)
 grad_circle = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
 grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()), Q_omega)
 
+
+
+# Define variational problem 
+
+F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 '''
-
-
-# Define variational problem for step 1
 F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
     - ( \
         ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
