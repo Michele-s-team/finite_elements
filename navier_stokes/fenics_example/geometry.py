@@ -86,7 +86,7 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 boundary = 'on_boundary'
 boundary_l   = 'near(x[0], -(2.0/2.0))'
 boundary_r  = 'near(x[0], (2.0/2.0))'
-boundary_tb  = 'near(x[1], (2.0/2.0)) || near(x[1], (2.0/2.0))'
+boundary_tb  = 'near(x[1], (2.0/2.0)) || near(x[1], (-2.0/2.0))'
 boundary_square = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > 0.6'
 boundary_circle = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < 0.6'
 #CHANGE PARAMETERS HERE
