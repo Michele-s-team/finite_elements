@@ -169,8 +169,19 @@ def w():
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor([-x[1], x[0]])
 
-def sqrt_deth(omega):
+#sqrt det h on a circular boundary
+def sqrt_deth_circle(omega):
     return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
+
+#sqrt det h on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
+def sqrt_deth_rectangle(omega):
+    x = ufl.SpatialCoordinate(mesh)
+
+    c = conditional(lt(abs(x[0] - (-L/2.0)), tol), g(omega)[1,1], 1.0) * \
+        conditional(lt(abs(x[0] - (L/2.0)), tol), g(omega)[1, 1], 1.0) * \
+        conditional(lt(abs(x[1] - (-h/2.0)), tol), g(omega)[0, 0], 1.0) * \
+        conditional(lt(abs(x[1] - (h/2.0)), tol), g(omega)[0, 0], 1.0)
+    return sqrt(c)
 
 #the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
 def n_lr(omega):
