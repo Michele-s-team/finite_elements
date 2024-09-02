@@ -161,10 +161,12 @@ solver.solve()
 
 # solve(F == 0, sigma_v_z_omega, bcs, J)
 
-'''    
-z_, omega_ = z_omega.split(deepcopy=True)
+   
+sigma_, v_, z_, omega_ = sigma_v_z_omega.split(deepcopy=True)
     
+xdmffile_sigma.write(sigma_, 0)
+xdmffile_v.write(v_, 0)
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
+
 xdmffile_n.write(n_facet_smooth(), 0)
-'''
