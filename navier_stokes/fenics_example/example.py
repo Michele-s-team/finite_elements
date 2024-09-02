@@ -136,24 +136,25 @@ assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
 l_profile_v = Expression(('4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
 
 # Define boundary conditions
-# boundary conditions for the velocity u
-bc_v_l = DirichletBC(O, l_profile_v, boundary_l)
-bc_v_tb = DirichletBC(O, Constant((0, 0)), boundary_tb)
-bc_v_circle = DirichletBC(O, Constant((0, 0)), boundary_circle)
+bc_sigma_r = DirichletBC(Q.sub(0), Constant(0), boundary_r)
 
-bc_sigma_r = DirichletBC(Q, Constant(0), boundary_r)
+bc_v_l = DirichletBC(Q.sub(1), l_profile_v, boundary_l)
+bc_v_tb = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_tb)
+bc_v_circle = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_circle)
+
+#CHANGE PARAMETERS HERE
+bc_z_circle = DirichletBC(Q.sub(2), Expression('0.5 * C', element = Q.sub(2).ufl_element(), C = C), boundary_circle)
+bc_z_square = DirichletBC(Q.sub(2), Expression('C', element = Q.sub(2).ufl_element(), C = C), boundary_square)
+#CHANGE PARAMETERS HERE
+
+
 
 # boundary conditions for the surface_tension p
-bc_v = [bc_v_l, bc_v_tb, bc_v_circle]
-bc_sigma = [bc_sigma_r]
+bc = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
 
     
 '''
 
-#CHANGE PARAMETERS HERE
-bc_circle = DirichletBC(Q.sub(0), Expression('0.5 * C', element = Q.sub(0).ufl_element(), C = C), boundary_circle)
-bc_square = DirichletBC(Q.sub(0), Expression('C', element = Q.sub(0).ufl_element(), C = C), boundary_square)
-#CHANGE PARAMETERS HERE
 bcs = [bc_circle, bc_square]
 
 solve(F == 0, z_omega, bcs)
