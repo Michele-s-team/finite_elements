@@ -259,10 +259,10 @@ def K(omega):
 def Gamma(omega):
     return as_tensor(0.5 * g_c(omega)[i,l] * ( (g(omega)[l, k]).dx(j) + (g(omega)[j, l]).dx(k) - (g(omega)[j, k]).dx(l) ), (i, j, k))
 
-#covariant derivative of vector v with respect to \partial/partial x: Nabla_v(v, z)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
+#covariant derivative of vector v with respect to \partial/partial x: Nabla_v(v, omega)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
 def Nabla_v(u, omega):
     return as_tensor((u[i]).dx(j) + u[k] * Gamma(omega)[i, k, j], (i, j))
 
-#covariant derivative of one-form f with respect to \partial/partial x: Nabla_f(f, z)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
+#covariant derivative of one-form f with respect to \partial/partial x: Nabla_f(f, omega)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
 def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
