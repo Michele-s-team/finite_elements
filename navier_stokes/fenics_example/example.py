@@ -64,6 +64,7 @@ nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
 
 # Define functions for solutions at previous and current time steps
 sigma_v_z_omega = Function(Q)
+J_sigma_v_z_omega = TrialFunction(Q)
 sigma, v, z, omega = split(sigma_v_z_omega)
 sigma_0 = Function(Q_sigma)
 v_0 = Function(Q_v)
@@ -152,7 +153,7 @@ bc_z_square = DirichletBC(Q.sub(2), Expression('C', element = Q.sub(2).ufl_eleme
 # boundary conditions for the surface_tension p
 bcs = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
 
-J  = derivative(F, sigma_v_z_omega, d_sigma_v_z_omega)  # Gateaux derivative in dir. of du
+J  = derivative(F, sigma_v_z_omega, J_sigma_v_z_omega)  # Gateaux derivative in dir. of du
 
 
 solve(F == 0, sigma_v_z_omega, bcs, J)
