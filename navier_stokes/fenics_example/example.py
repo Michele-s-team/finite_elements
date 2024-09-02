@@ -71,13 +71,12 @@ z_0 = Function(Q_z)
 omega_0 = Function(Q_omega)
 
 
-'''
 # Define expressions used in variational forms
 kappa = Constant(kappa)
-sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
 grad_circle = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
 grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()), Q_omega)
 
+'''
 
 
 # Define variational problem for step 1
