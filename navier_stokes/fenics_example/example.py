@@ -122,12 +122,13 @@ F_N = alpha * (  \
     )
 
 F = ( F_sigma + F_v + F_z + F_omega ) + F_N
+
+#set initial profile of fields 
+sigma_0 = interpolate(sigma0_Expression(element=Q_sigma.ufl_element()), Q_sigma)
+v_0 = interpolate(v0_Expression(element=Q_v.ufl_element()), Q_v)
+z_0 = interpolate(z0_Expression(element=Q_z.ufl_element()), Q_z)
+omega_0 = interpolate(omega0_Expression(element=Q_omega.ufl_element()), Q_omega)
 '''
-
-#set initial profile of z from analytical expression
-
-z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
-omega_0 = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
 
     
 assigner = FunctionAssigner(Q, [Q_z, Q_omega])
