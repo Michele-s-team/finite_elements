@@ -39,12 +39,16 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 n_facet = FacetNormal(mesh)
 
 # Define function spaces
+P_sigma = FiniteElement('P', triangle, 1)
+P_v = VectorElement('P', triangle, 2)
 P_z = FiniteElement('P', triangle, 1)
 P_omega = VectorElement('P', triangle, 3)
-element = MixedElement([P_z, P_omega])
-Q_z_omega = FunctionSpace(mesh, element)
-Q_z = Q_z_omega.sub(0).collapse()
-Q_omega = Q_z_omega.sub(1).collapse()
+element = MixedElement([P_sigma, P_v, P_z, P_omega])
+Q = FunctionSpace(mesh, element)
+Q_sigma = Q.sub(0).collapse()
+Q_v = Q.sub(1).collapse()
+Q_z = Q.sub(2).collapse()
+Q_omega = Q.sub(3).collapse()
 
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):

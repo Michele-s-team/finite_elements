@@ -57,10 +57,10 @@ print("Integral b = ", integral_b, " exact value = 1.3427663722292098")
 print("Integral circle = ", integral_circle, " exact value = 2.561571268514012")
 
 # Define trial and test functions
-nu_z, nu_omega = TestFunctions(Q_z_omega)
+nu_z, nu_omega = TestFunctions(Q)
 
 # Define functions for solutions at previous and current time steps
-z_omega = Function(Q_z_omega)
+z_omega = Function(Q)
 z, omega = split(z_omega)
 sigma = Function(Q_z)
 z_0 = Function(Q_z)
@@ -99,13 +99,13 @@ z_0 = interpolate(z_Expression(element=Q_z.ufl_element()), Q_z)
 omega_0 = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
 
     
-assigner = FunctionAssigner(Q_z_omega, [Q_z, Q_omega])
+assigner = FunctionAssigner(Q, [Q_z, Q_omega])
 assigner.assign(z_omega, [z_0, omega_0])
     
 
 #CHANGE PARAMETERS HERE
-bc_circle = DirichletBC(Q_z_omega.sub(0), Expression('0.5 * C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_circle)
-bc_square = DirichletBC(Q_z_omega.sub(0), Expression('C', element = Q_z_omega.sub(0).ufl_element(), C = C), boundary_square)
+bc_circle = DirichletBC(Q.sub(0), Expression('0.5 * C', element = Q.sub(0).ufl_element(), C = C), boundary_circle)
+bc_square = DirichletBC(Q.sub(0), Expression('C', element = Q.sub(0).ufl_element(), C = C), boundary_square)
 #CHANGE PARAMETERS HERE
 bcs = [bc_circle, bc_square]
 
