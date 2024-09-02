@@ -154,9 +154,12 @@ bc_z_square = DirichletBC(Q.sub(2), Expression('C', element = Q.sub(2).ufl_eleme
 bcs = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
 
 J  = derivative(F, sigma_v_z_omega, J_sigma_v_z_omega)  # Gateaux derivative in dir. of du
+problem = NonlinearVariationalProblem(F, sigma_v_z_omega, bcs, J)
+solver  = NonlinearVariationalSolver(problem)
+solver.solve()
 
 
-solve(F == 0, sigma_v_z_omega, bcs, J)
+# solve(F == 0, sigma_v_z_omega, bcs, J)
 
 '''    
 z_, omega_ = z_omega.split(deepcopy=True)
