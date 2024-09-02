@@ -15,9 +15,9 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-L = 2.0
+L = 4.0
 h = 2.0
-r = 0.5
+r = 0.2
 #bending rigidity
 kappa = 1.0
 #density
@@ -73,10 +73,6 @@ def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
 
-def C_n(i):
-    return( C_min + (C_max-C_min)*i/(N-1))
-
-
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
@@ -84,8 +80,8 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_l   = 'near(x[0], -(2.0/2.0))'
-boundary_r  = 'near(x[0], (2.0/2.0))'
+boundary_l   = 'near(x[0], -(4.0/2.0))'
+boundary_r  = 'near(x[0], (4.0/2.0))'
 boundary_tb  = 'near(x[1], (2.0/2.0)) || near(x[1], (-2.0/2.0))'
 boundary_square = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > 0.6'
 boundary_circle = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < 0.6'
@@ -101,7 +97,6 @@ epsilon = ufl.PermutationSymbol(2)
 
 
 #CHANGE PARAMETERS HERE
-
 class sigma0_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -147,7 +142,6 @@ class sigma_Expression(UserExpression):
         values[0] = sigma0
     def value_shape(self):
         return (1,)
-
 #CHANGE PARAMETERS HERE
 
 
