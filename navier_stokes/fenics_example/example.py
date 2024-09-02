@@ -132,6 +132,21 @@ omega_0 = interpolate(omega0_Expression(element=Q_omega.ufl_element()), Q_omega)
     
 assigner = FunctionAssigner(Q, [Q_sigma, Q_v, Q_z, Q_omega])
 assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
+
+l_profile_v = Expression(('4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
+
+# Define boundary conditions
+# boundary conditions for the velocity u
+bc_v_l = DirichletBC(O, l_profile_v, boundary_l)
+bc_v_tb = DirichletBC(O, Constant((0, 0)), boundary_tb)
+bc_v_circle = DirichletBC(O, Constant((0, 0)), boundary_circle)
+
+bc_sigma_r = DirichletBC(Q, Constant(0), boundary_r)
+
+# boundary conditions for the surface_tension p
+bc_v = [bc_v_l, bc_v_tb, bc_v_circle]
+bc_sigma = [bc_sigma_r]
+
     
 '''
 
