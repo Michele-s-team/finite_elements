@@ -150,15 +150,13 @@ bc_z_square = DirichletBC(Q.sub(2), Expression('C', element = Q.sub(2).ufl_eleme
 
 
 # boundary conditions for the surface_tension p
-bc = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
+bcs = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
 
     
-'''
 
-bcs = [bc_circle, bc_square]
+solve(F == 0, sigma_v_z_omega, bcs)
 
-solve(F == 0, z_omega, bcs)
-    
+'''    
 z_, omega_ = z_omega.split(deepcopy=True)
     
 xdmffile_z.write(z_, 0)
