@@ -120,9 +120,9 @@ F_N = alpha * (  \
         ( ( (n_facet_tb())[i]*omega[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_t + ds_b) + \
         ( ( n_facet[i]*omega[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_circle \
     )
-'''
-F = F_z + F_omega + F_N
 
+F = ( F_sigma + F_v + F_z + F_omega ) + F_N
+'''
 
 #set initial profile of z from analytical expression
 
