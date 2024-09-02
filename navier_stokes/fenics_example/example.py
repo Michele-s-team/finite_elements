@@ -87,8 +87,8 @@ F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  s
           ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_t + ds_b)
 F_N = eta * (  \
     ( ( n_facet[i]*omega[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_circle + \
-    ( ( n_facet_lr[i]*omega[i] - n_facet_lr[i]*grad_circle[i] ) * ( n_facet_lr[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_l + ds_r) + \
-    ( ( n_facet_tb[i]*omega[i] - n_facet_tb[i]*grad_circle[i] ) * ( n_facet_tb[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_t + ds_b) \
+    ( ( (n_facet_lr())[i]*omega[i] - (n_facet_lr())[i]*grad_circle[i] ) * ( (n_facet_lr())[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_l + ds_r) + \
+    ( ( (n_facet_tb())[i]*omega[i] - (n_facet_tb())[i]*grad_circle[i] ) * ( (n_facet_tb())[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_t + ds_b) \
         )
 F = F_z + F_omega + F_N
 
