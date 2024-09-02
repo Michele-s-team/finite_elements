@@ -24,6 +24,8 @@ set_log_level(20)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
+xdmffile_sigma = XDMFFile((args.output_directory) + '/sigma.xdmf')
+xdmffile_v = XDMFFile((args.output_directory) + '/v.xdmf')
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
@@ -57,7 +59,8 @@ print("Integral b = ", integral_b, " exact value = 1.3427663722292098")
 print("Integral circle = ", integral_circle, " exact value = 2.561571268514012")
 
 # Define trial and test functions
-nu_z, nu_omega = TestFunctions(Q)
+nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
+
 
 # Define functions for solutions at previous and current time steps
 z_omega = Function(Q)
@@ -67,6 +70,7 @@ z_0 = Function(Q_z)
 omega_0 = Function(Q_omega)
 
 
+'''
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 sigma = interpolate(sigma_Expression(element=Q_z.ufl_element()), Q_z)
@@ -116,3 +120,4 @@ z_, omega_ = z_omega.split(deepcopy=True)
 xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
 xdmffile_n.write(n_facet_smooth(), 0)
+'''
