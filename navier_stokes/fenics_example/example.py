@@ -63,9 +63,10 @@ nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
 
 
 # Define functions for solutions at previous and current time steps
-z_omega = Function(Q)
-z, omega = split(z_omega)
-sigma = Function(Q_z)
+sigma_v_z_omega = Function(Q)
+sigma, v, z, omega = split(sigma_v_z_omega)
+sigma_0 = Function(Q_sigma)
+v_0 = Function(Q_v)
 z_0 = Function(Q_z)
 omega_0 = Function(Q_omega)
 
