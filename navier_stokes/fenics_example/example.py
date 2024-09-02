@@ -97,12 +97,17 @@ F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
         ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega) * ds_circle
     )
 
-'''
-F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
+
+F_z = ( \
+        rho * v[i] * v[k] * b(omega)[k, i] * nu_z - \ 
+        kappa * ( 2 * g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 4.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) - \
+            2 * ( sigma * H(omega) + eta * Nabla_v(v, omega)[j, i] * g_c(omega)[i, k] * b(omega)[k, j] ) * nu_z \
+        ) * sqrt_detg(omega) * dx \
     - ( \
         ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
         ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_t + ds_b) \
     ) 
+'''
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
           ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega) * ds_circle +\
           ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_l + ds_r) +\
