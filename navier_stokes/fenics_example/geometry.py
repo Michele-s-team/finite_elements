@@ -15,10 +15,10 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-L = 4.0
-h = 2.0
-r = 0.2
-c_r = [0.0, 0.0]
+L = 2.2
+h = 0.41
+r = 0.05
+c_r = [0.2, 0.2]
 #bending rigidity
 kappa = 1.0
 #density
