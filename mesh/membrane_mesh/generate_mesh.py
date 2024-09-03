@@ -15,11 +15,10 @@ resolution = (float)(args.resolution)
 
 
 # Channel parameters
-L = 4.0
-h = 2.0
-r = 0.2
-c_r = [0, 0, 0]
-
+L = 2.2
+h = 0.41
+r = 0.05
+c_r = [0.2, 0.2, 0]
 
 
 print("L = ", L)
@@ -34,10 +33,10 @@ geometry = pygmsh.geo.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-my_points = [ model.add_point((-L/2, -h/2, 0), mesh_size=resolution),
-             model.add_point((L/2, -h/2, 0), mesh_size=resolution),
-             model.add_point((L/2, h/2, 0), mesh_size=resolution),
-             model.add_point((-L/2, h/2, 0), mesh_size=resolution)]
+my_points = [ model.add_point((0, 0, 0), mesh_size=resolution),
+             model.add_point((L, 0, 0), mesh_size=resolution),
+             model.add_point((L, h, 0), mesh_size=resolution),
+             model.add_point((0, h, 0), mesh_size=resolution)]
 
 # Add lines between all points creating the rectangle
 channel_lines = [model.add_line(my_points[i], my_points[i+1])
