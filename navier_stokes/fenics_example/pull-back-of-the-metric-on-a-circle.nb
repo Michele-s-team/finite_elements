@@ -1,0 +1,125 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3899,        117]
+NotebookOptionsPosition[      3149,         97]
+NotebookOutlinePosition[      3540,        113]
+CellTagsIndexPosition[      3497,        110]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{
+   "consider", " ", "a", " ", "cicle", " ", "with", " ", "radius", " ", "r", 
+    " ", "centered", " ", "at", " ", "c", " ", "and", " ", "parametrized", 
+    " ", "with", " ", "\[Theta]"}], " ", "->", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"let", " ", "us", " ", "compute", " ", "the", " ", "pull"}], "-", 
+     RowBox[{"back", " ", "h_", 
+      RowBox[{"{", 
+       RowBox[{"mu", " ", "nu"}], "}"}]}]}], " ", "==", " ", 
+    RowBox[{
+    "h", " ", "of", " ", "the", " ", "metric", " ", "g", " ", "on", " ", 
+     "the", " ", "circle"}]}]}], "*)"}]], "Input",
+ CellChangeTimes->{{3.934350588133257*^9, 3.9343506084308777`*^9}, {
+  3.93435063960684*^9, 3.934350654879962*^9}, {3.934350706849441*^9, 
+  3.9343507141072073`*^9}},ExpressionUUID->"6dd8f4e7-acb6-47b9-aa83-\
+f69bef0e4aeb"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"y", "[", "\[Theta]_", "]"}], ":=", 
+  RowBox[{"c", "+", 
+   RowBox[{"r", 
+    RowBox[{"{", " ", 
+     RowBox[{
+      RowBox[{"Cos", "[", "\[Theta]", "]"}], ",", " ", 
+      RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "}"}]}]}]}]], "Input",
+ CellChangeTimes->{{3.934350610501738*^9, 3.934350661939157*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"58e5d4d0-a560-4edb-b4bc-b6a36434ac6b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"y", "'"}], "[", "\[Theta]", "]"}]], "Input",
+ CellChangeTimes->{{3.934350671590108*^9, 3.93435067273596*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"ebcef8c2-a9a6-49a9-9fc3-3054237af788"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "r"}], " ", 
+    RowBox[{"Sin", "[", "\[Theta]", "]"}]}], ",", 
+   RowBox[{"r", " ", 
+    RowBox[{"Cos", "[", "\[Theta]", "]"}]}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.934350673295568*^9, 3.934350679843752*^9}},
+ CellLabel->"Out[2]=",ExpressionUUID->"a90381c9-24b5-464f-b8aa-3ebfde8b2f48"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"y", "'"}], "[", "\[Theta]", "]"}], " ", "=", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"-", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"y", "[", "\[Theta]", "]"}], "-", "c"}], ")"}], "[", 
+        RowBox[{"[", "2", "]"}], "]"}]}], ",", 
+      RowBox[{"+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"y", "[", "\[Theta]", "]"}], "-", "c"}], ")"}], "[", 
+        RowBox[{"[", "1", "]"}], "]"}]}]}]}]}], ")"}], "*)"}]], "Input",
+ CellChangeTimes->{{3.934350724788164*^9, 
+  3.93435076822022*^9}},ExpressionUUID->"37ef7a64-c9f6-456a-a61c-\
+5e5b32fd6341"]
+},
+WindowSize->{808, 748},
+WindowMargins->{{4, Automatic}, {2, Automatic}},
+FrontEndVersion->"14.1 for Mac OS X ARM (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6939fbb0-2f54-4ed3-8992-2d2fa2838a04"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 841, 19, 49, "Input",ExpressionUUID->"6dd8f4e7-acb6-47b9-aa83-f69bef0e4aeb"],
+Cell[1398, 41, 415, 10, 29, "Input",ExpressionUUID->"58e5d4d0-a560-4edb-b4bc-b6a36434ac6b"],
+Cell[CellGroupData[{
+Cell[1838, 55, 222, 4, 29, "Input",ExpressionUUID->"ebcef8c2-a9a6-49a9-9fc3-3054237af788"],
+Cell[2063, 61, 363, 9, 33, "Output",ExpressionUUID->"a90381c9-24b5-464f-b8aa-3ebfde8b2f48"]
+}, Open  ]],
+Cell[2441, 73, 704, 22, 29, "Input",ExpressionUUID->"37ef7a64-c9f6-456a-a61c-5e5b32fd6341"]
+}
+]
+*)
+

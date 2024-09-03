@@ -52,11 +52,11 @@ integral_t = assemble(f_test_ds*ds_t)
 integral_b = assemble(f_test_ds*ds_b)
 integral_circle = assemble(f_test_ds*ds_circle)
 
-print("Integral l = ", integral_l, " exact value = 1.7302067729935349")
-print("Integral r = ", integral_r, " exact value = 1.8395435007455374")
-print("Integral t = ", integral_t, " exact value = 1.8015367030205052")
-print("Integral b = ", integral_b, " exact value = 1.3427663722292098")
-print("Integral circle = ", integral_circle, " exact value = 2.561571268514012")
+print("Integral l = ", integral_l, " exact value = 0.600394346452214")
+print("Integral r = ", integral_r, " exact value = 0.10208892506278115")
+print("Integral t = ", integral_t, " exact value = 2.2174918655877303")
+print("Integral b = ", integral_b, " exact value = 0.44661250657638")
+print("Integral circle = ", integral_circle, " exact value = 0.9699985420993592")
 
 # Define trial and test functions
 nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
@@ -90,12 +90,12 @@ F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
     ( \
         ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
         ( sigma * n_tb(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega) * ds_circle
+        ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega, c_r) * ds_circle
     )  - \
     ( \
         ( 2 * eta * d(v, omega)[i, j] * n_lr(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * ds_l + \
         ( 2 * eta * d(v, omega)[i, j] * n_tb(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega) * ds_circle
+        ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega, c_r) * ds_circle
     )
 
 F_z = ( \
@@ -106,14 +106,14 @@ F_z = ( \
     + ( \
         ( 2 * kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
         ( 2 * kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( 2 * kappa * (n(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle(omega) * ds_circle 
+        ( 2 * kappa * (n(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle(omega, c_r) * ds_circle 
     ) 
 
 F_omega = ( z * Nabla_v(nu_omega, omega)[i, i] + omega[i] * nu_omega[i] ) * sqrt_detg(omega) * dx - \
           ( \
             ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
             ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-            ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega) * ds_circle \
+            ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega, c_r) * ds_circle \
           )
 
 F_N = alpha * (  \

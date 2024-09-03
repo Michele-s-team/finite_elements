@@ -15,9 +15,10 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-L = 4.0
-h = 2.0
-r = 0.2
+L = 2.2
+h = 0.41
+r = 0.05
+c_r = [0.2, 0.2]
 #bending rigidity
 kappa = 1.0
 #density
@@ -61,9 +62,9 @@ Q_omega = Q.sub(3).collapse()
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        cs = [0.1, 0.5]
-        rs = 1.0
-        values[0] = cos(my_norm(np.subtract(x, cs)) - rs)**2.0 
+        c_test = [0.3, 0.76]
+        r_test = 0.345
+        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0 
     def value_shape(self):
         return (1,)
 
@@ -192,14 +193,14 @@ def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
 
 
-#the vector used to define the pull-back of the metric, h
-def w():
+#the vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+def dydtheta(c):
     x = ufl.SpatialCoordinate(mesh)
-    return as_tensor([-x[1], x[0]])
+    return as_tensor([-(x[1]-c[1]), x[0]-c[0]])
 
-#sqrt det h on a circular boundary
-def sqrt_deth_circle(omega):
-    return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
+#pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+def sqrt_deth_circle(omega, c):
+    return(sqrt((dydtheta(c))[i]*(dydtheta(c))[j]*g(omega)[i, j]))
 
 #sqrt det h on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
 def sqrt_deth_square(omega):
