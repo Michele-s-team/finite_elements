@@ -90,12 +90,12 @@ F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
     ( \
         ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
         ( sigma * n_tb(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega) * ds_circle
+        ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega, c_r) * ds_circle
     )  - \
     ( \
         ( 2 * eta * d(v, omega)[i, j] * n_lr(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * ds_l + \
         ( 2 * eta * d(v, omega)[i, j] * n_tb(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega) * ds_circle
+        ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega, c_r) * ds_circle
     )
 
 F_z = ( \
@@ -106,14 +106,14 @@ F_z = ( \
     + ( \
         ( 2 * kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
         ( 2 * kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( 2 * kappa * (n(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle(omega) * ds_circle 
+        ( 2 * kappa * (n(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle(omega, c_r) * ds_circle 
     ) 
 
 F_omega = ( z * Nabla_v(nu_omega, omega)[i, i] + omega[i] * nu_omega[i] ) * sqrt_detg(omega) * dx - \
           ( \
             ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
             ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-            ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega) * ds_circle \
+            ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega, c_r) * ds_circle \
           )
 
 F_N = alpha * (  \

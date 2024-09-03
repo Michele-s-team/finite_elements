@@ -18,6 +18,7 @@ args = parser.parse_args()
 L = 4.0
 h = 2.0
 r = 0.2
+c_r = [0.0, 0.0]
 #bending rigidity
 kappa = 1.0
 #density
