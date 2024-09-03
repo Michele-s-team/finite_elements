@@ -81,9 +81,9 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_l   = 'near(x[0], -(4.0/2.0))'
-boundary_r  = 'near(x[0], (4.0/2.0))'
-boundary_tb  = 'near(x[1], (2.0/2.0)) || near(x[1], (-2.0/2.0))'
+boundary_l  = 'near(x[0], 0.0)'
+boundary_r  = 'near(x[0], 2.2)'
+boundary_tb  = 'near(x[1], 0) || near(x[1], 0.41)'
 boundary_square = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > 0.6'
 boundary_circle = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < 0.6'
 #CHANGE PARAMETERS HERE
