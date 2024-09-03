@@ -52,11 +52,11 @@ integral_t = assemble(f_test_ds*ds_t)
 integral_b = assemble(f_test_ds*ds_b)
 integral_circle = assemble(f_test_ds*ds_circle)
 
-print("Integral l = ", integral_l, " exact value = 0.600394346452214")
-print("Integral r = ", integral_r, " exact value = 0.10208892506278115")
-print("Integral t = ", integral_t, " exact value = 2.2174918655877303")
-print("Integral b = ", integral_b, " exact value = 0.44661250657638")
-print("Integral circle = ", integral_circle, " exact value = 0.9699985420993592")
+print("Integral l = ", integral_l, " exact value = 0.37316849042689265")
+print("Integral r = ", integral_r, " exact value = 0.0022778275141919855")
+print("Integral t = ", integral_t, " exact value = 1.3656168541307598")
+print("Integral b = ", integral_b, " exact value = 1.0283705026372492")
+print("Integral circle = ", integral_circle, " exact value = 0.298174235901449")
 
 # Define trial and test functions
 nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
