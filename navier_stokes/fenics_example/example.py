@@ -134,7 +134,9 @@ omega_0 = interpolate(omega0_Expression(element=Q_omega.ufl_element()), Q_omega)
 assigner = FunctionAssigner(Q, [Q_sigma, Q_v, Q_z, Q_omega])
 assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
 
-l_profile_v = Expression(('8.0*1.5*(x[1]+h/2.0)*(h - (x[1]+h/2.0)) / pow(h, 2)', '0'), degree=2, h=h)
+#CHANGE PARAMETERS HERE
+l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
+#CHANGE PARAMETERS HERE
 
 # Define boundary conditions
 bc_sigma_r = DirichletBC(Q.sub(0), Constant(0), boundary_r)
@@ -144,11 +146,9 @@ bc_v_tb = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_tb)
 bc_v_circle = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_circle)
 
 #CHANGE PARAMETERS HERE
-bc_z_circle = DirichletBC(Q.sub(2), Expression('0.5 * C', element = Q.sub(2).ufl_element(), C = C), boundary_circle)
-bc_z_square = DirichletBC(Q.sub(2), Expression('C', element = Q.sub(2).ufl_element(), C = C), boundary_square)
+bc_z_circle = DirichletBC(Q.sub(2), Expression('0.0', element = Q.sub(2).ufl_element(), C = C), boundary_circle)
+bc_z_square = DirichletBC(Q.sub(2), Expression('C/2.0', element = Q.sub(2).ufl_element(), C = C), boundary_square)
 #CHANGE PARAMETERS HERE
-
-
 
 # boundary conditions for the surface_tension p
 bcs = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
@@ -157,11 +157,9 @@ J  = derivative(F, sigma_v_z_omega, J_sigma_v_z_omega)  # Gateaux derivative in 
 problem = NonlinearVariationalProblem(F, sigma_v_z_omega, bcs, J)
 solver  = NonlinearVariationalSolver(problem)
 solver.solve()
-
-
 # solve(F == 0, sigma_v_z_omega, bcs, J)
 
-   
+
 sigma_, v_, z_, omega_ = sigma_v_z_omega.split(deepcopy=True)
     
 xdmffile_sigma.write(sigma_, 0)
