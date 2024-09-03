@@ -192,14 +192,14 @@ def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
 
 
-#the vector used to define the pull-back of the metric, h
-def w():
+#the vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+def dydtheta(c):
     x = ufl.SpatialCoordinate(mesh)
-    return as_tensor([-x[1], x[0]])
+    return as_tensor([-(x[1]-c[1]), x[0]-c[0]])
 
-#sqrt det h on a circular boundary
-def sqrt_deth_circle(omega):
-    return(sqrt((w())[i]*(w())[j]*g(omega)[i, j]))
+#pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+def sqrt_deth_circle(omega, c):
+    return(sqrt((dydtheta(c))[i]*(dydtheta(c))[j]*g(omega)[i, j]))
 
 #sqrt det h on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
 def sqrt_deth_square(omega):
