@@ -135,7 +135,7 @@ assigner = FunctionAssigner(Q, [Q_sigma, Q_v, Q_z, Q_omega])
 assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
 
 #CHANGE PARAMETERS HERE
-l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
+l_profile_v = Expression(('4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
 #CHANGE PARAMETERS HERE
 
 # Define boundary conditions
@@ -146,8 +146,8 @@ bc_v_tb = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_tb)
 bc_v_circle = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_circle)
 
 #CHANGE PARAMETERS HERE
-bc_z_circle = DirichletBC(Q.sub(2), Expression('0.0', element = Q.sub(2).ufl_element(), C = C), boundary_circle)
-bc_z_square = DirichletBC(Q.sub(2), Expression('C/2.0', element = Q.sub(2).ufl_element(), C = C), boundary_square)
+bc_z_circle = DirichletBC(Q.sub(2), Expression('0.0', element = Q.sub(2).ufl_element()), boundary_circle)
+bc_z_square = DirichletBC(Q.sub(2), Expression('h/4.0', element = Q.sub(2).ufl_element(), h = h), boundary_square)
 #CHANGE PARAMETERS HERE
 
 # boundary conditions for the surface_tension p
