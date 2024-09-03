@@ -18,7 +18,7 @@ args = parser.parse_args()
 L = 2.2
 h = 0.41
 r = 0.05
-c_r = [0.2, 0.2]
+c_r = [L/2.0, h/2.0]
 #bending rigidity
 kappa = 0.01
 #density
@@ -28,7 +28,6 @@ eta = 0.001
 #Nitche's parameter
 alpha = 100.0
 sigma0 = 1.0
-C = 0.5
 tol = 1E-3
 #CHANGE PARAMETERS HERE
 
@@ -84,8 +83,8 @@ boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
 boundary_r  = 'near(x[0], 2.2)'
 boundary_tb  = 'near(x[1], 0) || near(x[1], 0.41)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.2, 2) + pow(x[1] - 0.2, 2)) > 0.1'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.2, 2) + pow(x[1] - 0.2, 2)) < 0.1'
+boundary_square = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.41/2.0, 2)) > 0.1'
+boundary_circle = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.41/2.0, 2)) < 0.1'
 #CHANGE PARAMETERS HERE
 
 
