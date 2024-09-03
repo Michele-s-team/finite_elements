@@ -206,33 +206,34 @@ def sqrt_deth_circle(omega, c):
 def sqrt_deth_square(omega):
     x = ufl.SpatialCoordinate(mesh)
 
-    c = conditional(lt(abs(x[0] - (-L/2.0)), tol), g(omega)[1,1], 1.0) * \
-        conditional(lt(abs(x[0] - (L/2.0)), tol), g(omega)[1, 1], 1.0) * \
-        conditional(lt(abs(x[1] - (-h/2.0)), tol), g(omega)[0, 0], 1.0) * \
-        conditional(lt(abs(x[1] - (h/2.0)), tol), g(omega)[0, 0], 1.0)
+    c = conditional(lt(abs(x[0] - 0.0), tol), g(omega)[1,1], 1.0) * \
+        conditional(lt(abs(x[0] - L), tol), g(omega)[1, 1], 1.0) * \
+        conditional(lt(abs(x[1] - 0.0), tol), g(omega)[0, 0], 1.0) * \
+        conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
     return sqrt(c)
 
-#the normal vector on the inflow and outflow normalized according to g and pointing outside Omega
+#the normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
 def n_lr(omega):
     x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([conditional(lt(x[0], 0.0), -1.0, 1.0), 0.0] )
+    u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
-#the normal vector on the top  and bottom wall normalized according to g and pointing outside Omega
+#the normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
 def n_tb(omega):
     x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([0.0, conditional(lt(x[1], 0.0), -1.0, 1.0)] )
+    u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
-
+#the facet normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
 def n_facet_lr():
     x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([conditional(lt(x[0], 0.0), -1.0, 1.0), 0.0] )
+    u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
     return as_tensor(u[k], (k))
 
+#the facet normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
 def n_facet_tb():
     x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([0.0, conditional(lt(x[1], 0.0), -1.0, 1.0)] )
+    u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
     return as_tensor(u[k], (k))
 
 
