@@ -24,7 +24,7 @@ kappa = 1.0
 #density
 rho = 1.0
 #viscosity
-eta = 1.0
+eta = 0.001
 #Nitche's parameter
 alpha = 100.0
 sigma0 = 1.0
