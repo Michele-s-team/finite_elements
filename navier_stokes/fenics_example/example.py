@@ -1,7 +1,8 @@
 '''
-run with 
+this file solves for the steady state of a two-dimensional fluid in the presence of tangential flows
 
-python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/
+run with
+$python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/
 
 '''
 
@@ -34,7 +35,7 @@ xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
-
+#test for surface elements
 ds_l = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
 ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
 ds_t = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
@@ -52,6 +53,7 @@ integral_t = assemble(f_test_ds*ds_t)
 integral_b = assemble(f_test_ds*ds_b)
 integral_circle = assemble(f_test_ds*ds_circle)
 
+#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print("Integral l = ", integral_l, " exact value = 0.37316849042689265")
 print("Integral r = ", integral_r, " exact value = 0.0022778275141919855")
 print("Integral t = ", integral_t, " exact value = 1.3656168541307598")
@@ -63,9 +65,13 @@ nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
 
 
 # Define functions for solutions at previous and current time steps
+#the function in the total mixed space encorporating the surface tension (sigma), the tangent velocity (v), the membrane height function (z) and the gradient of z (omega)
 sigma_v_z_omega = Function(Q)
+#the Jacobian
 J_sigma_v_z_omega = TrialFunction(Q)
+#sigma, v, z, omega are used to store the numerical values of the fields
 sigma, v, z, omega = split(sigma_v_z_omega)
+#sigma_0, ...., omega_0 are used to store the initial conditions
 sigma_0 = Function(Q_sigma)
 v_0 = Function(Q_v)
 z_0 = Function(Q_z)
@@ -75,12 +81,17 @@ omega_0 = Function(Q_omega)
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 rho = Constant(rho)
+#the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
 grad_circle = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
 grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()), Q_omega)
 
 
 
-# Define variational problem 
+'''
+Define variational problem : F_sigma, F_v, F_z and F_omega are related to the PDEs for sigma, ..., omega respecitvely . F_N enforces the BCs with Nitche's method. 
+To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, t
+he surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
+'''
 
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
