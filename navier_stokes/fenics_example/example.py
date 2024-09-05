@@ -151,21 +151,25 @@ assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
 l_profile_v = Expression(('2.0  *  4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
 #CHANGE PARAMETERS HERE
 
-# Define boundary conditions
+# Define BCs
+#BC for sigma on the r edge of the rectangle
 bc_sigma_r = DirichletBC(Q.sub(0), Constant(0), boundary_r)
 
+#BCs for v
 bc_v_l = DirichletBC(Q.sub(1), l_profile_v, boundary_l)
 bc_v_tb = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_tb)
 bc_v_circle = DirichletBC(Q.sub(1), Constant((0, 0)), boundary_circle)
 
 #CHANGE PARAMETERS HERE
+#BCs for z
 bc_z_circle = DirichletBC(Q.sub(2), Expression('0.0', element = Q.sub(2).ufl_element()), boundary_circle)
 bc_z_square = DirichletBC(Q.sub(2), Expression('h/4.0', element = Q.sub(2).ufl_element(), h = h), boundary_square)
 #CHANGE PARAMETERS HERE
 
-# boundary conditions for the surface_tension p
+#all boundary conditions collected
 bcs = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
 
+#solve the variational problem
 J  = derivative(F, sigma_v_z_omega, J_sigma_v_z_omega)  # Gateaux derivative in dir. of du
 problem = NonlinearVariationalProblem(F, sigma_v_z_omega, bcs, J)
 solver  = NonlinearVariationalSolver(problem)
@@ -173,6 +177,7 @@ solver.solve()
 # solve(F == 0, sigma_v_z_omega, bcs, J)
 
 
+#get the solution and write it to file
 sigma_, v_, z_, omega_ = sigma_v_z_omega.split(deepcopy=True)
     
 xdmffile_sigma.write(sigma_, 0)
