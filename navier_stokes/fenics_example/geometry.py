@@ -255,30 +255,30 @@ def calc_normal_cg2(mesh):
     solve(A, nh.vector(), L)
     return nh
 
-
+#the normal to the manifold pointing outwards the manifold and normalized according to g, which cannot be plotted as a field
 def n(omega):
     u = n_facet
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
+#the normal to the manifold pointing outwards the manifold and normalized according to g, which can be plotted as a field
 def n_smooth(omega):
     u = calc_normal_cg2(mesh)
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
-
+#the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
 def n_facet_smooth():
     u = calc_normal_cg2(mesh)
     return as_tensor(u[k], (k))
 
-#H(z) = H_{al-izzi2020shear}
+#mean curvature, H = H_{al-izzi2020shear}
 def H(omega):
     return (0.5 * g_c(omega)[i, j]*b(omega)[j, i])
 
-#K(z) = K_{al-izzi2020shear}
+#gaussian curvature: K = K_{al-izzi2020shear}
 def K(omega):
     return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
 
-
-#christoffel symbols: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
+#Christoffel symbols: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
 def Gamma(omega):
     return as_tensor(0.5 * g_c(omega)[i,l] * ( (g(omega)[l, k]).dx(j) + (g(omega)[j, l]).dx(k) - (g(omega)[j, k]).dx(l) ), (i, j, k))
 
