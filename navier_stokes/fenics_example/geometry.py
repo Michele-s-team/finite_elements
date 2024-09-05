@@ -33,14 +33,13 @@ tol = 1E-3
 
 
 
-#create mesh
+#read mesh
 mesh=Mesh()
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-#sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
 
