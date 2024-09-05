@@ -33,32 +33,34 @@ tol = 1E-3
 
 
 
-#create mesh
+#read mesh
 mesh=Mesh()
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-#sub = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
-
+#this is the facet normal vector, which cannot be plotted as a field
 n_facet = FacetNormal(mesh)
 
 # Define function spaces
+#finite elements for sigma .... omega
 P_sigma = FiniteElement('P', triangle, 1)
 P_v = VectorElement('P', triangle, 2)
 P_z = FiniteElement('P', triangle, 1)
 P_omega = VectorElement('P', triangle, 3)
 element = MixedElement([P_sigma, P_v, P_z, P_omega])
+#total function space
 Q = FunctionSpace(mesh, element)
+#function spaces for sigma, ...., omega
 Q_sigma = Q.sub(0).collapse()
 Q_v = Q.sub(1).collapse()
 Q_z = Q.sub(2).collapse()
 Q_omega = Q.sub(3).collapse()
 
-#analytical expression for a general scalar function
+#analytical expression for a  scalar function used to test the ds
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
@@ -68,7 +70,7 @@ class ScalarFunctionExpression(UserExpression):
         return (1,)
 
 
-#  norm of vector x
+# norm of vector x
 def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
@@ -122,8 +124,6 @@ class omega0_Expression(UserExpression):
         values[1] = 0
         return (2,)
 
-
-#trial analytical expression for a vector
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -150,11 +150,12 @@ class sigma_Expression(UserExpression):
 i, j, k, l = ufl.indices(4)
 
 
+#the vector of the differential manifold, which is equal to \vec{X}_{\Gamma}(x_1, x_2) on page 8 if al-izzi2020shear
 def X(z):
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor([x[0], x[1], z])
 
-#e(z)[i] = e_i_{al-izzi2020shear}
+#the vectors tangent to the curvilinear coordinates on the manifold : e(z)[i] = e_i_{al-izzi2020shear}
 def e(omega):
     return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
 
@@ -166,42 +167,45 @@ def normal(omega):
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
 
-#b(z)[i,j] = b_{ij}_{al-izzi2020shear}
+#first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):
     return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i,j))
 
 
-#g_{ij}
+#two-covariant metric tensor: g_{ij}
 def g(omega):
     return as_tensor([[1+ (omega[0])**2, (omega[0])*(omega[1])],[(omega[0])*(omega[1]), 1+ (omega[1])**2]])
 
-#g^{ij}
+#two-contravariant metric tensor: g^{ij}
 def g_c(omega):
     return ufl.inv(g(omega))
 
+#determinant of the two-covariant metric tensor
 def detg(omega):
     return ufl.det(g(omega))
 
+#absolute value of the two-covariant metric tensor
 def abs_detg(omega):
     return np.abs(ufl.det(g(omega)))
 
+#square root of the determinant of the two-covariant metric tensor
 def sqrt_detg(omega):
     return sqrt(detg(omega))
 
+#square root of the absolute value of the two-covariant metric tensor
 def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
 
-
-#the vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+#vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r), see 'notes reall2013general'
 def dydtheta(c):
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor([-(x[1]-c[1]), x[0]-c[0]])
 
-#pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+#square root of the determinant of the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
 def sqrt_deth_circle(omega, c):
     return(sqrt((dydtheta(c))[i]*(dydtheta(c))[j]*g(omega)[i, j]))
 
-#sqrt det h on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
+#square root of the determinant of the pull-back of the metric on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
 def sqrt_deth_square(omega):
     x = ufl.SpatialCoordinate(mesh)
 
@@ -251,42 +255,42 @@ def calc_normal_cg2(mesh):
     solve(A, nh.vector(), L)
     return nh
 
-
+#the normal to the manifold pointing outwards the manifold and normalized according to g, which cannot be plotted as a field
 def n(omega):
     u = n_facet
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
+#the normal to the manifold pointing outwards the manifold and normalized according to g, which can be plotted as a field
 def n_smooth(omega):
     u = calc_normal_cg2(mesh)
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
-
+#the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
 def n_facet_smooth():
     u = calc_normal_cg2(mesh)
     return as_tensor(u[k], (k))
 
-#H(z) = H_{al-izzi2020shear}
+#mean curvature, H = H_{al-izzi2020shear}
 def H(omega):
     return (0.5 * g_c(omega)[i, j]*b(omega)[j, i])
 
-#K(z) = K_{al-izzi2020shear}
+#gaussian curvature: K = K_{al-izzi2020shear}
 def K(omega):
     return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
 
-
-#christoffel symbols: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
+#Christoffel symbols of the second kind related to g: Gamma(omega)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
 def Gamma(omega):
     return as_tensor(0.5 * g_c(omega)[i,l] * ( (g(omega)[l, k]).dx(j) + (g(omega)[j, l]).dx(k) - (g(omega)[j, k]).dx(l) ), (i, j, k))
 
-#covariant derivative of vector v with respect to \partial/partial x: Nabla_v(v, omega)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
+#covariant derivative of vector v with respect to \partial/partial x and with respect to the Levi-Civita connection generated by g: Nabla_v(v, omega)[i, j] = {\Nabla_j v^i}_{al-izzi2020shear}
 def Nabla_v(u, omega):
     return as_tensor((u[i]).dx(j) + u[k] * Gamma(omega)[i, k, j], (i, j))
 
-#covariant derivative of one-form f with respect to \partial/partial x: Nabla_f(f, omega)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
+#covariant derivative of one-form f with respect to \partial/partial x and with respect to the Levi-Civita connection generated by g: Nabla_f(f, omega)[i, j] = {\Nabla_j f_i}_{al-izzi2020shear}
 def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
 
-#rate-of_deformation tensor for zero normal velocity: d(u, z)[i, j] = {d_{ij}}_{alizzi2020shear for zero w}
+#2-covariant rate-of_deformation tensor for zero normal velocity: d(u, z)[i, j] = {d_{ij}}_{alizzi2020shear for zero w}
 def d(u, omega):
     return as_tensor(0.5 * ( g(omega)[i, k]*Nabla_v(u, omega)[k, j] + g(omega)[j, k]*Nabla_v(u, omega)[k, i] ), (i, j))
 
