@@ -20,13 +20,13 @@ h = 0.41
 r = 0.05
 c_r = [L/2.0, h/2.0]
 #bending rigidity
-kappa = 0.01
+kappa = 1.0
 #density
 rho = 1.0
 #viscosity
 eta = 0.001
 #Nitche's parameter
-alpha = 100.0
+alpha = 1e5
 sigma0 = 1.0
 tol = 1E-3
 #CHANGE PARAMETERS HERE
@@ -126,8 +126,9 @@ class omega0_Expression(UserExpression):
 
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        a = 0
+        values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
+        values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
         return (2,)
     
 class grad_square_Expression(UserExpression):
