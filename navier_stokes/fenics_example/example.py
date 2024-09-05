@@ -4,6 +4,8 @@ this file solves for the steady state of a two-dimensional fluid in the presence
 run with
 $python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/
 
+Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
+#CHANGE PARAMETERS HERE
 '''
 
 
