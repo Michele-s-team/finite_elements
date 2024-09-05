@@ -60,7 +60,7 @@ Q_v = Q.sub(1).collapse()
 Q_z = Q.sub(2).collapse()
 Q_omega = Q.sub(3).collapse()
 
-#analytical expression for a general scalar function
+#analytical expression for a  scalar function used to test the ds
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
@@ -70,7 +70,7 @@ class ScalarFunctionExpression(UserExpression):
         return (1,)
 
 
-#  norm of vector x
+# norm of vector x
 def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
@@ -124,8 +124,6 @@ class omega0_Expression(UserExpression):
         values[1] = 0
         return (2,)
 
-
-#trial analytical expression for a vector
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -152,11 +150,12 @@ class sigma_Expression(UserExpression):
 i, j, k, l = ufl.indices(4)
 
 
+#the vector of the differential manifold, which is equal to \vec{X}_{\Gamma}(x_1, x_2) on page 8 if al-izzi2020shear
 def X(z):
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor([x[0], x[1], z])
 
-#e(z)[i] = e_i_{al-izzi2020shear}
+#the vectors tangent to the curvilinear coordinates on the manifold : e(z)[i] = e_i_{al-izzi2020shear}
 def e(omega):
     return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
 
@@ -168,31 +167,34 @@ def normal(omega):
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
 
-#b(z)[i,j] = b_{ij}_{al-izzi2020shear}
+#first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):
     return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i,j))
 
 
-#g_{ij}
+#two-covariant metric tensor: g_{ij}
 def g(omega):
     return as_tensor([[1+ (omega[0])**2, (omega[0])*(omega[1])],[(omega[0])*(omega[1]), 1+ (omega[1])**2]])
 
-#g^{ij}
+#two-contravariant metric tensor: g^{ij}
 def g_c(omega):
     return ufl.inv(g(omega))
 
+#determinant of the two-covariant metric tensor
 def detg(omega):
     return ufl.det(g(omega))
 
+#absolute value of the two-covariant metric tensor
 def abs_detg(omega):
     return np.abs(ufl.det(g(omega)))
 
+#square root of the determinant of the two-covariant metric tensor
 def sqrt_detg(omega):
     return sqrt(detg(omega))
 
+#square root of the absolute value of the two-covariant metric tensor
 def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
-
 
 #the vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
 def dydtheta(c):
