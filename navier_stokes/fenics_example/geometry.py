@@ -20,7 +20,7 @@ h = 0.41
 r = 0.05
 c_r = [L/2.0, h/2.0]
 #bending rigidity
-kappa = 1.0
+kappa = 1e-2
 #density
 rho = 1.0
 #viscosity

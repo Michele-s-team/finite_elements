@@ -154,7 +154,7 @@ assigner = FunctionAssigner(Q, [Q_sigma, Q_v, Q_z, Q_omega])
 assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
 
 #CHANGE PARAMETERS HERE
-l_profile_v = Expression(('1e-2  *  4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
+l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
 #CHANGE PARAMETERS HERE
 
 # Define BCs
