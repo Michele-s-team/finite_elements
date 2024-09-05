@@ -42,16 +42,19 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 
 
-
+#this is the facet normal vector, which cannot be plotted as a field
 n_facet = FacetNormal(mesh)
 
 # Define function spaces
+#finite elements for sigma .... omega
 P_sigma = FiniteElement('P', triangle, 1)
 P_v = VectorElement('P', triangle, 2)
 P_z = FiniteElement('P', triangle, 1)
 P_omega = VectorElement('P', triangle, 3)
 element = MixedElement([P_sigma, P_v, P_z, P_omega])
+#total function space
 Q = FunctionSpace(mesh, element)
+#function spaces for sigma, ...., omega
 Q_sigma = Q.sub(0).collapse()
 Q_v = Q.sub(1).collapse()
 Q_z = Q.sub(2).collapse()
