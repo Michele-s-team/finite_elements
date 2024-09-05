@@ -126,7 +126,7 @@ class omega0_Expression(UserExpression):
 
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
-        a = 0
+        a = 1.0
         values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
         values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
         return (2,)
