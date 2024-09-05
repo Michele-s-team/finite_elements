@@ -278,7 +278,7 @@ def H(omega):
 def K(omega):
     return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
 
-#Christoffel symbols related to g: Gamma(z)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
+#Christoffel symbols of the second kind related to g: Gamma(omega)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
 def Gamma(omega):
     return as_tensor(0.5 * g_c(omega)[i,l] * ( (g(omega)[l, k]).dx(j) + (g(omega)[j, l]).dx(k) - (g(omega)[j, k]).dx(l) ), (i, j, k))
 
