@@ -169,7 +169,12 @@ F_wbar = ( \
                                  2.0 * sigma_n_12 * H(omega_n_12) \
                                  + 2.0 * eta * ( g_c(omega_n_12)[i, k] * Nabla_v(V, omega_n_12)[j, k] * (b(omega_n_12))[i, j] - 2.0 * W * ( 2.0 * (H(omega_n_12))**2 - K(omega_n_12) ) )
                      )
-         ) * sqrt_detg(omega_n_12) * dx
+         ) * sqrt_detg(omega_n_12) * dx \
+         + rho * ( \
+                     ( W * nu_wbar * n_lr(omega_n_12)[j] * g(omega_n_12)[j, i] * ( 3.0/2.0 * v_n_1[i] - 1.0/2.0 * v_n_2[i] ) ) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) \
+                     + ( W * nu_wbar * n_tb(omega_n_12)[j] * g(omega_n_12)[j, i] * ( 3.0/2.0 * v_n_1[i] - 1.0/2.0 * v_n_2[i] ) ) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) \
+                     + ( W * nu_wbar * n(omega_n_12)[j] * g(omega_n_12)[j, i] * ( 3.0/2.0 * v_n_1[i] - 1.0/2.0 * v_n_2[i] ) ) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle
+         )
 
 '''
 
