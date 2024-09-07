@@ -35,6 +35,7 @@ set_log_level(20)
 # Create XDMF files for visualization output
 xdmffile_sigma = XDMFFile((args.output_directory) + '/sigma.xdmf')
 xdmffile_v = XDMFFile((args.output_directory) + '/v.xdmf')
+xdmffile_w = XDMFFile((args.output_directory) + '/w.xdmf')
 xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
@@ -68,6 +69,7 @@ print("Integral t = ", integral_t, " exact value = 1.3656168541307598")
 print("Integral b = ", integral_b, " exact value = 1.0283705026372492")
 print("Integral circle = ", integral_circle, " exact value = 0.298174235901449")
 
+'''
 # Define trial and test functions
 nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
 
@@ -192,3 +194,4 @@ xdmffile_z.write(z_, 0)
 xdmffile_omega.write(omega_, 0)
 
 xdmffile_n.write(n_facet_smooth(), 0)
+'''
