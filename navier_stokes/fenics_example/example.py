@@ -91,14 +91,14 @@ vn_0 = Function(Q_vn)
 wn_0 = Function(Q_wn)
 zn_0 = Function(Q_zn)
 omegan_0 = Function(Q_omegan)
-'''
 
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 rho = Constant(rho)
 #the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-grad_circle = interpolate(grad_circle_Expression(element=Q_omega.ufl_element()), Q_omega)
-grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()), Q_omega)
+grad_circle = interpolate(grad_circle_Expression(element=Q_omegan.ufl_element()), Q_omegan)
+grad_square = interpolate(grad_square_Expression(element=Q_omegan.ufl_element()), Q_omegan)
+'''
 
 
 
