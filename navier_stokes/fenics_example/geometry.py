@@ -69,7 +69,7 @@ Q_zn= Q.sub(6).collapse()
 
 
 #analytical expression for a  scalar function used to test the ds
-class ScalarFunctionExpression(UserExpression):
+class FunctionTestIntegralsds(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345

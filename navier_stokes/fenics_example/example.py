@@ -52,8 +52,8 @@ ds_b = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=6)
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
-f_test_ds = Function(Q_z)
-f_test_ds = interpolate(ScalarFunctionExpression(element=Q_z.ufl_element()), Q_z)
+f_test_ds = Function(Q_zn)
+f_test_ds = interpolate(FunctionTestIntegralsds(element=Q_zn.ufl_element()), Q_zn)
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 integral_l = assemble(f_test_ds*ds_l)
@@ -63,11 +63,11 @@ integral_b = assemble(f_test_ds*ds_b)
 integral_circle = assemble(f_test_ds*ds_circle)
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print("Integral l = ", integral_l, " exact value = 0.37316849042689265")
-print("Integral r = ", integral_r, " exact value = 0.0022778275141919855")
-print("Integral t = ", integral_t, " exact value = 1.3656168541307598")
-print("Integral b = ", integral_b, " exact value = 1.0283705026372492")
-print("Integral circle = ", integral_circle, " exact value = 0.298174235901449")
+print("Integral l = ", integral_l, " exact value = 0.373169")
+print("Integral r = ", integral_r, " exact value = 0.00227783")
+print("Integral t = ", integral_t, " exact value = 1.36562")
+print("Integral b = ", integral_b, " exact value = 1.02837")
+print("Integral circle = ", integral_circle, " exact value = 0.205204")
 
 '''
 # Define trial and test functions
@@ -97,11 +97,9 @@ grad_square = interpolate(grad_square_Expression(element=Q_omega.ufl_element()),
 
 
 
-'''
-Define variational problem : F_sigma, F_v, F_z and F_omega are related to the PDEs for sigma, ..., omega respecitvely . F_N enforces the BCs with Nitche's method. 
-To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, t
-he surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
-'''
+# Define variational problem : F_sigma, F_v, F_z and F_omega are related to the PDEs for sigma, ..., omega respecitvely . F_N enforces the BCs with Nitche's method. 
+# To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, t
+# he surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
 
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
