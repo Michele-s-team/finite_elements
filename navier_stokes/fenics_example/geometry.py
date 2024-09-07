@@ -54,15 +54,15 @@ n_facet = FacetNormal(mesh)
 
 # Define function spaces
 #finite elements for sigma .... omega
-P_vbar = VectorElement('P', triangle, 2)
-P_wbar = FiniteElement('P', triangle, 1)
+P_v_bar = VectorElement( 'P', triangle, 2 )
+P_w_bar = FiniteElement( 'P', triangle, 1 )
 P_phi = FiniteElement('P', triangle, 2)
-P_vn = VectorElement('P', triangle, 2)
-P_wn = FiniteElement('P', triangle, 1)
+P_v_n = VectorElement( 'P', triangle, 2 )
+P_w_n = FiniteElement( 'P', triangle, 1 )
 P_omegan = VectorElement('P', triangle, 3)
 P_zn = FiniteElement('P', triangle, 1)
 
-element = MixedElement([P_vbar, P_wbar, P_phi, P_vn, P_wn, P_omegan, P_zn])
+element = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_omegan, P_zn] )
 #total function space
 Q = FunctionSpace(mesh, element)
 #function spaces for vbar .... zn
