@@ -108,6 +108,7 @@ omegan_0 = Function(Q_omegan)
 
 V = (vbar + v_n_1)/2.0
 W = (wbar + w_n_1)/2.0
+sigma_ast = (sigma_n_1 + sigma_n_2)/2.0
 #omega_{n-1/2}
 omega_n_12 = (omegan + omega_n_1)/2.0
 
@@ -127,14 +128,16 @@ To be safe, I explicitly wrote the each term on each part of the boundary with i
 the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
 '''
 
-F_vbar = rho * ( \
-            ( (vbar[i] - v_n_1[i]) / Deltat + \
-            ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] - \
-            2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i] + \
-            1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) * sqrt_detg(omega_n_12) * dx
+F_vbar = ( \
+                     rho * (  ( (vbar[i] - v_n_1[i]) / Deltat + \
+                                ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] - \
+                                2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i] + \
+                              1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) + \
+                     sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j]
+         )* sqrt_detg(omega_n_12) * dx
 
-    #      + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
-    #         + 2.0 * d_c( V, w_n, z_n )[i, j] * Nabla_f( nu, z_n )[i, j]) * sqrt_detg( z_n ) * dx \
+#      + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
+#         + 2.0 * d_c( V, w_n, z_n )[i, j] * Nabla_f( nu, z_n )[i, j]) * sqrt_detg( z_n ) * dx \
     #      + (- sigma_n * nu[i] * n_inout( z_n )[i] - 2.0 * (
     #         0.5 * (g( z_n )[i, k] * Nabla_v( V, z_n )[k, j] + 1 * g( z_n )[j, k] * Nabla_v( V, z_n )[k, i]) - (
     # b( z_n )[i, j]) * w_n) * g_c( z_n )[j, l] * nu[l] * n_inout( z_n )[i]) * sqrt_deth(
