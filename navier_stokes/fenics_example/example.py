@@ -159,7 +159,10 @@ F_vbar = ( \
 F_wbar = ( \
                      rho * ( (wbar - w_n_1)/Deltat + V[i]*V[k]*b(omega_n_12)[k, i] ) * nu_wbar \
                      - rho * W * Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar, omega_n_12)[i, i] \
-                    - 2.0 * kappa * g_c(omega_n_12)[i, j] * ((H(omega_n_12)).dx(j)) * (nu_wbar.dx(i))
+                     + 2.0 * kappa * ( \
+                                 - g_c(omega_n_12)[i, j] * ((H(omega_n_12)).dx(j)) * (nu_wbar.dx(i)) \
+                                 + 2.0 * H(omega_n_12) * ( (H(omega_n_12))**2 - K(omega_n_12) ) * nu_wbar \
+                         )
          ) * sqrt_detg(omega_n_12) * dx
 
 '''
