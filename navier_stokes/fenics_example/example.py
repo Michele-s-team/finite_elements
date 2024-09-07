@@ -78,7 +78,8 @@ v_n_2 = Function(Q_vn)
 w_n_1 = Function(Q_wn)
 sigma_n_1 = Function(Q_phi)
 sigma_n_2 = Function(Q_phi)
-z_n = Function(Q_zn)
+omega_n_1 = Function(Q_omegan)
+z_n_1 = Function(Q_zn)
 #
 
 
@@ -101,6 +102,9 @@ zn_0 = Function(Q_zn)
 omegan_0 = Function(Q_omegan)
 
 V = (vbar + v_n_1)/2.0
+W = (wbar + w_n_1)/2.0
+#omega_{n-1/2}
+omega_n_12 = (omegan + omega_n_1)/2.0
 
 
 # Define expressions used in variational forms
