@@ -74,20 +74,24 @@ print("Integral circle = ", integral_circle, " exact value = 0.205204")
 nu_vbar, nu_wbar, nu_phi, nu_vn, nu_wn, nu_omegan, nu_zn = TestFunctions(Q)
 
 
-'''
-# Define functions for solutions at previous and current time steps
-#the function in the total mixed space encorporating the surface tension (sigma), the tangent velocity (v), the membrane height function (z) and the gradient of z (omega)
-sigma_v_z_omega = Function(Q)
-#the Jacobian
-J_sigma_v_z_omega = TrialFunction(Q)
-#sigma, v, z, omega are used to store the numerical values of the fields
-sigma, v, z, omega = split(sigma_v_z_omega)
-#sigma_0, ...., omega_0 are used to store the initial conditions
-sigma_0 = Function(Q_sigma)
-v_0 = Function(Q_v)
-z_0 = Function(Q_z)
-omega_0 = Function(Q_omega)
 
+# Define functions for solutions at previous and current time steps
+#the function in the total mixed space encorporating vbar, wbar, phi, vn, wn, omegan and zn
+psi = Function(Q)
+#the Jacobian
+
+J_psi = TrialFunction(Q)
+#sigma, v, z, omega are used to store the numerical values of the fields
+vbar, wbar, phi, vn, wn, omegan, zn = split(psi)
+#vbar_0, ...., zn_0 are used to store the initial conditions
+vbar_0 = Function(Q_vbar)
+wbar_0 = Function(Q_wbar)
+phi_0 = Function(Q_phi)
+vn_0 = Function(Q_vn)
+wn_0 = Function(Q_wn)
+zn_0 = Function(Q_zn)
+omegan_0 = Function(Q_omegan)
+'''
 
 # Define expressions used in variational forms
 kappa = Constant(kappa)
