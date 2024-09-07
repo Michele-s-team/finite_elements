@@ -129,14 +129,14 @@ the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}:
 '''
 
 F_vbar = ( \
-                     rho * (  ( (vbar[i] - v_n_1[i]) / Deltat + \
-                                ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] - \
-                                2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i] + \
-                              1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) + \
-                     sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] + \
-                     2.0 * eta * d_c(V, W, omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[j, i]
-         )* sqrt_detg(omega_n_12) * dx + \
-         ( \
+                     rho * (  ( (vbar[i] - v_n_1[i]) / Deltat  \
+                                + ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j]  \
+                                - 2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i]  \
+                              + 1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] )  \
+                     + sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] \
+                     + 2.0 * eta * d_c(V, W, omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[j, i]
+         )* sqrt_detg(omega_n_12) * dx \
+         - rho/2.0 * ( \
                      ( n_lr(omega_n_12)[i] * nu_vbar[i] ) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) + \
                      ( n_tb(omega_n_12)[i] * nu_vbar[i] ) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) + \
                      ( n(omega_n_12)[i] * nu_vbar[i] ) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle
