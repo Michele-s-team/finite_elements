@@ -189,11 +189,9 @@ def normal(omega):
     return as_tensor(cross(e(omega)[0], e(omega)[1]) /  ufl_norm(cross(e(omega)[0], e(omega)[1])) )
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 
-
 #first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):
     return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i,j))
-
 
 #two-covariant metric tensor: g_{ij}
 def g(omega):
@@ -261,7 +259,6 @@ def n_facet_tb():
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
     return as_tensor(u[k], (k))
-
 
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
