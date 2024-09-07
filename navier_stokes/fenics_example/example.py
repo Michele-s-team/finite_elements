@@ -13,6 +13,10 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 '''
 
+'''
+possible isssues:
+- Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar
+'''
 
 from __future__ import print_function
 from fenics import *
@@ -153,8 +157,8 @@ F_vbar = ( \
          )
 
 F_wbar = ( \
-                     rho * ( (wbar - w_n_1)/Deltat + V[i]*V[k]*b(omega_n_12)[k, i] ) * nu_wbar
-
+                     rho * ( (wbar - w_n_1)/Deltat + V[i]*V[k]*b(omega_n_12)[k, i] ) * nu_wbar \
+                     - rho * W * Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar, omega_n_12)[i, i]
 
          ) * sqrt_detg(omega_n_12) * dx
 
