@@ -85,6 +85,7 @@ nu_vbar, nu_wbar, nu_phi, nu_vn, nu_wn, nu_omegan, nu_zn = TestFunctions(Q)
 v_n_1 = Function(Q_vn)
 v_n_2 = Function(Q_vn)
 w_n_1 = Function(Q_wn)
+sigma_n = Function(Q_phi)
 sigma_n_1 = Function(Q_phi)
 sigma_n_2 = Function(Q_phi)
 omega_n_1 = Function(Q_omegan)
@@ -115,6 +116,7 @@ W = (wbar + w_n_1)/2.0
 sigma_ast = (sigma_n_1 + sigma_n_2)/2.0
 #omega_{n-1/2}
 omega_n_12 = (omegan + omega_n_1)/2.0
+sigma_n_12 = (sigma_n + sigma_n_1)/2.0
 
 
 # Define expressions used in variational forms
@@ -162,6 +164,9 @@ F_wbar = ( \
                      + 2.0 * kappa * ( \
                                  - g_c(omega_n_12)[i, j] * ((H(omega_n_12)).dx(j)) * (nu_wbar.dx(i)) \
                                  + 2.0 * H(omega_n_12) * ( (H(omega_n_12))**2 - K(omega_n_12) ) * nu_wbar \
+                         ) \
+                     - ( \
+                                 2.0 * sigma_n_12 * H(omega_n_12) \
                          )
          ) * sqrt_detg(omega_n_12) * dx
 
