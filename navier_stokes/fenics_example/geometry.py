@@ -105,32 +105,52 @@ def ufl_norm(x):
 
 epsilon = ufl.PermutationSymbol(2)
 
-
 #CHANGE PARAMETERS HERE
-class sigma0_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-    def value_shape(self):
-        return (1,)
-    
-class v0_Expression(UserExpression):
+#iniial profiles for the fields
+class vbar0_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
         return (2,)
 
-class z0_Expression(UserExpression):
+class wbar0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+    def value_shape(self):
+        return (1,)
+
+class phi0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+    def value_shape(self):
+        return (1,)
+    
+class vn0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+        return (2,)
+
+class wn0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+    def value_shape(self):
+        return (1,)
+
+class omegan0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+        return (2,)
+
+class zn0_Expression(UserExpression):
     def eval(self, values, x):
         # [0] = C * cos(2*pi*x[0]/L) * ((x[1])**2)/2.0
         values[0] = 0
     def value_shape(self):
         return (1,)
 
-class omega0_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-        return (2,)
+
 
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
