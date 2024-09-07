@@ -101,7 +101,7 @@ psi = Function(Q)
 
 J_psi = TrialFunction(Q)
 #sigma, v, z, omega are used to store the numerical values of the fields
-v_bar, wbar, phi, vn, wn, omegan, zn = split( psi )
+v_bar, w_bar, phi, v_n, w_n, omega_n, z_n = split( psi )
 #vbar_0, ...., zn_0 are used to store the initial conditions
 v_bar_0 = Function( Q_vbar )
 w_bar_0 = Function( Q_wbar )
@@ -112,10 +112,10 @@ z_n_0 = Function( Q_zn )
 omega_n_0 = Function( Q_omegan )
 
 V = (v_bar + v_n_1) / 2.0
-W = (wbar + w_n_1)/2.0
+W = (w_bar + w_n_1) / 2.0
 sigma_ast = (sigma_n_1 + sigma_n_2)/2.0
 #omega_{n-1/2}
-omega_n_12 = (omegan + omega_n_1)/2.0
+omega_n_12 = (omega_n + omega_n_1) / 2.0
 sigma_n_12 = (sigma_n + sigma_n_1)/2.0
 
 
@@ -159,7 +159,7 @@ F_vbar = ( \
          )
 
 F_wbar = ( \
-                     rho * ( (wbar - w_n_1)/Deltat + V[i]*V[k]*b(omega_n_12)[k, i] ) * nu_wbar \
+                     rho * ((w_bar - w_n_1) / Deltat + V[i] * V[k] * b( omega_n_12 )[k, i]) * nu_wbar \
                      - rho * W * Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar, omega_n_12)[i, i] \
                      + 2.0 * kappa * ( \
                                  - g_c(omega_n_12)[i, j] * ((H(omega_n_12)).dx(j)) * (nu_wbar.dx(i)) \
