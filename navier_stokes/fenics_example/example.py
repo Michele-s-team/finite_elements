@@ -98,14 +98,15 @@ rho = Constant(rho)
 #the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
 grad_circle = interpolate(grad_circle_Expression(element=Q_omegan.ufl_element()), Q_omegan)
 grad_square = interpolate(grad_square_Expression(element=Q_omegan.ufl_element()), Q_omegan)
+
+
+'''
+Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
+To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, 
+the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
 '''
 
-
-
-# Define variational problem : F_sigma, F_v, F_z and F_omega are related to the PDEs for sigma, ..., omega respecitvely . F_N enforces the BCs with Nitche's method. 
-# To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, t
-# he surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
-
+'''
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
 F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
