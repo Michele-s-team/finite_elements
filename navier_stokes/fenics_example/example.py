@@ -33,11 +33,11 @@ set_log_level(20)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
-xdmffile_sigma = XDMFFile((args.output_directory) + '/sigma.xdmf')
 xdmffile_v = XDMFFile((args.output_directory) + '/v.xdmf')
 xdmffile_w = XDMFFile((args.output_directory) + '/w.xdmf')
-xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
+xdmffile_sigma = XDMFFile((args.output_directory) + '/sigma.xdmf')
 xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
+xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 
 
@@ -73,7 +73,13 @@ print("Integral circle = ", integral_circle, " exact value = 0.205204")
 # Define trial and test functions
 nu_vbar, nu_wbar, nu_phi, nu_vn, nu_wn, nu_omegan, nu_zn = TestFunctions(Q)
 
-
+v_n_1 = Function(Q_vn)
+v_n_2 = Function(Q_vn)
+w_n_1 = Function(Q_wn)
+sigma_n_1 = Function(Q_phi)
+sigma_n_2 = Function(Q_phi)
+z_n = Function(Q_zn)
+#
 
 # Define functions for solutions at previous and current time steps
 #the function in the total mixed space encorporating vbar, wbar, phi, vn, wn, omegan and zn
@@ -107,16 +113,18 @@ the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}:
 '''
 
 F_vbar = rho * ( \
-            ((vbar[i] - v_n_1[i]) / Deltat * nu \
-             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
-             - 2.0 * v_n[j] * w_n * g_c(z_n)[i, k] * b(z_n)[k, j] * nu[i] \
-             + 0.5 * (w_n ** 2) * g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-            + (- 0.5 * (w_n ** 2) * nu[i] * n_inout(z_n)[i]) * sqrt_deth(z_n) * ds \
+            ( (vbar[i] - v_n_1[i]) / Deltat + \
+            ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] - \
+            2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i] + \
+            1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) * sqrt_detg(omega_n_12) * dx \
+            + (- 0.5 * (w_n ** 2) * nu[i] * n_inout( z_n )[i]) * sqrt_deth( z_n ) * ds \
     ) \
-         + (g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
-            + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
-         + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + 1 * g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
-    z_n) * ds
+         + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
+            + 2.0 * d_c( V, w_n, z_n )[i, j] * Nabla_f( nu, z_n )[i, j]) * sqrt_detg( z_n ) * dx \
+         + (- sigma_n * nu[i] * n_inout( z_n )[i] - 2.0 * (
+            0.5 * (g( z_n )[i, k] * Nabla_v( V, z_n )[k, j] + 1 * g( z_n )[j, k] * Nabla_v( V, z_n )[k, i]) - (
+    b( z_n )[i, j]) * w_n) * g_c( z_n )[j, l] * nu[l] * n_inout( z_n )[i]) * sqrt_deth(
+    z_n ) * ds
 
 '''
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
