@@ -172,7 +172,7 @@ class grad_square_Expression(UserExpression):
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 
-
+#sign
 #the vector of the differential manifold, which is equal to \vec{X}_{\Gamma}(x_1, x_2) on page 8 if al-izzi2020shear
 def X(z):
     x = ufl.SpatialCoordinate(mesh)
