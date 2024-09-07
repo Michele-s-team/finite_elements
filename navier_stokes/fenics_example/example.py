@@ -106,6 +106,18 @@ To be safe, I explicitly wrote the each term on each part of the boundary with i
 the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
 '''
 
+F_vbar = rho * ( \
+            ((vbar[i] - v_n_1[i]) / Deltat * nu \
+             + (v_n[j] * Nabla_v(v_n, z_n)[i, j] * nu[i]) \
+             - 2.0 * v_n[j] * w_n * g_c(z_n)[i, k] * b(z_n)[k, j] * nu[i] \
+             + 0.5 * (w_n ** 2) * g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
+            + (- 0.5 * (w_n ** 2) * nu[i] * n_inout(z_n)[i]) * sqrt_deth(z_n) * ds \
+    ) \
+         + (g_c(z_n)[i, j] * Nabla_f(nu, z_n)[i, j] * sigma_n \
+            + 2.0 * d_c(V, w_n, z_n)[i, j] * Nabla_f(nu, z_n)[i, j]) * sqrt_detg(z_n) * dx \
+         + (- sigma_n * nu[i] * n_inout(z_n)[i] - 2.0 * (0.5 * ( g(z_n)[i, k]*Nabla_v(V, z_n)[k, j] + 1 * g(z_n)[j, k]*Nabla_v(V, z_n)[k, i] ) - (b(z_n)[i,j]) * w_n) * g_c(z_n)[j, l] * nu[l] *n_inout(z_n)[i]) * sqrt_deth(
+    z_n) * ds
+
 '''
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
