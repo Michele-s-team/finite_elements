@@ -152,6 +152,12 @@ F_vbar = ( \
                      (d_c(V, W, omega_n_12)[i, j] * g(omega_n_12)[i, k] * n(omega_n_12)[k] * nu_vbar[j]) * sqrt_deth_circle(omega_n_12, c_r ) * ds_circle
          )
 
+F_wbar = ( \
+                     rho * ( (wbar - w_n_1)/Deltat + V[i]*V[k]*b(omega_n_12)[k, i] ) * nu_wbar
+
+
+         ) * sqrt_detg(omega_n_12) * dx
+
 '''
 
 
