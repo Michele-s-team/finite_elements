@@ -101,17 +101,17 @@ psi = Function(Q)
 
 J_psi = TrialFunction(Q)
 #sigma, v, z, omega are used to store the numerical values of the fields
-vbar, wbar, phi, vn, wn, omegan, zn = split(psi)
+v_bar, wbar, phi, vn, wn, omegan, zn = split( psi )
 #vbar_0, ...., zn_0 are used to store the initial conditions
-vbar_0 = Function(Q_vbar)
-wbar_0 = Function(Q_wbar)
+v_bar_0 = Function( Q_vbar )
+w_bar_0 = Function( Q_wbar )
 phi_0 = Function(Q_phi)
-vn_0 = Function(Q_vn)
-wn_0 = Function(Q_wn)
-zn_0 = Function(Q_zn)
-omegan_0 = Function(Q_omegan)
+v_n_0 = Function( Q_vn )
+w_n_0 = Function( Q_wn )
+z_n_0 = Function( Q_zn )
+omega_n_0 = Function( Q_omegan )
 
-V = (vbar + v_n_1)/2.0
+V = (v_bar + v_n_1) / 2.0
 W = (wbar + w_n_1)/2.0
 sigma_ast = (sigma_n_1 + sigma_n_2)/2.0
 #omega_{n-1/2}
@@ -135,9 +135,9 @@ the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}:
 '''
 
 F_vbar = ( \
-                     rho * (  ( (vbar[i] - v_n_1[i]) / Deltat  \
-                                + ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j]  \
-                                - 2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i]  \
+                     rho * (  ((v_bar[i] - v_n_1[i]) / Deltat \
+                               + ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] \
+                               - 2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j]) * nu_vbar[i]  \
                               + 1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] )  \
                      + sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] \
                      + 2.0 * eta * d_c(V, W, omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[j, i]
