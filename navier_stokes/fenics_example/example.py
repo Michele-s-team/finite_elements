@@ -6,7 +6,7 @@ $ python3 generate_mesh.py 0.1
 and which are stored into finite_elements/mesh/membrane_mesh/
 
 Run with
-$python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/
+$python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/ 1.0 100
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution/
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
@@ -24,6 +24,9 @@ import ufl as ufl
 from geometry import *
 
 set_log_level(20)
+
+print("T = ", T)
+print("N = ", N)
 
 
 # # Create mesh
@@ -108,6 +111,7 @@ omega_n_12 = (omegan + omega_n_1)/2.0
 
 
 # Define expressions used in variational forms
+Deltat = Constant(dt)
 kappa = Constant(kappa)
 rho = Constant(rho)
 #the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
@@ -120,21 +124,22 @@ Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs fo
 To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, 
 the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
 '''
-'''
 
 F_vbar = rho * ( \
             ( (vbar[i] - v_n_1[i]) / Deltat + \
             ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] - \
             2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i] + \
-            1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) * sqrt_detg(omega_n_12) * dx \
-            + (- 0.5 * (w_n ** 2) * nu[i] * n_inout( z_n )[i]) * sqrt_deth( z_n ) * ds \
-    ) \
-         + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
-            + 2.0 * d_c( V, w_n, z_n )[i, j] * Nabla_f( nu, z_n )[i, j]) * sqrt_detg( z_n ) * dx \
-         + (- sigma_n * nu[i] * n_inout( z_n )[i] - 2.0 * (
-            0.5 * (g( z_n )[i, k] * Nabla_v( V, z_n )[k, j] + 1 * g( z_n )[j, k] * Nabla_v( V, z_n )[k, i]) - (
-    b( z_n )[i, j]) * w_n) * g_c( z_n )[j, l] * nu[l] * n_inout( z_n )[i]) * sqrt_deth(
-    z_n ) * ds
+            1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) * sqrt_detg(omega_n_12) * dx
+
+    #      + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
+    #         + 2.0 * d_c( V, w_n, z_n )[i, j] * Nabla_f( nu, z_n )[i, j]) * sqrt_detg( z_n ) * dx \
+    #      + (- sigma_n * nu[i] * n_inout( z_n )[i] - 2.0 * (
+    #         0.5 * (g( z_n )[i, k] * Nabla_v( V, z_n )[k, j] + 1 * g( z_n )[j, k] * Nabla_v( V, z_n )[k, i]) - (
+    # b( z_n )[i, j]) * w_n) * g_c( z_n )[j, l] * nu[l] * n_inout( z_n )[i]) * sqrt_deth(
+    # z_n ) * ds
+
+'''
+
 
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
