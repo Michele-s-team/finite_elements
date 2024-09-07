@@ -114,13 +114,13 @@ epsilon = ufl.PermutationSymbol(2)
 
 #CHANGE PARAMETERS HERE
 #iniial profiles for the fields
-class vbar0_Expression(UserExpression):
+class v_bar0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
         return (2,)
 
-class wbar0_Expression(UserExpression):
+class w_bar0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
     def value_shape(self):
@@ -132,25 +132,25 @@ class phi0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
     
-class vn0_Expression(UserExpression):
+class v_n0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
         return (2,)
 
-class wn0_Expression(UserExpression):
+class w_n0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
     def value_shape(self):
         return (1,)
 
-class omegan0_Expression(UserExpression):
+class omega_n0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
         return (2,)
 
-class zn0_Expression(UserExpression):
+class z_n0_Expression( UserExpression ):
     def eval(self, values, x):
         # [0] = C * cos(2*pi*x[0]/L) * ((x[1])**2)/2.0
         values[0] = 0
