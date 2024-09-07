@@ -171,9 +171,9 @@ F_w_bar = ( \
                      )
          ) * sqrt_detg(omega_n_12) * dx \
           + rho * ( \
-                     (W * nu_w_bar * n_lr(omega_n_12)[j] * g(omega_n_12)[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) \
-                     + (W * nu_w_bar * n_tb(omega_n_12)[j] * g(omega_n_12)[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) \
-                     + (W * nu_w_bar * n(omega_n_12)[j] * g(omega_n_12)[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+                     (W * nu_w_bar * (n_lr(omega_n_12))[j] * g(omega_n_12)[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) \
+                     + (W * nu_w_bar * (n_tb(omega_n_12))[j] * g(omega_n_12)[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) \
+                     + (W * nu_w_bar * (n(omega_n_12))[j] * g(omega_n_12)[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
          )
 
 '''
