@@ -25,6 +25,8 @@ from geometry import *
 
 set_log_level(20)
 
+print("Input diredtory = ", args.input_directory)
+print("Output diredtory = ", args.output_directory)
 print("T = ", T)
 print("N = ", N)
 
