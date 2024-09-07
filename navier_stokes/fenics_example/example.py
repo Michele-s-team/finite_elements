@@ -135,14 +135,12 @@ F_vbar = ( \
                               1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) + \
                      sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] + \
                      2.0 * eta * d_c(V, W, omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[j, i]
-         )* sqrt_detg(omega_n_12) * dx
-
-#      + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
-#         + 2.0 * d_c( V, w_n, z_n )[i, j] * Nabla_f( nu, z_n )[i, j]) * sqrt_detg( z_n ) * dx \
-    #      + (- sigma_n * nu[i] * n_inout( z_n )[i] - 2.0 * (
-    #         0.5 * (g( z_n )[i, k] * Nabla_v( V, z_n )[k, j] + 1 * g( z_n )[j, k] * Nabla_v( V, z_n )[k, i]) - (
-    # b( z_n )[i, j]) * w_n) * g_c( z_n )[j, l] * nu[l] * n_inout( z_n )[i]) * sqrt_deth(
-    # z_n ) * ds
+         )* sqrt_detg(omega_n_12) * dx + \
+         ( \
+                     ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
+                     ( sigma * n_tb(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
+                     ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega, c_r) * ds_circle
+         )
 
 '''
 
