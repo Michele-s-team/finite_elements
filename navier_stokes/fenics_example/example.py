@@ -147,7 +147,7 @@ F_vbar = ( \
                      ( sigma_ast * n(omega_n_12)[i] * nu_vbar[i]) * sqrt_deth_circle(omega_n_12, c_r ) * ds_circle
          ) \
          - 2.0 * eta * ( \
-                     (d_c(V, W, omega_n_12)[i, j] * g(omega_n_12)[i, k] * n_lr(omega_n_12)[k] * nu_vbar[j]) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) + \
+                     (d_c(V, W, omega_n_12)[i, j] * g(omega_n_12)[i, k] * n_lr(omega_n_12)[k] * nu_vbar[j]) * sqrt_deth_square(omega_n_12) * ds_l + \
                      (d_c(V, W, omega_n_12)[i, j] * g(omega_n_12)[i, k] * n_tb(omega_n_12)[k] * nu_vbar[j]) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) + \
                      (d_c(V, W, omega_n_12)[i, j] * g(omega_n_12)[i, k] * n(omega_n_12)[k] * nu_vbar[j]) * sqrt_deth_circle(omega_n_12, c_r ) * ds_circle
          )
