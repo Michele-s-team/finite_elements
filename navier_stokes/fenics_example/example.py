@@ -81,6 +81,8 @@ sigma_n_2 = Function(Q_phi)
 z_n = Function(Q_zn)
 #
 
+
+
 # Define functions for solutions at previous and current time steps
 #the function in the total mixed space encorporating vbar, wbar, phi, vn, wn, omegan and zn
 psi = Function(Q)
@@ -98,6 +100,9 @@ wn_0 = Function(Q_wn)
 zn_0 = Function(Q_zn)
 omegan_0 = Function(Q_omegan)
 
+V = (vbar + v_n_1)/2.0
+
+
 # Define expressions used in variational forms
 kappa = Constant(kappa)
 rho = Constant(rho)
@@ -110,6 +115,7 @@ grad_square = interpolate(grad_square_Expression(element=Q_omegan.ufl_element())
 Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
 To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, 
 the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
+'''
 '''
 
 F_vbar = rho * ( \
@@ -126,7 +132,6 @@ F_vbar = rho * ( \
     b( z_n )[i, j]) * w_n) * g_c( z_n )[j, l] * nu[l] * n_inout( z_n )[i]) * sqrt_deth(
     z_n ) * ds
 
-'''
 F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
 
 F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
