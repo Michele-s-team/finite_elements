@@ -318,9 +318,9 @@ def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
 
 #2-covariant rate-of_deformation tensor for zero normal velocity: d(u, z)[i, j] = {d_{ij}}_{alizzi2020shear for zero w}
-def d(u, omega):
-    return as_tensor(0.5 * ( g(omega)[i, k]*Nabla_v(u, omega)[k, j] + g(omega)[j, k]*Nabla_v(u, omega)[k, i] ), (i, j))
+def d(v, omega):
+    return as_tensor( 0.5 * (g(omega)[i, k] * Nabla_v( v, omega )[k, j] + g( omega )[j, k] * Nabla_v( v, omega )[k, i]), (i, j) )
 
 #2-contravariant rate-of_deformation tensor: d_c(u, omega)[i, j] = {d^{ij}}_{alizzi2020shear for zero w}
-def d_c(u, omega):
-    return as_tensor(g_c(omega)[i, k] * g_c(omega)[j, l] * d(u, omega)[k, l], (i,j))
+def d_c(v, omega):
+    return as_tensor( g_c(omega)[i, k] * g_c(omega)[j, l] * d( v, omega )[k, l], (i, j) )
