@@ -11,12 +11,12 @@ The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_ex
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
-'''
 
-'''
 possible isssues:
 - Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar
+
 '''
+
 
 from __future__ import print_function
 from fenics import *
@@ -158,8 +158,8 @@ F_vbar = ( \
 
 F_wbar = ( \
                      rho * ( (wbar - w_n_1)/Deltat + V[i]*V[k]*b(omega_n_12)[k, i] ) * nu_wbar \
-                     - rho * W * Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar, omega_n_12)[i, i]
-
+                     - rho * W * Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar, omega_n_12)[i, i] \
+                    - 2.0 * kappa * g_c(omega_n_12)[i, j] * ((H(omega_n_12)).dx(j)) * (nu_wbar.dx(i))
          ) * sqrt_detg(omega_n_12) * dx
 
 '''
