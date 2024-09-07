@@ -61,8 +61,8 @@ ds_b = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
 ds_circle = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=6)
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
-f_test_ds = Function(Q_zn)
-f_test_ds = interpolate(FunctionTestIntegralsds(element=Q_zn.ufl_element()), Q_zn)
+f_test_ds = Function( Q_z_n )
+f_test_ds = interpolate( FunctionTestIntegralsds( element=Q_z_n.ufl_element() ), Q_z_n )
 
 #here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
 integral_l = assemble(f_test_ds*ds_l)
@@ -82,14 +82,14 @@ print("Integral circle = ", integral_circle, " exact value = 0.205204")
 # Define trial and test functions
 nu_vbar, nu_wbar, nu_phi, nu_vn, nu_wn, nu_omegan, nu_zn = TestFunctions(Q)
 
-v_n_1 = Function(Q_vn)
-v_n_2 = Function(Q_vn)
-w_n_1 = Function(Q_wn)
+v_n_1 = Function( Q_v_n )
+v_n_2 = Function( Q_v_n )
+w_n_1 = Function( Q_w_n )
 sigma_n = Function(Q_phi)
 sigma_n_1 = Function(Q_phi)
 sigma_n_2 = Function(Q_phi)
-omega_n_1 = Function(Q_omegan)
-z_n_1 = Function(Q_zn)
+omega_n_1 = Function( Q_omega_n )
+z_n_1 = Function( Q_z_n )
 #
 
 
@@ -103,13 +103,13 @@ J_psi = TrialFunction(Q)
 #sigma, v, z, omega are used to store the numerical values of the fields
 v_bar, w_bar, phi, v_n, w_n, omega_n, z_n = split( psi )
 #vbar_0, ...., zn_0 are used to store the initial conditions
-v_bar_0 = Function( Q_vbar )
-w_bar_0 = Function( Q_wbar )
+v_bar_0 = Function( Q_v_bar )
+w_bar_0 = Function( Q_w_bar )
 phi_0 = Function(Q_phi)
-v_n_0 = Function( Q_vn )
-w_n_0 = Function( Q_wn )
-z_n_0 = Function( Q_zn )
-omega_n_0 = Function( Q_omegan )
+v_n_0 = Function( Q_v_n )
+w_n_0 = Function( Q_w_n )
+z_n_0 = Function( Q_z_n )
+omega_n_0 = Function( Q_omega_n )
 
 V = (v_bar + v_n_1) / 2.0
 W = (w_bar + w_n_1) / 2.0
@@ -124,8 +124,8 @@ Deltat = Constant(dt)
 kappa = Constant(kappa)
 rho = Constant(rho)
 #the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-grad_circle = interpolate(grad_circle_Expression(element=Q_omegan.ufl_element()), Q_omegan)
-grad_square = interpolate(grad_square_Expression(element=Q_omegan.ufl_element()), Q_omegan)
+grad_circle = interpolate( grad_circle_Expression( element=Q_omega_n.ufl_element() ), Q_omega_n )
+grad_square = interpolate( grad_square_Expression( element=Q_omega_n.ufl_element() ), Q_omega_n )
 
 
 '''
