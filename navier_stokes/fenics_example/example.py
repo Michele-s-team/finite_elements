@@ -69,11 +69,12 @@ print("Integral t = ", integral_t, " exact value = 1.36562")
 print("Integral b = ", integral_b, " exact value = 1.02837")
 print("Integral circle = ", integral_circle, " exact value = 0.205204")
 
-'''
+
 # Define trial and test functions
-nu_sigma, nu_v, nu_z, nu_omega = TestFunctions(Q)
+nu_vbar, nu_wbar, nu_phi, nu_vn, nu_wn, nu_omegan, nu_zn = TestFunctions(Q)
 
 
+'''
 # Define functions for solutions at previous and current time steps
 #the function in the total mixed space encorporating the surface tension (sigma), the tangent velocity (v), the membrane height function (z) and the gradient of z (omega)
 sigma_v_z_omega = Function(Q)
