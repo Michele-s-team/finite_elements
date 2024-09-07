@@ -133,7 +133,8 @@ F_vbar = ( \
                                 ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] - \
                                 2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_vbar[i] + \
                               1.0/2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] ) + \
-                     sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j]
+                     sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[i, j] + \
+                     2.0 * eta * d_c(V, W, omega_n_12)[i, j] * Nabla_f(nu_vbar, omega_n_12)[j, i]
          )* sqrt_detg(omega_n_12) * dx
 
 #      + (g_c( z_n )[i, j] * Nabla_f( nu, z_n )[i, j] * sigma_n \
