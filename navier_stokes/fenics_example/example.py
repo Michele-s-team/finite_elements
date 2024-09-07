@@ -167,6 +167,7 @@ F_wbar = ( \
                          ) \
                      - ( \
                                  2.0 * sigma_n_12 * H(omega_n_12) \
+                 + 2.0 * eta * ( g_c(omega_n_12)[i, k] * Nabla_v(V, omega_n_12)[j, k] * (b(omega_n_12))[i, j]  )
                          )
          ) * sqrt_detg(omega_n_12) * dx
 
