@@ -151,7 +151,7 @@ class zn0_Expression(UserExpression):
         return (1,)
 
 
-
+#profiles for the normal derivative
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
         a = 1.0
@@ -165,12 +165,6 @@ class grad_square_Expression(UserExpression):
         values[1] = 0
     def value_shape(self):
         return (2,)
-    
-class sigma_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = sigma0
-    def value_shape(self):
-        return (1,)
 #CHANGE PARAMETERS HERE
 
 
