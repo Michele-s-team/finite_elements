@@ -249,17 +249,17 @@ bc_w_bar = DirichletBC(Q.sub(1), Constant(0), boundary_l)
 
 #BC for phi
 bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
-'''
-
 
 #CHANGE PARAMETERS HERE
 #BCs for z
-bc_z_circle = DirichletBC(Q.sub(2), Expression('0.0', element = Q.sub(2).ufl_element()), boundary_circle)
-bc_z_square = DirichletBC(Q.sub(2), Expression('h/4.0', element = Q.sub(2).ufl_element(), h = h), boundary_square)
+bc_z_circle = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_element()), boundary_circle)
+bc_z_square = DirichletBC(Q.sub(6), Expression('h/4.0', element = Q.sub(6).ufl_element(), h = h), boundary_square)
 #CHANGE PARAMETERS HERE
 
-#all boundary conditions collected
-bcs = [bc_sigma_r, bc_v_l, bc_v_tb, bc_v_circle, bc_z_circle, bc_z_square]
+#all BCs
+bcs = [bc_v_bar_l, bc_v_bar_tb, bc_v_bar_circle, bc_w_bar, bc_phi, bc_z_circle, bc_z_square]
+
+'''
 
 #solve the variational problem
 J  = derivative(F, sigma_v_z_omega, J_sigma_v_z_omega)  # Gateaux derivative in dir. of du
