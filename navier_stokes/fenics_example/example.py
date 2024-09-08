@@ -191,12 +191,17 @@ F_v_n = ( ( rho/Deltat * ( v_n[i] - v_bar[i] ) + g_c(omega_n_12)[i, j] * (phi.dx
 
 F_w_n = ( ( w_n - w_bar ) * nu_w_n ) * sqrt_detg(omega_n_12) * dx
 
-
 F_N = alpha * ( \
             ( ( (n_facet_lr())[i]*omega_n_12[i] - (n_facet_lr())[i]*grad_square[i] ) * ( (n_facet_lr())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_l + ds_r) + \
             ( ( (n_facet_tb())[i]*omega_n_12[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_t + ds_b) + \
             ( ( n_facet[i]*omega_n_12[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * ds_circle \
     )
+
+F_z_n = ( \
+            ( (z_n - z_n_1)/Deltat \
+              - w_n_12 * ( (normal(omega_n_12))[2] - ( (normal(omega_n_12))[0] * omega_n_12[0] + (normal(omega_n_12))[1] * omega_n_12[1] ) ) ) * nu_z_n \
+            ) * sqrt_detg(omega_n_12) * dx
+
 '''
 
 
