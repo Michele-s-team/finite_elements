@@ -232,13 +232,14 @@ omega_n_0 = interpolate(omega_n0_Expression(element=Q_omega_n.ufl_element()), Q_
 assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
 assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
 
-'''
 
 #CHANGE PARAMETERS HERE
 l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
 #CHANGE PARAMETERS HERE
 
-# Define BCs
+'''
+
+# boundary conditions (BCs)
 #BC for sigma on the r edge of the rectangle
 bc_sigma_r = DirichletBC(Q.sub(0), Constant(0), boundary_r)
 
