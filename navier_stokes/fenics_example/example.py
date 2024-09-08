@@ -229,9 +229,10 @@ w_n_0 = interpolate(w_n0_Expression(element=Q_w_n.ufl_element()), Q_w_n)
 z_n_0 = interpolate(z_n0_Expression(element=Q_z_n.ufl_element()), Q_z_n)
 omega_n_0 = interpolate(omega_n0_Expression(element=Q_omega_n.ufl_element()), Q_omega_n)
 
+assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
+assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
+
 '''
-assigner = FunctionAssigner(Q, [Q_sigma, Q_v, Q_z, Q_omega])
-assigner.assign(sigma_v_z_omega, [sigma_0, v_0, z_0, omega_0])
 
 #CHANGE PARAMETERS HERE
 l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
