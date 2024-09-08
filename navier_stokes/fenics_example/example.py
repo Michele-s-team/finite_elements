@@ -276,7 +276,7 @@ v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
     
 xdmffile_v_n.write(v_n_1, t)
 xdmffile_w_n.write(w_n_1, t)
-xdmffile_sigma_n.write(sigma_n_1 t)
+xdmffile_sigma_n.write(sigma_n_1, t)
 xdmffile_omega_n.write(omega_n_1, t)
 xdmffile_z_n.write(z_n_1, t)
 
