@@ -207,9 +207,12 @@ F_z_n = ( \
                         ) * nu_z_n \
             ) * sqrt_detg(omega_n_12) * dx
 
-F_omega_n = (\
-                \
-                ) * sqrt_detg(omega_n_12) * dx
+F_omega_n = ( z_n * Nabla_v(nu_omega_n, omega_n_12)[i, i] + omega_n[i] * nu_omega_n[i] ) * sqrt_detg(omega_n_12) * dx \
+            - ( \
+                        ( (n_lr(omega_n_12))[i] * g(omega_n_12)[i, j] * z_n * nu_omega_n[j] ) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) \
+                        + ( (n_tb(omega_n_12))[i] * g(omega_n_12)[i, j] * z_n * nu_omega_n[j] ) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) \
+                        + ( (n(omega_n_12))[i] * g(omega_n_12)[i, j] * z_n * nu_omega_n[j] ) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle
+            )
 
 '''
 
