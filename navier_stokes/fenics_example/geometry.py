@@ -167,9 +167,11 @@ class z_n0_Expression( UserExpression ):
 #profiles for the normal derivative
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
-        a = 1.0
-        values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
-        values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
+        # a = 1.0
+        # values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
+        # values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
+        values[0] = 0
+        values[1] = 0
         return (2,)
     
 class grad_square_Expression(UserExpression):
