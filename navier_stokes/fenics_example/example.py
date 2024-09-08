@@ -6,7 +6,7 @@ $ python3 generate_mesh.py 0.1
 and which are stored into finite_elements/mesh/membrane_mesh/
 
 Run with
-$python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/ 1.0 100
+$clear; rm solution/*;  python3 example.py /home/fenics/shared/mesh/membrane_mesh/ /home/fenics/shared/navier_stokes/fenics_example/solution/ 0.01 3
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution/
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
