@@ -12,6 +12,9 @@ The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_ex
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
 
+issues:
+- the BC on omega_n imposed with Nitche's method has a factor of 2 with respect to what it should be 
+
 possible isssues:
 - Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar
 
