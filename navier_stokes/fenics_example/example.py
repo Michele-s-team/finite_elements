@@ -13,6 +13,7 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 
 issues:
+- v_n does not satisty the BCs
 - the BC on omega_n imposed with Nitche's method has a factor of 2 with respect to what it should be
 
 possible isssues:
