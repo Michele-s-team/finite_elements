@@ -114,8 +114,11 @@ omega_n_0 = Function( Q_omega_n )
 V = (v_bar + v_n_1) / 2.0
 W = (w_bar + w_n_1) / 2.0
 sigma_ast = (sigma_n_1 + sigma_n_2)/2.0
+#w_{n-1/2}
+w_n_12 = (w_n + w_n_1) / 2.0
 #omega_{n-1/2}
 omega_n_12 = (omega_n + omega_n_1) / 2.0
+#sigma_{n-1/2}
 sigma_n_12 = (sigma_n + sigma_n_1)/2.0
 
 
