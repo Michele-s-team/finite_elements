@@ -207,6 +207,10 @@ F_z_n = ( \
                         ) * nu_z_n \
             ) * sqrt_detg(omega_n_12) * dx
 
+F_omega_n = (\
+                \
+                ) * sqrt_detg(omega_n_12) * dx
+
 '''
 
 
