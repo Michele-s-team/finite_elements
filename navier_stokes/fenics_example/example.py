@@ -281,7 +281,7 @@ for n in range(N):
     v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
 
     #update previous solution: update sigma
-    sigma_n.assign(sigma_n_2-2.0*phi_)
+    sigma_n.assign(sigma_n_2-2.0*project(phi_, Q_phi))
     sigma_n_2.assign(sigma_n_1)
     sigma_n_1.assign(sigma_n)
 
