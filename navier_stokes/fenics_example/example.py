@@ -13,7 +13,7 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 
 issues:
-- the BC on omega_n imposed with Nitche's method has a factor of 2 with respect to what it should be 
+- the BC on omega_n imposed with Nitche's method has a factor of 2 with respect to what it should be
 
 possible isssues:
 - Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar
@@ -297,9 +297,9 @@ for n in range(N):
     sigma_n_1.assign(sigma_n)
 
 
-    xdmffile_v_n.write(v_n_1, n)
-    xdmffile_w_n.write(w_n_1, n)
-    xdmffile_sigma_n.write(sigma_n_1, n)
-    xdmffile_omega_n.write(omega_n_1, n)
-    xdmffile_z_n.write(z_n_1, n)
+    xdmffile_v_n.write(v_n_1, n+1)
+    xdmffile_w_n.write(w_n_1, n+1)
+    xdmffile_sigma_n.write(sigma_n_1, n+1)
+    xdmffile_omega_n.write(omega_n_1, n+1)
+    xdmffile_z_n.write(z_n_1, n+1)
 
