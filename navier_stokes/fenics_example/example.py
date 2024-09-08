@@ -247,9 +247,9 @@ bc_v_bar_circle = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_circle)
 #BCs for w_bar
 bc_w_bar = DirichletBC(Q.sub(1), Constant(0), boundary_l)
 
+#BC for phi
+bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
 '''
-#BC for sigma on the r edge of the rectangle
-bc_sigma_r = DirichletBC(Q.sub(0), Constant(0), boundary_r)
 
 
 #CHANGE PARAMETERS HERE
