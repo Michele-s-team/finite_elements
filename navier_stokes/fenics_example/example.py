@@ -263,10 +263,9 @@ bcs = [bc_v_bar_l, bc_v_bar_tb, bc_v_bar_circle, bc_w_bar, bc_phi, bc_z_circle, 
 #solve the variational problem
 J  = derivative(F, psi, J_psi)
 problem = NonlinearVariationalProblem(F, psi, bcs, J)
-# solver  = NonlinearVariationalSolver(problem)
+solver  = NonlinearVariationalSolver(problem)
 
-
-# solver.solve()
+solver.solve()
 # solve(F == 0, psi, bcs)
 
 '''
