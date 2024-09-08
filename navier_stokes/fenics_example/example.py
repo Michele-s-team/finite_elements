@@ -194,12 +194,6 @@ F_v_n = ( ( rho/Deltat * ( v_n[i] - v_bar[i] ) + g_c(omega_n_12)[i, j] * (phi.dx
 
 F_w_n = ( ( w_n - w_bar ) * nu_w_n ) * sqrt_detg(omega_n_12) * dx
 
-F_N = alpha * ( \
-            ( ( (n_facet_lr())[i]*omega_n_12[i] - (n_facet_lr())[i]*grad_square[i] ) * ( (n_facet_lr())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_l + ds_r) + \
-            ( ( (n_facet_tb())[i]*omega_n_12[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_t + ds_b) + \
-            ( ( n_facet[i]*omega_n_12[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * ds_circle \
-    )
-
 F_z_n = ( \
                     ( \
                                 (z_n - z_n_1)/Deltat \
@@ -214,47 +208,16 @@ F_omega_n = ( z_n * Nabla_v(nu_omega_n, omega_n_12)[i, i] + omega_n[i] * nu_omeg
                         + ( (n(omega_n_12))[i] * g(omega_n_12)[i, j] * z_n * nu_omega_n[j] ) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle
             )
 
-'''
-
-
-F_sigma = ( (Nabla_v(v, omega)[i, i]) * nu_sigma ) * sqrt_detg(omega) * dx
-
-F_v = ( rho * (  v[j]*Nabla_v(v, omega)[i, j] * nu_v[i] ) + \
-       sigma * Nabla_f(nu_v, omega)[i, j]*g_c(omega)[i, j] + \
-       2 * eta * d_c(v, omega)[j, i] * Nabla_f(nu_v, omega)[j, i] ) * sqrt_detg(omega) * dx - \
-    ( \
-        ( sigma * n_lr(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
-        ( sigma * n_tb(omega)[i] * nu_v[i] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( sigma * n(omega)[i] * nu_v[i] ) * sqrt_deth_circle(omega, c_r) * ds_circle
-    )  - \
-    ( \
-        ( 2 * eta * d(v, omega)[i, j] * n_lr(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * ds_l + \
-        ( 2 * eta * d(v, omega)[i, j] * n_tb(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( 2 * eta * d(v, omega)[i, j] * n(omega)[i] * g_c(omega)[j, k] * nu_v[k] ) * sqrt_deth_circle(omega, c_r) * ds_circle
+F_N = alpha * ( \
+            ( ( (n_facet_lr())[i]*omega_n_12[i] - (n_facet_lr())[i]*grad_square[i] ) * ( (n_facet_lr())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_l + ds_r) + \
+            ( ( (n_facet_tb())[i]*omega_n_12[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_t + ds_b) + \
+            ( ( n_facet[i]*omega_n_12[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * ds_circle \
     )
 
-F_z = ( \
-        rho * v[i] * v[k] * b(omega)[k, i] * nu_z - \
-        kappa * ( 2 * g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 4.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) - \
-            2 * ( sigma * H(omega) + eta * Nabla_v(v, omega)[j, i] * g_c(omega)[i, k] * b(omega)[k, j] ) * nu_z \
-        ) * sqrt_detg(omega) * dx \
-    + ( \
-        ( 2 * kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
-        ( 2 * kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-        ( 2 * kappa * (n(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle(omega, c_r) * ds_circle 
-    ) 
+#total functional for the mixed problem
+F = ( F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n +  F_z_n + F_omega_n ) + F_N
 
-F_omega = ( z * Nabla_v(nu_omega, omega)[i, i] + omega[i] * nu_omega[i] ) * sqrt_detg(omega) * dx - \
-          ( \
-            ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_l + ds_r) + \
-            ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_t + ds_b) + \
-            ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega, c_r) * ds_circle \
-          )
-
-
-
-F = ( F_sigma + F_v + F_z + F_omega ) + F_N
-
+'''
 #set initial profile of fields 
 sigma_0 = interpolate(sigma0_Expression(element=Q_sigma.ufl_element()), Q_sigma)
 v_0 = interpolate(v0_Expression(element=Q_v.ufl_element()), Q_v)
