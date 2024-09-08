@@ -273,7 +273,10 @@ solver.solve()
 
 #get the solution and write it to file
 v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
-    
+
+#obtain sigma_n -> sigma_{n-1} from phi
+sigma_n_1.assign(sigma_n_2-2.0*phi_)
+
 xdmffile_v_n.write(v_n_1, t)
 xdmffile_w_n.write(w_n_1, t)
 xdmffile_sigma_n.write(sigma_n_1, t)
