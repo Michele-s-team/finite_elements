@@ -131,7 +131,13 @@ class phi0_Expression(UserExpression):
         values[0] = 0
     def value_shape(self):
         return (1,)
-    
+
+class sigma0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+    def value_shape(self):
+        return (1,)
+
 class v_n0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0

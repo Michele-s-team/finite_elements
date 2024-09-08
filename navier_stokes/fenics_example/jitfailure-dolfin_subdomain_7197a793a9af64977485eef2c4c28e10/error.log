@@ -1,7 +1,0 @@
-/tmp/tmp6jso40gf/dolfin_subdomain_7197a793a9af64977485eef2c4c28e10.cpp: In member function ‘virtual bool dolfin::dolfin_subdomain_7197a793a9af64977485eef2c4c28e10::inside(Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, bool) const’:
-/tmp/tmp6jso40gf/dolfin_subdomain_7197a793a9af64977485eef2c4c28e10.cpp:63:48: error: ‘L’ was not declared in this scope
-          return on_boundary && sqrt(pow(x[0] - L/2.0, 2) + pow(x[1] - h/2.0, 2)) < 0.1;
-                                                ^
-/tmp/tmp6jso40gf/dolfin_subdomain_7197a793a9af64977485eef2c4c28e10.cpp:63:71: error: ‘h’ was not declared in this scope
-          return on_boundary && sqrt(pow(x[0] - L/2.0, 2) + pow(x[1] - h/2.0, 2)) < 0.1;
-                                                                       ^
