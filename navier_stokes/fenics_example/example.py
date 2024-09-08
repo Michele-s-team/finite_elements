@@ -285,9 +285,9 @@ sigma_n_2.assign(sigma_n_1)
 sigma_n_1.assign(sigma_n)
 
 
-xdmffile_v_n.write(v_n_1, t)
-xdmffile_w_n.write(w_n_1, t)
-xdmffile_sigma_n.write(sigma_n_1, t)
-xdmffile_omega_n.write(omega_n_1, t)
-xdmffile_z_n.write(z_n_1, t)
+xdmffile_v_n.write(v_n_1, n)
+xdmffile_w_n.write(w_n_1, n)
+xdmffile_sigma_n.write(sigma_n_1, n)
+xdmffile_omega_n.write(omega_n_1, n)
+xdmffile_z_n.write(z_n_1, n)
 
