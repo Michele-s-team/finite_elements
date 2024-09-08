@@ -261,6 +261,14 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('h/4.0', element = Q.sub(6).ufl_e
 #all BCs
 bcs = [bc_v_bar_l, bc_v_bar_tb, bc_v_bar_circle, bc_w_bar, bc_phi, bc_z_circle, bc_z_square]
 
+#set initial profiles
+v_n_1.assign(v_n_0)
+v_n_2.assign(v_n_0)
+w_n_1.assign(w_n_0)
+sigma_n_1.assign(sigma_0)
+sigma_n_2.assign(sigma_0)
+z_n_1.assign(z_n_0)
+omega_n_1.assign(omega_n_0)
 
 #solve the variational problem
 J  = derivative(F, psi, J_psi)
