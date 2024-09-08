@@ -276,8 +276,6 @@ for n in range(N):
 
     #update previous solution: update v_n_2 and w_n_2
     v_n_2.assign(v_n_1)
-    w_n_2.assign(w_n_1)
-
 
     #get the solution and write it to file
     v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
