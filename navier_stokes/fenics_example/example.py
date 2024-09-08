@@ -201,8 +201,10 @@ F_N = alpha * ( \
     )
 
 F_z_n = ( \
-            ( (z_n - z_n_1)/Deltat \
-              - w_n_12 * ( (normal(omega_n_12))[2] - ( (normal(omega_n_12))[0] * omega_n_12[0] + (normal(omega_n_12))[1] * omega_n_12[1] ) ) ) * nu_z_n \
+                    ( \
+                                (z_n - z_n_1)/Deltat \
+                                - w_n_12 * ( (normal(omega_n_12))[2] - ( (normal(omega_n_12))[0] * omega_n_12[0] + (normal(omega_n_12))[1] * omega_n_12[1] ) ) \
+                        ) * nu_z_n \
             ) * sqrt_detg(omega_n_12) * dx
 
 '''
