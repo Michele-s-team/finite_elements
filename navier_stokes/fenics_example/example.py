@@ -259,16 +259,17 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('h/4.0', element = Q.sub(6).ufl_e
 #all BCs
 bcs = [bc_v_bar_l, bc_v_bar_tb, bc_v_bar_circle, bc_w_bar, bc_phi, bc_z_circle, bc_z_square]
 
-'''
 
 #solve the variational problem
-J  = derivative(F, sigma_v_z_omega, J_sigma_v_z_omega)  # Gateaux derivative in dir. of du
-problem = NonlinearVariationalProblem(F, sigma_v_z_omega, bcs, J)
-solver  = NonlinearVariationalSolver(problem)
-solver.solve()
-# solve(F == 0, sigma_v_z_omega, bcs, J)
+J  = derivative(F, psi, J_psi)
+# problem = NonlinearVariationalProblem(F, psi, bcs, J)
+# solver  = NonlinearVariationalSolver(problem)
 
 
+# solver.solve()
+# solve(F == 0, psi, bcs)
+
+'''
 #get the solution and write it to file
 sigma_, v_, z_, omega_ = sigma_v_z_omega.split(deepcopy=True)
     
