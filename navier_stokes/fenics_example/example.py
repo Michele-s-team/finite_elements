@@ -84,15 +84,15 @@ print("Integral circle = ", integral_circle, " exact value = 0.205204")
 # Define trial and test functions
 nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_omega_n, nu_z_n = TestFunctions(Q)
 
-v_n_1 = Function( Q_v_n )
-v_n_2 = Function( Q_v_n )
-w_n_1 = Function( Q_w_n )
+v_n_1 = Function(Q_v_n)
+v_n_2 = Function(Q_v_n)
+w_n_1 = Function(Q_w_n)
 sigma_n = Function(Q_phi)
 sigma_n_1 = Function(Q_phi)
 sigma_n_2 = Function(Q_phi)
-omega_n_1 = Function( Q_omega_n )
-z_n_1 = Function( Q_z_n )
-#
+omega_n_1 = Function(Q_omega_n)
+z_n_1 = Function(Q_z_n)
+
 
 
 
@@ -271,11 +271,19 @@ solver.solve()
 # solve(F == 0, psi, bcs)
 
 
+#update previous solution: update v_n_2 and w_n_2
+v_n_2.assign(v_n_1)
+w_n_2.assign(w_n_1)
+
+
 #get the solution and write it to file
 v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
 
-#obtain sigma_n -> sigma_{n-1} from phi
-sigma_n_1.assign(sigma_n_2-2.0*phi_)
+#update previous solution: update sigma
+sigma_n.assign(sigma_n_2-2.0*phi_)
+sigma_n_2.assign(sigma_n_1)
+sigma_n_1.assign(sigma_n)
+
 
 xdmffile_v_n.write(v_n_1, t)
 xdmffile_w_n.write(w_n_1, t)
