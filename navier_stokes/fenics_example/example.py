@@ -181,6 +181,9 @@ F_w_bar = ( \
                       + (nu_w_bar * (n(omega_n_12))[i] * ((H(omega_n_12)).dx(i)) ) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle
           )
 
+F_phi = ( \
+            \) * sqrt_detg(omega_n_12) * dx
+
 '''
 
 
