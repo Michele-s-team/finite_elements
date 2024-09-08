@@ -42,12 +42,14 @@ print("N = ", N)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
-xdmffile_v = XDMFFile((args.output_directory) + '/v.xdmf')
-xdmffile_w = XDMFFile((args.output_directory) + '/w.xdmf')
-xdmffile_sigma = XDMFFile((args.output_directory) + '/sigma.xdmf')
-xdmffile_omega = XDMFFile((args.output_directory) + '/omega.xdmf')
-xdmffile_z = XDMFFile((args.output_directory) + '/z.xdmf')
+xdmffile_v_n = XDMFFile( (args.output_directory) + '/v_n.xdmf' )
+xdmffile_w_n = XDMFFile( (args.output_directory) + '/w_n.xdmf' )
+xdmffile_sigma_n = XDMFFile( (args.output_directory) + '/sigma_n.xdmf' )
+xdmffile_omega_n = XDMFFile( (args.output_directory) + '/omega_n.xdmf' )
+xdmffile_z_n = XDMFFile( (args.output_directory) + '/z_n.xdmf' )
+
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
+xdmffile_n.write(n_facet_smooth(), 0)
 
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
@@ -268,14 +270,13 @@ solver  = NonlinearVariationalSolver(problem)
 solver.solve()
 # solve(F == 0, psi, bcs)
 
-'''
-#get the solution and write it to file
-sigma_, v_, z_, omega_ = sigma_v_z_omega.split(deepcopy=True)
-    
-xdmffile_sigma.write(sigma_, 0)
-xdmffile_v.write(v_, 0)
-xdmffile_z.write(z_, 0)
-xdmffile_omega.write(omega_, 0)
 
-xdmffile_n.write(n_facet_smooth(), 0)
-'''
+#get the solution and write it to file
+v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
+    
+xdmffile_v_n.write(v_n_1, t)
+xdmffile_w_n.write(w_n_1, t)
+xdmffile_sigma_n.write(sigma_n_1 t)
+xdmffile_omega_n.write(omega_n_1, t)
+xdmffile_z_n.write(z_n_1, t)
+
