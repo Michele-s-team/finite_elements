@@ -267,27 +267,30 @@ J  = derivative(F, psi, J_psi)
 problem = NonlinearVariationalProblem(F, psi, bcs, J)
 solver  = NonlinearVariationalSolver(problem)
 
-solver.solve()
-# solve(F == 0, psi, bcs)
+# Time-stepping
+for n in range(N):
+
+    print("*************** n = ", n, " ***************")
+
+    solver.solve()
+
+    #update previous solution: update v_n_2 and w_n_2
+    v_n_2.assign(v_n_1)
+    w_n_2.assign(w_n_1)
 
 
-#update previous solution: update v_n_2 and w_n_2
-v_n_2.assign(v_n_1)
-w_n_2.assign(w_n_1)
+    #get the solution and write it to file
+    v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
+
+    #update previous solution: update sigma
+    sigma_n.assign(sigma_n_2-2.0*phi_)
+    sigma_n_2.assign(sigma_n_1)
+    sigma_n_1.assign(sigma_n)
 
 
-#get the solution and write it to file
-v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
-
-#update previous solution: update sigma
-sigma_n.assign(sigma_n_2-2.0*phi_)
-sigma_n_2.assign(sigma_n_1)
-sigma_n_1.assign(sigma_n)
-
-
-xdmffile_v_n.write(v_n_1, n)
-xdmffile_w_n.write(w_n_1, n)
-xdmffile_sigma_n.write(sigma_n_1, n)
-xdmffile_omega_n.write(omega_n_1, n)
-xdmffile_z_n.write(z_n_1, n)
+    xdmffile_v_n.write(v_n_1, n)
+    xdmffile_w_n.write(w_n_1, n)
+    xdmffile_sigma_n.write(sigma_n_1, n)
+    xdmffile_omega_n.write(omega_n_1, n)
+    xdmffile_z_n.write(z_n_1, n)
 
