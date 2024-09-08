@@ -191,6 +191,12 @@ F_v_n = ( ( rho/Deltat * ( v_n[i] - v_bar[i] ) + g_c(omega_n_12)[i, j] * (phi.dx
 
 F_w_n = ( ( w_n - w_bar ) * nu_w_n ) * sqrt_detg(omega_n_12) * dx
 
+
+F_N = alpha * ( \
+            ( ( (n_facet_lr())[i]*omega_n_12[i] - (n_facet_lr())[i]*grad_square[i] ) * ( (n_facet_lr())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_l + ds_r) + \
+            ( ( (n_facet_tb())[i]*omega_n_12[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * (ds_t + ds_b) + \
+            ( ( n_facet[i]*omega_n_12[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * ds_circle \
+    )
 '''
 
 
@@ -228,11 +234,7 @@ F_omega = ( z * Nabla_v(nu_omega, omega)[i, i] + omega[i] * nu_omega[i] ) * sqrt
             ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega, c_r) * ds_circle \
           )
 
-F_N = alpha * (  \
-        ( ( (n_facet_lr())[i]*omega[i] - (n_facet_lr())[i]*grad_square[i] ) * ( (n_facet_lr())[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_l + ds_r) + \
-        ( ( (n_facet_tb())[i]*omega[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega)[k, l]*nu_omega[l] ) ) * (ds_t + ds_b) + \
-        ( ( n_facet[i]*omega[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega)[k, l]*nu_omega[l] ) ) * ds_circle \
-    )
+
 
 F = ( F_sigma + F_v + F_z + F_omega ) + F_N
 
