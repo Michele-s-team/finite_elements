@@ -239,13 +239,15 @@ l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2,
 
 
 # boundary conditions (BCs)
-#BCs for v
+#BCs for v_bar
 bc_v_bar_l = DirichletBC(Q.sub(0), l_profile_v, boundary_l)
 bc_v_bar_tb = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_tb)
 bc_v_bar_circle = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_circle)
 
-'''
+#BCs for w_bar
+bc_w_bar = DirichletBC(Q.sub(1), Constant(0), boundary_l)
 
+'''
 #BC for sigma on the r edge of the rectangle
 bc_sigma_r = DirichletBC(Q.sub(0), Constant(0), boundary_r)
 
