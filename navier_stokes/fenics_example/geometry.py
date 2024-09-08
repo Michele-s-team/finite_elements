@@ -27,13 +27,13 @@ N = (int)(args.N)
 dt = T / N
 # time step size
 #bending rigidity
-kappa = 1e-2
+kappa = 1.0
 #density
 rho = 1.0
 #viscosity
-eta = 0.001
+eta = 1.0
 #Nitche's parameter
-alpha = 1e5
+alpha = 1e2
 sigma0 = 1.0
 tol = 1E-3
 #CHANGE PARAMETERS HERE
