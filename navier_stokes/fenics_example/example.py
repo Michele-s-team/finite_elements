@@ -236,7 +236,7 @@ assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
 
 
 #CHANGE PARAMETERS HERE
-l_profile_v = Expression(('8.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
+l_profile_v = Expression(('4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h)
 #CHANGE PARAMETERS HERE
 
 
