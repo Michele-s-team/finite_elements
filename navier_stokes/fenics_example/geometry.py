@@ -50,6 +50,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 
 #this is the facet normal vector, which cannot be plotted as a field
+#n_overline = \overline{n}_notes_{on the circle}
 n_overline = FacetNormal(mesh)
 
 # Define function spaces
@@ -264,12 +265,14 @@ def n_tb(omega):
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #the facet normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
+#n_overline_lr() = \overline{n}_notes on the l and r edges of the rectangle
 def n_overline_lr():
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
     return as_tensor(u[k], (k))
 
 #the facet normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
+#n_overline_tb() = \overline{n}_notes on the t and b edges of the rectangle
 def n_overline_tb():
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
