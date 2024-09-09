@@ -50,7 +50,7 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 
 #this is the facet normal vector, which cannot be plotted as a field
-n_facet = FacetNormal(mesh)
+n_overline = FacetNormal(mesh)
 
 # Define function spaces
 #finite elements for sigma .... omega
@@ -264,13 +264,13 @@ def n_tb(omega):
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #the facet normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
-def n_facet_lr():
+def n_overline_lr():
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
     return as_tensor(u[k], (k))
 
 #the facet normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
-def n_facet_tb():
+def n_overline_tb():
     x = ufl.SpatialCoordinate(mesh)
     u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
     return as_tensor(u[k], (k))
@@ -292,7 +292,7 @@ def calc_normal_cg2(mesh):
 
 #the normal to the manifold pointing outwards the manifold and normalized according to g, which cannot be plotted as a field
 def n(omega):
-    u = n_facet
+    u = n_overline
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #the normal to the manifold pointing outwards the manifold and normalized according to g, which can be plotted as a field
@@ -301,7 +301,7 @@ def n_smooth(omega):
     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
 
 #the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
-def n_facet_smooth():
+def n_overline_smooth():
     u = calc_normal_cg2(mesh)
     return as_tensor(u[k], (k))
 

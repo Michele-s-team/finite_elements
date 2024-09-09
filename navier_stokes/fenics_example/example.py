@@ -53,7 +53,7 @@ xdmffile_omega_n = XDMFFile( (args.output_directory) + '/omega_n.xdmf' )
 xdmffile_z_n = XDMFFile( (args.output_directory) + '/z_n.xdmf' )
 
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
-xdmffile_n.write(n_facet_smooth(), 0)
+xdmffile_n.write( n_overline_smooth(), 0 )
 
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
@@ -216,9 +216,9 @@ F_omega_n = ( z_n * Nabla_v(nu_omega_n, omega_n_12)[i, i] + omega_n[i] * nu_omeg
             )
 
 F_N = alpha * ( \
-            ( ( (n_facet_lr())[i]*omega_n[i] - (n_facet_lr())[i]*grad_square[i] ) * ( (n_facet_lr())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * sqrt_deth_square(omega_n_12) * (ds_l + ds_r) + \
-            ( ( (n_facet_tb())[i]*omega_n[i] - (n_facet_tb())[i]*grad_square[i] ) * ( (n_facet_tb())[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * sqrt_deth_square(omega_n_12) * (ds_t + ds_b) + \
-            ( ( n_facet[i]*omega_n[i] - n_facet[i]*grad_circle[i] ) * ( n_facet[k]*g(omega_n_12)[k, l]*nu_omega_n[l] ) ) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle \
+            (((n_overline_lr())[i] * omega_n[i] - (n_overline_lr())[i] * grad_square[i]) * ((n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) + \
+            (((n_overline_tb())[i] * omega_n[i] - (n_overline_tb())[i] * grad_square[i]) * ((n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) + \
+            ((n_overline[i] * omega_n[i] - n_overline[i] * grad_circle[i]) * (n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
     )
 
 #total functional for the mixed problem
