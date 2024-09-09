@@ -15,7 +15,6 @@ Note that all sections of the code which need to be changed when an external par
 issues:
 - on some boundaries w is not constrained bo tbe zero, but z is constrainted to be constant by the BCs -> inconsistent
 - v_n does not satisty the BCs
-- the BC on omega_n imposed with Nitche's method has a factor of 2 with respect to what it should be
 
 possible isssues:
 - Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar
