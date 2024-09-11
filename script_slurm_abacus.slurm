@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=navier_stokes
+#SBATCH --job-name=fenics_example
 #SBATCH --ntasks=1
 ##SBATCH --mem=1gb
 #SBATCH --time=10-00:00:00
@@ -9,12 +9,15 @@
 
 echo "Cantami o diva ... l'ira di Achille ... "
 
-IN="/mnt/beegfs/home/mcastel1/navier_stokes"
-RUN="/mnt/beegfs/home/mcastel1/navier_stokes"
+IN="/mnt/beegfs/home/mcastel1/fenics_example"
+RUN="/mnt/beegfs/home/mcastel1/fenics_example"
 OUT=$RUN"/results/"
+T="0.01"
+N="2"
+
 
 rm -rf $OUT
 mkdir $OUT
 
 cd $RUN
-apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 navier_stokes_membrane.py $IN $OUT
+apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 example.py $IN $OUT $T $N
