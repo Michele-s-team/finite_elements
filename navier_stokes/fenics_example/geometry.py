@@ -27,7 +27,7 @@ N = (int)(args.N)
 dt = T / N
 # time step size
 #bending rigidity
-kappa = 1.0
+kappa = 1e-1
 #density
 rho = 1.0
 #viscosity
@@ -168,7 +168,7 @@ class z_n0_Expression( UserExpression ):
 #profiles for the normal derivative
 class grad_circle_Expression(UserExpression):
     def eval(self, values, x):
-        a = 0.1
+        a = 0.5
         values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
         values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
         # values[0] = 0
