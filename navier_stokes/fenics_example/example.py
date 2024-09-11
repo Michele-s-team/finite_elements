@@ -281,7 +281,7 @@ solver  = NonlinearVariationalSolver(problem)
 # Time-stepping
 for n in range(N):
 
-    print("* n = ", n, "\n")
+    print("\n* n = ", n, "\n")
 
     solver.solve()
 
