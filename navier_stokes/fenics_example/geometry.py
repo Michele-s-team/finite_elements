@@ -34,7 +34,6 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e5
-sigma0 = 1.0
 tol = 1E-3
 #CHANGE PARAMETERS HERE
 
