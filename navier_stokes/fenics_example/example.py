@@ -215,9 +215,13 @@ F_omega_n = ( z_n * Nabla_v(nu_omega_n, omega_n_12)[i, i] + omega_n[i] * nu_omeg
             )
 
 F_N = alpha * ( \
-            (((n_overline_lr())[i] * omega_n[i] - (n_overline_lr())[i] * grad_square[i]) * ((n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) + \
-            (((n_overline_tb())[i] * omega_n[i] - (n_overline_tb())[i] * grad_square[i]) * ((n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) + \
-            ((n_overline[i] * omega_n[i] - n_overline[i] * grad_circle[i]) * (n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+            (((n_overline_lr())[i] * omega_n[i] - (n_overline_lr())[i] * grad_square[i]) * ((n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+            + (((n_overline_tb())[i] * omega_n[i] - (n_overline_tb())[i] * grad_square[i]) * ((n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+            + ((n_overline[i] * omega_n[i] - n_overline[i] * grad_circle[i]) * (n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+ \
+            + (((n_overline_lr())[i] * g(omega_n_12)[i, j] * v_bar[j] - 0) * ((n_overline_lr())[k] * nu_v_bar[k])) * sqrt_deth_square( omega_n_12 ) * ds_r \
+            + (((n_overline_tb())[i] * g(omega_n_12)[i, j] * v_bar[j] - 0) * ((n_overline_tb())[k] * nu_v_bar[k])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+            + ((n_overline[i] * g(omega_n_12)[i, j] * v_bar[j] - 0) * (n_overline[k] * nu_v_bar[k])) * sqrt_deth_circle(omega_n_12, c_r) * ds_circle \
     )
 
 #total functional for the mixed problem
@@ -250,7 +254,10 @@ bc_v_bar_l = DirichletBC(Q.sub(0), l_profile_v, boundary_l)
 # bc_v_bar_circle = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_circle)
 
 #BCs for w_bar
-# bc_w_bar = DirichletBC(Q.sub(1), Constant(0), boundary_l)
+bc_w_bar_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr)
+bc_w_bar_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb)
+bc_w_bar_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle)
+
 
 #BC for phi
 bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
@@ -262,7 +269,7 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_ele
 #CHANGE PARAMETERS HERE
 
 #all BCs
-bcs = [bc_v_bar_l, bc_v_bar_tb, bc_v_bar_circle, bc_w_bar, bc_phi, bc_z_circle, bc_z_square]
+bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
 
 #set initial profiles
 v_n_1.assign(v_n_0)
