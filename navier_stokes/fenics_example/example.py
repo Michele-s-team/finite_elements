@@ -16,9 +16,6 @@
 # - on some boundaries w is not constrained bo tbe zero, but z is constrainted to be constant by the BCs -> inconsistent
 # - v_n does not satisty the BCs . CHECK : the equation v_n - v_bar  + Deltat \nabla phi + the BC n^i \Nabla phi_i = 0 on \partial_Omega_.... tells you that v_n . n = 0 on \partial_Omega_* -> check if this is true
 #
-# possible isssues:
-# - Nabla_v((3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_wbar
-
 
 
 from __future__ import print_function
