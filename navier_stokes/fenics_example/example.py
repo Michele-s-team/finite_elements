@@ -144,10 +144,10 @@ the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}:
 '''
 
 F_v_bar = ( \
-                      rho * (((v_bar[i] - v_n_1[i]) / Deltat \
+                      rho * ( ( (v_bar[i] - v_n_1[i]) / Deltat \
                               + ( 3.0/2.0*v_n_1[j] - 1.0/2.0*v_n_2[j] ) * Nabla_v(V, omega_n_12)[i, j] \
-                              - 2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j]) * nu_v_bar[i] \
-                             + 1.0 / 2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j]) \
+                              - 2.0 * V[j] * W * g_c(omega_n_12)[i, k] * b(omega_n_12)[k, j] ) * nu_v_bar[i] \
+                             + 1.0 / 2.0 * (W**2) * g_c(omega_n_12)[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] ) \
                       + sigma_ast * g_c(omega_n_12)[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
                       + 2.0 * eta * d_c(V, W, omega_n_12)[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[j, i]
           ) * sqrt_detg(omega_n_12) * dx \
@@ -169,7 +169,7 @@ F_v_bar = ( \
           )
 
 F_w_bar = ( \
-                      rho * ((w_bar - w_n_1) / Deltat + V[i] * V[k] * b(omega_n_12)[k, i]) * nu_w_bar \
+                      rho * ( (w_bar - w_n_1) / Deltat + V[i] * V[k] * b(omega_n_12)[k, i] ) * nu_w_bar \
                       - rho * W * Nabla_v( (3.0/2.0*v_n_1 - 1.0/2.0*v_n_2) * nu_w_bar, omega_n_12 )[i, i] \
                       + 2.0 * kappa * ( \
                                   - g_c(omega_n_12)[i, j] * ((H(omega_n_12)).dx(j)) * (nu_w_bar.dx(i)) \
