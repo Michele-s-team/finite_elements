@@ -339,3 +339,7 @@ def d(v, w, omega):
 #2-contravariant rate-of_deformation tensor: d_c(u, un, z)[i, j] = {d^{ij}}_{alizzi2020shear}
 def d_c(v, w, omega):
     return as_tensor( g_c(omega)[i, k] * g_c(omega)[j, l] * d(v, w, omega)[k,l], (i, j) )
+
+#given a vector and a scalar, return the vector vector^i * scalar
+def vector_times_scalar(vector, scalar):
+    return as_tensor(scalar * vector[i], (i))
