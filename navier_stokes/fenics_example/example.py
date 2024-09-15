@@ -177,10 +177,6 @@ sigma_n_2.assign(sigma_0)
 z_n_1.assign(z_n_0)
 omega_n_1.assign(omega_n_0)
 
-#solve the variational problem
-J  = derivative(F, psi, J_psi)
-problem = NonlinearVariationalProblem(F, psi, bcs, J)
-solver  = NonlinearVariationalSolver(problem)
 
 # Time-stepping
 for step in range(N):
@@ -322,6 +318,11 @@ for step in range(N):
     # total functional for the mixed problem
     F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_z_n + F_omega_n) + F_N
 
+    # solve the variational problem
+    J = derivative( F, psi, J_psi )
+    problem = NonlinearVariationalProblem( F, psi, bcs, J )
+    solver = NonlinearVariationalSolver( problem )
+    
     solver.solve()
 
     #update previous solution: update v_n_2 and w_n_2
