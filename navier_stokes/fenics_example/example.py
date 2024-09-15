@@ -224,19 +224,8 @@ F_N = alpha * ( \
 #total functional for the mixed problem
 F = ( F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n +  F_z_n + F_omega_n ) + F_N
 
-
-#set initial profiles of fields
-v_bar_0 = interpolate(v_bar0_Expression(element=Q_v_bar.ufl_element()), Q_v_bar)
-w_bar_0 = interpolate(w_bar0_Expression(element=Q_w_bar.ufl_element()), Q_w_bar)
-phi_0 = interpolate(phi0_Expression(element=Q_phi.ufl_element()), Q_phi)
-sigma_0 = interpolate(sigma0_Expression(element=Q_phi.ufl_element()), Q_phi)
-v_n_0 = interpolate(v_n0_Expression(element=Q_v_n.ufl_element()), Q_v_n)
-w_n_0 = interpolate(w_n0_Expression(element=Q_w_n.ufl_element()), Q_w_n)
-z_n_0 = interpolate(z_n0_Expression(element=Q_z_n.ufl_element()), Q_z_n)
-omega_n_0 = interpolate(omega_n0_Expression(element=Q_omega_n.ufl_element()), Q_omega_n)
-
-assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
-assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
+# assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
+# assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
 
 
 #CHANGE PARAMETERS HERE
