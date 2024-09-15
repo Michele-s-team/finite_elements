@@ -288,6 +288,12 @@ for step in range(N):
 
     print("\n* step = ", step, "\n")
 
+    xdmffile_v_n.write( v_n_1, step)
+    xdmffile_w_n.write( w_n_1, step)
+    xdmffile_sigma_n.write( sigma_n_1, step)
+    xdmffile_omega_n.write( omega_n_1, step)
+    xdmffile_z_n.write( z_n_1, step)
+
     solver.solve()
 
     #update previous solution: update v_n_2 and w_n_2
@@ -300,11 +306,3 @@ for step in range(N):
     sigma_n.assign(sigma_n_2-2.0*project(phi_, Q_phi))
     sigma_n_2.assign(sigma_n_1)
     sigma_n_1.assign(sigma_n)
-
-
-    xdmffile_v_n.write(v_n_1, step+1)
-    xdmffile_w_n.write(w_n_1, step+1)
-    xdmffile_sigma_n.write(sigma_n_1, step+1)
-    xdmffile_omega_n.write(omega_n_1, step+1)
-    xdmffile_z_n.write(z_n_1, step+1)
-
