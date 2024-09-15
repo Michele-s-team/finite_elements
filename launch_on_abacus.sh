@@ -3,8 +3,8 @@
 #rsync --size-only -P -v -e ssh mcastel1@abacus:/mnt/beegfs/home/mcastel1/navier_stokes/results/velocity.\* ~/Desktop
 
 
-CODE_DIR="/Users/michele/Documents/fenics/navier_stokes/fenics_example"
-MESH_DIR="/Users/michele/Documents/fenics/mesh/membrane_mesh"
+CODE_DIR="/Users/michelecastellana/Documents/finite_elements/navier_stokes/fenics_example"
+MESH_DIR="/Users/michelecastellana/Documents/finite_elements/mesh/membrane_mesh"
 DEST_DIR="/mnt/beegfs/home/mcastel1/navier_stokes"
 
 ssh mcastel1@abacus "rm -rf "$DEST_DIR"/*"
