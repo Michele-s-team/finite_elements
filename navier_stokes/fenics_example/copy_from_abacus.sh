@@ -1,6 +1,6 @@
 #!/bin/bash
 
-IN_DIR="/mnt/beegfs/home/mcastel1/navier_stokes/results"
-OUT_DIR="/Users/michele/Desktop"
+IN_DIR="/mnt/beegfs/home/mcastel1/navier_stokes/solution"
+OUT_DIR="/Users/michelecastellana/Desktop"
 
-rsync --size-only -P -v -e ssh mcastel1@abacus:$IN_DIR/z.\* $OUT_DIR
+rsync --size-only -P -v -e ssh mcastel1@abacus:$IN_DIR/z_n.\* $OUT_DIR
