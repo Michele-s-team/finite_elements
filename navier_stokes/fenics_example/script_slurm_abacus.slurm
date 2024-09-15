@@ -10,7 +10,7 @@
 echo "Cantami o diva ..."
 
 RUN="/mnt/beegfs/home/mcastel1/navier_stokes/"
-OUT=$RUN"/results/"
+OUT=$RUN"/solution/"
 IN="/mnt/beegfs/home/mcastel1/navier_stokes/"
 T=0.001
 N=2
