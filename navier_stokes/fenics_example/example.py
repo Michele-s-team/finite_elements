@@ -169,13 +169,13 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_ele
 bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
 
 #set initial profiles
-v_n_1.assign(v_n_0)
-v_n_2.assign(v_n_0)
-w_n_1.assign(w_n_0)
-sigma_n_1.assign(sigma_0)
-sigma_n_2.assign(sigma_0)
-z_n_1.assign(z_n_0)
-omega_n_1.assign(omega_n_0)
+v_n_1 = interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()), Q_v_n)
+v_n_2 = v_n_1
+w_n_1 = interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()), Q_w_n)
+sigma_n_1 = interpolate(SurfaceTensionExpression(element=Q_phi.ufl_element()), Q_phi)
+sigma_n_2 = sigma_n_1
+z_n_1 = interpolate(ManifoldExpression(element=Q_z_n.ufl_element()), Q_z_n)
+omega_n_1 = interpolate(OmegaExpression(element=Q_omega_n.ufl_element()), Q_omega_n)
 
 
 # Time-stepping
@@ -322,7 +322,7 @@ for step in range(N):
     J = derivative( F, psi, J_psi )
     problem = NonlinearVariationalProblem( F, psi, bcs, J )
     solver = NonlinearVariationalSolver( problem )
-    
+
     solver.solve()
 
     #update previous solution: update v_n_2 and w_n_2
