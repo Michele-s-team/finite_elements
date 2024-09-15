@@ -16,4 +16,4 @@ rm -rf $OUT
 mkdir $OUT
 
 cd $RUN
-apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 navier_stokes_wing.py
+apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 example.py
