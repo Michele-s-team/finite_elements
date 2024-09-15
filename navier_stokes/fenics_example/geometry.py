@@ -114,56 +114,42 @@ def ufl_norm(x):
 epsilon = ufl.PermutationSymbol(2)
 
 #CHANGE PARAMETERS HERE
-#iniial profiles for the fields
-class v_bar0_Expression( UserExpression ):
+#trial analytical expression for a vector
+class TangentVelocityExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = 0.0
+        values[1] = 0.0
+    def value_shape(self):
         return (2,)
 
-class w_bar0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0
-    def value_shape(self):
-        return (1,)
+# trial analytical expression for the  surface tension p(x,y)
+class NormalVelocityExpression(UserExpression):
+        def eval(self, values, x):
+            values[0] = 0.0
+        def value_shape(self):
+            return (1,)
 
-class phi0_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-    def value_shape(self):
-        return (1,)
+# trial analytical expression for the  surface tension p(x,y)
+class SurfaceTensionExpression(UserExpression):
+        def eval(self, values, x):
+            values[0] = 0.0
+        def value_shape(self):
+            return (1,)
 
-class sigma0_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-    def value_shape(self):
-        return (1,)
+# trial analytical expression for the  surface tension p(x,y)
+class ManifoldExpression(UserExpression):
+        def eval(self, values, x):
+            values[0] = 0.0
+        def value_shape(self):
+            return (1,)
 
-class v_n0_Expression( UserExpression ):
+
+class OmegaExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = 0.0
+        values[1] = 0.0
+    def value_shape(self):
         return (2,)
-
-class w_n0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0
-    def value_shape(self):
-        return (1,)
-
-class omega_n0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-        return (2,)
-
-class z_n0_Expression( UserExpression ):
-    def eval(self, values, x):
-        # [0] = C * cos(2*pi*x[0]/L) * ((x[1])**2)/2.0
-        values[0] = 0
-    def value_shape(self):
-        return (1,)
-
 
 #profiles for the normal derivative
 class grad_circle_Expression(UserExpression):
@@ -171,8 +157,7 @@ class grad_circle_Expression(UserExpression):
         a = 0.1
         values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
         values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
-        # values[0] = 0
-        # values[1] = 0
+    def value_shape(self):
         return (2,)
     
 class grad_square_Expression(UserExpression):
