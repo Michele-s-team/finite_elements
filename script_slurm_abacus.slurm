@@ -11,9 +11,12 @@ echo "Cantami o diva ..."
 
 RUN="/mnt/beegfs/home/mcastel1/navier_stokes/"
 OUT=$RUN"/results/"
+IN="/mnt/beegfs/home/mcastel1/navier_stokes/"
+T=0.001
+N=2
 
 rm -rf $OUT
 mkdir $OUT
 
 cd $RUN
-apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 example.py
+apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 example.py $IN $OUT $T $N
