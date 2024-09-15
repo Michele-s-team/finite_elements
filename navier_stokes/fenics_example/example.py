@@ -284,9 +284,9 @@ problem = NonlinearVariationalProblem(F, psi, bcs, J)
 solver  = NonlinearVariationalSolver(problem)
 
 # Time-stepping
-for n in range(N):
+for step in range(N):
 
-    print("\n* n = ", n, "\n")
+    print("\n* step = ", step, "\n")
 
     solver.solve()
 
@@ -302,9 +302,9 @@ for n in range(N):
     sigma_n_1.assign(sigma_n)
 
 
-    xdmffile_v_n.write(v_n_1, n+1)
-    xdmffile_w_n.write(w_n_1, n+1)
-    xdmffile_sigma_n.write(sigma_n_1, n+1)
-    xdmffile_omega_n.write(omega_n_1, n+1)
-    xdmffile_z_n.write(z_n_1, n+1)
+    xdmffile_v_n.write(v_n_1, step+1)
+    xdmffile_w_n.write(w_n_1, step+1)
+    xdmffile_sigma_n.write(sigma_n_1, step+1)
+    xdmffile_omega_n.write(omega_n_1, step+1)
+    xdmffile_z_n.write(z_n_1, step+1)
 
