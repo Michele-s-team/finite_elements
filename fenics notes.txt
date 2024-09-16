@@ -12,3 +12,7 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
 
 - if you get the error 'integer is not callable' that may be because you defined first a function n(x) and then you re-defined n as a an integer, so when you write n(x) the program is trying to call an integer with an argument. To find out what is going on, on PyCharm the error is highlighted in yellow-brown, use this feature: click on n(x) highlighted in yellow-brown and see that it will redirect you to the integer n -> this will allow you to understand what the code is trying to call 
 - in codes that contain a time evolution, if you see that things do not evolve as much as they should or have an odd temporal dependence, ir may be because the variational problem is not updated fully at every time step ->  define the variational problem, the solver and J into the time loop
+
+- df = pd.read_csv('name of file.csv')
+ p = df.iloc[0].to_dict()
+ p['name of the parameter'] + ....
