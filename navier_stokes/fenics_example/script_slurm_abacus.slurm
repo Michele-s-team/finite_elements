@@ -12,8 +12,8 @@ echo "Cantami o diva ..."
 RUN="/mnt/beegfs/home/mcastel1/navier_stokes/"
 OUT=$RUN"/solution/"
 IN="/mnt/beegfs/home/mcastel1/navier_stokes/"
-T=0.001
-N=2
+T=0.05
+N=64
 
 rm -rf $OUT
 mkdir $OUT
