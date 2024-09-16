@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=navier_stokes
+#SBATCH --job-name=fenics_example
 #SBATCH --ntasks=1
 ##SBATCH --mem=1gb
 #SBATCH --time=10-00:00:00
@@ -7,13 +7,13 @@
 #SBATCH --partition=dev
 #SBATCH --mail-user=michele.castellana@curie.fr
 
-echo "Cantami o diva ..."
+echo "Cantami o diva ... l'ira di Achille ... "
 
-RUN="/mnt/beegfs/home/mcastel1/navier_stokes/"
+IN="/mnt/beegfs/home/mcastel1/fenics_example"
+RUN="/mnt/beegfs/home/mcastel1/fenics_example"
 OUT=$RUN"/solution/"
-IN="/mnt/beegfs/home/mcastel1/navier_stokes/"
-T=0.05
-N=64
+T="0.001"
+N="3"
 
 rm -rf $OUT
 mkdir $OUT
