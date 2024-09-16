@@ -183,11 +183,12 @@ for step in range(N):
 
     print("\n* step = ", step, "\n")
 
-    xdmffile_v_n.write( v_n_1, step)
-    xdmffile_w_n.write( w_n_1, step)
-    xdmffile_sigma_n.write( sigma_n_1, step)
-    xdmffile_omega_n.write( omega_n_1, step)
-    xdmffile_z_n.write( z_n_1, step)
+    if step>0:
+        xdmffile_v_n.write( v_n_1, step)
+        xdmffile_w_n.write( w_n_1, step)
+        xdmffile_sigma_n.write( sigma_n_1, step)
+        xdmffile_omega_n.write( omega_n_1, step)
+        xdmffile_z_n.write( z_n_1, step)
 
     '''
     Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
