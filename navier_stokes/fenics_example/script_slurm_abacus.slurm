@@ -9,8 +9,8 @@
 
 echo "Cantami o diva ... l'ira di Achille ... "
 
-IN="/mnt/beegfs/home/mcastel1/fenics_example"
 RUN="/mnt/beegfs/home/mcastel1/fenics_example"
+IN=$RUN
 OUT=$RUN"/solution/"
 T="0.001"
 N="3"
