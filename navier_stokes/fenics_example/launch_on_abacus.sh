@@ -5,7 +5,8 @@
 
 CODE_DIR="/Users/michelecastellana/Documents/finite_elements/navier_stokes/fenics_example"
 MESH_DIR="/Users/michelecastellana/Documents/finite_elements/mesh/membrane_mesh"
-DEST_DIR="/mnt/beegfs/home/mcastel1/fenics_example"
+
+DEST_DIR="/mnt/beegfs/home/mcastel1/fenics_example_short"
 
 ssh mcastel1@abacus "rm -rf "$DEST_DIR"/*"
 

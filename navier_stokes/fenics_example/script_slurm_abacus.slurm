@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=fenics_example
+#SBATCH --job-name=fenics_example_T0.1_N128
 #SBATCH --ntasks=1
 ##SBATCH --mem=1gb
 #SBATCH --time=10-00:00:00
@@ -9,11 +9,11 @@
 
 echo "Cantami o diva ... l'ira di Achille ... "
 
-RUN="/mnt/beegfs/home/mcastel1/fenics_example"
+RUN="/mnt/beegfs/home/mcastel1/fenics_example_short"
 IN=$RUN
 OUT=$RUN"/solution/"
-T="0.001"
-N="3"
+T="0.1"
+N="128"
 
 rm -rf $OUT
 mkdir $OUT
