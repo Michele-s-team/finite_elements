@@ -16,3 +16,5 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
 - df = pd.read_csv('name of file.csv')
  p = df.iloc[0].to_dict()
  p['name of the parameter'] + ....
+
+- use paraview version 5.10.1, the other versions may crash and freeze as soon as you open a file and try to press a button 
