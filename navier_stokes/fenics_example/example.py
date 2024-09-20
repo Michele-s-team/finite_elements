@@ -7,25 +7,23 @@ V = FunctionSpace(mesh, "Lagrange", 1)
 
 v  = Function( V )
 
-class AnalyticalExpression( UserExpression ):
-    def eval(self, values, x):
-        c_test = [0.3, 0.76]
-        r_test = 0.345
-        values[0] = x[0]
-    def value_shape(self):
-        return (1,)
-
-v = interpolate( AnalyticalExpression( element=V.ufl_element() ), V )
-
 
 
 # Create XDMF files for visualization output
-xdmffile_v_n = XDMFFile( 'v.xdmf' )
+xdmffile_v = XDMFFile( 'v.xdmf' )
 
 # Time-stepping
 for step in range(10):
 
     print("\n* step = ", step, "\n")
 
-    if step>0:
-        xdmffile_v_n.write( v, step )
+    class AnalyticalExpression( UserExpression ):
+        def eval(self, values, x):
+            values[0] = step * x[0]
+
+        def value_shape(self):
+            return (1,)
+
+    v = interpolate( AnalyticalExpression( element=V.ufl_element() ), V )
+
+    xdmffile_v.write( v, step )
