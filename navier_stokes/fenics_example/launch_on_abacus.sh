@@ -8,7 +8,7 @@ MESH_DIR="/Users/michelecastellana/Documents/finite_elements/mesh/membrane_mesh"
 
 #CHANGE PARAMETERS HERE
 T=0.4
-N=2048
+N=512
 r=0.3
 DEST_DIR="/mnt/beegfs/home/mcastel1/fenics_example_T"$T"_N"$N"_r"$r
 #CHANGE PARAMETERS HERE

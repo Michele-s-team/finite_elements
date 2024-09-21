@@ -192,17 +192,26 @@ for step in range(N):
         xdmffile_z_n.write( z_n_1, step)
 
         #write the solution at current step, so, in case the code crashes, it can be read back
-        xdmffile_v_n_t = XDMFFile( (args.output_directory) + '/steps' + '/v_n_' + str(step) + '.xdmf' )
-        xdmffile_v_n_t.write(v_n_1)
-        xdmffile_w_n_t = XDMFFile( (args.output_directory) + '/steps' + '/w_n_' + str(step) + '.xdmf' )
-        xdmffile_w_n_t.write(w_n_1)
-        xdmffile_sigma_n_t = XDMFFile( (args.output_directory) + '/steps' + '/sigma_n_' + str(step) + '.xdmf' )
-        xdmffile_sigma_n_t.write(sigma_n_1)
-        xdmffile_omega_n_t = XDMFFile( (args.output_directory) + '/steps' + '/omega_n_' + str(step) + '.xdmf' )
-        xdmffile_omega_n_t.write(omega_n_1)
-        xdmffile_z_n_t = XDMFFile( (args.output_directory) + '/steps' + '/z_n_' + str(step) + '.xdmf' )
-        xdmffile_z_n_t.write(z_n_1)
-     
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/v_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write.write(v_n_1, "/f" )
+        HDF5_file_write.close()
+
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/w_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write.write(w_n_1, "/f" )
+        HDF5_file_write.close()
+
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/sigma_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write.write(sigma_n_1, "/f" )
+        HDF5_file_write.close()
+
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/omega_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write.write(omega_n_1, "/f" )
+        HDF5_file_write.close()
+
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/z_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write.write(z_n_1, "/f" )
+        HDF5_file_write.close()
+
 
     '''
     Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
