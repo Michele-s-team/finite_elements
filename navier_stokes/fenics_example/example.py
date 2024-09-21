@@ -24,6 +24,6 @@ for step in range(10):
         def value_shape(self):
             return (1,)
 
-    v = interpolate( AnalyticalExpression( element=V.ufl_element() ), V )
+    v.interpolate( AnalyticalExpression( element=V.ufl_element() ))
 
     xdmffile_v.write( v, step )
