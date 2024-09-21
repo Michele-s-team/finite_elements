@@ -7,6 +7,8 @@ V = FunctionSpace(mesh, "Lagrange", 1)
 
 v  = Function( V )
 
+#define the expression to be assigned to v
+expr = Expression("p*x[0]", degree = 1, p = 1.0)
 
 
 # Create XDMF files for visualization output
@@ -17,13 +19,8 @@ for step in range(10):
 
     print("\n* step = ", step, "\n")
 
-    class AnalyticalExpression( UserExpression ):
-        def eval(self, values, x):
-            values[0] = step * x[0]
-
-        def value_shape(self):
-            return (1,)
-
-    v.interpolate( AnalyticalExpression( element=V.ufl_element() ))
+    expr.p = step;
+    #this is the correct way to interpolate an expression and write it into v
+    v.interpolate(expr)
 
     xdmffile_v.write( v, step )
