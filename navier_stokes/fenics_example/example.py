@@ -20,7 +20,7 @@ for step in range(10):
 
     print("\n* step = ", step, "\n")
 
-    # time.sleep( 5 )  # Makes Python wait for 5 seconds
+    time.sleep( 1 )  # Makes Python wait for 5 seconds
 
     expr.p = step;
     # this is the correct way to interpolate an expression and write it into v
