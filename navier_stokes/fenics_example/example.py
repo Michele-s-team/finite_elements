@@ -184,11 +184,25 @@ for step in range(N):
     print("\n* step = ", step, "\n")
 
     if step>0:
+        #append to the full time series solution at the current step
         xdmffile_v_n.write( v_n_1, step)
         xdmffile_w_n.write( w_n_1, step)
         xdmffile_sigma_n.write( sigma_n_1, step)
         xdmffile_omega_n.write( omega_n_1, step)
         xdmffile_z_n.write( z_n_1, step)
+
+        #write the solution at current step, so, in case the code crashes, it can be read back
+        xdmffile_v_n_t = XDMFFile( (args.output_directory) + '/steps' + '/v_n_' + str(step) + '.xdmf' )
+        xdmffile_v_n_t.write(v_n_1)
+        xdmffile_w_n_t = XDMFFile( (args.output_directory) + '/steps' + '/w_n_' + str(step) + '.xdmf' )
+        xdmffile_w_n_t.write(w_n_1)
+        xdmffile_sigma_n_t = XDMFFile( (args.output_directory) + '/steps' + '/sigma_n_' + str(step) + '.xdmf' )
+        xdmffile_sigma_n_t.write(sigma_n_1)
+        xdmffile_omega_n_t = XDMFFile( (args.output_directory) + '/steps' + '/omega_n_' + str(step) + '.xdmf' )
+        xdmffile_omega_n_t.write(omega_n_1)
+        xdmffile_z_n_t = XDMFFile( (args.output_directory) + '/steps' + '/z_n_' + str(step) + '.xdmf' )
+        xdmffile_z_n_t.write(z_n_1)
+     
 
     '''
     Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
