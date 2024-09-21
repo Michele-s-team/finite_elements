@@ -7,7 +7,10 @@ CODE_DIR="/Users/michelecastellana/Documents/finite_elements/navier_stokes/fenic
 MESH_DIR="/Users/michelecastellana/Documents/finite_elements/mesh/membrane_mesh"
 
 #CHANGE PARAMETERS HERE
-DEST_DIR="/mnt/beegfs/home/mcastel1/fenics_example_T0.1_N128_r0.1"
+T=0.4
+N=2048
+r=0.3
+DEST_DIR="/mnt/beegfs/home/mcastel1/fenics_example_T"$T"_N"$N"_r"$r
 #CHANGE PARAMETERS HERE
 
 

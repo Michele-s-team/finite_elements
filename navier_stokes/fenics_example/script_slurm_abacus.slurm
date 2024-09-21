@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=fenics_example_T0.1_N128_r0.1
+#SBATCH --job-name=fenics_example_T0.4_N2048_r0.3
 #SBATCH --ntasks=1
 ##SBATCH --mem=1gb
 #SBATCH --time=10-00:00:00
@@ -10,9 +10,9 @@
 echo "Cantami o diva ... l'ira di Achille ... "
 
 #CHANGE PARAMETERS HERE
-r="0.1"
-T="0.1"
-N="128"
+T=0.4
+N=2048
+r=0.3
 #CHANGE PARAMETERS HERE
 
 RUN="/mnt/beegfs/home/mcastel1/fenics_example_T"$T"_N"$N"_r"$r

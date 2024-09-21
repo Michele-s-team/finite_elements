@@ -6,4 +6,4 @@ OUT_DIR=$2
 echo "Input directory = " $IN_DIR
 echo "Output directory = " $OUT_DIR
 
-rsync --size-only -P -v -e ssh mcastel1@abacus:$IN_DIR/z_n.\* $OUT_DIR
+rsync -chavzP --stats mcastel1@abacus:$IN_DIR $OUT_DIR
