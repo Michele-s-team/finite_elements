@@ -168,7 +168,7 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_ele
 #all BCs
 bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
 
-#set initial profiles
+#Option 1: set initial profiles
 v_n_1 = interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()), Q_v_n)
 v_n_2 = v_n_1
 w_n_1 = interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()), Q_w_n)
@@ -177,6 +177,20 @@ sigma_n_2 = sigma_n_1
 z_n_1 = interpolate(ManifoldExpression(element=Q_z_n.ufl_element()), Q_z_n)
 omega_n_1 = interpolate(OmegaExpression(element=Q_omega_n.ufl_element()), Q_omega_n)
 
+
+#Option 2:read initial profiles by reading them from file
+'''
+read_step = 400
+print("Reading initial condition from file ... ")
+HDF5File( MPI.comm_world, "solution/steps/v_t" + str( read_step-1 ) + ".h5", "r" ).read(v_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/steps/v_t" + str( read_step-2 ) + ".h5", "r" ).read(v_n_2, "/f" )
+HDF5File( MPI.comm_world, "solution/steps/w_t" + str( read_step-1 ) + ".h5", "r" ).read(w_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/steps/sigma_t" + str( read_step-1 ) + ".h5", "r" ).read(sigma_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/steps/sigma_t" + str( read_step-2 ) + ".h5", "r" ).read(sigma_n_2, "/f" )
+HDF5File( MPI.comm_world, "solution/steps/z_t" + str( read_step-1 ) + ".h5", "r" ).read(z_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/steps/omega_t" + str( read_step-1 ) + ".h5", "r" ).read(omega_n_1, "/f" )
+print("... done.")
+'''
 
 # Time-stepping
 for step in range(N):
