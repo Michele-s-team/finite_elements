@@ -42,11 +42,11 @@ print("N = ", N)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
-xdmffile_v_n = XDMFFile( (args.output_directory) + '/v.xdmf' )
-xdmffile_w_n = XDMFFile( (args.output_directory) + '/w.xdmf' )
-xdmffile_sigma_n = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
-xdmffile_omega_n = XDMFFile( (args.output_directory) + '/omega.xdmf' )
-xdmffile_z_n = XDMFFile( (args.output_directory) + '/z.xdmf' )
+xdmffile_v = XDMFFile( (args.output_directory) + '/v.xdmf' )
+xdmffile_w = XDMFFile( (args.output_directory) + '/w.xdmf' )
+xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
+xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
+xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 xdmffile_n.write( n_overline_smooth(), 0 )
@@ -199,11 +199,11 @@ for step in range(N):
 
     if step>0:
         #append to the full time series solution at the current step
-        xdmffile_v_n.write( v_n_1, step)
-        xdmffile_w_n.write( w_n_1, step)
-        xdmffile_sigma_n.write( sigma_n_1, step)
-        xdmffile_omega_n.write( omega_n_1, step)
-        xdmffile_z_n.write( z_n_1, step)
+        xdmffile_v.write( v_n_1, step )
+        xdmffile_w.write( w_n_1, step )
+        xdmffile_sigma.write( sigma_n_1, step )
+        xdmffile_omega.write( omega_n_1, step )
+        xdmffile_z.write( z_n_1, step )
 
         #write the solution at current step, so, in case the code crashes, it can be read back
         #write the solutions in .h5 format into  snapshots/h5
