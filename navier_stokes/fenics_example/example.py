@@ -227,6 +227,21 @@ for step in range(N):
         HDF5_file_write.write(z_n_1, "/f" )
         HDF5_file_write.close()
 
+        # write the solution at current step, so, in case the code crashes, it can be read back
+        xdmffile_v_n_t = XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n' + str( step ) + '.xdmf' )
+        xdmffile_v_n_t.write( v_n_1 )
+        xdmffile_w_n_t = XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n' + str( step ) + '.xdmf' )
+        xdmffile_w_n_t.write( w_n_1 )
+        xdmffile_sigma_n_t = XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n' + str( step ) + '.xdmf' )
+        xdmffile_sigma_n_t.write( sigma_n_1 )
+        xdmffile_omega_n_t = XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n' + str( step ) + '.xdmf' )
+        xdmffile_omega_n_t.write( omega_n_1 )
+        xdmffile_z_n_t = XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n' + str( step ) + '.xdmf' )
+        xdmffile_z_n_t.write( z_n_1 )
+
+
+
+
 
     '''
     Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
