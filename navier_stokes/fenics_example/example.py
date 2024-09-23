@@ -206,23 +206,23 @@ for step in range(N):
         xdmffile_z_n.write( z_n_1, step)
 
         #write the solution at current step, so, in case the code crashes, it can be read back
-        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/v_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/v_n" + str( step ) + ".h5", "w" )
         HDF5_file_write.write(v_n_1, "/f" )
         HDF5_file_write.close()
 
-        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/w_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/w_n" + str( step ) + ".h5", "w" )
         HDF5_file_write.write(w_n_1, "/f" )
         HDF5_file_write.close()
 
-        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/sigma_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/sigma_n" + str( step ) + ".h5", "w" )
         HDF5_file_write.write(sigma_n_1, "/f" )
         HDF5_file_write.close()
 
-        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/omega_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/omega_n" + str( step ) + ".h5", "w" )
         HDF5_file_write.write(omega_n_1, "/f" )
         HDF5_file_write.close()
 
-        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/z_t" + str( step ) + ".h5", "w" )
+        HDF5_file_write = HDF5File( MPI.comm_world, (args.output_directory) + "/steps/z_n" + str( step ) + ".h5", "w" )
         HDF5_file_write.write(z_n_1, "/f" )
         HDF5_file_write.close()
 
