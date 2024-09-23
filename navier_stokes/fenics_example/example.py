@@ -42,11 +42,11 @@ print("N = ", N)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
-xdmffile_v_n = XDMFFile( (args.output_directory) + '/v_n.xdmf' )
-xdmffile_w_n = XDMFFile( (args.output_directory) + '/w_n.xdmf' )
-xdmffile_sigma_n = XDMFFile( (args.output_directory) + '/sigma_n.xdmf' )
-xdmffile_omega_n = XDMFFile( (args.output_directory) + '/omega_n.xdmf' )
-xdmffile_z_n = XDMFFile( (args.output_directory) + '/z_n.xdmf' )
+xdmffile_v_n = XDMFFile( (args.output_directory) + '/v.xdmf' )
+xdmffile_w_n = XDMFFile( (args.output_directory) + '/w.xdmf' )
+xdmffile_sigma_n = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
+xdmffile_omega_n = XDMFFile( (args.output_directory) + '/omega.xdmf' )
+xdmffile_z_n = XDMFFile( (args.output_directory) + '/z.xdmf' )
 
 xdmffile_n = XDMFFile((args.output_directory) + '/n.xdmf')
 xdmffile_n.write( n_overline_smooth(), 0 )
