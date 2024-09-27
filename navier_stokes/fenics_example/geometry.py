@@ -10,8 +10,9 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
+parser.add_argument("mesh_old_directory")
+parser.add_argument("solution_old_directory")
+parser.add_argument("solution_new_directory")
 parser.add_argument("N")
 args = parser.parse_args()
 
@@ -28,10 +29,10 @@ N = (int)(args.N)
 
 #read mesh
 mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
+with XDMFFile((args.mesh_old_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
+with XDMFFile((args.mesh_old_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 
 

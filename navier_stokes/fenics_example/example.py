@@ -1,6 +1,8 @@
 '''
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
-run with clear; clear; python3 example.py /home/fenics/shared/mesh/membrane_mesh/ /home/fenics/shared/navier_stokes/ [number of .h5 files to be read]
+run with
+clear; clear; python3 example.py [path of old mesh] [path of old solution] [path of new solution]  [number of .h5 files to be read]
+clear; clear; python3 example.py /home/fenics/shared/mesh/mesh_old /home/fenics/shared/navier_stokes/solution_old  /home/fenics/shared/navier_stokes/solution_new 1024
 '''
 
 from __future__ import print_function
@@ -9,11 +11,15 @@ import numpy as np
 import time
 from geometry import *
 
-XDMF_file_v = XDMFFile( 'solution/v.xdmf' )
-XDMF_file_w = XDMFFile( 'solution/w.xdmf' )
-XDMF_file_sigma = XDMFFile( 'solution/sigma.xdmf' )
-XDMF_file_omega = XDMFFile( 'solution/omega.xdmf' )
-XDMF_file_z = XDMFFile( 'solution/z.xdmf' )
+print("mesh old folder =", args.mesh_old_directory)
+print("solution old folder =", args.solution_old_directory)
+print("solution new folder =", args.solution_new_directory)
+
+XDMF_file_v = XDMFFile((args.solution_new_directory) +  '/v.xdmf' )
+XDMF_file_w = XDMFFile((args.solution_new_directory) +  '/w.xdmf' )
+XDMF_file_sigma = XDMFFile((args.solution_new_directory) +  '/sigma.xdmf' )
+XDMF_file_omega = XDMFFile((args.solution_new_directory) +  '/omega.xdmf' )
+XDMF_file_z = XDMFFile((args.solution_new_directory) +  '/z.xdmf' )
 
 v = Function(Q_v_n)
 w = Function(Q_w_n)
@@ -22,17 +28,17 @@ omega = Function(Q_omega_n)
 z = Function(Q_z_n)
 
 # Time-stepping
-for step in range(1, N+1):
+for step in range(512, N):
     # time.sleep( 1 )  # Makes Python wait for 5 seconds
 
     print("\n* step = ", step, "\n")
 
     # Read the contents of the .h5 files and write them in v, w, .... :
-    HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n" + str(step) + ".h5", "r" ).read(v, "/f" )
-    HDF5File( MPI.comm_world, "solution/snapshots/h5/w_n" + str(step) + ".h5", "r" ).read(w, "/f" )
-    HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_n" + str(step) + ".h5", "r" ).read(sigma, "/f" )
-    HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_n" + str(step) + ".h5", "r" ).read(omega, "/f" )
-    HDF5File( MPI.comm_world, "solution/snapshots/h5/z_n" + str(step) + ".h5", "r" ).read(z, "/f" )
+    HDF5File( MPI.comm_world, (args.solution_old_directory) + "/snapshots/h5/v_n" + str(step) + ".h5", "r" ).read(v, "/f" )
+    HDF5File( MPI.comm_world, (args.solution_old_directory) + "/snapshots/h5/w_n" + str(step) + ".h5", "r" ).read(w, "/f" )
+    HDF5File( MPI.comm_world, (args.solution_old_directory) + "/snapshots/h5/sigma_n" + str(step) + ".h5", "r" ).read(sigma, "/f" )
+    HDF5File( MPI.comm_world, (args.solution_old_directory) + "/snapshots/h5/omega_n" + str(step) + ".h5", "r" ).read(omega, "/f" )
+    HDF5File( MPI.comm_world, (args.solution_old_directory) + "/snapshots/h5/z_n" + str(step) + ".h5", "r" ).read(z, "/f" )
 
     # append into the xdmf files the current time step stored in v, w, ...
     XDMF_file_v.write(v, step)
