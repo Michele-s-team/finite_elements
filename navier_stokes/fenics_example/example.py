@@ -2,7 +2,7 @@
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
 run with
 clear; clear; python3 example.py [path of old mesh] [path of old solution] [path of new solution]  [number of .h5 files to be read]
-clear; clear; python3 example.py /home/fenics/shared/mesh/mesh_old /home/fenics/shared/navier_stokes/solution_old  /home/fenics/shared/navier_stokes/solution_new 1024
+clear; clear; python3 example.py /home/fenics/shared/mesh/mesh_old /home/fenics/shared/navier_stokes/fenics_example/solution_old  /home/fenics/shared/navier_stokes/fenics_example/solution_new 1024
 '''
 
 from __future__ import print_function
@@ -28,7 +28,7 @@ omega = Function(Q_omega_n)
 z = Function(Q_z_n)
 
 # Time-stepping
-for step in range(512, N):
+for step in range(1, N):
     # time.sleep( 1 )  # Makes Python wait for 5 seconds
 
     print("\n* step = ", step, "\n")
