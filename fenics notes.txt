@@ -41,6 +41,9 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
         Q_omega = Q.sub(0).collapse()
         Q_z = Q.sub(1).collapse()
         psi = Function( Q )
+        assigner.assign(psi, [..., ...])
+        h = f + g
+        f, z = psi.split( deepcopy=True ) (B)
         
 
 
