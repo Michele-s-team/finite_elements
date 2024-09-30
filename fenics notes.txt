@@ -18,3 +18,29 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
  p['name of the parameter'] + ....
 
 - use paraview version 5.10.1, the other versions may crash and freeze as soon as you open a file and try to press a button 
+
+
+- BE CAREFUL WHEN YOU WRITE INTO A FIELD: IT MAY ALLOCATE A NEW FIELD WRITTEN IN A NEW MEMORY ADDRESS:
+    * if you do
+        f = Function(Q) (A)
+        g = Function(Q) (B)
+        h = f+g
+    and then
+        f = interpolate( my_expression( element=Q.ufl_element() ), Q ) (C)
+    then (C) will re-allocate f, and h will point to the old allocation of f done in (A) and it will not be updated according to (C)
+      On the other hand, if you do (A), (B) and
+         f_dummy  =    interpolate( my_expression( element=Q.ufl_element() ), Q ) (D)
+         f.assign(f_dummy) (E)
+    then (D) and (E) will assign my_expression to f by keeping the same memory allocation of f, and g will be updated accordingly.
+    
+    * similarly for a function in a mixed space:
+        P_omega = VectorElement( 'P', triangle, 3 )
+        P_z = FiniteElement( 'P', triangle, 1 )
+        element = MixedElement( [P_omega, P_z] )
+        Q = FunctionSpace(mesh, element)
+        Q_omega = Q.sub(0).collapse()
+        Q_z = Q.sub(1).collapse()
+        psi = Function( Q )
+        
+
+
