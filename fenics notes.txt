@@ -32,6 +32,8 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
          f_dummy  =    interpolate( my_expression( element=Q.ufl_element() ), Q ) (D)
          f.assign(f_dummy) (E)
     then (D) and (E) will assign my_expression to f by keeping the same memory allocation of f, and g will be updated accordingly.
+    * on the other hand, if you do f.interpolate( my_function_Expression( element=Q.ufl_element() ) ), f will not be reallocated and this call to interpolate will write the expression into the already existing memory address of f
+
     
     * similarly for a function in a mixed space:
         P_omega = VectorElement( 'P', triangle, 3 )
@@ -42,8 +44,9 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
         Q_z = Q.sub(1).collapse()
         psi = Function( Q )
         assigner.assign(psi, [..., ...])
-        h = f + g
+        h = f + g (A)
         f, z = psi.split( deepcopy=True ) (B)
+        then (B) allocates a new f and z and h in (A) will not be updated because it points to the previously allocated f
         
 
 
