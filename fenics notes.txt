@@ -18,7 +18,7 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
  p['name of the parameter'] + ....
 
 - use paraview version 5.10.1, the other versions may crash and freeze as soon as you open a file and try to press a button 
-
+- the (?) in Paraview when plotting a field f may be due to the fact that you are allocating a new field at the next time loop, e.g., with f = interpolate(...)
 
 - BE CAREFUL WHEN YOU WRITE INTO A FIELD: IT MAY ALLOCATE A NEW FIELD WRITTEN IN A NEW MEMORY ADDRESS:
     * if you do
