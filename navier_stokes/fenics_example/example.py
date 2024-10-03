@@ -2,8 +2,10 @@
 
 run with
 
-clear; clear; python3 example.py [path where to read the mesh]
+clear; clear; python3 example.py [path where to read the mesh generated from generate_mesh.py]
+example:
 clear; clear; python3 example.py /home/fenics/shared/mesh/membrane_mesh
+Solving linear variational problem.
 
 '''
 

@@ -1,3 +1,17 @@
+'''
+run with
+
+clear; clear; python3 generate_mesh.py [mesh resolution]
+example:
+$ python3 generate_mesh.py 0.1
+r =  1
+c_r =  [0, 0, 0]
+resolution =  0.1
+
+
+
+'''
+
 import numpy
 import meshio
 import gmsh
