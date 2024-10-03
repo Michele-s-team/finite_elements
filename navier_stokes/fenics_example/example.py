@@ -1,3 +1,12 @@
+'''
+
+run with
+
+clear; clear; python3 example.py [path where to read the mesh]
+clear; clear; python3 example.py /home/fenics/shared/mesh/membrane_mesh
+
+'''
+
 from __future__ import print_function
 from fenics import *
 import matplotlib.pyplot as plt
@@ -20,8 +29,8 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 
 n = FacetNormal(mesh)
 
-V = FunctionSpace(mesh, 'P', 8)
-O = VectorFunctionSpace(mesh, 'P', 8, dim=2)
+Q = FunctionSpace( mesh, 'P', 8 )
+V = VectorFunctionSpace( mesh, 'P', 8, dim=2 )
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
@@ -36,29 +45,23 @@ class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 6.0
         values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
-        
     def value_shape(self):
         return (1,)
 
 
-
- 
 # Define variational problem
-u = TrialFunction(V)
-v = TestFunction(V)
-f = Function(V)
-grad_u = Function(O)
+u_ = Function( Q )
+u = TrialFunction( Q )
+v = TestFunction( Q )
+f = Function( Q )
+grad_u = Function( V )
 
-grad_u = interpolate(grad_u_expression(element=O.ufl_element()), O)
-f = interpolate(laplacian_u_expression(element=V.ufl_element()), V)
-
-
-
+grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
+f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
 a = dot(grad(u), grad(v))*dx
 L = -f*v*dx + dot(n,grad_u)*v*ds
 
-u = Function(V)
-solve(a == L, u)
+solve(a == L, u_)
 
-xdmffile_u.write(u, 0)
+xdmffile_u.write(u_, 0)
