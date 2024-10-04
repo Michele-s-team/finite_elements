@@ -1,8 +1,8 @@
 '''
 run with
 
-python3 example.py [path where to read the mesh] [path where to store the solution]
-python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/
+python3 example.py [path where to read the mesh] [path where to store the solution] N
+python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/ 4
 '''
 
 
@@ -99,8 +99,8 @@ F = F_z + F_omega
 
 #set initial profile of z from analytical expression
 
-z_0.assign(interpolate(z_Expression(element=Q_z.ufl_element())))
-omega_0.assign(interpolate(omega_Expression(element=Q_omega.ufl_element())))
+z_0.interpolate(z_Expression(element=Q_z.ufl_element()))
+omega_0.interpolate(omega_Expression(element=Q_omega.ufl_element()))
 
 
 #this loop cranks up the value of C in order smoothly reach the desired value of C from an easy one. This is because, if one starts directly with the desired value of C, the code may not find the solution
