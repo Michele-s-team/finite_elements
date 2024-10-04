@@ -130,12 +130,12 @@ for n in range(N):
 
     solve(F == 0, z_omega, bc_z_omega)
     
-    z_, omega_ = z_omega.split(deepcopy=True)
-    z_0.assign(project(C_n(n+1)/C_n(n)*z_, Q_z))
-    omega_0.assign(project(C_n(n+1)/C_n(n)*omega_, Q_omega))
+    z_dummy, omega_dummy = z_omega.split( deepcopy=True )
+    z_0.assign( project( C_n(n+1) / C_n(n) * z_dummy, Q_z ) )
+    omega_0.assign( project( C_n(n+1) / C_n(n) * omega_dummy, Q_omega ) )
     
-    xdmffile_z.write(z_, n)
-    xdmffile_omega.write(omega_, n)
+    xdmffile_z.write( z_dummy, n )
+    xdmffile_omega.write( omega_dummy, n )
 
 
 
