@@ -292,7 +292,7 @@ for step in range(N):
 
     solver.solve()
 
-    #update previous solution: update v_n_2 and w_n_2
+    #update previous solution:
     #v_bar, w_bar, phi, v_n, w_n, omega_n_12, z_n_12 = split( psi )
     #get the solution and write it to file
     v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
