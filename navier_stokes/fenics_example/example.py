@@ -325,20 +325,21 @@ for step in range(N):
     xdmffile_omega.write( omega_n_12_dummy, t - dt/2.0 )
     xdmffile_z.write( z_n_12_dummy, t - dt/2.0 )
 
-
-#sign
-    
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n" + str( step ) + ".h5", "w" ).write( v_n_1, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n" + str( step ) + ".h5", "w" ).write( w_n_1, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n" + str( step ) + ".h5", "w" ).write( omega_n_12, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n" + str( step ) + ".h5", "w" ).write( z_n_12, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_bar" + str( step ) + ".h5", "w" ).write( v_bar_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_bar" + str( step ) + ".h5", "w" ).write( w_bar_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n" + str( step ) + ".h5", "w" ).write( v_n_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n" + str( step ) + ".h5", "w" ).write( w_n_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n_12" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n_12" + str( step ) + ".h5", "w" ).write( omega_n_12_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n_12" + str( step ) + ".h5", "w" ).write( z_n_12_dummy, "/f" )
 
     # write the solutions in .xdmf format into  snapshots/xdmf
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n' + str( step ) + '.xdmf' ).write( v_n_1 )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n' + str( step ) + '.xdmf' ).write( w_n_1 )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n' + str( step ) + '.xdmf' ).write( sigma_n_12 )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n' + str( step ) + '.xdmf' ).write( omega_n_12 )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n' + str( step ) + '.xdmf' ).write( z_n_12 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_bar' + str( step ) + '.xdmf' ).write( v_bar_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_bar' + str( step ) + '.xdmf' ).write( w_bar_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n' + str( step ) + '.xdmf' ).write( v_n_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n' + str( step ) + '.xdmf' ).write( w_n_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n_12' + str( step ) + '.xdmf' ).write( sigma_n_12 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n_12' + str( step ) + '.xdmf' ).write( omega_n_12_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n_12' + str( step ) + '.xdmf' ).write( z_n_12_dummy )
