@@ -166,7 +166,7 @@ v_n_2.assign(v_n_1)
 w_n_1.interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()))
 sigma_n_32.interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ))
 z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
-omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
+# omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
 
 
 #Option 2:read initial profiles by reading them from file
@@ -309,7 +309,7 @@ for step in range(N):
 
     w_n_1.assign(w_n_dummy)
 
-    sigma_n_12.assign(sigma_n_32 - phi_dummy)
+    sigma_n_12.assign(sigma_n_32 - project(phi_dummy, Q_phi))
     sigma_n_32.assign(sigma_n_12)
 
     z_n_32.assign(z_n_12_dummy)
