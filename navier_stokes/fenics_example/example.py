@@ -40,8 +40,11 @@ print("N = ", N)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
+xdmffile_v_bar = XDMFFile( (args.output_directory) + '/v_bar.xdmf' )
+xdmffile_w_bar = XDMFFile( (args.output_directory) + '/w_bar.xdmf' )
 xdmffile_v = XDMFFile( (args.output_directory) + '/v.xdmf' )
 xdmffile_w = XDMFFile( (args.output_directory) + '/w.xdmf' )
+xdmffile_phi = XDMFFile( (args.output_directory) + '/phi.xdmf' )
 xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
 xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
 xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
@@ -311,16 +314,20 @@ for step in range(N):
 
     z_n_32.assign(z_n_12_dummy)
 
-    # sign
 
     #print solution to file
     # append to the full time series solution at the current t
-    xdmffile_v.write( v_n_1, t )
-    xdmffile_w.write( w_n_1, t )
+    xdmffile_v_bar.write( v_bar_dummy, t )
+    xdmffile_w_bar.write( w_bar_dummy, t )
+    xdmffile_v.write( v_n_dummy, t )
+    xdmffile_w.write( w_n_dummy, t )
     xdmffile_sigma.write( sigma_n_12, t - dt/2.0 )
     xdmffile_omega.write( omega_n_12_dummy, t - dt/2.0 )
     xdmffile_z.write( z_n_12_dummy, t - dt/2.0 )
 
+
+#sign
+    
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
     HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n" + str( step ) + ".h5", "w" ).write( v_n_1, "/f" )
