@@ -206,8 +206,7 @@ for step in range(N):
                               ds_l + ds_r) \
                           + ((W ** 2) * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (
                                       ds_t + ds_b) \
-                          + ((W ** 2) * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12,
-                                                                                                c_r ) * ds_circle
+                          + ((W ** 2) * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
               ) \
               - ( \
                           (sigma_ast * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (
