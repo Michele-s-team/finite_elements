@@ -228,25 +228,25 @@ for step in range(N):
               )
 
     F_w_bar = ( \
-                          rho * ((w_bar - w_n_1) / Deltat + V[i] * V[k] * b( omega_n_12 )[k, i]) * nu_w_bar \
-                          - rho * W * Nabla_v( vector_times_scalar( 3.0 / 2.0 * v_n_1 - 1.0 / 2.0 * v_n_2, nu_w_bar ), omega_n_12 )[i, i] \
-                          + 2.0 * kappa * ( \
+                          rho * ( (w_bar - w_n_1) + Deltat * V[i] * V[k] * b( omega_n_12 )[k, i] ) * nu_w_bar \
+                          - Deltat * rho * W * Nabla_v( vector_times_scalar( 3.0 / 2.0 * v_n_1 - 1.0 / 2.0 * v_n_2, nu_w_bar ), omega_n_12 )[i, i] \
+                          + Deltat * 2.0 * kappa * ( \
                                       - g_c( omega_n_12 )[i, j] * ((H( omega_n_12 )).dx( j )) * (nu_w_bar.dx( i )) \
                                       + 2.0 * H( omega_n_12 ) * ((H( omega_n_12 )) ** 2 - K( omega_n_12 )) * nu_w_bar \
                               ) \
-                          - ( \
+                          - Deltat * ( \
                                       2.0 * sigma_n_32 * H( omega_n_12 ) \
                                       + 2.0 * eta * (g_c( omega_n_12 )[i, k] * Nabla_v( V, omega_n_12 )[j, k] *
                                                      (b( omega_n_12 ))[i, j] - 2.0 * W * (
                                                                  2.0 * (H( omega_n_12 )) ** 2 - K( omega_n_12 )))
                           ) * nu_w_bar
               ) * sqrt_detg( omega_n_12 ) * dx \
-              + rho * ( \
+              + Deltat * rho * ( \
                           (W * nu_w_bar * (n_lr( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * ( 3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i]) ) * sqrt_deth_square( omega_n_12 ) * ( ds_l + ds_r) \
                           + (W * nu_w_bar * (n_tb( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * ( 3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
                           + (W * nu_w_bar * (n( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * ( 3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
               ) \
-              + 2.0 * kappa * ( \
+              + Deltat * 2.0 * kappa * ( \
                           (nu_w_bar * (n_lr( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
                           + (nu_w_bar * (n_tb( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
                           + (nu_w_bar * (n( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
