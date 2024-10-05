@@ -181,9 +181,13 @@ print("... done.")
 
 
 # Time-stepping
+t = 0
 for step in range(N):
 
     print("\n* step = ", step, "\n")
+
+    # Update current time
+    t += dt
 
     '''
     Define variational problem : F_vbar, F_wbar .... F_z_n_12 are related to the PDEs for v_bar, ..., z^{n-1/2} respecitvely . F_N enforces the BCs with Nitche's method. 
@@ -311,11 +315,11 @@ for step in range(N):
 
     #print solution to file
     # append to the full time series solution at the current t
-    xdmffile_v.write( v_n_1, step )
-    xdmffile_w.write( w_n_1, step )
-    xdmffile_sigma.write( sigma_n_12, step )
-    xdmffile_omega.write( omega_n_12, step )
-    xdmffile_z.write( z_n_12, step )
+    xdmffile_v.write( v_n_1, t )
+    xdmffile_w.write( w_n_1, t )
+    xdmffile_sigma.write( sigma_n_12, t - dt/2.0 )
+    xdmffile_omega.write( omega_n_12_dummy, t - dt/2.0 )
+    xdmffile_z.write( z_n_12_dummy, t - dt/2.0 )
 
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
