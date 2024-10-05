@@ -82,16 +82,15 @@ print("Integral circle = ", integral_circle, " exact value = 0.205204")
 # Define functions
 #the Jacobian
 J_psi = TrialFunction(Q)
-nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_omega_n, nu_z_n = TestFunctions(Q)
+psi = Function(Q)
+nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_omega_n_12, nu_z_n_12 = TestFunctions( Q )
+#fields at the preceeding steps
 v_n_1 = Function(Q_v_n)
 v_n_2 = Function(Q_v_n)
 w_n_1 = Function(Q_w_n)
-sigma_n = Function(Q_phi)
-sigma_n_1 = Function(Q_phi)
-sigma_n_2 = Function(Q_phi)
-omega_n_1 = Function(Q_omega_n)
-z_n_1 = Function(Q_z_n)
-psi = Function(Q)
+sigma_n_32 = Function( Q_phi )
+z_n_32 = Function( Q_z_n )
+
 #vbar_0, ...., z_n_0 are used to store the initial conditions
 v_bar_0 = Function( Q_v_bar )
 w_bar_0 = Function( Q_w_bar )
@@ -99,19 +98,19 @@ phi_0 = Function(Q_phi)
 sigma_0 = Function(Q_phi)
 v_n_0 = Function( Q_v_n )
 w_n_0 = Function( Q_w_n )
-z_n_0 = Function( Q_z_n )
-omega_n_0 = Function( Q_omega_n )
+z_n_12_0 = Function( Q_z_n )
+omega_n_12_0 = Function( Q_omega_n )
 
 v_bar, w_bar, phi, v_n, w_n, omega_n, z_n = split( psi )
 V = (v_bar + v_n_1) / 2.0
 W = (w_bar + w_n_1) / 2.0
-sigma_ast = (sigma_n_1 + sigma_n_2)/2.0
+sigma_ast = (sigma_n_12 + sigma_n_32) / 2.0
 #w_{n-1/2}
-w_n_12 = (w_n + w_n_1) / 2.0
+# w_n_12 = (w_n + w_n_1) / 2.0
 #omega_{n-1/2}
-omega_n_12 = (omega_n + omega_n_1) / 2.0
+# omega_n_12 = (omega_n + omega_n_1) / 2.0
 #sigma_{n-1/2}
-sigma_n_12 = (sigma_n + sigma_n_1)/2.0
+# sigma_n_12 = (sigma_n + sigma_n_1_12) / 2.0
 
 
 # Define expressions used in variational forms
@@ -161,10 +160,10 @@ bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circl
 v_n_1 = interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()), Q_v_n)
 v_n_2 = v_n_1
 w_n_1 = interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()), Q_w_n)
-sigma_n_1 = interpolate(SurfaceTensionExpression(element=Q_phi.ufl_element()), Q_phi)
-sigma_n_2 = sigma_n_1
-z_n_1 = interpolate(ManifoldExpression(element=Q_z_n.ufl_element()), Q_z_n)
-omega_n_1 = interpolate(OmegaExpression(element=Q_omega_n.ufl_element()), Q_omega_n)
+sigma_n_12 = interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ), Q_phi )
+sigma_n_32 = sigma_n_12
+z_n_12 = interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ), Q_z_n )
+# omega_n_12 = interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ), Q_omega_n )
 
 
 #Option 2:read initial profiles by reading them from file
@@ -190,24 +189,24 @@ for step in range(N):
         #append to the full time series solution at the current step
         xdmffile_v.write( v_n_1, step )
         xdmffile_w.write( w_n_1, step )
-        xdmffile_sigma.write( sigma_n_1, step )
-        xdmffile_omega.write( omega_n_1, step )
-        xdmffile_z.write( z_n_1, step )
+        xdmffile_sigma.write( sigma_n_12, step )
+        xdmffile_omega.write( omega_n_12, step )
+        xdmffile_z.write( z_n_12, step )
 
         #write the solution at current step, so, in case the code crashes, it can be read back
         #write the solutions in .h5 format into  snapshots/h5
         HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n" + str( step ) + ".h5", "w" ).write(v_n_1, "/f" )
         HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n" + str( step ) + ".h5", "w" ).write(w_n_1, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n" + str( step ) + ".h5", "w" ).write(sigma_n_1, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n" + str( step ) + ".h5", "w" ).write(omega_n_1, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n" + str( step ) + ".h5", "w" ).write(z_n_1, "/f" )
+        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
+        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n" + str( step ) + ".h5", "w" ).write( omega_n_12, "/f" )
+        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n" + str( step ) + ".h5", "w" ).write( z_n_12, "/f" )
 
         #write the solutions in .xdmf format into  snapshots/xdmf
         XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n' + str( step ) + '.xdmf' ).write( v_n_1 )
         XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n' + str( step ) + '.xdmf' ).write( w_n_1 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n' + str( step ) + '.xdmf' ).write( sigma_n_1 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n' + str( step ) + '.xdmf' ).write( omega_n_1 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n' + str( step ) + '.xdmf' ).write( z_n_1 )
+        XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n' + str( step ) + '.xdmf' ).write( sigma_n_12 )
+        XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n' + str( step ) + '.xdmf' ).write( omega_n_12 )
+        XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n' + str( step ) + '.xdmf' ).write( z_n_12 )
 
 
 
@@ -304,34 +303,34 @@ for step in range(N):
 
     F_z_n = ( \
                         ( \
-                                    (z_n - z_n_1) / Deltat \
+                                    (z_n - z_n_12) / Deltat \
                                     - w_n_12 * ((normal( omega_n_12 ))[2] - (
                                         (normal( omega_n_12 ))[0] * omega_n_12[0] + (normal( omega_n_12 ))[1] *
                                         omega_n_12[1])) \
-                            ) * nu_z_n \
+                            ) * nu_z_n_12 \
                 ) * sqrt_detg( omega_n_12 ) * dx
 
-    F_omega_n = (z_n * Nabla_v( nu_omega_n, omega_n_12 )[i, i] + omega_n[i] * nu_omega_n[i]) * sqrt_detg(
+    F_omega_n = (z_n * Nabla_v( nu_omega_n_12, omega_n_12 )[i, i] + omega_n[i] * nu_omega_n_12[i]) * sqrt_detg(
         omega_n_12 ) * dx \
                 - ( \
-                            ((n_lr( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n * nu_omega_n[j]) * sqrt_deth_square(
+                            ((n_lr( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n * nu_omega_n_12[j]) * sqrt_deth_square(
                         omega_n_12 ) * (ds_l + ds_r) \
-                            + ((n_tb( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n * nu_omega_n[
+                            + ((n_tb( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n * nu_omega_n_12[
                         j]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                            + ((n( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n * nu_omega_n[j]) * sqrt_deth_circle(
+                            + ((n( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n * nu_omega_n_12[j]) * sqrt_deth_circle(
                         omega_n_12, c_r ) * ds_circle
                 )
 
     F_N = alpha * ( \
                 (((n_overline_lr())[i] * omega_n[i] - (n_overline_lr())[i] * grad_square[i]) * (
-                            (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square(
+                        (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square(
             omega_n_12 ) * (ds_l + ds_r) \
                 + (((n_overline_tb())[i] * omega_n[i] - (n_overline_tb())[i] * grad_square[i]) * (
-                    (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_square( omega_n_12 ) * (
+                (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * (
                             ds_t + ds_b) \
                 + ((n_overline[i] * omega_n[i] - n_overline[i] * grad_circle[i]) * (
-                    n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n[l])) * sqrt_deth_circle( omega_n_12,
-                                                                                                c_r ) * ds_circle \
+                n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12,
+                                                                                               c_r ) * ds_circle \
  \
                 + (((n_overline_tb())[i] * g( omega_n_12 )[i, j] * v_bar[j] - 0) * (
                     (n_overline_tb())[k] * nu_v_bar[k])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
@@ -353,9 +352,9 @@ for step in range(N):
     v_n_2.assign(v_n_1)
 
     #get the solution and write it to file
-    v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_1, z_n_1 = psi.split(deepcopy=True)
+    v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_12, z_n_12 = psi.split( deepcopy=True )
 
     #update previous solution: update sigma
-    sigma_n.assign(sigma_n_2-2.0*project(phi_, Q_phi))
-    sigma_n_2.assign(sigma_n_1)
-    sigma_n_1.assign(sigma_n)
+    sigma_n.assign( sigma_n_32 - 2.0 * project( phi_, Q_phi ) )
+    sigma_n_32.assign( sigma_n_12 )
+    sigma_n_12.assign( sigma_n )
