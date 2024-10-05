@@ -279,7 +279,6 @@ for step in range(N):
                 + ( (n_overline[i] * g( omega_n_12 )[i, j] * v_bar[j] - 0 ) * ( n_overline[k] * nu_v_bar[k])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
         )
 
-    # sign
 
 
     # total functional for the mixed problem
@@ -291,6 +290,7 @@ for step in range(N):
     solver = NonlinearVariationalSolver( problem )
 
     solver.solve()
+    # sign
 
     #update previous solution: update v_n_2 and w_n_2
     v_n_2.assign(v_n_1)
