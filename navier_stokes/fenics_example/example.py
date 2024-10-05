@@ -187,7 +187,7 @@ for step in range(N):
     print("\n* step = ", step, "\n")
 
     '''
-    Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
+    Define variational problem : F_vbar, F_wbar .... F_z_n_12 are related to the PDEs for v_bar, ..., z^{n-1/2} respecitvely . F_N enforces the BCs with Nitche's method. 
     To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, 
     the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
     '''
@@ -198,7 +198,7 @@ for step in range(N):
                                   - 2.0 * V[j] * W * g_c( omega_n_12 )[i, k] * b( omega_n_12 )[k, j]) * nu_v_bar[i] \
                                  + 1.0 / 2.0 * (W ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[
                                      i, j]) \
-                          + sigma_ast * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
+                          + sigma_n_32 * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
                           + 2.0 * eta * d_c( V, W, omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[j, i]
               ) * sqrt_detg( omega_n_12 ) * dx \
               - rho / 2.0 * ( \
@@ -334,7 +334,7 @@ for step in range(N):
     sigma_n_12.assign( sigma_n )
 
     #print solution to file
-    # append to the full time series solution at the current step
+    # append to the full time series solution at the current t
     xdmffile_v.write( v_n_1, step )
     xdmffile_w.write( w_n_1, step )
     xdmffile_sigma.write( sigma_n_12, step )
