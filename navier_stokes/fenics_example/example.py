@@ -88,6 +88,7 @@ nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_omega_n_12, nu_z_n_12 = TestFunct
 v_n_1 = Function(Q_v_n)
 v_n_2 = Function(Q_v_n)
 w_n_1 = Function(Q_w_n)
+sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
 z_n_32 = Function( Q_z_n )
 
@@ -293,15 +294,16 @@ for step in range(N):
     # sign
 
     #update previous solution: update v_n_2 and w_n_2
-    v_n_2.assign(v_n_1)
-
+    #v_bar, w_bar, phi, v_n, w_n, omega_n_12, z_n_12 = split( psi )
     #get the solution and write it to file
-    v_bar_, w_bar_, phi_, v_n_1, w_n_1, omega_n_12, z_n_12 = psi.split( deepcopy=True )
+    v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
 
-    #update previous solution: update sigma
-    sigma_n.assign( sigma_n_32 - 2.0 * project( phi_, Q_phi ) )
-    sigma_n_32.assign( sigma_n_12 )
-    sigma_n_12.assign( sigma_n )
+    v_n_2.assign(v_n_1)
+    v_n_1.assign(v_n_dummy)
+
+    sigma_n_12.assign(sigma_n_32-phi_dummy)
+    sigma_n_32.assign(sigma_n_12)
+
 
     #print solution to file
     # append to the full time series solution at the current t
