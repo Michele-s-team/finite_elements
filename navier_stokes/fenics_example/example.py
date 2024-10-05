@@ -212,14 +212,10 @@ for step in range(N):
                           + (sigma_n_32 * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
               ) \
               - 2.0 * eta * ( \
-                          (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_bar[
-                              j]) * sqrt_deth_square( omega_n_12 ) * ds_l \
-                          + (d_c( V, W, omega_n_12 )[i, 1] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_bar[
-                      1]) * sqrt_deth_square( omega_n_12 ) * ds_r \
-                          + (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_tb( omega_n_12 ))[k] * nu_v_bar[
-                      j]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                          + (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n( omega_n_12 ))[k] * nu_v_bar[
-                      j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+                          (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_bar[j]) * sqrt_deth_square( omega_n_12 ) * ds_l \
+                          + (d_c( V, W, omega_n_12 )[i, 1] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_bar[1]) * sqrt_deth_square( omega_n_12 ) * ds_r \
+                          + (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_tb( omega_n_12 ))[k] * nu_v_bar[j]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                          + (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n( omega_n_12 ))[k] * nu_v_bar[j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
               )
 
     F_w_bar = ( \
