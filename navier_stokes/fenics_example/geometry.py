@@ -33,7 +33,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e7
+alpha = 1e1
 tol = 1E-3
 #CHANGE PARAMETERS HERE
 

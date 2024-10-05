@@ -202,22 +202,24 @@ for step in range(N):
     '''
 
     F_v_bar = ( \
-                          rho * ( ( (v_bar[i] - v_n_1[i] ) \
-                                  + Deltat * ( (3.0 / 2.0 * v_n_1[j] - 1.0 / 2.0 * v_n_2[j]) * Nabla_v( V, omega_n_12 )[i, j] \
-                                  - 2.0 * V[j] * W * g_c( omega_n_12 )[i, k] * b( omega_n_12 )[k, j]) * nu_v_bar[i] \
-                                  + 1.0 / 2.0 * (W ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] )\
-                                  ) \
+                          rho * ( ( \
+                                    (v_bar[i] - v_n_1[i]) \
+                                    + Deltat * ( (3.0 / 2.0 * v_n_1[j] - 1.0 / 2.0 * v_n_2[j]) * Nabla_v( V, omega_n_12 )[i, j] \
+                                    - 2.0 * V[j] * W * g_c( omega_n_12 )[i, k] * b( omega_n_12 )[k, j] )\
+                                    ) * nu_v_bar[i] \
+                                 + Deltat * 1.0 / 2.0 * (W ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
+                                 ) \
                           + Deltat * ( sigma_n_32 * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
                           + 2.0 * eta * d_c( V, W, omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[j, i] )
               ) * sqrt_detg( omega_n_12 ) * dx \
               - Deltat * rho / 2.0 * ( \
-                          ((W ** 2) * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * ( ds_l + ds_r) \
-                          + ((W ** 2) * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
+                          ((W ** 2) * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                          + ((W ** 2) * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
                           + ((W ** 2) * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
               ) \
               - Deltat * ( \
-                          (sigma_n_32 * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * ( ds_l + ds_r) \
-                          + (sigma_n_32 * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
+                          (sigma_n_32 * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                          + (sigma_n_32 * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
                           + (sigma_n_32 * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
               ) \
               - Deltat * 2.0 * eta * ( \
