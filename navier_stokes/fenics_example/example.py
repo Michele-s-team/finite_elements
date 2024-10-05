@@ -253,10 +253,10 @@ for step in range(N):
               )
 
     F_phi = ( \
-                        g_c( omega_n_12 )[i, j] * (phi.dx( i )) * (nu_phi.dx( j )) \
-                        + rho / Deltat * (Nabla_v( v_bar, omega_n_12 )[i, i] - 2.0 * H( omega_n_12 ) * w_bar) * nu_phi \
+                        Deltat * g_c( omega_n_12 )[i, j] * (phi.dx( i )) * (nu_phi.dx( j )) \
+                        + rho * (Nabla_v( v_bar, omega_n_12 )[i, i] - 2.0 * H( omega_n_12 ) * w_bar) * nu_phi \
                 ) * sqrt_detg( omega_n_12 ) * dx \
-            - ((n_lr( omega_n_12 ))[i] * (phi.dx( i )) * nu_phi) * sqrt_deth_square( omega_n_12 ) * ds_r
+            - Deltat * ( (n_lr( omega_n_12 ))[i] * (phi.dx( i )) * nu_phi ) * sqrt_deth_square( omega_n_12 ) * ds_r
 
 
     F_v_n = ((rho / Deltat * (v_n[i] - v_bar[i]) + g_c( omega_n_12 )[i, j] * (phi.dx( j ))) * nu_v_n[i]) * sqrt_detg( omega_n_12 ) * dx
