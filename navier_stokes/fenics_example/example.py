@@ -267,19 +267,14 @@ for step in range(N):
                             + ((n( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n_12 * nu_omega_n_12[j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
                 )
 
-    # sign
 
 
     F_N = alpha * ( \
-                (((n_overline_lr())[i] * omega_n[i] - (n_overline_lr())[i] * grad_square[i]) * (
-                        (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square(
-            omega_n_12 ) * (ds_l + ds_r) \
-                + (((n_overline_tb())[i] * omega_n[i] - (n_overline_tb())[i] * grad_square[i]) * (
-                (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * (
-                            ds_t + ds_b) \
-                + ((n_overline[i] * omega_n[i] - n_overline[i] * grad_circle[i]) * (
-                n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12,
-                                                                                               c_r ) * ds_circle \
+                (((n_overline_lr())[i] * omega_n_12[i] - (n_overline_lr())[i] * grad_square[i]) * ( (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                + (((n_overline_tb())[i] * omega_n_12[i] - (n_overline_tb())[i] * grad_square[i]) * ( (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
+                + ((n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * ( n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+    # sign
+
  \
                 + (((n_overline_tb())[i] * g( omega_n_12 )[i, j] * v_bar[j] - 0) * (
                     (n_overline_tb())[k] * nu_v_bar[k])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
