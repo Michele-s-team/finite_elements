@@ -202,11 +202,11 @@ for step in range(N):
     '''
 
     F_v_bar = ( \
-                          rho * (((v_bar[i] - v_n_1[i]) / Deltat \
+                          rho * ( ( (v_bar[i] - v_n_1[i] ) / Deltat \
                                   + (3.0 / 2.0 * v_n_1[j] - 1.0 / 2.0 * v_n_2[j]) * Nabla_v( V, omega_n_12 )[i, j] \
                                   - 2.0 * V[j] * W * g_c( omega_n_12 )[i, k] * b( omega_n_12 )[k, j]) * nu_v_bar[i] \
-                                 + 1.0 / 2.0 * (W ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[
-                                     i, j]) \
+                                  + 1.0 / 2.0 * (W ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
+                                  ) \
                           + sigma_n_32 * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
                           + 2.0 * eta * d_c( V, W, omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[j, i]
               ) * sqrt_detg( omega_n_12 ) * dx \
@@ -284,10 +284,9 @@ for step in range(N):
                 (((n_overline_lr())[i] * omega_n_12[i] - (n_overline_lr())[i] * grad_square[i]) * ( (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
                 + (((n_overline_tb())[i] * omega_n_12[i] - (n_overline_tb())[i] * grad_square[i]) * ( (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
                 + ((n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * ( n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
-
  \
-                + ( ((n_overline_tb())[i] * g( omega_n_12 )[i, j] * v_bar[j] - 0 ) * ( (n_overline_tb())[k] * nu_v_bar[k])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                + ( (n_overline[i] * g( omega_n_12 )[i, j] * v_bar[j] - 0 ) * ( n_overline[k] * nu_v_bar[k])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+                + ( ((n_overline_tb())[i] * v_bar[i] - 0 ) * ( (n_overline_tb())[j] * nu_v_bar[j])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                + ( (n_overline[i] * v_bar[i] - 0 ) * ( n_overline[j] * nu_v_bar[j])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
         )
 
 
