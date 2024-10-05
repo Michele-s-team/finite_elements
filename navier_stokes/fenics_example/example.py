@@ -101,10 +101,10 @@ w_n_0 = Function( Q_w_n )
 z_n_12_0 = Function( Q_z_n )
 omega_n_12_0 = Function( Q_omega_n )
 
-v_bar, w_bar, phi, v_n, w_n, omega_n, z_n = split( psi )
+v_bar, w_bar, phi, v_n, w_n, omega_n_12, z_n_12 = split( psi )
 V = (v_bar + v_n_1) / 2.0
 W = (w_bar + w_n_1) / 2.0
-sigma_ast = (sigma_n_12 + sigma_n_32) / 2.0
+# sigma_ast = (sigma_n_12 + sigma_n_32) / 2.0
 #w_{n-1/2}
 # w_n_12 = (w_n + w_n_1) / 2.0
 #omega_{n-1/2}
