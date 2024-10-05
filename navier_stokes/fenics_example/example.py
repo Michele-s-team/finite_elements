@@ -265,32 +265,27 @@ for step in range(N):
 
     F_z_n = ( \
                         ( \
-                                    (z_n_12 - z_n_32) / Deltat \
-                                    - w_n_1 * ((normal( omega_n_12 ))[2] - (
-                                        (normal( omega_n_12 ))[0] * omega_n_12[0] + (normal( omega_n_12 ))[1] * omega_n_12[1])) \
+                                    (z_n_12 - z_n_32) \
+                                    - Deltat * w_n_1 * ( (normal( omega_n_12 ))[2] - ( (normal( omega_n_12 ))[0] * omega_n_12[0] + (normal( omega_n_12 ))[1] * omega_n_12[1] ) ) \
                             ) * nu_z_n_12 \
                 ) * sqrt_detg( omega_n_12 ) * dx
 
-    F_omega_n = (z_n_12 * Nabla_v( nu_omega_n_12, omega_n_12 )[i, i] + omega_n_12[i] * nu_omega_n_12[i]) * sqrt_detg( omega_n_12 ) * dx \
+    F_omega_n = ( z_n_12 * Nabla_v( nu_omega_n_12, omega_n_12 )[i, i] + omega_n_12[i] * nu_omega_n_12[i] ) * sqrt_detg( omega_n_12 ) * dx \
                 - ( \
                             ((n_lr( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n_12 * nu_omega_n_12[j]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
                             + ((n_tb( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n_12 * nu_omega_n_12[j]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
                             + ((n( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n_12 * nu_omega_n_12[j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
                 )
 
-
-
     F_N = alpha * ( \
-                (((n_overline_lr())[i] * omega_n_12[i] - (n_overline_lr())[i] * grad_square[i]) * ( (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
-                + (((n_overline_tb())[i] * omega_n_12[i] - (n_overline_tb())[i] * grad_square[i]) * ( (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
-                + ((n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * ( n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+                ( ((n_overline_lr())[i] * omega_n_12[i] - (n_overline_lr())[i] * grad_square[i]) * ( (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l]) ) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                + ( ((n_overline_tb())[i] * omega_n_12[i] - (n_overline_tb())[i] * grad_square[i]) * ( (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l]) ) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
+                + ( (n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * ( n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l]) ) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
  \
                 + ( ((n_overline_tb())[i] * v_bar[i] - 0 ) * ( (n_overline_tb())[j] * nu_v_bar[j])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
                 + ( (n_overline[i] * v_bar[i] - 0 ) * ( n_overline[j] * nu_v_bar[j])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
         )
-
-
-
+    
     # total functional for the mixed problem
     F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_z_n + F_omega_n) + F_N
 
