@@ -105,8 +105,6 @@ boundary_square = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.41/
 boundary_circle = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.41/2.0, 2)) < 0.1'
 #CHANGE PARAMETERS HERE
 
-
-
 #norm for UFL vectors
 def ufl_norm(x):
     return(sqrt(ufl.dot(x, x)))
@@ -114,7 +112,6 @@ def ufl_norm(x):
 epsilon = ufl.PermutationSymbol(2)
 
 #CHANGE PARAMETERS HERE
-#trial analytical expression for a vector
 class TangentVelocityExpression(UserExpression):
     def eval(self, values, x):
         values[0] = 0.0
@@ -122,27 +119,23 @@ class TangentVelocityExpression(UserExpression):
     def value_shape(self):
         return (2,)
 
-# trial analytical expression for the  surface tension p(x,y)
 class NormalVelocityExpression(UserExpression):
         def eval(self, values, x):
             values[0] = 0.0
         def value_shape(self):
             return (1,)
 
-# trial analytical expression for the  surface tension p(x,y)
 class SurfaceTensionExpression(UserExpression):
         def eval(self, values, x):
             values[0] = 0.0
         def value_shape(self):
             return (1,)
 
-# trial analytical expression for the  surface tension p(x,y)
 class ManifoldExpression(UserExpression):
         def eval(self, values, x):
             values[0] = 0.0
         def value_shape(self):
             return (1,)
-
 
 class OmegaExpression(UserExpression):
     def eval(self, values, x):
