@@ -261,7 +261,7 @@ for step in range(N):
 
     F_v_n = ( ( rho * (v_n[i] - v_bar[i]) + Deltat * g_c( omega_n_12 )[i, j] * (phi.dx( j )) ) * nu_v_n[i] ) * sqrt_detg( omega_n_12 ) * dx
 
-    F_w_n = ((w_n - w_bar) * nu_w_n) * sqrt_detg( omega_n_12 ) * dx
+    F_w_n = ( (w_n - w_bar) * nu_w_n)  * sqrt_detg( omega_n_12 ) * dx
 
     F_z_n = ( \
                         ( \
