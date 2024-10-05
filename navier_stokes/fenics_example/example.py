@@ -291,7 +291,6 @@ for step in range(N):
     solver = NonlinearVariationalSolver( problem )
 
     solver.solve()
-    # sign
 
     #update previous solution: update v_n_2 and w_n_2
     #v_bar, w_bar, phi, v_n, w_n, omega_n_12, z_n_12 = split( psi )
@@ -301,9 +300,14 @@ for step in range(N):
     v_n_2.assign(v_n_1)
     v_n_1.assign(v_n_dummy)
 
-    sigma_n_12.assign(sigma_n_32-phi_dummy)
+    w_n_1.assign(w_n_dummy)
+
+    sigma_n_12.assign(sigma_n_32 - phi_dummy)
     sigma_n_32.assign(sigma_n_12)
 
+    z_n_32.assign(z_n_12_dummy)
+
+    # sign
 
     #print solution to file
     # append to the full time series solution at the current t
