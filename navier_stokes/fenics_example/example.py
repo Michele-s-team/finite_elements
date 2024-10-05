@@ -178,8 +178,6 @@ HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_t" + str( read_step-1 ) +
 print("... done.")
 '''
 
-#sign
-
 
 # Time-stepping
 for step in range(N):
@@ -220,13 +218,12 @@ for step in range(N):
 
     F_w_bar = ( \
                           rho * ((w_bar - w_n_1) / Deltat + V[i] * V[k] * b( omega_n_12 )[k, i]) * nu_w_bar \
-                          - rho * W *
-                          Nabla_v( vector_times_scalar( 3.0 / 2.0 * v_n_1 - 1.0 / 2.0 * v_n_2, nu_w_bar ), omega_n_12 )[
-                              i, i] \
+                          - rho * W * Nabla_v( vector_times_scalar( 3.0 / 2.0 * v_n_1 - 1.0 / 2.0 * v_n_2, nu_w_bar ), omega_n_12 )[i, i] \
                           + 2.0 * kappa * ( \
                                       - g_c( omega_n_12 )[i, j] * ((H( omega_n_12 )).dx( j )) * (nu_w_bar.dx( i )) \
                                       + 2.0 * H( omega_n_12 ) * ((H( omega_n_12 )) ** 2 - K( omega_n_12 )) * nu_w_bar \
                               ) \
+                  #sign
                           - ( \
                                       2.0 * sigma_n_12 * H( omega_n_12 ) \
                                       + 2.0 * eta * (g_c( omega_n_12 )[i, k] * Nabla_v( V, omega_n_12 )[j, k] *
