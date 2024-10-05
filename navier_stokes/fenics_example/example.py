@@ -128,13 +128,13 @@ grad_square = interpolate( grad_square_Expression( element=Q_omega_n.ufl_element
 
 #CHANGE PARAMETERS HERE
 C=0.1
-l_profile_v = Expression(('C * 4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h, C=C)
+l_profile_v_bar = Expression( ('C * 4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h, C=C )
 #CHANGE PARAMETERS HERE
 
 
 # boundary conditions (BCs)
 #BCs for v_bar
-bc_v_bar_l = DirichletBC(Q.sub(0), l_profile_v, boundary_l)
+bc_v_bar_l = DirichletBC( Q.sub(0), l_profile_v_bar, boundary_l )
 # bc_v_bar_tb = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_tb)
 # bc_v_bar_circle = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_circle)
 
@@ -143,12 +143,11 @@ bc_w_bar_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr)
 bc_w_bar_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb)
 bc_w_bar_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle)
 
-
 #BC for phi
 bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
 
 #CHANGE PARAMETERS HERE
-#BCs for z
+#BCs for z^{n-1/2}
 bc_z_circle = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_element()), boundary_circle)
 bc_z_square = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_element(), h = h), boundary_square)
 #CHANGE PARAMETERS HERE
@@ -156,14 +155,14 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_ele
 #all BCs
 bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
 
+
 #Option 1: set initial profiles
-v_n_1 = interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()), Q_v_n)
-v_n_2 = v_n_1
-w_n_1 = interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()), Q_w_n)
-sigma_n_12 = interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ), Q_phi )
-sigma_n_32 = sigma_n_12
-z_n_12 = interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ), Q_z_n )
-# omega_n_12 = interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ), Q_omega_n )
+v_n_1.interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()))
+v_n_2.assign(v_n_1)
+w_n_1.interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()))
+sigma_n_32.interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ))
+z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
+omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
 
 
 #Option 2:read initial profiles by reading them from file
@@ -173,44 +172,19 @@ print("Reading initial condition from file ... ")
 HDF5File( MPI.comm_world, "solution/snapshots/h5/v_t" + str( read_step-1 ) + ".h5", "r" ).read(v_n_1, "/f" )
 HDF5File( MPI.comm_world, "solution/snapshots/h5/v_t" + str( read_step-2 ) + ".h5", "r" ).read(v_n_2, "/f" )
 HDF5File( MPI.comm_world, "solution/snapshots/h5/w_t" + str( read_step-1 ) + ".h5", "r" ).read(w_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_t" + str( read_step-1 ) + ".h5", "r" ).read(sigma_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_t" + str( read_step-2 ) + ".h5", "r" ).read(sigma_n_2, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/z_t" + str( read_step-1 ) + ".h5", "r" ).read(z_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_t" + str( read_step-1 ) + ".h5", "r" ).read(omega_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_t" + str( read_step-1 ) + ".h5", "r" ).read(sigma_n_32, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/z_t" + str( read_step-1 ) + ".h5", "r" ).read(z_n_32, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_t" + str( read_step-1 ) + ".h5", "r" ).read(omega_n_32, "/f" )
 print("... done.")
 '''
+
+#sign
+
 
 # Time-stepping
 for step in range(N):
 
     print("\n* step = ", step, "\n")
-
-    if step>0:
-        #append to the full time series solution at the current step
-        xdmffile_v.write( v_n_1, step )
-        xdmffile_w.write( w_n_1, step )
-        xdmffile_sigma.write( sigma_n_12, step )
-        xdmffile_omega.write( omega_n_12, step )
-        xdmffile_z.write( z_n_12, step )
-
-        #write the solution at current step, so, in case the code crashes, it can be read back
-        #write the solutions in .h5 format into  snapshots/h5
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n" + str( step ) + ".h5", "w" ).write(v_n_1, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n" + str( step ) + ".h5", "w" ).write(w_n_1, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n" + str( step ) + ".h5", "w" ).write( omega_n_12, "/f" )
-        HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n" + str( step ) + ".h5", "w" ).write( z_n_12, "/f" )
-
-        #write the solutions in .xdmf format into  snapshots/xdmf
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n' + str( step ) + '.xdmf' ).write( v_n_1 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n' + str( step ) + '.xdmf' ).write( w_n_1 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n' + str( step ) + '.xdmf' ).write( sigma_n_12 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n' + str( step ) + '.xdmf' ).write( omega_n_12 )
-        XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n' + str( step ) + '.xdmf' ).write( z_n_12 )
-
-
-
-
 
     '''
     Define variational problem : F_vbar, F_wbar .... F_nz are related to the PDEs for vbar, ..., zn respecitvely . F_N enforces the BCs with Nitche's method. 
@@ -358,3 +332,26 @@ for step in range(N):
     sigma_n.assign( sigma_n_32 - 2.0 * project( phi_, Q_phi ) )
     sigma_n_32.assign( sigma_n_12 )
     sigma_n_12.assign( sigma_n )
+
+    #print solution to file
+    # append to the full time series solution at the current step
+    xdmffile_v.write( v_n_1, step )
+    xdmffile_w.write( w_n_1, step )
+    xdmffile_sigma.write( sigma_n_12, step )
+    xdmffile_omega.write( omega_n_12, step )
+    xdmffile_z.write( z_n_12, step )
+
+    # write the solution at current step, so, in case the code crashes, it can be read back
+    # write the solutions in .h5 format into  snapshots/h5
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n" + str( step ) + ".h5", "w" ).write( v_n_1, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n" + str( step ) + ".h5", "w" ).write( w_n_1, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n" + str( step ) + ".h5", "w" ).write( omega_n_12, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n" + str( step ) + ".h5", "w" ).write( z_n_12, "/f" )
+
+    # write the solutions in .xdmf format into  snapshots/xdmf
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n' + str( step ) + '.xdmf' ).write( v_n_1 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n' + str( step ) + '.xdmf' ).write( w_n_1 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n' + str( step ) + '.xdmf' ).write( sigma_n_12 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n' + str( step ) + '.xdmf' ).write( omega_n_12 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n' + str( step ) + '.xdmf' ).write( z_n_12 )
