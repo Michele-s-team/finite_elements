@@ -321,6 +321,7 @@ for step in range(N):
     xdmffile_v.write( v_n_dummy, t )
     xdmffile_w.write( w_n_dummy, t )
     xdmffile_sigma.write( sigma_n_12, t - dt/2.0 )
+    xdmffile_phi.write( phi_dummy, t )
     xdmffile_omega.write( omega_n_12_dummy, t - dt/2.0 )
     xdmffile_z.write( z_n_12_dummy, t - dt/2.0 )
 
