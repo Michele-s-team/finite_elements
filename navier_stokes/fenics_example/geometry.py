@@ -33,7 +33,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e1
+alpha = 1e3
 tol = 1E-3
 #CHANGE PARAMETERS HERE
 
@@ -56,7 +56,7 @@ n_overline = FacetNormal(mesh)
 #finite elements for sigma .... omega
 P_v_bar = VectorElement( 'P', triangle, 2 )
 P_w_bar = FiniteElement( 'P', triangle, 1 )
-P_phi = FiniteElement('P', triangle, 2)
+P_phi = FiniteElement('P', triangle, 1)
 P_v_n = VectorElement( 'P', triangle, 2 )
 P_w_n = FiniteElement( 'P', triangle, 1 )
 P_omega_n = VectorElement( 'P', triangle, 3 )
