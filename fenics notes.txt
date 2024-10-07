@@ -19,7 +19,7 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
 
 - use paraview version 5.10.1, the other versions may crash and freeze as soon as you open a file and try to press a button 
 - the (?) in Paraview when plotting a field f may be due to the fact that you are allocating a new field at the next time loop, e.g., with f = interpolate(...)
-
+- Be careful that Pycharm intellisense may include some lines that you don't want without you noticing ! 
 - BE CAREFUL WHEN YOU WRITE INTO A FIELD: IT MAY ALLOCATE A NEW FIELD WRITTEN IN A NEW MEMORY ADDRESS:
     * if you do
         f = Function(Q) (A)
@@ -33,6 +33,12 @@ Compilation failed! Sources, command, and errors have been written to: /home/fen
          f.assign(f_dummy) (E)
     then (D) and (E) will assign my_expression to f by keeping the same memory allocation of f, and g will be updated accordingly.
     * on the other hand, if you do f.interpolate( my_function_Expression( element=Q.ufl_element() ) ), f will not be reallocated and this call to interpolate will write the expression into the already existing memory address of f
+    * when writing a field to a file, if you do
+        xdmf_file_sigma.write( project(-p_n_12, Q),  t)
+    this will allocate a new field at every call of write() and produce a (?) when visualizing the field in Paraview. Instead, do sigma_n_12 = Function(Q) at the beginning of the code and
+        sigma_n_12.assign( project(-p_n_12, Q) )
+        xdmf_file_sigma.write( sigma_n_12,  t - dt/2.0 )
+    which will not yield the (?) in paraview.
 
     
     * similarly for a function in a mixed space:
