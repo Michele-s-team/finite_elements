@@ -43,11 +43,8 @@ print("N = ", N)
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
-xdmffile_v_bar = XDMFFile( (args.output_directory) + '/v_bar.xdmf' )
-xdmffile_w_bar = XDMFFile( (args.output_directory) + '/w_bar.xdmf' )
 xdmffile_v = XDMFFile( (args.output_directory) + '/v_n.xdmf' )
 xdmffile_w = XDMFFile( (args.output_directory) + '/w_n.xdmf' )
-xdmffile_phi = XDMFFile( (args.output_directory) + '/phi.xdmf' )
 xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma_n_12.xdmf' )
 xdmffile_omega = XDMFFile( (args.output_directory) + '/omega_n_12.xdmf' )
 xdmffile_z = XDMFFile( (args.output_directory) + '/z_n_12.xdmf' )
@@ -89,35 +86,23 @@ print("Integral circle = ", integral_circle, " exact value = 0.205204")
 #the Jacobian
 J_psi = TrialFunction(Q)
 psi = Function(Q)
-nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_omega_n_12, nu_z_n_12 = TestFunctions( Q )
+nu_v_n, nu_w_n, nu_omega_n_12, nu_z_n_12 = TestFunctions( Q )
 #fields at the preceeding steps
-v_n_1 = Function(Q_v_n)
-v_n_2 = Function(Q_v_n)
-w_n_1 = Function(Q_w_n)
+# v_n_1 = Function(Q_v_n)
+# v_n_2 = Function(Q_v_n)
+# w_n_1 = Function(Q_w_n)
 sigma_n_12 = Function( Q_phi )
-sigma_n_32 = Function( Q_phi )
-z_n_32 = Function( Q_z_n )
+# sigma_n_32 = Function( Q_phi )
+# z_n_32 = Function( Q_z_n )
 
-#vbar_0, ...., z_n_0 are used to store the initial conditions
-v_bar_0 = Function( Q_v_bar )
-w_bar_0 = Function( Q_w_bar )
-phi_0 = Function(Q_phi)
+#v_n_0, ...., z_n_0 are used to store the initial conditions
 # sigma_n_12_0 = Function( Q_phi )
 v_n_0 = Function( Q_v_n )
 w_n_0 = Function( Q_w_n )
 z_n_12_0 = Function( Q_z_n )
 omega_n_12_0 = Function( Q_omega_n )
 
-v_bar, w_bar, phi, v_n, w_n, omega_n_12, z_n_12 = split( psi )
-V = (v_bar + v_n_1) / 2.0
-W = (w_bar + w_n_1) / 2.0
-# sigma_ast = (sigma_n_12 + sigma_n_32) / 2.0
-#w_{n-1/2}
-# w_n_12 = (w_n + w_n_1) / 2.0
-#omega_{n-1/2}
-# omega_n_12 = (omega_n + omega_n_1) / 2.0
-#sigma_{n-1/2}
-# sigma_n_12 = (sigma_n + sigma_n_1_12) / 2.0
+v_n, w_n, omega_n_12, z_n_12 = split( psi )
 
 
 # Define expressions used in variational forms
@@ -141,17 +126,17 @@ l_profile_v_bar = Expression( ('C * 4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), 
 
 # boundary conditions (BCs)
 #BCs for v_bar
-bc_v_bar_l = DirichletBC( Q.sub(0), l_profile_v_bar, boundary_l )
+bc_v_n_l = DirichletBC( Q.sub( 0 ), l_profile_v_bar, boundary_l )
 # bc_v_bar_tb = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_tb)
 # bc_v_bar_circle = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_circle)
 
 #BCs for w_bar
-bc_w_bar_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr)
-bc_w_bar_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb)
-bc_w_bar_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle)
+bc_w_n_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr )
+bc_w_n_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb )
+bc_w_n_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle )
 
-#BC for phi
-bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
+# #BC for phi
+# bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
 
 #CHANGE PARAMETERS HERE
 #BCs for z^{n-1/2}
@@ -160,30 +145,19 @@ bc_z_square = DirichletBC(Q.sub(6), Expression('0.0', element = Q.sub(6).ufl_ele
 #CHANGE PARAMETERS HERE
 
 #all BCs
-bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
+bcs = [bc_v_n_l, bc_w_n_lr, bc_w_n_tb, bc_w_n_circle, bc_z_circle, bc_z_square]
 
 
 #Option 1: set initial profiles
-v_n_1.interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()))
-v_n_2.assign(v_n_1)
-w_n_1.interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()))
-sigma_n_32.interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ))
-z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
+# v_n_1.interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()))
+# v_n_2.assign(v_n_1)
+# w_n_1.interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()))
+# sigma_n_32.interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ))
+# z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
 # omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
 
 
-#Option 2:read initial profiles by reading them from file
-'''
-read_step = 400
-print("Reading initial condition from file ... ")
-HDF5File( MPI.comm_world, "solution/snapshots/h5/v_t" + str( read_step-1 ) + ".h5", "r" ).read(v_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/v_t" + str( read_step-2 ) + ".h5", "r" ).read(v_n_2, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/w_t" + str( read_step-1 ) + ".h5", "r" ).read(w_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_t" + str( read_step-1 ) + ".h5", "r" ).read(sigma_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/z_t" + str( read_step-1 ) + ".h5", "r" ).read(z_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_t" + str( read_step-1 ) + ".h5", "r" ).read(omega_n_32, "/f" )
-print("... done.")
-'''
+
 
 
 # Time-stepping
