@@ -101,7 +101,6 @@ omega_n_12_0 = Function( Q_omega_n )
 v_n, w_n, omega_n_12, z_n_12 = split( psi )
 
 # Define expressions used in variational forms
-Deltat = Constant( dt )
 kappa = Constant( kappa )
 rho = Constant( rho )
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
@@ -161,61 +160,59 @@ the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}:
 
 F_v_n = ( \
                       rho * (( \
-                                         (v_bar[i] - v_n_1[i]) \
-                                         + Deltat * ((3.0 / 2.0 * v_n_1[j] - 1.0 / 2.0 * v_n_2[j]) * Nabla_v( V, omega_n_12 )[i, j] \
-                                                     - 2.0 * V[j] * W * g_c( omega_n_12 )[i, k] * b( omega_n_12 )[k, j]) \
-                                 ) * nu_v_bar[i] \
-                             + Deltat * 1.0 / 2.0 * (W ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
+                                        ((3.0 / 2.0 * v_n[j] - 1.0 / 2.0 * v_n[j]) * Nabla_v( v_n, omega_n_12 )[i, j] \
+                                                     - 2.0 * v_n[j] * w_n * g_c( omega_n_12 )[i, k] * b( omega_n_12 )[k, j]) \
+                                 ) * nu_v_n[i] \
+                             + 1.0 / 2.0 * (w_n ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[i, j] \
                              ) \
-                      + Deltat * (sigma_n_32 * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[i, j] \
-                                  + 2.0 * eta * d_c( V, W, omega_n_12 )[i, j] * Nabla_f( nu_v_bar, omega_n_12 )[j, i])
+                      + (sigma_n_32 * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[i, j] \
+                                  + 2.0 * eta * d_c( v_n, w_n, omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[j, i])
           ) * sqrt_detg( omega_n_12 ) * dx \
-        - Deltat * rho / 2.0 * ( \
-                      ((W ** 2) * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
-                      + ((W ** 2) * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                      + ((W ** 2) * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+        - rho / 2.0 * ( \
+                      ((w_n ** 2) * (n_lr( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                      + ((w_n ** 2) * (n_tb( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                      + ((w_n ** 2) * (n( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           ) \
-        - Deltat * ( \
-                      (sigma_n_32 * (n_lr( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
-                      + (sigma_n_32 * (n_tb( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                      + (sigma_n_32 * (n( omega_n_12 ))[i] * nu_v_bar[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+        - ( \
+                      (sigma_n_32 * (n_lr( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                      + (sigma_n_32 * (n_tb( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                      + (sigma_n_32 * (n( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           ) \
-        - Deltat * 2.0 * eta * ( \
-                      (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_bar[j]) * sqrt_deth_square( omega_n_12 ) * ds_l \
-                      + (d_c( V, W, omega_n_12 )[i, 1] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_bar[1]) * sqrt_deth_square( omega_n_12 ) * ds_r \
-                      + (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_tb( omega_n_12 ))[k] * nu_v_bar[j]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                      + (d_c( V, W, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n( omega_n_12 ))[k] * nu_v_bar[j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+        - 2.0 * eta * ( \
+                      (d_c( v_n, w_n, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_n[j]) * sqrt_deth_square( omega_n_12 ) * ds_l \
+                      + (d_c( v_n, w_n, omega_n_12 )[i, 1] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_n[1]) * sqrt_deth_square( omega_n_12 ) * ds_r \
+                      + (d_c( v_n, w_n, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_tb( omega_n_12 ))[k] * nu_v_n[j]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                      + (d_c( v_n, w_n, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n( omega_n_12 ))[k] * nu_v_n[j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           )
 
 F_w_n = ( \
-                      rho * ((w_bar - w_n_1) + Deltat * V[i] * V[k] * b( omega_n_12 )[k, i]) * nu_w_bar \
-                      - Deltat * rho * W * Nabla_v( vector_times_scalar( 3.0 / 2.0 * v_n_1 - 1.0 / 2.0 * v_n_2, nu_w_bar ), omega_n_12 )[i, i] \
-                      + Deltat * 2.0 * kappa * ( \
-                                  - g_c( omega_n_12 )[i, j] * ((H( omega_n_12 )).dx( j )) * (nu_w_bar.dx( i )) \
-                                  + 2.0 * H( omega_n_12 ) * ((H( omega_n_12 )) ** 2 - K( omega_n_12 )) * nu_w_bar \
+                      rho * (v_n[i] * v_n[k] * b( omega_n_12 )[k, i]) * nu_w_n \
+                      - rho * w_n * Nabla_v( vector_times_scalar( 3.0 / 2.0 * v_n - 1.0 / 2.0 * v_n, nu_w_n ), omega_n_12 )[i, i] \
+                      + 2.0 * kappa * ( \
+                                  - g_c( omega_n_12 )[i, j] * ((H( omega_n_12 )).dx( j )) * (nu_w_n.dx( i )) \
+                                  + 2.0 * H( omega_n_12 ) * ((H( omega_n_12 )) ** 2 - K( omega_n_12 )) * nu_w_n \
                           ) \
-                      - Deltat * ( \
+                      - ( \
                                   2.0 * sigma_n_32 * H( omega_n_12 ) \
-                                  + 2.0 * eta * (g_c( omega_n_12 )[i, k] * Nabla_v( V, omega_n_12 )[j, k] *
-                                                 (b( omega_n_12 ))[i, j] - 2.0 * W * (
+                                  + 2.0 * eta * (g_c( omega_n_12 )[i, k] * Nabla_v( v_n, omega_n_12 )[j, k] *
+                                                 (b( omega_n_12 ))[i, j] - 2.0 * w_n * (
                                                          2.0 * (H( omega_n_12 )) ** 2 - K( omega_n_12 )))
-                      ) * nu_w_bar
+                      ) * nu_w_n
           ) * sqrt_detg( omega_n_12 ) * dx \
-        + Deltat * rho * ( \
-                      (W * nu_w_bar * (n_lr( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
-                      + (W * nu_w_bar * (n_tb( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                      + (W * nu_w_bar * (n( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+        + rho * ( \
+                      (w_n * nu_w_n * (n_lr( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * (3.0 / 2.0 * v_n[i] - 1.0 / 2.0 * v_n[i])) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                      + (w_n * nu_w_n * (n_tb( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * (3.0 / 2.0 * v_n[i] - 1.0 / 2.0 * v_n[i])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                      + (w_n * nu_w_n * (n( omega_n_12 ))[j] * g( omega_n_12 )[j, i] * (3.0 / 2.0 * v_n[i] - 1.0 / 2.0 * v_n[i])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           ) \
-        + Deltat * 2.0 * kappa * ( \
-                      (nu_w_bar * (n_lr( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
-                      + (nu_w_bar * (n_tb( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                      + (nu_w_bar * (n( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+        + 2.0 * kappa * ( \
+                      (nu_w_n * (n_lr( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                      + (nu_w_n * (n_tb( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                      + (nu_w_n * (n( omega_n_12 ))[i] * ((H( omega_n_12 )).dx( i ))) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           )
 
 F_z_n = ( \
                     ( \
-                                (z_n_12 - z_n_32) \
-                                - Deltat * w_n_1 * ((normal( omega_n_12 ))[2] - ((normal( omega_n_12 ))[0] * omega_n_12[0] + (normal( omega_n_12 ))[1] * omega_n_12[1])) \
+                                - w_n * ((normal( omega_n_12 ))[2] - ((normal( omega_n_12 ))[0] * omega_n_12[0] + (normal( omega_n_12 ))[1] * omega_n_12[1])) \
                         ) * nu_z_n_12 \
             ) * sqrt_detg( omega_n_12 ) * dx
 
@@ -233,8 +230,8 @@ F_N = alpha * ( \
                         ds_t + ds_b) \
             + ((n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * (n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
  \
-            + (((n_overline_tb())[i] * v_bar[i] - 0) * ((n_overline_tb())[j] * nu_v_bar[j])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-            + ((n_overline[i] * v_bar[i] - 0) * (n_overline[j] * nu_v_bar[j])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+            + (((n_overline_tb())[i] * v_bar[i] - 0) * ((n_overline_tb())[j] * nu_v_n[j])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+            + ((n_overline[i] * v_bar[i] - 0) * (n_overline[j] * nu_v_n[j])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
     )
 
 # total functional for the mixed problem
@@ -252,10 +249,10 @@ solver.solve()
 # get the solution and write it to file
 v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
 
-v_n_2.assign( v_n_1 )
-v_n_1.assign( v_n_dummy )
+# v_n_2.assign( v_n_1 )
+# v_n_1.assign( v_n_dummy )
 
-w_n_1.assign( w_n_dummy )
+# w_n_1.assign( w_n_dummy )
 
 sigma_n_12.assign( sigma_n_32 - project( phi_dummy, Q_phi ) )
 sigma_n_32.assign( sigma_n_12 )
