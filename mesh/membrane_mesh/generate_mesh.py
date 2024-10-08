@@ -19,7 +19,7 @@ resolution = (float)(args.resolution)
 L = 2.2
 h = 0.41
 r = 0.05
-c_r = [L/2.0, 0.2, 0]
+c_r = [L/2.0, h/2.0, 0]
 #CHANGE PARAMETERS HERE
 
 
