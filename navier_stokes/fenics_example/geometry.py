@@ -18,7 +18,7 @@ args = parser.parse_args()
 L = 2.2
 h = 0.41
 r = 0.05
-c_r = [L/2.0, h/2.0]
+c_r = [L/2.0, 0.2]
 # time step size
 #bending rigidity
 kappa = 1.0
