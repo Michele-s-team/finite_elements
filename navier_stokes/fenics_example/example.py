@@ -129,8 +129,8 @@ bc_w_n_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr )
 bc_w_n_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb )
 bc_w_n_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle )
 
-# #BC for phi
-# bc_phi = DirichletBC(Q.sub(2), Constant(0), boundary_r)
+#BC for sigma
+bc_sigma = DirichletBC(Q.sub(2), Constant(0), boundary_r)
 
 # CHANGE PARAMETERS HERE
 # BCs for z^{n-1/2}
@@ -139,7 +139,7 @@ bc_z_square = DirichletBC( Q.sub( 6 ), Expression( '0.0', element=Q.sub( 6 ).ufl
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_n_l, bc_w_n_lr, bc_w_n_tb, bc_w_n_circle, bc_z_circle, bc_z_square]
+bcs = [bc_v_n_l, bc_w_n_lr, bc_w_n_tb, bc_sigma, bc_w_n_circle, bc_z_circle, bc_z_square]
 
 
 # Option 1: set initial profiles
@@ -166,7 +166,7 @@ F_v_n = ( \
                                  ) * nu_v_n[i] \
                              + 1.0 / 2.0 * (w_n ** 2) * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[i, j] \
                              ) \
-                      + (sigma_n_32 * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[i, j] \
+                      + (sigma_n * g_c( omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[i, j] \
                                   + 2.0 * eta * d_c( v_n, w_n, omega_n_12 )[i, j] * Nabla_f( nu_v_n, omega_n_12 )[j, i])
           ) * sqrt_detg( omega_n_12 ) * dx \
         - rho / 2.0 * ( \
@@ -175,9 +175,9 @@ F_v_n = ( \
                       + ((w_n ** 2) * (n( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           ) \
         - ( \
-                      (sigma_n_32 * (n_lr( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
-                      + (sigma_n_32 * (n_tb( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-                      + (sigma_n_32 * (n( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
+                      (sigma_n * (n_lr( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
+                      + (sigma_n * (n_tb( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+                      + (sigma_n * (n( omega_n_12 ))[i] * nu_v_n[i]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
           ) \
         - 2.0 * eta * ( \
                       (d_c( v_n, w_n, omega_n_12 )[i, j] * g( omega_n_12 )[i, k] * (n_lr( omega_n_12 ))[k] * nu_v_n[j]) * sqrt_deth_square( omega_n_12 ) * ds_l \
@@ -194,7 +194,7 @@ F_w_n = ( \
                                   + 2.0 * H( omega_n_12 ) * ((H( omega_n_12 )) ** 2 - K( omega_n_12 )) * nu_w_n \
                           ) \
                       - ( \
-                                  2.0 * sigma_n_32 * H( omega_n_12 ) \
+                                  2.0 * sigma_n * H( omega_n_12 ) \
                                   + 2.0 * eta * (g_c( omega_n_12 )[i, k] * Nabla_v( v_n, omega_n_12 )[j, k] *
                                                  (b( omega_n_12 ))[i, j] - 2.0 * w_n * (
                                                          2.0 * (H( omega_n_12 )) ** 2 - K( omega_n_12 )))
@@ -248,23 +248,17 @@ solver.solve()
 # update previous solution:
 # v_n, w_n, omega_n_12, z_n_12 = split( psi )
 # get the solution and write it to file
-v_n_dummy, w_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
+v_n_dummy, w_n_dummy, sigma_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
 
 # v_n_2.assign( v_n_1 )
 # v_n_1.assign( v_n_dummy )
 
 # w_n_1.assign( w_n_dummy )
 
-sigma_n_12.assign( sigma_n_32 - project( phi_dummy, Q_phi ) )
-sigma_n_32.assign( sigma_n_12 )
-
-z_n_32.assign( z_n_12_dummy )
-
 # print solution to file
-# append to the full time series solution at the current t
 
-xdmffile_v.write( v_n_dummy, t )
-xdmffile_w.write( w_n_dummy, t )
-xdmffile_sigma.write( sigma_n_12, t - dt / 2.0 )
-xdmffile_omega.write( omega_n_12_dummy, t - dt / 2.0 )
-xdmffile_z.write( z_n_12_dummy, t - dt / 2.0 )
+xdmffile_v.write( v_n_dummy, 0)
+xdmffile_w.write( w_n_dummy, 0)
+xdmffile_sigma.write( sigma_n_dummy, 0 )
+xdmffile_omega.write( omega_n_12_dummy,0 )
+xdmffile_z.write( z_n_12_dummy, 0 )
