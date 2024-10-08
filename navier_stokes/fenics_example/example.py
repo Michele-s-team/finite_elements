@@ -41,11 +41,11 @@ print( "N = ", N )
 # mesh = generate_mesh(domain, 64)
 
 # Create XDMF files for visualization output
-xdmffile_v = XDMFFile( (args.output_directory) + '/v_n.xdmf' )
-xdmffile_w = XDMFFile( (args.output_directory) + '/w_n.xdmf' )
-xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma_n_12.xdmf' )
-xdmffile_omega = XDMFFile( (args.output_directory) + '/omega_n_12.xdmf' )
-xdmffile_z = XDMFFile( (args.output_directory) + '/z_n_12.xdmf' )
+xdmffile_v = XDMFFile( (args.output_directory) + '/v.xdmf' )
+xdmffile_w = XDMFFile( (args.output_directory) + '/w.xdmf' )
+xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
+xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
+xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( n_overline_smooth(), 0 )
@@ -82,12 +82,12 @@ print( "Integral circle = ", integral_circle, " exact value = 0.205204" )
 # the Jacobian
 J_psi = TrialFunction( Q )
 psi = Function( Q )
-nu_v_n, nu_w_n, nu_omega_n_12, nu_z_n_12 = TestFunctions( Q )
+nu_v_n, nu_w_n, nu_sigma_n, nu_omega_n_12, nu_z_n_12 = TestFunctions( Q )
 # fields at the preceeding steps
 # v_n_1 = Function(Q_v_n)
 # v_n_2 = Function(Q_v_n)
 # w_n_1 = Function(Q_w_n)
-sigma_n_12 = Function( Q_phi )
+# sigma_n_12 = Function( Q_phi )
 # sigma_n_32 = Function( Q_phi )
 # z_n_32 = Function( Q_z_n )
 
@@ -95,10 +95,11 @@ sigma_n_12 = Function( Q_phi )
 # sigma_n_12_0 = Function( Q_phi )
 v_n_0 = Function( Q_v_n )
 w_n_0 = Function( Q_w_n )
+sigma_n_0 = Function( Q_sigma_n )
 z_n_12_0 = Function( Q_z_n )
 omega_n_12_0 = Function( Q_omega_n )
 
-v_n, w_n, omega_n_12, z_n_12 = split( psi )
+v_n, w_n, sigma_n, omega_n_12, z_n_12 = split( psi )
 
 # Define expressions used in variational forms
 kappa = Constant( kappa )
