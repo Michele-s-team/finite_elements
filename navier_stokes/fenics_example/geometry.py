@@ -54,25 +54,19 @@ n_overline = FacetNormal(mesh)
 
 # Define function spaces
 #finite elements for sigma .... omega
-P_v_bar = VectorElement( 'P', triangle, 2 )
-P_w_bar = FiniteElement( 'P', triangle, 1 )
-P_phi = FiniteElement('P', triangle, 1)
 P_v_n = VectorElement( 'P', triangle, 2 )
 P_w_n = FiniteElement( 'P', triangle, 1 )
 P_omega_n = VectorElement( 'P', triangle, 3 )
 P_z_n = FiniteElement( 'P', triangle, 1 )
 
-element = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_omega_n, P_z_n] )
+element = MixedElement( [P_v_n, P_w_n, P_omega_n, P_z_n] )
 #total function space
 Q = FunctionSpace(mesh, element)
 #function spaces for vbar .... zn
-Q_v_bar = Q.sub(0).collapse()
-Q_w_bar = Q.sub(1).collapse()
-Q_phi = Q.sub(2).collapse()
-Q_v_n = Q.sub(3).collapse()
-Q_w_n = Q.sub(4).collapse()
-Q_omega_n = Q.sub(5).collapse()
-Q_z_n= Q.sub(6).collapse()
+Q_v_n = Q.sub(0).collapse()
+Q_w_n = Q.sub(1).collapse()
+Q_omega_n = Q.sub(2).collapse()
+Q_z_n= Q.sub(3).collapse()
 
 
 #analytical expression for a  scalar function used to test the ds
