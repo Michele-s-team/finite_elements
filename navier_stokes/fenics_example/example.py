@@ -9,8 +9,8 @@ To enter the folder
 cd shared/navier_stokes/fenics_example
 
 Run with
-clear; python3 example.py [path where to read the mesh] [path where to store the solution] T N
-clear; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution 0.001 8
+clear; python3 example.py [path where to read the mesh] [path where to store the solution]
+clear; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution
 
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution
 
@@ -31,8 +31,7 @@ set_log_level( 20 )
 
 print( "Input diredtory = ", args.input_directory )
 print( "Output diredtory = ", args.output_directory )
-print( "T = ", T )
-print( "N = ", N )
+
 
 # # Create mesh
 # channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
@@ -134,8 +133,8 @@ bc_sigma = DirichletBC(Q.sub(2), Constant(0), boundary_r)
 
 # CHANGE PARAMETERS HERE
 # BCs for z^{n-1/2}
-bc_z_circle = DirichletBC( Q.sub( 6 ), Expression( '0.0', element=Q.sub( 6 ).ufl_element() ), boundary_circle )
-bc_z_square = DirichletBC( Q.sub( 6 ), Expression( '0.0', element=Q.sub( 6 ).ufl_element(), h=h ), boundary_square )
+bc_z_circle = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element() ), boundary_circle )
+bc_z_square = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element(), h=h ), boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
@@ -211,6 +210,8 @@ F_w = ( \
                     + (nu_w * (n( omega ))[i] * ((H( omega )).dx( i ))) * sqrt_deth_circle( omega, c_r ) * ds_circle
           )
 
+F_sigma =  (Nabla_v(v, omega)[i, i]  - 2.0 * H(omega) * w ) * nu_sigma  * sqrt_detg(omega) * dx
+
 F_z = ( \
                     ( \
                                 - w * ((normal( omega ))[2] - ((normal( omega ))[0] * omega[0] + (normal( omega ))[1] * omega[1])) \
@@ -236,7 +237,7 @@ F_N = alpha * ( \
     )
 
 # total functional for the mixed problem
-F = (F_v + F_w + F_z + F_omega) + F_N
+F = (F_v + F_w + F_sigma + F_z + F_omega) + F_N
 
 # solve the variational problem
 J = derivative( F, psi, J_psi )

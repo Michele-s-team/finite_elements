@@ -12,8 +12,6 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
-parser.add_argument("T")
-parser.add_argument("N")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
@@ -21,10 +19,6 @@ L = 2.2
 h = 0.41
 r = 0.05
 c_r = [L/2.0, h/2.0]
-# time step size
-T = (float)(args.T)
-N = (int)(args.N)
-dt = T / N
 # time step size
 #bending rigidity
 kappa = 1.0
