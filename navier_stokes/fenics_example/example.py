@@ -11,6 +11,7 @@ cd shared/navier_stokes/fenics_example
 Run with
 clear; python3 example.py [path where to read the mesh] [path where to store the solution]
 clear; clear; rm -r solution; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution
+clear; clear; rm -r solution; mpirun -np 6 python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution
 
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution
 
