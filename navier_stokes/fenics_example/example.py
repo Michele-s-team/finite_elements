@@ -230,8 +230,8 @@ F_N = alpha * ( \
                         ds_t + ds_b) \
             + ((n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * (n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
  \
-            + (((n_overline_tb())[i] * v_bar[i] - 0) * ((n_overline_tb())[j] * nu_v_n[j])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
-            + ((n_overline[i] * v_bar[i] - 0) * (n_overline[j] * nu_v_n[j])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
+            + (((n_overline_tb())[i] * v_n[i] - 0) * ((n_overline_tb())[j] * nu_v_n[j])) * sqrt_deth_square( omega_n_12 ) * (ds_t + ds_b) \
+            + ((n_overline[i] * v_n[i] - 0) * (n_overline[j] * nu_v_n[j])) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
     )
 
 # total functional for the mixed problem
@@ -245,9 +245,9 @@ solver = NonlinearVariationalSolver( problem )
 solver.solve()
 
 # update previous solution:
-# v_bar, w_bar, phi, v_n, w_n, omega_n_12, z_n_12 = split( psi )
+# v_n, w_n, omega_n_12, z_n_12 = split( psi )
 # get the solution and write it to file
-v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
+v_n_dummy, w_n_dummy, omega_n_12_dummy, z_n_12_dummy = psi.split( deepcopy=True )
 
 # v_n_2.assign( v_n_1 )
 # v_n_1.assign( v_n_dummy )
@@ -261,30 +261,9 @@ z_n_32.assign( z_n_12_dummy )
 
 # print solution to file
 # append to the full time series solution at the current t
-xdmffile_v_bar.write( v_bar_dummy, t )
-xdmffile_w_bar.write( w_bar_dummy, t )
+
 xdmffile_v.write( v_n_dummy, t )
 xdmffile_w.write( w_n_dummy, t )
 xdmffile_sigma.write( sigma_n_12, t - dt / 2.0 )
-xdmffile_phi.write( phi_dummy, t )
 xdmffile_omega.write( omega_n_12_dummy, t - dt / 2.0 )
 xdmffile_z.write( z_n_12_dummy, t - dt / 2.0 )
-
-# write the solution at current step, so, in case the code crashes, it can be read back
-# write the solutions in .h5 format into  snapshots/h5
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_bar_" + str( step ) + ".h5", "w" ).write( v_bar_dummy, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_bar_" + str( step ) + ".h5", "w" ).write( w_bar_dummy, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n_" + str( step ) + ".h5", "w" ).write( v_n_dummy, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n_" + str( step ) + ".h5", "w" ).write( w_n_dummy, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n_12_" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n_12_" + str( step ) + ".h5", "w" ).write( omega_n_12_dummy, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n_12_" + str( step ) + ".h5", "w" ).write( z_n_12_dummy, "/f" )
-
-# write the solutions in .xdmf format into  snapshots/xdmf
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step ) + '.xdmf' ).write( v_bar_dummy )
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step ) + '.xdmf' ).write( w_bar_dummy )
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n_' + str( step ) + '.xdmf' ).write( v_n_dummy )
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n_' + str( step ) + '.xdmf' ).write( w_n_dummy )
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str( step ) + '.xdmf' ).write( sigma_n_12 )
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step ) + '.xdmf' ).write( omega_n_12_dummy )
-XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n_12_' + str( step ) + '.xdmf' ).write( z_n_12_dummy )
