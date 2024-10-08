@@ -91,8 +91,8 @@ boundary_l  = 'near(x[0], 0.0)'
 boundary_r  = 'near(x[0], 2.2)'
 boundary_lr  = 'near(x[0], 0) || near(x[0], 2.2)'
 boundary_tb  = 'near(x[1], 0) || near(x[1], 0.41)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.41/2.0, 2)) > 0.1'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.41/2.0, 2)) < 0.1'
+boundary_square = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.2, 2)) > 0.1'
+boundary_circle = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.2, 2)) < 0.1'
 #CHANGE PARAMETERS HERE
 
 #norm for UFL vectors
