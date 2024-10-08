@@ -139,7 +139,7 @@ bc_z_square = DirichletBC( Q.sub( 6 ), Expression( '0.0', element=Q.sub( 6 ).ufl
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_n_l, bc_w_n_lr, bc_w_n_tb, bc_sigma, bc_w_n_circle, bc_z_circle, bc_z_square]
+bcs = [bc_v_n_l, bc_w_n_lr, bc_w_n_tb, bc_w_n_circle, bc_sigma, bc_z_circle, bc_z_square]
 
 
 # Option 1: set initial profiles
