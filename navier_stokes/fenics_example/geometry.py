@@ -64,11 +64,11 @@ element = MixedElement( [P_v_n, P_w_n, P_sigma_n, P_omega_n, P_z_n] )
 #total function space
 Q = FunctionSpace(mesh, element)
 #function spaces for vbar .... zn
-Q_v_n = Q.sub(0).collapse()
-Q_w_n = Q.sub(1).collapse()
-Q_sigma_n = Q.sub(2).collapse()
-Q_omega_n = Q.sub(3).collapse()
-Q_z_n= Q.sub(4).collapse()
+Q_v = Q.sub( 0 ).collapse()
+Q_w = Q.sub( 1 ).collapse()
+Q_sigma = Q.sub( 2 ).collapse()
+Q_omega = Q.sub( 3 ).collapse()
+Q_z= Q.sub( 4 ).collapse()
 
 
 #analytical expression for a  scalar function used to test the ds
