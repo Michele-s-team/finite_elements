@@ -27,7 +27,7 @@ N = (int)(args.N)
 dt = T / N
 # time step size
 #bending rigidity
-kappa = 1.0
+kappa = 1e-1
 #density
 rho = 1.0
 #viscosity
