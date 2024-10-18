@@ -13,6 +13,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 parser.add_argument("T")
+parser.add_argument("k")
+parser.add_argument("r")
+parser.add_argument("e")
 parser.add_argument("N")
 args = parser.parse_args()
 
@@ -27,11 +30,11 @@ N = (int)(args.N)
 dt = T / N
 # time step size
 #bending rigidity
-kappa = 1e-1
+kappa = (float)(args.k)
 #density
-rho = 1.0
+rho = (float)(args.r)
 #viscosity
-eta = 1.0
+eta = (float)(args.e)
 #Nitche's parameter
 alpha = 1e3
 tol = 1E-3
