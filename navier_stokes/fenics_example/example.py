@@ -169,27 +169,27 @@ bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circl
 
 
 #Option 1: set initial profiles
+#
 v_n_1.interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()))
 v_n_2.assign(v_n_1)
 w_n_1.interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()))
 sigma_n_32.interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ))
 z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
 # omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
-
+#
 
 #Option 2:read initial profiles by reading them from file
 '''
 read_step = 400
 print("Reading initial condition from file ... ")
-HDF5File( MPI.comm_world, "solution/snapshots/h5/v_t" + str( read_step-1 ) + ".h5", "r" ).read(v_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/v_t" + str( read_step-2 ) + ".h5", "r" ).read(v_n_2, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/w_t" + str( read_step-1 ) + ".h5", "r" ).read(w_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_t" + str( read_step-1 ) + ".h5", "r" ).read(sigma_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/z_t" + str( read_step-1 ) + ".h5", "r" ).read(z_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_t" + str( read_step-1 ) + ".h5", "r" ).read(omega_n_32, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n_" + str( read_step-1 ) + ".h5", "r" ).read(v_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n_" + str( read_step-2 ) + ".h5", "r" ).read(v_n_2, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/w_n_" + str( read_step-1 ) + ".h5", "r" ).read(w_n_1, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(sigma_n_32, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/z_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(z_n_32, "/f" )
+HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(omega_n_32, "/f" )
 print("... done.")
 '''
-
 
 # Time-stepping
 t = 0
@@ -332,19 +332,19 @@ for step in range(N):
 
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_bar_" + str( step ) + ".h5", "w" ).write( v_bar_dummy, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_bar_" + str( step ) + ".h5", "w" ).write( w_bar_dummy, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n_" + str( step ) + ".h5", "w" ).write( v_n_dummy, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n_" + str( step ) + ".h5", "w" ).write( w_n_dummy, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n_12_" + str( step ) + ".h5", "w" ).write( sigma_n_12, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n_12_" + str( step ) + ".h5", "w" ).write( omega_n_12_dummy, "/f" )
-    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n_12_" + str( step ) + ".h5", "w" ).write( z_n_12_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_bar_" + str(step+1) + ".h5", "w" ).write( v_bar_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_bar_" + str(step+1) + ".h5", "w" ).write( w_bar_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/v_n_" + str(step+1) + ".h5", "w" ).write( v_n_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/w_n_" + str(step+1) + ".h5", "w" ).write( w_n_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/sigma_n_12_" + str(step+1) + ".h5", "w" ).write( sigma_n_12, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/omega_n_12_" + str(step+1) + ".h5", "w" ).write( omega_n_12_dummy, "/f" )
+    HDF5File( MPI.comm_world, (args.output_directory) + "/snapshots/h5/z_n_12_" + str(step+1) + ".h5", "w" ).write( z_n_12_dummy, "/f" )
 
     # write the solutions in .xdmf format into  snapshots/xdmf
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step ) + '.xdmf' ).write( v_bar_dummy )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step ) + '.xdmf' ).write( w_bar_dummy )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n_' + str( step ) + '.xdmf' ).write( v_n_dummy )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n_' + str( step ) + '.xdmf' ).write( w_n_dummy )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str( step ) + '.xdmf' ).write( sigma_n_12 )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step ) + '.xdmf' ).write( omega_n_12_dummy )
-    XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n_12_' + str( step ) + '.xdmf' ).write( z_n_12_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_bar_' + str(step+1) + '.xdmf' ).write( v_bar_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_bar_' + str(step+1) + '.xdmf' ).write( w_bar_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/v_n_' + str(step+1) + '.xdmf' ).write( v_n_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/w_n_' + str(step+1) + '.xdmf' ).write( w_n_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str(step+1) + '.xdmf' ).write( sigma_n_12 )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str(step+1) + '.xdmf' ).write( omega_n_12_dummy )
+    XDMFFile( (args.output_directory) + '/snapshots/xdmf/z_n_12_' + str(step+1) + '.xdmf' ).write( z_n_12_dummy )
