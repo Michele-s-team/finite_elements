@@ -10,8 +10,8 @@ cd shared/navier_stokes/fenics_example
 
 Run with
 clear; clear; python3 example.py [path where to read the mesh] [path where to store the solution] T N
-clear; clear; rm -r solution; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution 0.001 1.0 1.0 1.0 8
-clear; clear; rm -r solution; mpirun -np 6 python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution 0.001 1.0 1.0 1.0 8
+clear; clear; rm -rf solution; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution  0.001 1.0 1.0 1.0 32
+clear; clear; rm -rf solution; mpirun -np 6 python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution  0.001 1.0 1.0 1.0 32
 
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution
 
@@ -38,6 +38,7 @@ print("kappa = ", kappa)
 print("rho = ", rho)
 print("eta = ", eta)
 print("N = ", N)
+print("Mesh cell radius = ", r_mesh)
 
 
 # # Create mesh
@@ -283,7 +284,7 @@ for step in range(N):
                             + ((n( omega_n_12 ))[i] * g( omega_n_12 )[i, j] * z_n_12 * nu_omega_n_12[j]) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle
                 )
 
-    F_N = alpha * ( \
+    F_N = alpha/r_mesh * ( \
                 ( ((n_overline_lr())[i] * omega_n_12[i] - (n_overline_lr())[i] * grad_square[i]) * ( (n_overline_lr())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l]) ) * sqrt_deth_square( omega_n_12 ) * (ds_l + ds_r) \
                 + ( ((n_overline_tb())[i] * omega_n_12[i] - (n_overline_tb())[i] * grad_square[i]) * ( (n_overline_tb())[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l]) ) * sqrt_deth_square( omega_n_12 ) * ( ds_t + ds_b) \
                 + ( (n_overline[i] * omega_n_12[i] - n_overline[i] * grad_circle[i]) * ( n_overline[k] * g( omega_n_12 )[k, l] * nu_omega_n_12[l]) ) * sqrt_deth_circle( omega_n_12, c_r ) * ds_circle \
