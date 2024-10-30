@@ -9,9 +9,9 @@ To enter the folder
 cd shared/navier_stokes/fenics_example
 
 Run with
-clear; clear; python3 example.py [path where to read the mesh] [path where to store the solution] T N
-clear; clear; rm -rf solution; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution  0.001 1.0 1.0 1.0 32
-clear; clear; rm -rf solution; mpirun -np 6 python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution  0.001 1.0 1.0 1.0 32
+clear; clear; python3 example.py [path where to read the mesh] [path where to store the solution] T k r e v N
+clear; clear; rm -rf solution; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution  0.001 1.0 1.0 1.0 1.0 32
+clear; clear; rm -rf solution; mpirun -np 6 python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution  0.001 1.0 1.0 1.0 1.0 32
 
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution
 
@@ -37,6 +37,7 @@ print("T = ", T)
 print("kappa = ", kappa)
 print("rho = ", rho)
 print("eta = ", eta)
+print("v_l = ", v_l)
 print("N = ", N)
 print("Mesh cell radius = ", r_mesh)
 
@@ -139,8 +140,7 @@ grad_square = interpolate( grad_square_Expression( element=Q_omega_n.ufl_element
 
 
 #CHANGE PARAMETERS HERE
-C=0.1
-l_profile_v_bar = Expression( ('C * 4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h, C=C )
+l_profile_v_bar = Expression( ('v_l', '0'), v_l=v_l, element = Q_v_n.ufl_element())
 #CHANGE PARAMETERS HERE
 
 
