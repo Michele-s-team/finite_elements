@@ -14,6 +14,7 @@ parser.add_argument("mesh_old_directory")
 parser.add_argument("solution_old_directory")
 parser.add_argument("solution_new_directory")
 parser.add_argument("N")
+parser.add_argument("i")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
@@ -22,6 +23,7 @@ h = 0.41
 r = 0.05
 c_r = [L/2.0, h/2.0]
 N = (int)(args.N)
+increment = (int)(args.i)
 # time step size
 #CHANGE PARAMETERS HERE
 

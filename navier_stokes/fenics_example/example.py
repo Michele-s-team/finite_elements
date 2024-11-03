@@ -1,8 +1,8 @@
 '''
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
 run with
-clear; clear; python3 example.py [path of mesh] [path of old solution] [path of new solution]  [number of .h5 files to be read]
-clear; clear; rm -rf solution-new; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/snapshots/h5  /home/fenics/shared/navier_stokes/fenics_example/solution-new 103133
+clear; clear; python3 example.py [path of mesh] [path of old solution] [path of new solution]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
+clear; clear; rm -rf solution-new; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/snapshots/h5  /home/fenics/shared/navier_stokes/fenics_example/solution-new 103133 100
 '''
 
 from __future__ import print_function
@@ -28,7 +28,7 @@ omega = Function(Q_omega_n)
 z = Function(Q_z_n)
 
 # Time-stepping
-for step in range(1, N):
+for step in range(1, N, increment):
     # time.sleep( 1 )  # Makes Python wait for 5 seconds
 
     print("* step = ", step, "\n")
