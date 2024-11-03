@@ -2,7 +2,7 @@
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
 run with
 clear; clear; python3 example.py [path of mesh] [path of old solution] [path of new solution]  [number of .h5 files to be read]
-clear; clear; rm -rf solution-new; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/snapshots/h5  /home/fenics/shared/navier_stokes/fenics_example/solution-new 5855
+clear; clear; rm -rf solution-new; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/snapshots/h5  /home/fenics/shared/navier_stokes/fenics_example/solution-new 103133
 '''
 
 from __future__ import print_function
