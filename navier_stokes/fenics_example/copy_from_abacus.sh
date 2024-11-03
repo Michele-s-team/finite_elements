@@ -17,7 +17,7 @@ echo "Files to copy = " $FILES_TO_COPY
 echo "Output directory = " $OUT_DIR
 
 rm -rf $OUT_DIR
-mkdir $OUT_DIR
+mkdir -p $OUT_DIR
 
 rsync --stats --size-only -P -v -e ssh mcastel1@abacus:$IN_DIR/$FILES_TO_COPY $OUT_DIR
 
