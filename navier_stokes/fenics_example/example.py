@@ -114,8 +114,7 @@ grad_square = interpolate( grad_square_Expression( element=Q_omega.ufl_element()
 
 
 # CHANGE PARAMETERS HERE
-C = 0.1
-l_profile_v_bar = Expression( ('C * 4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=h, C=C )
+l_profile_v_bar = Expression( ('v_l', '0'), v_l=v_l, element = Q_v.ufl_element())
 # CHANGE PARAMETERS HERE
 
 

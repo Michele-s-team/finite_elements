@@ -28,6 +28,7 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e2
+v_l = 1.0
 tol = 1E-3
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
