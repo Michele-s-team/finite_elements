@@ -32,6 +32,7 @@ set_log_level( 20 )
 
 print( "Input diredtory = ", args.input_directory )
 print( "Output diredtory = ", args.output_directory )
+print("Radius of mesh cell = ", r_mesh)
 
 
 # # Create mesh
@@ -226,7 +227,7 @@ F_omega = (z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i]) * sqrt
                         + ((n( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( omega, c_r ) * ds_circle
             )
 
-F_N = alpha * ( \
+F_N = alpha/r_mesh * ( \
             (((n_overline_lr())[i] * omega[i] - (n_overline_lr())[i] * grad_square[i]) * ((n_overline_lr())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
                 ds_l + ds_r) \
             + (((n_overline_tb())[i] * omega[i] - (n_overline_tb())[i] * grad_square[i]) * ((n_overline_tb())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (

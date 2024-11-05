@@ -27,7 +27,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e5
+alpha = 1e2
 tol = 1E-3
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
@@ -41,6 +41,9 @@ with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
 mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
+
+#radius of the smallest cell in the mesh
+r_mesh = mesh.hmin()
 
 
 #this is the facet normal vector, which cannot be plotted as a field
