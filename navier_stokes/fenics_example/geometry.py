@@ -15,10 +15,10 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
-r = 0.05
-c_r = [L/2.0, 0.2]
+L = 0.5
+h = L
+r = 0.01
+c_r = [L/2.0, h/2.0]
 # time step size
 #bending rigidity
 kappa = 1.0
@@ -29,7 +29,7 @@ eta = 1.0
 #Nitche's parameter
 alpha = 1e5
 tol = 1E-3
-# dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
 
 
@@ -89,11 +89,11 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 2.2)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 2.2)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 0.41)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.2, 2)) > 0.1'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 2.2/2.0, 2) + pow(x[1] - 0.2, 2)) < 0.1'
+boundary_r  = 'near(x[0], 0.5)'
+boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
+boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
+boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > 2 * 0.01'
+boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < 2 * 0.01'
 #CHANGE PARAMETERS HERE
 
 #norm for UFL vectors
