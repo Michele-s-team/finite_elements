@@ -49,7 +49,7 @@ xdmf.close()
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = cos(x[0]**3)
+        values[0] = (cos(2.*(np.pi)*x[0]**3))**3
     def value_shape(self):
         return (1,)
 
@@ -65,5 +65,7 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Integral of a function =  {assemble( f_test_ds * dv_custom )}")
+print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.382947")
+print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.381054")
+print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.00189274")
 print(f"Volume = {assemble(Constant(1.0)*dv_custom)}")

@@ -3,7 +3,7 @@ import meshio
 import gmsh
 import pygmsh
 import argparse
-# from dolfin import *
+import numpy as np
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
@@ -34,16 +34,20 @@ model = geometry.__enter__()
 
 #add a 1d object a set of lines
 points = [model.add_point( (0, 0, 0), mesh_size=resolution ),
-          model.add_point((L, 0, 0), mesh_size=resolution)]
-channel_lines = [model.add_line(points[i], points[i+1])
-                  for i in range(-1, len(points)-1)]
+          model.add_point((np.pi/8.0, 0, 0), mesh_size=resolution),
+          model.add_point((L, 0, 0), mesh_size=resolution)
+          ]
+my_lines = [model.add_line( points[0], points[1] ), model.add_line( points[1], points[2] )]
 
 #add a 2d object:  a plane surface starting from the 4 lines above
 
 
 model.synchronize()
 
-model.add_physical([channel_lines[0]], "line")
+print("# of lines added = ", len(my_lines))
+
+model.add_physical([my_lines[0]], "line1")
+model.add_physical([my_lines[1]], "line2")
 model.add_physical([points[0]], "point_l")
 model.add_physical([points[1]], "point_r")
 
