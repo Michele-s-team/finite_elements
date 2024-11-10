@@ -46,8 +46,33 @@ with XDMFFile("line_mesh.xdmf") as infile:
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
+#analytical expression for a  scalar function used to test the ds
+class FunctionTestIntegral(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[0]
+    def value_shape(self):
+        return (1,)
 
 dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Volume measure
+
+
+# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+f_test_ds = Function( Q_z_n )
+f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_z_n.ufl_element() ))
+
+#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
+integral_l = assemble(f_test_ds*ds_l)
+integral_r = assemble(f_test_ds*ds_r)
+integral_t = assemble(f_test_ds*ds_t)
+integral_b = assemble(f_test_ds*ds_b)
+integral_circle = assemble(f_test_ds*ds_circle)
+
+#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
+print("Integral l = ", integral_l, " exact value = 0.373169")
+print("Integral r = ", integral_r, " exact value = 0.00227783")
+print("Integral t = ", integral_t, " exact value = 1.36562")
+print("Integral b = ", integral_b, " exact value = 1.02837")
+print("Integral circle = ", integral_circle, " exact value = 0.205204")
 
 # Should be 2.5
 print(f"Volume = {assemble(Constant(1.0)*dv_custom)}")
