@@ -6,6 +6,7 @@ from mshr import *
 import numpy as np
 import ufl as ufl
 import argparse
+from dolfin import *
 
 
 parser = argparse.ArgumentParser()
@@ -19,15 +20,32 @@ r = 1
 c_r = [0, 0]
 #CHANGE PARAMETERS HERE
 
-#read mesh
-mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
+#read the mesh
+mesh = Mesh()
+xdmf = XDMFFile(mesh.mpi_comm(), "tetra_mesh.xdmf")
+xdmf.read(mesh)
+
+#read the tetrahedra
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
+with XDMFFile("tetra_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
+cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
+
+#read the triangles
+# mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
+# with XDMFFile("triangle_mesh.xdmf") as infile:
+#     infile.read(mvc, "name_to_read")
+# sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+# xdmf.close()
+
+# mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-2)
+# with XDMFFile("line_mesh.xdmf") as infile:
+#     infile.read(mvc, "name_to_read")
+# mf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
+'''
 # Define function spaces
 #finite elements for sigma .... omega
 P_v_bar = VectorElement( 'P', triangle, 2 )
@@ -71,3 +89,4 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 
 
+'''
