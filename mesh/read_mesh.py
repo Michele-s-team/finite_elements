@@ -25,13 +25,6 @@ mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), "line_mesh.xdmf")
 xdmf.read(mesh)
 
-#read the tetrahedra
-# mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-# with XDMFFile("tetra_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-# cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-# xdmf.close()
-
 #read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile("line_mesh.xdmf") as infile:
@@ -39,7 +32,7 @@ with XDMFFile("line_mesh.xdmf") as infile:
 cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
-#read the points
+#read the vertices
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile("line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
@@ -49,12 +42,12 @@ xdmf.close()
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = (cos(2.*(np.pi)*x[0]**3))**3
+        values[0] = (np.cos(x[0]))**2
     def value_shape(self):
         return (1,)
 
 dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Volume measure
-
+ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Surface measure
 
 Q = FunctionSpace( mesh, 'P', 1 )
 
@@ -65,7 +58,10 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.382947")
-print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.381054")
-print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.00189274")
-print(f"Volume = {assemble(Constant(1.0)*dv_custom)}")
+print(f"Volume = {assemble(Constant(1.0)*dv_custom)}, should be 1.0")
+print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.727324")
+print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.373126")
+print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.354198")
+
+#this computes \sum_{i \in vertices in ds_custom} f_test_ds (i-th vertex in ds_custom)
+print(f"Integral over points  =  {assemble( f_test_ds * ds_custom )} should be 1.29193")
