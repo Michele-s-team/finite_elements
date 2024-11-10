@@ -47,6 +47,11 @@ sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
 
+dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Volume measure
+
+# Should be 2.5
+print(f"Volume = {assemble(Constant(1.0)*dv_custom)}")
+
 '''
 # Define function spaces
 #finite elements for sigma .... omega

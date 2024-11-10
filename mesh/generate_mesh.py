@@ -15,7 +15,7 @@ resolution = (float)(args.resolution)
 #mesh parameters
 #CHANGE PARAMETERS HERE
 L = 1.0
-h = 1.0
+h = L
 r = 1.0
 c_r = [0, 0, 0]
 #CHANGE PARAMETERS HERE
