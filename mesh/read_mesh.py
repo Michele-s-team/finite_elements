@@ -22,27 +22,29 @@ c_r = [0, 0]
 
 #read the mesh
 mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), "tetra_mesh.xdmf")
+xdmf = XDMFFile(mesh.mpi_comm(), "line_mesh.xdmf")
 xdmf.read(mesh)
 
 #read the tetrahedra
+# mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
+# with XDMFFile("tetra_mesh.xdmf") as infile:
+#     infile.read(mvc, "name_to_read")
+# cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+# xdmf.close()
+
+#read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile("tetra_mesh.xdmf") as infile:
+with XDMFFile("line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
-#read the triangles
-# mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
-# with XDMFFile("triangle_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-# sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-# xdmf.close()
-
-# mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-2)
-# with XDMFFile("line_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-# mf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+#read the points
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
+with XDMFFile("line_mesh.xdmf") as infile:
+    infile.read(mvc, "name_to_read")
+sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
 
 
 '''

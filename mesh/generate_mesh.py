@@ -34,24 +34,18 @@ model = geometry.__enter__()
 
 #add a 1d object a set of lines
 points = [model.add_point( (0, 0, 0), mesh_size=resolution ),
-          model.add_point((L, 0, 0), mesh_size=resolution),
-          model.add_point((L, h, 0), mesh_size=resolution),
-          model.add_point((0, h, 0), mesh_size=resolution)]
+          model.add_point((L, 0, 0), mesh_size=resolution)]
 channel_lines = [model.add_line(points[i], points[i+1])
                   for i in range(-1, len(points)-1)]
-channel_loop = model.add_curve_loop(channel_lines)
 
 #add a 2d object:  a plane surface starting from the 4 lines above
-plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
-#add a 3d object: a ball
-ball = model.add_ball(c_r, r)
 
 model.synchronize()
 
-model.add_physical([ball], "ball")
-model.add_physical([plane_surface], "surface")
 model.add_physical([channel_lines[0]], "line")
+model.add_physical([points[0]], "point_l")
+model.add_physical([points[1]], "point_r")
 
 geometry.generate_mesh(dim=3)
 gmsh.write("mesh.msh")
@@ -68,15 +62,15 @@ def create_mesh(mesh, cell_type, prune_z=False):
 mesh_from_file = meshio.read("mesh.msh")
 
 #build a mesh of tetrahedra from the 3d object
-tetra_mesh = create_mesh(mesh_from_file, "tetra", True)
+# tetra_mesh = create_mesh(mesh_from_file, "tetra", True)
 #build a mesh of triangles from the 1d object
-triangle_mesh = create_mesh(mesh_from_file, "triangle", True)
+# triangle_mesh = create_mesh(mesh_from_file, "triangle", True)
 #build a mesh of lines from the 1d object
 line_mesh = create_mesh(mesh_from_file, "line", True)
 
 
-meshio.write("tetra_mesh.xdmf", tetra_mesh)
-meshio.write("triangle_mesh.xdmf", triangle_mesh)
+# meshio.write("tetra_mesh.xdmf", tetra_mesh)
+# meshio.write("triangle_mesh.xdmf", triangle_mesh)
 meshio.write("line_mesh.xdmf", line_mesh)
 
 
