@@ -65,23 +65,28 @@ def create_mesh(mesh, cell_type, prune_z=False):
 
 mesh_from_file = meshio.read("mesh.msh")
 
-#build a mesh of tetrahedra from the 3d object
-# tetra_mesh = create_mesh(mesh_from_file, "tetra", True)
-#build a mesh of triangles from the 1d object
-# triangle_mesh = create_mesh(mesh_from_file, "triangle", True)
-#build a mesh of lines from the 1d object
+'''
+#create a tetrahedron mesh
+tetrahedron_mesh = create_mesh(msh, "tetra", True)
+meshio.write("tetrahedron_mesh.xdmf", tetrahedron_mesh)
+
+#create a triangle mesh
+triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
+meshio.write("triangle_mesh.xdmf", triangle_mesh)
+'''
+
+#create a line mesh
 line_mesh = create_mesh(mesh_from_file, "line", True)
-
-
-# meshio.write("tetra_mesh.xdmf", tetra_mesh)
-# meshio.write("triangle_mesh.xdmf", triangle_mesh)
 meshio.write("line_mesh.xdmf", line_mesh)
+
+#create a vertex mesh
+vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
+meshio.write("vertex_mesh.xdmf", vertex_mesh)
 
 
 '''
 line_mesh = create_mesh(mesh_from_file, "line", prune_z=False)
 meshio.write("line_mesh.xdmf", line_mesh)
 
-triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write("triangle_mesh.xdmf", triangle_mesh)
+
 '''
