@@ -38,7 +38,7 @@ model = geometry.__enter__()
 
 
 #add a 3d object:
-ball = model.add_ball(c_r, r)
+ball = model.add_ball(c_r, r,  mesh_size=resolution)
 
 
 
