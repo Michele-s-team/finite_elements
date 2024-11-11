@@ -1,3 +1,11 @@
+'''
+run with
+clear; clear; read_1dmesh.py [path where to find the mesh]
+example:
+clear; clear; read_1dmesh.py [path where to find the mesh]
+'''
+
+
 from __future__ import print_function
 from fenics import *
 from mshr import *
@@ -22,19 +30,19 @@ c_r = [0, 0]
 
 #read the mesh
 mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), "line_mesh.xdmf")
+xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/line_mesh.xdmf")
 xdmf.read(mesh)
 
 #read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile("line_mesh.xdmf") as infile:
+with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
 #read the vertices
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
-with XDMFFile("vertex_mesh.xdmf") as infile:
+with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
