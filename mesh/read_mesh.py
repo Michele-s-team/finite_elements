@@ -34,7 +34,7 @@ xdmf.close()
 
 #read the vertices
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
-with XDMFFile("line_mesh.xdmf") as infile:
+with XDMFFile("vertex_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
@@ -42,12 +42,13 @@ xdmf.close()
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = (np.cos(x[0]))**2
+        values[0] = (np.cos(3+x[0]))**2
     def value_shape(self):
         return (1,)
 
-dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Volume measure
-ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Surface measure
+dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Line measure
+ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Point measure for points at the edges of the mesh
+dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 Q = FunctionSpace( mesh, 'P', 1 )
 
@@ -64,4 +65,6 @@ print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "shoul
 print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.354198")
 
 #this computes \sum_{i \in vertices in ds_custom} f_test_ds (i-th vertex in ds_custom)
-print(f"Integral over points  =  {assemble( f_test_ds * ds_custom )} should be 1.29193")
+print(f"Integral over point_l  =  {assemble( f_test_ds * ds_custom(3) )} should be 0.980085")
+print(f"Integral over point_r =  {assemble( f_test_ds * ds_custom(4) )} should be 0.42725")
+print(f"Integral over point_in =  {assemble( f_test_ds * dS_custom(5) )} should be 0.93826")
