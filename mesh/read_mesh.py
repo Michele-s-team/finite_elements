@@ -60,9 +60,9 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(Constant(1.0)*dv_custom)}, should be 1.0")
-print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.727324")
-print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.373126")
-print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.354198")
+print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.817193")
+print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.386545")
+print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.430648")
 
 #this computes \sum_{i \in vertices in ds_custom} f_test_ds (i-th vertex in ds_custom)
 print(f"Integral over point_l  =  {assemble( f_test_ds * ds_custom(3) )} should be 0.980085")

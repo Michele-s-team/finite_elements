@@ -83,11 +83,3 @@ meshio.write("line_mesh.xdmf", line_mesh)
 #create a vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write("vertex_mesh.xdmf", vertex_mesh)
-
-
-'''
-line_mesh = create_mesh(mesh_from_file, "line", prune_z=False)
-meshio.write("line_mesh.xdmf", line_mesh)
-
-
-'''
