@@ -14,6 +14,8 @@ from mshr import *
 import numpy as np
 import argparse
 from dolfin import *
+import meshio
+
 
 
 parser = argparse.ArgumentParser()
@@ -30,12 +32,19 @@ mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
 xdmf.read(mesh)
 
+
+
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile((args.input_directory) + "/tetrahedron_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
+
+
+boundary_mesh = BoundaryMesh(mesh, "exterior")
+with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
+    xdmf.write(boundary_mesh)
 
 '''
 #read the triangles
