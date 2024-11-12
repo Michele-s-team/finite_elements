@@ -1,8 +1,8 @@
 '''
 run with
-clear; clear; read_3dmesh.py [path where to find the mesh]
+clear; clear; python3 read_3dmesh.py [path where to find the mesh]
 example:
-clear; clear; read_3dmesh.py [path where to find the mesh]
+clear; clear; python3 read_3dmesh.py /home/fenics/shared/mesh/solution
 '''
 
 

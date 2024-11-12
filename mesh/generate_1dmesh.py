@@ -53,7 +53,7 @@ model.add_physical([points[2]], "point_r")
 model.add_physical([points[1]], "point_in")
 
 geometry.generate_mesh(dim=3)
-gmsh.write("mesh.msh")
+gmsh.write("solution/mesh.msh")
 model.__exit__()
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -64,22 +64,22 @@ def create_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-mesh_from_file = meshio.read("mesh.msh")
+mesh_from_file = meshio.read("solution/mesh.msh")
 
 '''
 #create a tetrahedron mesh
 tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
-meshio.write("tetrahedron_mesh.xdmf", tetrahedron_mesh)
+meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
 #create a triangle mesh
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write("triangle_mesh.xdmf", triangle_mesh)
+meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 '''
 
 #create a line mesh
 line_mesh = create_mesh(mesh_from_file, "line", True)
-meshio.write("line_mesh.xdmf", line_mesh)
+meshio.write("solution/line_mesh.xdmf", line_mesh)
 
 #create a vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
-meshio.write("vertex_mesh.xdmf", vertex_mesh)
+meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
