@@ -225,33 +225,6 @@ def sqrt_deth_square(omega):
         conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
     return sqrt(c)
 
-#the normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
-def n_lr(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
-    Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
-    return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
-
-#the normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
-def n_tb(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
-    return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
-
-#the facet normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
-#n_overline_lr() = \overline{n}_notes on the l and r edges of the rectangle
-def n_overline_lr():
-    x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
-    return as_tensor(u[k], (k))
-
-#the facet normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
-#n_overline_tb() = \overline{n}_notes on the t and b edges of the rectangle
-def n_overline_tb():
-    x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
-    return as_tensor(u[k], (k))
-
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
@@ -266,6 +239,34 @@ def calc_normal_cg2(mesh):
     nh = Function(V)
     solve(A, nh.vector(), L)
     return nh
+
+#the normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
+def n_lr(omega):
+    x = ufl.SpatialCoordinate(mesh)
+    N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
+    Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+    return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
+
+#the normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
+def n_tb(omega):
+    x = ufl.SpatialCoordinate(mesh)
+    N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
+    Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+    return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
+
+#the facet normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
+#n_overline_lr() = \overline{n}_notes on the l and r edges of the rectangle
+def n_overline_lr():
+    x = ufl.SpatialCoordinate(mesh)
+    u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
+    return as_tensor(u[k], (k))
+
+#the facet normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
+#n_overline_tb() = \overline{n}_notes on the t and b edges of the rectangle
+def n_overline_tb():
+    x = ufl.SpatialCoordinate(mesh)
+    u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
+    return as_tensor(u[k], (k))
 
 #the normal to the manifold pointing outwards the manifold and normalized according to g, which cannot be plotted as a field
 def n(omega):
