@@ -22,16 +22,12 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
-import numpy as np
-import argparse
-import ufl as ufl
-# geometry.py contains all the aspects related to the differential geometry of the problem and function spaces.
 from geometry import *
 
 set_log_level( 20 )
 
-print( "Input diredtory = ", args.input_directory )
-print( "Output diredtory = ", args.output_directory )
+print("Input diredtory = ", args.input_directory )
+print("Output diredtory = ", args.output_directory )
 print("Radius of mesh cell = ", r_mesh)
 
 
