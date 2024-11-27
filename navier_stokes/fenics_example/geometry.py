@@ -258,7 +258,6 @@ def n_tb(omega):
 def n_circle(omega):
     return as_tensor((Nt_circle(omega))[k] / sqrt(g(omega)[i, j]* (Nt_circle(omega))[i] *  (Nt_circle(omega))[j] ), (k))
 
-#sign
 
 #the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
 def facet_normal_smooth():

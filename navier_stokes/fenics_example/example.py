@@ -67,6 +67,8 @@ integral_r = assemble( f_test_ds * ds_r )
 integral_t = assemble( f_test_ds * ds_t )
 integral_b = assemble( f_test_ds * ds_b )
 integral_circle = assemble( f_test_ds * ds_circle )
+#sign
+
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print( "Integral l = ", integral_l, " exact value = 0.373169" )
@@ -74,7 +76,7 @@ print( "Integral r = ", integral_r, " exact value = 0.00227783" )
 print( "Integral t = ", integral_t, " exact value = 1.36562" )
 print( "Integral b = ", integral_b, " exact value = 1.02837" )
 print( "Integral circle = ", integral_circle, " exact value = 0.205204" )
-
+'''
 # Define functions
 # the Jacobian
 J_psi = TrialFunction( Q )
@@ -149,11 +151,11 @@ bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square
 
 
 
-'''
-Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respecitvely . F_N enforces the BCs with Nitche's method. 
-To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, 
-the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
-'''
+
+    # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respecitvely . F_N enforces the BCs with Nitche's method. 
+    # To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector: for example, on the left (l) and on the right (r) sides of the rectangle, 
+    # the surface elements are ds_l + ds_r, and the normal is n_lr(omega) ~ {+-1 , 0}: this avoids odd interpolations at the corners of the rectangle edges. 
+
 
 F_v = ( \
                       rho * (( \
@@ -259,3 +261,4 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/w.h5", "w" ).write( w_d
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_dummy, "/f" )
+'''
