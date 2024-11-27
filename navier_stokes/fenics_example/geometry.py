@@ -213,7 +213,6 @@ def sqrt_deth_lr(omega):
 def sqrt_deth_tb(omega):
     return sqrt(g(omega)[0,0])
 
-#sign
 
 
 def calc_normal_cg2(mesh):
@@ -230,6 +229,27 @@ def calc_normal_cg2(mesh):
     nh = Function(V)
     solve(A, nh.vector(), L)
     return nh
+
+
+#Nt^i_notes on \partial \Omega_in and out
+def Nt_lr(omega):
+    x = ufl.SpatialCoordinate(mesh)
+    N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
+    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+
+#Nt^i_notes on \partisal \Omega_W
+def Nt_tb(omega):
+    x = ufl.SpatialCoordinate(mesh)
+    N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
+    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+
+#Nt^i_notes on \partisal \Omega_O
+def Nt_circle(omega):
+    N3d = [facet_normal[0], facet_normal[1], 0.0]
+    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+
+#sign
+
 
 #the normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
 def n_lr(omega):
