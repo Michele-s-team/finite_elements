@@ -205,18 +205,16 @@ def dydtheta(c):
 def sqrt_deth_circle(omega, c):
     return(sqrt((dydtheta(c))[i]*(dydtheta(c))[j]*g(omega)[i, j]))
 
+#square root of the determinant of the pull-back of the metric on \partial \Omega_in(out), parametrized with l , given by  x^1 = 0 (L) and x^2 = l, as coordinate for \partial \Omega_in (out)
+def sqrt_deth_lr(omega):
+    return sqrt(g(omega)[1,1])
+
+#square root of the determinant of the pull-back of the metric on \partial \Omega_W (top or bottom), parametrized with l , given by  x^1 = l and x^2 = 0 (H), as coordinate for \partial \Omega_W
+def sqrt_deth_tb(omega):
+    return sqrt(g(omega)[0,0])
+
 #sign
 
-
-#square root of the determinant of the pull-back of the metric on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
-def sqrt_deth_square(omega):
-    x = ufl.SpatialCoordinate(mesh)
-
-    c = conditional(lt(abs(x[0] - 0.0), tol), g(omega)[1,1], 1.0) * \
-        conditional(lt(abs(x[0] - L), tol), g(omega)[1, 1], 1.0) * \
-        conditional(lt(abs(x[1] - 0.0), tol), g(omega)[0, 0], 1.0) * \
-        conditional(lt(abs(x[1] - h), tol), g(omega)[0, 0], 1.0)
-    return sqrt(c)
 
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
