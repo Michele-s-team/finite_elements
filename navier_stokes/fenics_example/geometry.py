@@ -248,51 +248,20 @@ def Nt_circle(omega):
     N3d = [facet_normal[0], facet_normal[1], 0.0]
     return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
 
+#n^i_notes on \partial \Omega_in and out
+def n_lr(omega):
+    return as_tensor((Nt_lr(omega))[k] / sqrt(g(omega)[i, j]* (Nt_lr(omega))[i] *  (Nt_lr(omega))[j] ), (k))
+
+def n_tb(omega):
+    return as_tensor((Nt_tb(omega))[k] / sqrt(g(omega)[i, j]* (Nt_tb(omega))[i] *  (Nt_tb(omega))[j] ), (k))
+
+def n_circle(omega):
+    return as_tensor((Nt_circle(omega))[k] / sqrt(g(omega)[i, j]* (Nt_circle(omega))[i] *  (Nt_circle(omega))[j] ), (k))
+
 #sign
 
-
-#the normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
-def n_lr(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
-    Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
-    return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
-
-#the normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h), normalized according to g and pointing outside Omega
-def n_tb(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
-    Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
-    return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
-
-#the normal to the manifold pointing outwards the manifold and normalized according to g, which cannot be plotted as a field
-def n(omega):
-    N3d = [facet_normal[0], facet_normal[1], 0.0]
-    Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
-    return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
-
-#the facet normal vector on the l and r boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
-#n_overline_lr() = \overline{n}_notes on the l and r edges of the rectangle
-def n_overline_lr():
-    x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0] )
-    return as_tensor(u[k], (k))
-
-#the facet normal vector on the t  and b boundaries of a rectangle  (0,0) - (L,0) - (L, h) - (0,h)
-#n_overline_tb() = \overline{n}_notes on the t and b edges of the rectangle
-def n_overline_tb():
-    x = ufl.SpatialCoordinate(mesh)
-    u = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0)] )
-    return as_tensor(u[k], (k))
-
-#
-# #the normal to the manifold pointing outwards the manifold and normalized according to g, which can be plotted as a field
-# def n_smooth(omega):
-#     u = calc_normal_cg2(mesh)
-#     return as_tensor(u[k]/sqrt(g(omega)[i,j]*u[i]*u[j]), (k))
-
 #the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
-def n_overline_smooth():
+def facet_normal_smooth():
     u = calc_normal_cg2(mesh)
     return as_tensor(u[k], (k))
 

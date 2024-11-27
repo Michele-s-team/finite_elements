@@ -45,7 +45,7 @@ xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
 xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
-xdmffile_n.write( n_overline_smooth(), 0 )
+xdmffile_n.write( facet_normal_smooth(), 0 )
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
