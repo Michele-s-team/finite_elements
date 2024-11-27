@@ -58,7 +58,6 @@ ds_b = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=5 )
 ds_circle = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=6 )
 # ds_lr = ds_l + ds_r
 # ds_tb = ds_t + ds_b
-dtheta_circle = (1.0/r) * ds_circle
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function( Q_z )
@@ -172,22 +171,22 @@ F_v = ( \
       - rho / 2.0 * ( \
                   ((w ** 2) * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
                   + ((w ** 2) * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                  + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
+                  + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0/r) * ds_circle
       ) \
       - ( \
                   ( sigma * (n_lr( omega ))[i] * nu_v[i] ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
                   + ( sigma * (n_tb( omega ))[i] * nu_v[i] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                  + ( sigma * (n_circle( omega ))[i] * nu_v[i] ) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
+                  + ( sigma * (n_circle( omega ))[i] * nu_v[i] ) * sqrt_deth_circle( omega, c_r ) * (1.0/r) * ds_circle
       ) \
       - 2.0 * eta * ( \
 #natural bc
                   ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[j] ) * sqrt_deth_lr( omega ) * ds_l \
                   + ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_tb( omega ))[k] * nu_v[j] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                  + ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j] ) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
+                  + ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0/r) * ds_circle
       )
 #sign
 
-
+'''
 F_w = ( \
                   rho * (v[i] * v[k] * b( omega )[k, i]) * nu_w \
                   - rho * w * Nabla_v( vector_times_scalar( 3.0 / 2.0 * v - 1.0 / 2.0 * v, nu_w ), omega )[i, i] \
@@ -264,3 +263,4 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/w.h5", "w" ).write( w_d
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_dummy, "/f" )
+'''

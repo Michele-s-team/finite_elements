@@ -245,7 +245,7 @@ def Nt_tb(omega):
 
 #Nt^i_notes on \partisal \Omega_O
 def Nt_circle(omega):
-    N3d = [facet_normal[0], facet_normal[1], 0.0]
+    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
     return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
 
 #n^i_notes on \partial \Omega_in and out
