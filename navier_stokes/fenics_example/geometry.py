@@ -1,13 +1,8 @@
-import math
-
 from fenics import *
 from mshr import *
 import numpy as np
-# from dolfin import *
-import meshio
 import ufl as ufl
 import argparse
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -19,7 +14,6 @@ L = 0.5
 h = L
 r = 0.01
 c_r = [L/2.0, h/2.0]
-# time step size
 #bending rigidity
 kappa = 1.0
 #density
@@ -34,7 +28,6 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
 
 
-
 #read mesh
 mesh=Mesh()
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
@@ -46,10 +39,8 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 #radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()
 
-
-#this is the facet normal vector, which cannot be plotted as a field
-#n_overline = \overline{n}_notes_{on the circle}
-n_overline = FacetNormal(mesh)
+#this is the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
+facet_normal = FacetNormal( mesh )
 
 # Define function spaces
 #finite elements for sigma .... omega
@@ -79,15 +70,12 @@ class FunctionTestIntegralsds(UserExpression):
     def value_shape(self):
         return (1,)
 
-
 # norm of vector x
 def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
-
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
-
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
@@ -161,7 +149,6 @@ class grad_square_Expression(UserExpression):
 #latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 
-#sign
 #the vector of the differential manifold, which is equal to \vec{X}_{\Gamma}(x_1, x_2) on page 8 if al-izzi2020shear
 def X(z):
     x = ufl.SpatialCoordinate(mesh)
@@ -171,12 +158,13 @@ def X(z):
 def e(omega):
     return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
 
-
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
 def normal(omega):
     return as_tensor(cross(e(omega)[0], e(omega)[1]) /  ufl_norm(cross(e(omega)[0], e(omega)[1])) )
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
+
+
 
 #first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):
@@ -206,14 +194,19 @@ def sqrt_detg(omega):
 def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
 
+
+
 #vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r), see 'notes reall2013general'
 def dydtheta(c):
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor([-(x[1]-c[1]), x[0]-c[0]])
 
-#square root of the determinant of the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r)
+#square root of the determinant of the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r). This pull-back is done by parameterizing the circle, \partial \Omega_O witht the polar angle \theta as a variable
 def sqrt_deth_circle(omega, c):
     return(sqrt((dydtheta(c))[i]*(dydtheta(c))[j]*g(omega)[i, j]))
+
+#sign
+
 
 #square root of the determinant of the pull-back of the metric on a rectangular boundary given by a rectangle (0,0) - (L,0) - (L, h) - (0,h)
 def sqrt_deth_square(omega):
@@ -256,7 +249,7 @@ def n_tb(omega):
 
 #the normal to the manifold pointing outwards the manifold and normalized according to g, which cannot be plotted as a field
 def n(omega):
-    N3d = [n_overline[0], n_overline[1], 0.0]
+    N3d = [facet_normal[0], facet_normal[1], 0.0]
     Nt = as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
     return as_tensor(Nt[k]/sqrt(g(omega)[i, j]*Nt[i]*Nt[j]), (k))
 

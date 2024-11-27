@@ -227,10 +227,10 @@ F_N = alpha/r_mesh * ( \
                 ds_l + ds_r) \
             + (((n_overline_tb())[i] * omega[i] - (n_overline_tb())[i] * grad_square[i]) * ((n_overline_tb())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
                         ds_t + ds_b) \
-            + ((n_overline[i] * omega[i] - n_overline[i] * grad_circle[i]) * (n_overline[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
+            + ((facet_normal[i] * omega[i] - facet_normal[i] * grad_circle[i]) * (facet_normal[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
  \
             + (((n_overline_tb())[i] * v[i] - 0) * ((n_overline_tb())[j] * nu_v[j])) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-            + ((n_overline[i] * v[i] - 0) * (n_overline[j] * nu_v[j])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
+            + ((facet_normal[i] * v[i] - 0) * (facet_normal[j] * nu_v[j])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
     )
 
 # total functional for the mixed problem
