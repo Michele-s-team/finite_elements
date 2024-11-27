@@ -67,16 +67,19 @@ integral_r = assemble( f_test_ds * ds_r )
 integral_t = assemble( f_test_ds * ds_t )
 integral_b = assemble( f_test_ds * ds_b )
 integral_circle = assemble( f_test_ds * ds_circle )
-#sign
 
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print( "Integral l = ", integral_l, " exact value = 0.373169" )
-print( "Integral r = ", integral_r, " exact value = 0.00227783" )
-print( "Integral t = ", integral_t, " exact value = 1.36562" )
-print( "Integral b = ", integral_b, " exact value = 1.02837" )
-print( "Integral circle = ", integral_circle, " exact value = 0.205204" )
-'''
+print( "Integral l = ", integral_l, " exact value = 0.462517" )
+print( "Integral r = ", integral_r, " exact value = 0.47113" )
+print( "Integral t = ", integral_t, " exact value = 0.498266" )
+print( "Integral b = ", integral_b, " exact value = 0.413016" )
+print( "Integral circle = ", integral_circle, " exact value = 0.0610826" )
+
+#sign
+
+
+
 # Define functions
 # the Jacobian
 J_psi = TrialFunction( Q )
@@ -103,24 +106,22 @@ v, w, sigma, omega, z = split( psi )
 # Define expressions used in variational forms
 kappa = Constant( kappa )
 rho = Constant( rho )
+
+
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-grad_circle = interpolate( grad_circle_Expression( element=Q_omega.ufl_element() ), Q_omega )
-grad_square = interpolate( grad_square_Expression( element=Q_omega.ufl_element() ), Q_omega )
+omega_circle = interpolate( grad_circle_Expression( element=Q_omega.ufl_element() ), Q_omega )
+omega_square = interpolate( grad_square_Expression( element=Q_omega.ufl_element() ), Q_omega )
 
 # assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
 # assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
 
-
 # CHANGE PARAMETERS HERE
-l_profile_v_bar = Expression( ('v_l', '0'), v_l=v_l, element = Q_v.ufl_element())
+l_profile_v = Expression( ('v_l', '0'), v_l=v_l, element = Q_v.ufl_element() )
 # CHANGE PARAMETERS HERE
-
 
 # boundary conditions (BCs)
 # BCs for v_bar
-bc_v_l = DirichletBC( Q.sub( 0 ), l_profile_v_bar, boundary_l )
-# bc_v_bar_tb = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_tb)
-# bc_v_bar_circle = DirichletBC(Q.sub(0), Constant((0, 0)), boundary_circle)
+bc_v_l = DirichletBC( Q.sub( 0 ), l_profile_v, boundary_l )
 
 # BCs for w_bar
 bc_w_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr )
@@ -131,10 +132,12 @@ bc_w_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle )
 bc_sigma = DirichletBC(Q.sub(2), Constant(0), boundary_r)
 
 # CHANGE PARAMETERS HERE
-# BCs for z^{n-1/2}
+# BCs for z
 bc_z_circle = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element() ), boundary_circle )
 bc_z_square = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element(), h=h ), boundary_square )
 # CHANGE PARAMETERS HERE
+
+#sign
 
 # all BCs
 bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square]
@@ -225,11 +228,11 @@ F_omega = (z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i]) * sqrt
             )
 
 F_N = alpha/r_mesh * ( \
-            (((n_overline_lr())[i] * omega[i] - (n_overline_lr())[i] * grad_square[i]) * ((n_overline_lr())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
+            (((n_overline_lr())[i] * omega[i] - (n_overline_lr())[i] * omega_square[i]) * ((n_overline_lr())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
                 ds_l + ds_r) \
-            + (((n_overline_tb())[i] * omega[i] - (n_overline_tb())[i] * grad_square[i]) * ((n_overline_tb())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
+            + (((n_overline_tb())[i] * omega[i] - (n_overline_tb())[i] * omega_square[i]) * ((n_overline_tb())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
                         ds_t + ds_b) \
-            + ((facet_normal[i] * omega[i] - facet_normal[i] * grad_circle[i]) * (facet_normal[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
+            + ((facet_normal[i] * omega[i] - facet_normal[i] * omega_circle[i]) * (facet_normal[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
  \
             + (((n_overline_tb())[i] * v[i] - 0) * ((n_overline_tb())[j] * nu_v[j])) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
             + ((facet_normal[i] * v[i] - 0) * (facet_normal[j] * nu_v[j])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
@@ -261,4 +264,3 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/w.h5", "w" ).write( w_d
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_dummy, "/f" )
-'''

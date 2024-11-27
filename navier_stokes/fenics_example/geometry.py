@@ -138,8 +138,8 @@ class grad_circle_Expression(UserExpression):
     
 class grad_square_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = 0.0
+        values[1] = 0.0
     def value_shape(self):
         return (2,)
 #CHANGE PARAMETERS HERE
