@@ -56,6 +56,9 @@ ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=5 )
 ds_circle = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=6 )
+# ds_lr = ds_l + ds_r
+# ds_tb = ds_t + ds_b
+dtheta_circle = (1.0/r) * ds_circle
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result 
 f_test_ds = Function( Q_z )
@@ -166,18 +169,17 @@ F_v = ( \
                   + ( sigma * g_c( omega )[i, j] * Nabla_f( nu_v, omega )[i, j] \
                      + 2.0 * eta * d_c( v, w, omega )[j, i] * Nabla_f( nu_v, omega )[j, i])
       ) * sqrt_detg( omega ) * dx \
-#sign
-
       - rho / 2.0 * ( \
                   ((w ** 2) * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
                   + ((w ** 2) * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                  + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * ds_circle
+                  + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
       ) \
       - ( \
-                  (sigma * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_square( omega ) * (ds_l + ds_r) \
-                  + (sigma * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-                  + (sigma * (n( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * ds_circle
+                  ( sigma * (n_lr( omega ))[i] * nu_v[i] ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
+                  + ( sigma * (n_tb( omega ))[i] * nu_v[i] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
+                  + ( sigma * (n_circle( omega ))[i] * nu_v[i] ) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
       ) \
+#sign
       - 2.0 * eta * ( \
                   (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[j]) * sqrt_deth_square( omega ) * ds_l \
                   + (d_c( v, w, omega )[i, 1] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[1]) * sqrt_deth_square( omega ) * ds_r \
