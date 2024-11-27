@@ -209,7 +209,7 @@ def sqrt_deth_circle(omega, c):
 def sqrt_deth_lr(omega):
     return sqrt(g(omega)[1,1])
 
-#square root of the determinant of the pull-back of the metric on \partial \Omega_W (top or bottom), parametrized with l , given by  x^1 = l and x^2 = 0 (H), as coordinate for \partial \Omega_W
+#square root of the determinant of the pull-back of the metric on \partial \Omega_W (top or bottom), parametrized with l , given by  x^1 = l and x^2 = 0 (h), as coordinate for \partial \Omega_W
 def sqrt_deth_tb(omega):
     return sqrt(g(omega)[0,0])
 
