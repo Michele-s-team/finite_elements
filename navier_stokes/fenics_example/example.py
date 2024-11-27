@@ -155,23 +155,23 @@ bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
 # the surface elements are ds_l + ds_r, and the normal is n_lr(omega), and the pull-back of the metric is sqrt_deth_lr: this avoids odd interpolations at the corners of the rectangle edges.
 
-#sign
 
+F_sigma = (Nabla_v( v, omega )[i, i] - 2.0 * H( omega ) * w) * nu_sigma * sqrt_detg( omega ) * dx
 
 F_v = ( \
-                  rho * (( \
-                             ((3.0 / 2.0 * v[j] - 1.0 / 2.0 * v[j]) * Nabla_v( v, omega )[i, j] \
-                              - 2.0 * v[j] * w * g_c( omega )[i, k] * b( omega )[k, j]) \
-                             ) * nu_v[i] \
-                         + 1.0 / 2.0 * (w ** 2) * g_c( omega )[i, j] * Nabla_f( nu_v, omega )[i, j] \
-                         ) \
-                  + (sigma * g_c( omega )[i, j] * Nabla_f( nu_v, omega )[i, j] \
-                     + 2.0 * eta * d_c( v, w, omega )[i, j] * Nabla_f( nu_v, omega )[j, i])
+                  rho * ( \
+                      ( v[j] * Nabla_v( v, omega )[i, j] - 2.0 * v[j] * w * g_c( omega )[i, k] * b( omega )[k, j] ) * nu_v[i] \
+                      + 1.0 / 2.0 * (w ** 2) * g_c( omega )[i, j] * Nabla_f( nu_v, omega )[i, j] \
+              ) \
+                  + ( sigma * g_c( omega )[i, j] * Nabla_f( nu_v, omega )[i, j] \
+                     + 2.0 * eta * d_c( v, w, omega )[j, i] * Nabla_f( nu_v, omega )[j, i])
       ) * sqrt_detg( omega ) * dx \
+#sign
+
       - rho / 2.0 * ( \
-                  ((w ** 2) * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_square( omega ) * (ds_l + ds_r) \
-                  + ((w ** 2) * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-                  + ((w ** 2) * (n( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * ds_circle
+                  ((w ** 2) * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
+                  + ((w ** 2) * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
+                  + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * ds_circle
       ) \
       - ( \
                   (sigma * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_square( omega ) * (ds_l + ds_r) \
@@ -210,7 +210,6 @@ F_w = ( \
                   + (nu_w * (n( omega ))[i] * ((H( omega )).dx( i ))) * sqrt_deth_circle( omega, c_r ) * ds_circle
       )
 
-F_sigma = (Nabla_v( v, omega )[i, i] - 2.0 * H( omega ) * w) * nu_sigma * sqrt_detg( omega ) * dx
 
 F_z = ( \
                   ( \
