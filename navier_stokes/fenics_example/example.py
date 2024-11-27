@@ -179,13 +179,14 @@ F_v = ( \
                   + ( sigma * (n_tb( omega ))[i] * nu_v[i] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
                   + ( sigma * (n_circle( omega ))[i] * nu_v[i] ) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
       ) \
-#sign
       - 2.0 * eta * ( \
-                  (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[j]) * sqrt_deth_square( omega ) * ds_l \
-                  + (d_c( v, w, omega )[i, 1] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[1]) * sqrt_deth_square( omega ) * ds_r \
-                  + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_tb( omega ))[k] * nu_v[j]) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-                  + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n( omega ))[k] * nu_v[j]) * sqrt_deth_circle( omega, c_r ) * ds_circle
+#natural bc
+                  ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[j] ) * sqrt_deth_lr( omega ) * ds_l \
+                  + ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_tb( omega ))[k] * nu_v[j] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
+                  + ( d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j] ) * sqrt_deth_circle( omega, c_r ) * dtheta_circle
       )
+#sign
+
 
 F_w = ( \
                   rho * (v[i] * v[k] * b( omega )[k, i]) * nu_w \
