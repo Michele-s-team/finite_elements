@@ -76,7 +76,7 @@ print( "Integral l = ", integral_l, " exact value = 0.462517" )
 print( "Integral r = ", integral_r, " exact value = 0.47113" )
 print( "Integral t = ", integral_t, " exact value = 0.498266" )
 print( "Integral b = ", integral_b, " exact value = 0.413016" )
-print( "Integral circle = ", integral_circle, " exact value = 0.0610826" )
+print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
 
 #sign
 
@@ -179,8 +179,9 @@ F_v = ( \
                     + (sigma * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
       ) \
       - 2.0 * eta * ( \
-            # natural bc
               (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[j]) * sqrt_deth_lr( omega ) * ds_l \
+              # BC (1g)^\omega is implemented here as a natural bc
+              + (d_c( v, w, omega )[i, 1] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[1]) * sqrt_deth_lr( omega ) * ds_r \
               + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_tb( omega ))[k] * nu_v[j]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
               + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
       )
