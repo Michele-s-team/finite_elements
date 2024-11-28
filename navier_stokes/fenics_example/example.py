@@ -203,12 +203,14 @@ F_w = ( \
               + (w * nu_w * (n_tb( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
               + (w * nu_w * (n_circle( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 ) \
-      # sign
 + 2.0 * kappa * ( \
-              (nu_w * (n_lr( omega ))[i] * ((H( omega )).dx( i ))) * sqrt_deth_square( omega ) * (ds_l + ds_r) \
-              + (nu_w * (n_tb( omega ))[i] * ((H( omega )).dx( i ))) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-              + (nu_w * (n( omega ))[i] * ((H( omega )).dx( i ))) * sqrt_deth_circle( omega, c_r ) * ds_circle
+              ( (n_lr( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
+              + ( (n_tb( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
+              + ( (n_circle( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 )
+
+# sign
+
 
 '''
 F_z = ( \
