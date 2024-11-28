@@ -261,3 +261,9 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write(
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_dummy, "/f" )
 
+print( "\int_{\partial \Omega_W U \partial \Omega_O} (n_i v^i)^2 dS = ", \
+       assemble( ( (n_tb(omega))[i] * g(omega_dummy)[i, j] * v_dummy[j] ) ** 2 * (ds_t + ds_b) ) \
+       + assemble( ( (n_circle(omega))[i] * g(omega_dummy)[i, j] * v_dummy[j] ) ** 2 * ds_circle ) \
+       )
+
+
