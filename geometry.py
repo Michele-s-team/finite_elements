@@ -2,12 +2,7 @@ from fenics import *
 from mshr import *
 import numpy as np
 import ufl as ufl
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+from function_spaces import *
 
 #CHANGE PARAMETERS HERE
 L = 0.5
@@ -28,54 +23,52 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
 
 
-#read mesh
-mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-
-#radius of the smallest cell in the mesh
-r_mesh = mesh.hmin()
+# norm of vector x
+def my_norm(x):
+    return (sqrt(np.dot(x, x)))
 
 #this is the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( mesh )
 
-# Define function spaces
-#finite elements for sigma .... omega
-P_v_n = VectorElement( 'P', triangle, 2 )
-P_w_n = FiniteElement( 'P', triangle, 1 )
-P_sigma_n = FiniteElement( 'P', triangle, 1 )
-P_omega_n = VectorElement( 'P', triangle, 3 )
-P_z_n = FiniteElement( 'P', triangle, 1 )
+# read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
+mf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
 
-element = MixedElement( [P_v_n, P_w_n, P_sigma_n, P_omega_n, P_z_n] )
-#total function space
-Q = FunctionSpace(mesh, element)
-#function spaces for vbar .... zn
-Q_v = Q.sub( 0 ).collapse()
-Q_w = Q.sub( 1 ).collapse()
-Q_sigma = Q.sub( 2 ).collapse()
-Q_omega = Q.sub( 3 ).collapse()
-Q_z= Q.sub( 4 ).collapse()
+# test for surface elements
+ds_l = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
+ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
+ds_t = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=4 )
+ds_b = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=5 )
+ds_circle = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=6 )
+# ds_lr = ds_l + ds_r
+# ds_tb = ds_t + ds_b
 
+# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+f_test_ds = Function( Q_z )
 
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegralsds(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345
-        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0 
+        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
 
-# norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
+f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_z.ufl_element() ) )
 
-#read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
+# here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
+integral_l = assemble( f_test_ds * ds_l )
+integral_r = assemble( f_test_ds * ds_r )
+integral_t = assemble( f_test_ds * ds_t )
+integral_b = assemble( f_test_ds * ds_b )
+integral_circle = assemble( f_test_ds * ds_circle )
+
+# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
+print( "Integral l = ", integral_l, " exact value = 0.462517" )
+print( "Integral r = ", integral_r, " exact value = 0.47113" )
+print( "Integral t = ", integral_t, " exact value = 0.498266" )
+print( "Integral b = ", integral_b, " exact value = 0.413016" )
+print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
@@ -93,53 +86,6 @@ def ufl_norm(x):
     return(sqrt(ufl.dot(x, x)))
 
 epsilon = ufl.PermutationSymbol(2)
-
-#CHANGE PARAMETERS HERE
-class TangentVelocityExpression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
-    def value_shape(self):
-        return (2,)
-
-class NormalVelocityExpression(UserExpression):
-        def eval(self, values, x):
-            values[0] = 0.0
-        def value_shape(self):
-            return (1,)
-
-class SurfaceTensionExpression(UserExpression):
-        def eval(self, values, x):
-            values[0] = 0.0
-        def value_shape(self):
-            return (1,)
-
-class ManifoldExpression(UserExpression):
-        def eval(self, values, x):
-            values[0] = 0.0
-        def value_shape(self):
-            return (1,)
-
-class OmegaExpression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
-    def value_shape(self):
-        return (2,)
-
-#profiles for the normal derivative
-class omega_circle_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.5
-    def value_shape(self):
-        return (1,)
-    
-class omega_square_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.0
-    def value_shape(self):
-        return (1,)
-#CHANGE PARAMETERS HERE
 
 
 #definition of scalar, vectorial and tensorial quantities
