@@ -41,13 +41,8 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
-
-
-
-
 #radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()
-
 
 #this is the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( mesh )
@@ -105,7 +100,6 @@ integral_t = assemble( f_test_ds * ds_t )
 integral_b = assemble( f_test_ds * ds_b )
 integral_circle = assemble( f_test_ds * ds_circle )
 
-
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print( "Integral l = ", integral_l, " exact value = 0.462517" )
 print( "Integral r = ", integral_r, " exact value = 0.47113" )
@@ -114,12 +108,6 @@ print( "Integral b = ", integral_b, " exact value = 0.413016" )
 print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
 
 
-
-
-
-
-#read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
