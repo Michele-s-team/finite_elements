@@ -12,7 +12,7 @@ args = parser.parse_args()
 #CHANGE PARAMETERS HERE
 L = 0.5
 h = L
-r = 0.01
+r = 0.05
 c_r = [L/2.0, h/2.0]
 #bending rigidity
 kappa = 1.0
@@ -21,7 +21,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e2
+alpha = 1e1
 v_l = 1.0
 tol = 1E-3
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -84,8 +84,8 @@ boundary_l  = 'near(x[0], 0.0)'
 boundary_r  = 'near(x[0], 0.5)'
 boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
 boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > 2 * 0.01'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < 2 * 0.01'
+boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > 2 * 0.05'
+boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < 2 * 0.05'
 #CHANGE PARAMETERS HERE
 
 #norm for UFL vectors
@@ -130,7 +130,7 @@ class OmegaExpression(UserExpression):
 #profiles for the normal derivative
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.1
+        values[0] = 0.5
     def value_shape(self):
         return (1,)
     

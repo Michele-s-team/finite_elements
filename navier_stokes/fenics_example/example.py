@@ -232,12 +232,10 @@ F_N = alpha / r_mesh * ( \
               + ( ((n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
  \
       )
-# sign
 
-'''
 
 # total functional for the mixed problem
-F = (F_v + F_w + F_sigma + F_z + F_omega) + F_N
+F = ( F_v + F_w + F_sigma + F_z + F_omega ) + F_N
 
 # solve the variational problem
 J = derivative( F, psi, J_psi )
@@ -262,4 +260,4 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/w.h5", "w" ).write( w_d
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_dummy, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_dummy, "/f" )
-'''
+

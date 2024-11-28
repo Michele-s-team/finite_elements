@@ -18,7 +18,7 @@ resolution = (float)(args.resolution)
 #CHANGE PARAMETERS HERE
 L = 0.5
 h = L
-r = 0.01
+r = 0.05
 c_r = [L/2.0, h/2.0, 0]
 #CHANGE PARAMETERS HERE
 
