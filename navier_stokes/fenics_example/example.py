@@ -272,3 +272,9 @@ print( "\int_{\partial \Omega} (n^i \omega_i - psi )^2 dS = ", \
        + assemble( ( ( (n_tb(omega_dummy))[i] * omega_dummy[i] - omega_square ) ) ** 2 * (ds_t + ds_b) ) \
        + assemble( ( ( (n_circle(omega_dummy))[i] * omega_dummy[i] - omega_circle ) ) ** 2 * ds_circle ) \
        )
+
+print( "\int_{\partial \Omega_ou} ( n_i d^{i 1})^2 dS =}", \
+       assemble( (d_c( v_dummy, w_dummy, omega_dummy )[i, 0] * g( omega_dummy )[i, j] * (n_lr( omega_dummy ))[j]) ** 2 * ds_r ) \
+    )
+
+#
