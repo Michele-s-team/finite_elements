@@ -111,8 +111,8 @@ rho = Constant( rho )
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_circle = interpolate( grad_circle_Expression( element=Q_omega.ufl_element() ), Q_omega )
-omega_square = interpolate( grad_square_Expression( element=Q_omega.ufl_element() ), Q_omega )
+omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
+omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
 
 # assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
 # assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
@@ -219,24 +219,22 @@ F_omega = ( z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i] ) * sq
           - ( \
                         ( (n_lr( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
                         + ( (n_tb( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                        + ( (n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+                        + ( (n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle \
           )
 
+F_N = alpha / r_mesh * ( \
+ \
+              + ( ( (n_tb(omega))[i] * g(omega)[i, j] * v[j] ) * ( (n_tb(omega))[k] * nu_v[k]) ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
+              + ( ( (n_circle(omega))[i] * g(omega)[i, j] * v[j] ) * ( (n_circle(omega))[k] * nu_v[k]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
+\
+              + ( ((n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
+              + ( ((n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
+              + ( ((n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
+ \
+      )
 # sign
 
-
 '''
-
-F_N = alpha / r_mesh * ( \
-            (((n_overline_lr())[i] * omega[i] - (n_overline_lr())[i] * omega_square[i]) * ((n_overline_lr())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
-            ds_l + ds_r) \
-            + (((n_overline_tb())[i] * omega[i] - (n_overline_tb())[i] * omega_square[i]) * ((n_overline_tb())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
-                    ds_t + ds_b) \
-            + ((facet_normal[i] * omega[i] - facet_normal[i] * omega_circle[i]) * (facet_normal[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
- \
-            + (((n_overline_tb())[i] * v[i] - 0) * ((n_overline_tb())[j] * nu_v[j])) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-            + ((facet_normal[i] * v[i] - 0) * (facet_normal[j] * nu_v[j])) * sqrt_deth_circle( omega, c_r ) * ds_circle \
-    )
 
 # total functional for the mixed problem
 F = (F_v + F_w + F_sigma + F_z + F_omega) + F_N

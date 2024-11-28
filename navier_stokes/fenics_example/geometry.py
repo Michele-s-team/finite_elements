@@ -128,20 +128,17 @@ class OmegaExpression(UserExpression):
         return (2,)
 
 #profiles for the normal derivative
-class grad_circle_Expression(UserExpression):
+class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        a = 0.1
-        values[0] = a * (x[0] - c_r[0])/my_norm(x-c_r)
-        values[1] = a * (x[1] - c_r[1])/my_norm(x-c_r)
+        values[0] = 0.1
     def value_shape(self):
-        return (2,)
+        return (1,)
     
-class grad_square_Expression(UserExpression):
+class omega_square_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-        values[1] = 0.0
     def value_shape(self):
-        return (2,)
+        return (1,)
 #CHANGE PARAMETERS HERE
 
 
