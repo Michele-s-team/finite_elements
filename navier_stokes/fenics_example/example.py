@@ -209,15 +209,14 @@ F_w = ( \
               + ( (n_circle( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 )
 
+
+F_z = ( \
+                    - w * ( (normal( omega ))[2] - ( (normal( omega ))[0] * omega[0] + (normal( omega ))[1] * omega[1] ) ) * nu_z \
+            ) * sqrt_detg( omega ) * dx
+
 # sign
 
-
 '''
-F_z = ( \
-                  ( \
-                              - w * ((normal( omega ))[2] - ((normal( omega ))[0] * omega[0] + (normal( omega ))[1] * omega[1])) \
-                      ) * nu_z \
-          ) * sqrt_detg( omega ) * dx
 
 F_omega = (z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i]) * sqrt_detg( omega ) * dx \
           - ( \
