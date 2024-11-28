@@ -9,9 +9,9 @@ To enter the folder
 cd shared/navier_stokes/fenics_example
 
 Run with
-clear; python3 code.py [path where to read the mesh] [path where to store the solution]
-clear; clear; rm -r solution; python3 code.py /home/fenics/shared/mesh /home/fenics/shared/solution
-clear; clear; rm -r solution; mpirun -np 6 python3 code.py /home/fenics/shared/mesh /home/fenics/shared/solution
+clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
+clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/mesh /home/fenics/shared/solution
+clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/mesh /home/fenics/shared/solution
 
 The solution files will be stored in /home/fenics/shared/navier_stokes/fenics_example/solution
 
