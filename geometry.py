@@ -17,7 +17,6 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
-v_l = 1.0
 tol = 1E-3
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
@@ -106,8 +105,6 @@ def e(omega):
 def normal(omega):
     return as_tensor(cross(e(omega)[0], e(omega)[1]) /  ufl_norm(cross(e(omega)[0], e(omega)[1])) )
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
-
-
 
 #first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):

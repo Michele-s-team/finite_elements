@@ -15,5 +15,11 @@ mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 
+# # Create mesh
+# channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
+# cylinder = Circle(Point(0.2, 0.2), 0.05)
+# domain = channel - cylinder
+# mesh = generate_mesh(domain, 64)
+
 #radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()
