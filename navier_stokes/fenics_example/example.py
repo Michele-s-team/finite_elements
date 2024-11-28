@@ -227,9 +227,9 @@ F_N = alpha / r_mesh * ( \
               + ( ( (n_tb(omega))[i] * g(omega)[i, j] * v[j] ) * ( (n_tb(omega))[k] * nu_v[k]) ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
               + ( ( (n_circle(omega))[i] * g(omega)[i, j] * v[j] ) * ( (n_circle(omega))[k] * nu_v[k]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
 \
-              + ( ((n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
-              + ( ((n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
-              + ( ((n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
+              + ( ( (n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
+              + ( ( (n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
+              + ( ( (n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
  \
       )
 
@@ -266,4 +266,8 @@ print( "\int_{\partial \Omega_W U \partial \Omega_O} (n_i v^i)^2 dS = ", \
        + assemble( ( (n_circle(omega))[i] * g(omega_dummy)[i, j] * v_dummy[j] ) ** 2 * ds_circle ) \
        )
 
-
+print( "\int_{\partial \Omega} (n^i \omega_i - psi )^2 dS = ", \
+       assemble( ( ( (n_lr(omega_dummy))[i] * omega_dummy[i] - omega_square ) ) ** 2 * (ds_l + ds_r) ) \
+       + assemble( ( ( (n_tb(omega_dummy))[i] * omega_dummy[i] - omega_square ) ) ** 2 * (ds_t + ds_b) ) \
+       + assemble( ( ( (n_circle(omega_dummy))[i] * omega_dummy[i] - omega_circle ) ) ** 2 * ds_circle ) \
+       )
