@@ -2,13 +2,7 @@ from fenics import *
 from mshr import *
 import numpy as np
 import ufl as ufl
-import argparse
-
-
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+from function_spaces import *
 
 #CHANGE PARAMETERS HERE
 L = 0.5
@@ -29,43 +23,12 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
 
 
-#read mesh
-mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-
 # norm of vector x
 def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
-#radius of the smallest cell in the mesh
-r_mesh = mesh.hmin()
-
 #this is the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( mesh )
-
-# Define function spaces
-#finite elements for sigma .... omega
-P_v_n = VectorElement( 'P', triangle, 2 )
-P_w_n = FiniteElement( 'P', triangle, 1 )
-P_sigma_n = FiniteElement( 'P', triangle, 1 )
-P_omega_n = VectorElement( 'P', triangle, 3 )
-P_z_n = FiniteElement( 'P', triangle, 1 )
-
-element = MixedElement( [P_v_n, P_w_n, P_sigma_n, P_omega_n, P_z_n] )
-#total function space
-Q = FunctionSpace(mesh, element)
-#function spaces for vbar .... zn
-Q_v = Q.sub( 0 ).collapse()
-Q_w = Q.sub( 1 ).collapse()
-Q_sigma = Q.sub( 2 ).collapse()
-Q_omega = Q.sub( 3 ).collapse()
-Q_z= Q.sub( 4 ).collapse()
-
-
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
@@ -106,8 +69,6 @@ print( "Integral r = ", integral_r, " exact value = 0.47113" )
 print( "Integral t = ", integral_t, " exact value = 0.498266" )
 print( "Integral b = ", integral_b, " exact value = 0.413016" )
 print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
-
-
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE

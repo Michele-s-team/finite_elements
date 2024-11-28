@@ -22,6 +22,9 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
+from read_mesh import  *
+from geometry import *
+from function_spaces import *
 from variational_problem import *
 
 set_log_level( 20 )

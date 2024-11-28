@@ -6,7 +6,6 @@ from mshr import *
 from geometry import *
 
 
-
 # Define functions
 # the Jacobian
 J_psi = TrialFunction( Q )
@@ -126,7 +125,6 @@ bc_z_square = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl
 # all BCs
 bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square]
 
-
 #set initial profiles
 # v_n_1.interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()))
 # v_n_2.assign(v_n_1)
@@ -135,12 +133,9 @@ bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square
 # z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
 # omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
 
-
-
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
 # the surface elements are ds_l + ds_r, and the normal is n_lr(omega), and the pull-back of the metric is sqrt_deth_lr: this avoids odd interpolations at the corners of the rectangle edges.
-
 
 F_sigma = (Nabla_v( v, omega )[i, i] - 2.0 * H( omega ) * w) * nu_sigma * sqrt_detg( omega ) * dx
 
