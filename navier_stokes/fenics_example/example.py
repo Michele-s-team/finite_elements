@@ -209,21 +209,23 @@ F_w = ( \
               + ( (n_circle( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 )
 
-
 F_z = ( \
-                    - w * ( (normal( omega ))[2] - ( (normal( omega ))[0] * omega[0] + (normal( omega ))[1] * omega[1] ) ) * nu_z \
+                    - w * ((normal( omega ))[2] - ((normal( omega ))[0] * omega[0] + (normal( omega ))[1] * omega[1])) * nu_z \
             ) * sqrt_detg( omega ) * dx
+
+
+
+F_omega = ( z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i] ) * sqrt_detg( omega ) * dx \
+          - ( \
+                        ( (n_lr( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
+                        + ( (n_tb( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
+                        + ( (n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+          )
 
 # sign
 
-'''
 
-F_omega = (z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i]) * sqrt_detg( omega ) * dx \
-          - ( \
-                      ((n_lr( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_square( omega ) * (ds_l + ds_r) \
-                      + ((n_tb( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_square( omega ) * (ds_t + ds_b) \
-                      + ((n( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( omega, c_r ) * ds_circle
-          )
+'''
 
 F_N = alpha / r_mesh * ( \
             (((n_overline_lr())[i] * omega[i] - (n_overline_lr())[i] * omega_square[i]) * ((n_overline_lr())[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_square( omega ) * (
