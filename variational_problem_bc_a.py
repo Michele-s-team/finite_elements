@@ -79,7 +79,15 @@ class omega_square_Expression( UserExpression ):
 omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
 omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
 
-# assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
+v_0.interpolate(TangentVelocityExpression(element=Q_v.ufl_element()))
+w_0.interpolate(NormalVelocityExpression(element=Q_w.ufl_element()))
+sigma_0.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
+omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
+z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
+
+#uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
+# assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
+
 
 # CHANGE PARAMETERS HERE
 l_profile_v = Expression( ('v_l', '0'), v_l=v_l, element = Q_v.ufl_element() )

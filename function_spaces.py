@@ -1,3 +1,5 @@
+from symtable import Function
+
 from fenics import *
 from mshr import *
 from read_mesh import *
@@ -26,13 +28,14 @@ Q_z= Q.sub( 4 ).collapse()
 J_psi = TrialFunction( Q )
 psi = Function( Q )
 nu_v, nu_w, nu_sigma, nu_omega, nu_z = TestFunctions( Q )
-# fields at the preceeding steps
-# v_n_1 = Function(Q_v_n)
-# v_n_2 = Function(Q_v_n)
-# w_n_1 = Function(Q_w_n)
-# sigma_n_12 = Function( Q_phi )
-# sigma_n_32 = Function( Q_phi )
-# z_n_32 = Function( Q_z_n )
+
+#these functions are used to print the solution to file
+v_output = Function(Q_v)
+w_output = Function(Q_w)
+sigma_output = Function(Q_sigma)
+omega_output = Function(Q_omega)
+z_output = Function(Q_z)
+
 
 # v_0, .... are used to store the initial conditions
 v_0 = Function( Q_v )
