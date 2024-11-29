@@ -1,8 +1,8 @@
 from symtable import Function
-
 from fenics import *
 from mshr import *
-from read_square_mesh import *
+# from read_square_mesh import *
+from read_circle_mesh import *
 
 
 # Define function spaces
@@ -35,7 +35,6 @@ w_output = Function(Q_w)
 sigma_output = Function(Q_sigma)
 omega_output = Function(Q_omega)
 z_output = Function(Q_z)
-
 
 # v_0, .... are used to store the initial conditions
 v_0 = Function( Q_v )

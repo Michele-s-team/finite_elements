@@ -1,6 +1,5 @@
 from fenics import *
 from mshr import *
-import numpy as np
 import ufl as ufl
 from function_spaces import *
 
@@ -59,8 +58,6 @@ def sqrt_detg(omega):
 def sqrt_abs_detg(omega):
     return sqrt(abs_detg(omega))
 
-
-
 #vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r), see 'notes reall2013general'
 def dydtheta(c):
     x = ufl.SpatialCoordinate(mesh)
@@ -77,8 +74,6 @@ def sqrt_deth_lr(omega):
 #square root of the determinant of the pull-back of the metric on \partial \Omega_W (top or bottom), parametrized with l , given by  x^1 = l and x^2 = 0 (h), as coordinate for \partial \Omega_W
 def sqrt_deth_tb(omega):
     return sqrt(g(omega)[0,0])
-
-
 
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
