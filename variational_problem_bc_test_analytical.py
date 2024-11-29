@@ -75,8 +75,8 @@ z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 
 # CHANGE PARAMETERS HERE
-profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v0_r = v_r, element=Q.sub( 0 ).ufl_element() )
-profile_v_R = Expression( ('v_R * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_R * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v0_R = v_R, element=Q.sub( 0 ).ufl_element() )
+profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_r = v_r, element=Q.sub( 0 ).ufl_element() )
+profile_v_R = Expression( ('v_R * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_R * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_R = v_R, element=Q.sub( 0 ).ufl_element() )
 # CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
@@ -112,21 +112,16 @@ F_v = ( \
                        + 2.0 * eta * d_c( v, w, omega )[j, i] * Nabla_f( nu_v, omega )[j, i])
       ) * sqrt_detg( omega ) * dx \
       - rho / 2.0 * ( \
-                    ((w ** 2) * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
-                    + ((w ** 2) * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                    + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+                    + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+                    + ((w ** 2) * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R
       ) \
       - ( \
-                    (sigma * (n_lr( omega ))[i] * nu_v[i]) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
-                    + (sigma * (n_tb( omega ))[i] * nu_v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                    + (sigma * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+                    + (sigma * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+                    + (sigma * (n_circle( omega ))[i] * nu_v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R
       ) \
       - 2.0 * eta * ( \
-              (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[j]) * sqrt_deth_lr( omega ) * ds_l \
-              # BC (1g)^\omega is implemented here as a natural bc
-              + (d_c( v, w, omega )[i, 1] * g( omega )[i, k] * (n_lr( omega ))[k] * nu_v[1]) * sqrt_deth_lr( omega ) * ds_r \
-              + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_tb( omega ))[k] * nu_v[j]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-              + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+              + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+              + (d_c( v, w, omega )[i, j] * g( omega )[i, k] * (n_circle( omega ))[k] * nu_v[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R
       )
 
 F_w = ( \
@@ -143,39 +138,28 @@ F_w = ( \
                     ) * nu_w
       ) * sqrt_detg( omega ) * dx \
 + rho * ( \
-              (w * nu_w * (n_lr( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
-              + (w * nu_w * (n_tb( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-              + (w * nu_w * (n_circle( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+              + (w * nu_w * (n_circle( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+              + (w * nu_w * (n_circle( omega ))[j] * g( omega )[j, i] * v[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R
 ) \
 + 2.0 * kappa * ( \
-              ( (n_lr( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
-              + ( (n_tb( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-              + ( (n_circle( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+              + ( (n_circle( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+              + ( (n_circle( omega ))[i] * ((H( omega )).dx( i )) * nu_w ) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R \
 )
 
 F_z = ( \
                     - w * ((normal( omega ))[2] - ((normal( omega ))[0] * omega[0] + (normal( omega ))[1] * omega[1])) * nu_z \
             ) * sqrt_detg( omega ) * dx
 
-
-
-F_omega = ( z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i] ) * sqrt_detg( omega ) * dx \
+F_omega = (z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i]) * sqrt_detg( omega ) * dx \
           - ( \
-                        ( (n_lr( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_lr( omega ) * (ds_l + ds_r) \
-                        + ( (n_tb( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-                        + ( (n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle \
-          )
+                      + ((n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+                      + ((n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R \
+              )
 
 F_N = alpha / r_mesh * ( \
- \
-              + ( ( (n_tb(omega))[i] * g(omega)[i, j] * v[j] ) * ( (n_tb(omega))[k] * nu_v[k]) ) * sqrt_deth_tb( omega ) * (ds_t + ds_b) \
-              + ( ( (n_circle(omega))[i] * g(omega)[i, j] * v[j] ) * ( (n_circle(omega))[k] * nu_v[k]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
-\
-              + ( ( (n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
-              + ( ( (n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
-              + ( ( (n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
- \
-      )
+            + (((n_circle( omega ))[i] * omega[i] - omega_r) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
+            + (((n_circle( omega ))[i] * omega[i] - omega_R) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R \
+    )
 
 
 # total functional for the mixed problem

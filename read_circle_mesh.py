@@ -25,7 +25,6 @@ with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
 #radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()
 
-
 #CHANGE PARAMETERS HERE
 r = 1.0
 R = 2.0
@@ -75,10 +74,9 @@ integral_R = assemble( f_test_ds * ds_R )
 print( "Integral r = ", integral_r, " exact value = 2.77595" )
 print( "Integral R = ", integral_R, " exact value = 3.67175" )
 
-
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (1.0 + 2.0)/2.0)'
+boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (1.0 + 2.0)/2.0'
 boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (1.0 + 2.0)/2.0'
 #CHANGE PARAMETERS HERE

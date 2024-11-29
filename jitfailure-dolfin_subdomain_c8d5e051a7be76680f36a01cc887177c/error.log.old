@@ -1,0 +1,5 @@
+/tmp/tmpmir6su3y/dolfin_subdomain_c8d5e051a7be76680f36a01cc887177c.cpp: In member function ‘virtual bool dolfin::dolfin_subdomain_c8d5e051a7be76680f36a01cc887177c::inside(Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, bool) const’:
+/tmp/tmpmir6su3y/dolfin_subdomain_c8d5e051a7be76680f36a01cc887177c.cpp:63:83: error: expected ‘;’ before ‘)’ token
+          return on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (1.0 + 2.0)/2.0);
+                                                                                   ^
+/tmp/tmpmir6su3y/dolfin_subdomain_c8d5e051a7be76680f36a01cc887177c.cpp:63:83: error: expected primary-expression before ‘)’ token

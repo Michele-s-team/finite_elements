@@ -22,7 +22,8 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
-from variational_problem_bc_a import *
+# from variational_problem_bc_a import *
+from variational_problem_bc_test_analytical import *
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -99,4 +100,5 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write(
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
-import print_out_bc_a
+# import print_out_bc_a
+import print_out_bc_test_analytical
