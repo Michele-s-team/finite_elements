@@ -9,6 +9,7 @@ from geometry import *
 v_r = 0.9950371902099891356653
 v_R = 0.49772171942179792198035483312323
 w_r = 0.0
+w_R = 0.0
 sigma_r = -0.9950248754694831
 z_r = 1.0
 z_R = 1.09900076985083984499716224302
@@ -85,6 +86,7 @@ bc_v_R = DirichletBC( Q.sub( 0 ), profile_v_R, boundary_R )
 
 # BCs for w_bar
 bc_w_r = DirichletBC( Q.sub( 1 ), Constant( w_r ), boundary_r )
+bc_w_R = DirichletBC( Q.sub( 1 ), Constant( w_R ), boundary_R )
 
 #BC for sigma
 bc_sigma_r = DirichletBC( Q.sub( 2 ), Constant( sigma_r ), boundary_r )
@@ -94,7 +96,7 @@ bc_z_r = DirichletBC( Q.sub( 4 ), Expression( 'z_r', element=Q.sub( 4 ).ufl_elem
 bc_z_R = DirichletBC( Q.sub( 4 ), Expression( 'z_R', element=Q.sub( 4 ).ufl_element(), z_R=z_R), boundary_R )
 
 # all BCs
-bcs = [bc_v_r, bc_v_R, bc_w_r, bc_sigma_r, bc_z_r, bc_z_R]
+bcs = [bc_v_r, bc_v_R, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
 
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
