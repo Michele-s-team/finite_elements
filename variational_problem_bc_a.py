@@ -5,13 +5,16 @@ from fenics import *
 from mshr import *
 from geometry import *
 
-
-
-
-
 # CHANGE PARAMETERS HERE
 v_l = 1.0
-
+#bending rigidity
+kappa = 1.0
+#density
+rho = 1.0
+#viscosity
+eta = 1.0
+#Nitche's parameter
+alpha = 1e1
 
 class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):

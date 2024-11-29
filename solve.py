@@ -28,6 +28,7 @@ from function_spaces import *
 from variational_problem_bc_a import *
 
 set_log_level( 20 )
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input diredtory = ", args.input_directory )
 print("Output diredtory = ", args.output_directory )

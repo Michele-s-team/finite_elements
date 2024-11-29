@@ -9,16 +9,8 @@ L = 0.5
 h = L
 r = 0.05
 c_r = [L/2.0, h/2.0]
-#bending rigidity
-kappa = 1.0
-#density
-rho = 1.0
-#viscosity
-eta = 1.0
-#Nitche's parameter
-alpha = 1e1
+
 tol = 1E-3
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 #CHANGE PARAMETERS HERE
 
 
