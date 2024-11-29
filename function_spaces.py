@@ -34,12 +34,12 @@ nu_v, nu_w, nu_sigma, nu_omega, nu_z = TestFunctions( Q )
 # sigma_n_32 = Function( Q_phi )
 # z_n_32 = Function( Q_z_n )
 
-# v_n_0, ...., z_n_0 are used to store the initial conditions
-# sigma_n_12_0 = Function( Q_phi )
-# v_0 = Function( Q_v )
-# w_0 = Function( Q_w )
-# sigma_0 = Function( Q_sigma )
-# z_0 = Function( Q_z )
-# omega_0 = Function( Q_omega )
+# v_0, .... are used to store the initial conditions
+v_0 = Function( Q_v )
+w_0 = Function( Q_w )
+sigma_0 = Function( Q_sigma )
+omega_0 = Function( Q_omega )
+z_0 = Function( Q_z )
 
 v, w, sigma, omega, z = split( psi )
+assigner = FunctionAssigner(Q, [Q_v, Q_w, Q_sigma, Q_omega, Q_z])

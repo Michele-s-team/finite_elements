@@ -79,7 +79,6 @@ class omega_square_Expression( UserExpression ):
 omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
 omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
 
-# assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_omega_n, Q_z_n])
 # assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, omega_n_0, z_n_0])
 
 # CHANGE PARAMETERS HERE
