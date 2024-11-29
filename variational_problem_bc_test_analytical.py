@@ -13,6 +13,7 @@ w_R = 0.0
 sigma_r = -0.9950248754694831
 z_r = 1.0
 z_R = 1.09900076985083984499716224302
+#here I put a minus sign with respect to the value from check-with-analytical-solution.nb because here the normal points inwards
 omega_r = Constant(-0.1)
 omega_R = Constant(0.095790342136184933818424783941)
 
@@ -33,13 +34,11 @@ class TangentVelocityExpression( UserExpression ):
     def value_shape(self):
         return (2,)
 
-
 class NormalVelocityExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
     def value_shape(self):
         return (1,)
-
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
@@ -47,13 +46,11 @@ class SurfaceTensionExpression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-
 class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
     def value_shape(self):
         return (1,)
-
 
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
@@ -61,7 +58,6 @@ class OmegaExpression( UserExpression ):
         values[1] = 0.0
     def value_shape(self):
         return (2,)
-
 # CHANGE PARAMETERS HERE
 
 
@@ -77,12 +73,10 @@ z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_r = v_r, element=Q.sub( 0 ).ufl_element() )
-profile_v_R = Expression( ('v_R * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_R * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_R = v_R, element=Q.sub( 0 ).ufl_element() )
 # CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( Q.sub( 0 ), profile_v_r, boundary_r )
-bc_v_R = DirichletBC( Q.sub( 0 ), profile_v_R, boundary_R )
 
 # BCs for w_bar
 bc_w_r = DirichletBC( Q.sub( 1 ), Constant( w_r ), boundary_r )
@@ -96,7 +90,7 @@ bc_z_r = DirichletBC( Q.sub( 4 ), Expression( 'z_r', element=Q.sub( 4 ).ufl_elem
 bc_z_R = DirichletBC( Q.sub( 4 ), Expression( 'z_R', element=Q.sub( 4 ).ufl_element(), z_R=z_R), boundary_R )
 
 # all BCs
-bcs = [bc_v_r, bc_v_R, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
+bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
 
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
@@ -159,8 +153,10 @@ F_omega = (z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i]) * sqrt
               )
 
 F_N = alpha / r_mesh * ( \
-            + (((n_circle( omega ))[i] * omega[i] - omega_r) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
-            + (((n_circle( omega ))[i] * omega[i] - omega_R) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R \
+            + (((n_circle( omega ))[i] * omega[i] - omega_r) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_r \
+            + (((n_circle( omega ))[i] * omega[i] - omega_R) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * ds_R \
+ \
+            + ((n_circle( omega )[i] * g( omega )[i, j] * v[j] - v_R) * (n_circle( omega )[k] * nu_v[k])) * sqrt_deth_circle( omega, c_r ) * ds_R \
     )
 
 

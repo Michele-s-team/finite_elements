@@ -14,3 +14,7 @@ print( "\int_{\partial \Omega_r} (n^i \omega_i - psi )^2 dS = ", \
 print( "\int_{\partial \Omega_R} (n^i \omega_i - psi )^2 dS = ", \
    assemble( ( (((n_circle( omega_output ))[i] * omega_output[i] - omega_R) ) ** 2 * ds_R ) )
   )
+
+print( "\int_{\partial \Omega_R} (v^i n_i)^2 dS = ", \
+   assemble( ( (n_circle( omega_output )[i] * g( omega_output )[i, j] * v_output[j] - v_R) ** 2 * ds_R ) )
+  )
