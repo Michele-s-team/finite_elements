@@ -8,11 +8,12 @@ from geometry import *
 # CHANGE PARAMETERS HERE
 v_r = 0.9950371902099891356653
 v_R = 0.49772171942179792198035483312323
+w_r = 0.0
 sigma_r = -0.9950248754694831
 z_r = 1.0
 z_R = 1.09900076985083984499716224302
-omega0_r = 0.1
-omega0_R = 0.095790342136184933818424783941
+omega_r = Constant(-0.1)
+omega_R = Constant(0.095790342136184933818424783941)
 
 
 #bending rigidity
@@ -28,7 +29,6 @@ class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
         values[1] = 0.0
-
     def value_shape(self):
         return (2,)
 
@@ -36,7 +36,6 @@ class TangentVelocityExpression( UserExpression ):
 class NormalVelocityExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-
     def value_shape(self):
         return (1,)
 
@@ -44,7 +43,6 @@ class NormalVelocityExpression( UserExpression ):
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-
     def value_shape(self):
         return (1,)
 
@@ -52,7 +50,6 @@ class SurfaceTensionExpression( UserExpression ):
 class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-
     def value_shape(self):
         return (1,)
 
@@ -61,34 +58,11 @@ class OmegaExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
         values[1] = 0.0
-
     def value_shape(self):
         return (2,)
 
-
-# profiles for the normal derivative
-class omega_circle_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.5
-
-    def value_shape(self):
-        return (1,)
-
-
-class omega_square_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.0
-
-    def value_shape(self):
-        return (1,)
-
-
 # CHANGE PARAMETERS HERE
 
-
-# the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
-omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
 
 v_0.interpolate(TangentVelocityExpression(element=Q_v.ufl_element()))
 w_0.interpolate(NormalVelocityExpression(element=Q_w.ufl_element()))
@@ -101,37 +75,27 @@ z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 
 # CHANGE PARAMETERS HERE
-l_profile_v = Expression( ('v_l', '0'), v_l=v_l, element = Q_v.ufl_element() )
-# CHANGE PARAMETERS HERE
+profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v0_r = v_r, element=Q.sub( 0 ).ufl_element() )
+profile_v_R = Expression( ('v_R * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_R * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v0_R = v_R, element=Q.sub( 0 ).ufl_element() )
+# CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
-# BCs for v_bar
-bc_v_l = DirichletBC( Q.sub( 0 ), l_profile_v, boundary_l )
+bc_v_r = DirichletBC( Q.sub( 0 ), profile_v_r, boundary_r )
+bc_v_R = DirichletBC( Q.sub( 0 ), profile_v_R, boundary_R )
 
 # BCs for w_bar
-bc_w_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr )
-bc_w_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb )
-bc_w_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle )
+bc_w_r = DirichletBC( Q.sub( 1 ), Constant( w_r ), boundary_r )
 
 #BC for sigma
-bc_sigma = DirichletBC(Q.sub(2), Constant(0), boundary_r)
+bc_sigma_r = DirichletBC( Q.sub( 2 ), Constant( sigma_r ), boundary_r )
 
-# CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element() ), boundary_circle )
-bc_z_square = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element(), h=h ), boundary_square )
-# CHANGE PARAMETERS HERE
+bc_z_r = DirichletBC( Q.sub( 4 ), Expression( 'z_r', element=Q.sub( 4 ).ufl_element(), z_r=z_r), boundary_r )
+bc_z_R = DirichletBC( Q.sub( 4 ), Expression( 'z_R', element=Q.sub( 4 ).ufl_element(), z_R=z_R), boundary_R )
 
 # all BCs
-bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square]
+bcs = [bc_v_r, bc_v_R, bc_w_r, bc_sigma_r, bc_z_r, bc_z_R]
 
-#set initial profiles
-# v_n_1.interpolate(TangentVelocityExpression(element=Q_v_n.ufl_element()))
-# v_n_2.assign(v_n_1)
-# w_n_1.interpolate(NormalVelocityExpression(element=Q_w_n.ufl_element()))
-# sigma_n_32.interpolate( SurfaceTensionExpression( element=Q_phi.ufl_element() ))
-# z_n_32.interpolate( ManifoldExpression( element=Q_z_n.ufl_element() ) )
-# omega_n_32.interpolate( OmegaExpression( element=Q_omega_n.ufl_element() ))
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
