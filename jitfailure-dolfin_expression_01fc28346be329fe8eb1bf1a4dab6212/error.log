@@ -1,8 +1,0 @@
-/tmp/tmpbs3jov85/dolfin_expression_01fc28346be329fe8eb1bf1a4dab6212.cpp: In member function ‘virtual void dolfin::dolfin_expression_01fc28346be329fe8eb1bf1a4dab6212::eval(Eigen::Ref<Eigen::Matrix<double, -1, 1> >, Eigen::Ref<const Eigen::Matrix<double, -1, 1> >) const’:
-/tmp/tmpbs3jov85/dolfin_expression_01fc28346be329fe8eb1bf1a4dab6212.cpp:62:23: error: ‘v_r’ was not declared in this scope
-           values[0] = v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) );
-                       ^~~
-/tmp/tmpbs3jov85/dolfin_expression_01fc28346be329fe8eb1bf1a4dab6212.cpp:62:23: note: suggested alternative: ‘v0_r’
-           values[0] = v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) );
-                       ^~~
-                       v0_r
