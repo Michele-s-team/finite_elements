@@ -1,4 +1,3 @@
-import numpy
 import meshio
 import gmsh
 import pygmsh

@@ -2,7 +2,7 @@ from symtable import Function
 from fenics import *
 from mshr import *
 # from read_square_mesh import *
-from read_circle_mesh import *
+from read_ring_mesh import *
 
 
 # Define function spaces

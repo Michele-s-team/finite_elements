@@ -23,7 +23,7 @@ from __future__ import print_function
 from fenics import *
 from mshr import *
 # from variational_problem_bc_a import *
-from variational_problem_bc_test_analytical import *
+from variational_problem_bc_ring import *
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -69,6 +69,11 @@ params = {'nonlinear_solver': 'newton',
 }
 solver.parameters.update(params)
 '''
+'''
+#set the solver parameters here
+params ={"newton_solver": {"linear_solver": 'superlu'}}
+solver.parameters.update(params)
+'''
 
 solver.solve()
 
@@ -101,4 +106,4 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write(
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
 # import print_out_bc_a
-import print_out_bc_test_analytical
+import print_out_bc_ring
