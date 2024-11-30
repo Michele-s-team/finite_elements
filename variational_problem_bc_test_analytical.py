@@ -13,9 +13,8 @@ w_R = 0.0
 sigma_r = -0.9950248754694831
 z_r = 1.0
 z_R = 1.09900076985083984499716224302
-#here I put a minus sign with respect to the value from check-with-analytical-solution.nb because here the normal points inwards
-omega_r = Constant(-0.1)
-omega_R = Constant(0.095790342136184933818424783941)
+omega_r = Constant(-0.099503719020998913567)
+omega_R = Constant(0.095353867584048529241675292343)
 
 
 #bending rigidity
