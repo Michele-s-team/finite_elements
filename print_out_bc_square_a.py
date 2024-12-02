@@ -1,7 +1,7 @@
 from __future__ import print_function
 from fenics import *
 from mshr import *
-from variational_problem_bc_a import *
+from variational_problem_bc_square_a import *
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, omega_output, z_output = psi.split( deepcopy=True )
