@@ -4,6 +4,7 @@ from mshr import *
 from fenics import *
 from mshr import *
 from geometry import *
+from geometry import n_circle
 
 # CHANGE PARAMETERS HERE
 #bending rigidity
@@ -74,11 +75,13 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
     - ( \
         ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
         + ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
-    )
-F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx + \
-          ( (n(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle(omega) * ds_circle +\
-          ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_l + ds_r) +\
-          ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_square(omega) * (ds_t + ds_b)
+        + ( kappa * (n_circle(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+      )
+
+F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx \
+          + ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
+          + ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
+          + ( (n_circle(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 
 F_omega = ( z * Nabla_v( nu_omega, omega )[i, i] + omega[i] * nu_omega[i] ) * sqrt_detg( omega ) * dx \
           - ( \
