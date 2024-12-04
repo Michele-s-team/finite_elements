@@ -4,7 +4,6 @@ from mshr import *
 from fenics import *
 from mshr import *
 from geometry import *
-from geometry import n_circle
 
 # CHANGE PARAMETERS HERE
 #bending rigidity
@@ -51,7 +50,7 @@ class omega_square_Expression( UserExpression ):
 omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
 omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
 
-sigma_0.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
+sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
 omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
 z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
@@ -62,8 +61,8 @@ z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element() ), boundary_circle )
-bc_z_square = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element(), h=h ), boundary_square )
+bc_z_circle = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_circle )
+bc_z_square = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs

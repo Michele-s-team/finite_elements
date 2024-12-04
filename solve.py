@@ -78,7 +78,7 @@ xdmffile_omega.write( omega_output, 0 )
 xdmffile_z.write( z_output, 0 )
 
 # write the solutions in .h5 format so it can be read from other codes
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_output, "/f" )
+HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
