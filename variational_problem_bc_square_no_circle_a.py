@@ -8,8 +8,8 @@ from geometry import *
 # CHANGE PARAMETERS HERE
 #bending rigidity
 kappa = 1.0
-#density
-rho = 1.0
+sigma0 = 1.0
+C = 0.01
 #Nitche's parameter
 alpha = 1e1
 
@@ -32,22 +32,15 @@ class OmegaExpression( UserExpression ):
     def value_shape(self):
         return (2,)
 
-class omega_circle_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.5
-    def value_shape(self):
-        return (1,)
-
 class omega_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = C * x[1]/h
     def value_shape(self):
         return (1,)
 # CHANGE PARAMETERS HERE
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
 omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
 
 sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
@@ -61,12 +54,11 @@ z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_circle )
-bc_z_square = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_square )
+bc_z_square = DirichletBC( Q.sub( 1 ), Expression( 'C * x[1]/h', element=Q.sub( 1 ).ufl_element(), C=C, h=h), boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z_circle, bc_z_square]
+bcs = [bc_z_square]
 
 # Define variational problem
 
@@ -74,18 +66,15 @@ F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(o
     - ( \
         ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
         + ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
-        + ( kappa * (n_circle(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
       )
 
 F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx \
           + ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
           + ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
-          + ( (n_circle(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 
 F_N = alpha / r_mesh * ( \
               + ( ( (n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
               + ( ( (n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
-              + ( ( (n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
       )
 
 

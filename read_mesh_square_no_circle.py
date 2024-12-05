@@ -27,10 +27,8 @@ r_mesh = mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 0.5
-h = L
-r = 0.05
-c_r = [L/2.0, h/2.0]
+L = 10.0
+h = 1.0
 
 tol = 1E-3
 #CHANGE PARAMETERS HERE
@@ -51,9 +49,7 @@ ds_l = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=5 )
-ds_circle = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=6 )
-# ds_lr = ds_l + ds_r
-# ds_tb = ds_t + ds_b
+
 
 #a function space used solely to define f_test_ds
 Q_test = FunctionSpace( mesh, 'P', 2 )
@@ -77,22 +73,21 @@ integral_l = assemble( f_test_ds * ds_l )
 integral_r = assemble( f_test_ds * ds_r )
 integral_t = assemble( f_test_ds * ds_t )
 integral_b = assemble( f_test_ds * ds_b )
-integral_circle = assemble( f_test_ds * ds_circle )
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print( "Integral l = ", integral_l, " exact value = 0.462517" )
 print( "Integral r = ", integral_r, " exact value = 0.47113" )
 print( "Integral t = ", integral_t, " exact value = 0.498266" )
 print( "Integral b = ", integral_b, " exact value = 0.413016" )
-print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
 boundary_r  = 'near(x[0], 0.5)'
+boundary_t  = 'near(x[1], 0.5)'
+boundary_b  = 'near(x[1], 0.0)'
 boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
 boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > 2 * 0.05'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < 2 * 0.05'
+boundary_square = 'on_boundary'
 #CHANGE PARAMETERS HERE
