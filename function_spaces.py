@@ -1,8 +1,8 @@
 from symtable import Function
 from fenics import *
 from mshr import *
-from read_mesh_square import *
-# from read_mesh_ring import *
+# from read_mesh_square import *
+from read_mesh_ring import *
 
 
 # Define function spaces
