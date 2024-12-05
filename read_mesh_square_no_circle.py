@@ -75,10 +75,10 @@ integral_t = assemble( f_test_ds * ds_t )
 integral_b = assemble( f_test_ds * ds_b )
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print( "Integral l = ", integral_l, " exact value = 0.462517" )
-print( "Integral r = ", integral_r, " exact value = 0.47113" )
-print( "Integral t = ", integral_t, " exact value = 0.498266" )
-print( "Integral b = ", integral_b, " exact value = 0.413016" )
+print( "Integral l = ", integral_l, " exact value = 0.962047" )
+print( "Integral r = ", integral_r, " exact value = 0.996086" )
+print( "Integral t = ", integral_t, " exact value = 5.26416" )
+print( "Integral b = ", integral_b, " exact value = 4.97026" )
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
