@@ -61,7 +61,7 @@ z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_r = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_r )
+bc_z_r = DirichletBC( Q.sub( 1 ), Expression( '0.1', element=Q.sub( 1 ).ufl_element() ), boundary_r )
 bc_z_R = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_R )
 # CHANGE PARAMETERS HERE
 
