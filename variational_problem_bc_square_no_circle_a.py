@@ -9,8 +9,8 @@ from geometry import *
 #bending rigidity
 kappa = 1.0
 sigma0 = 1.0
-C = 0.01
-D = 0.01
+C = 0.1
+D = -0.1
 #Nitche's parameter
 alpha = 1e1
 
