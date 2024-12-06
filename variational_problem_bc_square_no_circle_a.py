@@ -10,7 +10,6 @@ from geometry import *
 kappa = 1.0
 sigma0 = 1.0
 C = 0.01
-D = 0.5
 #Nitche's parameter
 alpha = 1e1
 
@@ -29,14 +28,13 @@ class ManifoldExpression( UserExpression ):
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-        # values[1] = 0.0
-        values[1] = -0.00816736 + 1.731892 * x[1] - 2.278005 * (x[1]**2)
+        values[1] = 0.0
     def value_shape(self):
         return (2,)
 
 class omega_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = D * x[1]/h
+        values[0] = C * x[1]/h
     def value_shape(self):
         return (1,)
 # CHANGE PARAMETERS HERE

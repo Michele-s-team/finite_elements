@@ -19,16 +19,16 @@ class SurfaceTensionExpression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class z0_Expression( UserExpression ):
+class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0000300371897 - 0.00524403086 * x[1] + 0.844347452 * x[1]**2 - 0.738886103 * x[1]**3
+        values[0] = 0.0
     def value_shape(self):
         return (1,)
 
-class omega0_Expression( UserExpression ):
+class OmegaExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-        values[1] = 0.002597872 + 1.560845 * x[1] - 1.829453 * x[1]**2 - 0.2990343 * x[1]**3
+        values[1] = 0.0
     def value_shape(self):
         return (2,)
 
@@ -51,8 +51,8 @@ omega_r = interpolate( omega_r_Expression( element=Q_z.ufl_element() ), Q_z )
 omega_R = interpolate( omega_R_Expression( element=Q_z.ufl_element() ), Q_z )
 
 sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
-omega_0.interpolate( omega0_Expression( element=Q_omega.ufl_element() ))
-z_0.interpolate( z0_Expression( element=Q_z.ufl_element() ) )
+omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
+z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [omega_0, z_0])
