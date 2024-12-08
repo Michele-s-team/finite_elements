@@ -15,7 +15,7 @@ alpha = 1e1
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = 1.0
     def value_shape(self):
         return (1,)
 
