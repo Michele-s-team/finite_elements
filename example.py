@@ -1,14 +1,12 @@
 '''
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
 run with
-clear; clear; python3 example.py [path of mesh] [path of old solution] [path of new solution]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
-clear; clear; rm -rf solution-new; python3 example.py /home/fenics/shared/mesh/membrane_mesh /home/fenics/shared/navier_stokes/fenics_example/solution/snapshots/h5  /home/fenics/shared/navier_stokes/fenics_example/solution-new 103133 100
+clear; clear; python3 example.py [path of mesh] [path of solution to be read] [path of solution to write]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
+clear; clear; rm -rf solution-out; python3 example.py /home/fenics/shared/mesh /home/fenics/shared/solution-in/snapshots/h5  /home/fenics/shared/solution-out 22114 100
 '''
 
 from __future__ import print_function
 from fenics import *
-import numpy as np
-import time
 from geometry import *
 
 print("mesh old folder =", args.mesh_old_directory)
