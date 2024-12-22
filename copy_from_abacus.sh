@@ -1,8 +1,8 @@
 #ths script copies from abacus all files of typs $2 from folder $1 into folder $3, by removing $3 and creating a new one
 #run with
 # ./copy_from_abacus.sh [folder where to read the files on abacus] [type of files to read] [folder where to store the files]
-# ./copy_from_abacus.sh dynamics-bcs-w-square-1/solution/snapshots/h5 z_\* solution/snapshots/h5
-# ./copy_from_abacus.sh dynamics-bcs-w-square-1 \*.py ~/Desktop/test
+# ./copy_from_abacus.sh dynamics-1/solution/snapshots/h5 z_\* solution-in/snapshots/h5
+# ./copy_from_abacus.sh dynamics-1 \*.py ~/Desktop/test
 
 #!/bin/bash
 
