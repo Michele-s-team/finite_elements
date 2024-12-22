@@ -49,9 +49,9 @@ for step in range(1, N, increment):
 
     # append into the xdmf files the current time step stored in v, w, ...
     XDMF_file_v_n.write( v_n, step )
-    XDMF_file_v_n.write( v_bar, step )
+    XDMF_file_v_bar.write( v_bar, step )
     XDMF_file_w_n.write( w_n, step )
-    XDMF_file_w_n.write( w_bar, step )
+    XDMF_file_w_bar.write( w_bar, step )
     # XDMF_file_phi.write( phi, step )
     XDMF_file_sigma_n_12.write( sigma_n_12, step )
     XDMF_file_omega_n_12.write( omega_n_12, step )
