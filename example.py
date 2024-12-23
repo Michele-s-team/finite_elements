@@ -69,7 +69,7 @@ J = derivative( F, u, J_u )
 problem = NonlinearVariationalProblem( F, u, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-'''
+
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
@@ -82,12 +82,6 @@ params = {'nonlinear_solver': 'newton',
              }
 }
 solver.parameters.update(params)
-'''
-'''
-#set the solver parameters here
-params ={"newton_solver": {"linear_solver": 'superlu'}}
-solver.parameters.update(params)
-'''
 
 solver.solve()
 
