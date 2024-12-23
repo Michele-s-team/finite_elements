@@ -36,6 +36,12 @@ n = FacetNormal(mesh)
 Q = FunctionSpace( mesh, 'P', 8 )
 V = VectorFunctionSpace( mesh, 'P', 8, dim=2 )
 
+class u_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0.0
+    def value_shape(self):
+        return (1,)
+
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
         # values[0] = 2.0*x[0]
@@ -60,6 +66,7 @@ f = Function( Q )
 grad_u = Function( V )
 J_u = TrialFunction( Q )
 
+u.interpolate( u_expression( element=Q.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
