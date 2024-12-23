@@ -71,17 +71,11 @@ class FunctionTestIntegrals( UserExpression ):
 
 f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
-#here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_l = assemble(f_test_ds*ds_l)
-integral_r = assemble(f_test_ds*ds_r)
-integral_t = assemble(f_test_ds*ds_t)
-integral_b = assemble(f_test_ds*ds_b)
-
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print("Integral l = ", integral_l, " exact value = 0.373168")
-print("Integral r = ", integral_r, " exact value = 0.00227491")
-print("Integral t = ", integral_t, " exact value = 1.36138")
-print("Integral b = ", integral_b, " exact value = 1.02837")
+print("Integral l = ", assemble(f_test_ds*ds_l), " exact value = 0.373168")
+print("Integral r = ", assemble(f_test_ds*ds_r), " exact value = 0.00227491")
+print("Integral t = ", assemble(f_test_ds*ds_t), " exact value = 1.36138")
+print("Integral b = ", assemble(f_test_ds*ds_b), " exact value = 1.02837")
 
 
 
@@ -125,7 +119,7 @@ u.interpolate( u_expression( element=Q.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
-u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]+x[1], 2))', L=L, h=h, element=Q.ufl_element() )
+u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]-x[1], 2))', L=L, h=h, element=Q.ufl_element() )
 bc_u = DirichletBC( Q, u_profile, boundary_tb )
 
 
