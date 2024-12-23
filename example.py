@@ -14,6 +14,9 @@ from mshr import *
 import numpy as np
 import ufl as ufl
 
+L=2.2
+h=0.41
+
 i, j = ufl.indices(2)
 
 parser = argparse.ArgumentParser()
@@ -30,6 +33,13 @@ with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
 mvc = MeshValueCollection("size_t", mesh, 2)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
+
+# Define boundaries and obstacle
+# CHANGE PARAMETERS HERE
+boundary = 'on_boundary'
+boundary_lr = 'near(x[0], 0) || near(x[0], 2.2)'
+boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
+# CHANGE PARAMETERS HERE
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
@@ -115,8 +125,12 @@ u.interpolate( u_expression( element=Q.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
-F = (dot( grad(u), grad( nu ) ) + f * nu) * dx - dot( n, grad_u ) * nu * (ds_l + ds_r + ds_t + ds_b)
-bcs= []
+u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]+x[1], 2))', L=L, h=h, element=Q.ufl_element() )
+bc_u = DirichletBC( Q, u_profile, boundary_tb )
+
+
+F = (dot( grad(u), grad( nu ) ) + f * nu) * dx - dot( n, grad_u ) * nu * (ds_l + ds_r) - n[i]*(u.dx(i)) * nu * (ds_t + ds_b)
+bcs= [bc_u]
 J = derivative( F, u, J_u )
 problem = NonlinearVariationalProblem( F, u, bcs, J )
 solver = NonlinearVariationalSolver( problem )
@@ -142,4 +156,4 @@ solver.solve()
 
 xdmffile_u.write( u, 0 )
 
-print("\int (n[i] \partial_i u - n[i] grad_u[i])^2 dS = ", assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * ds ) )
+print("\int (n[i] \partial_i u - n[i] grad_u[i])^2 dS = ", assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) )
