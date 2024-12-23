@@ -70,4 +70,4 @@ solve(a == L, u_)
 
 xdmffile_u.write(u_, 0)
 
-print("BC = ", assemble(((n[i]*grad_u[i]) - (n[i]*u_.dx(i))) **2 * ds))
+print("\int (n[i] \partial_i u - n[i] grad_u[i])^2 dS = ", assemble(((n[i]*grad_u[i]) - (n[i]*u_.dx(i))) **2 * ds))
