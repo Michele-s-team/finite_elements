@@ -7,6 +7,7 @@ clear; clear; python3 read_3dmesh.py /home/fenics/shared/mesh/solution
 
 
 from __future__ import print_function
+import h5py
 from fenics import *
 from mshr import *
 from fenics import *
