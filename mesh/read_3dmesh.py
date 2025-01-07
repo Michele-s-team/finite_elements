@@ -25,16 +25,12 @@ args = parser.parse_args()
 # c_r = [0, 0]
 #CHANGE PARAMETERS HERE
 
-#read the mesh
+#read the mesh of the cube
 mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
 xdmf.read(mesh)
 
-
-
-
-
-####
+#extract the mesh corresponding to the side of the cube with y = 0 and store it in mesh2D
 with XDMFFile("solution/cube_mesh.xdmf") as xdmf:
     xdmf.write(mesh)
 
@@ -67,6 +63,8 @@ with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
 print("Dimension of mesh2D = ", mesh2D.geometry().dim())
 
 
+
+#test mesh2D by integrating a function over it 
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
