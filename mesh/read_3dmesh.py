@@ -21,8 +21,8 @@ parser.add_argument("input_directory")
 args = parser.parse_args()
 
 #CHANGE PARAMETERS HERE
-# r = 1
-# c_r = [0, 0]
+r = 1
+c_r = [0, 0, 0]
 #CHANGE PARAMETERS HERE
 
 #read the mesh of the cube
@@ -34,16 +34,22 @@ xdmf.read(mesh)
 with XDMFFile("solution/cube_mesh.xdmf") as xdmf:
     xdmf.write(mesh)
 
+
 dim=3
 bdim = dim-1
 boundary_mesh = BoundaryMesh( mesh, "exterior" )
 mapping = boundary_mesh.entity_map( bdim )
+
 part_of_bot = MeshFunction("size_t", boundary_mesh, bdim )
+
 for cell in cells( boundary_mesh ):
     curr_facet_normal = Facet(mesh, mapping[cell.index()]).normal()
+    #print all the members of curr_facet_normal
+    # print(dir(curr_facet_normal))
+    print(curr_facet_normal.array())
     if near(curr_facet_normal.y(), -1.0):  # On bot boundary
         part_of_bot[cell] = 1
-
+'''
 bot_boundary = SubMesh( boundary_mesh, part_of_bot, 1 )
 #File('bot_boundary.pvd') << bot_boundary
 with XDMFFile("solution/bot_mesh.xdmf") as xdmf:
@@ -64,7 +70,7 @@ print("Dimension of mesh2D = ", mesh2D.geometry().dim())
 
 
 
-#test mesh2D by integrating a function over it 
+#test mesh2D by integrating a function over it
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
@@ -88,15 +94,6 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.854037")
-
-
-'''
-
-# ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Point measure for points at the edges of the mesh
-# dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
-
-
-
 
 
 '''
