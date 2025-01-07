@@ -1,7 +1,34 @@
 import h5py
 import meshio
 import numpy as np
+import gmsh
+import pygmsh
 from dolfin import *
+
+######## generate ball mesh - start
+
+r = 1.0
+c_r = [0, 0, 0]
+resolution = 0.1
+
+print("r = ", r)
+print("c_r = ", c_r)
+print("resolution = ", resolution)
+
+
+geometry = pygmsh.occ.Geometry()
+model = geometry.__enter__()
+
+ball = model.add_ball(c_r, r,  mesh_size=resolution)
+
+model.synchronize()
+model.add_physical([ball], "ball")
+
+geometry.generate_mesh(dim=3)
+gmsh.write("mesh.msh")
+model.__exit__()
+
+######## generate ball mesh - end
 
 dim = 3
 N = 2**5
