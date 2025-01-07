@@ -33,8 +33,6 @@ mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
 xdmf.read(mesh)
 
-
-
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile((args.input_directory) + "/tetrahedron_mesh.xdmf") as infile:
@@ -50,15 +48,15 @@ with XDMFFile("solution/cube_mesh.xdmf") as xdmf:
 
 dim=3
 bdim = dim-1
-bmesh = BoundaryMesh(mesh, "exterior")
-mapping = bmesh.entity_map(bdim)
-part_of_bot = MeshFunction("size_t", bmesh, bdim)
-for cell in cells(bmesh):
+boundary_mesh = BoundaryMesh( mesh, "exterior" )
+mapping = boundary_mesh.entity_map( bdim )
+part_of_bot = MeshFunction("size_t", boundary_mesh, bdim )
+for cell in cells( boundary_mesh ):
     curr_facet_normal = Facet(mesh, mapping[cell.index()]).normal()
     if near(curr_facet_normal.y(), -1.0):  # On bot boundary
         part_of_bot[cell] = 1
 
-bot_boundary = SubMesh(bmesh, part_of_bot, 1)
+bot_boundary = SubMesh( boundary_mesh, part_of_bot, 1 )
 #File('bot_boundary.pvd') << bot_boundary
 with XDMFFile("solution/bot_mesh.xdmf") as xdmf:
     xdmf.write(bot_boundary)
@@ -66,47 +64,16 @@ with XDMFFile("solution/bot_mesh.xdmf") as xdmf:
 
 in_mesh = meshio.read("solution/bot_mesh.xdmf")
 
-# cells = in_mesh.get_cells_type("triangle")
-# points = np.delete(in_mesh.points, 1, axis=1)
-# out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
-# meshio.write("solution/pruned_mesh.xdmf", out_mesh)
-#
-#
-# mesh2D = Mesh()
-# with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
-#     xdmf.read(mesh2D)
-# print(mesh2D.geometry().dim())
+cells = in_mesh.get_cells_type("triangle")
+points = np.delete(in_mesh.points, 1, axis=1)
+out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
+meshio.write("solution/pruned_mesh.xdmf", out_mesh)
 
+mesh2D = Mesh()
+with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
+    xdmf.read(mesh2D)
+print("Dimension of mesh2D = ", mesh2D.geometry().dim())
 
-####
-
-
-# boundary_mesh = BoundaryMesh(mesh, "exterior")
-# with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
-#     xdmf.write(boundary_mesh)
-
-'''
-#read the triangles
-mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
-
-#read the lines
-mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
-
-#read the vertices
-mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
-with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
-'''
 
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
@@ -115,25 +82,19 @@ class FunctionTestIntegral(UserExpression):
     def value_shape(self):
         return (1,)
 
+'''
+
+
 dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Line measure
 # ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Point measure for points at the edges of the mesh
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 Q = FunctionSpace( mesh, 'P', 1 )
 
-
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
-
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(Constant(1.0)*dv_custom)}, should be 4.1887902047863905")
-# print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.817193")
-# print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.386545")
-# print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.430648")
-#
-# #this computes \sum_{i \in vertices in ds_custom} f_test_ds (i-th vertex in ds_custom)
-# print(f"Integral over point_l  =  {assemble( f_test_ds * ds_custom(3) )} should be 0.980085")
-# print(f"Integral over point_r =  {assemble( f_test_ds * ds_custom(4) )} should be 0.42725")
-# print(f"Integral over point_in =  {assemble( f_test_ds * dS_custom(5) )} should be 0.93826")
+'''
