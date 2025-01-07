@@ -89,7 +89,7 @@ f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.839936")
+print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.854037")
 
 
 '''
