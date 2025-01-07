@@ -7,6 +7,9 @@ dim = 3
 N = 2**5
 mesh = UnitCubeMesh(N, N, N)
 
+with XDMFFile("cube_mesh.xdmf") as xdmf:
+    xdmf.write(mesh)
+
 bdim = dim-1
 bmesh = BoundaryMesh(mesh, "exterior")
 mapping = bmesh.entity_map(bdim)
