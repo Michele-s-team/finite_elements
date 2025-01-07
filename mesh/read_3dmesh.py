@@ -75,7 +75,7 @@ print("Dimension of mesh2D = ", mesh2D.geometry().dim())
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = (np.cos(x[0]-x[1]))**2
+        values[0] = (x[2]/sqrt(x[0]**2 + x[1]**2 + x[2]**2))**2
     def value_shape(self):
         return (1,)
 
@@ -98,7 +98,4 @@ f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.854037")
-
-'''
-'''
+print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 4.18879")
