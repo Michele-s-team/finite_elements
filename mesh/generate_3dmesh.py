@@ -38,13 +38,13 @@ model = geometry.__enter__()
 
 
 #add a 3d object:
-ball = model.add_ball(c_r, r,  mesh_size=resolution)
-
+box = model.add_box([0, 0, 0], [1, 1, 1])
+# ball = model.add_ball(c_r, r,  mesh_size=resolution)
 
 
 model.synchronize()
 
-model.add_physical([ball], "ball")
+model.add_physical([box], "box")
 
 geometry.generate_mesh(dim=3)
 gmsh.write("solution/mesh.msh")
