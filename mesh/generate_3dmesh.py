@@ -2,7 +2,7 @@
 run with
 clear; clear; python3 generate_3dmesh.py [resolution]
 example:
-clear; clear; python3 generate_3dmesh.py 0.1
+clear; clear; rm -r solution; mkdir solution; python3 generate_3dmesh.py 0.1
 
 
 
@@ -45,6 +45,7 @@ box = model.add_box([0, 0, 0], [1, 1, 1])
 model.synchronize()
 
 model.add_physical([box], "box")
+# model.add_physical([ball], "ball")
 
 geometry.generate_mesh(dim=3)
 gmsh.write("solution/mesh.msh")
