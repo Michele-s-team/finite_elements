@@ -45,28 +45,29 @@ part_of_bot = MeshFunction("size_t", boundary_mesh, bdim )
 for cell in cells( boundary_mesh ):
     curr_facet_normal = Facet(mesh, mapping[cell.index()]).normal()
     #print all the members of curr_facet_normal
-    # print(dir(curr_facet_normal))
-    print(curr_facet_normal.array())
+    midpoint = Facet(mesh, mapping[cell.index()]).midpoint().array()
+    print(midpoint.dot(midpoint))
+    # print(curr_facet_normal.array())
     if near(curr_facet_normal.y(), -1.0):  # On bot boundary
         part_of_bot[cell] = 1
-'''
-bot_boundary = SubMesh( boundary_mesh, part_of_bot, 1 )
-#File('bot_boundary.pvd') << bot_boundary
+# bot_boundary = SubMesh( boundary_mesh, part_of_bot, 1 )
+bot_boundary = boundary_mesh
 with XDMFFile("solution/bot_mesh.xdmf") as xdmf:
     xdmf.write(bot_boundary)
 
 
-in_mesh = meshio.read("solution/bot_mesh.xdmf")
+# in_mesh = meshio.read("solution/bot_mesh.xdmf")
+#
+# cells = in_mesh.get_cells_type("triangle")
+# points = np.delete(in_mesh.points, 1, axis=1)
+# out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
+# meshio.write("solution/pruned_mesh.xdmf", out_mesh)
 
-cells = in_mesh.get_cells_type("triangle")
-points = np.delete(in_mesh.points, 1, axis=1)
-out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
-meshio.write("solution/pruned_mesh.xdmf", out_mesh)
-
-mesh2D = Mesh()
-with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
-    xdmf.read(mesh2D)
+mesh2D = bot_boundary
+# with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
+#     xdmf.read(mesh2D)
 print("Dimension of mesh2D = ", mesh2D.geometry().dim())
+
 
 
 
@@ -78,6 +79,7 @@ class FunctionTestIntegral(UserExpression):
     def value_shape(self):
         return (1,)
 
+
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", mesh2D, mesh2D.topology().dim())
 # with XDMFFile("solution/pruned_mesh.xdmf") as infile:
@@ -85,6 +87,9 @@ mvc = MeshValueCollection("size_t", mesh2D, mesh2D.topology().dim())
 cf = cpp.mesh.MeshFunctionSizet(mesh2D, mvc)
 # xdmf.close()
 dv_custom = Measure("dx", domain=mesh2D, subdomain_data=cf)    # Line measure
+
+
+
 
 Q = FunctionSpace( mesh2D, 'P', 1 )
 f_test_ds = Function( Q )
@@ -95,5 +100,5 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.854037")
 
-
+'''
 '''
