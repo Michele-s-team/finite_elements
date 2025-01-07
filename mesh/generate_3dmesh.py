@@ -3,9 +3,6 @@ run with
 clear; clear; python3 generate_3dmesh.py [resolution]
 example:
 clear; clear; rm -r solution; mkdir solution; python3 generate_3dmesh.py 0.1
-
-
-
 '''
 
 import meshio
@@ -19,36 +16,41 @@ args = parser.parse_args()
 
 #mesh resolution
 resolution = (float)(args.resolution)
-
-#mesh parameters
-#CHANGE PARAMETERS HERE
-r = 1.0
-c_r = [0, 0, 0]
-# L1 = 1
-# L2 = 0.5
-# L3 = 0.45
-#CHANGE PARAMETERS HERE
-
-print("r = ", r)
-print("c_r = ", c_r)
 print("resolution = ", resolution)
-
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.occ.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-
-#add a 3d object:
-# box = model.add_box([0, 0, 0], [L1, L2, L3], mesh_size=resolution)
-ball = model.add_ball(c_r, r,  mesh_size=resolution)
-
-
+#generate a box
+'''
+#
+#CHANGE PARAMETERS HERE
+L1 = 1
+L2 = 0.5
+L3 = 0.45
+#CHANGE PARAMETERS HERE
+box = model.add_box([0, 0, 0], [L1, L2, L3], mesh_size=resolution)
 model.synchronize()
+model.add_physical([box], "box")
+#
+'''
 
-# model.add_physical([box], "box")
+#generate a ball
+#
+#CHANGE PARAMETERS HERE
+r = 1.0
+c_r = [0, 0, 0]
+#CHANGE PARAMETERS HERE
+
+print( "r = ", r )
+print( "c_r = ", c_r )
+
+ball = model.add_ball(c_r, r,  mesh_size=resolution)
+model.synchronize()
 model.add_physical([ball], "ball")
+#
 
 geometry.generate_mesh(dim=3)
 gmsh.write("solution/mesh.msh")

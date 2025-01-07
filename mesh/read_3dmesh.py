@@ -5,7 +5,6 @@ example:
 clear; clear; python3 read_3dmesh.py /home/fenics/shared/mesh/solution
 '''
 
-
 import h5py
 from mshr import *
 from mshr import *
@@ -13,8 +12,6 @@ import numpy as np
 from dolfin import *
 import meshio
 import argparse
-
-
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -25,77 +22,37 @@ r = 1
 c_r = [0, 0, 0]
 #CHANGE PARAMETERS HERE
 
-#read the mesh of the cube
-mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
-xdmf.read(mesh)
+#read the mesh of the ball
+ball_mesh = Mesh()
+xdmf = XDMFFile(ball_mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
+xdmf.read(ball_mesh)
 
-#extract the mesh corresponding to the side of the cube with y = 0 and store it in mesh2D
-with XDMFFile("solution/cube_mesh.xdmf") as xdmf:
-    xdmf.write(mesh)
-
-
+#extract the boundary of the ball (spere) and write it in a new mesh `sphere`
 dim=3
 bdim = dim-1
-boundary_mesh = BoundaryMesh( mesh, "exterior" )
-mapping = boundary_mesh.entity_map( bdim )
-
-part_of_bot = MeshFunction("size_t", boundary_mesh, bdim )
-
-for cell in cells( boundary_mesh ):
-    curr_facet_normal = Facet(mesh, mapping[cell.index()]).normal()
-    #print all the members of curr_facet_normal
-    midpoint = Facet(mesh, mapping[cell.index()]).midpoint().array()
-    print(midpoint.dot(midpoint))
-    # print(curr_facet_normal.array())
-    if near(curr_facet_normal.y(), -1.0):  # On bot boundary
-        part_of_bot[cell] = 1
-# bot_boundary = SubMesh( boundary_mesh, part_of_bot, 1 )
-bot_boundary = boundary_mesh
-with XDMFFile("solution/bot_mesh.xdmf") as xdmf:
-    xdmf.write(bot_boundary)
+sphere_mesh = BoundaryMesh( ball_mesh, "exterior" )
+print("Dimension of boundary_mesh = ", sphere_mesh.geometry().dim() )
 
 
-# in_mesh = meshio.read("solution/bot_mesh.xdmf")
-#
-# cells = in_mesh.get_cells_type("triangle")
-# points = np.delete(in_mesh.points, 1, axis=1)
-# out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
-# meshio.write("solution/pruned_mesh.xdmf", out_mesh)
-
-mesh2D = bot_boundary
-# with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
-#     xdmf.read(mesh2D)
-print("Dimension of mesh2D = ", mesh2D.geometry().dim())
-
-
-
-
-#test mesh2D by integrating a function over it
+#test the mesh `sphere` by integrating a function over it
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = (x[2]/sqrt(x[0]**2 + x[1]**2 + x[2]**2))**2
+        values[0] = (x[2]/sqrt(x[0]**2 + x[1]**2 + x[2]**2))**2 * (1.0/(1.0 + (x[1]/x[0])**2))**2
     def value_shape(self):
         return (1,)
 
 
 #read the tetrahedra
-mvc = MeshValueCollection("size_t", mesh2D, mesh2D.topology().dim())
-# with XDMFFile("solution/pruned_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh2D, mvc)
-# xdmf.close()
-dv_custom = Measure("dx", domain=mesh2D, subdomain_data=cf)    # Line measure
+mvc = MeshValueCollection("size_t", sphere_mesh, sphere_mesh.topology().dim() )
+cf = cpp.mesh.MeshFunctionSizet( sphere_mesh, mvc )
+dv_custom = Measure("dx", domain=sphere_mesh, subdomain_data=cf )    # Line measure
 
-
-
-
-Q = FunctionSpace( mesh2D, 'P', 1 )
+Q = FunctionSpace( sphere_mesh, 'P', 1 )
 f_test_ds = Function( Q )
 
-# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+# f_test_ds is a scalar function defined on the mesh `sphere`
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 4.18879")
+print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 1.5708")
