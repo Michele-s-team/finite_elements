@@ -46,13 +46,13 @@ class FunctionTestIntegral(UserExpression):
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", sphere_mesh, sphere_mesh.topology().dim() )
 cf = cpp.mesh.MeshFunctionSizet( sphere_mesh, mvc )
-dv_custom = Measure("dx", domain=sphere_mesh, subdomain_data=cf )    # Line measure
+dx_custom = Measure("dx", domain=sphere_mesh, subdomain_data=cf )    # Line measure
 
 Q = FunctionSpace( sphere_mesh, 'P', 1 )
-f_test_ds = Function( Q )
+f_test = Function( Q )
 
 # f_test_ds is a scalar function defined on the mesh `sphere`
-f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
+f_test.interpolate( FunctionTestIntegral( element=Q.ufl_element() ) )
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 1.5708")
+print(f"Volume = {assemble( f_test * dx_custom )}, should be 1.5708" )
