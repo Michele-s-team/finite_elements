@@ -33,9 +33,14 @@ geometry = pygmsh.occ.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-
 #add a volume object (a ball):
 ball = model.add_ball(c_r, r,  mesh_size=resolution)
+
+#add a line object
+points = [model.add_point( (0, 0, 0), mesh_size=resolution ),
+          model.add_point((0.2, 0.2, 0.2), mesh_size=resolution)
+          ]
+line = [model.add_line( points[0], points[1] )]
 
 
 
@@ -49,14 +54,14 @@ model.add_physical([ball], "ball")
 #this is name_to_read which will be shown in paraview and subdomain_id which will be used in the code which reads the mesh in `ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)`
 '''
 the  surfaces are tagged with the following subdomain_ids: 
-
-If you have a doubt about the subdomain_ids, see name_to_read in tetrahedron_mesh.xdmf with Paraview
+If you have a doubt about the subdomain_ids, see name_to_read in triangle_mesh.xdmf with Paraview
 '''
 dim_facet = 2 # for facets in 3D
 sphere_boundaries = []
 #extract the boundaries from the mesh
 boundaries = gmsh.model.getBoundary(volumes, oriented=False)
 #add the surface objects: loop through the surfaces in the model and add them as physical objects: here the sphere surface will be added with subdomain_id = 1
+print("*********** surfaces : ***********  ", boundaries)
 id=0
 for boundary in boundaries:
     center_of_mass = gmsh.model.occ.getCenterOfMass(boundary[0], boundary[1])
@@ -64,6 +69,30 @@ for boundary in boundaries:
     gmsh.model.addPhysicalGroup(dim_facet, sphere_boundaries)
     print(f"surface # {id}, center of mass = {center_of_mass}")
     id+=1
+
+
+# print("dir = " , dir(gmsh.model))
+
+
+#tag the line objet : find out the line  and add it to the model
+# the lines are tagged with the following subdomain_ids:
+# If you have a doubt about the subdomain_ids, see name_to_read in line_mesh.xdmf with Paraview
+
+dim_segment = 1 # for lines in 3D
+#extract the segments from the mesh
+segments = gmsh.model.occ.getEntities(dim=1)
+
+#add the segment objects: loop through the segments in the model and add them as physical objects: here line[0] surface will be added with subdomain_id =
+print("*********** segments : *********** ", segments)
+id=0
+line_segments = []
+for segment in segments:
+    center_of_mass = gmsh.model.occ.getCenterOfMass(segment[0], segment[1])
+    line_segments.append(segment[1])
+    # gmsh.model.addPhysicalGroup(dim_segment, line_segments)
+    print(f"segment # {id}, center of mass = {center_of_mass}, segment: {segment}")
+    id+=1
+
 
 
 geometry.generate_mesh(dim=3)
