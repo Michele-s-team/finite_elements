@@ -75,7 +75,7 @@ xdmf.close()
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
         # values[0] = 1.0
-        values[0] = (np.cos(3+x[0]))**2
+        values[0] = (np.cos(3*x[2]-2*x[1]+x[0]))**2
     def value_shape(self):
         return (1,)
 
@@ -97,10 +97,10 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 numerical_value_int_dx_ball = assemble( f_test_ds * dv_custom )
-exact_value_int_dx_ball = 3.00868
+exact_value_int_dx_ball = 2.06773
 print(f"\int_ball f dx = {numerical_value_int_dx_ball}, should be  {exact_value_int_dx_ball}, relative error =  {abs( (numerical_value_int_dx_ball - exact_value_int_dx_ball) / exact_value_int_dx_ball ):e}" )
 
-exact_value_int_ds_sphere = 9.02605
+exact_value_int_ds_sphere = 7.06579
 numerical_value_int_ds_sphere = assemble( f_test_ds * ds_custom )
 print(f"\int_sphere f ds = {numerical_value_int_ds_sphere}, should be  {exact_value_int_ds_sphere}, relative error =  {abs( (numerical_value_int_ds_sphere - exact_value_int_ds_sphere) / exact_value_int_ds_sphere ):e}" )
 

@@ -34,27 +34,26 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 
-#add a 3d object:
+#add a volume object (a ball):
 ball = model.add_ball(c_r, r,  mesh_size=resolution)
 
 
 
 model.synchronize()
+volumes = gmsh.model.getEntities( dim=3 )
 
-#add the volume object (ball), which will be added with subdomain_id = 2
+#tag the volume object (ball), which will be added with subdomain_id = 2
 model.add_physical([ball], "ball")
 
-#add the 2d objet (ball surface, i.e., sphere): find out the sphere surface and add it to the model
+#tag the surface objet (ball surface, i.e., sphere): find out the sphere surface and add it to the model
 #this is name_to_read which will be shown in paraview and subdomain_id which will be used in the code which reads the mesh in `ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)`
 '''
 the  surfaces are tagged with the following subdomain_ids: 
 
 If you have a doubt about the subdomain_ids, see name_to_read in tetrahedron_mesh.xdmf with Paraview
 '''
-sphere_tag = 1
 dim_facet = 2 # for facets in 3D
 sphere_boundaries = []
-volumes = gmsh.model.getEntities( dim=3 )
 #extract the boundaries from the mesh
 boundaries = gmsh.model.getBoundary(volumes, oriented=False)
 #add the surface objects: loop through the surfaces in the model and add them as physical objects: here the sphere surface will be added with subdomain_id = 1
