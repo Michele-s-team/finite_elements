@@ -44,19 +44,18 @@ with XDMFFile((args.input_directory) + "/tetrahedron_mesh.xdmf") as infile:
 cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
+#read the triangles
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
+with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
+    infile.read(mvc, "name_to_read")
+sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
 
 boundary_mesh = BoundaryMesh(mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
     xdmf.write(boundary_mesh)
 
 '''
-#read the triangles
-mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
-
 #read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
@@ -80,7 +79,7 @@ class FunctionTestIntegral(UserExpression):
         return (1,)
 
 dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Line measure
-# ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Point measure for points at the edges of the mesh
+ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)    # Point measure for points at the edges of the mesh
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 Q = FunctionSpace( mesh, 'P', 1 )
@@ -92,7 +91,8 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(Constant(1.0)*dv_custom)}, should be 4.1887902047863905")
+print(f"\int_ball dx f = {assemble(Constant(1.0)*dv_custom)}, should be 4.1887902047863905")
+print(f"\int_sphere ds f = {assemble(Constant(1.0)*ds_custom)}, should be 4.1887902047863905")
 # print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.817193")
 # print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.386545")
 # print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.430648")

@@ -41,7 +41,31 @@ ball = model.add_ball(c_r, r,  mesh_size=resolution)
 
 model.synchronize()
 
+#add the volume object (ball), which will be added with subdomain_id = 2
 model.add_physical([ball], "ball")
+
+#add the 2d objet (ball surface, i.e., sphere): find out the sphere surface and add it to the model
+#this is name_to_read which will be shown in paraview and subdomain_id which will be used in the code which reads the mesh in `ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)`
+'''
+the  surfaces are tagged with the following subdomain_ids: 
+
+If you have a doubt about the subdomain_ids, see name_to_read in tetrahedron_mesh.xdmf with Paraview
+'''
+sphere_tag = 1
+dim_facet = 2 # for facets in 3D
+sphere_boundaries = []
+volumes = gmsh.model.getEntities( dim=3 )
+#extract the boundaries from the mesh
+boundaries = gmsh.model.getBoundary(volumes, oriented=False)
+#add the surface objects: loop through the surfaces in the model and add them as physical objects: here the sphere surface will be added with subdomain_id = 1
+id=0
+for boundary in boundaries:
+    center_of_mass = gmsh.model.occ.getCenterOfMass(boundary[0], boundary[1])
+    sphere_boundaries.append(boundary[1])
+    gmsh.model.addPhysicalGroup(dim_facet, sphere_boundaries)
+    print(f"surface # {id}, center of mass = {center_of_mass}")
+    id+=1
+
 
 geometry.generate_mesh(dim=3)
 gmsh.write("solution/mesh.msh")
@@ -57,17 +81,15 @@ def create_mesh(mesh, cell_type, prune_z=False):
 
 mesh_from_file = meshio.read("solution/mesh.msh")
 
-
-#create a tetrahedron mesh
+#create a tetrahedron mesh (containing solid objects such as a ball)
 tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
 meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
-'''
-#create a triangle mesh
+#create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
 meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
-
+'''
 #create a line mesh
 line_mesh = create_mesh(mesh_from_file, "line", True)
 meshio.write("solution/line_mesh.xdmf", line_mesh)
