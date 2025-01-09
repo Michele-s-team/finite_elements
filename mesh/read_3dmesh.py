@@ -74,12 +74,13 @@ xdmf.close()
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
+        # values[0] = 1.0
         values[0] = (np.cos(3+x[0]))**2
     def value_shape(self):
         return (1,)
 
-dv_custom = Measure("dx", domain=mesh, subdomain_data=cf)    # Line measure
-ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)    # Point measure for points at the edges of the mesh
+dv_custom = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=2) #volume measure
+ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1) #surface measure
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 Q = FunctionSpace( mesh, 'P', 1 )
@@ -91,8 +92,21 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"\int_ball dx f = {assemble(Constant(1.0)*dv_custom)}, should be 4.1887902047863905")
-print(f"\int_sphere ds f = {assemble(Constant(1.0)*ds_custom)}, should be 4.1887902047863905")
+# print(f"\int_ball dx f = {assemble(Constant(1.0)*dv_custom)}, should be 4.1887902047863905")
+# print(f"\int_sphere ds f = {assemble(Constant(1.0)*ds_custom)}, should be 4.1887902047863905")
+
+#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
+numerical_value_int_dx_ball = assemble( f_test_ds * dv_custom )
+exact_value_int_dx_ball = 3.00868
+print(f"\int_ball f dx = {numerical_value_int_dx_ball}, should be  {exact_value_int_dx_ball}, relative error =  {abs( (numerical_value_int_dx_ball - exact_value_int_dx_ball) / exact_value_int_dx_ball ):e}" )
+
+exact_value_int_ds_sphere = 9.02605
+numerical_value_int_ds_sphere = assemble( f_test_ds * ds_custom )
+print(f"\int_sphere f ds = {numerical_value_int_ds_sphere}, should be  {exact_value_int_ds_sphere}, relative error =  {abs( (numerical_value_int_ds_sphere - exact_value_int_ds_sphere) / exact_value_int_ds_sphere ):e}" )
+
+
+
+
 # print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.817193")
 # print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.386545")
 # print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.430648")
