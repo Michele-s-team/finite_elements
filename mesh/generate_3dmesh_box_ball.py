@@ -23,8 +23,12 @@ warnings.filterwarnings("ignore")
 gmsh.initialize()
 
 gmsh.model.add("my model")
-L, B, H, r = 2.5, 0.41, 0.41, 0.05
-resolution = 0.05
+L = 1.0
+B = 1.0
+H = 1.0
+r = 0.25
+resolution = (float)(args.resolution)
+print(f"Mesh resolution = {resolution}")
 
 channel = gmsh.model.occ.addBox(0, 0, 0, L, B, H)
 sphere = gmsh.model.occ.addSphere( L/2.0, B/2.0, H/2.0, r)
@@ -41,6 +45,7 @@ gmsh.model.setPhysicalName(volumes[0][0], fluid_marker, "Fluid volume")
 
 
 surfaces = gmsh.model.occ.getEntities(dim=2)
+#these are the subdomain_ids with which the components will be read in read_3dmesh_box_ball.py
 inlet_marker, outlet_marker, wall_marker, obstacle_marker = 1, 3, 5, 7
 walls = []
 obstacles = []
