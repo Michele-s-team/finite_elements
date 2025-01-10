@@ -39,15 +39,19 @@ volumes = gmsh.model.getEntities(dim=3)
 
 assert volumes == fluid[0]
 #these is is the subdomain_id with which the volume [box-sphere] will be read in read_3dmesh_box_ball.py
-fluid_marker = 8
-gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], fluid_marker)
-gmsh.model.setPhysicalName(volumes[0][0], fluid_marker, "box_minus_sphere")
+box_minus_ball_subdomain_id = 8
+gmsh.model.addPhysicalGroup( volumes[0][0], [volumes[0][1]], box_minus_ball_subdomain_id )
+gmsh.model.setPhysicalName( volumes[0][0], box_minus_ball_subdomain_id, "box_minus_sphere" )
 
 
 
 surfaces = gmsh.model.occ.getEntities(dim=2)
 #these are the subdomain_ids with which the components will be read in read_3dmesh_box_ball.py
-inlet_marker, outlet_marker, wall_marker, obstacle_marker = 1, 3, 5, 7
+boundary_le_subdomain_id = 1
+boundary_ri_subdomain_id = 3
+walls_subdomain_id = 5
+sphere_subdomain_id = 7
+
 walls = []
 obstacles = []
 
@@ -55,13 +59,13 @@ for surface in surfaces:
     center_of_mass = gmsh.model.occ.getCenterOfMass( surface[0], surface[1] )
     if np.allclose( center_of_mass, [0, B / 2, H / 2] ):
         # the center of mass is close to [0, B / 2, H / 2] -> the surface under consideration is the inlet
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], inlet_marker)
+        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_le_subdomain_id )
         inlet = surface[1]
-        gmsh.model.setPhysicalName(surface[0], inlet_marker, "boundary_le")
+        gmsh.model.setPhysicalName( surface[0], boundary_le_subdomain_id, "boundary_le" )
     elif np.allclose( center_of_mass, [L, B / 2, H / 2] ):
         # the center of mass is close to [L, B / 2, H / 2] -> the surface under consideration is the outlet
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], outlet_marker)
-        gmsh.model.setPhysicalName(surface[0], outlet_marker, "boundary_ri")
+        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_ri_subdomain_id )
+        gmsh.model.setPhysicalName( surface[0], boundary_ri_subdomain_id, "boundary_ri" )
     elif (
         #the center of mass is not the inlet nor the outlet: either center_of_mass[2] = 0 or H (the surface under consideration is the tob or bottom wall, or center_of_mass[0] = 0 or B ( the surface under consideration is the front or back wall) -> I append the surface under consideration to  walls
         np.isclose( center_of_mass[2], 0 )
@@ -74,10 +78,10 @@ for surface in surfaces:
         obstacles.append(surface[1])
 
 
-gmsh.model.addPhysicalGroup(2, walls, wall_marker)
-gmsh.model.setPhysicalName(2, wall_marker, "boundary_walls")
-gmsh.model.addPhysicalGroup(2, obstacles, obstacle_marker)
-gmsh.model.setPhysicalName(2, obstacle_marker, "sphere")
+gmsh.model.addPhysicalGroup( 2, walls, walls_subdomain_id )
+gmsh.model.setPhysicalName( 2, walls_subdomain_id, "boundary_walls" )
+gmsh.model.addPhysicalGroup( 2, obstacles, sphere_subdomain_id )
+gmsh.model.setPhysicalName( 2, sphere_subdomain_id, "sphere" )
 
 #set the resolution close to the obstacle
 distance = gmsh.model.mesh.field.add("Distance")
