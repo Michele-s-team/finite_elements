@@ -56,7 +56,7 @@ xdmf.close()
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = (np.cos(3.0*x[0]+x[2]-2.0*x[1]))**2
+        values[0] = (np.cos(3.0*x[2]-2.0*x[1]+x[0]))**2
     def value_shape(self):
         return (1,)
 
