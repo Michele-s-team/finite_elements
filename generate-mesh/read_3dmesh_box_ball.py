@@ -5,7 +5,7 @@ This code reads the 3d mesh generated from generate_3dmesh.py and it creates dvs
 run with
 clear; clear; python3 read_3dmesh_box_ball.py [path where to find the mesh]
 example:
-clear; clear; python3 read_3dmesh_box_ball.py /home/fenics/shared/mesh/solution
+clear; clear; python3 read_3dmesh_box_ball.py /home/fenics/shared/generate-mesh/solution
 '''
 
 
