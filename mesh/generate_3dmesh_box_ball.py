@@ -38,7 +38,7 @@ gmsh.model.occ.synchronize()
 volumes = gmsh.model.getEntities(dim=3)
 
 assert volumes == fluid[0]
-fluid_marker = 11
+fluid_marker = 8
 gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], fluid_marker)
 gmsh.model.setPhysicalName(volumes[0][0], fluid_marker, "Fluid volume")
 
