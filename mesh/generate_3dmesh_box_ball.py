@@ -27,43 +27,53 @@ L, B, H, r = 2.5, 0.41, 0.41, 0.05
 resolution = 0.05
 
 channel = gmsh.model.occ.addBox(0, 0, 0, L, B, H)
-cylinder = gmsh.model.occ.addCylinder(0.5, 0, 0.2, 0, B, 0, r)
-fluid = gmsh.model.occ.cut([(3, channel)], [(3, cylinder)])
+sphere = gmsh.model.occ.addSphere( L/2.0, B/2.0, H/2.0, r)
+fluid = gmsh.model.occ.cut( [(3, channel)], [(3, sphere)] )
 
 gmsh.model.occ.synchronize()
 volumes = gmsh.model.getEntities(dim=3)
+
 assert volumes == fluid[0]
 fluid_marker = 11
 gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], fluid_marker)
 gmsh.model.setPhysicalName(volumes[0][0], fluid_marker, "Fluid volume")
 
+
+
 surfaces = gmsh.model.occ.getEntities(dim=2)
 inlet_marker, outlet_marker, wall_marker, obstacle_marker = 1, 3, 5, 7
 walls = []
 obstacles = []
+
 for surface in surfaces:
-    com = gmsh.model.occ.getCenterOfMass(surface[0], surface[1])
-    if np.allclose(com, [0, B / 2, H / 2]):
+    center_of_mass = gmsh.model.occ.getCenterOfMass( surface[0], surface[1] )
+    if np.allclose( center_of_mass, [0, B / 2, H / 2] ):
+        # the center of mass is close to [0, B / 2, H / 2] -> the surface under consideration is the inlet
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], inlet_marker)
         inlet = surface[1]
         gmsh.model.setPhysicalName(surface[0], inlet_marker, "Fluid inlet")
-    elif np.allclose(com, [L, B / 2, H / 2]):
+    elif np.allclose( center_of_mass, [L, B / 2, H / 2] ):
+        # the center of mass is close to [L, B / 2, H / 2] -> the surface under consideration is the outlet
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], outlet_marker)
         gmsh.model.setPhysicalName(surface[0], outlet_marker, "Fluid outlet")
     elif (
-        np.isclose(com[2], 0)
-        or np.isclose(com[1], B)
-        or np.isclose(com[2], H)
-        or np.isclose(com[1], 0)
+        #the center of mass is not the inlet nor the outlet: either center_of_mass[2] = 0 or H (the surface under consideration is the tob or bottom wall, or center_of_mass[0] = 0 or B ( the surface under consideration is the front or back wall) -> I append the surface under consideration to  walls
+        np.isclose( center_of_mass[2], 0 )
+        or np.isclose( center_of_mass[1], B )
+        or np.isclose( center_of_mass[2], H )
+        or np.isclose( center_of_mass[1], 0 )
     ):
         walls.append(surface[1])
     else:
         obstacles.append(surface[1])
+
+
 gmsh.model.addPhysicalGroup(2, walls, wall_marker)
 gmsh.model.setPhysicalName(2, wall_marker, "Walls")
 gmsh.model.addPhysicalGroup(2, obstacles, obstacle_marker)
 gmsh.model.setPhysicalName(2, obstacle_marker, "Obstacle")
 
+#set the resolution close to the obstacle
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", obstacles)
 
@@ -74,6 +84,7 @@ gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * r)
 gmsh.model.mesh.field.setNumber(threshold, "DistMax", r)
 
+#set the resolution close to the inlet
 inlet_dist = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(inlet_dist, "FacesList", [inlet])
 
@@ -92,10 +103,6 @@ gmsh.model.occ.synchronize()
 gmsh.model.mesh.generate(3)
 
 gmsh.write("solution/mesh.msh")
-
-
-
-
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
