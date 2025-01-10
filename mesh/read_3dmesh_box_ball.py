@@ -63,8 +63,11 @@ class FunctionTestIntegral(UserExpression):
 dx_box_minus_ball = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=8 )
 ds_sphere = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=7 )
 ds_le = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=1 )
-ds_ri = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
-ds_wa = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
+ds_ri = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+ds_fr = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
+ds_ba = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=4 )
+ds_to = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
+ds_bo = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=6 )
 
 Q = FunctionSpace( mesh, 'P', 1 )
 
@@ -92,6 +95,18 @@ exact_value_int_ds_ri = 0.489414
 numerical_value_int_ds_ri = assemble( f_test_ds * ds_ri )
 print(f"\int_r f ds = {numerical_value_int_ds_ri}, should be  {exact_value_int_ds_ri}, relative error =  {abs( (numerical_value_int_ds_ri - exact_value_int_ds_ri) / exact_value_int_ds_ri ):e}" )
 
-exact_value_int_ds_wa = 2.16447
-numerical_value_int_ds_wa = assemble( f_test_ds * ds_wa )
-print(f"\int_wa f ds = {numerical_value_int_ds_wa}, should be  {exact_value_int_ds_wa}, relative error =  {abs( (numerical_value_int_ds_wa - exact_value_int_ds_wa) / exact_value_int_ds_wa ):e}" )
+exact_value_int_ds_fr = 0.487063
+numerical_value_int_ds_fr = assemble( f_test_ds * ds_fr )
+print(f"\int_fr f ds = {numerical_value_int_ds_fr}, should be  {exact_value_int_ds_fr}, relative error =  {abs( (numerical_value_int_ds_fr - exact_value_int_ds_fr) / exact_value_int_ds_fr ):e}" )
+
+exact_value_int_ds_ba = 0.519791
+numerical_value_int_ds_ba = assemble( f_test_ds * ds_ba )
+print(f"\int_ba f ds = {numerical_value_int_ds_ba}, should be  {exact_value_int_ds_ba}, relative error =  {abs( (numerical_value_int_ds_ba - exact_value_int_ds_ba) / exact_value_int_ds_ba ):e}" )
+
+exact_value_int_ds_to = 0.554261
+numerical_value_int_ds_to = assemble( f_test_ds * ds_to )
+print(f"\int_to f ds = {numerical_value_int_ds_to}, should be  {exact_value_int_ds_to}, relative error =  {abs( (numerical_value_int_ds_to - exact_value_int_ds_to) / exact_value_int_ds_to ):e}" )
+
+exact_value_int_ds_bo = 0.603353
+numerical_value_int_ds_bo = assemble( f_test_ds * ds_bo )
+print(f"\int_bo f ds = {numerical_value_int_ds_bo}, should be  {exact_value_int_ds_bo}, relative error =  {abs( (numerical_value_int_ds_bo - exact_value_int_ds_bo) / exact_value_int_ds_bo ):e}" )
