@@ -38,9 +38,10 @@ gmsh.model.occ.synchronize()
 volumes = gmsh.model.getEntities(dim=3)
 
 assert volumes == fluid[0]
+#these is is the subdomain_id with which the volume [box-sphere] will be read in read_3dmesh_box_ball.py
 fluid_marker = 8
 gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], fluid_marker)
-gmsh.model.setPhysicalName(volumes[0][0], fluid_marker, "Fluid volume")
+gmsh.model.setPhysicalName(volumes[0][0], fluid_marker, "box_minus_sphere")
 
 
 
@@ -56,11 +57,11 @@ for surface in surfaces:
         # the center of mass is close to [0, B / 2, H / 2] -> the surface under consideration is the inlet
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], inlet_marker)
         inlet = surface[1]
-        gmsh.model.setPhysicalName(surface[0], inlet_marker, "Fluid inlet")
+        gmsh.model.setPhysicalName(surface[0], inlet_marker, "boundary_le")
     elif np.allclose( center_of_mass, [L, B / 2, H / 2] ):
         # the center of mass is close to [L, B / 2, H / 2] -> the surface under consideration is the outlet
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], outlet_marker)
-        gmsh.model.setPhysicalName(surface[0], outlet_marker, "Fluid outlet")
+        gmsh.model.setPhysicalName(surface[0], outlet_marker, "boundary_ri")
     elif (
         #the center of mass is not the inlet nor the outlet: either center_of_mass[2] = 0 or H (the surface under consideration is the tob or bottom wall, or center_of_mass[0] = 0 or B ( the surface under consideration is the front or back wall) -> I append the surface under consideration to  walls
         np.isclose( center_of_mass[2], 0 )
@@ -74,9 +75,9 @@ for surface in surfaces:
 
 
 gmsh.model.addPhysicalGroup(2, walls, wall_marker)
-gmsh.model.setPhysicalName(2, wall_marker, "Walls")
+gmsh.model.setPhysicalName(2, wall_marker, "boundary_walls")
 gmsh.model.addPhysicalGroup(2, obstacles, obstacle_marker)
-gmsh.model.setPhysicalName(2, obstacle_marker, "Obstacle")
+gmsh.model.setPhysicalName(2, obstacle_marker, "sphere")
 
 #set the resolution close to the obstacle
 distance = gmsh.model.mesh.field.add("Distance")

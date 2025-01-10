@@ -84,14 +84,14 @@ numerical_value_int_ds_sphere = assemble( f_test_ds * ds_sphere )
 print(f"\int_sphere f ds = {numerical_value_int_ds_sphere}, should be  {exact_value_int_ds_sphere}, relative error =  {abs( (numerical_value_int_ds_sphere - exact_value_int_ds_sphere) / exact_value_int_ds_sphere ):e}" )
 
 
-exact_value_int_ds_le = 0.603353
+exact_value_int_ds_le = 0.505778
 numerical_value_int_ds_le = assemble( f_test_ds * ds_le )
 print(f"\int_l f ds = {numerical_value_int_ds_le}, should be  {exact_value_int_ds_le}, relative error =  {abs( (numerical_value_int_ds_le - exact_value_int_ds_le) / exact_value_int_ds_le ):e}" )
 
-exact_value_int_ds_ri = 0.554261
+exact_value_int_ds_ri = 0.489414
 numerical_value_int_ds_ri = assemble( f_test_ds * ds_ri )
 print(f"\int_r f ds = {numerical_value_int_ds_ri}, should be  {exact_value_int_ds_ri}, relative error =  {abs( (numerical_value_int_ds_ri - exact_value_int_ds_ri) / exact_value_int_ds_ri ):e}" )
 
-exact_value_int_ds_wa = 0.487063
+exact_value_int_ds_wa = 2.16447
 numerical_value_int_ds_wa = assemble( f_test_ds * ds_wa )
 print(f"\int_wa f ds = {numerical_value_int_ds_wa}, should be  {exact_value_int_ds_wa}, relative error =  {abs( (numerical_value_int_ds_wa - exact_value_int_ds_wa) / exact_value_int_ds_wa ):e}" )
