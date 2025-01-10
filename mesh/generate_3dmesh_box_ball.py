@@ -24,7 +24,7 @@ gmsh.initialize()
 
 gmsh.model.add("my model")
 L, B, H, r = 2.5, 0.41, 0.41, 0.05
-resolution = r / 10
+resolution = 0.05
 
 channel = gmsh.model.occ.addBox(0, 0, 0, L, B, H)
 cylinder = gmsh.model.occ.addCylinder(0.5, 0, 0.2, 0, B, 0, r)
@@ -70,7 +70,7 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", obstacles)
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
 gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", 20 * resolution)
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * r)
 gmsh.model.mesh.field.setNumber(threshold, "DistMax", r)
 
@@ -79,8 +79,8 @@ gmsh.model.mesh.field.setNumbers(inlet_dist, "FacesList", [inlet])
 
 inlet_thre = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(inlet_thre, "IField", inlet_dist)
-gmsh.model.mesh.field.setNumber(inlet_thre, "LcMin", 5 * resolution)
-gmsh.model.mesh.field.setNumber(inlet_thre, "LcMax", 10 * resolution)
+gmsh.model.mesh.field.setNumber(inlet_thre, "LcMin",  resolution)
+gmsh.model.mesh.field.setNumber(inlet_thre, "LcMax",  resolution)
 gmsh.model.mesh.field.setNumber(inlet_thre, "DistMin", 0.1)
 gmsh.model.mesh.field.setNumber(inlet_thre, "DistMax", 0.5)
 
