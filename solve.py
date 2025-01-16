@@ -71,7 +71,8 @@ xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( facet_normal_smooth(), 0 )
 
-xdmffile_fn = XDMFFile( (args.output_directory) + '/fn.xdmf' )
+xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
+xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
@@ -87,7 +88,9 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write(
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
-xdmffile_fn.write( fel_n(omega_output, kappa) + flaplace(sigma, omega_output) + fvisc_n(v, w,  omega_output, eta ) , 0 )
+xdmffile_f.write( project(fel_n( omega_output, kappa ), Q_sigma), 0 )
+xdmffile_f.write( project(flaplace( sigma, omega_output), Q_sigma), 0 )
+# xdmffile_f.write( project(fvisc_n( v, w, omega_output, eta ), Q_omega), 0 )
 
 
 # import print_out_bc_square_a

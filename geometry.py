@@ -161,6 +161,10 @@ def Nabla_v(u, omega):
 def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
 
+#lalplace-beltrami operator applied to a scalar function f : Nabla_LB(f, omega) = \Nabla_{LB} f_notes
+def Nabla_LB(f, omega):
+    return (- 1.0/sqrt_detg(omega) * ( ( sqrt_detg(omega) * g_c(omega)[i, j] * (f.dx(j)) ).dx(i) ) )
+
 #2-covariant rate-of_deformation tensor for zero normal velocity: d(u, z)[i, j] = {d_{ij}}_{alizzi2020shear for zero w}
 def d(v, w, omega):
     return as_tensor( 0.5 * (g(omega)[i, k] * Nabla_v(v, omega)[k, j] + g(omega)[j, k] * Nabla_v(v, omega)[k, i]) - (b(omega)[i,j]) * w, (i, j) )
