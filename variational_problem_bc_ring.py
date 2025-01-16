@@ -10,6 +10,8 @@ from geometry import *
 kappa = 1.0
 #density
 rho = 1.0
+#viscosity
+eta = 1.0
 #Nitche's parameter
 alpha = 1e1
 

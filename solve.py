@@ -20,6 +20,7 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
+from physics import *
 # from variational_problem_bc_square_a import *
 from variational_problem_bc_ring import *
 # from variational_problem_bc_square_no_circle_a import *
@@ -70,6 +71,9 @@ xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( facet_normal_smooth(), 0 )
 
+xdmffile_fn = XDMFFile( (args.output_directory) + '/fn.xdmf' )
+
+
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 omega_output, z_output = psi.split( deepcopy=True )
 
@@ -82,6 +86,9 @@ xdmffile_z.write( z_output, 0 )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
+
+xdmffile_fn.write( fel_n(omega_output, kappa) + flaplace(sigma, omega_output) + fvisc_n(v, w,  omega_output, eta ) , 0 )
+
 
 # import print_out_bc_square_a
 import print_out_bc_ring
