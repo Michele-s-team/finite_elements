@@ -1,5 +1,5 @@
 '''
-
+This code solves the Poisson equation Nabla u = f
 run with
 
 clear; clear; python3 example.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
@@ -25,6 +25,7 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
+xdmffile_error = XDMFFile((args.output_directory) + "/error.xdmf")
 
 #create mesh
 mesh=Mesh()
@@ -145,9 +146,7 @@ solver.parameters.update(params)
 
 solver.solve()
 
-
-# solve( a == L, u )
-
 xdmffile_u.write( u, 0 )
+xdmffile_error.write( project(u.dx(i).dx(i) - f, Q) , 0)
 
 print("\int (n[i] \partial_i u - n[i] grad_u[i])^2 dS = ", assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) )
