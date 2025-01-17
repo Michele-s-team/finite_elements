@@ -85,6 +85,7 @@ xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
 xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 
 xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
+xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( facet_normal_smooth(), 0 )
