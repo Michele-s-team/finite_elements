@@ -118,7 +118,7 @@ print(f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds
 n = FacetNormal(mesh)
 
 Q = FunctionSpace( mesh, 'P', 8 )
-V = VectorFunctionSpace( mesh, 'P', 8, dim=2 )
+V = VectorFunctionSpace( mesh, 'P', 8 )
 
 class u_expression(UserExpression):
     def eval(self, values, x):
@@ -183,6 +183,22 @@ solver.solve()
 xdmffile_u.write( u, 0 )
 xdmffile_error.write( project(u.dx(i).dx(i) - f, Q), 0 )
 
-print(f"<<(Nabla u - f)^2>> = { assemble( ((u.dx(i).dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
+def errornorm(u_e, u):
+    error = (u_e - u)**2*dx
+    E = sqrt(abs(assemble(error)))
+    V = u.function_space()
+    mesh = V.mesh()
+    degree = V.ufl_element().degree()
+    W = FunctionSpace(mesh, 'P', degree + 3)
+    u_e_W = interpolate(u_e, W)
+    u_W = interpolate(u, W)
+    e_W = Function(W)
+    e_W.vector()[:] = u_e_W.vector().get_local() - u_W.vector().get_local()
+    error = e_W**2*dx
+    return sqrt(abs(assemble(error)))
+
+
+print(f"<<(Nabla u - f)^2>>_no-errornorm = { assemble( ((u.dx(i).dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
+print(f"<<(Nabla u - f)^2>>_errornorm = { errornorm(f, u)}")
 
 print(f"<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble (Constant(1.0) * (ds_l + ds_r)) }" )
