@@ -108,8 +108,8 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write(
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
 #write to xdmffile_f the force per unit length exerted on a segment [1,0] and [0,1]
-xdmffile_f.write( project(dFdl(v_output, w_output, omega_output, sigma_output, eta, as_tensor([1, 0])), Q_f) , 0 )
-xdmffile_f.write( project(dFdl(v_output, w_output, omega_output, sigma_output, eta, as_tensor([0, 1])), Q_f) , 0 )
+xdmffile_f.write( project(dFdl(v_output, w_output, omega_output, sigma_output, eta, nu_curve_bt), Q_f) , 0 )
+xdmffile_f.write( project(dFdl(v_output, w_output, omega_output, sigma_output, eta, nu_curve_lr), Q_f) , 0 )
 
 
 import print_out_bc_square_a
