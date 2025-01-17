@@ -27,7 +27,9 @@ parser.add_argument("output_directory")
 args = parser.parse_args()
 
 xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
-xdmffile_error = XDMFFile((args.output_directory) + "/error.xdmf")
+
+xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
+xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 #create mesh
 #read the mesh
@@ -120,9 +122,9 @@ n = FacetNormal(mesh)
 Q = FunctionSpace( mesh, 'P', 8 )
 V = VectorFunctionSpace( mesh, 'P', 8 )
 
-class u_expression(UserExpression):
+class u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
     def value_shape(self):
         return (1,)
 
@@ -149,8 +151,10 @@ nu = TestFunction( Q )
 f = Function( Q )
 grad_u = Function( V )
 J_u = TrialFunction( Q )
+u_exact = Function( Q )
 
-u.interpolate( u_expression( element=Q.ufl_element() ) )
+
+u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
@@ -181,7 +185,10 @@ solver.parameters.update(params)
 solver.solve()
 
 xdmffile_u.write( u, 0 )
-xdmffile_error.write( project(u.dx(i).dx(i) - f, Q), 0 )
+xdmffile_check.write( project( u.dx( i ).dx( i ), Q ), 0 )
+xdmffile_check.write( f, 0 )
+xdmffile_check.write( project( u.dx( i ).dx( i ) - f, Q), 0 )
+xdmffile_check.close()
 
 def errornorm(u_e, u):
     error = (u_e - u)**2*dx
@@ -197,8 +204,12 @@ def errornorm(u_e, u):
     error = e_W**2*dx
     return sqrt(abs(assemble(error)))
 
+print("Solution check: ")
+print(f"\t<<(u - u_exact)^2>>_no-errornorm = { assemble( ((u - u_exact)**2)  * dx) / assemble(Constant(1.0)*dx)}")
+print(f"\t<<(u - u_exact)^2>>_errornorm = { errornorm(u, u_exact)}")
 
-print(f"<<(Nabla u - f)^2>>_no-errornorm = { assemble( ((u.dx(i).dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
-print(f"<<(Nabla u - f)^2>>_errornorm = { errornorm(f, u)}")
+print(f"\t<<(Nabla u - f)^2>>_no-errornorm = { assemble( ((u.dx(i).dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
+print(f"\t<<(Nabla u - f)^2>>_errornorm = { errornorm( project(u.dx(i).dx(i), Q), f)}")
 
-print(f"<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble (Constant(1.0) * (ds_l + ds_r)) }" )
+
+print(f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble (Constant(1.0) * (ds_l + ds_r)) }" )
