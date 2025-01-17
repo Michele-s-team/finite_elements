@@ -20,6 +20,7 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
+from physics import *
 from variational_problem_bc_square_a import *
 # from variational_problem_bc_ring import *
 
