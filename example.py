@@ -13,6 +13,8 @@ import argparse
 from mshr import *
 import numpy as np
 import ufl as ufl
+from dolfin import *
+
 
 L=2.2
 h=0.41
@@ -28,12 +30,24 @@ xdmffile_u = XDMFFile((args.output_directory) + "/u.xdmf")
 xdmffile_error = XDMFFile((args.output_directory) + "/error.xdmf")
 
 #create mesh
-mesh=Mesh()
+#read the mesh
+mesh = Mesh()
+xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf")
+xdmf.read(mesh)
+
+#read the triangles
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
+    infile.read(mvc, "name_to_read")
+cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
+
+#read the lines
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
+sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
 
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
@@ -43,17 +57,17 @@ boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
 # CHANGE PARAMETERS HERE
 
 #read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 
 #  norm of vector x
 def my_norm(x):
     return (sqrt(np.dot(x, x)))
 
 #test for surface elements
-ds_l = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=2)
-ds_r = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=3)
-ds_t = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=4)
-ds_b = Measure("ds", domain=mesh, subdomain_data=mf, subdomain_id=5)
+dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
+ds_l = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=2)
+ds_r = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=3)
+ds_t = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=4)
+ds_b = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=5)
 
 #a function space used solely to define f_test_ds
 Q_test = FunctionSpace( mesh, 'P', 2 )
@@ -72,11 +86,31 @@ class FunctionTestIntegrals( UserExpression ):
 
 f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
-#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print("Integral l = ", assemble(f_test_ds*ds_l), " exact value = 0.373168")
-print("Integral r = ", assemble(f_test_ds*ds_r), " exact value = 0.00227491")
-print("Integral t = ", assemble(f_test_ds*ds_t), " exact value = 1.36138")
-print("Integral b = ", assemble(f_test_ds*ds_b), " exact value = 1.02837")
+#print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
+
+exact_value_int_dx = 0.501508
+numerical_value_int_dx = assemble( f_test_ds * dx )
+print(f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
+
+
+exact_value_int_ds_l = 0.373168
+numerical_value_int_ds_l = assemble( f_test_ds * ds_l )
+print(f"\int_l f ds = {numerical_value_int_ds_l}, should be  {exact_value_int_ds_l}, relative error =  {abs( (numerical_value_int_ds_l - exact_value_int_ds_l) / exact_value_int_ds_l ):e}" )
+
+exact_value_int_ds_r = 0.00227783
+numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
+print(f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
+
+exact_value_int_ds_t = 1.36562
+numerical_value_int_ds_t = assemble( f_test_ds * ds_t )
+print(f"\int_t f ds = {numerical_value_int_ds_t}, should be  {exact_value_int_ds_t}, relative error =  {abs( (numerical_value_int_ds_t - exact_value_int_ds_t) / exact_value_int_ds_t ):e}" )
+
+exact_value_int_ds_b = 1.02837
+numerical_value_int_ds_b = assemble( f_test_ds * ds_b )
+print(f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds_b}, relative error =  {abs( (numerical_value_int_ds_b - exact_value_int_ds_b) / exact_value_int_ds_b ):e}" )
+
+
+
 
 
 
@@ -147,6 +181,7 @@ solver.parameters.update(params)
 solver.solve()
 
 xdmffile_u.write( u, 0 )
-xdmffile_error.write( project(u.dx(i).dx(i) - f, Q) , 0)
+
+print(f"<<err^2>> = {  assemble(Constant(1.0)*dx)}")
 
 print("\int (n[i] \partial_i u - n[i] grad_u[i])^2 dS = ", assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) )
