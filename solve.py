@@ -84,6 +84,8 @@ xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
 xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
 xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
 
+xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
+
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( facet_normal_smooth(), 0 )
 
@@ -103,6 +105,9 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/w.h5", "w" ).write( w_o
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
+
+xdmffile_f.write( fvisc_n(v_output, w_output,  omega_output, eta ) , 0 )
+
 
 import print_out_bc_square_a
 # import print_out_bc_ring
