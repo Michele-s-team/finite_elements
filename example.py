@@ -181,7 +181,8 @@ solver.parameters.update(params)
 solver.solve()
 
 xdmffile_u.write( u, 0 )
+xdmffile_error.write( project(u.dx(i).dx(i) - f, Q), 0 )
 
-print(f"<<err^2>> = {  assemble(Constant(1.0)*dx)}")
+print(f"<<(Nabla u - f)^2>> = { assemble( ((u.dx(i).dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
 
-print("\int (n[i] \partial_i u - n[i] grad_u[i])^2 dS = ", assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) )
+print(f"<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble (Constant(1.0) * (ds_l + ds_r)) }" )
