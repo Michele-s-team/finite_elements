@@ -22,6 +22,8 @@ Q_w = Q.sub( 1 ).collapse()
 Q_sigma = Q.sub( 2 ).collapse()
 Q_omega = Q.sub( 3 ).collapse()
 Q_z= Q.sub( 4 ).collapse()
+#function space to store force fields
+Q_f = VectorFunctionSpace( mesh, 'P', 2 )
 
 # Define functions
 # the Jacobian
