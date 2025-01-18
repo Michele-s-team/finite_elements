@@ -1,5 +1,5 @@
 '''
-This code solves the Poisson equation Nabla u = f
+This code solves the Poisson equation Nabla u = f expressed in terms of the function u 
 run with
 
 clear; clear; python3 example.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
