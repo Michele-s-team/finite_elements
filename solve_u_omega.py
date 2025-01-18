@@ -215,10 +215,13 @@ solver.parameters.update(params)
 
 solver.solve()
 
-xdmffile_u.write( u, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ), Q_u ), 0 )
+omega_output, u_output = psi.split( deepcopy=True )
+
+
+xdmffile_u.write( u_output, 0 )
+xdmffile_check.write( project( u_output.dx( i ).dx( i ), Q_u ), 0 )
 xdmffile_check.write( f, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ) - f, Q_u ), 0 )
+xdmffile_check.write( project( u_output.dx( i ).dx( i ) - f, Q_u ), 0 )
 xdmffile_check.close()
 
 def errornorm(u_e, u):
@@ -236,11 +239,11 @@ def errornorm(u_e, u):
     return sqrt(abs(assemble(error)))
 
 print("Solution check: ")
-print(f"\t<<(u - u_exact)^2>>_no-errornorm = { assemble( ((u - u_exact)**2)  * dx) / assemble(Constant(1.0)*dx)}")
-print(f"\t<<(u - u_exact)^2>>_errornorm = { errornorm(u, u_exact)}")
+print(f"\t<<(u - u_exact)^2>>_no-errornorm = { assemble( ((u_output - u_exact)**2)  * dx) / assemble(Constant(1.0)*dx)}")
+print(f"\t<<(u - u_exact)^2>>_errornorm = { errornorm(u_output, u_exact)}")
 
-print(f"\t<<(Nabla u - f)^2>>_no-errornorm = { assemble( ((u.dx(i).dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
-print(f"\t<<(Nabla u - f)^2>>_errornorm = { errornorm( project( u.dx(i).dx(i), Q_u ), f )}" )
+print(f"\t<<(Nabla u - f)^2>>_no-errornorm = { assemble( ((omega_output[i].dx(i) - f)**2)  * dx) / assemble(Constant(1.0)*dx)}")
+print(f"\t<<(Nabla u - f)^2>>_errornorm = { errornorm( project( omega_output[i].dx(i), Q_u ), f )}" )
 
 
-print(f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i]*grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble (Constant(1.0) * (ds_l + ds_r)) }" )
+print(f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i]*grad_u[i]) - (n[i] * u_output.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble (Constant(1.0) * (ds_l + ds_r)) }" )
