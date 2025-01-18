@@ -1,10 +1,10 @@
 '''
-This code solves the Poisson equation Nabla u = f
+This code solves the Poisson equation Nabla u = f expressed in terms of the function u 
 run with
 
-clear; clear; python3 example.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+clear; clear; python3 solve_u.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
-clear; clear; rm -rf solution; python3 example.py /home/fenics/shared/mesh /home/fenics/shared/solution
+clear; clear; rm -rf solution; python3 solve_u.py /home/fenics/shared/mesh /home/fenics/shared/solution
 '''
 
 from __future__ import print_function
