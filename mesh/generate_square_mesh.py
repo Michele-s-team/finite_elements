@@ -62,11 +62,11 @@ model.add_physical([channel_lines[1]], "b")
 model.add_physical(circle_r.curve_loop.curves, "c")
 
 geometry.generate_mesh(dim=2)
-gmsh.write("membrane_mesh.msh")
+gmsh.write("mesh.msh")
 gmsh.clear()
 geometry.__exit__()
 
-mesh_from_file = meshio.read("membrane_mesh.msh")
+mesh_from_file = meshio.read("mesh.msh")
 
 def create_mesh(mesh, cell_type, prune_z=False):
     cells = mesh.get_cells_type(cell_type)
