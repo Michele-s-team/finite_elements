@@ -168,13 +168,15 @@ grad_u = Function( Q_omega )
 J_psi = TrialFunction( Q )
 u_exact = Function( Q_u )
 
+omega, u = split( psi )
+
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=Q_omega.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 
-u_profile = Expression( '1 + pow(x[0], 2) + 2 * pow(x[1], 2)', L=L, h=h, element=Q_u.ufl_element() )
-bc_u = DirichletBC( Q_u, u_profile, boundary_tb )
+u_profile = Expression( '1 + pow(x[0], 2) + 2 * pow(x[1], 2)', L=L, h=h, element=Q.sub(1).ufl_element() )
+bc_u = DirichletBC( Q.sub(1), u_profile, boundary_tb )
 
 '''
 \partial_i u = omega_i
@@ -183,14 +185,18 @@ bc_u = DirichletBC( Q_u, u_profile, boundary_tb )
 
 
 F_u = ( omega[i] * (nu_u.dx(i)) + f * nu_u) * dx \
-    - n[i] * omega[i] * nu_u * (ds_l + ds_r) \
+    - n[i] * grad_u[i] * nu_u * (ds_l + ds_r) \
     - n[i] * omega[i] * nu_u * (ds_t + ds_b)
 
+F_omega = ( - u * (nu_omega[i].dx(i)) - omega[i] * nu_omega[i] ) * dx \
+     + n[i] * u * nu_omega[i] * (ds_l + ds_r + ds_t + ds_b)
 
+F = F_u + F_omega
 
 bcs= [bc_u]
-J = derivative( F, u, J_u )
-problem = NonlinearVariationalProblem( F, u, bcs, J )
+#sign
+J = derivative( F, psi, J_psi )
+problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 
