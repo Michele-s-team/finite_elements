@@ -127,8 +127,8 @@ print(f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds
 n = FacetNormal(mesh)
 
 
-P_omega = VectorElement( 'P', triangle, 1 )
-P_u = FiniteElement( 'P', triangle, 1 )
+P_omega = VectorElement( 'P', triangle, 2 )
+P_u = FiniteElement( 'P', triangle, 2 )
 
 element = MixedElement( [P_omega, P_u] )
 Q = FunctionSpace(mesh, element)
@@ -204,7 +204,7 @@ solver = NonlinearVariationalSolver( problem )
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
-                'linear_solver'           : 'mumps',
+                'linear_solver'           : 'superlu',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
                 'maximum_iterations'      : 1000000,
@@ -222,6 +222,7 @@ xdmffile_u.write( u_output, 0 )
 xdmffile_check.write( project( u_output.dx( i ).dx( i ), Q_u ), 0 )
 xdmffile_check.write( f, 0 )
 xdmffile_check.write( project( u_output.dx( i ).dx( i ) - f, Q_u ), 0 )
+xdmffile_check.write( project( omega[i].dx( i ) - f, Q_u ), 0 )
 xdmffile_check.close()
 
 def errornorm(u_e, u):
