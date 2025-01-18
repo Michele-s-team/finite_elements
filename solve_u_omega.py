@@ -1,5 +1,12 @@
 '''
-This code solves the Poisson equation Nabla u = f expressed in terms of the function u 
+This code solves the Poisson equation
+
+Nabla u = f expressed in terms of the function u and omega:
+
+\partial_i u = omega_i
+\partial_i omega_i = f
+
+
 run with
 
 clear; clear; python3 solve_u_omega.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
@@ -119,8 +126,15 @@ print(f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds
 
 n = FacetNormal(mesh)
 
-Q_u = FunctionSpace( mesh, 'P', 8 )
-Q_omega = VectorFunctionSpace( mesh, 'P', 8 )
+
+P_omega = VectorElement( 'P', triangle, 1 )
+P_u = FiniteElement( 'P', triangle, 1 )
+
+element = MixedElement( [P_omega, P_u] )
+Q = FunctionSpace(mesh, element)
+Q_omega = Q.sub( 0 ).collapse()
+Q_u= Q.sub( 1 ).collapse()
+
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
@@ -147,11 +161,11 @@ class laplacian_u_expression(UserExpression):
 
 
 # Define variational problem
-u = Function( Q_u )
-nu = TestFunction( Q_u )
+psi = Function( Q )
+nu_omega, nu_u = TestFunctions( Q )
 f = Function( Q_u )
 grad_u = Function( Q_omega )
-J_u = TrialFunction( Q_u )
+J_psi = TrialFunction( Q )
 u_exact = Function( Q_u )
 
 
