@@ -176,8 +176,18 @@ f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 u_profile = Expression( '1 + pow(x[0], 2) + 2 * pow(x[1], 2)', L=L, h=h, element=Q_u.ufl_element() )
 bc_u = DirichletBC( Q_u, u_profile, boundary_tb )
 
+'''
+\partial_i u = omega_i
+\partial_i omega_i = f
+'''
 
-F = (dot( grad(u), grad( nu ) ) + f * nu) * dx - dot( n, grad_u ) * nu * (ds_l + ds_r) - n[i]*(u.dx(i)) * nu * (ds_t + ds_b)
+
+F_u = ( omega[i] * (nu_u.dx(i)) + f * nu_u) * dx \
+    - n[i] * omega[i] * nu_u * (ds_l + ds_r) \
+    - n[i] * omega[i] * nu_u * (ds_t + ds_b)
+
+
+
 bcs= [bc_u]
 J = derivative( F, u, J_u )
 problem = NonlinearVariationalProblem( F, u, bcs, J )
