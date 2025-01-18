@@ -124,8 +124,8 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-P_omega = VectorElement( 'P', triangle, 2 )
-P_u = FiniteElement( 'P', triangle, 2 )
+P_omega = VectorElement( 'P', triangle, 3 )
+P_u = FiniteElement( 'P', triangle, 3 )
 
 element = MixedElement( [P_omega, P_u] )
 Q = FunctionSpace( mesh, element )
