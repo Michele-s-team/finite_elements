@@ -30,7 +30,6 @@ xdmffile_u = XDMFFile( (args.output_directory) + "/u.xdmf" )
 xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
-# create mesh
 # read the mesh
 mesh = Mesh()
 xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
