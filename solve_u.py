@@ -15,11 +15,11 @@ import numpy as np
 import ufl as ufl
 from dolfin import *
 
-#CHANGE PARAMETERS HERE
+# CHANGE PARAMETERS HERE
 L = 2.2
 h = 0.41
 alpha = 1e3
-#CHANGE PARAMETERS HERE
+# CHANGE PARAMETERS HERE
 
 
 i, j, k, l = ufl.indices( 4 )
@@ -39,10 +39,10 @@ mesh = Mesh()
 xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
 xdmf.read( mesh )
 
-#radius of the smallest cell in the mesh
+# radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()
 
-print(f"Mesh radius = {r_mesh}")
+print( f"Mesh radius = {r_mesh}" )
 
 # read the triangles
 mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
@@ -127,64 +127,73 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 2
-Q = FunctionSpace( mesh, 'P', function_space_degree )
-V = VectorFunctionSpace( mesh, 'P', function_space_degree )
+function_space_degree = 3
+
+P_u = FiniteElement( 'P', triangle, function_space_degree )
+P_du = VectorElement( 'P', triangle, function_space_degree )
+P_ddu = TensorElement( 'P', triangle, function_space_degree, (2, 2) )
+P_dddu = TensorElement( 'P', triangle, function_space_degree, (2, 2, 2) )
+
+element = MixedElement( [P_u, P_du, P_ddu, P_ddu ] )
+Q = FunctionSpace( mesh, element )
+
+Q_u = Q.sub( 0 ).collapse()
+Q_du = Q.sub( 1 ).collapse()
+Q_ddu = Q.sub( 2 ).collapse()
+Q_dddu = Q.sub( 3 ).collapse()
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0 + cos(x[0]) + sin(x[1])
+        values[0] = 1.0 + cos( x[0] ) + sin( x[1] )
 
     def value_shape(self):
         return (1,)
 
-
-class grad_u_expression( UserExpression ):
+class du_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -sin(x[0])
-        values[1] = cos (x[1])
+        values[0] = -sin( x[0] )
+        values[1] = cos( x[1] )
 
     def value_shape(self):
         return (2,)
 
-
 class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -cos(x[0]) - sin(x[1])
+        values[0] = -cos( x[0] ) - sin( x[1] )
 
     def value_shape(self):
         return (1,)
 
 
 # Define variational problem
-u = Function( Q )
-nu = TestFunction( Q )
-f = Function( Q )
+u = Function( Q_u )
+nu = TestFunction( Q_u )
+f = Function( Q_u )
 grad_u = Function( V )
-J_u = TrialFunction( Q )
-u_exact = Function( Q )
+J_u = TrialFunction( Q_u )
+u_exact = Function( Q_u )
 
-u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
-grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
-f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
+u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
+grad_u.interpolate( du_expression( element=V.ufl_element() ) )
+f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 
-u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q.ufl_element() )
-bc_u = DirichletBC( Q, u_profile, boundary )
+u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q_u.ufl_element() )
+bc_u = DirichletBC( Q_u, u_profile, boundary )
 
-u.assign( u_exact )
+# u.assign( u_exact )
 
 '''
 \partial_j \partial_j \partial_i \partial_i u = f
 \int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
 \int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
-\int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
+0 =  \int dx (\partial_j \partial_i \partial_i u) \partial_j nu + \int dx f nu  - \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] 
 '''
 
-F_u = ((u.dx( j )) * (nu.dx( j )) + f * nu) * dx \
-    - n[j] * (u.dx(j)) * nu * ds
-#nitsche's term
-F_N = alpha / r_mesh * (n[j] * (u.dx(j)) - n[j] * grad_u[j]) * n[k] * (nu.dx( k )) * ds
+F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
+      - n[j] * (u.dx( i ).dx( i ).dx( j )) * nu * ds
+# nitsche's term
+F_N = alpha / r_mesh * (n[j] * (u.dx( j )) - n[j] * grad_u[j]) * n[k] * (nu.dx( k )) * ds
 
 F = F_u + F_N
 bcs = [bc_u]
@@ -194,24 +203,24 @@ problem = NonlinearVariationalProblem( F, u, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 # set the solver parameters here
-params = {'nonlinear_solver': 'newton',
-          'newton_solver':
-              {
-                  'linear_solver': 'superlu',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
-              }
-          }
-solver.parameters.update( params )
+# params = {'nonlinear_solver': 'newton',
+#           'newton_solver':
+#               {
+#                   'linear_solver': 'mumps',
+#                   'absolute_tolerance': 1e-6,
+#                   'relative_tolerance': 1e-6,
+#                   'maximum_iterations': 1000000,
+#                   'relaxation_parameter': 0.95,
+#               }
+#           }
+# solver.parameters.update( params )
 
 solver.solve()
 
 xdmffile_u.write( u, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q ), 0 )
+xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
 xdmffile_check.write( f, 0 )
-xdmffile_check.write( project(  u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q ), 0 )
+xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
 xdmffile_check.close()
 
 
@@ -234,8 +243,7 @@ print( "Solution check: " )
 print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
 print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
 
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( (( u.dx( i ).dx( i ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project(  u.dx( i ).dx( i ), Q ), f )}" )
+print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
 
 print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * (u.dx( i )))) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-

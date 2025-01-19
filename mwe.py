@@ -14,8 +14,9 @@ from dolfin import *
 
 L = 2.2
 h = 0.41
+alpha = 1e3
 
-i, j = ufl.indices( 2 )
+i, j, k, l = ufl.indices( 4 )
 
 
 xdmffile_u = XDMFFile( "solution/u.xdmf" )
@@ -26,6 +27,8 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 mesh = RectangleMesh(Point(0, 0), Point(L, h), 20, 10)
 mf = MeshFunction("size_t", mesh, mesh.topology().dim() - 1, 0)
 eps = 100 * DOLFIN_EPS
+
+r_mesh = mesh.hmin()
 
 
 class left(SubDomain):
@@ -66,40 +69,47 @@ V = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0 + (x[0] ** 4) - 2.0 * (x[1] ** 4)
+        values[0] = 1.0 + cos(x[0]) + sin(x[1])
     def value_shape(self):
         return (1,)
 
-class grad_laplacian_u_expression( UserExpression ):
+class grad_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 24.0 * x[0]
-        values[1] = - 48.0 * x[1]
+        values[0] = -sin( x[0] )
+        values[1] = cos( x[1] )
+
     def value_shape(self):
         return (2,)
 
 class laplacian2_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -24.0
+        values[0] = cos( x[0] ) + sin( x[1] )
+
     def value_shape(self):
         return (1,)
+
 
 
 u = Function( Q )
 nu = TestFunction( Q )
 f = Function( Q )
-grad_laplacian_u = Function( V )
+grad_u = Function( V )
 J_u = TrialFunction( Q )
 u_exact = Function( Q )
 
 u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
-grad_laplacian_u.interpolate( grad_laplacian_u_expression( element=V.ufl_element() ) )
+grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
 f.interpolate( laplacian2_u_expression( element=Q.ufl_element() ) )
 
-u_profile = Expression( '1.0 + pow(x[0], 4) - 2.0 * pow(x[1], 4)', L=L, h=h, element=Q.ufl_element() )
+u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q.ufl_element() )
 bc_u = DirichletBC( Q, u_profile, boundary )
 
-F = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
-    - n[j] * grad_laplacian_u[j] * nu * (ds_l + ds_r + ds_t + ds_b)
+F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
+      - n[j] * (u.dx( i ).dx( i ).dx( j )) * nu * ds
+# nitsche's term
+F_N = alpha / r_mesh * (n[j] * (u.dx( j )) - n[j] * grad_u[j]) * n[k] * (nu.dx( k )) * ds
+
+F = F_u + F_N
 bcs = [bc_u]
 
 J = derivative( F, u, J_u )
