@@ -1,10 +1,17 @@
 '''
-This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u
+This code solves the Poisson equation
+
+Nabla u = f expressed in terms of the function u and omega:
+
+\partial_i u = omega_i
+\partial_i omega_i = f
+
+
 run with
 
-clear; clear; python3 solve_u.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+clear; clear; python3 solve_u_omega.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
-clear; clear; rm -rf solution; python3 solve_u.py /home/fenics/shared/mesh /home/fenics/shared/solution
+clear; clear; rm -rf solution; python3 solve_u_omega.py /home/fenics/shared/mesh /home/fenics/shared/solution
 '''
 
 from __future__ import print_function
@@ -117,71 +124,97 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 8
-Q = FunctionSpace( mesh, 'P', function_space_degree )
-V = VectorFunctionSpace( mesh, 'P', function_space_degree )
+P_omega = VectorElement( 'P', triangle, 3 )
+P_u = FiniteElement( 'P', triangle, 3 )
+
+element = MixedElement( [P_omega, P_u] )
+Q = FunctionSpace( mesh, element )
+Q_omega = Q.sub( 0 ).collapse()
+Q_u = Q.sub( 1 ).collapse()
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 4 - 2 * x[1] ** 4
-
+    # values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
+    # values[0] = 1 + x[0]**2 + 2*x[1]**2
+        values[0] = 1 + np.cos( 2.0 * np.pi * x[0] / L ) - np.sin( np.pi * x[1] / h )
     def value_shape(self):
         return (1,)
 
 
-class grad_laplacian_u_expression( UserExpression ):
+class grad_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 24 * x[0]
-        values[1] = - 48 * x[1]
+        # values[0] = 2.0*x[0]
+        # values[1] = 4.0*x[1]
+
+        # values[0] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
+        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
+        # values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
+        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
+
+        values[0] = -(2 * np.pi * np.sin((2 * np.pi * x[0])/L))/L
+        values[1] = -((np.pi * cos((np.pi * x[1])/h))/h)
 
     def value_shape(self):
         return (2,)
 
 
-class laplacian2_u_expression( UserExpression ):
+class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -24.0
+        # values[0] = 6.0
+        # values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * cos( 2 * (np.pi) * (x[0] - (x[1])) ** 2 ) - sin( 2 * (np.pi) * (x[0] - (x[1])) ** 2 )) * sin(
+        #     2 * (np.pi) * (x[0] + (x[1])) )
+        values[0] = (np.pi)**2 * (-((4 * cos((2 * (np.pi) * x[0])/L))/L**2)+sin((np.pi * x[1])/h)/h**2)
 
     def value_shape(self):
         return (1,)
 
 
 # Define variational problem
-u = Function( Q )
-nu = TestFunction( Q )
-f = Function( Q )
-grad_laplacian_u = Function( V )
-J_u = TrialFunction( Q )
-u_exact = Function( Q )
+psi = Function( Q )
+nu_omega, nu_u = TestFunctions( Q )
+f = Function( Q_u )
+grad_u = Function( Q_omega )
+J_psi = TrialFunction( Q )
+u_exact = Function( Q_u )
 
-u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
-grad_laplacian_u.interpolate( grad_laplacian_u_expression( element=V.ufl_element() ) )
-f.interpolate( laplacian2_u_expression( element=Q.ufl_element() ) )
+omega, u = split( psi )
 
-u_profile = Expression( '1 + pow(x[0], 4) - 2 * pow(x[1], 4)', L=L, h=h, element=Q.ufl_element() )
-bc_u = DirichletBC( Q, u_profile, boundary )
+u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
+grad_u.interpolate( grad_u_expression( element=Q_omega.ufl_element() ) )
+f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
+
+# u_profile = Expression( '1 + pow(x[0], 2) + 2 * pow(x[1], 2)', L=L, h=h, element=Q.sub(1).ufl_element() )
+# u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]-x[1], 2))', L=L, h=h, element=Q.sub(1).ufl_element() )
+u_profile = Expression( '1 + cos(2.0*pi*x[0]/L) - sin(pi*x[1]/h)', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
+
+bc_u = DirichletBC( Q.sub( 1 ), u_profile, boundary_tb )
 
 '''
-\partial_j \partial_j \partial_i \partial_i u = f
-\int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
-\int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
-\int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
+\partial_i u = omega_i
+\partial_i omega_i = f
 '''
 
-F = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
-    - n[j] * grad_laplacian_u[j] * nu * (ds_l + ds_r + ds_t + ds_b)
+F_u = (omega[i] * (nu_u.dx( i )) + f * nu_u) * dx \
+      - n[i] * grad_u[i] * nu_u * (ds_l + ds_r) \
+      - n[i] * omega[i] * nu_u * (ds_t + ds_b)
+
+F_omega = (- u * (nu_omega[i].dx( i )) - omega[i] * nu_omega[i]) * dx \
+          + n[i] * u * nu_omega[i] * (ds_l + ds_r + ds_t + ds_b)
+
+F = F_u + F_omega
+
 bcs = [bc_u]
-
-J = derivative( F, u, J_u )
-problem = NonlinearVariationalProblem( F, u, bcs, J )
+# sign
+J = derivative( F, psi, J_psi )
+problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
-                  'linear_solver': 'mumps',
+                  'linear_solver': 'superlu',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
                   'maximum_iterations': 1000000,
@@ -192,10 +225,13 @@ solver.parameters.update( params )
 
 solver.solve()
 
-xdmffile_u.write( u, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q ), 0 )
+omega_output, u_output = psi.split( deepcopy=True )
+
+xdmffile_u.write( u_output, 0 )
+xdmffile_check.write( project( u_output.dx( i ).dx( i ), Q_u ), 0 )
 xdmffile_check.write( f, 0 )
-xdmffile_check.write( project(  u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q ), 0 )
+xdmffile_check.write( project( u_output.dx( i ).dx( i ) - f, Q_u ), 0 )
+xdmffile_check.write( project( omega[i].dx( i ) - f, Q_u ), 0 )
 xdmffile_check.close()
 
 
@@ -215,11 +251,10 @@ def errornorm(u_e, u):
 
 
 print( "Solution check: " )
-print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
+print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u_output, u_exact )}" )
 
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( (( u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project(  u.dx( i ).dx( i ).dx( j ).dx( j ), Q ), f )}" )
+print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((omega_output[i].dx( i ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( omega_output[i].dx( i ), Q_u ), f )}" )
 
-print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_laplacian_u[i]) - (n[i] * u.dx(j).dx(j).dx( i ))) ** 2 * (ds_l + ds_r + ds_t + ds_b) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r + ds_t + ds_b) )}" )
-
+print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * u_output.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r) )}" )
