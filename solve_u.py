@@ -18,7 +18,7 @@ from dolfin import *
 #CHANGE PARAMETERS HERE
 L = 2.2
 h = 0.41
-alpha = 1e1
+alpha = 1e3
 #CHANGE PARAMETERS HERE
 
 
@@ -61,8 +61,8 @@ xdmf.close()
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_lr = 'near(x[0], 0) || near(x[0], 2.2)'
-boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
+boundary_lr = 'near(x[0], 0) || near(x[0], 1.0)'
+boundary_tb = 'near(x[1], 0) || near(x[1], 1.0)'
 
 
 # CHANGE PARAMETERS HERE
@@ -80,6 +80,7 @@ ds_l = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
+ds = ds_l + ds_r + ds_t + ds_b
 
 # a function space used solely to define f_test_ds
 Q_test = FunctionSpace( mesh, 'P', 2 )
@@ -116,6 +117,7 @@ numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
 print( f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
 
 exact_value_int_ds_t = 1.36562
+exact_value_int_ds_t = 1.36562
 numerical_value_int_ds_t = assemble( f_test_ds * ds_t )
 print( f"\int_t f ds = {numerical_value_int_ds_t}, should be  {exact_value_int_ds_t}, relative error =  {abs( (numerical_value_int_ds_t - exact_value_int_ds_t) / exact_value_int_ds_t ):e}" )
 
@@ -125,31 +127,31 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 8
+function_space_degree = 2
 Q = FunctionSpace( mesh, 'P', function_space_degree )
 V = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0 + (x[0] ** 4) - 2.0 * (x[1] ** 4)
+        values[0] = 1.0 + cos(x[0]) + sin(x[1])
 
     def value_shape(self):
         return (1,)
 
 
-class grad_laplacian_u_expression( UserExpression ):
+class grad_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 24.0 * x[0]
-        values[1] = - 48.0 * x[1]
+        values[0] = -sin(x[0])
+        values[1] = cos (x[1])
 
     def value_shape(self):
         return (2,)
 
 
-class laplacian2_u_expression( UserExpression ):
+class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -24.0
+        values[0] = -cos(x[0]) - sin(x[1])
 
     def value_shape(self):
         return (1,)
@@ -159,16 +161,18 @@ class laplacian2_u_expression( UserExpression ):
 u = Function( Q )
 nu = TestFunction( Q )
 f = Function( Q )
-grad_laplacian_u = Function( V )
+grad_u = Function( V )
 J_u = TrialFunction( Q )
 u_exact = Function( Q )
 
 u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
-grad_laplacian_u.interpolate( grad_laplacian_u_expression( element=V.ufl_element() ) )
-f.interpolate( laplacian2_u_expression( element=Q.ufl_element() ) )
+grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
+f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
-u_profile = Expression( '1.0 + pow(x[0], 4) - 2.0 * pow(x[1], 4)', L=L, h=h, element=Q.ufl_element() )
+u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q.ufl_element() )
 bc_u = DirichletBC( Q, u_profile, boundary )
+
+u.assign( u_exact )
 
 '''
 \partial_j \partial_j \partial_i \partial_i u = f
@@ -177,10 +181,10 @@ bc_u = DirichletBC( Q, u_profile, boundary )
 \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
 '''
 
-F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
-    - n[j] * (u.dx(i).dx(i).dx(j)) * nu * ds
+F_u = ((u.dx( j )) * (nu.dx( j )) + f * nu) * dx \
+    - n[j] * (u.dx(j)) * nu * ds
 #nitsche's term
-F_N = alpha/r_mesh * ( n[j] * (u.dx(i).dx(i).dx(j)) - n[j] * grad_laplacian_u[j] ) * n[k] * (nu.dx(l).dx(l).dx(k)) * ds
+F_N = alpha / r_mesh * (n[j] * (u.dx(j)) - n[j] * grad_u[j]) * n[k] * (nu.dx( k )) * ds
 
 F = F_u + F_N
 bcs = [bc_u]
@@ -190,17 +194,17 @@ problem = NonlinearVariationalProblem( F, u, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 # set the solver parameters here
-# params = {'nonlinear_solver': 'newton',
-#           'newton_solver':
-#               {
-#                   'linear_solver': 'superlu',
-#                   'absolute_tolerance': 1e-6,
-#                   'relative_tolerance': 1e-6,
-#                   'maximum_iterations': 1000000,
-#                   'relaxation_parameter': 0.95,
-#               }
-#           }
-# solver.parameters.update( params )
+params = {'nonlinear_solver': 'newton',
+          'newton_solver':
+              {
+                  'linear_solver': 'superlu',
+                  'absolute_tolerance': 1e-6,
+                  'relative_tolerance': 1e-6,
+                  'maximum_iterations': 1000000,
+                  'relaxation_parameter': 0.95,
+              }
+          }
+solver.parameters.update( params )
 
 solver.solve()
 
@@ -230,8 +234,8 @@ print( "Solution check: " )
 print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
 print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
 
-print( f"\t<<(Nabla^2 u - f)^2>>_no-errornorm = {assemble( (( u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla^2 u - f)^2>>_errornorm = {errornorm( project(  u.dx( i ).dx( i ).dx( j ).dx( j ), Q ), f )}" )
+print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( (( u.dx( i ).dx( i ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project(  u.dx( i ).dx( i ), Q ), f )}" )
 
-print( f"\t<<(n[i] \partial_i Nabla u - n[i] grad_laplacian_u[i])^2>> =  {assemble( ((n[i] * grad_laplacian_u[i]) - (n[i] * (u.dx(j).dx(j).dx( i )))) ** 2 * (ds_l + ds_r + ds_t + ds_b) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r + ds_t + ds_b) )}" )
+print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * (u.dx( i )))) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 
