@@ -117,14 +117,14 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 8
+function_space_degree = 4
 Q = FunctionSpace( mesh, 'P', function_space_degree )
 V = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 4 - 2 * x[1] ** 4
+        values[0] = 1.0 + (x[0] ** 4) - 2.0 * (x[1] ** 4)
 
     def value_shape(self):
         return (1,)
@@ -132,8 +132,8 @@ class u_exact_expression( UserExpression ):
 
 class grad_laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 24 * x[0]
-        values[1] = - 48 * x[1]
+        values[0] = 24.0 * x[0]
+        values[1] = - 48.0 * x[1]
 
     def value_shape(self):
         return (2,)
@@ -159,7 +159,7 @@ u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
 grad_laplacian_u.interpolate( grad_laplacian_u_expression( element=V.ufl_element() ) )
 f.interpolate( laplacian2_u_expression( element=Q.ufl_element() ) )
 
-u_profile = Expression( '1 + pow(x[0], 4) - 2 * pow(x[1], 4)', L=L, h=h, element=Q.ufl_element() )
+u_profile = Expression( '1.0 + pow(x[0], 4) - 2.0 * pow(x[1], 4)', L=L, h=h, element=Q.ufl_element() )
 bc_u = DirichletBC( Q, u_profile, boundary )
 
 '''
@@ -178,17 +178,17 @@ problem = NonlinearVariationalProblem( F, u, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 # set the solver parameters here
-params = {'nonlinear_solver': 'newton',
-          'newton_solver':
-              {
-                  'linear_solver': 'mumps',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
-              }
-          }
-solver.parameters.update( params )
+# params = {'nonlinear_solver': 'newton',
+#           'newton_solver':
+#               {
+#                   'linear_solver': 'superlu',
+#                   'absolute_tolerance': 1e-6,
+#                   'relative_tolerance': 1e-6,
+#                   'maximum_iterations': 1000000,
+#                   'relaxation_parameter': 0.95,
+#               }
+#           }
+# solver.parameters.update( params )
 
 solver.solve()
 
@@ -218,8 +218,8 @@ print( "Solution check: " )
 print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
 print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
 
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( (( u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project(  u.dx( i ).dx( i ).dx( j ).dx( j ), Q ), f )}" )
+print( f"\t<<(Nabla^2 u - f)^2>>_no-errornorm = {assemble( (( u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print( f"\t<<(Nabla^2 u - f)^2>>_errornorm = {errornorm( project(  u.dx( i ).dx( i ).dx( j ).dx( j ), Q ), f )}" )
 
-print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_laplacian_u[i]) - (n[i] * u.dx(j).dx(j).dx( i ))) ** 2 * (ds_l + ds_r + ds_t + ds_b) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r + ds_t + ds_b) )}" )
+print( f"\t<<(n[i] \partial_i Nabla u - n[i] grad_laplacian_u[i])^2>> =  {assemble( ((n[i] * grad_laplacian_u[i]) - (n[i] * (u.dx(j).dx(j).dx( i )))) ** 2 * (ds_l + ds_r + ds_t + ds_b) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r + ds_t + ds_b) )}" )
 
