@@ -169,7 +169,7 @@ bc_u = DirichletBC( Q, u_profile, boundary )
 '''
 
 F = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
-    - n[j] * grad_laplacian_u[j] * nu * (ds_l + ds_r + ds_t + ds_b)
+    - n[j] * (u.dx(i).dx(i).dx(j)) * nu * (ds_l + ds_r + ds_t + ds_b)
 bcs = [bc_u]
 
 J = derivative( F, u, J_u )
