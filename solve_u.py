@@ -15,10 +15,14 @@ import numpy as np
 import ufl as ufl
 from dolfin import *
 
+#CHANGE PARAMETERS HERE
 L = 2.2
 h = 0.41
+alpha = 1e1
+#CHANGE PARAMETERS HERE
 
-i, j = ufl.indices( 2 )
+
+i, j, k, l = ufl.indices( 4 )
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "input_directory" )
@@ -34,6 +38,11 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 mesh = Mesh()
 xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
 xdmf.read( mesh )
+
+#radius of the smallest cell in the mesh
+r_mesh = mesh.hmin()
+
+print(f"Mesh radius = {r_mesh}")
 
 # read the triangles
 mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
@@ -116,7 +125,7 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 4
+function_space_degree = 8
 Q = FunctionSpace( mesh, 'P', function_space_degree )
 V = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
@@ -168,8 +177,12 @@ bc_u = DirichletBC( Q, u_profile, boundary )
 \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
 '''
 
-F = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
-    - n[j] * (u.dx(i).dx(i).dx(j)) * nu * (ds_l + ds_r + ds_t + ds_b)
+F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
+    - n[j] * (u.dx(i).dx(i).dx(j)) * nu * ds
+#nitsche's term
+F_N = alpha/r_mesh * ( n[j] * (u.dx(i).dx(i).dx(j)) - n[j] * grad_laplacian_u[j] ) * n[k] * (nu.dx(l).dx(l).dx(k)) * ds
+
+F = F_u + F_N
 bcs = [bc_u]
 
 J = derivative( F, u, J_u )
