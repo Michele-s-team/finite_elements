@@ -7,7 +7,6 @@ example:
 clear; clear; rm -rf solution; python3 solve_u.py /home/fenics/shared/mesh /home/fenics/shared/solution
 '''
 
-from __future__ import print_function
 from fenics import *
 import argparse
 from mshr import *
@@ -146,22 +145,28 @@ Q_dddu = Q.sub( 3 ).collapse()
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 1.0 + cos( x[0] ) + sin( x[1] )
-
     def value_shape(self):
         return (1,)
 
-class du_expression( UserExpression ):
+class grad_u_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = -sin( x[0] )
         values[1] = cos( x[1] )
+    def value_shape(self):
+        return (2,)
 
+class hessian_u_expression( UserExpression ):
+    def eval(self, values, x):
+        values[0, 0] = - cos(x[0])
+        values[0, 1] =  0
+        values[1, 0] = 0
+        values[1, 0] = - sin(x[1])
     def value_shape(self):
         return (2,)
 
 class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = -cos( x[0] ) - sin( x[1] )
-
     def value_shape(self):
         return (1,)
 
@@ -170,12 +175,12 @@ class laplacian_u_expression( UserExpression ):
 u = Function( Q_u )
 nu = TestFunction( Q_u )
 f = Function( Q_u )
-grad_u = Function( V )
+grad_u = Function( Q_du )
 J_u = TrialFunction( Q_u )
 u_exact = Function( Q_u )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
-grad_u.interpolate( du_expression( element=V.ufl_element() ) )
+grad_u.interpolate( grad_u_expression( element=Q_du.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 
 u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q_u.ufl_element() )
@@ -188,6 +193,7 @@ bc_u = DirichletBC( Q_u, u_profile, boundary )
 \int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
 \int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
 0 =  \int dx (\partial_j \partial_i \partial_i u) \partial_j nu + \int dx f nu  - \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] 
+'''
 '''
 
 F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
@@ -247,3 +253,4 @@ print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx(
 print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
 
 print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * (u.dx( i )))) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+'''
