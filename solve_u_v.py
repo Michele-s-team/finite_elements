@@ -159,7 +159,7 @@ class v_exact_expression( UserExpression ):
 class laplacian_v_exact_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 1.0
-        
+
     def value_shape(self):
         return (1,)
 
@@ -189,7 +189,7 @@ u, v = split( psi )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
-f.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
+f.interpolate( laplacian_v_exact_expression( element=Q_v.ufl_element() ) )
 
 u_profile = Expression( '1.0 + (pow(x[0], 4) + pow(x[1], 4))/48.0', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
 v_profile = Expression( '(pow(x[0], 2) + pow(x[1], 2))/4.0', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
