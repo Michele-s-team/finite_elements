@@ -66,6 +66,8 @@ xdmf.close()
 boundary = 'on_boundary'
 boundary_lr = 'near(x[0], 0) || near(x[0], 2.2)'
 boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
+
+
 # CHANGE PARAMETERS HERE
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
@@ -127,7 +129,6 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-
 P_u = FiniteElement( 'P', triangle, function_space_degree )
 P_v = VectorElement( 'P', triangle, function_space_degree )
 element = MixedElement( [P_u, P_v] )
@@ -137,25 +138,38 @@ Q_u = Q.sub( 0 ).collapse()
 Q_v = Q.sub( 1 ).collapse()
 
 
-class u_exact_expression(UserExpression):
+# CHANGE PARAMETERS HERE
+class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
+        values[0] = 1 + cos( x[0] - x[1] ) - sin( x[1] )
+        # values[0] = 1 + (x[0]**2) + 2 * (x[1]**2)
+        # values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
+
     def value_shape(self):
         return (1,)
 
-class v_exact_expression(UserExpression):
+
+class v_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] =  2 *(np.pi) *cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
-        values[1] = 2 * (np.pi) * cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * sin(2 * (np.pi)*  ((x[0]) + (x[1])))
+        values[0] = - sin( x[0] - x[1] )
+        values[1] = sin( x[0] - x[1] ) - cos( x[1] )
+        # values[0] =  2 *(np.pi) *cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        # values[1] = 2 * (np.pi) * cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * sin(2 * (np.pi)*  ((x[0]) + (x[1])))
+
     def value_shape(self):
         return (2,)
 
-class laplacian_u_exact_expression(UserExpression):
+
+class laplacian_u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
+        values[0] = -2 * cos( x[0] - x[1] ) + sin( x[1] )
+        # values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
+
     def value_shape(self):
         return (1,)
 
+
+# CHANGE PARAMETERS HERE
 
 
 # Define variational problem
@@ -177,15 +191,20 @@ v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 laplacian_u_exact.interpolate( laplacian_u_exact_expression( element=Q_u.ufl_element() ) )
 f.interpolate( laplacian_u_exact_expression( element=Q_u.ufl_element() ) )
 
-u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]-x[1], 2))', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
+# CHANGE PARAMETERS HERE
+u_profile = Expression( '1 + cos(x[0]-x[1]) - sin(x[1])', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
+# u_profile = Expression( '1 + cos(x[0]) - sin(x[1])', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
+# u_profile = Expression( '1 + pow(x[0], 2) + 2 * pow(x[1], 2)', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
+# u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]-x[1], 2))', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
+# CHANGE PARAMETERS HERE
+
 bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
 
-F_v = (v[i] * nu_v[i] + u * (nu_v[i].dx(i))) * dx \
+F_v = (v[i] * nu_v[i] + u * (nu_v[i].dx( i ))) * dx \
       - n[i] * u * (nu_v[i]) * ds
 F_u = (v[i] * (nu_u.dx( i )) + f * nu_u) * dx \
       - n[i] * v[i] * nu_u * ds
-F_N = alpha/r_mesh * (n[i] * v[i] - n[i] * v_exact[i]) * n[j] * nu_v[j] * ds
-
+F_N = alpha / r_mesh * (n[i] * v[i] - n[i] * v_exact[i]) * n[j] * nu_v[j] * ds
 
 F = F_u + F_v + F_N
 bcs = [bc_u]
@@ -215,12 +234,12 @@ xdmffile_v.write( v_output, 0 )
 
 print( "BCs check: " )
 print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(n.v-n.v_exact)^2>>_\partial Omega =  {assemble( (n[i]*v_output[i] - n[i]*v_exact[i]) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-#
+print( f"\t<<(n.v-n.v_exact)^2>>_\partial Omega =  {assemble( (n[i] * v_output[i] - n[i] * v_exact[i]) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+
 print( "Solution check: " )
 print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output[i] - v_exact[i]) * (v_output[i] - v_exact[i])) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( (v_output[i].dx(i) - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<|v - v_exact|^2>> = {sqrt( assemble( ((v_output[i] - v_exact[i]) * (v_output[i] - v_exact[i])) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(\partial_i v_i - f)^2>> = {sqrt( assemble( (v_output[i].dx( i ) - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
 '''
 xdmffile_u.write( v_output, 0 )
