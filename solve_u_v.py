@@ -1,10 +1,10 @@
 '''
-This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u
+This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u and v = Nabla u
 run with
 
-clear; clear; python3 solve_u.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+clear; clear; python3 solve_u_v.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
-clear; clear; rm -rf solution; python3 solve_u.py /home/fenics/shared/mesh /home/fenics/shared/solution
+clear; clear; rm -rf solution; python3 solve_u_v.py /home/fenics/shared/mesh /home/fenics/shared/solution
 '''
 
 from fenics import *
@@ -15,9 +15,8 @@ import ufl as ufl
 from dolfin import *
 
 # CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
-alpha = 1e3
+L = 1.0
+h = 1.0
 # CHANGE PARAMETERS HERE
 
 
@@ -130,22 +129,26 @@ n = FacetNormal( mesh )
 function_space_degree = 2
 
 P_u = FiniteElement( 'P', triangle, function_space_degree )
-P_du = VectorElement( 'P', triangle, function_space_degree )
-P_ddu = TensorElement( 'P', triangle, function_space_degree, (2, 2) )
-P_dddu = TensorElement( 'P', triangle, function_space_degree, (2, 2, 2) )
-
-element = MixedElement( [P_u, P_du, P_ddu, P_dddu] )
+P_v = FiniteElement( 'P', triangle, function_space_degree )
+element = MixedElement( [P_u, P_v] )
 Q = FunctionSpace( mesh, element )
 
 Q_u = Q.sub( 0 ).collapse()
-Q_du = Q.sub( 1 ).collapse()
-Q_ddu = Q.sub( 2 ).collapse()
-Q_dddu = Q.sub( 3 ).collapse()
+Q_v = Q.sub( 1 ).collapse()
+Q_grad_v = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 1.0 + cos( x[0] ) + sin( x[1] )
+
+    def value_shape(self):
+        return (1,)
+
+
+class v_exact_expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = - cos( x[0] ) - sin( x[1] )
 
     def value_shape(self):
         return (1,)
@@ -160,94 +163,47 @@ class grad_u_expression( UserExpression ):
         return (2,)
 
 
-class hessian_u_expression( UserExpression ):
-    def init(self, **kwargs):
-        super().init( **kwargs )
-
-    def eval(self, values, x):
-        values[0] = cos( 2.0 * np.pi * x[0] / L )
-        values[1] = cos( 2.0 * np.pi * x[1] / h )
-        values[2] = sin( 2.0 * np.pi * x[0] / L )
-        values[3] = sin( 2.0 * np.pi * x[1] / h )
-        # print("LOCAL tensor\n", values.reshape(self.value_shape()))
-
-    def value_shape(self):
-        return (2, 2)
-
-
-class triad_u_expression( UserExpression ):
-    def init(self, **kwargs):
-        super().init( **kwargs )
-
-    def eval(self, values, x):
-        values[0] = 1
-        values[1] = cos(2 * np.pi * x[0] / L )
-        values[2] = 3
-        values[3] = 4
-        values[4] = 5
-        values[5] = 6
-        values[6] = 7
-        values[7] = 8
-        # print("LOCAL tensor\n", values.reshape(self.value_shape()))
-
-    def value_shape(self):
-        return (2, 2, 2)
-
-
-class laplacian_u_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = -cos( x[0] ) - sin( x[1] )
-
-    def value_shape(self):
-        return (1,)
-
-
 # Define variational problem
-u = Function( Q_u )
-nu = TestFunction( Q_u )
-f = Function( Q_u )
-grad_u = Function( Q_du )
-hessian_u = Function( Q_ddu )
-triad_u = Function( Q_dddu )
-J_u = TrialFunction( Q_u )
+psi = Function( Q )
+nu_u, nu_v = TestFunctions( Q )
+
+grad_v = Function( Q_grad_v )
+u_output = Function( Q_u )
+v_output = Function( Q_v )
 u_exact = Function( Q_u )
+v_exact = Function( Q_v )
+
+f = Function( Q_u )
+J_uv = TrialFunction( Q )
+u, v = split( psi )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
-grad_u.interpolate( grad_u_expression( element=Q_du.ufl_element() ) )
-hessian_u.interpolate( hessian_u_expression( element=Q_ddu.ufl_element() ) )
-triad_u.interpolate( triad_u_expression( element=Q_dddu.ufl_element() ) )
-f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
-
-
-xdmffile_u.write( project( triad_u[0, 0, 0], Q_u ), 0 )
-xdmffile_u.write( project( triad_u[0, 0, 1], Q_u ), 0 )
-
-
-'''
+v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
+f.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 
 u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q_u.ufl_element() )
 bc_u = DirichletBC( Q_u, u_profile, boundary )
-
-
 
 # \partial_j \partial_j \partial_i \partial_i u = f
 # \int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
 # \int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
 # 0 =  \int dx (\partial_j \partial_i \partial_i u) \partial_j nu + \int dx f nu  - \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ]
 
-F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
-      - n[j] * (u.dx( i ).dx( i ).dx( j )) * nu * ds
+F_u = ((v.dx( i )) * (nu_u.dx( i )) + f * nu_u) * dx \
+      - n[i] * grad_v[i] * nu_u * ds
+F_v = ((u.dx( i )) * (nu_v.dx( i )) + v * nu_v) * dx \
+      - n[i] * (u.dx( i )) * nu_v * ds
 # nitsche's term
-F_N = alpha / r_mesh * (n[j] * (u.dx( j )) - n[j] * grad_u[j]) * n[k] * (nu.dx( k )) * ds
+# F_N = alpha / r_mesh * (n[j] * (u.dx( j )) - n[j] * grad_u[j]) * n[k] * (nu.dx( k )) * ds
 
-F = F_u + F_N
+F = F_u + F_v
 bcs = [bc_u]
 
 # u.assign( u_exact )
 
 
-J = derivative( F, u, J_u )
-problem = NonlinearVariationalProblem( F, u, bcs, J )
+J = derivative( F, u, J_uv )
+problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 # set the solver parameters here
@@ -271,7 +227,7 @@ xdmffile_check.write( f, 0 )
 xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
 xdmffile_check.close()
 
-
+'''
 def errornorm(u_e, u):
     error = (u_e - u) ** 2 * dx
     E = sqrt( abs( assemble( error ) ) )
@@ -295,4 +251,5 @@ print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx(
 print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
 
 print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * (u.dx( i )))) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+
 '''
