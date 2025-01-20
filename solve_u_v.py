@@ -17,6 +17,8 @@ from dolfin import *
 # CHANGE PARAMETERS HERE
 L = 1.0
 h = 1.0
+
+function_space_degree = 4
 # CHANGE PARAMETERS HERE
 
 
@@ -128,7 +130,6 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 2
 
 P_u = FiniteElement( 'P', triangle, function_space_degree )
 P_v = FiniteElement( 'P', triangle, function_space_degree )
@@ -184,7 +185,7 @@ v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 f.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 
 u_profile = Expression( '1.0 + (pow(x[0], 4) + pow(x[1], 4))/48.0', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-v_profile = Expression( '1.0 + (pow(x[0], 2) + pow(x[1], 2))/4.0', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
+v_profile = Expression( '(pow(x[0], 2) + pow(x[1], 2))/4.0', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
 bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
 bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
 
@@ -219,13 +220,20 @@ u_output, v_output = psi.split( deepcopy=True )
 xdmffile_u.write( u_output, 0 )
 xdmffile_v.write( v_output, 0 )
 
+print( "BCs check: " )
+print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 
-# xdmffile_u.write( v_output, 0 )
-# xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
-# xdmffile_check.write( f, 0 )
-# xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
-# xdmffile_check.close()
+print( "Solution check: " )
+print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
+'''
+xdmffile_u.write( v_output, 0 )
+xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
+xdmffile_check.write( f, 0 )
+xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
+xdmffile_check.close()
 
 def errornorm(u_e, u):
     error = (u_e - u) ** 2 * dx
@@ -241,14 +249,6 @@ def errornorm(u_e, u):
     error = e_W ** 2 * dx
     return sqrt( abs( assemble( error ) / assemble( Constant( 1.0 ) * dx ) ) )
 
-
-print( "Solution check: " )
-print( f"\t<<(u - u_exact)^2>>_no-errornorm = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u_output, u_exact )}" )
-'''
 print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
 print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
-
-print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * (u.dx( i )))) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-
 '''
