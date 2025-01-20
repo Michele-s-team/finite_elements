@@ -17,6 +17,7 @@ from dolfin import *
 # CHANGE PARAMETERS HERE
 L = 2.2
 h = 0.41
+alpha = 1e2
 function_space_degree = 4
 # CHANGE PARAMETERS HERE
 
@@ -134,43 +135,38 @@ Q = FunctionSpace( mesh, element )
 
 Q_u = Q.sub( 0 ).collapse()
 Q_v = Q.sub( 1 ).collapse()
-Q_grad_u = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 
-class u_exact_expression( UserExpression ):
+class u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1.0 + (x[0] ** 4 + x[1] ** 4) / 48.0
-
+        values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
     def value_shape(self):
         return (1,)
 
-
-class v_exact_expression( UserExpression ):
+class v_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = (x[0] ** 2 + x[1] ** 2) / 4.0
-
-    def value_shape(self):
-        return (1,)
-
-
-class grad_v_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = x[0] / 2.0
-        values[1] = x[1] / 2.0
-
+        values[0] =  2 *(np.pi) *cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        values[1] = 2 * (np.pi) * cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * sin(2 * (np.pi)*  ((x[0]) + (x[1])))
     def value_shape(self):
         return (2,)
+
+class laplacian_u_exact_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
+    def value_shape(self):
+        return (1,)
+
 
 
 # Define variational problem
 psi = Function( Q )
 nu_u, nu_v = TestFunctions( Q )
 
-grad_v = Function( Q_grad_v )
 u_output = Function( Q_u )
 v_output = Function( Q_v )
 u_exact = Function( Q_u )
 v_exact = Function( Q_v )
+laplacian_u_exact = Function( Q_u )
 
 f = Function( Q_u )
 J_uv = TrialFunction( Q )
@@ -178,20 +174,21 @@ u, v = split( psi )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
-f.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
+laplacian_u_exact.interpolate( laplacian_u_exact_expression( element=Q_u.ufl_element() ) )
+f.interpolate( laplacian_u_exact_expression( element=Q_u.ufl_element() ) )
 
-u_profile = Expression( '1.0 + (pow(x[0], 4) + pow(x[1], 4))/48.0', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-v_profile = Expression( '(pow(x[0], 2) + pow(x[1], 2))/4.0', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
+u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]-x[1], 2))', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
 bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
-bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
 
-F_v = ((v.dx( i )) * (nu_v.dx( i )) + f * nu_v) * dx \
-      - n[i] * (v.dx( i )) * nu_v * ds
-F_u = ((u.dx( i )) * (nu_u.dx( i )) + v * nu_u) * dx \
-      - n[i] * (u.dx( i )) * nu_u * ds
+F_v = (v[i] * nu_v[i] + u * (nu_v[i].dx(i))) * dx \
+      - n[i] * u * (nu_v[i]) * ds
+F_u = (v[i] * (nu_u.dx( i )) + f * nu_u) * dx \
+      - n[i] * v[i] * nu_u * ds
+F_N = alpha/r_mesh * (n[i] * v[i] - n[i] * v_exact[i]) * n[j] * nu_v[j] * ds
 
-F = F_u + F_v
-bcs = [bc_u, bc_v]
+
+F = F_u + F_v + F_N
+bcs = [bc_u]
 
 J = derivative( F, psi, J_uv )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
@@ -218,11 +215,11 @@ xdmffile_v.write( v_output, 0 )
 
 print( "BCs check: " )
 print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-
+print( f"\t<<(n.v-n.v_exact)^2>>_\partial Omega =  {assemble( (n[i]*v_output[i] - n[i]*v_exact[i]) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+#
 print( "Solution check: " )
 print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output[i] - v_exact[i]) * (v_output[i] - v_exact[i])) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
 '''
 xdmffile_u.write( v_output, 0 )
