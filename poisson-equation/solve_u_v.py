@@ -1,5 +1,5 @@
 '''
-This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u and v = Nabla u
+This code solves the Poisson equation  Nabla u = f expressed in terms of the function u and v_i = \partial_i u
 run with
 
 clear; clear; python3 solve_u_v.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
@@ -220,6 +220,7 @@ print( f"\t<<(n.v-n.v_exact)^2>>_\partial Omega =  {assemble( (n[i]*v_output[i] 
 print( "Solution check: " )
 print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output[i] - v_exact[i]) * (v_output[i] - v_exact[i])) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( (v_output[i].dx(i) - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
 '''
 xdmffile_u.write( v_output, 0 )
