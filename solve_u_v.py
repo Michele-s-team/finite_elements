@@ -154,10 +154,10 @@ class v_exact_expression( UserExpression ):
         return (1,)
 
 
-class grad_u_expression( UserExpression ):
+class grad_v_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -sin( x[0] )
-        values[1] = cos( x[1] )
+        values[0] = sin( x[0] )
+        values[1] = - cos( x[1] )
 
     def value_shape(self):
         return (2,)
@@ -181,13 +181,9 @@ u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 f.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 
-u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q_u.ufl_element() )
-bc_u = DirichletBC( Q_u, u_profile, boundary )
+u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q.sub(0).ufl_element() )
+bc_u = DirichletBC( Q.sub(0), u_profile, boundary )
 
-# \partial_j \partial_j \partial_i \partial_i u = f
-# \int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
-# \int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
-# 0 =  \int dx (\partial_j \partial_i \partial_i u) \partial_j nu + \int dx f nu  - \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ]
 
 F_u = ((v.dx( i )) * (nu_u.dx( i )) + f * nu_u) * dx \
       - n[i] * grad_v[i] * nu_u * ds
@@ -202,10 +198,9 @@ bcs = [bc_u]
 # u.assign( u_exact )
 
 
-J = derivative( F, u, J_uv )
+J = derivative( F, psi, J_uv )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
-
 # set the solver parameters here
 # params = {'nonlinear_solver': 'newton',
 #           'newton_solver':
@@ -221,11 +216,15 @@ solver = NonlinearVariationalSolver( problem )
 
 solver.solve()
 
-xdmffile_u.write( u, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
-xdmffile_check.write( f, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
-xdmffile_check.close()
+u_output, v_output = psi.split( deepcopy=True )
+
+
+xdmffile_u.write( u_output, 0 )
+xdmffile_u.write( v_output, 0 )
+# xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
+# xdmffile_check.write( f, 0 )
+# xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
+# xdmffile_check.close()
 
 '''
 def errornorm(u_e, u):
