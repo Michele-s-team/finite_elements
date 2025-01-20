@@ -130,7 +130,6 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-
 P_u = FiniteElement( 'P', triangle, function_space_degree )
 P_v = FiniteElement( 'P', triangle, function_space_degree )
 element = MixedElement( [P_u, P_v] )
@@ -157,7 +156,15 @@ class v_exact_expression( UserExpression ):
         return (1,)
 
 
-class grad_v_expression( UserExpression ):
+class laplacian_v_exact_expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 1.0
+        
+    def value_shape(self):
+        return (1,)
+
+
+class grad_v_exact_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = x[0] / 2.0
         values[1] = x[1] / 2.0
