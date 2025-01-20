@@ -155,14 +155,17 @@ class grad_u_expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
-class hessian_u_expression( UserExpression ):
+class hessian_u_expression(UserExpression):
+    def init(self, **kwargs):
+        super().init(**kwargs)
     def eval(self, values, x):
-        values[0, 0] = - cos(x[0])
-        values[0, 1] =  0
-        values[1, 0] = 0
-        values[1, 0] = - sin(x[1])
+        values[0] = 0
+        values[1] = 1
+        values[2] = 2
+        values[3] = 3
+        #print("LOCAL tensor\n", values.reshape(self.value_shape()))
     def value_shape(self):
-        return (2,)
+        return (2,2)
 
 class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
@@ -176,25 +179,26 @@ u = Function( Q_u )
 nu = TestFunction( Q_u )
 f = Function( Q_u )
 grad_u = Function( Q_du )
+hessian_u = Function( Q_ddu )
 J_u = TrialFunction( Q_u )
 u_exact = Function( Q_u )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=Q_du.ufl_element() ) )
+hessian_u.interpolate( hessian_u_expression( element=Q_ddu.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 
 u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q_u.ufl_element() )
 bc_u = DirichletBC( Q_u, u_profile, boundary )
 
-# u.assign( u_exact )
+
+
 
 '''
-\partial_j \partial_j \partial_i \partial_i u = f
-\int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
-\int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
-0 =  \int dx (\partial_j \partial_i \partial_i u) \partial_j nu + \int dx f nu  - \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ] 
-'''
-'''
+# \partial_j \partial_j \partial_i \partial_i u = f
+# \int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
+# \int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
+# 0 =  \int dx (\partial_j \partial_i \partial_i u) \partial_j nu + \int dx f nu  - \int ds n^j [ (\partial_j \partial_i \partial_i u) nu ]
 
 F_u = ((u.dx( i ).dx( i ).dx( j )) * (nu.dx( j )) + f * nu) * dx \
       - n[j] * (u.dx( i ).dx( i ).dx( j )) * nu * ds
@@ -203,6 +207,9 @@ F_N = alpha / r_mesh * (n[j] * (u.dx( j )) - n[j] * grad_u[j]) * n[k] * (nu.dx( 
 
 F = F_u + F_N
 bcs = [bc_u]
+
+# u.assign( u_exact )
+
 
 J = derivative( F, u, J_u )
 problem = NonlinearVariationalProblem( F, u, bcs, J )
