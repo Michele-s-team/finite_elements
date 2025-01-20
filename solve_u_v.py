@@ -142,7 +142,7 @@ Q_grad_v = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0 + (x[0] ** 4 + x[1] ** 4) / 48.0
+        values[0] = cos(x[0]+x[1]) * sin(x[0]-x[1])
 
     def value_shape(self):
         return (1,)
@@ -150,7 +150,7 @@ class u_exact_expression( UserExpression ):
 
 class v_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (x[0] ** 2 + x[1] ** 2) / 4.0
+        values[0] = - 4 * cos(x[0])*sin(x[0]) + 4 * cos(x[1])*sin(x[1])
 
     def value_shape(self):
         return (1,)
@@ -158,19 +158,10 @@ class v_exact_expression( UserExpression ):
 
 class w_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0
+        values[0] = 8 * (sin(2*x[0]) - sin(2*x[1]))
 
     def value_shape(self):
         return (1,)
-
-
-class grad_v_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = x[0] / 2.0
-        values[1] = x[1] / 2.0
-
-    def value_shape(self):
-        return (2,)
 
 
 # Define variational problem
@@ -194,8 +185,8 @@ v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 w_exact.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
 f.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
 
-u_profile = Expression( '1.0 + (pow(x[0], 4) + pow(x[1], 4))/48.0', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-v_profile = Expression( '(pow(x[0], 2) + pow(x[1], 2))/4.0', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
+u_profile = Expression( 'cos(x[0]+x[1]) * sin(x[0]-x[1])', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
+v_profile = Expression( '- 4 * cos(x[0])*sin(x[0]) + 4 * cos(x[1])*sin(x[1])', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
 bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
 bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
 
