@@ -126,14 +126,14 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 n = FacetNormal( mesh )
 
-function_space_degree = 3
+function_space_degree = 2
 
 P_u = FiniteElement( 'P', triangle, function_space_degree )
 P_du = VectorElement( 'P', triangle, function_space_degree )
 P_ddu = TensorElement( 'P', triangle, function_space_degree, (2, 2) )
 P_dddu = TensorElement( 'P', triangle, function_space_degree, (2, 2, 2) )
 
-element = MixedElement( [P_u, P_du, P_ddu, P_ddu ] )
+element = MixedElement( [P_u, P_du, P_ddu, P_dddu ] )
 Q = FunctionSpace( mesh, element )
 
 Q_u = Q.sub( 0 ).collapse()
@@ -167,6 +167,22 @@ class hessian_u_expression(UserExpression):
     def value_shape(self):
         return (2,2)
 
+class triad_u_expression(UserExpression):
+    def init(self, **kwargs):
+        super().init(**kwargs)
+    def eval(self, values, x):
+        values[0] = 1
+        values[1] = 2
+        values[2] = 3
+        values[3] = 4
+        values[4] = 5
+        values[5] = 6
+        values[6] = 7
+        values[7] = 8
+        #print("LOCAL tensor\n", values.reshape(self.value_shape()))
+    def value_shape(self):
+        return (2, 2, 2)
+
 class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = -cos( x[0] ) - sin( x[1] )
@@ -180,12 +196,14 @@ nu = TestFunction( Q_u )
 f = Function( Q_u )
 grad_u = Function( Q_du )
 hessian_u = Function( Q_ddu )
+triad_u = Function( Q_dddu )
 J_u = TrialFunction( Q_u )
 u_exact = Function( Q_u )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=Q_du.ufl_element() ) )
 hessian_u.interpolate( hessian_u_expression( element=Q_ddu.ufl_element() ) )
+triad_u.interpolate( triad_u_expression( element=Q_dddu.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 
 xdmffile_u.write( hessian_u, 0 )
