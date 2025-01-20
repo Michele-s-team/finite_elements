@@ -30,10 +30,8 @@ parser.add_argument( "output_directory" )
 args = parser.parse_args()
 
 xdmffile_u = XDMFFile( (args.output_directory) + "/u.xdmf" )
-xdmffile_u.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-
 xdmffile_v = XDMFFile( (args.output_directory) + "/v.xdmf" )
-xdmffile_v.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+xdmffile_w = XDMFFile( (args.output_directory) + "/w.xdmf" )
 
 xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
@@ -132,11 +130,13 @@ n = FacetNormal( mesh )
 
 P_u = FiniteElement( 'P', triangle, function_space_degree )
 P_v = FiniteElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_u, P_v] )
+P_w = FiniteElement( 'P', triangle, function_space_degree )
+element = MixedElement( [P_u, P_v, P_w] )
 Q = FunctionSpace( mesh, element )
 
 Q_u = Q.sub( 0 ).collapse()
 Q_v = Q.sub( 1 ).collapse()
+Q_w = Q.sub( 2 ).collapse()
 Q_grad_v = VectorFunctionSpace( mesh, 'P', function_space_degree )
 
 
@@ -156,7 +156,7 @@ class v_exact_expression( UserExpression ):
         return (1,)
 
 
-class laplacian_v_exact_expression( UserExpression ):
+class w_exact_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 1.0
 
@@ -175,36 +175,41 @@ class grad_v_exact_expression( UserExpression ):
 
 # Define variational problem
 psi = Function( Q )
-nu_u, nu_v = TestFunctions( Q )
+nu_u, nu_v, nu_w = TestFunctions( Q )
 
 grad_v = Function( Q_grad_v )
 u_output = Function( Q_u )
 v_output = Function( Q_v )
+w_output = Function( Q_w )
 u_exact = Function( Q_u )
 v_exact = Function( Q_v )
+w_exact = Function( Q_w )
 
-f = Function( Q_u )
-J_uv = TrialFunction( Q )
-u, v = split( psi )
+f = Function( Q_w )
+J_uvw = TrialFunction( Q )
+u, v, w = split( psi )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
-f.interpolate( laplacian_v_exact_expression( element=Q_v.ufl_element() ) )
+w_exact.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
+f.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
 
 u_profile = Expression( '1.0 + (pow(x[0], 4) + pow(x[1], 4))/48.0', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
 v_profile = Expression( '(pow(x[0], 2) + pow(x[1], 2))/4.0', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
 bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
 bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
 
-F_v = ((v.dx( i )) * (nu_v.dx( i )) + f * nu_v) * dx \
-      - n[i] * (v.dx( i )) * nu_v * ds
-F_u = ((u.dx( i )) * (nu_u.dx( i )) + v * nu_u) * dx \
-      - n[i] * (u.dx( i )) * nu_u * ds
+F_v = ((v.dx( i )) * (nu_u.dx( i )) + f * nu_u) * dx \
+      - n[i] * (v.dx( i )) * nu_u * ds
+F_u = ((u.dx( i )) * (nu_v.dx( i )) + v * nu_v) * dx \
+      - n[i] * (u.dx( i )) * nu_v * ds
+F_w = ((v.dx( i )) * (nu_w.dx( i )) + w * nu_w) * dx \
+      - n[i] * (v.dx( i )) * nu_w * ds
 
-F = F_u + F_v
+F = F_u + F_v + F_w
 bcs = [bc_u, bc_v]
 
-J = derivative( F, psi, J_uv )
+J = derivative( F, psi, J_uvw )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
@@ -222,18 +227,23 @@ solver = NonlinearVariationalSolver( problem )
 
 solver.solve()
 
-u_output, v_output = psi.split( deepcopy=True )
+u_output, v_output, w_output = psi.split( deepcopy=True )
 
 xdmffile_u.write( u_output, 0 )
 xdmffile_v.write( v_output, 0 )
+xdmffile_w.write( w_output, 0 )
 
 print( "BCs check: " )
 print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+print( f"\t<<(w-w_exact)^2>>_\partial Omega =  {assemble( (w_output - w_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 
-print( "Solution check: " )
+print( "Comparison with exact solution: " )
 print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+
+print("Check that the PDE is satisfied: ")
+print( f"\t<<(w-f)^2>>_\partial Omega =  {assemble( (w_output - f) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 
 '''
 xdmffile_u.write( v_output, 0 )
