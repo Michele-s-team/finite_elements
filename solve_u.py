@@ -159,10 +159,10 @@ class hessian_u_expression(UserExpression):
     def init(self, **kwargs):
         super().init(**kwargs)
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 1
-        values[2] = 2
-        values[3] = 3
+        values[0] = cos(2.0 * np.pi * x[0] / L)
+        values[1] = cos(2.0 * np.pi * x[1] / h)
+        values[2] = sin(2.0 * np.pi * x[0] / L)
+        values[3] = sin(2.0 * np.pi * x[1] / h)
         #print("LOCAL tensor\n", values.reshape(self.value_shape()))
     def value_shape(self):
         return (2,2)
@@ -188,13 +188,17 @@ grad_u.interpolate( grad_u_expression( element=Q_du.ufl_element() ) )
 hessian_u.interpolate( hessian_u_expression( element=Q_ddu.ufl_element() ) )
 f.interpolate( laplacian_u_expression( element=Q_u.ufl_element() ) )
 
+xdmffile_u.write( hessian_u, 0 )
+
+
+
+'''
+
 u_profile = Expression( '1.0 + cos(x[0]) + sin(x[1])', L=L, h=h, element=Q_u.ufl_element() )
 bc_u = DirichletBC( Q_u, u_profile, boundary )
 
 
 
-
-'''
 # \partial_j \partial_j \partial_i \partial_i u = f
 # \int dx (\partial_j \partial_j \partial_i \partial_i u ) nu = \int dx f nu
 # \int dx \partial_j (\partial_j \partial_i \partial_i u nu ) - \int dx (\partial_j \partial_i \partial_i u) \partial_j nu = \int dx f nu
