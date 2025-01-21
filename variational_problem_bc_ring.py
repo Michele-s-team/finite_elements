@@ -13,8 +13,10 @@ rho = 1.0
 # viscosity
 eta = 1.0
 #values of z at the boundaries
-z_r = 0.1
-z_R = 0.0
+z_r_const = 0.1
+z_R_const = 0.0
+omega_r_const = 0.5
+omega_R_const = 0.0
 # Nitche's parameter
 alpha = 1e1
 
@@ -63,7 +65,7 @@ class NuExpression( UserExpression ):
 
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.5
+        values[0] = omega_r_const
 
     def value_shape(self):
         return (1,)
@@ -71,7 +73,7 @@ class omega_r_Expression( UserExpression ):
 
 class omega_R_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = omega_R_const
 
     def value_shape(self):
         return (1,)
@@ -97,8 +99,8 @@ nu_0.interpolate( NuExpression( element=Q_nu.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_r = DirichletBC( Q.sub( 0 ), Expression( 'z_r', z_r=z_r, element=Q.sub( 0 ).ufl_element() ), boundary_r )
-bc_z_R = DirichletBC( Q.sub( 0 ), Expression( 'z_R', z_R=z_R, element=Q.sub( 0 ).ufl_element() ), boundary_R )
+bc_z_r = DirichletBC( Q.sub( 0 ), Expression( 'z_r', z_r=z_r_const, element=Q.sub( 0 ).ufl_element() ), boundary_r )
+bc_z_R = DirichletBC( Q.sub( 0 ), Expression( 'z_R', z_R=z_R_const, element=Q.sub( 0 ).ufl_element() ), boundary_R )
 # CHANGE PARAMETERS HERE
 
 # all BCs
