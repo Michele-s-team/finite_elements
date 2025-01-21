@@ -2,7 +2,7 @@
 This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u and v = Nabla u
 run with
 
-clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+clear; clear; python3 solve.py [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
 example:
 clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/biharmonic-equation/mesh /home/fenics/shared/biharmonic-equation/solution
 '''
@@ -17,7 +17,6 @@ from dolfin import *
 # CHANGE PARAMETERS HERE
 L = 1.0
 h = 1.0
-
 function_space_degree = 4
 # CHANGE PARAMETERS HERE
 

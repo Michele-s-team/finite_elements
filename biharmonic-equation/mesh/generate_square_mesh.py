@@ -14,12 +14,10 @@ args = parser.parse_args()
 resolution = (float)(args.resolution)
 
 
-# Channel parameters
-
+#CHANGE PARAMETERS HERE
 L = 1.0
 h = 1.0
-
-
+#CHANGE PARAMETERS HERE
 
 print("L = ", L)
 print("h = ", h)
