@@ -7,8 +7,17 @@ from read_mesh_ring import *
 
 # Define function spaces
 #finite elements for sigma .... omega
-P_omega = VectorElement( 'P', triangle, 3 )
-P_z = FiniteElement( 'P', triangle, 1 )
+'''
+z
+omega_i = \partial_i z
+eta = H(omega)
+theta_i = Nabla_i eta (where Nabla is the covariant derivative)
+'''
+degree_function_space = 2
+P_z = FiniteElement( 'P', triangle, degree_function_space )
+P_omega = VectorElement( 'P', triangle, degree_function_space )
+P_eta = FiniteElement( 'P', triangle, degree_function_space )
+P_theta = VectorElement( 'P', triangle, degree_function_space )
 
 element = MixedElement( [P_omega, P_z] )
 #total function space
