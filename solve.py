@@ -40,12 +40,12 @@ J = derivative( F, psi, J_psi )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-'''
+
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
-                'linear_solver'           : 'mumps',
+                'linear_solver'           : 'superlu',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
                 'maximum_iterations'      : 1000000,
@@ -53,7 +53,7 @@ params = {'nonlinear_solver': 'newton',
              }
 }
 solver.parameters.update(params)
-'''
+
 '''
 #set the solver parameters here
 params ={"newton_solver": {"linear_solver": 'superlu'}}
