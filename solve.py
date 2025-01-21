@@ -85,16 +85,16 @@ z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 xdmffile_sigma.write( sigma, 0 )
 xdmffile_z.write( z_output, 0 )
 
-
-dof_coordinates = Q_z.tabulate_dof_coordinates()
-out = open("z_test.csv", "w")
-print( f"\"f\",\":0\",\":1\",\":2\"", file=out )
-for x, val in zip(dof_coordinates, z_output.vector().get_local()):
-    print(f"{val}, {x[0]}, {x[1]}, {0}", file=out)
-out.close()
-
+def print_to_csvfile(f, filename):
+    csvfile = open(filename, "w")
+    print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
+    for x, val in zip(f.function_space().tabulate_dof_coordinates(), f.vector().get_local()):
+        print(f"{val},{x[0]},{x[1]},{0}", file=csvfile)
+    csvfile.close()
 
 
+
+print_to_csvfile(z_output, (args.output_directory) + '/z.csv')
 
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
