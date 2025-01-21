@@ -41,7 +41,7 @@ J = derivative( F, psi, J_psi )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-'''
+
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
@@ -54,7 +54,7 @@ params = {'nonlinear_solver': 'newton',
              }
 }
 solver.parameters.update(params)
-'''
+
 '''
 #set the solver parameters here
 params ={"newton_solver": {"linear_solver": 'superlu'}}
@@ -83,13 +83,17 @@ xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_m
 z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 
 # print solution to file
-xdmffile_sigma.write( sigma, 0 )
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
+xdmffile_sigma.write( sigma, 0 )
 
-print_to_csvfile(z_output, (args.output_directory) + '/z.csv')
+print_scalar_to_csvfile(z_output, (args.output_directory) + '/z.csv')
+print_vector_to_csvfile(omega_output, (args.output_directory) + '/omega.csv')
+print_scalar_to_csvfile(mu_output, (args.output_directory) + '/mu.csv')
+print_vector_to_csvfile(nu_output, (args.output_directory) + '/nu.csv')
+print_scalar_to_csvfile(sigma, (args.output_directory) + '/sigma.csv')
 
 
 # write the solutions in .h5 format so it can be read from other codes
