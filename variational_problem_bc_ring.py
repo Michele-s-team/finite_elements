@@ -34,6 +34,19 @@ class OmegaExpression( UserExpression ):
     def value_shape(self):
         return (2,)
 
+class MuExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0.0
+    def value_shape(self):
+        return (1,)
+
+class NuExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0.0
+        values[1] = 0.0
+    def value_shape(self):
+        return (2,)
+
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.5
@@ -53,18 +66,20 @@ omega_r = interpolate( omega_r_Expression( element=Q_z.ufl_element() ), Q_z )
 omega_R = interpolate( omega_R_Expression( element=Q_z.ufl_element() ), Q_z )
 
 sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
-omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
 z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
+omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
+mu_0.interpolate( MuExpression( element=Q_mu.ufl_element() ))
+nu_0.interpolate( NuExpression( element=Q_nu.ufl_element() ))
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# assigner.assign(psi, [omega_0, z_0])
+# assigner.assign(psi, [z_0, omega_0, mu_0, nu_0])
 
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_r = DirichletBC( Q.sub( 1 ), Expression( '0.1', element=Q.sub( 1 ).ufl_element() ), boundary_r )
-bc_z_R = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_R )
+bc_z_r = DirichletBC( Q.sub( 0 ), Expression( '0.1', element=Q.sub( 0 ).ufl_element() ), boundary_r )
+bc_z_R = DirichletBC( Q.sub( 0 ), Expression( '0.0', element=Q.sub( 0 ).ufl_element() ), boundary_R )
 # CHANGE PARAMETERS HERE
 
 # all BCs

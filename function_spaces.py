@@ -10,21 +10,23 @@ from read_mesh_ring import *
 '''
 z
 omega_i = \partial_i z
-eta = H(omega)
-theta_i = Nabla_i eta (where Nabla is the covariant derivative)
+mu = H(omega)
+nu_i = Nabla_i eta (where Nabla is the covariant derivative)
 '''
 degree_function_space = 2
 P_z = FiniteElement( 'P', triangle, degree_function_space )
 P_omega = VectorElement( 'P', triangle, degree_function_space )
-P_eta = FiniteElement( 'P', triangle, degree_function_space )
-P_theta = VectorElement( 'P', triangle, degree_function_space )
+P_mu = FiniteElement( 'P', triangle, degree_function_space )
+P_nu = VectorElement( 'P', triangle, degree_function_space )
 
-element = MixedElement( [P_omega, P_z] )
+element = MixedElement( [P_z, P_omega, P_mu, P_nu] )
 #total function space
 Q = FunctionSpace(mesh, element)
-#function spaces for omega and z
-Q_omega = Q.sub( 0 ).collapse()
-Q_z= Q.sub( 1 ).collapse()
+#function spaces for z, omega, eta and theta
+Q_z= Q.sub( 0 ).collapse()
+Q_omega = Q.sub( 1 ).collapse()
+Q_mu = Q.sub( 2 ).collapse()
+Q_nu = Q.sub( 3 ).collapse()
 
 Q_sigma = FunctionSpace( mesh, 'P', 1 )
 
@@ -32,16 +34,20 @@ Q_sigma = FunctionSpace( mesh, 'P', 1 )
 # the Jacobian
 J_psi = TrialFunction( Q )
 psi = Function( Q )
-nu_omega, nu_z = TestFunctions( Q )
+nu_z, nu_omega, nu_mu, nu_nu = TestFunctions( Q )
 
 #these functions are used to print the solution to file
 sigma = Function(Q_sigma)
-omega_output = Function(Q_omega)
 z_output = Function(Q_z)
+omega_output = Function(Q_omega)
+mu_output = Function( Q_mu )
+nu_output = Function( Q_nu )
 
 # omega_0, z_0 are used to store the initial conditions
-omega_0 = Function( Q_omega )
 z_0 = Function( Q_z )
+omega_0 = Function( Q_omega )
+mu_0 = Function( Q_mu )
+nu_0 = Function( Q_nu )
 
-omega, z = split( psi )
-assigner = FunctionAssigner(Q, [Q_omega, Q_z])
+z, omega, mu, nu = split( psi )
+assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu, Q_nu] )
