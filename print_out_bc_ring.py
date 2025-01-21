@@ -8,6 +8,12 @@ from variational_problem_bc_ring import *
 z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 
 print("Check of BCs:")
+print( "\t<<(z - phi)^2>>_r = ", \
+   sqrt(assemble( ( ((z_output - z_r_const) ) ** 2 * ds_r ) ) / assemble(Constant(1.0) * ds_r))
+  )
+print( "\t<<(z - phi)^2>>_R = ", \
+   sqrt(assemble( ( ((z_output - z_R_const) ) ** 2 * ds_R ) ) / assemble(Constant(1.0) * ds_R))
+  )
 print( "\t<<(n^i \omega_i - psi )^2>>_r = ", \
    sqrt(assemble( ( (((n_circle( omega_output ))[i] * omega_output[i] - omega_r) ) ** 2 * ds_r ) ) / assemble(Constant(1.0) * ds_r))
   )
