@@ -12,6 +12,9 @@ kappa = 1.0
 rho = 1.0
 # viscosity
 eta = 1.0
+#values of z at the boundaries
+z_r = 0.1
+z_R = 0.0
 # Nitche's parameter
 alpha = 1e1
 
@@ -94,8 +97,8 @@ nu_0.interpolate( NuExpression( element=Q_nu.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_r = DirichletBC( Q.sub( 0 ), Expression( '0.1', element=Q.sub( 0 ).ufl_element() ), boundary_r )
-bc_z_R = DirichletBC( Q.sub( 0 ), Expression( '0.0', element=Q.sub( 0 ).ufl_element() ), boundary_R )
+bc_z_r = DirichletBC( Q.sub( 0 ), Expression( 'z_r', z_r=z_r, element=Q.sub( 0 ).ufl_element() ), boundary_r )
+bc_z_R = DirichletBC( Q.sub( 0 ), Expression( 'z_R', z_R=z_R, element=Q.sub( 0 ).ufl_element() ), boundary_R )
 # CHANGE PARAMETERS HERE
 
 # all BCs
