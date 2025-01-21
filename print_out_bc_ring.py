@@ -5,7 +5,7 @@ from mshr import *
 from variational_problem_bc_ring import *
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-omega_output, z_output = psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 
 
 print( "\int_{\partial \Omega_r} (n^i \omega_i - psi )^2 dS = ", \
