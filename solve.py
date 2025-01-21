@@ -20,6 +20,7 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
+from input_output import *
 from physics import *
 # from variational_problem_bc_square_a import *
 from variational_problem_bc_ring import *
@@ -84,21 +85,12 @@ z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 # print solution to file
 xdmffile_sigma.write( sigma, 0 )
 xdmffile_z.write( z_output, 0 )
-
-def print_to_csvfile(f, filename):
-    csvfile = open(filename, "w")
-    print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
-    for x, val in zip(f.function_space().tabulate_dof_coordinates(), f.vector().get_local()):
-        print(f"{val},{x[0]},{x[1]},{0}", file=csvfile)
-    csvfile.close()
-
-
-
-print_to_csvfile(z_output, (args.output_directory) + '/z.csv')
-
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
+
+print_to_csvfile(z_output, (args.output_directory) + '/z.csv')
+
 
 # write the solutions in .h5 format so it can be read from other codes
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
