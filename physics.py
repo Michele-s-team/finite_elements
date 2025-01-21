@@ -11,9 +11,9 @@ def Pi(v, w, omega, sigma, eta):
 def dFdl(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * g(omega)[j, k] * nu[k], (i))
 
-#fel_n(omega, kappa) = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity
-def fel_n(omega, kappa):
-    return (kappa * ( 2.0 * Nabla_LB(H(omega), omega) - 4.0 * H(omega) * ( (H(omega))**2 - K(omega) ) ))
+#fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity
+def fel_n(omega, mu, nu, kappa):
+    return (kappa * ( - 2.0 * g_c(omega)[i, j] * Nabla_f(nu, omega)[i, j] - 4.0 * mu * ( (mu**2) - K(omega) ) ))
 
 #fvisc_n(v, w, omega, eta) = f^{VISC}_n_notes, i.e., viscous contribution to the normal force
 def fvisc_n(v, w, omega, eta):

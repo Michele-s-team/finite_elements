@@ -40,7 +40,7 @@ J = derivative( F, psi, J_psi )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-
+'''
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
@@ -53,7 +53,7 @@ params = {'nonlinear_solver': 'newton',
              }
 }
 solver.parameters.update(params)
-
+'''
 '''
 #set the solver parameters here
 params ={"newton_solver": {"linear_solver": 'superlu'}}
@@ -95,7 +95,7 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/mu.h5", "w" ).write( mu
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
 
-xdmffile_f.write( project(fel_n( omega_output, kappa ), Q_sigma), 0 )
+xdmffile_f.write( project(fel_n( omega_output, mu_output, nu_output, kappa ), Q_sigma), 0 )
 xdmffile_f.write( project(flaplace( sigma, omega_output), Q_sigma), 0 )
 # xdmffile_f.write( project(fvisc_n( v, w, omega_output, eta ), Q_omega), 0 )
 
