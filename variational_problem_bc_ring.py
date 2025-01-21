@@ -103,7 +103,7 @@ bcs = [bc_z_r, bc_z_R]
 
 # Define variational problem
 
-F_z = (kappa * (g_c( omega )[i, j] * nu[j] * (nu_z.dx( i )) - 2.0 * H( omega ) * ((H( omega )) ** 2 - K( omega )) * nu_z) + sigma * H( omega ) * nu_z) * sqrt_detg( omega ) * dx \
+F_z = (kappa * (g_c( omega )[i, j] * nu[j] * (nu_z.dx( i )) - 2.0 * mu * ((mu ** 2) - K( omega )) * nu_z) + sigma * mu * nu_z) * sqrt_detg( omega ) * dx \
       - ( \
                   + (kappa * (n_circle( omega ))[i] * nu_z * nu[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
                   + (kappa * (n_circle( omega ))[i] * nu_z * nu[i]) * sqrt_deth_circle( omega, c_R ) * (1.0 / R) * ds_R
