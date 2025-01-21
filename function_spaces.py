@@ -11,7 +11,7 @@ from read_mesh_ring import *
 z
 omega_i = \partial_i z
 mu = H(omega)
-nu_i = Nabla_i eta (where Nabla is the covariant derivative)
+nu_i = Nabla_i mu (where Nabla is the covariant derivative)
 '''
 degree_function_space = 2
 P_z = FiniteElement( 'P', triangle, degree_function_space )
