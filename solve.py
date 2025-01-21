@@ -46,7 +46,8 @@ solver = NonlinearVariationalSolver( problem )
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
-                'linear_solver'           : 'superlu',
+                # 'linear_solver'           : 'superlu',
+                'linear_solver'           : 'mumps',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
                 'maximum_iterations'      : 1000000,
@@ -77,7 +78,6 @@ xdmffile_n.write( facet_normal_smooth(), 0 )
 
 xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )

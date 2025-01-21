@@ -5,6 +5,10 @@ from physics import *
 # from variational_problem_bc_a import *
 from variational_problem_bc_ring import *
 
+xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
+xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+
+
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 
@@ -26,3 +30,6 @@ print("Check if the PDE is satisfied:")
 print( "\t<<(fel - flaplace)^2>> = ", \
    sqrt(assemble( ( (  fel_n( omega_output, mu_output, nu_output, kappa ) + flaplace( sigma, omega_output) ) ** 2 * dx ) ) / assemble(Constant(1.0) * dx))
   )
+
+xdmffile_check.write( project( fel_n( omega_output, mu_output, nu_output, kappa ) + flaplace( sigma, omega_output) , Q_sigma ), 0 )
+xdmffile_check.close()
