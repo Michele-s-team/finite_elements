@@ -13,10 +13,24 @@ from mshr import *
 import numpy as np
 import ufl as ufl
 from dolfin import *
+from input_output import * 
 
+'''
+#square mesh
 # CHANGE PARAMETERS HERE
 L = 1.0
 h = 1.0
+# CHANGE PARAMETERS HERE
+'''
+
+#ring mesh
+# CHANGE PARAMETERS HERE
+r = 1.0
+R = 2.0
+# CHANGE PARAMETERS HERE
+
+
+# CHANGE PARAMETERS HERE
 function_space_degree = 4
 # CHANGE PARAMETERS HERE
 
@@ -62,10 +76,6 @@ xdmf.close()
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_lr = 'near(x[0], 0) || near(x[0], 1.0)'
-boundary_tb = 'near(x[1], 0) || near(x[1], 1.0)'
-
-
 # CHANGE PARAMETERS HERE
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
@@ -76,12 +86,24 @@ def my_norm(x):
 
 
 # test for surface elements
+#square mesh
+'''
 dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
 ds_l = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
 ds = ds_l + ds_r + ds_t + ds_b
+'''
+
+#ring mesh
+#
+dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
+ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
+ds = ds_r + ds_R
+#
+
 
 # a function space used solely to define f_test_ds
 Q_test = FunctionSpace( mesh, 'P', 2 )
@@ -105,6 +127,9 @@ f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
 # print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
 
+
+#square mesh
+'''
 exact_value_int_dx = 0.937644
 numerical_value_int_dx = assemble( f_test_ds * dx )
 print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
@@ -124,6 +149,24 @@ print( f"\int_t f ds = {numerical_value_int_ds_t}, should be  {exact_value_int_d
 exact_value_int_ds_b = 0.776577
 numerical_value_int_ds_b = assemble( f_test_ds * ds_b )
 print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds_b}, relative error =  {abs( (numerical_value_int_ds_b - exact_value_int_ds_b) / exact_value_int_ds_b ):e}" )
+'''
+
+#ring mesh
+#
+exact_value_int_dx = 2.90212
+numerical_value_int_dx = assemble( f_test_ds * dx )
+print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
+
+
+exact_value_int_ds_r = 2.77595
+numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
+print( f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
+
+exact_value_int_ds_R = 3.67175
+numerical_value_int_ds_R = assemble( f_test_ds * ds_R )
+print( f"\int_R f ds = {numerical_value_int_ds_R}, should be  {exact_value_int_ds_R}, relative error =  {abs( (numerical_value_int_ds_R - exact_value_int_ds_R) / exact_value_int_ds_R ):e}" )
+# 
+
 
 n = FacetNormal( mesh )
 
@@ -184,8 +227,8 @@ v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 w_exact.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
 f.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
 
-u_profile = Expression( 'cos(x[0]+x[1]) * sin(x[0]-x[1])', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-v_profile = Expression( '- 4 * cos(x[0])*sin(x[0]) + 4 * cos(x[1])*sin(x[1])', L=L, h=h, element=Q.sub( 1 ).ufl_element() )
+u_profile = Expression( 'cos(x[0]+x[1]) * sin(x[0]-x[1])', element=Q.sub( 0 ).ufl_element() )
+v_profile = Expression( '- 4 * cos(x[0])*sin(x[0]) + 4 * cos(x[1])*sin(x[1])', element=Q.sub( 1 ).ufl_element() )
 bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
 bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
 
@@ -233,7 +276,10 @@ print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * 
 print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
 print("Check that the PDE is satisfied: ")
-print( f"\t<<(w-f)^2>>_\partial Omega =  {assemble( (w_output - f) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+print( f"\t<<(w-f)^2>>_Omega =  {assemble( (w_output - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+
+xdmffile_check.write( project( w_output - f , Q_w ), 0 )
+xdmffile_check.close()
 
 '''
 xdmffile_u.write( v_output, 0 )
