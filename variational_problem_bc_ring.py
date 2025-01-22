@@ -15,9 +15,10 @@ eta = 1.0
 C = 0.1
 #values of z at the boundaries
 z_r_const = C *r
-z_R_const = C* R
-omega_r_const = - C
-omega_R_const = C
+z_R_const = C * R
+# if you compare with the solution from check-with-analytical-solution-bc-ring.nb, omega_r(R)_const_{here} <-> omegaRmin(max)_{check-with-analytical-solution-bc-ring.nb}
+omega_r_const = - C * r / sqrt((1.0 + C**2) * r**2)
+omega_R_const = C * R / sqrt((1.0 + C**2) * R**2)
 # Nitche's parameter
 alpha = 1e1
 
