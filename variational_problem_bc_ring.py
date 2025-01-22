@@ -19,10 +19,10 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
-z_r_const = C * (r**2)
-z_R_const = C * (R**2)
-zp_r_const = 2 * C * r
-zp_R_const = 2 * C * R
+z_r_const = 1.0/10.0
+z_R_const = 4.0/5.0
+zp_r_const = 3.0/10.0
+zp_R_const = 6.0/5.0
 omega_r_const = - r * zp_r_const / sqrt( r**2  * (1.0 + zp_r_const**2))
 omega_R_const = R * zp_R_const / sqrt( R**2  * (1.0 + zp_R_const**2))
 # Nitche's parameter
@@ -34,8 +34,14 @@ class SurfaceTensionExpression( UserExpression ):
         # values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
 
         s = my_norm(x)
-        numerator = 16 * C ** 2 * (-1 + 6 * C ** 2 * s ** 2 + 6 * C ** 4 * s ** 4 + 4 * C ** 6 * s ** 6) * kappa
-        denominator = (1 + 2 * C ** 2 * s ** 2) * (1 + 4 * C ** 2 * s ** 2) ** 3
+        # Define the numerator
+        numerator = 200000000 - 489000000 * s ** 4 + 243 * s ** 8 * (130000 + 700 * s ** 4 + 9 * s ** 8)
+
+        # Define the denominator
+        denominator = 2 * s ** 2 * (100 + 3 * s ** 4) * (100 + 9 * s ** 4) ** 3
+
+        # Define the full expression
+        expression = numerator / denominator
 
         values[0] =  numerator/denominator
 
