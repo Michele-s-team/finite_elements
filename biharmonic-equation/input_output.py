@@ -1,5 +1,6 @@
 from fenics import *
 from mshr import *
+from dolfin import *
 
 #this function prints a scalar field to csv file
 def print_scalar_to_csvfile(f, filename):

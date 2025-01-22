@@ -15,20 +15,21 @@ import ufl as ufl
 from dolfin import *
 from input_output import * 
 
-'''
+#
 #square mesh
 # CHANGE PARAMETERS HERE
 L = 1.0
 h = 1.0
 # CHANGE PARAMETERS HERE
-'''
+#
 
+'''
 #ring mesh
 # CHANGE PARAMETERS HERE
 r = 1.0
 R = 2.0
 # CHANGE PARAMETERS HERE
-
+'''
 
 # CHANGE PARAMETERS HERE
 function_space_degree = 4
@@ -87,22 +88,22 @@ def my_norm(x):
 
 # test for surface elements
 #square mesh
-'''
+#
 dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
 ds_l = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
 ds = ds_l + ds_r + ds_t + ds_b
-'''
+#
 
 #ring mesh
-#
+'''
 dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 ds = ds_r + ds_R
-#
+'''
 
 
 # a function space used solely to define f_test_ds
@@ -129,7 +130,7 @@ f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
 
 #square mesh
-'''
+#
 exact_value_int_dx = 0.937644
 numerical_value_int_dx = assemble( f_test_ds * dx )
 print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
@@ -149,10 +150,10 @@ print( f"\int_t f ds = {numerical_value_int_ds_t}, should be  {exact_value_int_d
 exact_value_int_ds_b = 0.776577
 numerical_value_int_ds_b = assemble( f_test_ds * ds_b )
 print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds_b}, relative error =  {abs( (numerical_value_int_ds_b - exact_value_int_ds_b) / exact_value_int_ds_b ):e}" )
-'''
+#
 
 #ring mesh
-#
+'''
 exact_value_int_dx = 2.90212
 numerical_value_int_dx = assemble( f_test_ds * dx )
 print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
@@ -165,7 +166,7 @@ print( f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_d
 exact_value_int_ds_R = 3.67175
 numerical_value_int_ds_R = assemble( f_test_ds * ds_R )
 print( f"\int_R f ds = {numerical_value_int_ds_R}, should be  {exact_value_int_ds_R}, relative error =  {abs( (numerical_value_int_ds_R - exact_value_int_ds_R) / exact_value_int_ds_R ):e}" )
-# 
+'''
 
 
 n = FacetNormal( mesh )
@@ -266,14 +267,19 @@ xdmffile_u.write( u_output, 0 )
 xdmffile_v.write( v_output, 0 )
 xdmffile_w.write( w_output, 0 )
 
+print_scalar_to_csvfile(u_output, (args.output_directory) + '/u.csv')
+print_scalar_to_csvfile(v_output, (args.output_directory) + '/v.csv')
+print_scalar_to_csvfile(w_output, (args.output_directory) + '/w.csv')
+
 print( "BCs check: " )
 print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 print( f"\t<<(w-w_exact)^2>>_\partial Omega =  {assemble( (w_output - w_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
 
 print( "Comparison with exact solution: " )
-print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(v - v_exact)^2>> = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(u - u_exact)^2>>_Omega = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(v - v_exact)^2>>_Omega = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print( f"\t<<(w - w_exact)^2>>_Omega = {sqrt( assemble( ((w_output - w_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
 print("Check that the PDE is satisfied: ")
 print( f"\t<<(w-f)^2>>_Omega =  {assemble( (w_output - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx )}" )
