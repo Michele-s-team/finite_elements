@@ -14,18 +14,25 @@ rho = 1.0
 eta = 1.0
 C = 0.1
 #values of z at the boundaries
-z_r_const = C *r
-z_R_const = C * R
-# if you compare with the solution from check-with-analytical-solution-bc-ring.nb, omega_r(R)_const_{here} <-> omegaRmin(max)_{check-with-analytical-solution-bc-ring.nb}
-omega_r_const = - C * r / sqrt((1.0 + C**2) * r**2)
-omega_R_const = C * R / sqrt((1.0 + C**2) * R**2)
+'''
+if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
+    - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
+    - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
+'''
+z_r_const = C * (r**2)
+z_R_const = C * (R**2)
+zp_r_const = 2 * C * r
+zp_R_const = 2 * C * R
+omega_r_const = - r * zp_r_const / sqrt( r**2  * (1.0 + zp_r_const**2))
+omega_R_const = R * zp_R_const / sqrt( R**2  * (1.0 + zp_R_const**2))
 # Nitche's parameter
 alpha = 1e1
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
+        # values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
+        values[0] =  (16*(C**2)*(-1 + 6*(C**2)*(r**2) + 6*(C**4)*(r**4) + 4*(C**6)*(r**6))*kappa)/((1 + 2*(C**2)*(r**2))*((1 + 4*(C**2)*(r**2))**3))
 
     def value_shape(self):
         return (1,)
