@@ -12,18 +12,19 @@ kappa = 1.0
 rho = 1.0
 # viscosity
 eta = 1.0
+C = 0.1
 #values of z at the boundaries
-z_r_const = 0.1
-z_R_const = 0.0
-omega_r_const = 0.5
-omega_R_const = 0.0
+z_r_const = C *r
+z_R_const = C* R
+omega_r_const = - C
+omega_R_const = C
 # Nitche's parameter
 alpha = 1e1
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0
+        values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
 
     def value_shape(self):
         return (1,)
@@ -31,7 +32,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -39,8 +40,8 @@ class ManifoldExpression( UserExpression ):
 
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -48,7 +49,7 @@ class OmegaExpression( UserExpression ):
 
 class MuExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -56,8 +57,8 @@ class MuExpression( UserExpression ):
 
 class NuExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
