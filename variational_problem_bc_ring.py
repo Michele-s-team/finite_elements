@@ -32,7 +32,12 @@ alpha = 1e1
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         # values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
-        values[0] =  (16*(C**2)*(-1 + 6*(C**2)*(r**2) + 6*(C**4)*(r**4) + 4*(C**6)*(r**6))*kappa)/((1 + 2*(C**2)*(r**2))*((1 + 4*(C**2)*(r**2))**3))
+
+        s = my_norm(x)
+        numerator = 16 * C ** 2 * (-1 + 6 * C ** 2 * s ** 2 + 6 * C ** 4 * s ** 4 + 4 * C ** 6 * s ** 6) * kappa
+        denominator = (1 + 2 * C ** 2 * s ** 2) * (1 + 4 * C ** 2 * s ** 2) ** 3
+
+        values[0] =  numerator/denominator
 
     def value_shape(self):
         return (1,)
