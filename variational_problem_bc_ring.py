@@ -21,7 +21,7 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
 '''
 z_r_const = 1.0/10.0
 z_R_const = 4.0/5.0
-zp_r_const = 3.0/10.0
+zp_r_const = -3.0/10.0
 zp_R_const = 6.0/5.0
 omega_r_const = - r * zp_r_const / sqrt( r**2  * (1.0 + zp_r_const**2))
 omega_R_const = R * zp_R_const / sqrt( R**2  * (1.0 + zp_R_const**2))
@@ -32,18 +32,7 @@ alpha = 1e1
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         # values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
-
-        s = my_norm(x)
-        # Define the numerator
-        numerator = 200000000 - 489000000 * s ** 4 + 243 * s ** 8 * (130000 + 700 * s ** 4 + 9 * s ** 8)
-
-        # Define the denominator
-        denominator = 2 * s ** 2 * (100 + 3 * s ** 4) * (100 + 9 * s ** 4) ** 3
-
-        # Define the full expression
-        expression = numerator / denominator
-
-        values[0] =  numerator/denominator
+        values[0] =  cos(2.0*(np.pi)*my_norm(x))
 
     def value_shape(self):
         return (1,)

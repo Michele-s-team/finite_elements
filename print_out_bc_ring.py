@@ -27,7 +27,7 @@ print( "\t<<(n^i \omega_i - psi )^2>>_R = ", \
   )
 
 print("Check if the PDE is satisfied:")
-print( "\t<<(fel - flaplace)^2>> = ", \
+print( "\t<<(fel + flaplace)^2>> = ", \
    sqrt(assemble( ( (  fel_n( omega_output, mu_output, nu_output, kappa ) + flaplace( sigma, omega_output) ) ** 2 * dx ) ) / assemble(Constant(1.0) * dx))
   )
 
