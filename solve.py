@@ -20,6 +20,7 @@ Note that all sections of the code which need to be changed when an external par
 from __future__ import print_function
 from fenics import *
 from mshr import *
+from input_output import *
 from physics import *
 # from variational_problem_bc_square_a import *
 from variational_problem_bc_ring import *
@@ -40,11 +41,12 @@ J = derivative( F, psi, J_psi )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-'''
+
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
+                # 'linear_solver'           : 'superlu',
                 'linear_solver'           : 'mumps',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
@@ -53,7 +55,7 @@ params = {'nonlinear_solver': 'newton',
              }
 }
 solver.parameters.update(params)
-'''
+
 '''
 #set the solver parameters here
 params ={"newton_solver": {"linear_solver": 'superlu'}}
@@ -64,9 +66,12 @@ solver.solve()
 
 
 # Create XDMF files for visualization output
-xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
-xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
 xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
+xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
+xdmffile_mu = XDMFFile( (args.output_directory) + '/mu.xdmf' )
+xdmffile_nu = XDMFFile( (args.output_directory) + '/nu.xdmf' )
+
+xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
 
 xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( facet_normal_smooth(), 0 )
@@ -74,21 +79,31 @@ xdmffile_n.write( facet_normal_smooth(), 0 )
 xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
-
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-omega_output, z_output = psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
 
 # print solution to file
-xdmffile_sigma.write( sigma, 0 )
-xdmffile_omega.write( omega_output, 0 )
 xdmffile_z.write( z_output, 0 )
+xdmffile_omega.write( omega_output, 0 )
+xdmffile_mu.write( mu_output, 0 )
+xdmffile_nu.write( nu_output, 0 )
+xdmffile_sigma.write( sigma, 0 )
+
+print_scalar_to_csvfile(z_output, (args.output_directory) + '/z.csv')
+print_vector_to_csvfile(omega_output, (args.output_directory) + '/omega.csv')
+print_scalar_to_csvfile(mu_output, (args.output_directory) + '/mu.csv')
+print_vector_to_csvfile(nu_output, (args.output_directory) + '/nu.csv')
+print_scalar_to_csvfile(sigma, (args.output_directory) + '/sigma.csv')
+
 
 # write the solutions in .h5 format so it can be read from other codes
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
+HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
+HDF5File( MPI.comm_world, (args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
+HDF5File( MPI.comm_world, (args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
+HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
 
-xdmffile_f.write( project(fel_n( omega_output, kappa ), Q_sigma), 0 )
+xdmffile_f.write( project(fel_n( omega_output, mu_output, nu_output, kappa ), Q_sigma), 0 )
 xdmffile_f.write( project(flaplace( sigma, omega_output), Q_sigma), 0 )
 # xdmffile_f.write( project(fvisc_n( v, w, omega_output, eta ), Q_omega), 0 )
 

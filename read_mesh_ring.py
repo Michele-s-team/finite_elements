@@ -2,19 +2,33 @@ from fenics import *
 from mshr import *
 import argparse
 import numpy as np
+from dolfin import *
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-#read mesh
-mesh=Mesh()
+#read the mesh
+mesh = Mesh()
+xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf")
+xdmf.read(mesh)
+
+#read the triangles
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mesh)
-mvc = MeshValueCollection("size_t", mesh, 2)
+    infile.read(mvc, "name_to_read")
+sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
+
+#read the lines
+mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
+mf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+xdmf.close()
+
 
 # # Create mesh
 # channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
@@ -42,10 +56,8 @@ def my_norm(x):
 #this is the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( mesh )
 
-# read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-mf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
-
 # test for surface elements
+dx = Measure( "dx", domain=mesh, subdomain_data=sf, subdomain_id=1 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
 ds_R = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
 
@@ -67,13 +79,20 @@ class FunctionTestIntegralsds(UserExpression):
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
-# here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_r = assemble( f_test_ds * ds_r )
-integral_R = assemble( f_test_ds * ds_R )
+#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
+numerical_value_int_dx = assemble( f_test_ds * dx )
+exact_value_int_dx = 2.90212
+print(f"\int_box_minus_ball f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
 
-# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print( "Integral r = ", integral_r, " exact value = 2.77595" )
-print( "Integral R = ", integral_R, " exact value = 3.67175" )
+exact_value_int_ds_r = 2.77595
+numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
+print(f"\int_sphere f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
+
+exact_value_int_ds_R = 3.67175
+numerical_value_int_ds_R = assemble( f_test_ds * ds_R )
+print(f"\int_sphere f ds = {numerical_value_int_ds_R}, should be  {exact_value_int_ds_R}, relative error =  {abs( (numerical_value_int_ds_R - exact_value_int_ds_R) / exact_value_int_ds_R ):e}" )
+
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
