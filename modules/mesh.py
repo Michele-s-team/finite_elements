@@ -1,10 +1,16 @@
 from fenics import *
 import numpy as np
-
+import termcolor
 
 #  norm of vector x
 def my_norm(x):
     return (sqrt( np.dot( x, x ) ))
+
+
+#compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference
+def test_mesh_integral(exact_value, f_test, measure, label):
+    numerical_value = assemble( f_test * measure )
+    print( f"{label} = {numerical_value}, should be {exact_value}, relative error =  {termcolor.colored(abs( (numerical_value - exact_value) / exact_value ), 'yellow')}" )
 
 
 class BoundaryMarker( SubDomain ):

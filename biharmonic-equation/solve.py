@@ -160,18 +160,9 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 #ring mesh
 #
-exact_value_int_dx = 2.90212
-numerical_value_int_dx = assemble( f_test_ds * dx )
-print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
-
-
-exact_value_int_ds_r = 2.77595
-numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
-print( f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
-
-exact_value_int_ds_R = 3.67175
-numerical_value_int_ds_R = assemble( f_test_ds * ds_R )
-print( f"\int_R f ds = {numerical_value_int_ds_R}, should be  {exact_value_int_ds_R}, relative error =  {abs( (numerical_value_int_ds_R - exact_value_int_ds_R) / exact_value_int_ds_R ):e}" )
+msh.test_mesh_integral(2.90212, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(2.77595, f_test_ds, ds_r, '\int_r f ds')
+msh.test_mesh_integral(3.67175, f_test_ds, ds_R, '\int_R f ds')
 #
 
 
