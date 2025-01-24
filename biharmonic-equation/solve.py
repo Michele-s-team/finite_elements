@@ -290,32 +290,3 @@ g = Function(V)
 g.interpolate(Expression('x[0]+ 2*x[1]', degree=1))
 
 print_in_bulk(g)
-
-
-# FunctionSpace(Mesh(VectorElement(FiniteElement('Lagrange', triangle, 1), dim=2), 4), FiniteElement('Lagrange', triangle, 1))
-
-
-'''
-xdmffile_u.write( v_output, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
-xdmffile_check.write( f, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
-xdmffile_check.close()
-
-def errornorm(u_e, u):
-    error = (u_e - u) ** 2 * dx
-    E = sqrt( abs( assemble( error ) ) )
-    V = u.function_space()
-    mesh = V.mesh()
-    degree = V.ufl_element().degree()
-    W = FunctionSpace( mesh, 'P', degree + 3 )
-    u_e_W = interpolate( u_e, W )
-    u_W = interpolate( u, W )
-    e_W = Function( W )
-    e_W.vector()[:] = u_e_W.vector().get_local() - u_W.vector().get_local()
-    error = e_W ** 2 * dx
-    return sqrt( abs( assemble( error ) / assemble( Constant( 1.0 ) * dx ) ) )
-
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
-'''

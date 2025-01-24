@@ -3,6 +3,9 @@ from mshr import *
 from dolfin import *
 import numpy as np
 
+#  norm of vector x
+def my_norm(x):
+    return (sqrt( np.dot( x, x ) ))
 
 # this function prints a scalar field to csv file
 def print_scalar_to_csvfile(f, filename):
@@ -42,30 +45,44 @@ def print_in_bulk(f):
     mesh = Q.mesh()
 
     print( f"Function space: {Q}" )
+    print( f"Dir(Q): {dir(Q)}" )
+    print( f"Dir(Q.dofmap): {dir(Q.dofmap())}" )
+
+    degrees_of_freedom_map = Q.dofmap()
+
+    info( "DoF range owned by this process: %s" % str( degrees_of_freedom_map.ownership_range() ) )
+    info( "DoFs block size: %s" % str( degrees_of_freedom_map.block_size() ) )
+    info( "Vertex dofs: %s" % str( degrees_of_freedom_map.entity_dofs( mesh, 0 ) ) )
+    info( "Length of vertex dofs: %s" % str( len(degrees_of_freedom_map.entity_dofs( mesh, 0 )) ) )
+    info( "Facet dofs: %s" % str( degrees_of_freedom_map.entity_dofs( mesh, 1 ) ) )
+    info( "Cell dofs: %s" % str( degrees_of_freedom_map.entity_dofs( mesh, 2 ) ) )
+    info( "All DoFs (Vertex, Facet, and Cell) associated with cell 0: %s" % str( degrees_of_freedom_map.cell_dofs( 0 ) ) )
+    info( "Local (process) to global DoF map: %s" % str( degrees_of_freedom_map.tabulate_local_to_global_dofs() ) )
+    info( "******" )
+
 
     vertex_function = MeshFunction( "size_t", mesh, 0 )
+
 
     class BoundaryMarker( SubDomain ):
         def inside(self, x, on_boundary):
             return on_boundary
 
+
     BoundaryMarker().mark( vertex_function, 1 )
     boundary_vertices = np.asarray( vertex_function.where_equal( 1 ) )
 
-    print( f"dir = {dir( Q.dofmap() )}" )
-    print( f"dofs = {len( Q.dofmap().tabulate_local_to_global_dofs() )}" )
 
-    dofs = (Q.dofmap().tabulate_local_to_global_dofs())[boundary_vertices]
+    print("\nlength of boundary_vertices:", len(boundary_vertices))
+    print("boundary_vertices:", boundary_vertices)
 
-    print( f"dofs[boundary_vertices] 1= {(Q.dofmap().tabulate_local_to_global_dofs())[boundary_vertices]}" )
-    #
-    #
-    # v_to_d = vertex_to_dof_map( Q )
-    # print(f"dof[boundary_vertices]  2 = {v_to_d[boundary_vertices]}")
+    my_vertex_to_dof_map = vertex_to_dof_map( Q )
 
-    # dofs = v_to_d[boundary_vertices]
+    print("\nlength of my_vertex_to_dof_map:", len(my_vertex_to_dof_map))
+    print("my_vertex_to_dof_map:", my_vertex_to_dof_map)
 
-    #
-    x = Q.tabulate_dof_coordinates()
-    for dof in dofs:
-        print( x[dof], f.vector()[dof] )
+    dofs = my_vertex_to_dof_map[boundary_vertices]
+
+    # x = Q.tabulate_dof_coordinates()
+    # for dof in dofs:
+    #     print( x[dof], f.vector()[dof], my_norm(x[dof]) )
