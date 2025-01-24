@@ -52,20 +52,20 @@ def print_in_bulk(f):
     BoundaryMarker().mark( vertex_function, 1 )
     boundary_vertices = np.asarray( vertex_function.where_equal( 1 ) )
 
-    print(f"dir = {dir(Q.dofmap())}")
-    print(f"dofs = {len(Q.dofmap().tabulate_local_to_global_dofs())}")
+    print( f"dir = {dir( Q.dofmap() )}" )
+    print( f"dofs = {len( Q.dofmap().tabulate_local_to_global_dofs() )}" )
 
-    v_to_d = vertex_to_dof_map( Q )
-    print(f"dof with method 2 = {len(v_to_d)}")
+    dofs = (Q.dofmap().tabulate_local_to_global_dofs())[boundary_vertices]
 
+    print( f"dofs[boundary_vertices] 1= {(Q.dofmap().tabulate_local_to_global_dofs())[boundary_vertices]}" )
+    #
+    #
+    # v_to_d = vertex_to_dof_map( Q )
+    # print(f"dof[boundary_vertices]  2 = {v_to_d[boundary_vertices]}")
 
-    dofs = v_to_d[boundary_vertices]
-
-
-
+    # dofs = v_to_d[boundary_vertices]
 
     #
-    # x = Q.tabulate_dof_coordinates()
-    # for dof in dofs:
-    #     print( x[dof], f.vector()[dof] )
-
+    x = Q.tabulate_dof_coordinates()
+    for dof in dofs:
+        print( x[dof], f.vector()[dof] )
