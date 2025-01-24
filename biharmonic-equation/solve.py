@@ -285,6 +285,16 @@ print( f"\t<<(w-f)^2>>_Omega =  {assemble( (w_output - f) ** 2 * dx ) / assemble
 xdmffile_check.write( project( w_output - f , Q_w ), 0 )
 xdmffile_check.close()
 
+V = FunctionSpace(mesh, 'CG', 1)
+g = Function(V)
+g.interpolate(Expression('x[0]+ 2*x[1]', degree=1))
+
+print_in_bulk(g)
+
+
+# FunctionSpace(Mesh(VectorElement(FiniteElement('Lagrange', triangle, 1), dim=2), 4), FiniteElement('Lagrange', triangle, 1))
+
+
 '''
 xdmffile_u.write( v_output, 0 )
 xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
