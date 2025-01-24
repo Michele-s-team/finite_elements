@@ -1,10 +1,9 @@
 '''
 
 run with
-python3 example.py [path where to read the mesh]
+python3 solve.py [path where to read the mesh]
 wxample:
-clear; clear; rm -rf solution; python3 example.py /home/fenics/shared/example-nitsches-method/2d/mesh
-
+clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/example-nitsches-method/2d/mesh
 '''
 
 
@@ -12,6 +11,15 @@ from __future__ import print_function
 from fenics import *
 import argparse
 import ufl as ufl
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import mesh as msh
+import input_output as io
+
 
 
 parser = argparse.ArgumentParser()
@@ -79,3 +87,4 @@ F = F_0 + F_N
 solve(F == 0, u)
 
 xdmffile_u.write(u, 0)
+io.print_vector_to_csvfile(u, 'solution/u.csv')
