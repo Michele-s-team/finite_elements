@@ -13,7 +13,9 @@ from mshr import *
 import numpy as np
 import ufl as ufl
 from dolfin import *
-from input_output import *
+import input_output as io
+import mesh as msh
+import termcolor
 
 '''
 #square mesh
@@ -63,14 +65,14 @@ print( f"Mesh radius = {r_mesh}" )
 mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
 with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
     infile.read( mvc, "name_to_read" )
-cf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
+cf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
 xdmf.close()
 
 # read the lines
 mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() - 1 )
 with XDMFFile( (args.input_directory) + "/line_mesh.xdmf" ) as infile:
     infile.read( mvc, "name_to_read" )
-sf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
+sf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
 xdmf.close()
 
 # Define boundaries and obstacle
@@ -265,47 +267,28 @@ xdmffile_u.write( u_output, 0 )
 xdmffile_v.write( v_output, 0 )
 xdmffile_w.write( w_output, 0 )
 
-print_scalar_to_csvfile(u_output, (args.output_directory) + '/u.csv')
-print_scalar_to_csvfile(v_output, (args.output_directory) + '/v.csv')
-print_scalar_to_csvfile(w_output, (args.output_directory) + '/w.csv')
+io.print_scalar_to_csvfile(u_output, (args.output_directory) + '/u.csv')
+io.print_scalar_to_csvfile(v_output, (args.output_directory) + '/v.csv')
+io.print_scalar_to_csvfile(w_output, (args.output_directory) + '/w.csv')
 
 print( "BCs check: " )
-print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(w-w_exact)^2>>_\partial Omega =  {assemble( (w_output - w_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-
-print( "Comparison with exact solution: " )
-print( f"\t<<(u - u_exact)^2>>_Omega = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(v - v_exact)^2>>_Omega = {sqrt( assemble( ((v_output - v_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(w - w_exact)^2>>_Omega = {sqrt( assemble( ((w_output - w_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+print(f"<<(u_output - u_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(u_output, u_exact), 'red')}")
+print(f"<<(v_output - v_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(v_output, v_exact), 'red')}")
+print(f"<<(w_output - w_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(w_output, w_exact), 'red')}")
 
 print("Check that the PDE is satisfied: ")
-print( f"\t<<(w-f)^2>>_Omega =  {assemble( (w_output - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print(f"<<(w - f)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(w_output, f), 'green')}")
+
+
+print( "Comparison with exact solution: " )
+print(f"<<(u_output - u_exact)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(u_output, u_exact), 'blue')}")
+print(f"<<(v_output - v_exact)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(v_output, v_exact), 'blue')}")
+print(f"<<(w_output - w_exact)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(w_output, w_exact), 'blue')}")
+
+
 
 xdmffile_check.write( project( w_output - f , Q_w ), 0 )
 xdmffile_check.close()
 
-'''
-xdmffile_u.write( v_output, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
-xdmffile_check.write( f, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
-xdmffile_check.close()
+msh.bulk_points(mesh)
 
-def errornorm(u_e, u):
-    error = (u_e - u) ** 2 * dx
-    E = sqrt( abs( assemble( error ) ) )
-    V = u.function_space()
-    mesh = V.mesh()
-    degree = V.ufl_element().degree()
-    W = FunctionSpace( mesh, 'P', degree + 3 )
-    u_e_W = interpolate( u_e, W )
-    u_W = interpolate( u, W )
-    e_W = Function( W )
-    e_W.vector()[:] = u_e_W.vector().get_local() - u_W.vector().get_local()
-    error = e_W ** 2 * dx
-    return sqrt( abs( assemble( error ) / assemble( Constant( 1.0 ) * dx ) ) )
-
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
-'''
