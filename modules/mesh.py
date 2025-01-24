@@ -35,10 +35,10 @@ def boundary_points(mesh):
     x = Q_dummy.tabulate_dof_coordinates()
     x = x[degrees_of_freedom]
 
-    csvfile = open( "test_boundary_points.csv", "w" )
-    for p in x:
-        print( f"{p[0]},{p[1]}", file=csvfile )
-    csvfile.close()
+    # csvfile = open( "test_boundary_points.csv", "w" )
+    # for p in x:
+    #     print( f"{p[0]},{p[1]}", file=csvfile )
+    # csvfile.close()
 
     # print("Degrees of freedom on the boundary:")
     # for degree_of_freedom in degrees_of_freedom:
@@ -70,10 +70,10 @@ def bulk_points(mesh):
     x = Q_dummy.tabulate_dof_coordinates()
     x = x[degrees_of_freedom]
 
-    csvfile = open( "test_bulk_points.csv", "w" )
-    for p in x:
-        print( f"{p[0]},{p[1]}", file=csvfile )
-    csvfile.close()
+    # csvfile = open( "test_bulk_points.csv", "w" )
+    # for p in x:
+    #     print( f"{p[0]},{p[1]}", file=csvfile )
+    # csvfile.close()
 
     # print("Degrees of freedom on the boundary:")
     # for degree_of_freedom in degrees_of_freedom:

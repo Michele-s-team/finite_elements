@@ -13,9 +13,15 @@ from mshr import *
 import numpy as np
 import ufl as ufl
 from dolfin import *
+import termcolor
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
 import input_output as io
 import mesh as msh
-import termcolor
 
 '''
 #square mesh
