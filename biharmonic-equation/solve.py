@@ -270,9 +270,9 @@ io.print_scalar_to_csvfile(v_output, (args.output_directory) + '/v.csv')
 io.print_scalar_to_csvfile(w_output, (args.output_directory) + '/w.csv')
 
 print( "BCs check: " )
-print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(w-w_exact)^2>>_\partial Omega =  {assemble( (w_output - w_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {sqrt(assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds ))}" )
+print( f"\t<<(v-v_exact)^2>>_\partial Omega =  {sqrt(assemble( (v_output - v_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds ))}" )
+print( f"\t<<(w-w_exact)^2>>_\partial Omega =  {sqrt(assemble( (w_output - w_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds ))}" )
 
 print( "Comparison with exact solution: " )
 print( f"\t<<(u - u_exact)^2>>_Omega = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
@@ -280,10 +280,10 @@ print( f"\t<<(v - v_exact)^2>>_Omega = {sqrt( assemble( ((v_output - v_exact) **
 print( f"\t<<(w - w_exact)^2>>_Omega = {sqrt( assemble( ((w_output - w_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
 
 print("Check that the PDE is satisfied: ")
-print( f"\t<<(w-f)^2>>_Omega =  {assemble( (w_output - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+print( f"\t<<(w-f)^2>>_Omega =  {sqrt(assemble( (w_output - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx ))}" )
 
 xdmffile_check.write( project( w_output - f , Q_w ), 0 )
 xdmffile_check.close()
 
 
-msh.boundary_points( mesh )
+print(f"Differente on boundary between u_output and u_exact = {msh.difference_on_boundary(u_output, u_exact)}")
