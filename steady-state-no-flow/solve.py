@@ -26,6 +26,7 @@ sys.path.append(module_path)
 
 import input_output
 import physics as phys
+import runtime_arguments as rarg
 # from variational_problem_bc_square_a import *
 from variational_problem_bc_ring import *
 # from variational_problem_bc_square_no_circle_a import *
@@ -33,9 +34,9 @@ from variational_problem_bc_ring import *
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-print("Input diredtory = ", args.input_directory )
-print("Output diredtory = ", args.output_directory )
-print("Radius of mesh cell = ", r_mesh)
+print("Input diredtory = ", rarg.args.input_directory )
+print("Output diredtory = ", rarg.args.output_directory )
+print("Radius of mesh cell = ", rmsh.r_mesh)
 
 # Define expressions used in variational forms
 kappa = Constant( kappa )
