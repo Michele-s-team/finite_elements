@@ -2,10 +2,15 @@ from __future__ import print_function
 from fenics import *
 from mshr import *
 import numpy as np
+import ufl as ufl
 
 import geometry as geo
 import function_spaces as fsp
 import read_mesh_ring as rmsh
+
+
+i, j, k, l = ufl.indices(4)
+
 
 # CHANGE PARAMETERS HERE
 # bending rigidity
@@ -119,25 +124,25 @@ bcs = [bc_z_r, bc_z_R]
 
 # Define variational problem
 
-F_z = (kappa * (g_c( omega )[i, j] * nu[j] * (nu_z.dx( i )) - 2.0 * mu * ((mu ** 2) - K( omega )) * nu_z) + sigma * mu * nu_z) * sqrt_detg( omega ) * dx \
+F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * nu[j] * (nu_z.dx( i )) - 2.0 * mu * ((mu ** 2) - K( fsp.omega )) * nu_z) + sigma * mu * nu_z) * sqrt_detg( fsp.omega ) * dx \
       - ( \
-                  + (kappa * (n_circle( omega ))[i] * nu_z * nu[i]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
-                  + (kappa * (n_circle( omega ))[i] * nu_z * nu[i]) * sqrt_deth_circle( omega, c_R ) * (1.0 / R) * ds_R
+                  + (kappa * (n_circle( fsp.omega ))[i] * nu_z * nu[i]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
+                  + (kappa * (n_circle( fsp.omega ))[i] * nu_z * nu[i]) * sqrt_deth_circle( fsp.omega, c_R ) * (1.0 / R) * ds_R
       )
 
-F_omega = (- z * Nabla_v( nu_omega, omega )[i, i] - omega[i] * nu_omega[i]) * sqrt_detg( omega ) * dx \
-          + ((n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
-          + ((n_circle( omega ))[i] * g( omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( omega, c_R ) * (1.0 / R) * ds_R
+F_omega = (- z * Nabla_v( nu_omega, fsp.omega )[i, i] - fsp.omega[i] * nu_omega[i]) * sqrt_detg( fsp.omega ) * dx \
+          + ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
+          + ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( fsp.omega, c_R ) * (1.0 / R) * ds_R
 
-F_mu = ((H( omega ) - mu) * nu_mu) * sqrt_detg( omega ) * dx
+F_mu = ((H( fsp.omega ) - mu) * nu_mu) * sqrt_detg( fsp.omega ) * dx
 
-F_nu = (nu[i] * nu_nu[i] + mu * Nabla_v( nu_nu, omega )[i, i]) * sqrt_detg( omega ) * dx \
-       - ((n_circle( omega ))[i] * g( omega )[i, j] * mu * nu_nu[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
-       - ((n_circle( omega ))[i] * g( omega )[i, j] * mu * nu_nu[j]) * sqrt_deth_circle( omega, c_r ) * (1.0 / R) * ds_R
+F_nu = (nu[i] * nu_nu[i] + mu * Nabla_v( nu_nu, fsp.omega )[i, i]) * sqrt_detg( fsp.omega ) * dx \
+       - ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * mu * nu_nu[j]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
+       - ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * mu * nu_nu[j]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / R) * ds_R
 
 F_N = alpha / r_mesh * ( \
-            + (((n_circle( omega ))[i] * omega[i] - omega_r) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_r \
-            + (((n_circle( omega ))[i] * omega[i] - omega_R) * ((n_circle( omega ))[k] * g( omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( omega, c_R ) * (1.0 / R) * ds_R \
+            + (((n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((n_circle( fsp.omega ))[k] * g( fsp.omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
+            + (((n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((n_circle( fsp.omega ))[k] * g( fsp.omega )[k, l] * nu_omega[l])) * sqrt_deth_circle( fsp.omega, c_R ) * (1.0 / R) * ds_R \
     )
 
 # total functional for the mixed problem
