@@ -1,8 +1,6 @@
 from __future__ import print_function
 from fenics import *
 from mshr import *
-from fenics import *
-from mshr import *
 from geometry import *
 
 # CHANGE PARAMETERS HERE

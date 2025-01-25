@@ -17,11 +17,15 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 '''
 
-from __future__ import print_function
 from fenics import *
-from mshr import *
-from input_output import *
-from physics import *
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import input_output
+import physics as phys
 # from variational_problem_bc_square_a import *
 from variational_problem_bc_ring import *
 # from variational_problem_bc_square_no_circle_a import *
@@ -89,11 +93,11 @@ xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
 xdmffile_sigma.write( sigma, 0 )
 
-print_scalar_to_csvfile(z_output, (args.output_directory) + '/z.csv')
-print_vector_to_csvfile(omega_output, (args.output_directory) + '/omega.csv')
-print_scalar_to_csvfile(mu_output, (args.output_directory) + '/mu.csv')
-print_vector_to_csvfile(nu_output, (args.output_directory) + '/nu.csv')
-print_scalar_to_csvfile(sigma, (args.output_directory) + '/sigma.csv')
+input_output.print_scalar_to_csvfile(z_output, (args.output_directory) + '/z.csv')
+input_output.print_vector_to_csvfile(omega_output, (args.output_directory) + '/omega.csv')
+input_output.print_scalar_to_csvfile(mu_output, (args.output_directory) + '/mu.csv')
+input_output.print_vector_to_csvfile(nu_output, (args.output_directory) + '/nu.csv')
+input_output.print_scalar_to_csvfile(sigma, (args.output_directory) + '/sigma.csv')
 
 
 # write the solutions in .h5 format so it can be read from other codes
@@ -103,8 +107,8 @@ HDF5File( MPI.comm_world, (args.output_directory) + "/h5/mu.h5", "w" ).write( mu
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
 HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
 
-xdmffile_f.write( project(fel_n( omega_output, mu_output, nu_output, kappa ), Q_sigma), 0 )
-xdmffile_f.write( project(flaplace( sigma, omega_output), Q_sigma), 0 )
+xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, nu_output, kappa ), Q_sigma), 0 )
+xdmffile_f.write( project(phys.flaplace( sigma, omega_output), Q_sigma), 0 )
 # xdmffile_f.write( project(fvisc_n( v, w, omega_output, eta ), Q_omega), 0 )
 
 
