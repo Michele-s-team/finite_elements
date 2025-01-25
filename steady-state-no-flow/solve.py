@@ -42,7 +42,7 @@ print("Radius of mesh cell = ", rmsh.r_mesh)
 kappa = Constant( kappa )
 
 # solve the variational problem
-J = derivative( F, fsp.psi, J_psi )
+J = derivative( F, fsp.psi, fsp.J_psi )
 problem = NonlinearVariationalProblem( F, fsp.psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
@@ -71,17 +71,17 @@ solver.solve()
 
 
 # Create XDMF files for visualization output
-xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
-xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
-xdmffile_mu = XDMFFile( (args.output_directory) + '/mu.xdmf' )
-xdmffile_nu = XDMFFile( (args.output_directory) + '/nu.xdmf' )
+xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z.xdmf' )
+xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega.xdmf' )
+xdmffile_mu = XDMFFile( (rarg.args.output_directory) + '/mu.xdmf' )
+xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu.xdmf' )
 
-xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
+xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )
 
-xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
+xdmffile_n = XDMFFile( (rarg.args.output_directory) + '/n.xdmf' )
 xdmffile_n.write( facet_normal_smooth(), 0 )
 
-xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
+xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
@@ -94,19 +94,19 @@ xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
 xdmffile_sigma.write( sigma, 0 )
 
-input_output.print_scalar_to_csvfile(z_output, (args.output_directory) + '/z.csv')
-input_output.print_vector_to_csvfile(omega_output, (args.output_directory) + '/omega.csv')
-input_output.print_scalar_to_csvfile(mu_output, (args.output_directory) + '/mu.csv')
-input_output.print_vector_to_csvfile(nu_output, (args.output_directory) + '/nu.csv')
-input_output.print_scalar_to_csvfile(sigma, (args.output_directory) + '/sigma.csv')
+input_output.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
+input_output.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
+input_output.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
+input_output.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
+input_output.print_scalar_to_csvfile(sigma, (rarg.args.output_directory) + '/sigma.csv')
 
 
 # write the solutions in .h5 format so it can be read from other codes
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma, "/f" )
 
 xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, nu_output, kappa ), Q_sigma), 0 )
 xdmffile_f.write( project(phys.flaplace( sigma, omega_output), Q_sigma), 0 )
