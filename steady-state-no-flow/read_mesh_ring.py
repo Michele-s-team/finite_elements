@@ -1,10 +1,12 @@
+import numpy as np
+import ufl as ufl
+
+
 from fenics import *
+from dolfin import *
 from mshr import *
 import argparse
-import numpy as np
-from dolfin import *
 import geometry as geo
-import ufl as ufl
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")

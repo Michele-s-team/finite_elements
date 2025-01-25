@@ -18,6 +18,7 @@ Note that all sections of the code which need to be changed when an external par
 '''
 
 from fenics import *
+from mshr import *
 import sys
 
 #add the path where to find the shared modules
