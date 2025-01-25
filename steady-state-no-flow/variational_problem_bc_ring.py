@@ -2,8 +2,8 @@ from fenics import *
 import numpy as np
 import ufl as ufl
 
-import geometry as geo
 import function_spaces as fsp
+import geometry as geo
 import read_mesh_ring as rmsh
 
 

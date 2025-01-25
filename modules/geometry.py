@@ -3,7 +3,6 @@ from mshr import *
 import ufl as ufl
 import numpy as np
 
-import function_spaces as fsp
 
 #euclidean  norm of vector x
 def my_norm(x):

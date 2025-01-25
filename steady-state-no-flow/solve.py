@@ -25,12 +25,14 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import input_output
+import function_spaces as fsp
+import input_output as inout
 import physics as phys
+import read_mesh_ring as rmsh
 import runtime_arguments as rarg
-# from variational_problem_bc_square_a import *
-from variational_problem_bc_ring import *
-# from variational_problem_bc_square_no_circle_a import *
+#import variational_problem_bc_square_a as vp
+import variational_problem_bc_ring as vp
+#import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -40,11 +42,11 @@ print("Output diredtory = ", rarg.args.output_directory )
 print("Radius of mesh cell = ", rmsh.r_mesh)
 
 # Define expressions used in variational forms
-kappa = Constant( kappa )
+kappa = Constant( vp.kappa )
 
 # solve the variational problem
-J = derivative( F, fsp.psi, fsp.J_psi )
-problem = NonlinearVariationalProblem( F, fsp.psi, bcs, J )
+J = derivative( vp.F, fsp.psi, fsp.J_psi )
+problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 
@@ -95,11 +97,11 @@ xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
 xdmffile_sigma.write( fsp.sigma, 0 )
 
-input_output.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
-input_output.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
-input_output.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
-input_output.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
-input_output.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
+inout.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
+inout.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
+inout.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
+inout.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
+inout.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
 
 
 # write the solutions in .h5 format so it can be read from other codes

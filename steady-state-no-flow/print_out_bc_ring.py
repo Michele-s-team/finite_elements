@@ -1,13 +1,13 @@
 from fenics import *
 import ufl as ufl
 
-import runtime_arguments as rarg
-import physics as phys
-import geometry as geo
-import read_mesh_ring as rmsh
-# from variational_problem_bc_a import *
-import variational_problem_bc_ring as vp
 import function_spaces as fsp
+import physics as phys
+import read_mesh_ring as rmsh
+import runtime_arguments as rarg
+#import variational_problem_bc_square_a as vp
+import variational_problem_bc_ring as vp
+#import variational_problem_bc_square_no_circle_a as vp
 
 i, j, k, l = ufl.indices(4)
 

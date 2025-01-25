@@ -1,18 +1,19 @@
-import numpy as np
-import ufl as ufl
-
-
 from fenics import *
 from dolfin import *
 from mshr import *
+import numpy as np
+import ufl as ufl
+
 import runtime_arguments as rarg
-import geometry as geo
 
 
 #read the mesh
 mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 xdmf.read(mesh)
+
+import geometry as geo
+
 
 i, j, k, l = ufl.indices(4)
 
