@@ -42,8 +42,8 @@ print("Radius of mesh cell = ", rmsh.r_mesh)
 kappa = Constant( kappa )
 
 # solve the variational problem
-J = derivative( F, psi, J_psi )
-problem = NonlinearVariationalProblem( F, psi, bcs, J )
+J = derivative( F, fsp.psi, J_psi )
+problem = NonlinearVariationalProblem( F, fsp.psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 
@@ -85,7 +85,7 @@ xdmffile_f = XDMFFile( (args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output, nu_output = psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 # print solution to file
 xdmffile_z.write( z_output, 0 )
