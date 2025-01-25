@@ -2,9 +2,6 @@ from fenics import *
 import numpy as np
 
 
-#  norm of vector x
-def my_norm(x):
-    return (sqrt( np.dot( x, x ) ))
 
 
 # this function prints a scalar field to csv file

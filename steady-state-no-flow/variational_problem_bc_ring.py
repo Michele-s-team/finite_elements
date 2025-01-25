@@ -1,10 +1,11 @@
 from __future__ import print_function
 from fenics import *
 from mshr import *
+import numpy as np
 
-from geometry import *
-from function_spaces import *
-import read_mesh_ring as read_mesh
+import geometry as geo
+import function_spaces as fsp
+import read_mesh_ring as rmsh
 
 # CHANGE PARAMETERS HERE
 # bending rigidity
@@ -24,8 +25,8 @@ z_r_const = 1.0/10.0
 z_R_const = 4.0/5.0
 zp_r_const = -3.0/10.0
 zp_R_const = 6.0/5.0
-omega_r_const = - (read_mesh.r) * zp_r_const / sqrt( (read_mesh.r)**2  * (1.0 + zp_r_const**2))
-omega_R_const = (read_mesh.R) * zp_R_const / sqrt( (read_mesh.R)**2  * (1.0 + zp_R_const**2))
+omega_r_const = - (rmsh.r) * zp_r_const / sqrt( (rmsh.r)**2  * (1.0 + zp_r_const**2))
+omega_R_const = (rmsh.R) * zp_R_const / sqrt( (rmsh.R)**2  * (1.0 + zp_R_const**2))
 # Nitche's parameter
 alpha = 1e1
 
@@ -33,7 +34,7 @@ alpha = 1e1
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         # values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
-        values[0] =  cos(2.0*(np.pi)*my_norm(x))
+        values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
 
     def value_shape(self):
         return (1,)
@@ -93,14 +94,14 @@ class omega_R_Expression( UserExpression ):
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_r = interpolate( omega_r_Expression( element=Q_z.ufl_element() ), Q_z )
-omega_R = interpolate( omega_R_Expression( element=Q_z.ufl_element() ), Q_z )
+omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
-sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ) )
-z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
-omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ) )
-mu_0.interpolate( MuExpression( element=Q_mu.ufl_element() ) )
-nu_0.interpolate( NuExpression( element=Q_nu.ufl_element() ) )
+fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_0.interpolate( MuExpression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [z_0, omega_0, mu_0, nu_0])
@@ -109,8 +110,8 @@ nu_0.interpolate( NuExpression( element=Q_nu.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_r = DirichletBC( Q.sub( 0 ), Expression( 'z_r', z_r=z_r_const, element=Q.sub( 0 ).ufl_element() ), boundary_r )
-bc_z_R = DirichletBC( Q.sub( 0 ), Expression( 'z_R', z_R=z_R_const, element=Q.sub( 0 ).ufl_element() ), boundary_R )
+bc_z_r = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_r', z_r=z_r_const, element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_R', z_R=z_R_const, element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_R )
 # CHANGE PARAMETERS HERE
 
 # all BCs

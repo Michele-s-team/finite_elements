@@ -4,6 +4,10 @@ import ufl as ufl
 from function_spaces import *
 
 
+#euclidean  norm of vector x
+def my_norm(x):
+    return (sqrt( np.dot( x, x ) ))
+
 #norm for UFL vectors
 def ufl_norm(x):
     return(sqrt(ufl.dot(x, x)))
