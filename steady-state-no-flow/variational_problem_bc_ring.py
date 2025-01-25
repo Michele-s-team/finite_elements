@@ -130,13 +130,13 @@ F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * fsp.nu[j] * (fsp.nu_z.dx( i )) - 2.
                   + (kappa * (geo.n_circle( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
       )
 
-F_omega = (- z * Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i] * fsp.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * dx \
+F_omega = (- z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i] * fsp.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * dx \
           + ((geo.n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * z * fsp.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
           + ((geo.n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * z * fsp.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
 
-F_mu = ((H( fsp.omega ) - fsp.mu) * nu_mu) * geo.sqrt_detg( fsp.omega ) * dx
+F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * dx
 
-F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * dx \
+F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * dx \
        - ((geo.n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
        - ((geo.n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.R) * rmsh.ds_R
 
