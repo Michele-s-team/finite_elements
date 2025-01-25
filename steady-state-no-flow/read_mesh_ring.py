@@ -5,17 +5,13 @@ import ufl as ufl
 from fenics import *
 from dolfin import *
 from mshr import *
-import argparse
+import runtime_arguments as rarg
 import geometry as geo
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-args = parser.parse_args()
 
 #read the mesh
 mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf")
+xdmf = XDMFFile(mesh.mpi_comm(), (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 xdmf.read(mesh)
 
 i, j, k, l = ufl.indices(4)
@@ -33,14 +29,14 @@ def Nn_circle(omega):
 
 #read the triangles
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
+with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 sf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
 #read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
+with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()

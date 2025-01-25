@@ -1,11 +1,12 @@
 from fenics import *
 
+import runtime_arguments as rarg
 import physics as phys
 import geometry as geo
 # from variational_problem_bc_a import *
 from variational_problem_bc_ring import *
 
-xdmffile_check = XDMFFile( (rmsh.args.output_directory) + "/check.xdmf" )
+xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 

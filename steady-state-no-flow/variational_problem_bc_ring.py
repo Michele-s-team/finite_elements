@@ -1,4 +1,3 @@
-from __future__ import print_function
 from fenics import *
 import numpy as np
 import ufl as ufl
