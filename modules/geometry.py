@@ -115,15 +115,6 @@ def Nn_tb(omega):
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
     return (N3d[i] * (normal(omega))[i])
 
-#Nt^i_notes on \partisal \Omega_O
-def Nt_circle(omega):
-    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
-    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
-
-#N_n_notes on \partial \Omega_O
-def Nn_circle(omega):
-    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
-    return (N3d[i] * (normal(omega))[i])
 
 #n^i_notes on \partial \Omega_in and out
 def n_lr(omega):

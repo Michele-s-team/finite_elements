@@ -3,7 +3,8 @@ from mshr import *
 import argparse
 import numpy as np
 from dolfin import *
-
+import geometry as geo
+import ufl as ufl
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -15,26 +16,32 @@ mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf")
 xdmf.read(mesh)
 
+i, j, k, l = ufl.indices(4)
+
+#Nt^i_notes on \partisal \Omega_O
+def Nt_circle(omega):
+    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
+    return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
+
+#N_n_notes on \partial \Omega_O
+def Nn_circle(omega):
+    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
+    return (N3d[i] * (normal(omega))[i])
+
+
 #read the triangles
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
 with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+sf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 
 #read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-mf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+mf = dolfin.cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
-
-
-# # Create mesh
-# channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
-# cylinder = Circle(Point(0.2, 0.2), 0.05)
-# domain = channel - cylinder
-# mesh = generate_mesh(domain, 64)
 
 #radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()

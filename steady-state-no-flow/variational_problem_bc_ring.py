@@ -1,7 +1,10 @@
 from __future__ import print_function
 from fenics import *
 from mshr import *
+
 from geometry import *
+from function_spaces import *
+import read_mesh_ring as read_mesh
 
 # CHANGE PARAMETERS HERE
 # bending rigidity
@@ -21,8 +24,8 @@ z_r_const = 1.0/10.0
 z_R_const = 4.0/5.0
 zp_r_const = -3.0/10.0
 zp_R_const = 6.0/5.0
-omega_r_const = - r * zp_r_const / sqrt( r**2  * (1.0 + zp_r_const**2))
-omega_R_const = R * zp_R_const / sqrt( R**2  * (1.0 + zp_R_const**2))
+omega_r_const = - (read_mesh.r) * zp_r_const / sqrt( (read_mesh.r)**2  * (1.0 + zp_r_const**2))
+omega_R_const = (read_mesh.R) * zp_R_const / sqrt( (read_mesh.R)**2  * (1.0 + zp_R_const**2))
 # Nitche's parameter
 alpha = 1e1
 
