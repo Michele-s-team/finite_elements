@@ -80,7 +80,7 @@ xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu.xdmf' )
 xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )
 
 xdmffile_n = XDMFFile( (rarg.args.output_directory) + '/n.xdmf' )
-xdmffile_n.write( geo.facet_normal_smooth(), 0 )
+xdmffile_n.write( rmsh.facet_normal_smooth(), 0 )
 
 xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )

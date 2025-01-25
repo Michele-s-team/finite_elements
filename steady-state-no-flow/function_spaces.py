@@ -1,7 +1,7 @@
 from fenics import *
 from mshr import *
 # from read_mesh_square import *
-from read_mesh_ring import *
+import read_mesh_ring as rmsh
 # from read_mesh_square_no_circle import *
 
 # Define function spaces
@@ -20,14 +20,14 @@ P_nu = VectorElement( 'P', triangle, degree_function_space )
 
 element = MixedElement( [P_z, P_omega, P_mu, P_nu] )
 #total function space
-Q = FunctionSpace(mesh, element)
+Q = FunctionSpace(rmsh.mesh, element)
 #function spaces for z, omega, eta and theta
 Q_z= Q.sub( 0 ).collapse()
 Q_omega = Q.sub( 1 ).collapse()
 Q_mu = Q.sub( 2 ).collapse()
 Q_nu = Q.sub( 3 ).collapse()
 
-Q_sigma = FunctionSpace( mesh, 'P', 1 )
+Q_sigma = FunctionSpace( rmsh.mesh, 'P', 1 )
 
 # Define functions
 # the Jacobian

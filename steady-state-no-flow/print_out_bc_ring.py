@@ -27,10 +27,10 @@ print( "\t<<(z - phi)^2>>_R = ", \
    sqrt(assemble( ( (z_output - vp.z_R_const ) ** 2 * rmsh.ds_R ) ) / assemble(Constant(1.0) * rmsh.ds_R))
   )
 print( "\t<<(n^i \omega_i - psi )^2>>_r = ", \
-   sqrt(assemble( ( ((geo.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_r ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
+   sqrt(assemble( ( ((rmsh.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_r ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
   )
 print( "\t<<(n^i \omega_i - psi )^2>>_R = ", \
-   sqrt(assemble( ( ((geo.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_R ) ** 2 * rmsh.ds_R ) ) / assemble( Constant(1.0) * rmsh.ds_R))
+   sqrt(assemble( ( ((rmsh.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_R ) ** 2 * rmsh.ds_R ) ) / assemble( Constant(1.0) * rmsh.ds_R))
   )
 
 print("Check if the PDE is satisfied:")
