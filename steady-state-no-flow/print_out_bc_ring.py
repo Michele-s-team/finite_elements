@@ -1,10 +1,16 @@
 from fenics import *
+import ufl as ufl
 
 import runtime_arguments as rarg
 import physics as phys
 import geometry as geo
+import read_mesh_ring as rmsh
 # from variational_problem_bc_a import *
-from variational_problem_bc_ring import *
+import variational_problem_bc_ring as vp
+import function_spaces as fsp
+
+i, j, k, l = ufl.indices(4)
+
 
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
@@ -15,22 +21,22 @@ z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 print("Check of BCs:")
 print( "\t<<(z - phi)^2>>_r = ", \
-   sqrt(assemble( ( (z_output - z_r_const ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
+   sqrt(assemble( ( (z_output - vp.z_r_const ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
   )
 print( "\t<<(z - phi)^2>>_R = ", \
-   sqrt(assemble( ( (z_output - z_R_const ) ** 2 * rmsh.ds_R ) ) / assemble(Constant(1.0) * rmsh.ds_R))
+   sqrt(assemble( ( (z_output - vp.z_R_const ) ** 2 * rmsh.ds_R ) ) / assemble(Constant(1.0) * rmsh.ds_R))
   )
 print( "\t<<(n^i \omega_i - psi )^2>>_r = ", \
-   sqrt(assemble( ( ((geo.n_circle( omega_output ))[i] * omega_output[i] - omega_r ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
+   sqrt(assemble( ( ((geo.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_r ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
   )
 print( "\t<<(n^i \omega_i - psi )^2>>_R = ", \
-   sqrt(assemble( ( ((geo.n_circle( omega_output ))[i] * omega_output[i] - omega_R ) ** 2 * rmsh.ds_R ) ) / assemble( Constant(1.0) * rmsh.ds_R))
+   sqrt(assemble( ( ((geo.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_R ) ** 2 * rmsh.ds_R ) ) / assemble( Constant(1.0) * rmsh.ds_R))
   )
 
 print("Check if the PDE is satisfied:")
 print( "\t<<(fel + flaplace)^2>> = ", \
-   sqrt(assemble( ( (  phys.fel_n( omega_output, mu_output, nu_output, kappa ) + phys.flaplace( fsp.sigma, omega_output) ) ** 2 * rmsh.dx ) ) / assemble(Constant(1.0) * rmsh.dx))
+   sqrt(assemble( ( (  phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) ) ** 2 * rmsh.dx ) ) / assemble(Constant(1.0) * rmsh.dx))
   )
 
-xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
+xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
 xdmffile_check.close()

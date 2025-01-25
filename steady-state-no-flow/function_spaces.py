@@ -1,4 +1,3 @@
-from symtable import Function
 from fenics import *
 from mshr import *
 # from read_mesh_square import *
