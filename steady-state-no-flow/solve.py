@@ -8,10 +8,10 @@ and which are stored into finite_elements/mesh
 
 Run with
 clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
-clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/mesh /home/fenics/shared/solution
-clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/mesh /home/fenics/shared/solution
+clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
+clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
-The solution files will be stored in /home/fenics/shared/solution
+The solution files will be stored in /home/fenics/shared/steady-state-no-flow/solution
 
 Note that all sections of the code which need to be changed when an external parameter (e.g. the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
