@@ -124,19 +124,19 @@ bcs = [bc_z_r, bc_z_R]
 
 # Define variational problem
 
-F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * fsp.nu[j] * (nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - K( fsp.omega )) * nu_z) + sigma * fsp.mu * nu_z) * sqrt_detg( fsp.omega ) * dx \
+F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * fsp.nu[j] * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg( fsp.omega ) * dx \
       - ( \
-                  + (kappa * (n_circle( fsp.omega ))[i] * nu_z * fsp.nu[i]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
-                  + (kappa * (n_circle( fsp.omega ))[i] * nu_z * fsp.nu[i]) * sqrt_deth_circle( fsp.omega, c_R ) * (1.0 / R) * ds_R
+                  + (kappa * (n_circle( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
+                  + (kappa * (n_circle( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * sqrt_deth_circle( fsp.omega, c_R ) * (1.0 / R) * ds_R
       )
 
-F_omega = (- z * Nabla_v( nu_omega, fsp.omega )[i, i] - fsp.omega[i] * nu_omega[i]) * sqrt_detg( fsp.omega ) * dx \
+F_omega = (- z * Nabla_v( nu_omega, fsp.omega )[i, i] - fsp.omega[i] * nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * dx \
           + ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
           + ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * z * nu_omega[j]) * sqrt_deth_circle( fsp.omega, c_R ) * (1.0 / R) * ds_R
 
-F_mu = ((H( fsp.omega ) - fsp.mu) * nu_mu) * sqrt_detg( fsp.omega ) * dx
+F_mu = ((H( fsp.omega ) - fsp.mu) * nu_mu) * geo.sqrt_detg( fsp.omega ) * dx
 
-F_nu = (fsp.nu[i] * nu_nu[i] + fsp.mu * Nabla_v( nu_nu, fsp.omega )[i, i]) * sqrt_detg( fsp.omega ) * dx \
+F_nu = (fsp.nu[i] * nu_nu[i] + fsp.mu * Nabla_v( nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * dx \
        - ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * fsp.mu * nu_nu[j]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / r) * ds_r \
        - ((n_circle( fsp.omega ))[i] * g( fsp.omega )[i, j] * fsp.mu * nu_nu[j]) * sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / R) * ds_R
 
