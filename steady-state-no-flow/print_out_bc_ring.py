@@ -1,7 +1,9 @@
 from fenics import *
 import ufl as ufl
+import termcolor
 
 import function_spaces as fsp
+import mesh as msh
 import physics as phys
 import read_mesh_ring as rmsh
 import runtime_arguments as rarg
@@ -23,6 +25,11 @@ print("Check of BCs:")
 print( "\t<<(z - phi)^2>>_r = ", \
    sqrt(assemble( ( (z_output - vp.z_r_const ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
   )
+
+# msh.boundary_points_circle(rmsh.mesh, rmsh.r/2, (rmsh.r + rmsh.R)/2, [0, 0])
+print(f"\t<<(z - phi)^2>>_r = {termcolor.colored(msh.difference_on_boundary(z_output, vp.z_r), 'red')}")
+
+
 print( "\t<<(z - phi)^2>>_R = ", \
    sqrt(assemble( ( (z_output - vp.z_R_const ) ** 2 * rmsh.ds_R ) ) / assemble(Constant(1.0) * rmsh.ds_R))
   )

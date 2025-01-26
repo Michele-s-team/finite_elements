@@ -77,6 +77,22 @@ class NuExpression( UserExpression ):
         return (2,)
 
 
+class z_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_r_const
+
+    def value_shape(self):
+        return (1,)
+
+
+class z_R_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_R_const
+
+    def value_shape(self):
+        return (1,)
+
+
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = omega_r_const
@@ -96,7 +112,11 @@ class omega_R_Expression( UserExpression ):
 # CHANGE PARAMETERS HERE
 
 
-# the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
+# values of z on ds_r and ds_R, to be used to check if the boundary conditions (BCs) are satisfied
+z_r = interpolate( z_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+
+# values of \partial_i z = omega_i on the ds_r and ds_R, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
 omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 

@@ -88,6 +88,22 @@ def bulk_points(mesh):
     return x
 
 
+#return the set of boundary points whose distance from the point c lies between r and R
+def boundary_points_circle(mesh, r, R, c):
+    points = boundary_points(mesh)
+
+    x = []
+    for point in points:
+        if((my_norm( point - c  ) > r) and (my_norm( point - c  ) < R)):
+            x.append( point )
+
+    csvfile = open( "test_boundary_points_circle.csv", "w" )
+    for p in x:
+        print( f"{p[0]},{p[1]}", file=csvfile )
+    csvfile.close()
+
+    return x
+
 '''
 compute the difference between functions f and g on the boundary of the mesh on which f and g are defined, returning 
 sqrt(\sum_{i \in {vertices in the boundary of the mesh} [f(x_i) - g(x_i)]^2/ (number of vertices in the boundary of the mesh})
