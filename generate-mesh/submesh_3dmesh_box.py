@@ -14,6 +14,14 @@ from dolfin import *
 import meshio
 import argparse
 
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import mesh as msh
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -84,3 +92,5 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.0219446")
+
+msh.test_mesh_integral( 0.0219446, f_test_ds, dv_custom, 'Volume' )
