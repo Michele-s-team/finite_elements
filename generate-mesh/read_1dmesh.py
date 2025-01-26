@@ -8,9 +8,7 @@ clear; clear; python3 read_1dmesh.py /home/fenics/shared/generate-mesh/solution
 '''
 from fenics import *
 from mshr import *
-from mshr import *
 import numpy as np
-import ufl as ufl
 import argparse
 from dolfin import *
 import sys
@@ -65,22 +63,17 @@ dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for
 
 Q = FunctionSpace( mesh, 'P', 1 )
 
-
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
-
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(Constant(1.0)*dv_custom)}, should be 1.0")
 msh.test_mesh_integral(1.0, Constant(1.0), dv_custom, 'Volume')
-
-
-print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.817193")
-print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.386545")
-print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.430648")
+msh.test_mesh_integral(0.817193, f_test_ds, dv_custom, '\int f_{dv_custom}')
+msh.test_mesh_integral(0.386545, f_test_ds, dv_custom(1), '\int f_{line #1}')
+msh.test_mesh_integral(0.430648, f_test_ds, dv_custom(2), '\int f_{line #2}')
 
 #this computes \sum_{i \in vertices in ds_custom} f_test_ds (i-th vertex in ds_custom)
-print(f"Integral over point_l  =  {assemble( f_test_ds * ds_custom(3) )} should be 0.980085")
-print(f"Integral over point_r =  {assemble( f_test_ds * ds_custom(4) )} should be 0.42725")
-print(f"Integral over point_in =  {assemble( f_test_ds * dS_custom(5) )} should be 0.93826")
+msh.test_mesh_integral(0.980085, f_test_ds, ds_custom(3), '\int f_{point_l}')
+msh.test_mesh_integral(0.42725, f_test_ds, ds_custom(4), '\int f_{point_r}')
+msh.test_mesh_integral(0.93826, f_test_ds,  dS_custom(5), '\int f_{point_in}')

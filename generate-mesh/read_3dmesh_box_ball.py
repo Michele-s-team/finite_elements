@@ -9,15 +9,19 @@ clear; clear; python3 read_3dmesh_box_ball.py /home/fenics/shared/generate-mesh/
 '''
 
 
-from __future__ import print_function
 from fenics import *
 from mshr import *
-from fenics import *
-from mshr import *
+from dolfin import *
 import numpy as np
 import argparse
-from dolfin import *
-import meshio
+
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import mesh as msh
 
 
 
