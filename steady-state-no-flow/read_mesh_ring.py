@@ -5,7 +5,7 @@ import numpy as np
 import ufl as ufl
 
 import runtime_arguments as rarg
-
+import mesh as msh
 
 #read the mesh
 mesh = Mesh()
@@ -159,19 +159,13 @@ class FunctionTestIntegralsds(UserExpression):
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-numerical_value_int_dx = assemble( f_test_ds * dx )
-exact_value_int_dx = 2.90212
-print(f"\int_box_minus_ball f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
+# numerical_value_int_dx = assemble( f_test_ds * dx )
+# exact_value_int_dx = 2.90212
+# print(f"\int_box_minus_ball f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
 
-exact_value_int_ds_r = 2.77595
-numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
-print(f"\int_sphere f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
-
-exact_value_int_ds_R = 3.67175
-numerical_value_int_ds_R = assemble( f_test_ds * ds_R )
-print(f"\int_sphere f ds = {numerical_value_int_ds_R}, should be  {exact_value_int_ds_R}, relative error =  {abs( (numerical_value_int_ds_R - exact_value_int_ds_R) / exact_value_int_ds_R ):e}" )
-
-
+msh.test_mesh_integral(2.90212, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(2.77595, f_test_ds, ds_r, '\int f ds_r')
+msh.test_mesh_integral(3.67175, f_test_ds, ds_R, '\int f ds_R')
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE

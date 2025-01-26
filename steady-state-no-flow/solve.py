@@ -26,7 +26,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import input_output as inout
+import input_output as io
 import physics as phys
 import read_mesh_ring as rmsh
 import runtime_arguments as rarg
@@ -97,11 +97,11 @@ xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
 xdmffile_sigma.write( fsp.sigma, 0 )
 
-inout.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
-inout.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
-inout.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
-inout.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
-inout.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
+io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
+io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
+io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
+io.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
+io.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
 
 
 # write the solutions in .h5 format so it can be read from other codes
