@@ -6,17 +6,20 @@ clear; clear; python3 read_1dmesh.py [path where to find the mesh]
 example:
 clear; clear; python3 read_1dmesh.py /home/fenics/shared/generate-mesh/solution
 '''
-
-
-from __future__ import print_function
 from fenics import *
 from mshr import *
-from fenics import *
 from mshr import *
 import numpy as np
 import ufl as ufl
 import argparse
 from dolfin import *
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import mesh as msh
 
 
 parser = argparse.ArgumentParser()
@@ -70,6 +73,9 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(Constant(1.0)*dv_custom)}, should be 1.0")
+msh.test_mesh_integral(1.0, Constant(1.0), dv_custom, 'Volume')
+
+
 print(f"Integral over the whole domain =  {assemble( f_test_ds * dv_custom )}", " should be 0.817193")
 print(f"Integral over line #1 =  {assemble( f_test_ds * dv_custom(1) )}", "should be 0.386545")
 print(f"Integral over line #2 =  {assemble( f_test_ds * dv_custom(2) )}", "should be 0.430648")
