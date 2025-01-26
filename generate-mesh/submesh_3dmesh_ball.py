@@ -9,11 +9,17 @@ clear; clear; python3 submesh_3dmesh_ball.py /home/fenics/shared/generate-mesh/s
 
 import h5py
 from mshr import *
-from mshr import *
-import numpy as np
 from dolfin import *
-import meshio
 import argparse
+
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import mesh as msh
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -40,7 +46,7 @@ print("Dimension of boundary_mesh = ", sphere_mesh.geometry().dim() )
 #analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
-        values[0] = (x[2]/sqrt(x[0]**2 + x[1]**2 + x[2]**2))**2 * (1.0/(1.0 + (x[1]/x[0])**2))**2
+        values[0] = (x[2]/sqrt(x[0]**2 + x[1]**2 + x[2]**2))**2
     def value_shape(self):
         return (1,)
 
@@ -57,4 +63,4 @@ f_test = Function( Q )
 f_test.interpolate( FunctionTestIntegral( element=Q.ufl_element() ) )
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble( f_test * dx_custom )}, should be 1.5708" )
+msh.test_mesh_integral(4.18879, f_test, dx_custom, 'Volume')

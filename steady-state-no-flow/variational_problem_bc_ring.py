@@ -6,7 +6,6 @@ import function_spaces as fsp
 import geometry as geo
 import read_mesh_ring as rmsh
 
-
 i, j, k, l = ufl.indices(4)
 
 
@@ -24,20 +23,20 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
-z_r_const = 1.0/10.0
-z_R_const = 4.0/5.0
-zp_r_const = -3.0/10.0
-zp_R_const = 6.0/5.0
-omega_r_const = - (rmsh.r) * zp_r_const / sqrt( (rmsh.r)**2  * (1.0 + zp_r_const**2))
-omega_R_const = (rmsh.R) * zp_R_const / sqrt( (rmsh.R)**2  * (1.0 + zp_R_const**2))
+z_r_const = C * rmsh.r
+z_R_const = C * rmsh.R
+zp_r_const = C
+zp_R_const = C
+omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r)**2  * (1.0 + zp_r_const**2))
+omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R)**2  * (1.0 + zp_R_const**2))
 # Nitche's parameter
 alpha = 1e1
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        # values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (x[0]**2 + x[1]**2))
-        values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
+        values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (geo.my_norm(x)**2))
+        # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
 
     def value_shape(self):
         return (1,)
