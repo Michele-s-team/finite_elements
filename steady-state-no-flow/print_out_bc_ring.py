@@ -48,5 +48,12 @@ print( "\t<<(fel + flaplace)^2>> = ", \
    sqrt(assemble( ( (  phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) ) ** 2 * rmsh.dx ) ) / assemble(Constant(1.0) * rmsh.dx))
   )
 
+print("\t<<(fel + flaplace)^2>> = ",\
+       termcolor.colored(msh.difference_in_bulk(\
+              project(phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ), fsp.Q_z),\
+              project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)\
+              ), 'green'))
+
+
 xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
 xdmffile_check.close()
