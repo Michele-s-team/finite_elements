@@ -9,7 +9,6 @@ clear; clear; python3 submesh_3dmesh_box.py /home/fenics/shared/generate-mesh/so
 
 import h5py
 from mshr import *
-from mshr import *
 import numpy as np
 from dolfin import *
 import meshio
@@ -85,15 +84,3 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.0219446")
-
-
-'''
-
-# ds_custom = Measure("ds", domain=mesh, subdomain_data=sf)    # Point measure for points at the edges of the mesh
-# dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
-
-
-
-
-
-'''
