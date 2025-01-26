@@ -22,23 +22,26 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 print("Check of BCs:")
-print( "\t<<(z - phi)^2>>_r = ", \
-   sqrt(assemble( ( (z_output - vp.z_r_const ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
-  )
+# print( "\t<<(z - phi)^2>>_r = ", \
+#    sqrt(assemble( ( (z_output - vp.z_r_const ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
+#   )
+print( f"\t<<(z - phi)^2>>_r = {termcolor.colored(msh.difference_wrt_measure(z_output, vp.z_r_const, rmsh.ds_r), 'red')}")
 
-# msh.boundary_points_circle(rmsh.mesh, rmsh.r/2, (rmsh.r + rmsh.R)/2, [0, 0])
-print(f"\t<<(z - phi)^2>>_r = {termcolor.colored(msh.difference_on_boundary_circle(z_output, vp.z_r, rmsh.r/2.0, (rmsh.r + rmsh.R)/2.0, rmsh.c_r), 'red')}")
+# print( "\t<<(z - phi)^2>>_R = ", \
+#    sqrt(assemble( ( (z_output - vp.z_R_const ) ** 2 * rmsh.ds_R ) ) / assemble(Constant(1.0) * rmsh.ds_R))
+#   )
+print( f"\t<<(z - phi)^2>>_R = {termcolor.colored(msh.difference_wrt_measure(z_output, vp.z_R_const, rmsh.ds_R), 'red')}")
 
+# print( "\t<<(n^i \omega_i - psi )^2>>_r = ", \
+#    sqrt(assemble( ( ((rmsh.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_r ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
+#   )
+print( f"\t<<(n^i \omega_i - psi )^2>>_r = {termcolor.colored(msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r), 'red')}")
 
-print( "\t<<(z - phi)^2>>_R = ", \
-   sqrt(assemble( ( (z_output - vp.z_R_const ) ** 2 * rmsh.ds_R ) ) / assemble(Constant(1.0) * rmsh.ds_R))
-  )
-print( "\t<<(n^i \omega_i - psi )^2>>_r = ", \
-   sqrt(assemble( ( ((rmsh.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_r ) ** 2 * rmsh.ds_r ) ) / assemble(Constant(1.0) * rmsh.ds_r))
-  )
-print( "\t<<(n^i \omega_i - psi )^2>>_R = ", \
-   sqrt(assemble( ( ((rmsh.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_R ) ** 2 * rmsh.ds_R ) ) / assemble( Constant(1.0) * rmsh.ds_R))
-  )
+# print( "\t<<(n^i \omega_i - psi )^2>>_R = ", \
+#    sqrt(assemble( ( ((rmsh.n_circle( omega_output ))[i] * omega_output[i] - vp.omega_R ) ** 2 * rmsh.ds_R ) ) / assemble( Constant(1.0) * rmsh.ds_R))
+#   )
+print( f"\t<<(n^i \omega_i - psi )^2>>_R = {termcolor.colored(msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R), 'red')}")
+
 
 print("Check if the PDE is satisfied:")
 print( "\t<<(fel + flaplace)^2>> = ", \
