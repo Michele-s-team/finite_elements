@@ -97,10 +97,10 @@ def boundary_points_circle(mesh, r, R, c):
         if((my_norm( point - c  ) > r) and (my_norm( point - c  ) < R)):
             x.append( point )
 
-    csvfile = open( "test_boundary_points_circle.csv", "w" )
-    for p in x:
-        print( f"{p[0]},{p[1]}", file=csvfile )
-    csvfile.close()
+    # csvfile = open( "test_boundary_points_circle.csv", "w" )
+    # for p in x:
+    #     print( f"{p[0]},{p[1]}", file=csvfile )
+    # csvfile.close()
 
     return x
 
@@ -138,5 +138,24 @@ def difference_in_bulk(f, g):
         diff += (delta ** 2)
 
     diff = np.sqrt( diff / len( bulk_points_mesh ) )
+
+    return diff
+
+
+'''
+compute the difference between functions f and g on the boundary of the mesh, boundary_c, given by the boundary points whose distance from point c lies between r and R, returning 
+sqrt(\sum_{i \in {vertices in boundary_c} [f(x_i) - g(x_i)]^2/ (number of vertices in boundary_c})
+'''
+def difference_on_boundary_circle(f, g, r, R, c):
+
+    mesh = f.function_space().mesh()
+    boundary_c_points = boundary_points_circle( mesh, r, R, c )
+
+    diff = 0.0
+    for x in boundary_c_points:
+        delta = f( x ) - g( x )
+        diff += (delta ** 2)
+
+    diff = np.sqrt( diff / len( boundary_c_points ) )
 
     return diff

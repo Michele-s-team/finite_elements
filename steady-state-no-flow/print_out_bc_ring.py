@@ -27,7 +27,7 @@ print( "\t<<(z - phi)^2>>_r = ", \
   )
 
 # msh.boundary_points_circle(rmsh.mesh, rmsh.r/2, (rmsh.r + rmsh.R)/2, [0, 0])
-print(f"\t<<(z - phi)^2>>_r = {termcolor.colored(msh.difference_on_boundary(z_output, vp.z_r), 'red')}")
+print(f"\t<<(z - phi)^2>>_r = {termcolor.colored(msh.difference_on_boundary_circle(z_output, vp.z_r, rmsh.r/2.0, (rmsh.r + rmsh.R)/2.0, rmsh.c_r), 'red')}")
 
 
 print( "\t<<(z - phi)^2>>_R = ", \
