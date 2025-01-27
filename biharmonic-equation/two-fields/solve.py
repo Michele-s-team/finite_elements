@@ -232,10 +232,10 @@ bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
 bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
 bc_w = DirichletBC( Q.sub( 2 ), w_profile, boundary )
 
-F_v = ((v.dx( i )) * (nu_u.dx( i )) + f * nu_u) * dx \
-      - n[i] * (v.dx( i )) * nu_u * ds
-F_u = ((u.dx( i )) * (nu_v.dx( i )) + v * nu_v) * dx \
-      - n[i] * (u.dx( i )) * nu_v * ds
+F_v = ((v.dx( i )) * (nu_v.dx( i )) + f * nu_v) * dx \
+      - n[i] * (v.dx( i )) * nu_v * ds
+F_u = ((u.dx( i )) * (nu_u.dx( i )) + v * nu_u) * dx \
+      - n[i] * (u.dx( i )) * nu_u * ds
 F_w = ((v.dx( i )) * (nu_w.dx( i )) + w * nu_w) * dx \
       - n[i] * (v.dx( i )) * nu_w * ds
 
