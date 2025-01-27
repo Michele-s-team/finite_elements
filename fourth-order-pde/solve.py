@@ -173,9 +173,11 @@ Q_omega = Q.sub( 1 ).collapse()
 
 assigner = FunctionAssigner( Q, [Q_z, Q_omega] )
 
+
 class z_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = np.cos( x[0] + x[1] ) * np.sin( x[0] - x[1] )
+        # values[0] = np.cos( x[0] + x[1] ) * np.sin( x[0] - x[1] )
+        values[0] = (x[0] ** 4 + x[1] ** 4) / 48.0
 
     def value_shape(self):
         return (1,)
@@ -183,8 +185,8 @@ class z_exact_expression( UserExpression ):
 
 class omega_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = np.cos( 2 * x[0] )
-        values[1] = - np.cos( 2 * x[1] )
+        values[0] = (x[0] ** 3) / 12.0
+        values[1] = (x[1] ** 3) / 12.0
 
     def value_shape(self):
         return (2,)
@@ -192,7 +194,8 @@ class omega_exact_expression( UserExpression ):
 
 class f_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -16 * (np.cos( 4 * x[0] ) + np.cos( 4 * x[1] ) + np.sin( 2 * x[0] ) * np.sin( 2 * x[1] ))
+        # values[0] = -16 * (np.cos( 4 * x[0] ) + np.cos( 4 * x[1] ) + np.sin( 2 * x[0] ) * np.sin( 2 * x[1] ))
+        values[0] = 1 / 8.0 * (3 * x[0] ** 4 + x[0] ** 2 * x[1] ** 2 + 3 * x[1] ** 4)
 
     def value_shape(self):
         return (1,)
@@ -215,11 +218,11 @@ z_exact.interpolate( z_exact_expression( element=Q_z.ufl_element() ) )
 omega_exact.interpolate( omega_exact_expression( element=Q_omega.ufl_element() ) )
 f.interpolate( f_exact_expression( element=Q_z.ufl_element() ) )
 
-z_profile = Expression( 'cos(x[0]+x[1]) * sin(x[0]-x[1])', element=Q.sub( 0 ).ufl_element() )
+z_profile = Expression( '(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=Q.sub( 0 ).ufl_element() )
 bc_u = DirichletBC( Q.sub( 0 ), z_profile, boundary )
 
-assigner.assign(psi, [z_exact, omega_exact])
-
+#here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution 
+assigner.assign( psi, [f, omega_exact] )
 
 F_z = (((z * omega[i]).dx( i ).dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
       - n[j] * ((z * omega[i]).dx( i ).dx( j )) * nu_z * ds
@@ -236,17 +239,17 @@ J = derivative( F, psi, J_zomega )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
-# params = {'nonlinear_solver': 'newton',
-#           'newton_solver':
-#               {
-#                   'linear_solver': 'mumps',
-#                   'absolute_tolerance': 1e-6,
-#                   'relative_tolerance': 1e-6,
-#                   'maximum_iterations': 1000000,
-#                   'relaxation_parameter': 0.95,
-#               }
-#           }
-# solver.parameters.update( params )
+params = {'nonlinear_solver': 'newton',
+          'newton_solver':
+              {
+                  'linear_solver': 'superlu',
+                  'absolute_tolerance': 1e-6,
+                  'relative_tolerance': 1e-6,
+                  'maximum_iterations': 1000000,
+                  'relaxation_parameter': 0.95,
+              }
+          }
+solver.parameters.update( params )
 
 
 solver.solve()
