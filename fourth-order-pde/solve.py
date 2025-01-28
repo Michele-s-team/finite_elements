@@ -293,12 +293,14 @@ F_tau = (tau * nu_tau + rho[i] * (nu_tau.dx( i ))) * dx \
 F_N = alpha / r_mesh * ( \
             (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds \
             + (mu - ((z * omega[i]).dx( i ))) * nu_mu * ds \
+            + (rho[i] - (mu.dx( i ))) * nu_rho[i] * ds \
+            + (tau - ((rho[i]).dx( i ))) * nu_tau * ds \
     )
 
 F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
 # bcs = [bc_z]
 # bcs = [bc_z, bc_mu, bc_rho, bc_tau]
-bcs = [bc_z, bc_rho, bc_tau]
+bcs = [bc_z]
 
 J = derivative( F, psi, J_Q )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
@@ -309,8 +311,8 @@ params = {'nonlinear_solver': 'newton',
               {
                   # 'linear_solver': 'superlu',
                   'linear_solver': 'mumps',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
+                  'absolute_tolerance': 1e-12,
+                  'relative_tolerance': 1e-12,
                   'maximum_iterations': 1000000,
                   'relaxation_parameter': 0.95,
               }
