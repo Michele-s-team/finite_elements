@@ -57,6 +57,7 @@ xdmffile_z = XDMFFile( (args.output_directory) + "/z.xdmf" )
 xdmffile_omega = XDMFFile( (args.output_directory) + "/omega.xdmf" )
 xdmffile_mu = XDMFFile( (args.output_directory) + "/mu.xdmf" )
 xdmffile_rho = XDMFFile( (args.output_directory) + "/rho.xdmf" )
+xdmffile_tau = XDMFFile( (args.output_directory) + "/tau.xdmf" )
 
 xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
@@ -169,15 +170,17 @@ P_z = FiniteElement( 'P', triangle, function_space_degree )
 P_omega = VectorElement( 'P', triangle, function_space_degree )
 P_mu = FiniteElement( 'P', triangle, function_space_degree )
 P_rho = VectorElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_z, P_omega, P_mu, P_rho] )
+P_tau = FiniteElement( 'P', triangle, function_space_degree )
+element = MixedElement( [P_z, P_omega, P_mu, P_rho, P_tau] )
 Q = FunctionSpace( mesh, element )
 
 Q_z = Q.sub( 0 ).collapse()
 Q_omega = Q.sub( 1 ).collapse()
 Q_mu = Q.sub( 2 ).collapse()
 Q_rho = Q.sub( 3 ).collapse()
+Q_tau = Q.sub( 4 ).collapse()
 
-assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu, Q_rho] )
+assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu, Q_rho, Q_tau] )
 
 
 class z_exact_expression( UserExpression ):
@@ -209,7 +212,7 @@ class mu_exact_expression( UserExpression ):
 class rho_exact_expression( UserExpression ):
     def eval(self, values, x):
         values[0] = x[0] * (7 * x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + x[1] ** 4) / 96.0
-        values[1] = x[1] * (x[0]**4 + 2 * x[0]**2 * x[1]**2 + 7 * x[1]**4) / 96.0
+        values[1] = x[1] * (x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + 7 * x[1] ** 4) / 96.0
 
     def value_shape(self):
         return (2,)
@@ -226,39 +229,45 @@ class f_exact_expression( UserExpression ):
 
 # Define variational problem
 psi = Function( Q )
-nu_z, nu_omega, nu_mu, nu_rho = TestFunctions( Q )
+nu_z, nu_omega, nu_mu, nu_rho, nu_tau = TestFunctions( Q )
 
 z_output = Function( Q_z )
 omega_output = Function( Q_omega )
 mu_output = Function( Q_mu )
 rho_output = Function( Q_rho )
+tau_output = Function( Q_tau )
 
 z_exact = Function( Q_z )
 omega_exact = Function( Q_omega )
 mu_exact = Function( Q_mu )
 rho_exact = Function( Q_rho )
+tau_exact = Function( Q_tau )
 
 f = Function( Q_z )
 J_Q = TrialFunction( Q )
-z, omega, mu, rho = split( psi )
+z, omega, mu, rho, tau = split( psi )
 
 z_exact.interpolate( z_exact_expression( element=Q_z.ufl_element() ) )
 omega_exact.interpolate( omega_exact_expression( element=Q_omega.ufl_element() ) )
 mu_exact.interpolate( mu_exact_expression( element=Q_mu.ufl_element() ) )
 rho_exact.interpolate( rho_exact_expression( element=Q_rho.ufl_element() ) )
+tau_exact.interpolate( f_exact_expression( element=Q_tau.ufl_element() ) )
 f.interpolate( f_exact_expression( element=Q_z.ufl_element() ) )
 
 z_profile = Expression( '(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=Q.sub( 0 ).ufl_element() )
 mu_profile = Expression( '(7 * pow(x[0], 6) + 3 * pow(x[0], 4) * pow(x[1], 2) + 3 * pow(x[0], 2) * pow(x[1], 4) + 7 * pow(x[1], 6))/576.0', element=Q.sub( 2 ).ufl_element() )
-rho_profile = Expression( ('(1.0 / 96.0) * x[0] * (7.0 * pow(x[0], 4) + 2.0 * pow(x[0], 2) * pow(x[1], 2) + pow(x[1], 4))', '(1.0 / 96.0) * x[1] * (pow(x[0], 4) + 2 * pow(x[0], 2) * pow(x[1], 2) + 7 * pow(x[1], 4))'), element=Q.sub( 3 ).ufl_element() )
-
+rho_profile = Expression(
+    ('(1.0 / 96.0) * x[0] * (7.0 * pow(x[0], 4) + 2.0 * pow(x[0], 2) * pow(x[1], 2) + pow(x[1], 4))', '(1.0 / 96.0) * x[1] * (pow(x[0], 4) + 2 * pow(x[0], 2) * pow(x[1], 2) + 7 * pow(x[1], 4))'),
+    element=Q.sub( 3 ).ufl_element() )
+tau_profile = Expression( '(1.0 / 8.0) * (3 * pow(x[0], 4) + pow(x[0], 2) * pow(x[1], 2) + 3 * pow(x[1], 4))', element=Q.sub( 4 ).ufl_element() )
 
 bc_z = DirichletBC( Q.sub( 0 ), z_profile, boundary )
 bc_mu = DirichletBC( Q.sub( 2 ), mu_profile, boundary )
 bc_rho = DirichletBC( Q.sub( 3 ), rho_profile, boundary )
+bc_tau = DirichletBC( Q.sub( 4 ), tau_profile, boundary )
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
-assigner.assign( psi, [f, omega_exact, mu_exact, rho_exact] )
+assigner.assign( psi, [f, omega_exact, mu_exact, rho_exact, tau_exact] )
 
 F_z = (((z * omega[i]).dx( i ).dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
       - n[j] * ((z * omega[i]).dx( i ).dx( j )) * nu_z * ds
@@ -270,12 +279,15 @@ F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
        - n[i] * z * omega[i] * nu_mu * ds
 
 F_rho = (mu * ((nu_rho[i]).dx( i )) + rho[i] * nu_rho[i]) * dx \
-          - n[i] * mu * nu_rho[i] * ds
+        - n[i] * mu * nu_rho[i] * ds
+
+F_tau = ( ((rho[i]).dx(i))  * nu_tau + rho[i] * (nu_tau.dx(i)) ) * dx \
+      - n[i] * rho[i] * nu_tau * ds
 
 F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
 
-F = (F_omega + F_z + F_mu + F_rho) + F_N
-bcs = [bc_z, bc_mu, bc_rho]
+F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
+bcs = [bc_z, bc_mu, bc_rho, bc_tau]
 
 J = derivative( F, psi, J_Q )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
@@ -296,17 +308,19 @@ solver.parameters.update( params )
 
 solver.solve()
 
-z_output, omega_output, mu_output, rho_output = psi.split( deepcopy=True )
+z_output, omega_output, mu_output, rho_output, tau_output = psi.split( deepcopy=True )
 
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
 xdmffile_rho.write( rho_output, 0 )
+xdmffile_tau.write( tau_output, 0 )
 
 io.print_scalar_to_csvfile( z_output, (args.output_directory) + '/z.csv' )
 io.print_vector_to_csvfile( omega_output, (args.output_directory) + '/omega.csv' )
 io.print_scalar_to_csvfile( mu_output, (args.output_directory) + '/mu.csv' )
 io.print_vector_to_csvfile( rho_output, (args.output_directory) + '/rho.csv' )
+io.print_vector_to_csvfile( tau_output, (args.output_directory) + '/tau.csv' )
 
 print( "BCs check: " )
 print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
@@ -321,10 +335,11 @@ print(
 
 print( "Comparison with exact solution: " )
 print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
-print( f"\t<<|omega - omega_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project(sqrt((omega_output[i] - omega_exact[i]) * (omega_output[i] - omega_exact[i])), Q_z) , project(Constant(0), Q_z) ), 'blue' )}" )
+print(
+    f"\t<<|omega - omega_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (omega_output[i] - omega_exact[i]) * (omega_output[i] - omega_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
 print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
-print( f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project(sqrt((rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i])), Q_z) , project(Constant(0), Q_z) ), 'blue' )}" )
-
+print(
+    f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
 
 # xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
 xdmffile_check.write( project( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]), Q_z ), 0 )
