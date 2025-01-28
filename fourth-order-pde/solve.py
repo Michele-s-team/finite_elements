@@ -1,5 +1,10 @@
 '''
-This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u and v = Nabla u
+This code solves the biharmonic equation Nabla Nabla \partial_i (z \partial_i z) = f expressed in terms of the function
+- z
+- omega[i] = \partial_i z
+- mu = \partial_i (z omega_i)
+- rho_i = \partial_i mu
+- tau = \partial_i rho_i
 run with
 
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
@@ -275,6 +280,7 @@ F_z = ((mu.dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
 F_omega = (z * ((nu_omega[i]).dx( i )) + omega[i] * nu_omega[i]) * dx \
           - n[i] * z * nu_omega[i] * ds
 
+# F_mu = ((z * omega[i]).dx(i) * nu_mu  - mu * nu_mu) * dx
 F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
        - n[i] * z * omega[i] * nu_mu * ds
 
@@ -287,6 +293,7 @@ F_tau = ( tau  * nu_tau + rho[i] * (nu_tau.dx(i)) ) * dx \
 F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
 
 F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
+# bcs = [bc_z]
 bcs = [bc_z, bc_mu, bc_rho, bc_tau]
 
 J = derivative( F, psi, J_Q )
@@ -332,8 +339,8 @@ print(
 print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, f ), 'red' )}" )
 
 
-# print( "Check that the PDE is satisfied: " )
-# print( f"<<(w - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( w_output, f ), 'green' )}" )
+print( "Check that the PDE is satisfied: " )
+print( f"\t<<(Nabla^2 partial_i ( z partial_i z) - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'green' )}" )
 
 print( "Comparison with exact solution: " )
 print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
