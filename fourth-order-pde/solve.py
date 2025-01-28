@@ -55,6 +55,7 @@ args = parser.parse_args()
 
 xdmffile_z = XDMFFile( (args.output_directory) + "/z.xdmf" )
 xdmffile_omega = XDMFFile( (args.output_directory) + "/omega.xdmf" )
+xdmffile_mu = XDMFFile( (args.output_directory) + "/mu.xdmf" )
 
 xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
@@ -260,7 +261,8 @@ solver = NonlinearVariationalSolver( problem )
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
-                  'linear_solver': 'superlu',
+                  # 'linear_solver': 'superlu',
+                  'linear_solver': 'mumps',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
                   'maximum_iterations': 1000000,
@@ -283,17 +285,17 @@ io.print_scalar_to_csvfile( mu_output, (args.output_directory) + '/mu.csv' )
 
 
 print( "BCs check: " )
-print( f"<<(u - u_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
-print( f"<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-# print( f"<<(w - w_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( w_output, w_exact ), 'red' )}" )
+print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
+print( f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
+print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
 
 # print( "Check that the PDE is satisfied: " )
 # print( f"<<(w - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( w_output, f ), 'green' )}" )
 
-# print( "Comparison with exact solution: " )
-print( f"<<(z - u_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
+print( "Comparison with exact solution: " )
+print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
 # print( f"<<(v - v_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( omega_output, omega_exact ), 'blue' )}" )
-# print( f"<<(w - w_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( w_output, w_exact ), 'blue' )}" )
+print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
 
 # xdmffile_check.write( project( w_output - f, Q_w ), 0 )
 # xdmffile_check.close()
