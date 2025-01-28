@@ -287,14 +287,18 @@ F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
 F_rho = (mu * ((nu_rho[i]).dx( i )) + rho[i] * nu_rho[i]) * dx \
         - n[i] * mu * nu_rho[i] * ds
 
-F_tau = ( tau  * nu_tau + rho[i] * (nu_tau.dx(i)) ) * dx \
-      - n[i] * rho[i] * nu_tau * ds
+F_tau = (tau * nu_tau + rho[i] * (nu_tau.dx( i ))) * dx \
+        - n[i] * rho[i] * nu_tau * ds
 
-F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
+F_N = alpha / r_mesh * ( \
+            (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds \
+            + (mu - ((z * omega[i]).dx( i ))) * nu_mu * ds \
+    )
 
 F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
 # bcs = [bc_z]
-bcs = [bc_z, bc_mu, bc_rho, bc_tau]
+# bcs = [bc_z, bc_mu, bc_rho, bc_tau]
+bcs = [bc_z, bc_rho, bc_tau]
 
 J = derivative( F, psi, J_Q )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
@@ -338,7 +342,6 @@ print(
     f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
 print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, f ), 'red' )}" )
 
-
 print( "Check that the PDE is satisfied: " )
 print( f"\t<<(Nabla^2 partial_i ( z partial_i z) - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'green' )}" )
 
@@ -352,7 +355,7 @@ print(
 print( f"\t<<(tau - tau_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'blue' )}" )
 
 xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
-xdmffile_check.write( project( sqrt((rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i])), Q_z ), 0 )
+xdmffile_check.write( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), 0 )
 xdmffile_check.write( project( tau_output - f, Q_z ), 0 )
 xdmffile_check.close()
 #
