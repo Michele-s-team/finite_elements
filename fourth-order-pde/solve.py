@@ -5,6 +5,8 @@ This code solves the biharmonic equation Nabla Nabla \partial_i (z \partial_i z)
 - mu = \partial_i (z omega_i)
 - rho_i = \partial_i mu
 - tau = \partial_i rho_i
+
+where the BCs for mu,  rho and tau are imposed  in terms of the fields z and omega with Nitsche's method
 run with
 
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
@@ -18,7 +20,7 @@ import argparse
 from mshr import *
 import ufl as ufl
 from dolfin import *
-import termcolor
+import colorama as col
 import numpy as np
 import sys
 
@@ -336,25 +338,27 @@ io.print_vector_to_csvfile( rho_output, (args.output_directory) + '/rho.csv' )
 io.print_vector_to_csvfile( tau_output, (args.output_directory) + '/tau.csv' )
 
 print( "BCs check: " )
-print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
+print( f"\t<<(z - z_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( z_output, z_exact ):4e}{col.Style.RESET_ALL}" )
+
+print( f"\t<<(z - z_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( z_output, z_exact ):4e}{col.Style.RESET_ALL}" )
 print(
-    f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
+    f"\t<<|omega - omega_exact|^2>>_partial Omega = {col.Fore.RED}{np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, mu_exact ):4e}{col.Style.RESET_ALL}" )
 print(
-    f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, f ), 'red' )}" )
+    f"\t<<|rho - rho_exact|^2>>_partial Omega = {col.Fore.RED}{np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( tau_output, f ):4e}{col.Style.RESET_ALL}" )
 
 print( "Check that the PDE is satisfied: " )
-print( f"\t<<(Nabla^2 partial_i ( z partial_i z) - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'green' )}" )
+print( f"\t<<(Nabla^2 partial_i ( z partial_i z) - f)^2>>_Omega = {col.Fore.GREEN}{msh.difference_in_bulk( tau_output, tau_exact ):4e}{col.Style.RESET_ALL}" )
 
 print( "Comparison with exact solution: " )
-print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
+print( f"\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( z_output, z_exact ):4e}{col.Style.RESET_ALL}" )
 print(
-    f"\t<<|omega - omega_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (omega_output[i] - omega_exact[i]) * (omega_output[i] - omega_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
-print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
+    f"\t<<|omega - omega_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - omega_exact[i]) * (omega_output[i] - omega_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, mu_exact ):4e}{col.Style.RESET_ALL}" )
 print(
-    f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
-print( f"\t<<(tau - tau_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'blue' )}" )
+    f"\t<<|rho - rho_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( tau_output, tau_exact ):4e}{col.Style.RESET_ALL}" )
 
 xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
 xdmffile_check.write( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), 0 )
