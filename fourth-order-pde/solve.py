@@ -269,8 +269,8 @@ bc_tau = DirichletBC( Q.sub( 4 ), tau_profile, boundary )
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
 assigner.assign( psi, [f, omega_exact, mu_exact, rho_exact, tau_exact] )
 
-F_z = (((z * omega[i]).dx( i ).dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
-      - n[j] * ((z * omega[i]).dx( i ).dx( j )) * nu_z * ds
+F_z = ((mu.dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
+      - n[j] * (mu.dx( j )) * nu_z * ds
 
 F_omega = (z * ((nu_omega[i]).dx( i )) + omega[i] * nu_omega[i]) * dx \
           - n[i] * z * nu_omega[i] * ds
@@ -281,7 +281,7 @@ F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
 F_rho = (mu * ((nu_rho[i]).dx( i )) + rho[i] * nu_rho[i]) * dx \
         - n[i] * mu * nu_rho[i] * ds
 
-F_tau = ( ((rho[i]).dx(i))  * nu_tau + rho[i] * (nu_tau.dx(i)) ) * dx \
+F_tau = ( tau  * nu_tau + rho[i] * (nu_tau.dx(i)) ) * dx \
       - n[i] * rho[i] * nu_tau * ds
 
 F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
@@ -296,8 +296,8 @@ solver = NonlinearVariationalSolver( problem )
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
-                  'linear_solver': 'superlu',
-                  # 'linear_solver': 'mumps',
+                  # 'linear_solver': 'superlu',
+                  'linear_solver': 'mumps',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
                   'maximum_iterations': 1000000,
@@ -329,6 +329,8 @@ print(
 print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
 print(
     f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
+print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, f ), 'red' )}" )
+
 
 # print( "Check that the PDE is satisfied: " )
 # print( f"<<(w - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( w_output, f ), 'green' )}" )
@@ -340,9 +342,11 @@ print(
 print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
 print(
     f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
+print( f"\t<<(tau - tau_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'blue' )}" )
 
-# xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
-xdmffile_check.write( project( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]), Q_z ), 0 )
+xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
+xdmffile_check.write( project( sqrt((rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i])), Q_z ), 0 )
+xdmffile_check.write( project( tau_output - f, Q_z ), 0 )
 xdmffile_check.close()
 #
 # msh.bulk_points( mesh )
