@@ -56,6 +56,7 @@ args = parser.parse_args()
 xdmffile_z = XDMFFile( (args.output_directory) + "/z.xdmf" )
 xdmffile_omega = XDMFFile( (args.output_directory) + "/omega.xdmf" )
 xdmffile_mu = XDMFFile( (args.output_directory) + "/mu.xdmf" )
+xdmffile_rho = XDMFFile( (args.output_directory) + "/rho.xdmf" )
 
 xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
@@ -167,14 +168,16 @@ n = FacetNormal( mesh )
 P_z = FiniteElement( 'P', triangle, function_space_degree )
 P_omega = VectorElement( 'P', triangle, function_space_degree )
 P_mu = FiniteElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_z, P_omega, P_mu] )
+P_rho = VectorElement( 'P', triangle, function_space_degree )
+element = MixedElement( [P_z, P_omega, P_mu, P_rho] )
 Q = FunctionSpace( mesh, element )
 
 Q_z = Q.sub( 0 ).collapse()
 Q_omega = Q.sub( 1 ).collapse()
 Q_mu = Q.sub( 2 ).collapse()
+Q_rho = Q.sub( 3 ).collapse()
 
-assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu] )
+assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu, Q_rho] )
 
 
 class z_exact_expression( UserExpression ):
@@ -203,6 +206,15 @@ class mu_exact_expression( UserExpression ):
         return (1,)
 
 
+class rho_exact_expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = x[0] * (7 * x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + x[1] ** 4) / 96.0
+        values[1] = x[1] * (x[0]**4 + 2 * x[0]**2 * x[1]**2 + 7 * x[1]**4) / 96.0
+
+    def value_shape(self):
+        return (2,)
+
+
 class f_exact_expression( UserExpression ):
     def eval(self, values, x):
         # values[0] = -16 * (np.cos( 4 * x[0] ) + np.cos( 4 * x[1] ) + np.sin( 2 * x[0] ) * np.sin( 2 * x[1] ))
@@ -214,31 +226,39 @@ class f_exact_expression( UserExpression ):
 
 # Define variational problem
 psi = Function( Q )
-nu_z, nu_omega, nu_mu = TestFunctions( Q )
+nu_z, nu_omega, nu_mu, nu_rho = TestFunctions( Q )
 
 z_output = Function( Q_z )
 omega_output = Function( Q_omega )
 mu_output = Function( Q_mu )
+rho_output = Function( Q_rho )
+
 z_exact = Function( Q_z )
 omega_exact = Function( Q_omega )
 mu_exact = Function( Q_mu )
+rho_exact = Function( Q_rho )
 
 f = Function( Q_z )
-J_zomegamu = TrialFunction( Q )
-z, omega, mu = split( psi )
+J_Q = TrialFunction( Q )
+z, omega, mu, rho = split( psi )
 
 z_exact.interpolate( z_exact_expression( element=Q_z.ufl_element() ) )
 omega_exact.interpolate( omega_exact_expression( element=Q_omega.ufl_element() ) )
 mu_exact.interpolate( mu_exact_expression( element=Q_mu.ufl_element() ) )
+rho_exact.interpolate( rho_exact_expression( element=Q_rho.ufl_element() ) )
 f.interpolate( f_exact_expression( element=Q_z.ufl_element() ) )
 
 z_profile = Expression( '(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=Q.sub( 0 ).ufl_element() )
 mu_profile = Expression( '(7 * pow(x[0], 6) + 3 * pow(x[0], 4) * pow(x[1], 2) + 3 * pow(x[0], 2) * pow(x[1], 4) + 7 * pow(x[1], 6))/576.0', element=Q.sub( 2 ).ufl_element() )
+rho_profile = Expression( ('(1.0 / 96.0) * x[0] * (7.0 * pow(x[0], 4) + 2.0 * pow(x[0], 2) * pow(x[1], 2) + pow(x[1], 4))', '(1.0 / 96.0) * x[1] * (pow(x[0], 4) + 2 * pow(x[0], 2) * pow(x[1], 2) + 7 * pow(x[1], 4))'), element=Q.sub( 3 ).ufl_element() )
+
+
 bc_z = DirichletBC( Q.sub( 0 ), z_profile, boundary )
 bc_mu = DirichletBC( Q.sub( 2 ), mu_profile, boundary )
+bc_rho = DirichletBC( Q.sub( 3 ), rho_profile, boundary )
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
-assigner.assign( psi, [f, omega_exact, mu_exact] )
+assigner.assign( psi, [f, omega_exact, mu_exact, rho_exact] )
 
 F_z = (((z * omega[i]).dx( i ).dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
       - n[j] * ((z * omega[i]).dx( i ).dx( j )) * nu_z * ds
@@ -249,20 +269,23 @@ F_omega = (z * ((nu_omega[i]).dx( i )) + omega[i] * nu_omega[i]) * dx \
 F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
        - n[i] * z * omega[i] * nu_mu * ds
 
+F_rho = (mu * ((nu_rho[i]).dx( i )) + rho[i] * nu_rho[i]) * dx \
+          - n[i] * mu * nu_rho[i] * ds
+
 F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
 
-F = (F_omega + F_z + F_mu) + F_N
-bcs = [bc_z, bc_mu]
+F = (F_omega + F_z + F_mu + F_rho) + F_N
+bcs = [bc_z, bc_mu, bc_rho]
 
-J = derivative( F, psi, J_zomegamu )
+J = derivative( F, psi, J_Q )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
-                  # 'linear_solver': 'superlu',
-                  'linear_solver': 'mumps',
+                  'linear_solver': 'superlu',
+                  # 'linear_solver': 'mumps',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
                   'maximum_iterations': 1000000,
@@ -273,20 +296,22 @@ solver.parameters.update( params )
 
 solver.solve()
 
-z_output, omega_output, mu_output = psi.split( deepcopy=True )
+z_output, omega_output, mu_output, rho_output = psi.split( deepcopy=True )
 
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
+xdmffile_rho.write( rho_output, 0 )
 
 io.print_scalar_to_csvfile( z_output, (args.output_directory) + '/z.csv' )
 io.print_vector_to_csvfile( omega_output, (args.output_directory) + '/omega.csv' )
 io.print_scalar_to_csvfile( mu_output, (args.output_directory) + '/mu.csv' )
-
+io.print_vector_to_csvfile( rho_output, (args.output_directory) + '/rho.csv' )
 
 print( "BCs check: " )
 print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
-print( f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
+print(
+    f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
 print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
 
 # print( "Check that the PDE is satisfied: " )
