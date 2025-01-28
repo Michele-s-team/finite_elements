@@ -165,13 +165,15 @@ n = FacetNormal( mesh )
 
 P_z = FiniteElement( 'P', triangle, function_space_degree )
 P_omega = VectorElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_z, P_omega] )
+P_mu = FiniteElement( 'P', triangle, function_space_degree )
+element = MixedElement( [P_z, P_omega, P_mu] )
 Q = FunctionSpace( mesh, element )
 
 Q_z = Q.sub( 0 ).collapse()
 Q_omega = Q.sub( 1 ).collapse()
+Q_mu = Q.sub( 2 ).collapse()
 
-assigner = FunctionAssigner( Q, [Q_z, Q_omega] )
+assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu] )
 
 
 class z_exact_expression( UserExpression ):
@@ -192,6 +194,14 @@ class omega_exact_expression( UserExpression ):
         return (2,)
 
 
+class mu_exact_expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = (7 * x[0] ** 6 + 3 * x[0] ** 4 * x[1] ** 2 + 3 * x[0] ** 2 * x[1] ** 4 + 7 * x[1] ** 6) / 576.0
+
+    def value_shape(self):
+        return (1,)
+
+
 class f_exact_expression( UserExpression ):
     def eval(self, values, x):
         # values[0] = -16 * (np.cos( 4 * x[0] ) + np.cos( 4 * x[1] ) + np.sin( 2 * x[0] ) * np.sin( 2 * x[1] ))
@@ -203,26 +213,31 @@ class f_exact_expression( UserExpression ):
 
 # Define variational problem
 psi = Function( Q )
-nu_z, nu_omega = TestFunctions( Q )
+nu_z, nu_omega, nu_mu = TestFunctions( Q )
 
 z_output = Function( Q_z )
 omega_output = Function( Q_omega )
+mu_output = Function( Q_mu )
 z_exact = Function( Q_z )
 omega_exact = Function( Q_omega )
+mu_exact = Function( Q_mu )
 
 f = Function( Q_z )
-J_zomega = TrialFunction( Q )
-z, omega = split( psi )
+J_zomegamu = TrialFunction( Q )
+z, omega, mu = split( psi )
 
 z_exact.interpolate( z_exact_expression( element=Q_z.ufl_element() ) )
 omega_exact.interpolate( omega_exact_expression( element=Q_omega.ufl_element() ) )
+mu_exact.interpolate( mu_exact_expression( element=Q_mu.ufl_element() ) )
 f.interpolate( f_exact_expression( element=Q_z.ufl_element() ) )
 
 z_profile = Expression( '(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=Q.sub( 0 ).ufl_element() )
-bc_u = DirichletBC( Q.sub( 0 ), z_profile, boundary )
+mu_profile = Expression( '(7 * pow(x[0], 6) + 3 * pow(x[0], 4) * pow(x[1], 2) + 3 * pow(x[0], 2) * pow(x[1], 4) + 7 * pow(x[1], 6))/576.0', element=Q.sub( 2 ).ufl_element() )
+bc_z = DirichletBC( Q.sub( 0 ), z_profile, boundary )
+bc_mu = DirichletBC( Q.sub( 2 ), mu_profile, boundary )
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
-assigner.assign( psi, [f, omega_exact] )
+assigner.assign( psi, [f, omega_exact, mu_exact] )
 
 F_z = (((z * omega[i]).dx( i ).dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
       - n[j] * ((z * omega[i]).dx( i ).dx( j )) * nu_z * ds
@@ -230,12 +245,15 @@ F_z = (((z * omega[i]).dx( i ).dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
 F_omega = (z * ((nu_omega[i]).dx( i )) + omega[i] * nu_omega[i]) * dx \
           - n[i] * z * nu_omega[i] * ds
 
+F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
+       - n[i] * z * omega[i] * nu_mu * ds
+
 F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
 
-F = (F_omega + F_z) + F_N
-bcs = [bc_u]
+F = (F_omega + F_z + F_mu) + F_N
+bcs = [bc_z, bc_mu]
 
-J = derivative( F, psi, J_zomega )
+J = derivative( F, psi, J_zomegamu )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
@@ -253,13 +271,16 @@ solver.parameters.update( params )
 
 solver.solve()
 
-z_output, omega_output = psi.split( deepcopy=True )
+z_output, omega_output, mu_output = psi.split( deepcopy=True )
 
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
+xdmffile_mu.write( mu_output, 0 )
 
 io.print_scalar_to_csvfile( z_output, (args.output_directory) + '/z.csv' )
 io.print_vector_to_csvfile( omega_output, (args.output_directory) + '/omega.csv' )
+io.print_scalar_to_csvfile( mu_output, (args.output_directory) + '/mu.csv' )
+
 
 print( "BCs check: " )
 print( f"<<(u - u_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
