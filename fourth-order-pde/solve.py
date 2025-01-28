@@ -313,16 +313,21 @@ print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.differenc
 print(
     f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
 print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
+print(
+    f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
 
 # print( "Check that the PDE is satisfied: " )
 # print( f"<<(w - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( w_output, f ), 'green' )}" )
 
 print( "Comparison with exact solution: " )
 print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
-# print( f"<<(v - v_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( omega_output, omega_exact ), 'blue' )}" )
+print( f"\t<<|omega - omega_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project(sqrt((omega_output[i] - omega_exact[i]) * (omega_output[i] - omega_exact[i])), Q_z) , project(Constant(0), Q_z) ), 'blue' )}" )
 print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
+print( f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project(sqrt((rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i])), Q_z) , project(Constant(0), Q_z) ), 'blue' )}" )
 
-xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
+
+# xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
+xdmffile_check.write( project( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]), Q_z ), 0 )
 xdmffile_check.close()
 #
 # msh.bulk_points( mesh )
