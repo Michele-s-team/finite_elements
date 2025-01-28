@@ -297,7 +297,7 @@ print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bul
 # print( f"<<(v - v_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( omega_output, omega_exact ), 'blue' )}" )
 print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
 
-# xdmffile_check.write( project( w_output - f, Q_w ), 0 )
-# xdmffile_check.close()
+xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
+xdmffile_check.close()
 #
 # msh.bulk_points( mesh )
