@@ -68,8 +68,8 @@ class mu_exact_Expression( UserExpression ):
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = - (C * x[0]) / (2.0 * np.sqrt(1.0 + C**2) * (x[0]**2 + x[1]**2)**(3.0/2.0))
+        values[1] = - (C * x[1]) / (2.0 * np.sqrt(1.0 + C**2) * (x[0]**2 + x[1]**2)**(3.0/2.0))
 
     def value_shape(self):
         return (2,)
