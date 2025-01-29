@@ -29,7 +29,7 @@ zp_R_const = C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
-alpha = 1e2
+alpha = 1e1
 
 
 class SurfaceTensionExpression( UserExpression ):
@@ -149,17 +149,17 @@ z_profile = Expression( ' C * sqrt(pow(x[0], 2) + pow(x[1], 2))', C=C, element=f
 # mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2)))', C=C, element=fsp.Q.sub( 2 ).ufl_element() )
 # nu_profile = Expression( ('- (C * x[0]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))', '- (C * x[1]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))'),
 #                          C=C, element=fsp.Q.sub( 3 ).ufl_element() )
-tau_profile = Expression( 'C / (2.0 * pow((1.0 + C * C) * (x[0]*x[0] + x[1]*x[1]), 3.0/2.0)) ', C=C, element=fsp.Q.sub( 3 ).ufl_element() )
+# tau_profile = Expression( 'C / (2.0 * pow((1.0 + C * C) * (x[0]*x[0] + x[1]*x[1]), 3.0/2.0)) ', C=C, element=fsp.Q.sub( 3 ).ufl_element() )
 
 bc_z = DirichletBC( fsp.Q.sub( 0 ), z_profile, rmsh.boundary )
 # bc_mu = DirichletBC( fsp.Q.sub( 2 ), mu_profile, rmsh.boundary )
 # bc_nu = DirichletBC( fsp.Q.sub( 3 ), nu_profile, rmsh.boundary )
-bc_tau = DirichletBC( fsp.Q.sub( 4 ), tau_profile, rmsh.boundary )
+# bc_tau = DirichletBC( fsp.Q.sub( 4 ), tau_profile, rmsh.boundary )
 
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z, bc_tau]
+bcs = [bc_z]
 
 # Define variational problem
 
@@ -192,11 +192,15 @@ F_N = alpha / rmsh.r_mesh * ( \
                                                                                                                                                                                      rmsh.c_R ) * (
                     1.0 / rmsh.R) * rmsh.ds_R \
  \
-            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
  \
-            + ( fsp.nu[i] - (fsp.mu.dx(i)) ) * fsp.nu_nu[i] * (1.0 / rmsh.r) * rmsh.ds_r \
-            + ( fsp.nu[i] - (fsp.mu.dx(i)) ) * fsp.nu_nu[i] * (1.0 / rmsh.R) * rmsh.ds_R \
+            + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ \
+            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ \
     )
 
 # total functional for the mixed problem
