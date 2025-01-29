@@ -35,7 +35,6 @@ print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference
 
 
 print("Check if the PDE is satisfied:")
-# print(f"\t<<(fel + flaplace)^2>> = {col.Fore.GREEN}{np.sqrt(assemble( ( (  phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) ) ** 2 * rmsh.dx ) ) / assemble(Constant(1.0) * rmsh.dx))}{col.Style.RESET_ALL}")
 print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, tau_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
 
 
@@ -52,6 +51,7 @@ print( f"\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bul
 
 
 xdmffile_check.write( project( z_output - fsp.z_exact , fsp.Q_z ), 0 )
+xdmffile_check.write( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( mu_output - fsp.mu_exact , fsp.Q_z ), 0 )
 xdmffile_check.write( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( tau_output - fsp.tau_exact , fsp.Q_tau ), 0 )
