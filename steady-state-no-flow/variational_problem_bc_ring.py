@@ -136,16 +136,16 @@ fsp.nu_exact.interpolate(nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
-bc_z_r = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_r', z_r=z_r_const, element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_r )
-bc_z_R = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_R', z_R=z_R_const, element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_R )
+z_profile = Expression( ' C * sqrt(pow(x[0], 2) + pow(x[1], 2))', C = C, element=fsp.Q.sub( 0 ).ufl_element() )
+mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2)))', C = C, element=fsp.Q.sub( 2 ).ufl_element() )
 
-mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2))', C = rmsh.C, element=Q.sub( 2 ).ufl_element() )
+bc_z = DirichletBC( fsp.Q.sub( 0 ),z_profile, rmsh.boundary )
 bc_mu = DirichletBC( fsp.Q.sub( 2 ), mu_profile, rmsh.boundary )
 
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z_r, bc_z_R, bc_mu]
+bcs = [bc_z, bc_mu]
 
 # Define variational problem
 
