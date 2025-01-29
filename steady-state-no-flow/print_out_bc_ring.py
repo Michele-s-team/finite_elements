@@ -28,6 +28,9 @@ print( f"\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt
 print( f"\t<<(z - phi)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(z_output, vp.z_R_const, rmsh.ds_R):4e}{col.Style.RESET_ALL}")
 print( f"\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r):4e}{col.Style.RESET_ALL}")
 print( f"\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R):4e}{col.Style.RESET_ALL}")
+print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, fsp.mu_exact ):4e}{col.Style.RESET_ALL}" )
+print(
+    f"\t<<|nu - nu_exact|^2>>_partial Omega = {col.Fore.RED}{np.sqrt( assemble( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) * rmsh.ds ) / assemble( Constant( 1 ) * rmsh.ds ) ):4e}{col.Style.RESET_ALL}" )
 
 
 print("Check if the PDE is satisfied:")

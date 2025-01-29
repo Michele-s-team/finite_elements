@@ -139,6 +139,7 @@ facet_normal = FacetNormal( mesh )
 dx = Measure( "dx", domain=mesh, subdomain_data=sf, subdomain_id=1 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
 ds_R = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
+ds = ds_r + ds_R
 
 
 #a function space used solely to define f_test_ds
