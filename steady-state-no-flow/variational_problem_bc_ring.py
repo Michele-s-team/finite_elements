@@ -147,19 +147,19 @@ fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element()
 # CHANGE PARAMETERS HERE
 z_profile = Expression( ' C * sqrt(pow(x[0], 2) + pow(x[1], 2))', C=C, element=fsp.Q.sub( 0 ).ufl_element() )
 # mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2)))', C=C, element=fsp.Q.sub( 2 ).ufl_element() )
-nu_profile = Expression( ('- (C * x[0]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))', '- (C * x[1]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))'),
-                         C=C, element=fsp.Q.sub( 3 ).ufl_element() )
+# nu_profile = Expression( ('- (C * x[0]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))', '- (C * x[1]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))'),
+#                          C=C, element=fsp.Q.sub( 3 ).ufl_element() )
 tau_profile = Expression( 'C / (2.0 * pow((1.0 + C * C) * (x[0]*x[0] + x[1]*x[1]), 3.0/2.0)) ', C=C, element=fsp.Q.sub( 3 ).ufl_element() )
 
 bc_z = DirichletBC( fsp.Q.sub( 0 ), z_profile, rmsh.boundary )
 # bc_mu = DirichletBC( fsp.Q.sub( 2 ), mu_profile, rmsh.boundary )
-bc_nu = DirichletBC( fsp.Q.sub( 3 ), nu_profile, rmsh.boundary )
+# bc_nu = DirichletBC( fsp.Q.sub( 3 ), nu_profile, rmsh.boundary )
 bc_tau = DirichletBC( fsp.Q.sub( 4 ), tau_profile, rmsh.boundary )
 
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z, bc_nu, bc_tau]
+bcs = [bc_z, bc_tau]
 
 # Define variational problem
 
@@ -194,6 +194,9 @@ F_N = alpha / rmsh.r_mesh * ( \
  \
             + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
             + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ \
+            + ( fsp.nu[i] - (fsp.mu.dx(i)) ) * fsp.nu_nu[i] * (1.0 / rmsh.r) * rmsh.ds_r \
+            + ( fsp.nu[i] - (fsp.mu.dx(i)) ) * fsp.nu_nu[i] * (1.0 / rmsh.R) * rmsh.ds_R \
     )
 
 # total functional for the mixed problem
