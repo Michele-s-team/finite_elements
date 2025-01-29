@@ -60,7 +60,7 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * sqrt(1.0 + C**2) * geo.my_norm( x ))
+        values[0] = C / (2.0 * sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
 
     def value_shape(self):
         return (1,)
@@ -68,11 +68,19 @@ class mu_exact_Expression( UserExpression ):
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = - (C * x[0]) / (2.0 * np.sqrt(1.0 + C**2) * (x[0]**2 + x[1]**2)**(3.0/2.0))
-        values[1] = - (C * x[1]) / (2.0 * np.sqrt(1.0 + C**2) * (x[0]**2 + x[1]**2)**(3.0/2.0))
+        values[0] = - (C * x[0]) / (2.0 * np.sqrt( 1.0 + C ** 2 ) * (x[0] ** 2 + x[1] ** 2) ** (3.0 / 2.0))
+        values[1] = - (C * x[1]) / (2.0 * np.sqrt( 1.0 + C ** 2 ) * (x[0] ** 2 + x[1] ** 2) ** (3.0 / 2.0))
 
     def value_shape(self):
         return (2,)
+
+
+class tau_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = C / (2.0 * ((1.0 + C ** 2) * (geo.my_norm( x )) ** 2) ** (3.0 / 2.0))
+
+    def value_shape(self):
+        return (1,)
 
 
 class z_r_Expression( UserExpression ):
@@ -123,12 +131,13 @@ fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_exact.interpolate(omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
-fsp.mu_exact.interpolate(mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
-fsp.nu_exact.interpolate(nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
-
+fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [z_0, omega_0, mu_0, nu_0])
@@ -136,18 +145,21 @@ fsp.nu_exact.interpolate(nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
-z_profile = Expression( ' C * sqrt(pow(x[0], 2) + pow(x[1], 2))', C = C, element=fsp.Q.sub( 0 ).ufl_element() )
-mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2)))', C = C, element=fsp.Q.sub( 2 ).ufl_element() )
-nu_profile = Expression( ('- (C * x[0]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))', '- (C * x[1]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))'), C = C, element=fsp.Q.sub( 3 ).ufl_element() )
+z_profile = Expression( ' C * sqrt(pow(x[0], 2) + pow(x[1], 2))', C=C, element=fsp.Q.sub( 0 ).ufl_element() )
+mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2)))', C=C, element=fsp.Q.sub( 2 ).ufl_element() )
+nu_profile = Expression( ('- (C * x[0]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))', '- (C * x[1]) / (2.0 * sqrt(1.0 + C * C) * pow(x[0] * x[0] + x[1] * x[1], 3.0/2.0))'),
+                         C=C, element=fsp.Q.sub( 3 ).ufl_element() )
+tau_profile = Expression( 'C / (2.0 * pow((1.0 + C * C) * (x[0]*x[0] + x[1]*x[1]), 3.0/2.0)) ', C=C, element=fsp.Q.sub( 3 ).ufl_element() )
 
-bc_z = DirichletBC( fsp.Q.sub( 0 ),z_profile, rmsh.boundary )
+bc_z = DirichletBC( fsp.Q.sub( 0 ), z_profile, rmsh.boundary )
 bc_mu = DirichletBC( fsp.Q.sub( 2 ), mu_profile, rmsh.boundary )
 bc_nu = DirichletBC( fsp.Q.sub( 3 ), nu_profile, rmsh.boundary )
+bc_tau = DirichletBC( fsp.Q.sub( 4 ), tau_profile, rmsh.boundary )
 
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z, bc_mu, bc_nu]
+bcs = [bc_z, bc_mu, bc_nu, bc_tau]
 
 # Define variational problem
 
@@ -168,6 +180,10 @@ F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[
        - ((rmsh.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
        - ((rmsh.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.R) * rmsh.ds_R
 
+F_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * dx \
+        - ((rmsh.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+        - ((rmsh.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
+
 F_N = alpha / rmsh.r_mesh * ( \
             + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega,
                                                                                                                                                                                      rmsh.c_r ) * (
@@ -175,10 +191,10 @@ F_N = alpha / rmsh.r_mesh * ( \
             + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega,
                                                                                                                                                                                      rmsh.c_R ) * (
                     1.0 / rmsh.R) * rmsh.ds_R \
- # \
- #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
- #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
-    )
+    # \
+    #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+    #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+)
 
 # total functional for the mixed problem
-F = (F_z + F_omega + F_mu + F_nu) + F_N
+F = (F_z + F_omega + F_mu + F_nu + F_tau) + F_N

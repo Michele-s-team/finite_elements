@@ -78,6 +78,7 @@ xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z.xdmf' )
 xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega.xdmf' )
 xdmffile_mu = XDMFFile( (rarg.args.output_directory) + '/mu.xdmf' )
 xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu.xdmf' )
+xdmffile_tau = XDMFFile( (rarg.args.output_directory) + '/tau.xdmf' )
 
 xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )
 
@@ -88,19 +89,23 @@ xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output, tau_output = fsp.psi.split( deepcopy=True )
 
 # print solution to file
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
+xdmffile_tau.write( tau_output, 0 )
+
 xdmffile_sigma.write( fsp.sigma, 0 )
 
 io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
 io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
 io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
 io.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
+io.print_vector_to_csvfile(tau_output, (rarg.args.output_directory) + '/tau.csv')
+
 io.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
 
 
@@ -109,6 +114,8 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( tau_output, "/f" )
+
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( fsp.sigma, "/f" )
 
 xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, nu_output, kappa ), fsp.Q_sigma), 0 )

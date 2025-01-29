@@ -21,7 +21,7 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output, tau_output = fsp.psi.split( deepcopy=True )
 
 print("Check of BCs:")
 print( f"\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(z_output, vp.z_r_const, rmsh.ds_r):4e}{col.Style.RESET_ALL}")
@@ -31,6 +31,7 @@ print( f"\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.di
 print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, fsp.mu_exact ):4e}{col.Style.RESET_ALL}" )
 print(
     f"\t<<|nu - nu_exact|^2>>_partial Omega = {col.Fore.RED}{np.sqrt( assemble( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) * rmsh.ds ) / assemble( Constant( 1 ) * rmsh.ds ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( tau_output, fsp.tau_exact ):4e}{col.Style.RESET_ALL}" )
 
 
 print("Check if the PDE is satisfied:")
@@ -47,11 +48,13 @@ print(
 print( f"\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):4e}{col.Style.RESET_ALL}" )
 print(
     f"\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( tau_output, fsp.tau_exact ):4e}{col.Style.RESET_ALL}" )
 
 
 xdmffile_check.write( project( z_output - fsp.z_exact , fsp.Q_z ), 0 )
 xdmffile_check.write( project( mu_output - fsp.mu_exact , fsp.Q_z ), 0 )
 xdmffile_check.write( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), 0 )
+xdmffile_check.write( project( tau_output - fsp.tau_exact , fsp.Q_tau ), 0 )
 
 # xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
 # xdmffile_check.close()
