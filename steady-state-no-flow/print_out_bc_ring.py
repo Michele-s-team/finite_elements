@@ -4,6 +4,7 @@ import colorama as col
 import numpy as np
 
 import function_spaces as fsp
+import geometry as geo
 import mesh as msh
 import physics as phys
 import read_mesh_ring as rmsh
@@ -34,5 +35,6 @@ print("Check if the PDE is satisfied:")
 print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
 
 
+xdmffile_check.write( project( mu_output - geo.H(omega_output) , fsp.Q_z ), 0 )
 xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
 xdmffile_check.close()
