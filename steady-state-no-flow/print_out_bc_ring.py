@@ -35,6 +35,16 @@ print("Check if the PDE is satisfied:")
 print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
 
 
-xdmffile_check.write( project( mu_output - geo.H(omega_output) , fsp.Q_z ), 0 )
-xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
-xdmffile_check.close()
+
+
+print( "Comparison with exact solution: " )
+print( f"\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( z_output, fsp.z_exact ):4e}{col.Style.RESET_ALL}" )
+print(
+    f"\t<<|omega - omega_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print( f"\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):4e}{col.Style.RESET_ALL}" )
+
+
+xdmffile_check.write( project( z_output - fsp.z_exact , fsp.Q_z ), 0 )
+xdmffile_check.write( project( mu_output - fsp.mu_exact , fsp.Q_z ), 0 )
+# xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
+# xdmffile_check.close()

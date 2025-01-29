@@ -51,8 +51,8 @@ class z_exact_Expression( UserExpression ):
 
 class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = C * x[0] / (geo.my_norm( x ))
+        values[1] = C * x[1] / (geo.my_norm( x ))
 
     def value_shape(self):
         return (2,)
@@ -123,6 +123,12 @@ fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+
+fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_exact.interpolate(omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_exact.interpolate(mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_exact.interpolate(nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [z_0, omega_0, mu_0, nu_0])

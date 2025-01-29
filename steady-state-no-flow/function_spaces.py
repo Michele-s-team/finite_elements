@@ -42,6 +42,11 @@ omega_output = Function(Q_omega)
 mu_output = Function( Q_mu )
 nu_output = Function( Q_nu )
 
+z_exact = Function( Q_z )
+omega_exact = Function( Q_omega )
+mu_exact = Function( Q_mu )
+nu_exact = Function( Q_nu )
+
 # omega_0, z_0 are used to store the initial conditions
 z_0 = Function( Q_z )
 omega_0 = Function( Q_omega )
