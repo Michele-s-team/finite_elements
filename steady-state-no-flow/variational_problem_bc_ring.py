@@ -43,7 +43,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = C * geo.my_norm( x )
 
     def value_shape(self):
         return (1,)
