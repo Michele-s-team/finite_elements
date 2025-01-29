@@ -60,7 +60,7 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = C / (2.0 * sqrt(1.0 + C**2) * geo.my_norm( x ))
 
     def value_shape(self):
         return (1,)
