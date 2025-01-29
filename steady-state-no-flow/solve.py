@@ -118,7 +118,7 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).wri
 
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( fsp.sigma, "/f" )
 
-xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, nu_output, kappa ), fsp.Q_sigma), 0 )
+xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, tau_output, kappa ), fsp.Q_sigma), 0 )
 xdmffile_f.write( project(phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
 # xdmffile_f.write( project(fvisc_n( v, w, omega_output, eta ), Q_omega), 0 )
 

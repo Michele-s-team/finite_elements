@@ -36,7 +36,7 @@ print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference
 
 print("Check if the PDE is satisfied:")
 # print(f"\t<<(fel + flaplace)^2>> = {col.Fore.GREEN}{np.sqrt(assemble( ( (  phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) ) ** 2 * rmsh.dx ) ) / assemble(Constant(1.0) * rmsh.dx))}{col.Style.RESET_ALL}")
-print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
+print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, tau_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
 
 
 
