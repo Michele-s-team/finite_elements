@@ -6,8 +6,7 @@ import function_spaces as fsp
 import geometry as geo
 import read_mesh_ring as rmsh
 
-i, j, k, l = ufl.indices(4)
-
+i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 # bending rigidity
@@ -17,7 +16,7 @@ rho = 1.0
 # viscosity
 eta = 1.0
 C = 0.1
-#values of z at the boundaries
+# values of z at the boundaries
 '''
 if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
@@ -27,15 +26,15 @@ z_r_const = C * rmsh.r
 z_R_const = C * rmsh.R
 zp_r_const = C
 zp_R_const = C
-omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r)**2  * (1.0 + zp_r_const**2))
-omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R)**2  * (1.0 + zp_R_const**2))
+omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
+omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
 alpha = 1e1
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (2.0 + C**2) * kappa / (2.0 * (1.0 + C**2) * (geo.my_norm(x)**2))
+        values[0] = (2.0 + C ** 2) * kappa / (2.0 * (1.0 + C ** 2) * (geo.my_norm( x ) ** 2))
         # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
 
     def value_shape(self):
@@ -141,7 +140,8 @@ bcs = [bc_z_r, bc_z_R]
 
 # Define variational problem
 
-F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * fsp.nu[j] * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg( fsp.omega ) * dx \
+F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * fsp.nu[j] * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg(
+    fsp.omega ) * dx \
       - ( \
                   + (kappa * (rmsh.n_circle( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
                   + (kappa * (rmsh.n_circle( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
@@ -158,8 +158,15 @@ F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[
        - ((rmsh.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.R) * rmsh.ds_R
 
 F_N = alpha / rmsh.r_mesh * ( \
-            + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-            + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+            + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega,
+                                                                                                                                                                                     rmsh.c_r ) * (
+                    1.0 / rmsh.r) * rmsh.ds_r \
+            + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega,
+                                                                                                                                                                                     rmsh.c_R ) * (
+                    1.0 / rmsh.R) * rmsh.ds_R \
+ \
+            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
     )
 
 # total functional for the mixed problem

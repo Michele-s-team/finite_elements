@@ -23,15 +23,15 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 print("Check of BCs:")
-print( f"\t<<(z - phi)^2>>_r = {col.Fore.RED}{msh.difference_wrt_measure(z_output, vp.z_r_const, rmsh.ds_r):4e}{col.Style.RESET_ALL}")
-print( f"\t<<(z - phi)^2>>_R = {col.Fore.RED}{msh.difference_wrt_measure(z_output, vp.z_R_const, rmsh.ds_R):4e}{col.Style.RESET_ALL}")
-print( f"\t<<(n^i \omega_i - psi )^2>>_r = {col.Fore.RED}{msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r):4e}{col.Style.RESET_ALL}")
-print( f"\t<<(n^i \omega_i - psi )^2>>_R = {col.Fore.RED}{msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R):4e}{col.Style.RESET_ALL}")
+print( f"\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(z_output, vp.z_r_const, rmsh.ds_r):4e}{col.Style.RESET_ALL}")
+print( f"\t<<(z - phi)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(z_output, vp.z_R_const, rmsh.ds_R):4e}{col.Style.RESET_ALL}")
+print( f"\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r):4e}{col.Style.RESET_ALL}")
+print( f"\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure((rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R):4e}{col.Style.RESET_ALL}")
 
 
 print("Check if the PDE is satisfied:")
 # print(f"\t<<(fel + flaplace)^2>> = {col.Fore.GREEN}{np.sqrt(assemble( ( (  phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) ) ** 2 * rmsh.dx ) ) / assemble(Constant(1.0) * rmsh.dx))}{col.Style.RESET_ALL}")
-print(f"\t<<(fel + flaplace)^2>> =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
+print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
 
 
 xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
