@@ -136,13 +136,16 @@ fsp.nu_exact.interpolate(nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
-# BCs for z
 bc_z_r = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_r', z_r=z_r_const, element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_r )
 bc_z_R = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_R', z_R=z_R_const, element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_R )
+
+mu_profile = Expression( ' C / (2.0 * sqrt(1.0 + pow(C, 2)) * sqrt(pow(x[0], 2) + pow(x[1], 2))', C = rmsh.C, element=Q.sub( 2 ).ufl_element() )
+bc_mu = DirichletBC( fsp.Q.sub( 2 ), mu_profile, rmsh.boundary )
+
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z_r, bc_z_R]
+bcs = [bc_z_r, bc_z_R, bc_mu]
 
 # Define variational problem
 
@@ -170,9 +173,9 @@ F_N = alpha / rmsh.r_mesh * ( \
             + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega,
                                                                                                                                                                                      rmsh.c_R ) * (
                     1.0 / rmsh.R) * rmsh.ds_R \
- \
-            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ # \
+ #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+ #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
     )
 
 # total functional for the mixed problem
