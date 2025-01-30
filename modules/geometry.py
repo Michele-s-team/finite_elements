@@ -66,6 +66,10 @@ def sqrt_abs_detg(omega):
 def H(omega):
     return (0.5 * g_c(omega)[i, j]*b(omega)[j, i])
 
+#same as H(omega), but expressed in terms of the covariant derivative of omega
+def H_Nabla_omega(omega):
+    return (1.0/2.0 * sqrt_detg(omega) * g_c(omega)[i, j]* Nabla_f(omega, omega)[j, i])
+
 #gaussian curvature: K = K_{al-izzi2020shear}
 def K(omega):
     return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))

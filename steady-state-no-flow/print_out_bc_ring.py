@@ -55,6 +55,3 @@ xdmffile_check.write( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (o
 xdmffile_check.write( project( mu_output - fsp.mu_exact , fsp.Q_z ), 0 )
 xdmffile_check.write( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( tau_output - fsp.tau_exact , fsp.Q_tau ), 0 )
-
-# xdmffile_check.write( project( phys.fel_n( omega_output, mu_output, nu_output, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output) , fsp.Q_sigma ), 0 )
-# xdmffile_check.close()
