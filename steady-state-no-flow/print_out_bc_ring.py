@@ -37,6 +37,18 @@ print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference
 print("Check if the PDE is satisfied:")
 print(f"\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk(project(phys.fel_n( omega_output, mu_output, tau_output, vp.kappa ), fsp.Q_z), project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
 
+print("Check if the intermediate PDEs are satisfied:")
+print("1)")
+print("2)")
+print(
+    f"\t\t<<|omega - partial z|^2>>_Omega = {col.Fore.CYAN}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - z_output.dx(i)) * (omega_output[i] - z_output.dx(i)) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print(
+    f"\t\t<<|omega - partial z|^2>>_partial Omega = {col.Fore.CYAN}{np.sqrt( assemble( (omega_output[i] - z_output.dx(i)) * (omega_output[i] - z_output.dx(i)) * rmsh.ds ) / assemble( Constant( 1 ) * rmsh.ds ) ):4e}{col.Style.RESET_ALL}" )
+print("3)")
+print( f"\t\t<<(mu - H(omega))^2>>_partial Omega = {col.Fore.CYAN}{msh.difference_on_boundary( mu_output, project(geo.H(omega_output), fsp.Q_z) ):4e}{col.Style.RESET_ALL}" )
+print(f"\t\t<<(mu - H(omega))^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk(mu_output, project(geo.H(omega_output), fsp.Q_z)):4e}{col.Style.RESET_ALL}")
+
+
 
 
 

@@ -159,8 +159,8 @@ bc_tau = DirichletBC( fsp.Q.sub( 4 ), tau_profile, rmsh.boundary )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-# bcs = [bc_z]
-bcs = [bc_z, bc_tau]
+bcs = [bc_z]
+# bcs = [bc_z, bc_tau]
 
 # Define variational problem
 
@@ -203,13 +203,9 @@ F_N = alpha / rmsh.r_mesh * ( \
             + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
             + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
  \
- #            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
- #            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
- # \
- #            \
- #            + (fsp.tau - fsp.tau_exact) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
- #            + (fsp.tau - fsp.tau_exact) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
- # \
+            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ \
     )
 
 # total functional for the mixed problem
