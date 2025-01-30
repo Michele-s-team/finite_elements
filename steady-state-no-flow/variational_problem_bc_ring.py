@@ -196,16 +196,16 @@ F_N = alpha / rmsh.r_mesh * ( \
             + (((rmsh.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((rmsh.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_circle( fsp.omega,
                                                                                                                                                                                      rmsh.c_R ) * (
                     1.0 / rmsh.R) * rmsh.ds_R \
- \
-            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
- \
-            + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-            + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
- \
-            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
- \
+ # \
+ #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+ #            + (fsp.mu - geo.H( fsp.omega )) * fsp.nu_mu * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ # \
+ #            + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+ #            + (fsp.nu[i] - (fsp.mu.dx( i ))) * fsp.nu_nu[i] * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ # \
+ #            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+ #            + (fsp.tau - geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]) * fsp.nu_tau * rmsh.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R \
+ # \
     )
 
 # total functional for the mixed problem
