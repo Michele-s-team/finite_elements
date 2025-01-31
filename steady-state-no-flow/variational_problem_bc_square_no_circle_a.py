@@ -38,27 +38,27 @@ class omega0_Expression( UserExpression ):
 
 class omega_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = D * x[1]/h
+        values[0] = D * x[1]/rmsh.h
     def value_shape(self):
         return (1,)
 # CHANGE PARAMETERS HERE
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
+omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
-sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
-omega_0.interpolate( omega0_Expression( element=Q_omega.ufl_element() ))
-z_0.interpolate( z0_Expression( element=Q_z.ufl_element() ) )
+fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
+fsp.omega_0.interpolate( omega0_Expression( element=fsp.Q_omega.ufl_element() ))
+fsp.z_0.interpolate( z0_Expression( element=fsp.Q_z.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# assigner.assign(psi, [omega_0, z_0])
+# fsp.assigner.assign(fsp.psi, [fsp.omega_0, fsp.z_0])
 
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_square = DirichletBC( fsp.Q.sub( 1 ), Expression( 'C * x[1]/h', element=fsp.Q.sub( 1 ).ufl_element(), C=C, h=h), boundary_square )
+bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( 'C * x[1]/h', element=fsp.Q.sub( 1 ).ufl_element(), C=C, h=rmsh.h), rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
@@ -66,7 +66,7 @@ bcs = [bc_z_square]
 
 # Define variational problem
 
-F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
+F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + fsp.sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
     - ( \
         ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
         + ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
