@@ -68,17 +68,17 @@ bcs = [bc_z_square]
 
 F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * (geo.H(fsp.omega).dx(j)) * (fsp.nu_z.dx(i)) - 2.0 * geo.H(fsp.omega) * ( (geo.H(fsp.omega))**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * geo.H(fsp.omega) * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * dx \
     - ( \
-        ( kappa * (n_lr(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * sqrt_deth_lr(fsp.omega) * (ds_l + ds_r) \
-        + ( kappa * (n_tb(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * sqrt_deth_tb(fsp.omega) * (ds_t + ds_b) \
+        ( kappa * (rmsh.n_lr(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * rmsh.sqrt_deth_lr(fsp.omega) * (rmsh.ds_l + rmsh.ds_r) \
+        + ( kappa * (rmsh.n_tb(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * rmsh.sqrt_deth_tb(fsp.omega) * (rmsh.ds_t + rmsh.ds_b) \
       )
 
-F_omega = ( - fsp.z * Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] * fsp.nu_omega[i] ) *  geo.sqrt_detg(fsp.omega) * dx \
-          + ( (n_lr(fsp.omega))[i] * g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * sqrt_deth_lr(fsp.omega) * (ds_l + ds_r) \
-          + ( (n_tb(fsp.omega))[i] * g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * sqrt_deth_tb(fsp.omega) * (ds_t + ds_b) \
+F_omega = ( - fsp.z * geo.Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] * fsp.nu_omega[i] ) *  geo.sqrt_detg(fsp.omega) * rmsh.dx \
+          + ( (rmsh.n_lr(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * rmsh.sqrt_deth_lr(fsp.omega) * (rmsh.ds_l + rmsh.ds_r) \
+          + ( (rmsh.n_tb(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * rmsh.sqrt_deth_tb(fsp.omega) * (rmsh.ds_t + rmsh.ds_b) \
 
-F_N = alpha / r_mesh * ( \
-              + ( ( (n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((n_lr(fsp.omega))[k] * g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * sqrt_deth_lr( fsp.omega ) * ( ds_l + ds_r) \
-              + ( ( (n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((n_tb(fsp.omega))[k] * g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * sqrt_deth_tb( fsp.omega ) * ( ds_t + ds_b) \
+F_N = alpha / rmsh.r_mesh * ( \
+              + ( ( (rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((rmsh.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * rmsh.sqrt_deth_lr( fsp.omega ) * ( rmsh.ds_l + rmsh.ds_r) \
+              + ( ( (rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((rmsh.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * rmsh.sqrt_deth_tb( fsp.omega ) * ( rmsh.ds_t + rmsh.ds_b) \
       )
 
 

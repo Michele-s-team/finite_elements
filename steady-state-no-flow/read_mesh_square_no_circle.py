@@ -63,7 +63,7 @@ def calc_normal_cg2(mesh):
 def Nt_lr(omega):
     x = ufl.SpatialCoordinate(mesh)
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
-    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+    return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 #N_n_notes on \partial \Omega_in and out
 def Nn_lr(omega):
@@ -75,7 +75,7 @@ def Nn_lr(omega):
 def Nt_tb(omega):
     x = ufl.SpatialCoordinate(mesh)
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
-    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+    return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 #N_n_notes on \partial \Omega_top and bottom
 def Nn_tb(omega):
@@ -148,7 +148,7 @@ class FunctionTestIntegralsds(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345
-        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0
+        values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
 
