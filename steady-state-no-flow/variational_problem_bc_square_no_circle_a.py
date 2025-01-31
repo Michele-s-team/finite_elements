@@ -128,16 +128,19 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0, fsp.tau_
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-z_profile = Expression( 'pow(x[0], 2) + pow(x[1], 2)', element=fsp.Q.sub( 0 ).ufl_element())
-bc_z = DirichletBC( fsp.Q.sub( 0 ), z_profile, rmsh.boundary )
+bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
+bc_mu = DirichletBC( fsp.Q.sub( 2 ), fsp.mu_exact, rmsh.boundary )
+bc_nu = DirichletBC( fsp.Q.sub( 3 ), fsp.nu_exact, rmsh.boundary )
+bc_tau = DirichletBC( fsp.Q.sub( 4 ), fsp.tau_exact, rmsh.boundary )
 # CHANGE PARAMETERS HERE
 
 # all BCs
+# bcs = [bc_z, bc_mu, bc_nu, bc_tau]
 bcs = [bc_z]
 
 # Define variational problem
 
-F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * fsp.nu[j] * (fsp.nu_z.dx(i)) - 2.0 * fsp.mu * ( (fsp.mu)**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * fsp.mu * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * dx \
+F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * fsp.nu[j] * (fsp.nu_z.dx(i)) - 2.0 * fsp.mu * ( (fsp.mu)**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * fsp.mu * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * rmsh.dx \
     - ( \
         ( kappa * (rmsh.n_lr(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * rmsh.sqrt_deth_lr(fsp.omega) * (rmsh.ds_l + rmsh.ds_r) \
         + ( kappa * (rmsh.n_tb(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * rmsh.sqrt_deth_tb(fsp.omega) * (rmsh.ds_t + rmsh.ds_b) \
