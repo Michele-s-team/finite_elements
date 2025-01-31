@@ -94,4 +94,4 @@ F_N = alpha / rmsh.r_mesh * ( \
 
 
 # total functional for the mixed problem
-F = ( F_z + F_omega ) + F_N
+F = ( F_z + F_omega + F_mu + F_nu + F_tau) + F_N

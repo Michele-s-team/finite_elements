@@ -28,7 +28,8 @@ sys.path.append(module_path)
 import function_spaces as fsp
 import input_output as io
 import physics as phys
-import read_mesh_ring as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square_no_circle as rmsh
 import runtime_arguments as rarg
 #import variational_problem_bc_square_a as vp
 # import variational_problem_bc_ring as vp
