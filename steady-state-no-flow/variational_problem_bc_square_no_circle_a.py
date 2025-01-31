@@ -142,8 +142,8 @@ bcs = [bc_z]
 
 F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * fsp.nu[j] * (fsp.nu_z.dx(i)) - 2.0 * fsp.mu * ( (fsp.mu)**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * fsp.mu * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * rmsh.dx \
     - ( \
-        ( kappa * (rmsh.n_lr(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * rmsh.sqrt_deth_lr(fsp.omega) * (rmsh.ds_l + rmsh.ds_r) \
-        + ( kappa * (rmsh.n_tb(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * rmsh.sqrt_deth_tb(fsp.omega) * (rmsh.ds_t + rmsh.ds_b) \
+        ( kappa * (rmsh.n_lr(fsp.omega))[i] * fsp.nu_z * (fsp.mu.dx(i)) ) * rmsh.sqrt_deth_lr(fsp.omega) * (rmsh.ds_l + rmsh.ds_r) \
+        + ( kappa * (rmsh.n_tb(fsp.omega))[i] * fsp.nu_z * (fsp.mu.dx(i)) ) * rmsh.sqrt_deth_tb(fsp.omega) * (rmsh.ds_t + rmsh.ds_b) \
       )
 
 F_omega = ( - fsp.z * geo.Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] * fsp.nu_omega[i] ) *  geo.sqrt_detg(fsp.omega) * rmsh.dx \
