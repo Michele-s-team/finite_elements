@@ -66,19 +66,19 @@ bcs = [bc_z_square]
 
 # Define variational problem
 
-F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + fsp.sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
+F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * (geo.H(fsp.omega).dx(j)) * (fsp.nu_z.dx(i)) - 2.0 * geo.H(fsp.omega) * ( (geo.H(fsp.omega))**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * geo.H(fsp.omega) * fsp.nu_z ) * sqrt_detg(fsp.omega) * dx \
     - ( \
-        ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
-        + ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
+        ( kappa * (n_lr(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * sqrt_deth_lr(fsp.omega) * (ds_l + ds_r) \
+        + ( kappa * (n_tb(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * sqrt_deth_tb(fsp.omega) * (ds_t + ds_b) \
       )
 
-F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx \
-          + ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
-          + ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
+F_omega = ( - fsp.z * Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] * fsp.nu_omega[i] ) *  sqrt_detg(fsp.omega) * dx \
+          + ( (n_lr(fsp.omega))[i] * g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * sqrt_deth_lr(fsp.omega) * (ds_l + ds_r) \
+          + ( (n_tb(fsp.omega))[i] * g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * sqrt_deth_tb(fsp.omega) * (ds_t + ds_b) \
 
 F_N = alpha / r_mesh * ( \
-              + ( ( (n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
-              + ( ( (n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
+              + ( ( (n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((n_lr(fsp.omega))[k] * g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * sqrt_deth_lr( fsp.omega ) * ( ds_l + ds_r) \
+              + ( ( (n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((n_tb(fsp.omega))[k] * g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * sqrt_deth_tb( fsp.omega ) * ( ds_t + ds_b) \
       )
 
 
