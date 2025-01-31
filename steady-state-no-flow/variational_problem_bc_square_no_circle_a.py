@@ -1,5 +1,4 @@
 from fenics import *
-import numpy as np
 import ufl as ufl
 
 import function_spaces as fsp
@@ -14,31 +13,66 @@ kappa = 1.0
 sigma0 = 1.0
 C = 0.1
 D = -0.1
+omega_square_const = 0.0
 #Nitche's parameter
 alpha = 1e1
 
+
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = sigma0
+        values[0] = (2.0 + C ** 2) * kappa / (2.0 * (1.0 + C ** 2) * (geo.my_norm( x ) ** 2))
+        # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
+
     def value_shape(self):
         return (1,)
 
-class z0_Expression( UserExpression ):
+
+class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0000300371897 - 0.00524403086 * x[1] + 0.844347452 * x[1]**2 - 0.738886103 * x[1]**3
+        values[0] = C * geo.my_norm( x )
+
     def value_shape(self):
         return (1,)
 
-class omega0_Expression( UserExpression ):
+
+class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.002597872 + 1.560845 * x[1] - 1.829453 * x[1]**2 - 0.2990343 * x[1]**3
+        values[0] = C * x[0] / (geo.my_norm( x ))
+        values[1] = C * x[1] / (geo.my_norm( x ))
+
     def value_shape(self):
         return (2,)
 
+
+class mu_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = C / (2.0 * sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
+
+    def value_shape(self):
+        return (1,)
+
+
+class nu_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = - (C * x[0]) / (2.0 * np.sqrt( 1.0 + C ** 2 ) * (x[0] ** 2 + x[1] ** 2) ** (3.0 / 2.0))
+        values[1] = - (C * x[1]) / (2.0 * np.sqrt( 1.0 + C ** 2 ) * (x[0] ** 2 + x[1] ** 2) ** (3.0 / 2.0))
+
+    def value_shape(self):
+        return (2,)
+
+
+class tau_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = C / (2.0 * ((1.0 + C ** 2) * (geo.my_norm( x )) ** 2) ** (3.0 / 2.0))
+
+    def value_shape(self):
+        return (1,)
+
+
 class omega_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = D * x[1]/rmsh.h
+        values[0] = omega_square_const
+
     def value_shape(self):
         return (1,)
 # CHANGE PARAMETERS HERE
@@ -47,9 +81,19 @@ class omega_square_Expression( UserExpression ):
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
 omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
-fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
-fsp.omega_0.interpolate( omega0_Expression( element=fsp.Q_omega.ufl_element() ))
-fsp.z_0.interpolate( z0_Expression( element=fsp.Q_z.ufl_element() ) )
+
+fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
+
+fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0, fsp.tau_0])
@@ -58,11 +102,12 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0, fsp.tau_
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( 'C * x[1]/h', element=fsp.Q.sub( 0 ).ufl_element(), C=C, h=rmsh.h), rmsh.boundary_square )
+z_profile = Expression( 'C * x[1]/h', element=fsp.Q.sub( 0 ).ufl_element(), C=C, h=rmsh.h)
+bc_z = DirichletBC( fsp.Q.sub( 0 ), z_profile, rmsh.boundary )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z_square]
+bcs = [bc_z]
 
 # Define variational problem
 
@@ -88,8 +133,8 @@ F_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau
         - ((rmsh.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)
 
 F_N = alpha / rmsh.r_mesh * ( \
-              + ( ( (rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((rmsh.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * rmsh.sqrt_deth_lr( fsp.omega ) * ( rmsh.ds_l + rmsh.ds_r) \
-              + ( ( (rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((rmsh.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * rmsh.sqrt_deth_tb( fsp.omega ) * ( rmsh.ds_t + rmsh.ds_b) \
+            + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
+            + (((rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square) * ((rmsh.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
       )
 
 

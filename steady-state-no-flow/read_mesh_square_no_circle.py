@@ -5,7 +5,7 @@ import numpy as np
 import ufl as ufl
 
 import runtime_arguments as rarg
-# import mesh as msh
+import mesh as msh
 
 #read the mesh
 mesh = Mesh()
@@ -128,9 +128,9 @@ h = 1.0
 facet_normal = FacetNormal( mesh )
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-mf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
 
 # test for surface elements
+dx = Measure( "dx", domain=mesh, subdomain_data=sf, subdomain_id=1 )
 ds_l = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=4 )
@@ -154,26 +154,20 @@ class FunctionTestIntegralsds(UserExpression):
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
-# here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_l = assemble( f_test_ds * ds_l )
-integral_r = assemble( f_test_ds * ds_r )
-integral_t = assemble( f_test_ds * ds_t )
-integral_b = assemble( f_test_ds * ds_b )
+msh.test_mesh_integral(0.937644, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(0.962047, f_test_ds, ds_l, '\int f ds_l')
+msh.test_mesh_integral(0.805631, f_test_ds, ds_r, '\int f ds_r')
+msh.test_mesh_integral(0.975624, f_test_ds, ds_t, '\int f ds_t')
+msh.test_mesh_integral(0.776577, f_test_ds, ds_b, '\int f ds_b')
 
-# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print( "Integral l = ", integral_l, " exact value = 0.962047" )
-print( "Integral r = ", integral_r, " exact value = 0.996086" )
-print( "Integral t = ", integral_t, " exact value = 5.26416" )
-print( "Integral b = ", integral_b, " exact value = 4.97026" )
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 0.5)'
-boundary_t  = 'near(x[1], 0.5)'
+boundary_r  = 'near(x[0], 1.0)'
+boundary_t  = 'near(x[1], 1.0)'
 boundary_b  = 'near(x[1], 0.0)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
-boundary_square = 'on_boundary'
+boundary_lr  = 'near(x[0], 0) || near(x[0], 1.0)'
+boundary_tb  = 'near(x[1], 0) || near(x[1], 1.0)'
 #CHANGE PARAMETERS HERE
