@@ -2,6 +2,9 @@ from fenics import *
 import numpy as np
 import colorama as col
 
+import input_output as io
+
+
 #  norm of vector x
 def my_norm(x):
     return (sqrt( np.dot( x, x ) ))
@@ -10,7 +13,7 @@ def my_norm(x):
 #compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference
 def test_mesh_integral(exact_value, f_test, measure, label):
     numerical_value = assemble( f_test * measure )
-    print( f"{label} = {numerical_value}, should be {exact_value}, relative error =  {col.Fore.YELLOW}{abs( (numerical_value - exact_value) / exact_value ):4e}{col.Style.RESET_ALL}" )
+    print( f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {col.Fore.YELLOW}{abs( (numerical_value - exact_value) / exact_value ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
 class BoundaryMarker( SubDomain ):

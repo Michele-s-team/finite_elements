@@ -1,6 +1,6 @@
 from fenics import *
-import numpy as np
 
+number_of_decimals = 2
 
 
 
