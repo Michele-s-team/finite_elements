@@ -1,5 +1,6 @@
 from fenics import *
 import ufl as ufl
+import numpy as np
 
 import function_spaces as fsp
 import geometry as geo
@@ -10,10 +11,6 @@ i, j, k, l = ufl.indices( 4 )
 # CHANGE PARAMETERS HERE
 #bending rigidity
 kappa = 1.0
-sigma0 = 1.0
-C = 0.1
-D = -0.1
-omega_square_const = 0.0
 #Nitche's parameter
 alpha = 1e1
 
@@ -31,7 +28,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = x[0]**2 + x[1]**2
 
     def value_shape(self):
         return (1,)
@@ -39,8 +36,8 @@ class z_exact_Expression( UserExpression ):
 
 class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = 2 * x[0]
+        values[1] = 2 * x[1]
 
     def value_shape(self):
         return (2,)
@@ -71,9 +68,31 @@ class tau_exact_Expression( UserExpression ):
         return (1,)
 
 
-class omega_square_Expression( UserExpression ):
+class omega_l_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_square_const
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+
+class omega_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = -((8 * x[1]**2) / np.sqrt((1 + 4 * x[1]**2) * (5 + 4 * x[1]**2))) + 2 / np.sqrt(1 + 4 / (1 + 4 * x[1]**2))
+
+    def value_shape(self):
+        return (1,)
+
+
+class omega_t_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = -((8 * x[0]**2) / np.sqrt((1 + 4 * x[0]**2) * (5 + 4 * x[0]**2))) + 2 / np.sqrt(1 + 4 / (1 + 4 * x[0]**2))
+
+    def value_shape(self):
+        return (1,)
+
+class omega_b_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -81,7 +100,10 @@ class omega_square_Expression( UserExpression ):
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_l = interpolate( omega_l_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_t = interpolate( omega_t_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_b = interpolate( omega_b_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 
 fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
@@ -135,8 +157,11 @@ F_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau
         - ((rmsh.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)
 
 F_N = alpha / rmsh.r_mesh * ( \
-            + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
-            + (((rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square) * ((rmsh.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+            + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
+            + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
+\
+            + (((rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_t) * ((rmsh.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_tb( fsp.omega ) * rmsh.ds_t\
+            + (((rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_b) * ((rmsh.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_tb( fsp.omega ) * rmsh.ds_b \
       )
 
 

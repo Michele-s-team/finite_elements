@@ -7,6 +7,6 @@ from variational_problem_bc_square_no_circle_a import *
 omega_output, z_output = psi.split( deepcopy=True )
 
 print( "\int_{\partial \Omega} (n^i \omega_i - psi )^2 dS = ", \
-       assemble( ( ((n_lr( omega_output ))[i] * omega_output[i] - omega_square)) ** 2 * (ds_l + ds_r) ) \
-       + assemble( ( ((n_tb( omega_output ))[i] * omega_output[i] - omega_square)) ** 2 * (ds_t + ds_b) ) \
+       assemble( ( ((n_lr( omega_output ))[i] * omega_output[i] - omega_l)) ** 2 * (ds_l + ds_r) ) \
+       + assemble( ( ((n_tb( omega_output ))[i] * omega_output[i] - omega_l)) ** 2 * (ds_t + ds_b) ) \
        )
