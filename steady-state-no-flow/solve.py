@@ -45,14 +45,11 @@ print("Input diredtory = ", rarg.args.input_directory )
 print("Output diredtory = ", rarg.args.output_directory )
 print("Radius of mesh cell = ", rmsh.r_mesh)
 
-# Define expressions used in variational forms
-kappa = Constant( vp.kappa )
 
 # solve the variational problem
 J = derivative( vp.F, fsp.psi, fsp.J_psi )
 problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
-
 
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -69,39 +66,38 @@ params = {'nonlinear_solver': 'newton',
 }
 solver.parameters.update(params)
 
-'''
-#set the solver parameters here
-params ={"newton_solver": {"linear_solver": 'superlu'}}
-solver.parameters.update(params)
-'''
+#the post-processing ('pp') variational problem used to compute tau
+J_pp = derivative( vp.F_pp, fsp.tau, fsp.J_pp )
+problem_pp = NonlinearVariationalProblem( vp.F_pp, fsp.tau, [], J_pp )
+solver_pp = NonlinearVariationalSolver( problem_pp )
+
 
 solver.solve()
-
+solver_pp.solve()
 
 # Create XDMF files for visualization output
 xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z.xdmf' )
 xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega.xdmf' )
 xdmffile_mu = XDMFFile( (rarg.args.output_directory) + '/mu.xdmf' )
 xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu.xdmf' )
+
 xdmffile_tau = XDMFFile( (rarg.args.output_directory) + '/tau.xdmf' )
 
 xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )
-
-xdmffile_n = XDMFFile( (rarg.args.output_directory) + '/n.xdmf' )
-xdmffile_n.write( rmsh.facet_normal_smooth(), 0 )
 
 xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output, nu_output, tau_output = fsp.psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 # print solution to file
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( nu_output, 0 )
-xdmffile_tau.write( tau_output, 0 )
+
+xdmffile_tau.write( fsp.tau, 0 )
 
 xdmffile_sigma.write( fsp.sigma, 0 )
 
@@ -109,7 +105,8 @@ io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
 io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
 io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
 io.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
-io.print_vector_to_csvfile(tau_output, (rarg.args.output_directory) + '/tau.csv')
+
+io.print_vector_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
 
 io.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
 
@@ -119,14 +116,13 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( tau_output, "/f" )
+
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( fsp.tau, "/f" )
 
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( fsp.sigma, "/f" )
 
-xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, tau_output, kappa ), fsp.Q_sigma), 0 )
+xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
 xdmffile_f.write( project(phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
-# xdmffile_f.write( project(fvisc_n( v, w, omega_output, eta ), Q_omega), 0 )
-
 
 # import print_out_bc_square_a
 # import print_out_bc_ring

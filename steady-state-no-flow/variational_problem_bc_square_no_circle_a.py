@@ -113,29 +113,27 @@ fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+
 fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0, fsp.tau_0])
+fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0])
 
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
 # BCs for z
 bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
-bc_mu = DirichletBC( fsp.Q.sub( 2 ), fsp.mu_exact, rmsh.boundary )
-bc_nu = DirichletBC( fsp.Q.sub( 3 ), fsp.nu_exact, rmsh.boundary )
-bc_tau = DirichletBC( fsp.Q.sub( 4 ), fsp.tau_exact, rmsh.boundary )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-# bcs = [bc_z, bc_mu, bc_nu, bc_tau]
 bcs = [bc_z]
 
 # Define variational problem
@@ -157,10 +155,6 @@ F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[
        - ((rmsh.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * rmsh.sqrt_deth_lr( fsp.omega) * (rmsh.ds_l + rmsh.ds_r)  \
        - ((rmsh.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * rmsh.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b)
 
-F_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-        - ((rmsh.n_lr( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_lr( fsp.omega  ) * (rmsh.ds_l + rmsh.ds_r) \
-        - ((rmsh.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)
-
 F_N = alpha / rmsh.r_mesh * ( \
             + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
             + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
@@ -170,4 +164,10 @@ F_N = alpha / rmsh.r_mesh * ( \
 
 
 # total functional for the mixed problem
-F = ( F_z + F_omega + F_mu + F_nu + F_tau) + F_N
+F = ( F_z + F_omega + F_mu + F_nu) + F_N
+
+
+#post-processing variational functional
+F_pp = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+       - ((rmsh.n_lr( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_lr( fsp.omega  ) * (rmsh.ds_l + rmsh.ds_r) \
+       - ((rmsh.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * rmsh.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)
