@@ -135,6 +135,9 @@ ds_l = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=5 )
+ds_lr = ds_l + ds_r
+ds_tb = ds_t + ds_b
+ds = ds_lr + ds_tb
 
 
 #a function space used solely to define f_test_ds
@@ -155,6 +158,12 @@ class FunctionTestIntegralsds(UserExpression):
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
 msh.test_mesh_integral(0.937644, f_test_ds, dx, '\int f dx')
+
+msh.test_mesh_integral(3.51988, f_test_ds, ds, '\int f ds')
+
+msh.test_mesh_integral(1.76768, f_test_ds, ds_lr, '\int f ds_lr')
+msh.test_mesh_integral(1.7522, f_test_ds, ds_tb, '\int f ds_lr')
+
 msh.test_mesh_integral(0.962047, f_test_ds, ds_l, '\int f ds_l')
 msh.test_mesh_integral(0.805631, f_test_ds, ds_r, '\int f ds_r')
 msh.test_mesh_integral(0.975624, f_test_ds, ds_t, '\int f ds_t')
