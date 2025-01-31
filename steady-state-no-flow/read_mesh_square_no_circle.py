@@ -1,33 +1,26 @@
 from fenics import *
+from dolfin import *
 from mshr import *
-import argparse
 import numpy as np
+import ufl as ufl
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+import runtime_arguments as rarg
+import mesh as msh
 
 #read mesh
 mesh=Mesh()
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
+with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mesh)
 mvc = MeshValueCollection("size_t", mesh, 2)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
+with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-
-# # Create mesh
-# channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
-# cylinder = Circle(Point(0.2, 0.2), 0.05)
-# domain = channel - cylinder
-# mesh = generate_mesh(domain, 64)
 
 #radius of the smallest cell in the mesh
 r_mesh = mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 10.0
+L = 1.0
 h = 1.0
 
 tol = 1E-3

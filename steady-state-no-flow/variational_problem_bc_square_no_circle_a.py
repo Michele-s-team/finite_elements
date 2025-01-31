@@ -1,9 +1,12 @@
-from __future__ import print_function
 from fenics import *
-from mshr import *
-from fenics import *
-from mshr import *
-from geometry import *
+import numpy as np
+import ufl as ufl
+
+import function_spaces as fsp
+import geometry as geo
+import read_mesh_square_no_circle as rmsh
+
+i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 #bending rigidity
@@ -55,7 +58,7 @@ z_0.interpolate( z0_Expression( element=Q_z.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_square = DirichletBC( Q.sub( 1 ), Expression( 'C * x[1]/h', element=Q.sub( 1 ).ufl_element(), C=C, h=h), boundary_square )
+bc_z_square = DirichletBC( fsp.Q.sub( 1 ), Expression( 'C * x[1]/h', element=fsp.Q.sub( 1 ).ufl_element(), C=C, h=h), boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
