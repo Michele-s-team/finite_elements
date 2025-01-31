@@ -11,10 +11,6 @@ i, j, k, l = ufl.indices( 4 )
 # CHANGE PARAMETERS HERE
 # bending rigidity
 kappa = 1.0
-# density
-rho = 1.0
-# viscosity
-eta = 1.0
 C = 0.1
 # values of z at the boundaries
 '''
