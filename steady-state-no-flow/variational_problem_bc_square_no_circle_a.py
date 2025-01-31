@@ -164,7 +164,6 @@ F_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau
 F_N = alpha / rmsh.r_mesh * ( \
             + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
             + (((rmsh.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((rmsh.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
-\
             + (((rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_t) * ((rmsh.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_tb( fsp.omega ) * rmsh.ds_t\
             + (((rmsh.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_b) * ((rmsh.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * rmsh.sqrt_deth_tb( fsp.omega ) * rmsh.ds_b \
       )
