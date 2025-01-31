@@ -1,8 +1,8 @@
 from fenics import *
 from mshr import *
-# from read_mesh_square import *
-import read_mesh_ring as rmsh
-# from read_mesh_square_no_circle import *
+#import read_mesh_square as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square_no_circle as rmsh
 
 # Define function spaces
 #finite elements for sigma .... omega
