@@ -66,13 +66,13 @@ bcs = [bc_z_square]
 
 # Define variational problem
 
-F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * (geo.H(fsp.omega).dx(j)) * (fsp.nu_z.dx(i)) - 2.0 * geo.H(fsp.omega) * ( (geo.H(fsp.omega))**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * geo.H(fsp.omega) * fsp.nu_z ) * sqrt_detg(fsp.omega) * dx \
+F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * (geo.H(fsp.omega).dx(j)) * (fsp.nu_z.dx(i)) - 2.0 * geo.H(fsp.omega) * ( (geo.H(fsp.omega))**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * geo.H(fsp.omega) * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * dx \
     - ( \
         ( kappa * (n_lr(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * sqrt_deth_lr(fsp.omega) * (ds_l + ds_r) \
         + ( kappa * (n_tb(fsp.omega))[i] * fsp.nu_z * (geo.H(fsp.omega).dx(i)) ) * sqrt_deth_tb(fsp.omega) * (ds_t + ds_b) \
       )
 
-F_omega = ( - fsp.z * Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] * fsp.nu_omega[i] ) *  sqrt_detg(fsp.omega) * dx \
+F_omega = ( - fsp.z * Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] * fsp.nu_omega[i] ) *  geo.sqrt_detg(fsp.omega) * dx \
           + ( (n_lr(fsp.omega))[i] * g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * sqrt_deth_lr(fsp.omega) * (ds_l + ds_r) \
           + ( (n_tb(fsp.omega))[i] * g(fsp.omega)[i, j] * fsp.z * fsp.nu_omega[j] ) * sqrt_deth_tb(fsp.omega) * (ds_t + ds_b) \
 
