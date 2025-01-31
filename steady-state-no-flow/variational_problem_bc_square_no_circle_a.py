@@ -20,8 +20,10 @@ alpha = 1e1
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (2.0 + C ** 2) * kappa / (2.0 * (1.0 + C ** 2) * (geo.my_norm( x ) ** 2))
-        # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
+        values[0] = (16 * (-1 + 4 * x[0]**6 + 6 * x[1]**2 + 6 * x[1]**4 + 4 * x[1]**6 + \
+                  6 * x[0]**4 * (1 + 2 * x[1]**2) +\
+                  6 * x[0]**2 * (1 + 2 * (x[1]**2 + x[1]**4))) * kappa) / \
+           ((1 + 2 * x[0]**2 + 2 * x[1]**2) * (1 + 4 * x[0]**2 + 4 * x[1]**2)**3)
 
     def value_shape(self):
         return (1,)
@@ -29,7 +31,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C * geo.my_norm( x )
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -37,8 +39,8 @@ class z_exact_Expression( UserExpression ):
 
 class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C * x[0] / (geo.my_norm( x ))
-        values[1] = C * x[1] / (geo.my_norm( x ))
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -46,7 +48,7 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -54,8 +56,8 @@ class mu_exact_Expression( UserExpression ):
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = - (C * x[0]) / (2.0 * np.sqrt( 1.0 + C ** 2 ) * (x[0] ** 2 + x[1] ** 2) ** (3.0 / 2.0))
-        values[1] = - (C * x[1]) / (2.0 * np.sqrt( 1.0 + C ** 2 ) * (x[0] ** 2 + x[1] ** 2) ** (3.0 / 2.0))
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -63,7 +65,7 @@ class nu_exact_Expression( UserExpression ):
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * ((1.0 + C ** 2) * (geo.my_norm( x )) ** 2) ** (3.0 / 2.0))
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -102,7 +104,7 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0, fsp.tau_
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-z_profile = Expression( 'C * x[1]/h', element=fsp.Q.sub( 0 ).ufl_element(), C=C, h=rmsh.h)
+z_profile = Expression( 'pow(x[0], 2) + pow(x[1], 2)', element=fsp.Q.sub( 0 ).ufl_element())
 bc_z = DirichletBC( fsp.Q.sub( 0 ), z_profile, rmsh.boundary )
 # CHANGE PARAMETERS HERE
 
