@@ -20,7 +20,7 @@ xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output, nu_output, tau_output = fsp.psi.split( deepcopy=True )
+z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 print( "Check of BCs:" )
 print("1)")
@@ -34,7 +34,7 @@ print(
 print( f"3)\t\t<<[mu - H(omega)]^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, project(geo.H(omega_output), fsp.Q_z) ):4e}{col.Style.RESET_ALL}" )
 print(
     f"4)\t\t<<|nu_i - \partial_i mu|^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure(project(sqrt((nu_output[i] - (mu_output.dx(i))) * (nu_output[i] - (mu_output.dx(i)))), fsp.Q_z), project(Constant(0), fsp.Q_z), rmsh.ds):4e}{col.Style.RESET_ALL}" )
-print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_partial Omega =  {col.Fore.RED}{msh.difference_on_boundary( tau_output, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_partial Omega =  {col.Fore.RED}{msh.difference_on_boundary( fsp.tau, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
 
 
 print( "Check if the intermediate PDEs are satisfied:" )
@@ -43,7 +43,7 @@ print(
     f"2) \t\t<<|omega - partial z|^2>>_Omega = {col.Fore.CYAN}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - z_output.dx( i )) * (omega_output[i] - z_output.dx( i )) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
 print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( mu_output, project( geo.H( omega_output ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
 print( f"4)\t\t<<|nu - partial  mu|^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( project((nu_output[i] - mu_output.dx( i )) * (nu_output[i] - mu_output.dx( i )), fsp.Q_z), project( Constant(0), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
-print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( tau_output, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
+print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( fsp.tau, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
 
 
 
@@ -54,16 +54,16 @@ print(
 print( f"3)\t\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):4e}{col.Style.RESET_ALL}" )
 print(
     f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
-print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( tau_output, fsp.tau_exact ):4e}{col.Style.RESET_ALL}" )
+print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):4e}{col.Style.RESET_ALL}" )
 
 
 print( "Check if the PDE is satisfied:" )
 print(
-    f"\t\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk( project( phys.fel_n( omega_output, mu_output, tau_output, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ) ):4e}{col.Style.RESET_ALL}" )
 
 
 xdmffile_check.write( project( z_output - fsp.z_exact, fsp.Q_z ), 0 )
 xdmffile_check.write( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( mu_output - fsp.mu_exact, fsp.Q_z ), 0 )
 xdmffile_check.write( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), 0 )
-xdmffile_check.write( project( tau_output - fsp.tau_exact, fsp.Q_tau ), 0 )
+xdmffile_check.write( project( fsp.tau - fsp.tau_exact, fsp.Q_tau ), 0 )
