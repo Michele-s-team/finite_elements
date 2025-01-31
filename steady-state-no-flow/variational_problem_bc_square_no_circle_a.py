@@ -63,7 +63,8 @@ class nu_exact_Expression( UserExpression ):
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = (32 * (-1 + 4 * x[0]**4 + 6 * x[1]**2 + 4 * x[1]**4 + x[0]**2 * (6 + 8 * x[1]**2))) / (1 + 4 * x[0]**2 + 4 * x[1]**2)**(9.0/2.0)
+
 
     def value_shape(self):
         return (1,)
