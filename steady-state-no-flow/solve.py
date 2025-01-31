@@ -59,7 +59,8 @@ params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
                 # 'linear_solver'           : 'superlu',
-                'linear_solver'           : 'mumps',
+                # 'linear_solver'           : 'mumps',
+                'linear_solver': 'lu',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
                 'maximum_iterations'      : 1000000,

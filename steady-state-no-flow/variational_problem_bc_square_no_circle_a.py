@@ -54,8 +54,8 @@ class mu_exact_Expression( UserExpression ):
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] = - (16 * x[0] * (1 + x[0]**2 + x[1]**2)) / ((1 + 4 * x[0]**2 + 4 * x[1]**2) ** (5.0/2.0))
+        values[1] = -((16 * x[1] * (1 + x[0]**2 + x[1]**2)) / (1 + 4 * x[0]**2 + 4 * x[1]**2)**(5.0/2.0))
 
     def value_shape(self):
         return (2,)
