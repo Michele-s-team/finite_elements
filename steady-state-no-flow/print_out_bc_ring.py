@@ -3,6 +3,7 @@ import ufl as ufl
 import colorama as col
 import numpy as np
 
+import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
@@ -29,9 +30,9 @@ print( f"\t\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_w
 print( f"\t\t<<(z - phi)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_R_const, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print("2)")
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 # print( f"3)\t\t<<[mu - H(omega)]^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, project(geo.H(omega_output), fsp.Q_z) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 # print(
 #     f"4)\t\t<<|nu_i - \partial_i mu|^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure(project(sqrt((nu_output[i] - (mu_output.dx(i))) * (nu_output[i] - (mu_output.dx(i)))), fsp.Q_z), project(Constant(0), fsp.Q_z), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )

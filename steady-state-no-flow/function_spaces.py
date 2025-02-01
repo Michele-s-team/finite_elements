@@ -1,8 +1,12 @@
 from fenics import *
 from mshr import *
+
+import boundary_geometry as bgeo
+
 #import read_mesh_square as rmsh
 import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
+
 
 # Define function spaces
 #finite elements for sigma .... omega
@@ -22,16 +26,16 @@ P_nu = VectorElement( 'P', triangle, degree_function_space )
 
 element = MixedElement( [P_z, P_omega, P_mu, P_nu] )
 #total function space
-Q = FunctionSpace(rmsh.mesh, element)
+Q = FunctionSpace(bgeo.mesh, element)
 #function spaces for z, omega, eta and theta
 Q_z= Q.sub( 0 ).collapse()
 Q_omega = Q.sub( 1 ).collapse()
 Q_mu = Q.sub( 2 ).collapse()
 Q_nu = Q.sub( 3 ).collapse()
 
-Q_sigma = FunctionSpace( rmsh.mesh, 'P', 1 )
+Q_sigma = FunctionSpace( bgeo.mesh, 'P', 1 )
 #the function space for tau is for post-processing only
-Q_tau = FunctionSpace( rmsh.mesh, 'P', degree_function_space )
+Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
 # Define functions
 J_psi = TrialFunction( Q )
