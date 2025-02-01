@@ -128,10 +128,6 @@ tol = 1E-3
 #CHANGE PARAMETERS HERE
 
 
-# norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
-
 #this is the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( mesh )
 
@@ -153,16 +149,11 @@ class FunctionTestIntegralsds(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345
-        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0
+        values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
-
-#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-# numerical_value_int_dx = assemble( f_test_ds * dx )
-# exact_value_int_dx = 2.90212
-# print(f"\int_box_minus_ball f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
 
 msh.test_mesh_integral(2.90212, f_test_ds, dx, '\int f dx')
 msh.test_mesh_integral(2.77595, f_test_ds, ds_r, '\int f ds_r')

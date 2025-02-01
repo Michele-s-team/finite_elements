@@ -106,7 +106,7 @@ io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.
 io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
 io.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
 
-io.print_vector_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
+io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
 
 io.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
 
@@ -122,7 +122,7 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).wri
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( fsp.sigma, "/f" )
 
 xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
-xdmffile_f.write( project(phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
+xdmffile_f.write( project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
 
 # import print_out_bc_square_a
 import print_out_bc_ring

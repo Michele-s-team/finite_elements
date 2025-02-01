@@ -32,10 +32,10 @@ print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"3)\t\t<<[mu - H(omega)]^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, project(geo.H(omega_output), fsp.Q_z) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print(
-    f"4)\t\t<<|nu_i - \partial_i mu|^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure(project(sqrt((nu_output[i] - (mu_output.dx(i))) * (nu_output[i] - (mu_output.dx(i)))), fsp.Q_z), project(Constant(0), fsp.Q_z), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_partial Omega =  {col.Fore.RED}{msh.difference_on_boundary( fsp.tau, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+# print( f"3)\t\t<<[mu - H(omega)]^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( mu_output, project(geo.H(omega_output), fsp.Q_z) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+# print(
+#     f"4)\t\t<<|nu_i - \partial_i mu|^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure(project(sqrt((nu_output[i] - (mu_output.dx(i))) * (nu_output[i] - (mu_output.dx(i)))), fsp.Q_z), project(Constant(0), fsp.Q_z), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+# print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_partial Omega =  {col.Fore.RED}{msh.difference_on_boundary( fsp.tau, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
 print( "Check if the intermediate PDEs are satisfied:" )
@@ -47,7 +47,7 @@ print( f"4)\t\t<<|nu - partial  mu|^2>>_Omega =  {col.Fore.CYAN}{msh.difference_
 print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( fsp.tau, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
-
+'''
 print( "Comparison with exact solution: " )
 print( f"1)\t\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
@@ -56,7 +56,7 @@ print( f"3)\t\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_b
 print(
     f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
+'''
 
 print( "Check if the PDE is satisfied:" )
 print(

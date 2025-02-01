@@ -18,10 +18,10 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
-z_r_const = C * rmsh.r
-z_R_const = C * rmsh.R
+z_r_const = 0
+z_R_const = C
 zp_r_const = C
-zp_R_const = C
+zp_R_const = - 2*C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
@@ -30,7 +30,7 @@ alpha = 1e1
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (2.0 + C ** 2) * kappa / (2.0 * (1.0 + C ** 2) * (geo.my_norm( x ) ** 2))
+        values[0] =  1.0
         # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
 
     def value_shape(self):
@@ -143,11 +143,13 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0])
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
-bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
+# bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
+bc_z_r = DirichletBC( fsp.Q.sub( 0 ), z_r_const, rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 0 ), z_R_const, rmsh.boundary_R )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z]
+bcs = [bc_z_r, bc_z_R]
 # bcs = [bc_z, bc_tau]
 
 # Define variational problem
