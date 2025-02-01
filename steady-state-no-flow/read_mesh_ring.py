@@ -6,11 +6,6 @@ import ufl as ufl
 
 import runtime_arguments as rarg
 import mesh as msh
-
-
-
-
-
 import geometry as geo
 import boundary_geometry as bgeo
 
@@ -35,8 +30,6 @@ r = 1.0
 R = 2.0
 c_r = [0, 0]
 c_R = [0, 0]
-
-tol = 1E-3
 #CHANGE PARAMETERS HERE
 
 
