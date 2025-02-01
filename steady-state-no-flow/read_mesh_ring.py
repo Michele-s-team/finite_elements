@@ -2,7 +2,6 @@ from fenics import *
 from dolfin import *
 from mshr import *
 import numpy as np
-import ufl as ufl
 
 import runtime_arguments as rarg
 import mesh as msh

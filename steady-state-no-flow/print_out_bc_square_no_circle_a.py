@@ -2,6 +2,7 @@ from fenics import *
 import ufl as ufl
 import colorama as col
 
+import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
@@ -27,13 +28,13 @@ print("1)")
 print( f"\t\t<<(z - phi)^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure( z_output, fsp.z_exact, rmsh.ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print("2)")
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega l = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_l, rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega l = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_l, rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega r = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega r = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_t, rmsh.ds_t ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_t, rmsh.ds_t ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure( (rmsh.n_circle( omega_output ))[i] * omega_output[i], vp.omega_b, rmsh.ds_b ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_b, rmsh.ds_b ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 #
 print( "Check if the intermediate PDEs are satisfied:" )
 print( "1)\t\tCannot be computed" )

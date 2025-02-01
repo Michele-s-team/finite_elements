@@ -107,6 +107,34 @@ def boundary_points_circle(mesh, r, R, c):
 
     return x
 
+#compute the lowest and largest x and y values of points in the mesh and return them as a vector in the format [[x_min, x_max], [y_min, y_max]]
+def extremal_coordinates(mesh):
+
+    points = boundary_points(mesh)
+    x_min = points[0][0]
+    x_max = x_min
+    y_min = points[0][1]
+    y_max = y_min
+
+    for point in points:
+        if point[0] < x_min:
+            x_min = point[0]
+
+        if point[0] > x_max:
+            x_max = point[0]
+
+        if point[1] < y_min:
+            y_min = point[1]
+
+        if point[1] > y_max:
+            y_max = point[1]
+
+    # print(f"\textremal coordinates: {x_min}, {x_max}, {y_min}, {y_max}")
+
+    return [[x_min, x_max], [y_min, y_max]]
+
+
+
 '''
 compute the difference between functions f and g on the boundary of the mesh on which f and g are defined, returning 
 sqrt(\sum_{i \in {vertices in the boundary of the mesh} [f(x_i) - g(x_i)]^2/ (number of vertices in the boundary of the mesh})

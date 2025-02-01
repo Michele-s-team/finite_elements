@@ -5,6 +5,7 @@ import ufl as ufl
 
 
 import geometry as geo
+import mesh as mesh_module
 import runtime_arguments as rarg
 
 
@@ -12,6 +13,7 @@ import runtime_arguments as rarg
 mesh = Mesh()
 xdmf = XDMFFile(mesh.mpi_comm(), (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 xdmf.read(mesh)
+
 
 #the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( mesh )
@@ -65,24 +67,32 @@ def calc_normal_cg2(mesh):
 #Nt^i_notes on \partial \Omega_in and out
 def Nt_lr(omega):
     x = ufl.SpatialCoordinate(mesh)
+    L = (mesh_module.extremal_coordinates( mesh ))[0][1]
+
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
-    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+    return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 #N_n_notes on \partial \Omega_in and out
 def Nn_lr(omega):
     x = ufl.SpatialCoordinate(mesh)
+    L = (mesh_module.extremal_coordinates( mesh ))[0][1]
+
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
     return (N3d[i] * (normal(omega))[i])
 
 #Nt^i_notes on \partisal \Omega_W
 def Nt_tb(omega):
     x = ufl.SpatialCoordinate(mesh)
+    h = (mesh_module.extremal_coordinates( mesh ))[1][1]
+
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
-    return as_tensor(g_c(omega)[i, j] * N3d[k] * e(omega)[j, k], (i))
+    return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 #N_n_notes on \partial \Omega_top and bottom
 def Nn_tb(omega):
     x = ufl.SpatialCoordinate(mesh)
+    h = (mesh_module.extremal_coordinates( mesh ))[1][1]
+
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
     return (N3d[i] * (normal(omega))[i])
 
