@@ -14,14 +14,23 @@ i, j, k, l = ufl.indices( 4 )
 kappa = 1.0
 #Nitche's parameter
 alpha = 1e1
+C=0.1
+
+'''
+if you compare with the solution from check-with-analytical-solution-bc-square-no-circle-a.nb:
+    - z_t(b)_const_{here} <-> \[Phi]TOP(BOTTOM)_{check-with-analytical-solution-bc-square-no-circle.nb}
+    - omega_t(b)_const_{here} <-> \[Psi]TOP(BOTTOM)_{check-with-analytical-solution-bc-square-no-circle.nb}
+
+'''
+z_t_const = C
+z_b_const = 0.0
+omega_t_const = - C
+omega_b_const = 0.0
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (16 * (-1 + 4 * x[0]**6 + 6 * x[1]**2 + 6 * x[1]**4 + 4 * x[1]**6 + \
-                  6 * x[0]**4 * (1 + 2 * x[1]**2) +\
-                  6 * x[0]**2 * (1 + 2 * (x[1]**2 + x[1]**4))) * kappa) / \
-           ((1 + 2 * x[0]**2 + 2 * x[1]**2) * (1 + 4 * x[0]**2 + 4 * x[1]**2)**3)
+        values[0] = 1.0
 
     def value_shape(self):
         return (1,)
@@ -29,7 +38,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = x[0]**2 + x[1]**2
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -37,8 +46,8 @@ class z_exact_Expression( UserExpression ):
 
 class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 2 * x[0]
-        values[1] = 2 * x[1]
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -46,7 +55,7 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (4 + 8 * x[0]**2 + 8 * x[1]**2) / (2 * (1 + 4 * x[0]**2 + 4 * x[1]**2)**(3.0/2.0))
+        values[0] = 0
 
 
     def value_shape(self):
@@ -55,8 +64,8 @@ class mu_exact_Expression( UserExpression ):
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = - (16 * x[0] * (1 + x[0]**2 + x[1]**2)) / ((1 + 4 * x[0]**2 + 4 * x[1]**2) ** (5.0/2.0))
-        values[1] = -((16 * x[1] * (1 + x[0]**2 + x[1]**2)) / (1 + 4 * x[0]**2 + 4 * x[1]**2)**(5.0/2.0))
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -64,7 +73,7 @@ class nu_exact_Expression( UserExpression ):
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (32 * (-1 + 4 * x[0]**4 + 6 * x[1]**2 + 4 * x[1]**4 + x[0]**2 * (6 + 8 * x[1]**2))) / (1 + 4 * x[0]**2 + 4 * x[1]**2)**(9.0/2.0)
+        values[0] = 0
 
 
     def value_shape(self):
@@ -80,7 +89,7 @@ class omega_l_Expression( UserExpression ):
 
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -((8 * x[1]**2) / np.sqrt((1 + 4 * x[1]**2) * (5 + 4 * x[1]**2))) + 2 / np.sqrt(1 + 4 / (1 + 4 * x[1]**2))
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -88,14 +97,14 @@ class omega_r_Expression( UserExpression ):
 
 class omega_t_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -((8 * x[0]**2) / np.sqrt((1 + 4 * x[0]**2) * (5 + 4 * x[0]**2))) + 2 / np.sqrt(1 + 4 / (1 + 4 * x[0]**2))
+        values[0] = omega_t_const
 
     def value_shape(self):
         return (1,)
 
 class omega_b_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = omega_b_const
 
     def value_shape(self):
         return (1,)
@@ -131,11 +140,13 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0])
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
+#note that here I imposte BCs for z only on l and r because the solution is independent of x, if you consider cases where the solutoion depdends on x, add bc_l, bc_r
+bc_z_t = DirichletBC( fsp.Q.sub( 0 ), z_t_const, rmsh.boundary_t )
+bc_z_b = DirichletBC( fsp.Q.sub( 0 ), z_b_const, rmsh.boundary_b )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_z]
+bcs = [bc_z_t, bc_z_b]
 
 # Define variational problem
 
@@ -157,8 +168,10 @@ F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[
        - ((bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b)
 
 F_N = alpha / rmsh.r_mesh * ( \
-            + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
-            + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
+
+            #note that here I imposte BCs for omega only on l and r because the solution is independent of x, if you consider cases where the solutoion depdends on x, add Nitsches' terms for ds_l and ds_r
+            # + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
+            # + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
             + (((bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_t) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_t\
             + (((bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_b) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_b \
       )

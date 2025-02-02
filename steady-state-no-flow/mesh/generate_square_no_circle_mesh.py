@@ -11,7 +11,7 @@ args = parser.parse_args()
 resolution = (float)( args.resolution )
 
 # CHANGE PARAMETERS HERE
-L = 1.0
+L = 10.0
 h = 1.0
 # CHANGE PARAMETERS HERE
 
