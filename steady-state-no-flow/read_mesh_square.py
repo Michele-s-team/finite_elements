@@ -22,7 +22,7 @@ with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
 mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 
 #radius of the smallest cell in the mesh
-r_mesh = mesh.hmin()
+r_mesh = bgeo.mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
@@ -36,11 +36,11 @@ c_r = [L/2.0, h/2.0]
 
 
 # test for surface elements
-ds_l = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=2 )
-ds_r = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=3 )
-ds_t = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=4 )
-ds_b = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=5 )
-ds_circle = Measure( "ds", domain=mesh, subdomain_data=mf, subdomain_id=6 )
+ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
+ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
+ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
+ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
+ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=6 )
 # ds_lr = ds_l + ds_r
 # ds_tb = ds_t + ds_b
 
@@ -55,7 +55,7 @@ class FunctionTestIntegralsds(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345
-        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0
+        values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
 
