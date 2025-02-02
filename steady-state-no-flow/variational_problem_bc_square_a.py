@@ -110,7 +110,7 @@ fsp.assigner.assign( fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0] )
 # CHANGE PARAMETERS HERE
 # BCs for z
 bc_z_circle = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_circle_const', element=fsp.Q.sub( 0 ).ufl_element(), z_circle_const=z_circle_const ), rmsh.boundary_circle )
-bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_square_const', element=fsp.Q.sub( 0 ).ufl_element() , z_square_const=z_square_const),  rmsh.boundary_square )
+bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_square_const', element=fsp.Q.sub( 0 ).ufl_element(), z_square_const=z_square_const ), rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
@@ -119,7 +119,7 @@ bcs = [bc_z_circle, bc_z_square]
 # Define variational problem
 
 F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * fsp.nu[j] * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * (
-            (fsp.mu) ** 2 - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+        (fsp.mu) ** 2 - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
       - ( \
                   (kappa * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
                   + (kappa * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_z * fsp.nu[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
@@ -141,15 +141,14 @@ F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[
 F_N = alpha / rmsh.r_mesh * ( \
             + (((bgeo.n_lr( fsp.omega ))[i] * fsp.omega[i] - omega_square) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
             + (((bgeo.n_tb( fsp.omega ))[i] * fsp.omega[i] - omega_square) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
-            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_circle) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega,
-                                                                                                                                                                                          rmsh.c_r ) * (
-                        1.0 / rmsh.r) * rmsh.ds_circle \
+            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_circle) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle \
     )
 
 # total functional for the mixed problem
 F = (F_z + F_omega + F_mu + F_nu) + F_N
 
-#post-processing variational functional
+# post-processing variational functional
 F_pp = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-       - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_lr( fsp.omega  ) * rmsh.ds_lr \
-       - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_tb( fsp.omega) * rmsh.ds_tb
+       - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+       - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
+       - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_circle( fsp.omega , rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle
