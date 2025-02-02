@@ -23,16 +23,15 @@ z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
 
 print( "Check of BCs:" )
 print("1)")
-print( f"\t\t<<(z - phi)^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure( z_output, fsp.z_exact, rmsh.ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - phi)^2>>_square = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_square_const, rmsh.ds_square ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - phi)^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_circle_const, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print("2)")
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega l = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_l, rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_lr = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega r = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_tb = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_t, rmsh.ds_t ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_b, rmsh.ds_b ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - psi )^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 #
 print( "Check if the intermediate PDEs are satisfied:" )
 print( "1)\t\tCannot be computed" )
@@ -42,16 +41,6 @@ print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_
 print( f"4)\t\t<<|nu - partial  mu|^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( project(sqrt((nu_output[i] - mu_output.dx( i )) * (nu_output[i] - mu_output.dx( i ))), fsp.Q_z), project( Constant(0), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print( f"5)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {col.Fore.CYAN}{msh.difference_in_bulk( fsp.tau, project( geo.g_c(fsp.omega)[i, j] * geo.Nabla_f(nu_output, omega_output)[i, j], fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-# print( "Comparison with exact solution: " )
-# print( f"1)\t\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print(
-#     f"2)\t\t<<|omega - omega_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print( f"3)\t\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print(
-#     f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-#
-# print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 #
 print( "Check if the PDE is satisfied:" )
