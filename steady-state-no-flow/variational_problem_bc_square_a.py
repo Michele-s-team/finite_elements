@@ -91,7 +91,7 @@ F_omega = ( - z * Nabla_v(bgeo.nu_omega, omega)[i, i] - omega[i] * bgeo.nu_omega
           + ( (bgeo.n_tb(omega))[i] * g(omega)[i, j] * z * bgeo.nu_omega[j] ) * bgeo.sqrt_deth_tb(omega) * (ds_t + ds_b) \
           + ( (bgeo.n_circle(omega))[i] * g(omega)[i, j] * z * bgeo.nu_omega[j] ) * bgeo.sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 
-F_N = alpha / r_mesh * ( \
+F_N = alpha / rmsh.r_mesh * ( \
               + ( ( (bgeo.n_lr(omega))[i] * omega[i] - omega_square ) * ((bgeo.n_lr(omega))[k] * g( omega )[k, l] * bgeo.nu_omega[l]) ) * bgeo.sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
               + ( ( (bgeo.n_tb(omega))[i] * omega[i] - omega_square ) * ((bgeo.n_tb(omega))[k] * g( omega )[k, l] * bgeo.nu_omega[l]) ) * bgeo.sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
               + ( ( (bgeo.n_circle(omega))[i] * omega[i] - omega_circle ) * ((bgeo.n_circle(omega))[k] * g( omega )[k, l] * bgeo.nu_omega[l]) ) * bgeo.sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
