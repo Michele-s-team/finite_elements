@@ -79,22 +79,22 @@ bcs = [bc_z_circle, bc_z_square]
 
 # Define variational problem
 
-F_z = ( kappa * ( geo.g_comega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
+F_z = ( kappa * ( geo.g_comega)[i, j] * (geo.H(omega).dx(j)) * (bgeo.nu_z.dx(i)) - 2.0 * geo.H(omega) * ( (geo.H(omega))**2 - K(omega) ) * bgeo.nu_z ) + sigma * geo.H(omega) * bgeo.nu_z ) * sqrt_detg(omega) * dx \
     - ( \
-        ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
-        + ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
-        + ( kappa * (n_circle(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+        ( kappa * (bgeo.n_lr(omega))[i] * bgeo.nu_z * (geo.H(omega).dx(i)) ) * bgeo.sqrt_deth_lr(omega) * (ds_l + ds_r) \
+        + ( kappa * (bgeo.n_tb(omega))[i] * bgeo.nu_z * (geo.H(omega).dx(i)) ) * bgeo.sqrt_deth_tb(omega) * (ds_t + ds_b) \
+        + ( kappa * (bgeo.n_circle(omega))[i] * bgeo.nu_z * (geo.H(omega).dx(i)) ) * bgeo.sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
       )
 
-F_omega = ( - z * Nabla_v(nu_omega, omega)[i, i] - omega[i] * nu_omega[i] ) *  sqrt_detg(omega) * dx \
-          + ( (n_lr(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
-          + ( (n_tb(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
-          + ( (n_circle(omega))[i] * g(omega)[i, j] * z * nu_omega[j] ) * sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
+F_omega = ( - z * Nabla_v(bgeo.nu_omega, omega)[i, i] - omega[i] * bgeo.nu_omega[i] ) *  sqrt_detg(omega) * dx \
+          + ( (bgeo.n_lr(omega))[i] * g(omega)[i, j] * z * bgeo.nu_omega[j] ) * bgeo.sqrt_deth_lr(omega) * (ds_l + ds_r) \
+          + ( (bgeo.n_tb(omega))[i] * g(omega)[i, j] * z * bgeo.nu_omega[j] ) * bgeo.sqrt_deth_tb(omega) * (ds_t + ds_b) \
+          + ( (bgeo.n_circle(omega))[i] * g(omega)[i, j] * z * bgeo.nu_omega[j] ) * bgeo.sqrt_deth_circle( omega, c_r ) * (1.0 / r) * ds_circle
 
 F_N = alpha / r_mesh * ( \
-              + ( ( (n_lr(omega))[i] * omega[i] - omega_square ) * ((n_lr(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
-              + ( ( (n_tb(omega))[i] * omega[i] - omega_square ) * ((n_tb(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
-              + ( ( (n_circle(omega))[i] * omega[i] - omega_circle ) * ((n_circle(omega))[k] * g( omega )[k, l] * nu_omega[l]) ) * sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
+              + ( ( (bgeo.n_lr(omega))[i] * omega[i] - omega_square ) * ((bgeo.n_lr(omega))[k] * g( omega )[k, l] * bgeo.nu_omega[l]) ) * bgeo.sqrt_deth_lr( omega ) * ( ds_l + ds_r) \
+              + ( ( (bgeo.n_tb(omega))[i] * omega[i] - omega_square ) * ((bgeo.n_tb(omega))[k] * g( omega )[k, l] * bgeo.nu_omega[l]) ) * bgeo.sqrt_deth_tb( omega ) * ( ds_t + ds_b) \
+              + ( ( (bgeo.n_circle(omega))[i] * omega[i] - omega_circle ) * ((bgeo.n_circle(omega))[k] * g( omega )[k, l] * bgeo.nu_omega[l]) ) * bgeo.sqrt_deth_circle(omega, c_r) * (1.0 / r) * ds_circle \
       )
 
 
