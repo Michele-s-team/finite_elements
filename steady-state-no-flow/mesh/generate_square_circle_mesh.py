@@ -43,7 +43,7 @@ channel_lines = [model.add_line(my_points[i], my_points[i+1])
 
 channel_loop = model.add_curve_loop(channel_lines)
 
-circle_r = model.add_circle(c_r, r, mesh_size=resolution)
+circle_r = model.add_circle(c_r, r, mesh_size=resolution/10)
 
 
 plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])

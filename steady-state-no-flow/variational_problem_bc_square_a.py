@@ -13,17 +13,17 @@ i, j, k, l = ufl.indices( 4 )
 # bending rigidity
 kappa = 1.0
 # Nitche's parameter
-alpha = 1e1
+alpha = 1e2
 
 z_circle_const = 0.0
-z_square_const = 0.0
+z_square_const = 0.1
 omega_circle_const = 0.5
 omega_square_const = 0.0
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = 1.0
 
     def value_shape(self):
         return (1,)

@@ -1,6 +1,5 @@
 from fenics import *
 from mshr import *
-import argparse
 import numpy as np
 
 import runtime_arguments as rarg
@@ -78,8 +77,6 @@ msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int_b f ds')
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 0.5)'
 boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
 boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
 boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > 2 * 0.05'
