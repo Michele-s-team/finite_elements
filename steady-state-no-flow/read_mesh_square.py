@@ -36,13 +36,15 @@ c_r = [L/2.0, h/2.0]
 
 
 # test for surface elements
+dx = Measure( "dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1 )
 ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
 ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=6 )
-# ds_lr = ds_l + ds_r
-# ds_tb = ds_t + ds_b
+ds_lr = ds_l + ds_r
+ds_tb = ds_t + ds_b
+ds_square = ds_lr + ds_tb
 
 #a function space used solely to define f_test_ds
 Q_test = FunctionSpace( bgeo.mesh, 'P', 2 )
@@ -61,19 +63,13 @@ class FunctionTestIntegralsds(UserExpression):
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
-# here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_l = assemble( f_test_ds * ds_l )
-integral_r = assemble( f_test_ds * ds_r )
-integral_t = assemble( f_test_ds * ds_t )
-integral_b = assemble( f_test_ds * ds_b )
-integral_circle = assemble( f_test_ds * ds_circle )
+msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int_square f ds')
+msh.test_mesh_integral(0.3049366444861381, f_test_ds, ds_circle, '\int_circle f ds')
+msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int_lr f ds')
+msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int_tb f ds')
 
-# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print( "Integral l = ", integral_l, " exact value = 0.462517" )
-print( "Integral r = ", integral_r, " exact value = 0.47113" )
-print( "Integral t = ", integral_t, " exact value = 0.498266" )
-print( "Integral b = ", integral_b, " exact value = 0.413016" )
-print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE

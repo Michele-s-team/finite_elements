@@ -3,9 +3,9 @@ from mshr import *
 
 import boundary_geometry as bgeo
 
-#import read_mesh_square as rmsh
+import read_mesh_square as rmsh
 # import read_mesh_ring as rmsh
-import read_mesh_square_no_circle as rmsh
+# import read_mesh_square_no_circle as rmsh
 
 
 # Define function spaces
