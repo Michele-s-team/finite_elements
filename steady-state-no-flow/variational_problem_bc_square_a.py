@@ -1,5 +1,4 @@
 from fenics import *
-import numpy as np
 import ufl as ufl
 
 import function_spaces as fsp
