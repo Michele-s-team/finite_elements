@@ -36,6 +36,28 @@ class OmegaExpression( UserExpression ):
     def value_shape(self):
         return (2,)
 
+class MuExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+
+class NuExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+class TauExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.5
@@ -55,12 +77,12 @@ omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_z.ufl_element
 omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
-fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
-fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
-fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_0.interpolate( MuExpression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 
-fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
+fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
