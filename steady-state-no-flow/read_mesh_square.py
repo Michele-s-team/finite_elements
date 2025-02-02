@@ -69,6 +69,10 @@ msh.test_mesh_integral(0.3049366444861381, f_test_ds, ds_circle, '\int_circle f 
 msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int_lr f ds')
 msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int_tb f ds')
 
+msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int_l f ds')
+msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int_r f ds')
+msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int_t f ds')
+msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int_b f ds')
 
 
 # Define boundaries and obstacle
