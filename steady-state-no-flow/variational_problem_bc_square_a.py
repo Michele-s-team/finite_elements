@@ -1,9 +1,13 @@
-from __future__ import print_function
 from fenics import *
-from mshr import *
-from fenics import *
-from mshr import *
-from geometry import *
+import numpy as np
+import ufl as ufl
+
+import function_spaces as fsp
+import boundary_geometry as bgeo
+import geometry as geo
+import read_mesh_square as rmsh
+
+i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 #bending rigidity
@@ -47,22 +51,27 @@ class omega_square_Expression( UserExpression ):
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_circle = interpolate( omega_circle_Expression( element=Q_z.ufl_element() ), Q_z )
-omega_square = interpolate( omega_square_Expression( element=Q_z.ufl_element() ), Q_z )
+omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
-sigma.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
-omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
-z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
+fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
+fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 
-#uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# assigner.assign(psi, [omega_0, z_0])
+fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
+
+
+# uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
+fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0, fsp.nu_0])
 
 # boundary conditions (BCs)
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_circle )
-bc_z_square = DirichletBC( Q.sub( 1 ), Expression( '0.0', element=Q.sub( 1 ).ufl_element() ), boundary_square )
+bc_z_circle = DirichletBC( fsp.Q.sub( 0 ), Expression( '0.0', element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_circle )
+bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( '0.0', element=fsp.Q.sub( 0 ).ufl_element() ), rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
@@ -70,7 +79,7 @@ bcs = [bc_z_circle, bc_z_square]
 
 # Define variational problem
 
-F_z = ( kappa * ( g_c(omega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
+F_z = ( kappa * ( geo.g_comega)[i, j] * (H(omega).dx(j)) * (nu_z.dx(i)) - 2.0 * H(omega) * ( (H(omega))**2 - K(omega) ) * nu_z ) + sigma * H(omega) * nu_z ) * sqrt_detg(omega) * dx \
     - ( \
         ( kappa * (n_lr(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_lr(omega) * (ds_l + ds_r) \
         + ( kappa * (n_tb(omega))[i] * nu_z * (H(omega).dx(i)) ) * sqrt_deth_tb(omega) * (ds_t + ds_b) \
