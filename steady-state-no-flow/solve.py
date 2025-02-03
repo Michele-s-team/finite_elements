@@ -30,12 +30,12 @@ import input_output as io
 import physics as phys
 import runtime_arguments as rarg
 
-import read_mesh_square as rmsh
-# import read_mesh_ring as rmsh
+# import read_mesh_square as rmsh
+import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
 
-import variational_problem_bc_square_a as vp
-# import variational_problem_bc_ring as vp
+# import variational_problem_bc_square_a as vp
+import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
@@ -89,13 +89,12 @@ xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output, nu_output = fsp.psi.split( deepcopy=True )
+z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 
 # print solution to file
 xdmffile_z.write( z_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_mu.write( mu_output, 0 )
-xdmffile_nu.write( nu_output, 0 )
 
 xdmffile_tau.write( fsp.tau, 0 )
 
@@ -104,7 +103,6 @@ xdmffile_sigma.write( fsp.sigma, 0 )
 io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
 io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
 io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
-io.print_vector_to_csvfile(nu_output, (rarg.args.output_directory) + '/nu.csv')
 
 io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
 
@@ -115,7 +113,6 @@ io.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( nu_output, "/f" )
 
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( fsp.tau, "/f" )
 
@@ -124,6 +121,6 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).w
 xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
 xdmffile_f.write( project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
 
-import print_out_bc_square_a
-# import print_out_bc_ring
+# import print_out_bc_square_a
+import print_out_bc_ring
 # import print_out_bc_square_no_circle_a
