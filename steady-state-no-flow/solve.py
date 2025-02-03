@@ -17,6 +17,7 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 '''
 
+import colorama as col
 from fenics import *
 from mshr import *
 import sys
@@ -43,7 +44,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input diredtory = ", rarg.args.input_directory )
 print("Output diredtory = ", rarg.args.output_directory )
-print("Radius of mesh cell = ", rmsh.r_mesh)
+print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 
 # solve the variational problem

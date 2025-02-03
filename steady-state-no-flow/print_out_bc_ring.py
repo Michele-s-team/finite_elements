@@ -41,11 +41,11 @@ print(
 
 print( "Check if the intermediate PDEs are satisfied:" )
 print(
-    f"1)\t\t<<(fel + flaplace)^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"1)\t\t<<(fel + flaplace)^2>>_Omega =  {msh.difference_in_bulk( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
 print(
-    f"2) \t\t<<|omega - partial z|^2>>_Omega = {col.Fore.GREEN}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - z_output.dx( i )) * (omega_output[i] - z_output.dx( i )) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk( mu_output, project( geo.H( omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {col.Fore.GREEN}{msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"2) \t\t<<|omega - partial z|^2>>_Omega = {msh.difference_in_bulk( project( sqrt( (omega_output[i] - z_output.dx( i )) * (omega_output[i] - z_output.dx( i )) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
+print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {msh.difference_in_bulk( mu_output, project( geo.H( omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
+print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
 
 
 '''
