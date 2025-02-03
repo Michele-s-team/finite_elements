@@ -140,7 +140,7 @@ bcs = [bc_z_t, bc_z_b]
 
 # Define variational problem
 
-F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * fsp.nu[j] * (fsp.nu_z.dx(i)) - 2.0 * fsp.mu * ( (fsp.mu)**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * fsp.mu * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * rmsh.dx \
+F_z = ( kappa * ( geo.g_c(fsp.omega)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx(i)) - 2.0 * fsp.mu * ( (fsp.mu)**2 - geo.K(fsp.omega) ) * fsp.nu_z ) + fsp.sigma * fsp.mu * fsp.nu_z ) * geo.sqrt_detg(fsp.omega) * rmsh.dx \
     - ( \
         ( kappa * (bgeo.n_lr(fsp.omega))[i] * fsp.nu_z * (fsp.mu.dx(i)) ) * bgeo.sqrt_deth_lr(fsp.omega) * (rmsh.ds_l + rmsh.ds_r) \
         + ( kappa * (bgeo.n_tb(fsp.omega))[i] * fsp.nu_z * (fsp.mu.dx(i)) ) * bgeo.sqrt_deth_tb(fsp.omega) * (rmsh.ds_t + rmsh.ds_b) \
@@ -153,10 +153,6 @@ F_omega = ( - fsp.z * geo.Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] 
 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
-F_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-       - ((bgeo.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_lr( fsp.omega) * (rmsh.ds_l + rmsh.ds_r)  \
-       - ((bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b)
-
 F_N = alpha / rmsh.r_mesh * ( \
 
             #note that here I imposte BCs for omega only on l and r because the solution is independent of x, if you consider cases where the solutoion depdends on x, add Nitsches' terms for ds_l and ds_r
@@ -168,10 +164,10 @@ F_N = alpha / rmsh.r_mesh * ( \
 
 
 # total functional for the mixed problem
-F = ( F_z + F_omega + F_mu + F_nu) + F_N
+F = ( F_z + F_omega + F_mu) + F_N
 
 
 #post-processing variational functional
-F_pp = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-       - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_lr( fsp.omega  ) * (rmsh.ds_l + rmsh.ds_r) \
-       - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)
+F_pp = ((fsp.mu.dx(i)) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+       - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr( fsp.omega  ) * (rmsh.ds_l + rmsh.ds_r) \
+       - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)
