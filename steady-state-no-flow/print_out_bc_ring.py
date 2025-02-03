@@ -1,7 +1,6 @@
 from fenics import *
 import ufl as ufl
 import colorama as col
-import numpy as np
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
