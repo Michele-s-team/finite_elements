@@ -30,13 +30,13 @@ import input_output as io
 import physics as phys
 import runtime_arguments as rarg
 
-#import read_mesh_square as rmsh
+import read_mesh_square as rmsh
 # import read_mesh_ring as rmsh
-import read_mesh_square_no_circle as rmsh
+# import read_mesh_square_no_circle as rmsh
 
-#import variational_problem_bc_square_a as vp
+import variational_problem_bc_square_a as vp
 # import variational_problem_bc_ring as vp
-import variational_problem_bc_square_no_circle_a as vp
+# import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -57,7 +57,7 @@ params = {'nonlinear_solver': 'newton',
             {
                 'linear_solver'           : 'superlu',
                 # 'linear_solver'           : 'mumps',
-                # 'linear_solver': 'lu',
+                # 'linear_solver':   'lu',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
                 'maximum_iterations'      : 1000000,
@@ -124,6 +124,6 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).w
 xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
 xdmffile_f.write( project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
 
-# import print_out_bc_square_a
+import print_out_bc_square_a
 # import print_out_bc_ring
-import print_out_bc_square_no_circle_a
+# import print_out_bc_square_no_circle_a
