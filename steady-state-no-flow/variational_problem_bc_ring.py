@@ -19,10 +19,10 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
-z_r_const = C * rmsh.r
-z_R_const = C * rmsh.R
+z_r_const = 0
+z_R_const = C
 zp_r_const = C
-zp_R_const = C
+zp_R_const = -2*C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
@@ -31,8 +31,8 @@ alpha = 1e1
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        # values[0] =  1.0
-        values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
+        values[0] =  1.0
+        # values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
 
     def value_shape(self):
         return (1,)
