@@ -62,6 +62,14 @@ class mu_exact_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
+class nu_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
@@ -119,12 +127,14 @@ fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
@@ -170,7 +180,7 @@ F_N = alpha / rmsh.r_mesh * ( \
 F = (F_z + F_omega + F_mu ) + F_N
 
 #post-processing variational functional
-F_pp = ((fsp.mu.dx(i)) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-        - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-        - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
+F_pp_tau = ((fsp.mu.dx( i )) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+           - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+           - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
 

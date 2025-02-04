@@ -68,8 +68,8 @@ params = {'nonlinear_solver': 'newton',
 solver.parameters.update(params)
 
 #the post-processing ('pp') variational problem used to compute tau
-J_pp = derivative( vp.F_pp, fsp.tau, fsp.J_pp_tau )
-problem_pp = NonlinearVariationalProblem( vp.F_pp, fsp.tau, [], J_pp )
+J_pp = derivative( vp.F_pp_tau, fsp.tau, fsp.J_pp_tau )
+problem_pp = NonlinearVariationalProblem( vp.F_pp_tau, fsp.tau, [], J_pp )
 solver_pp = NonlinearVariationalSolver( problem_pp )
 
 
