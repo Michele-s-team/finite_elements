@@ -31,12 +31,12 @@ import input_output as io
 import physics as phys
 import runtime_arguments as rarg
 
-import read_mesh_square as rmsh
-# import read_mesh_ring as rmsh
+# import read_mesh_square as rmsh
+import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
 
-import variational_problem_bc_square_a as vp
-# import variational_problem_bc_ring as vp
+# import variational_problem_bc_square_a as vp
+import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
@@ -68,7 +68,7 @@ params = {'nonlinear_solver': 'newton',
 solver.parameters.update(params)
 
 #the post-processing ('pp') variational problem used to compute tau
-J_pp = derivative( vp.F_pp, fsp.tau, fsp.J_pp )
+J_pp = derivative( vp.F_pp, fsp.tau, fsp.J_pp_tau )
 problem_pp = NonlinearVariationalProblem( vp.F_pp, fsp.tau, [], J_pp )
 solver_pp = NonlinearVariationalSolver( problem_pp )
 
@@ -122,6 +122,6 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).w
 xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
 xdmffile_f.write( project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
 
-import print_out_bc_square_a
-# import print_out_bc_ring
+# import print_out_bc_square_a
+import print_out_bc_ring
 # import print_out_bc_square_no_circle_a
