@@ -19,10 +19,10 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
-z_r_const = 0
-z_R_const = C
+z_r_const = C * rmsh.r
+z_R_const = C * rmsh.R
 zp_r_const = C
-zp_R_const = - 2*C
+zp_R_const = C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
@@ -64,8 +64,8 @@ class mu_exact_Expression( UserExpression ):
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] =  -((C * (1 + C**2) * (geo.my_norm(x))) / (2 * ((1 + C**2) * (geo.my_norm(x))**2)**(3/2))) * x[0]/geo.my_norm(x)
-        values[1] = -((C * (1 + C**2) * (geo.my_norm(x))) / (2 * ((1 + C**2) * (geo.my_norm(x))**2)**(3/2))) * x[1]/geo.my_norm(x)
+        values[0] =  -((C * (1 + C**2) * (geo.my_norm(x))) / (2.0 * ((1 + C**2) * (geo.my_norm(x))**2)**(3.0/2.0))) * x[0]/geo.my_norm(x)
+        values[1] = -((C * (1 + C**2) * (geo.my_norm(x))) / (2.0 * ((1 + C**2) * (geo.my_norm(x))**2)**(3.0/2.0))) * x[1]/geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
@@ -138,7 +138,7 @@ fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) 
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
+# fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 # boundary conditions (BCs)
 

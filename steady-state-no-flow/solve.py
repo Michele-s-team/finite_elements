@@ -40,7 +40,7 @@ import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
 
 print("Input diredtory = ", rarg.args.input_directory )
 print("Output diredtory = ", rarg.args.output_directory )
