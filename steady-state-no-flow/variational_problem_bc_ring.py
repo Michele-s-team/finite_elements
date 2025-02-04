@@ -31,8 +31,8 @@ alpha = 1e1
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] =  1.0
-        # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
+        # values[0] =  1.0
+        values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
 
     def value_shape(self):
         return (1,)
@@ -57,15 +57,15 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
+        values[0] = C / (2.0 * np.sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
 
     def value_shape(self):
         return (1,)
 
 class nu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
+        values[0] =  -((C * (1 + C**2) * (geo.my_norm(x))) / (2 * ((1 + C**2) * (geo.my_norm(x))**2)**(3/2))) * x[0]/geo.my_norm(x)
+        values[1] = -((C * (1 + C**2) * (geo.my_norm(x))) / (2 * ((1 + C**2) * (geo.my_norm(x))**2)**(3/2))) * x[1]/geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
