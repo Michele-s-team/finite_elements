@@ -52,6 +52,14 @@ class MuExpression( UserExpression ):
     def value_shape(self):
         return (1,)
 
+class NuExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0.0
+        values[1] = 0.0
+
+    def value_shape(self):
+        return (2,)
+
 class TauExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
