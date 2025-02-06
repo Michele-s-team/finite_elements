@@ -26,7 +26,7 @@ r_mesh = bgeo.mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 10.0
+L = 1.0
 h = 1.0
 #CHANGE PARAMETERS HERE
 
@@ -79,9 +79,9 @@ msh.test_mesh_integral(4.970263832232728, f_test_ds, ds_b, '\int f ds_b')
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 10.0)'
+boundary_r  = 'near(x[0], 1.0)'
 boundary_t  = 'near(x[1], 1.0)'
 boundary_b  = 'near(x[1], 0.0)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 10.0)'
+boundary_lr  = 'near(x[0], 0) || near(x[0], 1.0)'
 boundary_tb  = 'near(x[1], 0) || near(x[1], 1.0)'
 #CHANGE PARAMETERS HERE

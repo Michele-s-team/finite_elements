@@ -25,12 +25,13 @@ z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 
 print( "Check of BCs:" )
 print("1)")
-print( f"\t\t<<(z - phi)^2>>_partial Omega = {col.Fore.RED}{msh.difference_wrt_measure( z_output, fsp.z_exact, rmsh.ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - phi)^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_t_const, rmsh.ds_t ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - phi)^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_b_const, rmsh.ds_b ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print("2)")
-print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega l = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_l, rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega r = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+# print(
+#     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega l = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_l, rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+# print(
+#     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega r = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_t, rmsh.ds_t ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
@@ -45,21 +46,22 @@ print(
 print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {msh.difference_in_bulk( mu_output, project( geo.H( omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
 print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
 '''
+'''
+print( "Comparison with exact solution: " )
+print( f"1)\t\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print(
+    f"2)\t\t<<|omega - omega_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"3)\t\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print(
+    f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-# print( "Comparison with exact solution: " )
-# print( f"1)\t\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print(
-#     f"2)\t\t<<|omega - omega_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (omega_output[i] - fsp.omega_exact[i]) * (omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print( f"3)\t\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print(
-#     f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-#
-# print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
+print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+'''
 
 
 
 xdmffile_check.write( project( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
-xdmffile_check.write( project( project( sqrt( (omega_output[i] - z_output.dx( i )) * (omega_output[i] - z_output.dx( i )) ), fsp.Q_z ), fsp.Q_z ), 0 )
+xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
-xdmffile_check.write( project( project( fsp.tau - (- geo.Nabla_LB(mu_output, omega_output)), fsp.Q_z ), fsp.Q_tau ), 0 )
+xdmffile_check.write( project( project( sqrt( (fsp.nu[i] - (mu_output.dx( i ))) * (fsp.nu[i] - (mu_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
+xdmffile_check.write( project( project( fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z ), fsp.Q_tau ), 0 )

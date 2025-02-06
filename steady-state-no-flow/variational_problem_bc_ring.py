@@ -22,7 +22,7 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
 z_r_const = 0
 z_R_const = C
 zp_r_const = C
-zp_R_const = - 2*C
+zp_R_const = -2*C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
@@ -32,7 +32,7 @@ alpha = 1e1
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         values[0] =  1.0
-        # values[0] =  cos(2.0*(np.pi)*geo.my_norm(x))
+        # values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
 
     def value_shape(self):
         return (1,)
@@ -57,10 +57,18 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
+        values[0] = C / (2.0 * np.sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
 
     def value_shape(self):
         return (1,)
+
+class nu_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] =  -((C * (1 + C**2) * (geo.my_norm(x))) / (2.0 * ((1 + C**2) * (geo.my_norm(x))**2)**(3.0/2.0))) * x[0]/geo.my_norm(x)
+        values[1] = -((C * (1 + C**2) * (geo.my_norm(x))) / (2.0 * ((1 + C**2) * (geo.my_norm(x))**2)**(3.0/2.0))) * x[1]/geo.my_norm(x)
+
+    def value_shape(self):
+        return (2,)
 
 
 class tau_exact_Expression( UserExpression ):
@@ -119,16 +127,18 @@ fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
+# fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 # boundary conditions (BCs)
 
@@ -170,7 +180,13 @@ F_N = alpha / rmsh.r_mesh * ( \
 F = (F_z + F_omega + F_mu ) + F_N
 
 #post-processing variational functional
-F_pp = ((fsp.mu.dx(i)) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-        - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
-        - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
+
+F_pp_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+       - ((bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+       - ((bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.R) * rmsh.ds_R
+
+
+F_pp_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+           - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+           - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
 

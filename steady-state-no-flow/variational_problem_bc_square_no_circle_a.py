@@ -1,6 +1,5 @@
 from fenics import *
 import ufl as ufl
-import numpy as np
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
@@ -61,7 +60,13 @@ class mu_exact_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
+class nu_exact_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] =  0
+        values[1] = 0
 
+    def value_shape(self):
+        return (2,)
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
@@ -115,12 +120,14 @@ fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
@@ -154,10 +161,8 @@ F_omega = ( - fsp.z * geo.Nabla_v(fsp.nu_omega, fsp.omega)[i, i] - fsp.omega[i] 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_N = alpha / rmsh.r_mesh * ( \
-
-            #note that here I imposte BCs for omega only on l and r because the solution is independent of x, if you consider cases where the solutoion depdends on x, add Nitsches' terms for ds_l and ds_r
-            # + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
-            # + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
+            + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_l) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
+            + (((bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
             + (((bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_t) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_t\
             + (((bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_b) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_b \
       )
@@ -167,7 +172,11 @@ F_N = alpha / rmsh.r_mesh * ( \
 F = ( F_z + F_omega + F_mu) + F_N
 
 
-#post-processing variational functional
-F_pp = ((fsp.mu.dx(i)) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+#post-processing variational functionals
+F_pp_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+       - ((bgeo.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr\
+       - ((bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb
+
+F_pp_tau = ((fsp.mu.dx(i)) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
        - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr( fsp.omega  ) * (rmsh.ds_l + rmsh.ds_r) \
        - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_tb( fsp.omega) * (rmsh.ds_t + rmsh.ds_b)

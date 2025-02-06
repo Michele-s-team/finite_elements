@@ -16,7 +16,7 @@ omega_i = \partial_i z
 mu = H(omega)
 tau = Nabla_i nu^i 
 '''
-degree_function_space = 2
+degree_function_space = 1
 P_z = FiniteElement( 'P', triangle, degree_function_space )
 P_omega = VectorElement( 'P', triangle, degree_function_space )
 P_mu = FiniteElement( 'P', triangle, degree_function_space )
@@ -31,7 +31,8 @@ Q_omega = Q.sub( 1 ).collapse()
 Q_mu = Q.sub( 2 ).collapse()
 
 Q_sigma = FunctionSpace( bgeo.mesh, 'P', 1 )
-#the function space for tau is for post-processing only
+#the function spaces for nu and tau are for post-processing only
+Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
 # Define functions
@@ -39,11 +40,14 @@ J_psi = TrialFunction( Q )
 psi = Function( Q )
 nu_z, nu_omega, nu_mu = TestFunctions( Q )
 
-J_pp = TrialFunction( Q_tau )
+J_pp_nu = TrialFunction( Q_nu )
+J_pp_tau = TrialFunction( Q_tau )
+nu_nu = TestFunction(Q_nu)
 nu_tau = TestFunction(Q_tau)
 
 #these functions are used to print the solution to file
 sigma = Function(Q_sigma)
+nu = Function(Q_nu)
 tau = Function(Q_tau)
 
 z_output = Function(Q_z)
@@ -54,6 +58,7 @@ z_exact = Function( Q_z )
 omega_exact = Function( Q_omega )
 mu_exact = Function( Q_mu )
 
+nu_exact = Function( Q_nu )
 tau_exact = Function( Q_tau )
 
 # omega_0, z_0 are used to store the initial conditions
@@ -61,6 +66,7 @@ z_0 = Function( Q_z )
 omega_0 = Function( Q_omega )
 mu_0 = Function( Q_mu )
 
+nu_0 = Function( Q_nu )
 tau_0 = Function( Q_tau )
 
 z, omega, mu = split( psi )
