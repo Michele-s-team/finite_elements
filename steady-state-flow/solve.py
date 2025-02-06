@@ -110,5 +110,4 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).w
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
-# import print_out_bc_square_a
 import print_out_bc_ring
