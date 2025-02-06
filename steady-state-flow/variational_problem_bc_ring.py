@@ -145,7 +145,7 @@ F_w = ( \
 )
 
 F_z = ( \
-                    - w * ((normal( fsp.omega ))[2] - ((normal( fsp.omega ))[0] * fsp.omega[0] + (normal( fsp.omega ))[1] * fsp.omega[1])) * geo.nu_z \
+                    - w * ((geo.normal( fsp.omega ))[2] - ((geo.normal( fsp.omega ))[0] * fsp.omega[0] + (geo.normal( fsp.omega ))[1] * fsp.omega[1])) * geo.nu_z \
             ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_omega = (z * geo.Nabla_v( geo.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * geo.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
