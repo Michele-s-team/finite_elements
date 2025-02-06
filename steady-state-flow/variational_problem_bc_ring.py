@@ -77,22 +77,22 @@ fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 
 
 # CHANGE PARAMETERS HERE
-profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_r = v_r, element=Q.sub( 0 ).ufl_element() )
+profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_r = v_r, element=fsp.Q.sub( 0 ).ufl_element() )
 # CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
-bc_v_r = DirichletBC( Q.sub( 0 ), profile_v_r, boundary_r )
+bc_v_r = DirichletBC( fsp.Q.sub( 0 ), profile_v_r, rmsh.boundary_r )
 
 # BCs for w_bar
-bc_w_r = DirichletBC( Q.sub( 1 ), Constant( w_r ), boundary_r )
-bc_w_R = DirichletBC( Q.sub( 1 ), Constant( w_R ), boundary_R )
+bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( w_r ), rmsh.boundary_r )
+bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R ), rmsh.boundary_R )
 
 #BC for sigma
-bc_sigma_r = DirichletBC( Q.sub( 2 ), Constant( sigma_r ), boundary_r )
+bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r ), rmsh.boundary_r )
 
 # BCs for z
-bc_z_r = DirichletBC( Q.sub( 4 ), Expression( 'z_r', element=Q.sub( 4 ).ufl_element(), z_r=z_r), boundary_r )
-bc_z_R = DirichletBC( Q.sub( 4 ), Expression( 'z_R', element=Q.sub( 4 ).ufl_element(), z_R=z_R), boundary_R )
+bc_z_r = DirichletBC( fsp.Q.sub( 4 ), Expression( 'z_r', element=fsp.Q.sub( 4 ).ufl_element(), z_r=z_r), rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 4 ), Expression( 'z_R', element=fsp.Q.sub( 4 ).ufl_element(), z_R=z_R), rmsh.boundary_R )
 
 # all BCs
 bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
