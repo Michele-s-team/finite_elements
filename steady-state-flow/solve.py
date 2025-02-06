@@ -100,6 +100,7 @@ xdmffile_sigma.write( sigma_output, 0 )
 
 io.print_vector_to_csvfile(v_output, (rarg.args.output_directory) + '/v.csv')
 io.print_scalar_to_csvfile(w_output, (rarg.args.output_directory) + '/w.csv')
+io.print_scalar_to_csvfile(sigma_output, (rarg.args.output_directory) + '/sigma.csv')
 io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
 io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
 io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
