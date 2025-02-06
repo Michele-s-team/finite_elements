@@ -78,7 +78,7 @@ solver.parameters.update(params)
 solver.solve()
 
 
-# Create XDMF files for visualization output
+# Create XDMF files for visualization output=+
 xdmffile_v = XDMFFile( (rarg.args.output_directory) + '/v.xdmf' )
 xdmffile_w = XDMFFile( (rarg.args.output_directory) + '/w.xdmf' )
 xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )

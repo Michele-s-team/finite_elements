@@ -5,16 +5,19 @@ import boundary_geometry as bgeo
 
 import read_mesh_ring as rmsh
 
+degree_function_space = 1
 
 # Define function spaces
 #finite elements for sigma .... omega
 P_v_n = VectorElement( 'P', triangle, 2 )
 P_w_n = FiniteElement( 'P', triangle, 1 )
 P_sigma_n = FiniteElement( 'P', triangle, 1 )
-P_omega_n = VectorElement( 'P', triangle, 3 )
 P_z_n = FiniteElement( 'P', triangle, 1 )
+P_omega_n = VectorElement( 'P', triangle, 3 )
+P_mu_n = FiniteElement( 'P', triangle, degree_function_space )
 
-element = MixedElement( [P_v_n, P_w_n, P_sigma_n, P_z_n, P_omega_n] )
+
+element = MixedElement( [P_v_n, P_w_n, P_sigma_n, P_z_n, P_omega_n, P_mu_n] )
 #total function space
 Q = FunctionSpace(bgeo.mesh, element)
 #function spaces for vbar .... zn
@@ -23,6 +26,7 @@ Q_w = Q.sub( 1 ).collapse()
 Q_sigma = Q.sub( 2 ).collapse()
 Q_z= Q.sub( 3 ).collapse()
 Q_omega = Q.sub( 4 ).collapse()
+Q_mu = Q.sub( 5 ).collapse()
 #function space to store force fields
 Q_f = VectorFunctionSpace( bgeo.mesh, 'P', 2 )
 
@@ -30,7 +34,7 @@ Q_f = VectorFunctionSpace( bgeo.mesh, 'P', 2 )
 # the Jacobian
 J_psi = TrialFunction( Q )
 psi = Function( Q )
-nu_v, nu_w, nu_sigma,  nu_z, nu_omega = TestFunctions( Q )
+nu_v, nu_w, nu_sigma,  nu_z, nu_omega, nu_mu = TestFunctions( Q )
 
 #these functions are used to print the solution to file
 v_output = Function(Q_v)
@@ -38,6 +42,7 @@ w_output = Function(Q_w)
 sigma_output = Function(Q_sigma)
 z_output = Function(Q_z)
 omega_output = Function(Q_omega)
+mu_output = Function(Q_mu)
 
 # v_0, .... are used to store the initial conditions
 v_0 = Function( Q_v )
@@ -45,6 +50,7 @@ w_0 = Function( Q_w )
 sigma_0 = Function( Q_sigma )
 z_0 = Function( Q_z )
 omega_0 = Function( Q_omega )
+mu_0 = Function( Q_mu )
 
-v, w, sigma, z, omega = split( psi )
-assigner = FunctionAssigner(Q, [Q_v, Q_w, Q_sigma, Q_z, Q_omega])
+v, w, sigma, z, omega, mu = split( psi )
+assigner = FunctionAssigner(Q, [Q_v, Q_w, Q_sigma, Q_z, Q_omega, Q_mu])
