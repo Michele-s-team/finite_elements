@@ -110,7 +110,7 @@ F_v = ( \
                           + 1.0 / 2.0 * (w ** 2) * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( geo.nu_v, fsp.omega )[i, j] \
                   ) \
                     + (fsp.sigma * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( geo.nu_v, fsp.omega )[i, j] \
-                       + 2.0 * eta * d_c( v, w, fsp.omega )[j, i] * geo.Nabla_f( geo.nu_v, fsp.omega )[j, i])
+                       + 2.0 * eta * geo.d_c( v, w, fsp.omega )[j, i] * geo.Nabla_f( geo.nu_v, fsp.omega )[j, i])
       ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
       - rho / 2.0 * ( \
                     + ((w ** 2) * (geo.n_circle( fsp.omega ))[i] * geo.nu_v[i]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * geo.ds_r \
