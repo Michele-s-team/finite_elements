@@ -97,6 +97,11 @@ xdmffile_mu = XDMFFile( (rarg.args.output_directory) + '/mu.xdmf' )
 xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu.xdmf' )
 xdmffile_tau = XDMFFile( (rarg.args.output_directory) + '/tau.xdmf' )
 
+
+xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
+xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+
+
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 
@@ -133,6 +138,10 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).writ
 
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( fsp.nu, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( fsp.tau, "/f" )
+
+xdmffile_f.write( project(phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_sigma), 0 )
+xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
+xdmffile_f.write( project(phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
 
 
 import print_out_bc_ring
