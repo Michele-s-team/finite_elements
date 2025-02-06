@@ -36,7 +36,7 @@ import runtime_arguments as rarg
 
 import read_mesh_ring as rmsh
 
-import variational_problem_bc_ring import as vp
+import variational_problem_bc_ring as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
