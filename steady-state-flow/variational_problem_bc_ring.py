@@ -151,10 +151,10 @@ F_z = ( \
                     - fsp.w * ((geo.normal( fsp.omega ))[2] - ((geo.normal( fsp.omega ))[0] * fsp.omega[0] + (geo.normal( fsp.omega ))[1] * fsp.omega[1])) * geo.nu_z \
             ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
-F_omega = (z * geo.Nabla_v( geo.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * geo.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+F_omega = (fsp.z * geo.Nabla_v( geo.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * geo.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
           - ( \
-                      + ((geo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * z * geo.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * geo.ds_r \
-                      + ((geo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * z * geo.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.R) * geo.ds_R \
+                      + ((geo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * geo.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * geo.ds_r \
+                      + ((geo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * geo.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.R) * geo.ds_R \
               )
 
 F_N = alpha / rmsh.r_mesh * ( \
