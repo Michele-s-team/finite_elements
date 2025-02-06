@@ -73,8 +73,9 @@ integral_R = assemble( f_test_ds * ds_R )
 # print( "Integral r = ", integral_r, " exact value = 2.77595" )
 # print( "Integral R = ", integral_R, " exact value = 3.67175" )
 
-msh.test_mesh_integral(2.77595, f_test_ds, ds_r, '\int f ds_r')
-msh.test_mesh_integral(3.67175, f_test_ds, ds_R, '\int f ds_R')
+msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(2.7759459256115657, f_test_ds, ds_r, '\int f ds_r')
+msh.test_mesh_integral(3.6717505977470717, f_test_ds, ds_R, '\int f ds_R')
 
 
 # Define boundaries and obstacle
