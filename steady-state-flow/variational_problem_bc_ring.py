@@ -1,8 +1,12 @@
 from fenics import *
-from mshr import *
-from fenics import *
-from mshr import *
-from geometry import *
+import numpy as np
+import ufl as ufl
+
+import function_spaces as fsp
+import boundary_geometry as bgeo
+import geometry as geo
+import read_mesh_ring as rmsh
+
 
 # CHANGE PARAMETERS HERE
 v_r = 0.9950371902099891356653
@@ -59,11 +63,11 @@ class OmegaExpression( UserExpression ):
 # CHANGE PARAMETERS HERE
 
 
-v_0.interpolate(TangentVelocityExpression(element=Q_v.ufl_element()))
-w_0.interpolate(NormalVelocityExpression(element=Q_w.ufl_element()))
-sigma_0.interpolate( SurfaceTensionExpression( element=Q_sigma.ufl_element() ))
-omega_0.interpolate( OmegaExpression( element=Q_omega.ufl_element() ))
-z_0.interpolate( ManifoldExpression( element=Q_z.ufl_element() ) )
+fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
+fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
+fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
+fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
+fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
