@@ -130,12 +130,12 @@ F_w = ( \
                     - rho * fsp.w * geo.Nabla_v( geo.vector_times_scalar( fsp.v,  fsp.nu_w ), fsp.omega )[i, i] \
                     + 2.0 * kappa * ( \
                                   - geo.g_c( fsp.omega )[i, j] * ((geo.H( fsp.omega )).dx( i )) * (fsp.nu_w.dx( j )) \
-                                  + 2.0 * geo.H( fsp.omega ) * ((geo.H( fsp.omega )) ** 2 - K( fsp.omega )) * fsp.nu_w \
+                                  + 2.0 * geo.H( fsp.omega ) * ((geo.H( fsp.omega )) ** 2 - geo.K( fsp.omega )) * fsp.nu_w \
                           ) \
                     - ( \
                                   2.0 * fsp.sigma * geo.H( fsp.omega ) \
                                   + 2.0 * eta * (geo.g_c( fsp.omega )[i, k] * geo.Nabla_v( fsp.v,  fsp.omega )[j, k] *
-                                                 (geo.b( fsp.omega ))[i, j] - 2.0 * fsp.w * (2.0 * (geo.H( fsp.omega )) ** 2 - K( fsp.omega )))
+                                                 (geo.b( fsp.omega ))[i, j] - 2.0 * fsp.w * (2.0 * (geo.H( fsp.omega )) ** 2 - geo.K( fsp.omega )))
                     ) * fsp.nu_w
       ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
 + rho * ( \
