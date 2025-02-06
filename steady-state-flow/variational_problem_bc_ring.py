@@ -12,11 +12,11 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_r = 0.9950371902099891356653
-v_R = 0.5
-w_r = 0.0
-w_R = 0.0
-sigma_r = -0.9950248754694831
+v_r_const = 0.9950371902099891356653
+v_R_const = 0.5
+w_r_const = 0.0
+w_R_const = 0.0
+sigma_r_const = -0.9950248754694831
 z_r_const = 1.0
 z_R_const = 1.09900076985083984499716224302
 omega_r_const = -0.099503719020998913567
@@ -31,6 +31,14 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
+
+class v_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = v_r_const * x[0] / geo.my_norm(x)
+        values[1] = v_r_const * x[1] / geo.my_norm(x)
+
+    def value_shape(self):
+        return (2,)
 
 class z_r_Expression( UserExpression ):
     def eval(self, values, x):
@@ -100,6 +108,9 @@ class MuExpression( UserExpression ):
         return (1,)
 # CHANGE PARAMETERS HERE
 
+v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
+
+
 z_r = interpolate( z_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
@@ -120,18 +131,18 @@ fsp.mu_0.interpolate( OmegaExpression( element=fsp.Q_mu.ufl_element() ))
 
 
 # CHANGE PARAMETERS HERE
-profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'),  v_r = v_r, element=fsp.Q.sub( 0 ).ufl_element() )
+# profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'), v_r = v_r_const, element=fsp.Q.sub( 0 ).ufl_element() )
 # CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
-bc_v_r = DirichletBC( fsp.Q.sub( 0 ), profile_v_r, rmsh.boundary_r )
+bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
 
 # BCs for w_bar
-bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( w_r ), rmsh.boundary_r )
-bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R ), rmsh.boundary_R )
+bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( w_r_const ), rmsh.boundary_r )
+bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R_const ), rmsh.boundary_R )
 
 #BC for sigma
-bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r ), rmsh.boundary_r )
+bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r_const ), rmsh.boundary_r )
 
 # BCs for z
 bc_z_r = DirichletBC( fsp.Q.sub( 3 ), z_r, rmsh.boundary_r )
@@ -207,7 +218,7 @@ F_N = alpha / rmsh.r_mesh * ( \
             + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
             + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
  \
-            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - v_R) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - v_R_const) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
     )
 
 
