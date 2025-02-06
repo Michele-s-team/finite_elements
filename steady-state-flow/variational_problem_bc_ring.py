@@ -106,6 +106,19 @@ class MuExpression( UserExpression ):
         values[0] = 0.0
     def value_shape(self):
         return (1,)
+
+class NuExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0.0
+        values[1] = 0.0
+    def value_shape(self):
+        return (2,)
+
+class TauExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0.0
+    def value_shape(self):
+        return (1,)
 # CHANGE PARAMETERS HERE
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
@@ -124,6 +137,9 @@ fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_eleme
 fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
 fsp.mu_0.interpolate( OmegaExpression( element=fsp.Q_mu.ufl_element() ))
+
+fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
+fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
@@ -224,3 +240,14 @@ F_N = alpha / rmsh.r_mesh * ( \
 
 # total functional for the mixed problem
 F = ( F_v + F_w + F_sigma + F_z + F_omega + F_mu) + F_N
+
+
+#post-processing variational functional
+F_pp_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+       - ((bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+       - ((bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
+
+
+F_pp_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
+           - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_r \
+           - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * fsp.nu[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * (1.0 / rmsh.R) * rmsh.ds_R
