@@ -154,7 +154,7 @@ F_omega = (z * geo.Nabla_v( geo.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * geo
                       + ((geo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * z * geo.nu_omega[j]) * geo.sqrt_deth_circle( fsp.omega, c_r ) * (1.0 / R) * geo.ds_R \
               )
 
-F_N = alpha / r_mesh * ( \
+F_N = alpha / rmsh.r_mesh * ( \
             + (((geo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((geo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * geo.nu_omega[l])) * geo.sqrt_deth_circle( fsp.omega, c_r ) * geo.ds_r \
             + (((geo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((geo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * geo.nu_omega[l])) * geo.sqrt_deth_circle( fsp.omega, c_r ) * geo.ds_R \
  \
