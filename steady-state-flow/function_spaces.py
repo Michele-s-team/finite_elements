@@ -12,8 +12,8 @@ degree_function_space = 1
 P_v_n = VectorElement( 'P', triangle, 2 )
 P_w_n = FiniteElement( 'P', triangle, 1 )
 P_sigma_n = FiniteElement( 'P', triangle, 1 )
-P_z_n = FiniteElement( 'P', triangle, 1 )
-P_omega_n = VectorElement( 'P', triangle, 3 )
+P_z_n = FiniteElement( 'P', triangle, degree_function_space )
+P_omega_n = VectorElement( 'P', triangle, degree_function_space )
 P_mu_n = FiniteElement( 'P', triangle, degree_function_space )
 
 
