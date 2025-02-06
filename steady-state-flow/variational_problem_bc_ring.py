@@ -17,10 +17,10 @@ v_R = 0.5
 w_r = 0.0
 w_R = 0.0
 sigma_r = -0.9950248754694831
-z_r = 1.0
-z_R = 1.09900076985083984499716224302
-omega_r = Constant(-0.099503719020998913567)
-omega_R = Constant(0.095353867584048529241675292343)
+z_r_const = 1.0
+z_R_const = 1.09900076985083984499716224302
+omega_r_const = -0.099503719020998913567
+omega_R_const = 0.095353867584048529241675292343
 
 
 #bending rigidity
@@ -31,6 +31,36 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
+
+class z_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_r_const
+
+    def value_shape(self):
+        return (1,)
+
+
+class z_R_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_R_const
+
+    def value_shape(self):
+        return (1,)
+
+class omega_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = omega_r_const
+
+    def value_shape(self):
+        return (1,)
+
+
+class omega_R_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = omega_R_const
+
+    def value_shape(self):
+        return (1,)
 
 class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):
@@ -70,6 +100,12 @@ class MuExpression( UserExpression ):
         return (1,)
 # CHANGE PARAMETERS HERE
 
+z_r = interpolate( z_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+
+omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+
 
 fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
 fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
@@ -98,8 +134,8 @@ bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R ), rmsh.boundary_R )
 bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r ), rmsh.boundary_r )
 
 # BCs for z
-bc_z_r = DirichletBC( fsp.Q.sub( 3 ), Expression( 'z_r', element=fsp.Q.sub( 3 ).ufl_element(), z_r=z_r), rmsh.boundary_r )
-bc_z_R = DirichletBC( fsp.Q.sub( 3 ), Expression( 'z_R', element=fsp.Q.sub( 3 ).ufl_element(), z_R=z_R), rmsh.boundary_R )
+bc_z_r = DirichletBC( fsp.Q.sub( 3 ), z_r, rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_R, rmsh.boundary_R )
 
 # all BCs
 bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
