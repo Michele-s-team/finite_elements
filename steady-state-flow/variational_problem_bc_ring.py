@@ -1,4 +1,3 @@
-from __future__ import print_function
 from fenics import *
 from mshr import *
 from fenics import *
