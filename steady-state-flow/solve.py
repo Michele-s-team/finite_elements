@@ -48,8 +48,8 @@ print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh}{col.Style.RESET_ALL}"
 
 
 # solve the variational problem
-J = derivative( vp.F, vp.psi, vp.J_psi )
-problem = NonlinearVariationalProblem( vp.F, vp.psi, vp.bcs, J )
+J = derivative( vp.F, fsp.psi, fsp.J_psi )
+problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 '''
