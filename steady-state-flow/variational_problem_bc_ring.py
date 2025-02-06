@@ -69,8 +69,8 @@ class OmegaExpression( UserExpression ):
 fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
 fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
 fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
-fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
 fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
@@ -91,8 +91,8 @@ bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R ), rmsh.boundary_R )
 bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r ), rmsh.boundary_r )
 
 # BCs for z
-bc_z_r = DirichletBC( fsp.Q.sub( 4 ), Expression( 'z_r', element=fsp.Q.sub( 4 ).ufl_element(), z_r=z_r), rmsh.boundary_r )
-bc_z_R = DirichletBC( fsp.Q.sub( 4 ), Expression( 'z_R', element=fsp.Q.sub( 4 ).ufl_element(), z_R=z_R), rmsh.boundary_R )
+bc_z_r = DirichletBC( fsp.Q.sub( 3 ), Expression( 'z_r', element=fsp.Q.sub( 3 ).ufl_element(), z_r=z_r), rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 3 ), Expression( 'z_R', element=fsp.Q.sub( 3 ).ufl_element(), z_R=z_R), rmsh.boundary_R )
 
 # all BCs
 bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]

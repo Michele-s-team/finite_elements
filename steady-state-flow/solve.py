@@ -86,13 +86,13 @@ xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega.xdmf' )
 xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z.xdmf' )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-v_output, w_output, sigma_output, omega_output, z_output = fsp.psi.split( deepcopy=True )
+v_output, w_output, sigma_output, z_output, omega_output = fsp.psi.split( deepcopy=True )
 
 # print solution to file
 xdmffile_v.write( v_output, 0 )
 xdmffile_w.write( w_output, 0 )
-xdmffile_omega.write( omega_output, 0 )
 xdmffile_z.write( z_output, 0 )
+xdmffile_omega.write( omega_output, 0 )
 
 xdmffile_sigma.write( sigma_output, 0 )
 

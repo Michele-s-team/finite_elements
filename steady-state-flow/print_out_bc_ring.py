@@ -20,7 +20,7 @@ xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-v_output, w_output, sigma_output, omega_output, z_output = fsp.psi.split( deepcopy=True )
+v_output, w_output, sigma_output, z_output, omega_output = fsp.psi.split( deepcopy=True )
 
 
 # print( "\int_{\partial \Omega_r} (n^i \omega_i - psi )^2 dS = ", \
