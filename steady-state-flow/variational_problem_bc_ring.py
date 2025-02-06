@@ -127,7 +127,7 @@ F_v = ( \
 
 F_w = ( \
                     rho * (v[i] * v[k] * geo.b( fsp.omega )[k, i]) * geo.nu_w \
-                    - rho * fsp.w * geo.Nabla_v( vector_times_scalar( v, geo.nu_w ), fsp.omega )[i, i] \
+                    - rho * fsp.w * geo.Nabla_v( geo.vector_times_scalar( v, geo.nu_w ), fsp.omega )[i, i] \
                     + 2.0 * kappa * ( \
                                   - geo.g_c( fsp.omega )[i, j] * ((geo.H( fsp.omega )).dx( i )) * (geo.nu_w.dx( j )) \
                                   + 2.0 * geo.H( fsp.omega ) * ((geo.H( fsp.omega )) ** 2 - K( fsp.omega )) * geo.nu_w \

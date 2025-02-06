@@ -3,7 +3,7 @@ from mshr import *
 
 import boundary_geometry as bgeo
 
-import read_mesh_ring rmsh
+import read_mesh_ring as rmsh
 
 
 # Define function spaces

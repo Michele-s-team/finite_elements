@@ -49,7 +49,7 @@ ds = ds_r + ds_R
 
 
 #a function space used solely to define f_test_ds
-Q_test = FunctionSpace( mesh, 'P', 2 )
+Q_test = FunctionSpace( bgeo.mesh, 'P', 2 )
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 f_test_ds = Function( Q_test )
@@ -59,7 +59,7 @@ class FunctionTestIntegralsds(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345
-        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test)**2.0
+        values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
 
