@@ -19,26 +19,37 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 '''
 
-from __future__ import print_function
+import colorama as col
 from fenics import *
 from mshr import *
-# from variational_problem_bc_square_a import *
-from variational_problem_bc_ring import *
+
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import function_spaces as fsp
+import input_output as io
+import physics as phys
+import runtime_arguments as rarg
+
+import read_mesh_ring as rmsh
+
+import variational_problem_bc_ring import as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-print("Input diredtory = ", args.input_directory )
-print("Output diredtory = ", args.output_directory )
-print("Radius of mesh cell = ", r_mesh)
+print("Input diredtory = ", rarg.args.input_directory )
+print("Output diredtory = ", rarg.args.output_directory )
+print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
-# Define expressions used in variational forms
-kappa = Constant( kappa )
-rho = Constant( rho )
+
 
 # solve the variational problem
-J = derivative( F, psi, J_psi )
-problem = NonlinearVariationalProblem( F, psi, bcs, J )
+J = derivative( vp.F, vp.psi, vp.J_psi )
+problem = NonlinearVariationalProblem( vp.F, vp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
 '''
@@ -54,17 +65,6 @@ params = {'nonlinear_solver': 'newton',
                 # 'sign'                    : 'nonnegative',
                 'relaxation_parameter'    : 0.95,
                 # 'preconditioner'    : 'ilu',
-                'lu_solver' :{
-                    # 'report' : True,
-                     'symmetric' : False
-                },
-                'krylov_solver' :{
-                    'divergence_limit' : 1e0,
-                    'absolute_tolerance' : 1e-6,
-                    'relative_tolerance' : 1e-6,
-                    'nonzero_initial_guess' : True
-                }
-
              }
 }
 solver.parameters.update(params)
@@ -79,31 +79,36 @@ solver.solve()
 
 
 # Create XDMF files for visualization output
-xdmffile_v = XDMFFile( (args.output_directory) + '/v.xdmf' )
-xdmffile_w = XDMFFile( (args.output_directory) + '/w.xdmf' )
-xdmffile_sigma = XDMFFile( (args.output_directory) + '/sigma.xdmf' )
-xdmffile_omega = XDMFFile( (args.output_directory) + '/omega.xdmf' )
-xdmffile_z = XDMFFile( (args.output_directory) + '/z.xdmf' )
-
-xdmffile_n = XDMFFile( (args.output_directory) + '/n.xdmf' )
-xdmffile_n.write( facet_normal_smooth(), 0 )
+xdmffile_v = XDMFFile( (rarg.args.output_directory) + '/v.xdmf' )
+xdmffile_w = XDMFFile( (rarg.args.output_directory) + '/w.xdmf' )
+xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )
+xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega.xdmf' )
+xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z.xdmf' )
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-v_output, w_output, sigma_output, omega_output, z_output = psi.split( deepcopy=True )
+v_output, w_output, sigma_output, omega_output, z_output = fsp.psi.split( deepcopy=True )
 
 # print solution to file
 xdmffile_v.write( v_output, 0 )
 xdmffile_w.write( w_output, 0 )
-xdmffile_sigma.write( sigma_output, 0 )
 xdmffile_omega.write( omega_output, 0 )
 xdmffile_z.write( z_output, 0 )
 
+xdmffile_sigma.write( sigma_output, 0 )
+
+io.print_vector_to_csvfile(v_output, (rarg.args.output_directory) + '/v.csv')
+io.print_scalar_to_csvfile(w_output, (rarg.args.output_directory) + '/w.csv')
+io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
+io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
+
+
+
 # write the solutions in .h5 format so it can be read from other codes
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/v.h5", "w" ).write( v_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/w.h5", "w" ).write( w_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
-HDF5File( MPI.comm_world, (args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/v.h5", "w" ).write( v_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/w.h5", "w" ).write( w_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( sigma_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
+HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
 
 # import print_out_bc_square_a
 import print_out_bc_ring
