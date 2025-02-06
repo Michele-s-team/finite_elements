@@ -52,23 +52,22 @@ J = derivative( vp.F, fsp.psi, fsp.J_psi )
 problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-'''
+
 #set the solver parameters here
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
-                'linear_solver'           : 'mumps',
-                # 'line_search' : 'bt',
+                'linear_solver'           : 'superlu',
+                # 'linear_solver'           : 'mumps',
+                # 'linear_solver'           : 'lu',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
                 'maximum_iterations'      : 1000000,
-                # 'sign'                    : 'nonnegative',
                 'relaxation_parameter'    : 0.95,
-                # 'preconditioner'    : 'ilu',
              }
 }
 solver.parameters.update(params)
-'''
+
 '''
 #set the solver parameters here
 params ={"newton_solver": {"linear_solver": 'superlu'}}
