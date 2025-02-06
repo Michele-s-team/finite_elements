@@ -60,7 +60,6 @@ class ManifoldExpression( UserExpression ):
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
-        values[1] = 0.0
     def value_shape(self):
         return (2,)
 
