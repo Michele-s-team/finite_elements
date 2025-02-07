@@ -1,9 +1,14 @@
-from __future__ import print_function
 from fenics import *
-from mshr import *
-from fenics import *
-from mshr import *
-from geometry import *
+import numpy as np
+import ufl as ufl
+
+import function_spaces as fsp
+import boundary_geometry as bgeo
+import geometry as geo
+import read_mesh_square as rmsh
+
+i, j, k, l = ufl.indices( 4 )
+
 
 # CHANGE PARAMETERS HERE
 v_l = 1.0

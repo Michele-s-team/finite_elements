@@ -36,7 +36,8 @@ import runtime_arguments as rarg
 
 import read_mesh_ring as rmsh
 
-import variational_problem_bc_ring as vp
+# import variational_problem_bc_ring as vp
+import variational_problem_bc_square_a as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -157,4 +158,5 @@ io.print_scalar_to_csvfile(project(phys.fel_n( omega_output, mu_output, fsp.tau,
 io.print_scalar_to_csvfile(project(phys.flaplace( fsp.sigma, omega_output), fsp.Q_f), (rarg.args.output_directory) + '/flaplace.csv')
 
 
-import print_out_bc_ring
+# import print_out_bc_ring
+import print_out_bc_square_a
