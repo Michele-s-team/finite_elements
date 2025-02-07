@@ -11,7 +11,11 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_l = 1.0
+v_l_const = 1.0
+w_boundary_const = 0.0
+sigma_r_const = 0.0
+z_r_const = 0.0
+z_square_const = 0.0
 #bending rigidity
 kappa = 1.0
 #density
@@ -20,6 +24,43 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
+
+class v_l_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = v_l_const
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+class w_boundary_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = w_boundary_const
+
+    def value_shape(self):
+        return (1,)
+
+class sigma_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = sigma_r_const
+
+    def value_shape(self):
+        return (1,)
+
+
+class z_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_r_const
+
+    def value_shape(self):
+        return (1,)
+
+class z_square_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_square_const
+
+    def value_shape(self):
+        return (1,)
 
 class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):
@@ -96,31 +137,32 @@ fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
 
+v_l = interpolate( v_l_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
+w_boundary = interpolate( w_boundary_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
+sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 
-# CHANGE PARAMETERS HERE
-l_profile_v = Expression( ('v_l', '0'), v_l=v_l, element = fsp.Q_v.ufl_element() )
-# CHANGE PARAMETERS HERE
+z_r = interpolate( z_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+
 
 # boundary conditions (BCs)
 # BCs for v_bar
-bc_v_l = DirichletBC( fsp.Q.sub( 0 ), l_profile_v, rmsh.boundary_l )
+bc_v_l = DirichletBC( fsp.Q.sub( 0 ), v_l, rmsh.boundary_l )
 
 # BCs for w_bar
-bc_w_lr = DirichletBC( fsp.Q.sub( 1 ), Constant( 0 ), rmsh.boundary_lr )
-bc_w_tb = DirichletBC( fsp.Q.sub( 1 ), Constant( 0 ), rmsh.boundary_tb )
-bc_w_circle = DirichletBC( fsp.Q.sub( 1 ), Constant( 0 ), rmsh.boundary_circle )
+bc_w_boundary = DirichletBC( fsp.Q.sub( 1 ), w_boundary, rmsh.boundary )
 
 #BC for sigma
-bc_sigma = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.boundary_r)
+bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( fsp.Q.sub( 3 ), Expression( '0.0', element=fsp.Q.sub( 3 ).ufl_element() ), rmsh.boundary_circle )
-bc_z_square = DirichletBC( fsp.Q.sub( 3 ), Expression( '0.0', element=fsp.Q.sub( 3 ).ufl_element() ), rmsh.boundary_square )
+bc_z_circle = DirichletBC( fsp.Q.sub( 3 ), z_r, rmsh.boundary_circle )
+bc_z_square = DirichletBC( fsp.Q.sub( 3 ), z_square, rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square]
+bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_circle, bc_z_square]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
