@@ -57,6 +57,15 @@ solver = NonlinearVariationalSolver( problem )
 params = {'nonlinear_solver': 'newton',
            'newton_solver':
             {
+                # 'linear_solver'           : 'gmres',
+                # 'linear_solver'           : 'minres',
+                # 'linear_solver'           : 'petsc',
+                # 'linear_solver'           : 'richardson',
+                # 'linear_solver'           : 'superlu_dist',
+                # 'linear_solver'           : 'tfqmr',
+                # 'linear_solver'           : 'umfpack',
+                # 'linear_solver'           : 'cg',
+                # 'linear_solver'           : 'bicgstab',
                 'linear_solver'           : 'superlu',
                 # 'linear_solver'           : 'mumps',
                 # 'linear_solver'           : 'lu',
