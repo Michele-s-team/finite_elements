@@ -130,7 +130,7 @@ F_sigma = (geo.Nabla_v( v, fsp.omega )[i, i] - 2.0 * H( fsp.omega ) * w) * fsp.n
 
 F_v = ( \
                     rho * ( \
-                          (v[j] * geo.Nabla_v( v, fsp.omega )[i, j] - 2.0 * v[j] * w * geo.g_c( fsp.omega )[i, k] * b( fsp.omega )[k, j]) * fsp.nu_v[i] \
+                          (v[j] * geo.Nabla_v( v, fsp.omega )[i, j] - 2.0 * v[j] * w * geo.g_c( fsp.omega )[i, k] * geo.b( fsp.omega )[k, j]) * fsp.nu_v[i] \
                           + 1.0 / 2.0 * (w ** 2) * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
                   ) \
                     + (sigma * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
@@ -155,7 +155,7 @@ F_v = ( \
       )
 
 F_w = ( \
-                    rho * (v[i] * v[k] * b( fsp.omega )[k, i]) * fsp.nu_w \
+                    rho * (v[i] * v[k] * geo.b( fsp.omega )[k, i]) * fsp.nu_w \
                     - rho * w * geo.Nabla_v( vector_times_scalar( v, fsp.nu_w ), fsp.omega )[i, i] \
                     + 2.0 * kappa * ( \
                                   - geo.g_c( fsp.omega )[i, j] * ((H( fsp.omega )).dx( i )) * (fsp.nu_w.dx( j )) \
@@ -164,7 +164,7 @@ F_w = ( \
                     - ( \
                                   2.0 * sigma * H( fsp.omega ) \
                                   + 2.0 * eta * (geo.g_c( fsp.omega )[i, k] * geo.Nabla_v( v, fsp.omega )[j, k] *
-                                                 (b( fsp.omega ))[i, j] - 2.0 * w * (2.0 * (H( fsp.omega )) ** 2 - K( fsp.omega )))
+                                                 (geo.b( fsp.omega ))[i, j] - 2.0 * w * (2.0 * (H( fsp.omega )) ** 2 - K( fsp.omega )))
                     ) * fsp.nu_w
       ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx \
 + rho * ( \
