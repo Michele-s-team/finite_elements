@@ -130,10 +130,10 @@ F_sigma = (geo.Nabla_v( v, fsp.omega )[i, i] - 2.0 * H( fsp.omega ) * w) * fsp.n
 
 F_v = ( \
                     rho * ( \
-                          (v[j] * geo.Nabla_v( v, fsp.omega )[i, j] - 2.0 * v[j] * w * g_c( fsp.omega )[i, k] * b( fsp.omega )[k, j]) * fsp.nu_v[i] \
-                          + 1.0 / 2.0 * (w ** 2) * g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
+                          (v[j] * geo.Nabla_v( v, fsp.omega )[i, j] - 2.0 * v[j] * w * geo.g_c( fsp.omega )[i, k] * b( fsp.omega )[k, j]) * fsp.nu_v[i] \
+                          + 1.0 / 2.0 * (w ** 2) * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
                   ) \
-                    + (sigma * g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
+                    + (sigma * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
                        + 2.0 * eta * d_c( v, w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu_v, fsp.omega )[j, i])
       ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx \
       - rho / 2.0 * ( \
@@ -158,12 +158,12 @@ F_w = ( \
                     rho * (v[i] * v[k] * b( fsp.omega )[k, i]) * fsp.nu_w \
                     - rho * w * geo.Nabla_v( vector_times_scalar( v, fsp.nu_w ), fsp.omega )[i, i] \
                     + 2.0 * kappa * ( \
-                                  - g_c( fsp.omega )[i, j] * ((H( fsp.omega )).dx( i )) * (fsp.nu_w.dx( j )) \
+                                  - geo.g_c( fsp.omega )[i, j] * ((H( fsp.omega )).dx( i )) * (fsp.nu_w.dx( j )) \
                                   + 2.0 * H( fsp.omega ) * ((H( fsp.omega )) ** 2 - K( fsp.omega )) * fsp.nu_w \
                           ) \
                     - ( \
                                   2.0 * sigma * H( fsp.omega ) \
-                                  + 2.0 * eta * (g_c( fsp.omega )[i, k] * geo.Nabla_v( v, fsp.omega )[j, k] *
+                                  + 2.0 * eta * (geo.g_c( fsp.omega )[i, k] * geo.Nabla_v( v, fsp.omega )[j, k] *
                                                  (b( fsp.omega ))[i, j] - 2.0 * w * (2.0 * (H( fsp.omega )) ** 2 - K( fsp.omega )))
                     ) * fsp.nu_w
       ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx \
