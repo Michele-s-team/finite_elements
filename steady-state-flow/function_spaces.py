@@ -33,7 +33,7 @@ Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
 #function space to store force fields
-Q_f = VectorFunctionSpace( bgeo.mesh, 'P', 2 )
+Q_f = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
 # Define functions
 # the Jacobian
