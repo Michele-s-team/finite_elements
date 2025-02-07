@@ -66,10 +66,6 @@ class FunctionTestIntegralsds(UserExpression):
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
-# here I integrate \int ds 1 over the circle and store the result of the integral as a double in inner_circumference
-integral_r = assemble( f_test_ds * ds_r )
-integral_R = assemble( f_test_ds * ds_R )
-
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 # print( "Integral r = ", integral_r, " exact value = 2.77595" )
 # print( "Integral R = ", integral_R, " exact value = 3.67175" )
