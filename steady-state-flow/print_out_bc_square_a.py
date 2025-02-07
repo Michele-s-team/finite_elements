@@ -25,22 +25,24 @@ v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.sp
 
 print( "Check of BCs:" )
 
-print( f"\t\t<<|v^i - v_r^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (v_output[i] - vp.v_r[i]) * (v_output[i] - vp.v_r[i]), Constant(0), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(v^i n_i - v_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], vp.v_R_const, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<|v^i - v_l^i|^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure( (v_output[i] - vp.v_l[i]) * (v_output[i] - vp.v_l[i]), Constant(0), rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(v^i n_i)^2>>_[partial Omega tb + circle] = {col.Fore.RED}{msh.difference_wrt_measure( bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], Constant(0), rmsh.ds_tb + rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-print( f"\t\t<<(w - w_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_r_const, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(w - w_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_R_const, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(w - w_boundary)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_boundary, rmsh.ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-print( f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_r_const, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
-print( f"\t\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(z - phi)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - z_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_r, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - z_square)^2>>_[partial Omega square] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_square, rmsh.ds_square ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - omega_r )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print(
+    f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+
 
 
 xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ), 0 )

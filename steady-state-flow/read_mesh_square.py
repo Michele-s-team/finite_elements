@@ -41,6 +41,8 @@ ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
 ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=6 )
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
+ds_square = ds_lr + ds_tb
+ds = ds_square + ds_circle
 
 #a function space used solely to define f_test_ds
 Q_test = FunctionSpace( bgeo.mesh, 'P', 2 )
@@ -73,6 +75,13 @@ msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int f ds_l')
 msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int f ds_r')
 msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int f ds_t')
 msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int f ds_b')
+
+msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int f ds_lr')
+msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int f ds_tb')
+
+msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int f ds_square')
+
+
 
 
 
