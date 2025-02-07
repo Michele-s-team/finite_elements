@@ -103,20 +103,20 @@ l_profile_v = Expression( ('v_l', '0'), v_l=v_l, element = fsp.Q_v.ufl_element()
 
 # boundary conditions (BCs)
 # BCs for v_bar
-bc_v_l = DirichletBC( Q.sub( 0 ), l_profile_v, boundary_l )
+bc_v_l = DirichletBC( fsp.Q.sub( 0 ), l_profile_v, rmsh.boundary_l )
 
 # BCs for w_bar
-bc_w_lr = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_lr )
-bc_w_tb = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_tb )
-bc_w_circle = DirichletBC( Q.sub( 1 ), Constant( 0 ), boundary_circle )
+bc_w_lr = DirichletBC( fsp.Q.sub( 1 ), Constant( 0 ), rmsh.boundary_lr )
+bc_w_tb = DirichletBC( fsp.Q.sub( 1 ), Constant( 0 ), rmsh.boundary_tb )
+bc_w_circle = DirichletBC( fsp.Q.sub( 1 ), Constant( 0 ), rmsh.boundary_circle )
 
 #BC for sigma
-bc_sigma = DirichletBC(Q.sub(2), Constant(0), boundary_r)
+bc_sigma = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.boundary_r)
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element() ), boundary_circle )
-bc_z_square = DirichletBC( Q.sub( 4 ), Expression( '0.0', element=Q.sub( 4 ).ufl_element(), h=h ), boundary_square )
+bc_z_circle = DirichletBC( fsp.Q.sub( 3 ), Expression( '0.0', element=fsp.Q.sub( 3 ).ufl_element() ), rmsh.boundary_circle )
+bc_z_square = DirichletBC( fsp.Q.sub( 3 ), Expression( '0.0', element=fsp.Q.sub( 3 ).ufl_element() ), rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
@@ -126,7 +126,7 @@ bcs = [bc_v_l, bc_w_lr, bc_w_tb, bc_w_circle, bc_sigma, bc_z_circle, bc_z_square
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
 # the surface elements are ds_l + ds_r, and the normal is n_lr(omega), and the pull-back of the metric is sqrt_deth_lr: this avoids odd interpolations at the corners of the rectangle edges.
 
-F_sigma = (geo.Nabla_v( fsp.v, fsp.omega )[i, i] - 2.0 * geo.H( fsp.omega ) * fsp.w) * fsp.nu_sigma * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx
+F_sigma = (geo.Nabla_v( fsp.v, fsp.omega )[i, i] - 2.0 * geo.H( fsp.omega ) * fsp.w) * fsp.nu_sigma * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_v = ( \
                     rho * ( \
@@ -135,7 +135,7 @@ F_v = ( \
                   ) \
                     + (fsp.sigma * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
                        + 2.0 * eta * geo.d_c( fsp.v, fsp.w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu_v, fsp.omega )[j, i])
-      ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx \
+      ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
       - rho / 2.0 * ( \
                     ((fsp.w ** 2) * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
                     + ((fsp.w ** 2) * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
@@ -166,7 +166,7 @@ F_w = ( \
                                   + 2.0 * eta * (geo.g_c( fsp.omega )[i, k] * geo.Nabla_v( fsp.v, fsp.omega )[j, k] *
                                                  (geo.b( fsp.omega ))[i, j] - 2.0 * fsp.w * (2.0 * (geo.H( fsp.omega )) ** 2 - geo.K( fsp.omega )))
                     ) * fsp.nu_w
-      ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx \
+      ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
 + rho * ( \
               (fsp.w * fsp.nu_w * (bgeo.n_lr( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
               + (fsp.w * fsp.nu_w * (bgeo.n_tb( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
@@ -180,11 +180,11 @@ F_w = ( \
 
 F_z = ( \
                     - fsp.w * ((geo.normal( fsp.omega ))[2] - ((geo.normal( fsp.omega ))[0] * fsp.omega[0] + (geo.normal( fsp.omega ))[1] * fsp.omega[1])) * fsp.nu_z \
-            ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx
+            ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 
 
-F_omega = ( fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * fsp.nu_omega[i] ) * bgeo.sqrt_detg( fsp.omega ) * rmsh.dx \
+F_omega = ( fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * fsp.nu_omega[i] ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
           - ( \
                         ( (bgeo.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
                         + ( (bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \

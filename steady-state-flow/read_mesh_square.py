@@ -33,6 +33,7 @@ c_r = [L/2.0, h/2.0]
 
 
 # test for surface elements
+dx = Measure( "dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1 )
 ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
@@ -60,11 +61,20 @@ f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 #sign
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print( "Integral l = ", integral_l, " exact value = 0.462517" )
-print( "Integral r = ", integral_r, " exact value = 0.47113" )
-print( "Integral t = ", integral_t, " exact value = 0.498266" )
-print( "Integral b = ", integral_b, " exact value = 0.413016" )
-print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
+# print( "Integral l = ", integral_l, " exact value = 0.462517" )
+# print( "Integral r = ", integral_r, " exact value = 0.47113" )
+# print( "Integral t = ", integral_t, " exact value = 0.498266" )
+# print( "Integral b = ", integral_b, " exact value = 0.413016" )
+# print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
+
+msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(0.3049364448613816, f_test_ds, ds_circle, '\int f ds')
+msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int f ds_l')
+msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int f ds_r')
+msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int f ds_t')
+msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int f ds_b')
+
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
