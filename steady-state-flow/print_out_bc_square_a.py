@@ -33,7 +33,7 @@ print( f"\t\t<<(w - w_boundary)^2>>_[partial Omega] = {col.Fore.RED}{msh.differe
 print( f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
-print( f"\t\t<<(z - z_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_r, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - z_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<(z - z_square)^2>>_[partial Omega square] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_square, rmsh.ds_square ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print(
