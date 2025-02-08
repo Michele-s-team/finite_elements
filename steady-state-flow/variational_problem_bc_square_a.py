@@ -16,8 +16,8 @@ w_boundary_const = 0.0
 sigma_r_const = 0.0
 z_circle_const = 0.0
 z_square_const = 0.0
-omega_circle_const = 0.5
-omega_square_const = 0.0
+omega_circle_const = -0.1
+omega_square_const = 0.1
 #bending rigidity
 kappa = 1.0
 #density
