@@ -25,9 +25,9 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 r_mesh = bgeo.mesh.hmin()
 
 #CHANGE PARAMETERS HERE
-L = 4.0
+L = 0.5
 h = L
-r = 1.0
+r = 0.05
 c_r = [L/2.0, h/2.0]
 #CHANGE PARAMETERS HERE
 
@@ -69,17 +69,17 @@ f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 # print( "Integral b = ", integral_b, " exact value = 0.413016" )
 # print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
 
-msh.test_mesh_integral(8.156667278847937, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(2.6169097993914576, f_test_ds, ds_circle, '\int f ds')
-msh.test_mesh_integral(2.3663152429774774, f_test_ds, ds_l, '\int f ds_l')
-msh.test_mesh_integral(2.7294140758352445, f_test_ds, ds_r, '\int f ds_r')
-msh.test_mesh_integral(2.9936668292294635, f_test_ds, ds_t, '\int f ds_t')
-msh.test_mesh_integral(2.129299284073449, f_test_ds, ds_b, '\int f ds_b')
+msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(0.30493664448613816, f_test_ds, ds_circle, '\int f ds')
+msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int f ds_l')
+msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int f ds_r')
+msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int f ds_t')
+msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int f ds_b')
 
-msh.test_mesh_integral(5.095729318812722, f_test_ds, ds_lr, '\int f ds_lr')
-msh.test_mesh_integral(5.122966113302912, f_test_ds, ds_tb, '\int f ds_tb')
+msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int f ds_lr')
+msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int f ds_tb')
 
-msh.test_mesh_integral(10.218695432115634, f_test_ds, ds_square, '\int f ds_square')
+msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int f ds_square')
 
 
 
@@ -89,9 +89,9 @@ msh.test_mesh_integral(10.218695432115634, f_test_ds, ds_square, '\int f ds_squa
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 4.0)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 4.0)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 4.0)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 4.0/2.0, 2) + pow(x[1] - 4.0/2.0, 2)) > (1.0 + 2.0)/2.0'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 4.0/2.0, 2) + pow(x[1] - 4.0/2.0, 2)) < (1.0 + 2.0)/2.0'
+boundary_r  = 'near(x[0], 0.5)'
+boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
+boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
+boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > (0.05+0.25)/2.0'
+boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < (0.05+0.25)/2.0'
 #CHANGE PARAMETERS HERE
