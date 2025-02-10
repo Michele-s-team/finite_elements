@@ -1,0 +1,61 @@
+FROM quay.io/fenicsproject/stable:latest
+
+WORKDIR /home/fenics
+
+# Environment variables
+ENV PETSC_VERSION=3.12.3 \
+    SLEPC_VERSION=3.12.1 \
+    PYBIND11_VERSION=2.4.3 \
+    MPI4PY_VERSION=3.0.3 \
+    PETSC4PY_VERSION=3.12.0 \
+    SLEPC4PY_VERSION=3.12.0 \
+    TRILINOS_VERSION=12.10.1 \
+    OPENBLAS_NUM_THREADS=1 \
+    OPENBLAS_VERBOSE=0 \
+    FENICS_PREFIX=$FENICS_HOME/local
+
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    libglu1 \
+    libxcursor-dev \
+    libxinerama1 \
+    libgl-dev \
+    libxft2 \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+
+# Install PETSc from source
+RUN wget -nc --quiet https://gitlab.com/petsc/petsc/-/archive/v${PETSC_VERSION}/petsc-v${PETSC_VERSION}.tar.gz -O petsc-${PETSC_VERSION}.tar.gz && \
+    mkdir -p petsc-src && tar -xf petsc-${PETSC_VERSION}.tar.gz -C petsc-src --strip-components 1 && \
+    cd petsc-src && \
+    ./configure --COPTFLAGS="-O2" \
+                --CXXOPTFLAGS="-O2" \
+                --FOPTFLAGS="-O2" \
+                --with-fortran-bindings=no \
+                --with-debugging=0 \
+                --download-blacs \
+                --download-hypre \
+                --download-metis \
+                --download-mumps \
+                --download-ptscotch \
+                --download-scalapack \
+                --download-spai \
+                --download-suitesparse \
+                --download-superlu \
+			--download-superlu_dist \
+                --prefix=/usr/local/petsc-32 && \
+     make && \
+     make install && \
+     rm -rf /tmp/*
+
+RUN pip3 install scipy
+RUN pip3 install progressbar
+RUN pip3 install meshio
+RUN pip3 install gmsh
+RUN pip3 install pygmsh
+RUN pip3 install h5py
+
+  
