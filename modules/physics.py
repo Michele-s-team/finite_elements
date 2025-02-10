@@ -4,6 +4,9 @@ import ufl as ufl
 
 import geometry as geo
 
+i, j, k, l = ufl.indices( 4 )
+
+
 #Pi(v, w, omega, sigma)[i, j] = \Pi^{ij}_notes, i.e., the momentum-flux tensor
 def Pi(v, w, omega, sigma, eta):
     return as_tensor( - geo.g_c(omega)[i, j] * sigma - 2.0 * eta * geo.d_c(v, w, omega)[i ,j], (i, j) )
@@ -16,9 +19,10 @@ def dFdl(v, w, omega, sigma, eta, nu):
 def fel_n(omega, mu, tau, kappa):
     return (kappa * ( - 2.0 * tau - 4.0 * mu * ( (mu**2) - geo.K(omega) ) ))
 
-#fvisc_n(v, w, omega, eta) = f^{VISC}_n_notes, i.e., viscous contribution to the normal force
-def fvisc_n(v, w, omega, eta):
-    return ( 2.0 * eta * ( geo.g_c(omega)[i, k] * geo.Nabla_v(v, omega)[j, k] * geo.b(omega)[i, j] - 2.0 * w * ( 2.0 * ((geo.H(omega))**2) - geo.K(omega) )  )  )
+
+#fvisc_n(v, w, omega, mu, eta) = f^{VISC}_n_notes, i.e., viscous contribution to the normal force
+def fvisc_n(v, w, omega, mu, eta):
+    return ( 2.0 * eta * ( geo.g_c(omega)[i, k] * geo.Nabla_v(v, omega)[j, k] * geo.b(omega)[i, j] - 2.0 * w * ( 2.0 * (mu**2) - geo.K(omega) )  )  )
 
 #tforce coming from the Laplace preccure
 def flaplace(sigma, omega):
