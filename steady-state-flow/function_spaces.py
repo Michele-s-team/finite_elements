@@ -3,8 +3,8 @@ from mshr import *
 
 import boundary_geometry as bgeo
 
-# import read_mesh_ring as rmsh
-import read_mesh_square as rmsh
+import read_mesh_ring as rmsh
+# import read_mesh_square as rmsh
 
 degree_function_space = 1
 
