@@ -71,13 +71,13 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).writ
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( fsp.nu, "/f" )
 HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( fsp.tau, "/f" )
 
-xdmffile_f.write( project(phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f), 0 )
-xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f), 0 )
-xdmffile_f.write( project(phys.flaplace( sigma_output, omega_output), fsp.Q_f), 0 )
+xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), 0 )
+xdmffile_f.write( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), 0 )
+xdmffile_f.write( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), 0 )
 
-io.print_scalar_to_csvfile(project(phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f), (rarg.args.output_directory) + '/fvisc_n.csv')
-io.print_scalar_to_csvfile(project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f), (rarg.args.output_directory) + '/fel_n.csv')
-io.print_scalar_to_csvfile(project(phys.flaplace( sigma_output, omega_output), fsp.Q_f), (rarg.args.output_directory) + '/flaplace.csv')
+io.print_scalar_to_csvfile( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), (rarg.args.output_directory) + '/fvisc_n.csv' )
+io.print_scalar_to_csvfile( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), (rarg.args.output_directory) + '/fel_n.csv' )
+io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), (rarg.args.output_directory) + '/flaplace.csv' )
 
 
 
