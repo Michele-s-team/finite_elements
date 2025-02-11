@@ -7,16 +7,22 @@ example:
 clear; clear; rm -rf solution; python3 solve_u.py /home/fenics/shared/poisson-equation/mesh /home/fenics/shared/poisson-equation/solution
 '''
 
-from __future__ import print_function
-
-from email.header import Header
+import colorama as col
 
 from fenics import *
 import argparse
 from mshr import *
-import numpy as np
 import ufl as ufl
 from dolfin import *
+import numpy as np
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import input_output as io
+import mesh as msh
 
 L = 2.2
 h = 0.41
@@ -185,8 +191,10 @@ u_exact = Function( Q )
 # Define post-processing (pp) variational problem
 # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
 hess_u = Function( T )
-nu_hess_u = TestFunction( V )
+nu_hess_u = TestFunction( T )
 hess_u_exact = Function( T )
+J_hess_u = TrialFunction( T )
+
 
 u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
@@ -196,7 +204,7 @@ hess_u_exact.interpolate( hess_u_exact_expression( element=T.ufl_element() ) )
 
 bc_u = DirichletBC( Q, u_exact, boundary_tb )
 
-F = (dot( grad( u ), grad( nu_u ) ) + f * nu_u) * dx - dot( n, grad_u ) * nu_u * (ds_l + ds_r) - n[i] * (u.dx( i )) * nu_u * (ds_t + ds_b)
+F = (dot( grad( u ), grad( nu_u ) ) + f * nu_u) * dx - dot( n, grad_u ) * nu_u * ds_lr - n[i] * (u.dx( i )) * nu_u * ds_tb
 
 F_pp = (hess_u[i, j] * nu_hess_u[i, j] + (u.dx( j )) * ((nu_hess_u[i, j]).dx( i ))) * dx \
        - (n[i] * (u.dx( j )) * nu_hess_u[i, j]) * ds
@@ -219,7 +227,12 @@ params = {'nonlinear_solver': 'newton',
           }
 solver.parameters.update( params )
 
+J_pp = derivative( F_pp, hess_u, J_hess_u )
+problem_pp = NonlinearVariationalProblem( F_pp, hess_u, [], J_pp )
+solver_pp = NonlinearVariationalSolver( problem_pp )
+
 solver.solve()
+solver_pp.solve()
 
 xdmffile_u.write( u, 0 )
 xdmffile_check.write( project( u.dx( i ).dx( i ), Q ), 0 )
@@ -243,11 +256,17 @@ def errornorm(u_e, u):
     return sqrt( abs( assemble( error ) ) )
 
 
-print( "Solution check: " )
-print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
+print( "Check of BCs:" )
 
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ), Q ), f )}" )
+print( f"\t\t<<(u - phi)^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( u, u_exact, ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure( n[i] * (u.dx( i )), n[i] * grad_u[i], ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r) )}" )
+
+# print( "Solution check: " )
+# print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+# print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
+#
+# print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
+# print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ), Q ), f )}" )
+#
+# print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r) )}" )
