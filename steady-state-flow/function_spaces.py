@@ -34,11 +34,11 @@ Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_d = TensorFunctionSpace( bgeo.mesh, 'P', degree_function_space, shape=(2, 2) )
 
-
+# function space to store tangential force fields
+Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 #function space to store normal force fields
 Q_f_n = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
-#function space to store tangential force fields
-Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+
 
 # Define functions
 J_psi = TrialFunction( Q )

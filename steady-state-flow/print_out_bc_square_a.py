@@ -108,8 +108,23 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
+lhs_t = Function( fsp.Q_f_t )
+
+lhs_t.assign( \
+    project( as_tensor( \
+        vp.rho * (v_output[j] * geo.Nabla_v( v_output, omega_output )[i, j] \
+                  - 2 * v_output[j] * w_output * geo.g_c( omega_output )[i, k] * geo.b( omega_output )[k, j] \
+                  - w_output * geo.g_c( omega_output )[i, j] * (w_output.dx( j ))
+                  ) \
+        - (geo.g_c( omega_output )[i, j] * (sigma_output.dx( j )) + phys.fvisc_t( v_output, w_output, fsp.d, omega_output, fsp.mu )[i]),
+        (i) ), \
+        fsp.Q_f_t ) \
+    )
 
 
+
+
+xdmffile_check.write( project(lhs_t[i] * lhs_t[i], fsp.Q_z), 0 )
 xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( sigma_output, omega_output ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
