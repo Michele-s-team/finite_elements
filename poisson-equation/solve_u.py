@@ -121,6 +121,7 @@ n = FacetNormal(mesh)
 
 Q = FunctionSpace( mesh, 'P', 8 )
 V = VectorFunctionSpace( mesh, 'P', 8 )
+T = TensorFunctionSpace(mesh, 'P', 2, shape=(2, 2))
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):

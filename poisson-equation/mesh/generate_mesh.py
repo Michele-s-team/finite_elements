@@ -1,3 +1,12 @@
+'''
+run with
+
+python3 generate_mesh.py [resolution]
+example:
+python3 generate_mesh.py 0.1
+'''
+
+
 import numpy
 import meshio
 import gmsh
