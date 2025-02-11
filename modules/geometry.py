@@ -86,6 +86,10 @@ def Nabla_v(u, omega):
 def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
 
+#covariant derivative of a two-coavariant tensor t: Nabla_ff(t, omega)[i, j, k] = \Nabla_k t_{ij}
+def Nabla_ff(t, omega):
+    return as_tensor((t[i, j]).dx(k) - t[l, j] * Gamma(omega)[l, i, k] - t[i, l] * Gamma(omega)[l, j, k], (i, j, k))
+
 #lalplace-beltrami operator applied to a scalar function f : Nabla_LB(f, omega) = \Nabla_{LB} f_notes
 def Nabla_LB(f, omega):
     return (- 1.0/sqrt_detg(omega) * ( ( sqrt_detg(omega) * g_c(omega)[i, j] * (f.dx(j)) ).dx(i) ) )
