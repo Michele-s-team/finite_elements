@@ -1,5 +1,6 @@
 '''
-This code solves the Poisson equation Nabla u = f expressed in terms of the function u 
+This code solves the Poisson equation Nabla u = f expressed in terms of the function u
+The Hessian of u is solved in a post-processing (pp) variational problem, because one cannot take directly the second derivative of u (u.dx(i).dx(j)) [this would lead to divergences]
 run with
 
 clear; clear; python3 solve_u.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
