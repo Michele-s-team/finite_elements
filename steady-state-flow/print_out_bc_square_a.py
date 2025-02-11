@@ -17,8 +17,6 @@ import variational_problem_bc_square_a as vp
 i, j, k, l = ufl.indices( 4 )
 
 
-
-
 # Create XDMF files for visualization output
 xdmffile_v = XDMFFile( (rarg.args.output_directory) + '/v.xdmf' )
 xdmffile_w = XDMFFile( (rarg.args.output_directory) + '/w.xdmf' )
@@ -81,15 +79,11 @@ io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output),
 
 
 
-
-
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 
-
 print( "Check of BCs:" )
-
 print( f"\t\t<<|v^i - v_l^i|^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure( (v_output[i] - vp.v_l[i]) * (v_output[i] - vp.v_l[i]), Constant(0), rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<(v^i n_i)^2>>_[partial Omega tb + circle] = {col.Fore.RED}{msh.difference_wrt_measure( bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], Constant(0), rmsh.ds_tb + rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
@@ -107,10 +101,6 @@ print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-
-
-
 
 
 # xdmffile_check.write( project( phys.lhs_t(v_output, w_output, sigma_output, fsp.d, omega_output, fsp.mu, vp.rho)[0] , fsp.Q_z), 0 )
