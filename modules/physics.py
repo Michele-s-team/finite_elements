@@ -30,4 +30,4 @@ def flaplace(sigma, omega):
 
 #fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
 def fvisc_t(v, w, d, omega, eta):
-    return(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
+    return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
