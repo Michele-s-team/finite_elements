@@ -28,6 +28,6 @@ def fvisc_n(v, w, omega, mu, eta):
 def flaplace(sigma, omega):
     return (2.0 * sigma * geo.H(omega))
 
-#fvisc_t[i] = f^{VISC i}_notes
-def fvisc_t(v, w, omega, eta):
-    return(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(geo.d(v, w, omega), omega)[j, l, k], (i))
+#fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
+def fvisc_t(v, w, d, omega, eta):
+    return(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
