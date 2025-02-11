@@ -27,3 +27,9 @@ def fvisc_n(v, w, omega, mu, eta):
 #tforce coming from the Laplace preccure. flaplace ={ 2 * \sigma * H }_notes
 def flaplace(sigma, omega):
     return (2.0 * sigma * geo.H(omega))
+
+'''
+#fvisc_t[i] = f^{VISC i}_notes
+def fvisc_t(v, w, omega, eta):
+    return(, (i))
+'''
