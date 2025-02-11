@@ -75,6 +75,9 @@ ds_l = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 ds_t = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=4 )
 ds_b = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
+ds_lr = ds_l + ds_r
+ds_tb = ds_t + ds_b
+ds = ds_lr + ds_tb
 
 # a function space used solely to define f_test_ds
 Q_test = FunctionSpace( mesh, 'P', 2 )
@@ -127,7 +130,7 @@ T = TensorFunctionSpace( mesh, 'P', 2, shape=(2, 2) )
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1 + x[0]**2 + 2 * x[1]**2
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
         # values[0] = np.sin( 2 * (np.pi) * (x[0] + x[1]) ) * np.cos( 2 * (np.pi) * (x[0] - x[1]) ** 2 )
 
     def value_shape(self):
@@ -140,8 +143,8 @@ class grad_u_expression( UserExpression ):
         #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
         # values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
         #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
-        values[0] = 2.0*x[0]
-        values[1] = 4.0*x[1]
+        values[0] = 2.0 * x[0]
+        values[1] = 4.0 * x[1]
 
     def value_shape(self):
         return (2,)
@@ -155,6 +158,7 @@ class laplacian_u_expression( UserExpression ):
 
     def value_shape(self):
         return (1,)
+
 
 class hess_u_exact_expression( UserExpression ):
     def init(self, **kwargs):
@@ -190,12 +194,12 @@ f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
 
 hess_u_exact.interpolate( hess_u_exact_expression( element=T.ufl_element() ) )
 
-
 bc_u = DirichletBC( Q, u_exact, boundary_tb )
 
 F = (dot( grad( u ), grad( nu_u ) ) + f * nu_u) * dx - dot( n, grad_u ) * nu_u * (ds_l + ds_r) - n[i] * (u.dx( i )) * nu_u * (ds_t + ds_b)
 
-# F_pp =
+F_pp = (hess_u[i, j] * nu_hess_u[i, j] + (u.dx( j )) * ((nu_hess_u[i, j]).dx( i ))) * dx \
+       - (n[i] * (u.dx( j )) * nu_hess_u[i, j]) * ds
 
 bcs = [bc_u]
 J = derivative( F, u, J_u )
