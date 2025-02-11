@@ -24,6 +24,6 @@ def fel_n(omega, mu, tau, kappa):
 def fvisc_n(v, w, omega, mu, eta):
     return ( 2.0 * eta * ( geo.g_c(omega)[i, k] * geo.Nabla_v(v, omega)[j, k] * geo.b(omega)[i, j] - 2.0 * w * ( 2.0 * (mu**2) - geo.K(omega) )  )  )
 
-#tforce coming from the Laplace preccure
+#tforce coming from the Laplace preccure. flaplace ={ 2 * \sigma * H }_notes
 def flaplace(sigma, omega):
     return (2.0 * sigma * geo.H(omega))
