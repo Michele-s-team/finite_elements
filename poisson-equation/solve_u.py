@@ -17,9 +17,9 @@ from dolfin import *
 import numpy as np
 import sys
 
-#add the path where to find the shared modules
+# add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
+sys.path.append( module_path )
 
 import input_output as io
 import mesh as msh
@@ -131,13 +131,13 @@ n = FacetNormal( mesh )
 
 Q = FunctionSpace( mesh, 'P', 8 )
 V = VectorFunctionSpace( mesh, 'P', 8 )
-T = TensorFunctionSpace( mesh, 'P', 2, shape=(2, 2) )
+T = TensorFunctionSpace( mesh, 'P', 8, shape=(2, 2) )
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-        # values[0] = np.sin( 2 * (np.pi) * (x[0] + x[1]) ) * np.cos( 2 * (np.pi) * (x[0] - x[1]) ** 2 )
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = np.sin( 2 * (np.pi) * (x[0] + x[1]) ) * np.cos( 2 * (np.pi) * (x[0] - x[1]) ** 2 )
 
     def value_shape(self):
         return (1,)
@@ -145,12 +145,12 @@ class u_exact_expression( UserExpression ):
 
 class grad_u_expression( UserExpression ):
     def eval(self, values, x):
-        # values[0] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
-        # values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
-        values[0] = 2.0 * x[0]
-        values[1] = 4.0 * x[1]
+        # values[0] = 2.0 * x[0]
+        # values[1] = 4.0 * x[1]
+        values[0] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
+            2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
+        values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
+            2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
 
     def value_shape(self):
         return (2,)
@@ -158,9 +158,9 @@ class grad_u_expression( UserExpression ):
 
 class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
-        # values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * cos( 2 * (np.pi) * (x[0] - (x[1])) ** 2 ) - sin( 2 * (np.pi) * (x[0] - (x[1])) ** 2 )) * sin(
-        #     2 * (np.pi) * (x[0] + (x[1])) )
-        values[0] = 6.0
+        # values[0] = 6.0
+        values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * cos( 2 * (np.pi) * (x[0] - (x[1])) ** 2 ) - sin( 2 * (np.pi) * (x[0] - (x[1])) ** 2 )) * sin(
+            2 * (np.pi) * (x[0] + (x[1])) )
 
     def value_shape(self):
         return (1,)
@@ -171,10 +171,28 @@ class hess_u_exact_expression( UserExpression ):
         super().init( **kwargs )
 
     def eval(self, values, x):
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
+        # values[0] = 2
+        # values[1] = 0
+        # values[2] = 0
+        # values[3] = 4
+        values[0] = 4 * np.pi * (
+                4 * np.pi * (-x[0] + x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
+                - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+                + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
+            )
+        values[1] =  4 * np.pi * (
+                np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+                + np.sin(2 * np.pi * (x[0] - x[1])**2)
+            ) * np.sin(2 * np.pi * (x[0] + x[1]))
+        values[2] = 4 * np.pi * (
+                np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+                + np.sin(2 * np.pi * (x[0] - x[1])**2)
+            ) * np.sin(2 * np.pi * (x[0] + x[1]))
+        values[3] = 4 * np.pi * (
+                4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
+                - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+                + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
+            )
 
     def value_shape(self):
         return (2, 2)
@@ -194,7 +212,6 @@ hess_u = Function( T )
 nu_hess_u = TestFunction( T )
 hess_u_exact = Function( T )
 J_hess_u = TrialFunction( T )
-
 
 u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
 grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
@@ -235,9 +252,9 @@ solver.solve()
 solver_pp.solve()
 
 xdmffile_u.write( u, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ), Q ), 0 )
+xdmffile_check.write( project( hess_u[i, i], Q ), 0 )
 xdmffile_check.write( f, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ) - f, Q ), 0 )
+xdmffile_check.write( project( hess_u[i, i] - f, Q ), 0 )
 xdmffile_check.close()
 
 
@@ -257,16 +274,11 @@ def errornorm(u_e, u):
 
 
 print( "Check of BCs:" )
-
 print( f"\t\t<<(u - phi)^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( u, u_exact, ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure( n[i] * (u.dx( i )), n[i] * grad_u[i], ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print(
+    f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure( n[i] * (u.dx( i )), n[i] * grad_u[i], ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-
-# print( "Solution check: " )
-# print( f"\t<<(u - u_exact)^2>>_no-errornorm = {assemble( ((u - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-# print( f"\t<<(u - u_exact)^2>>_errornorm = {errornorm( u, u_exact )}" )
-#
-# print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-# print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ), Q ), f )}" )
-#
-# print( f"\t<<(n[i] \partial_i u - n[i] grad_u[i])^2>> =  {assemble( ((n[i] * grad_u[i]) - (n[i] * u.dx( i ))) ** 2 * (ds_l + ds_r) ) / assemble( Constant( 1.0 ) * (ds_l + ds_r) )}" )
+print( "Comparison with exact solution: " )
+print( f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure( u, u_exact, dx ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print(
+    f"\t\t<<(hess_u - hess_u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure( (hess_u[i, j] - hess_u_exact[i, j]) * (hess_u[i, j] - hess_u_exact[i, j]), Constant( 0 ), dx ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
