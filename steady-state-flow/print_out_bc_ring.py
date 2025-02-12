@@ -30,6 +30,9 @@ xdmffile_tau = XDMFFile( (rarg.args.output_directory) + '/tau.xdmf' )
 xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
 xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
+xdmffile_d = XDMFFile( (rarg.args.output_directory) + '/d.xdmf' )
+xdmffile_d.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
@@ -75,6 +78,9 @@ xdmffile_f.write( project( phys.fv_t(v_output, omega_output, vp.rho)  ,fsp.Q_f_t
 xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), 0 )
+
+xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
+
 
 io.print_vector_to_csvfile( project( phys.fvisc_t( v_output, w_output, fsp.d, omega_output, vp.eta ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fvisc_t.csv' )
 io.print_vector_to_csvfile( project( phys.fsigma_t( sigma_output, omega_output ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fsigma_t.csv' )
