@@ -3,7 +3,6 @@ from mshr import *
 import ufl as ufl
 
 import geometry as geo
-from modules.geometry import Nabla_v
 
 i, j, k, l = ufl.indices( 4 )
 
@@ -31,7 +30,7 @@ def flaplace(sigma, omega):
 
 #fv_t[i] = {\rho v^j \nabla_j v^i}_notes (convective term)
 def fv_t(v, omega, rho):
-    return as_tensor(rho * v[j] * Nabla_v(v, omega)[i, j] , (i) )
+    return as_tensor(rho * v[j] * geo.Nabla_v(v, omega)[i, j] , (i) )
 
 #fsigma_t[i] = {\nabla^i \sigma}_notes
 def fsigma_t(sigma, omega):
