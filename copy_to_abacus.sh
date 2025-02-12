@@ -13,5 +13,5 @@ ssh $OUT "mkdir "$2"/mesh"
 scp modules/*.py $OUT:$2
 scp $1/*.py $OUT:$2
 
-rsync -av --exclude 'mesh.msh' --exclude '.DS_Store' $1/mesh $OUT:$2/mesh
+rsync -av --exclude 'mesh.msh' --exclude '.DS_Store' $1/mesh $OUT:$2
 rsync -av $1/*.py $OUT:$2
