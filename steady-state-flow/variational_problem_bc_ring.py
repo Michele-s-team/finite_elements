@@ -13,14 +13,14 @@ i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 v_r_const = 0.9950371902099891356653
-v_R_const = 0.5
+v_R_const = 0.5000000000000000000000000000000
 w_r_const = 0.0
 w_R_const = 0.0
-sigma_r_const = -0.9950248754694831
+sigma_r_const = -0.99502487546948322183
 z_r_const = 1.0
-z_R_const = 1.09900076985083984499716224302
+z_R_const = 1.09900076963490661833037160663
 omega_r_const = -0.099503719020998913567
-omega_R_const = 0.095353867584048529241675292343
+omega_R_const = 0.095353866240961546555843199533
 
 
 #bending rigidity
