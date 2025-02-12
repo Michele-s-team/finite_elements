@@ -76,6 +76,10 @@ xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu
 xdmffile_f.write( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), 0 )
 
+io.print_vector_to_csvfile( project( phys.fvisc_t( v_output, w_output, fsp.d, omega_output, vp.eta ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fvisc_t.csv' )
+io.print_vector_to_csvfile( project( phys.fsigma_t( sigma_output, omega_output ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fsigma_t.csv' )
+io.print_vector_to_csvfile( project( phys.fv_t( v_output, omega_output, vp.rho ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fv_t.csv' )
+
 io.print_scalar_to_csvfile( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), (rarg.args.output_directory) + '/fvisc_n.csv' )
 io.print_scalar_to_csvfile( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), (rarg.args.output_directory) + '/fel_n.csv' )
 io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), (rarg.args.output_directory) + '/flaplace.csv' )
