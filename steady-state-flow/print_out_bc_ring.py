@@ -120,8 +120,12 @@ print(
 
 
 # xdmffile_check.write( project( phys.lhs_t(v_output, w_output, sigma_output, fsp.d, omega_output, fsp.mu, vp.rho)[0] , fsp.Q_z), 0 )
-xdmffile_check.write( project( (geo.Nabla_v( v_output, omega_output )[i, i] - 2.0 * mu_output * w_output) , fsp.Q_z), 0 )
-xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ), 0 )
+xdmffile_check.write( project( (geo.Nabla_v( v_output, omega_output )[i, i] - 2.0 * mu_output * w_output) , fsp.Q_sigma), 0 )
+xdmffile_check.write( project( \
+    sqrt( (phys.fvisc_t(v_output, w_output, fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.fv_t( v_output, omega_output, vp.rho )[i]) \
+    * (phys.fvisc_t(v_output, w_output, fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.fv_t( v_output, omega_output, vp.rho )[i]) ),\
+    fsp.Q_f_n ), 0 )
+xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output ), fsp.Q_f_n ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (fsp.nu[i] - (mu_output.dx( i ))) * (fsp.nu[i] - (mu_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
