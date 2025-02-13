@@ -106,10 +106,11 @@ def d_c(v, w, omega):
 def vector_times_scalar(vector, scalar):
     return as_tensor(scalar * vector[i], (i))
 
-# vector living in the three-dimensional Euclidean space, which is orthogonal to the circle of radius r centered at c_r
+# vector living in the three-dimensional Euclidean space, which is orthogonal to the circle of radius r centered at c_r. N3d_c_r[k] = \vec{N}_{\gamma k}_notes
 def N3d_c_r(c_r):
     x = ufl.SpatialCoordinate( mesh )
     return as_tensor( [(x[0] - c_r[0]) / my_norm( x - c_r ), (x[1] - c_r[1]) / my_norm( x - c_r ), 0.0] )
 
+# Nt_c_r[i] = N_{t \gamma}^i_notes
 def Nt_c_r(c_r, omega):
     return as_tensor(g_c(omega)[i, j] * N3d_c_r(c_r)[k] * e(omega)[j, k], (i))
