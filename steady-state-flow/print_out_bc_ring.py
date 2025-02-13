@@ -99,15 +99,12 @@ xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
 
 
 
-#print residual of the PDEs to files 
+#print residual of the PDEs to files
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
-# copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 
 print( "Check of BCs:" )
-
 print( f"\t\t<<|v^i - v_r^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (v_output[i] - vp.v_r[i]) * (v_output[i] - vp.v_r[i]), Constant(0), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<(v^i n_i - v_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], vp.v_R_const, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
