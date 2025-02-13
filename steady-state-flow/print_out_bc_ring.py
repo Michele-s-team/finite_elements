@@ -33,6 +33,9 @@ xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_m
 xdmffile_d = XDMFFile( (rarg.args.output_directory) + '/d.xdmf' )
 xdmffile_d.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
+xdmffile_dFdl = XDMFFile( (rarg.args.output_directory) + '/dFdl.xdmf' )
+xdmffile_dFdl.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+
 
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
@@ -130,3 +133,6 @@ xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (fsp.nu[i] - (mu_output.dx( i ))) * (fsp.nu[i] - (mu_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z ), fsp.Q_tau ), 0 )
+
+
+xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), 0 )
