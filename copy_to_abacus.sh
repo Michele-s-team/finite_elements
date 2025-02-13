@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# run with ./copy_to_abacus.sh steady-state-flow steady-state-flow
+
 clear
 clear
 
