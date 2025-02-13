@@ -114,3 +114,7 @@ def N3d_c_r(c_r):
 # Nt_c_r[i] = N_{t \gamma}^i_notes
 def Nt_c_r(c_r, omega):
     return as_tensor(g_c(omega)[i, j] * N3d_c_r(c_r)[k] * e(omega)[j, k], (i))
+
+#n_c_r[i] = n_\gamma^i_notes
+def n_c_r(c_r, omega):
+    return as_tensor((Nt_c_r(c_r, omega))[k] / sqrt(g(omega)[i, j]* (Nt_c_r(c_r, omega))[i] *  (Nt_c_r(c_r, omega))[j] ), (k))
