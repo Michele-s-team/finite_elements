@@ -135,6 +135,6 @@ xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q
 xdmffile_check.write( project( project( sqrt( (fsp.nu[i] - (mu_output.dx( i ))) * (fsp.nu[i] - (mu_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z ), fsp.Q_tau ), 0 )
 
-
+#write to file forces per unit length
 xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), 0 )
 io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), (rarg.args.output_directory) + '/dFdl.csv' )
