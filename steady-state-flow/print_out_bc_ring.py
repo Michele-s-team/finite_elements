@@ -123,7 +123,6 @@ print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
-# xdmffile_check.write( project( phys.lhs_t(v_output, w_output, sigma_output, fsp.d, omega_output, fsp.mu, vp.rho)[0] , fsp.Q_z), 0 )
 xdmffile_check.write( project( (geo.Nabla_v( v_output, omega_output )[i, i] - 2.0 * mu_output * w_output) , fsp.Q_sigma), 0 )
 xdmffile_check.write( project( \
     sqrt( (phys.fvisc_t(v_output, w_output, fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.fv_t( v_output, omega_output, vp.rho )[i]) \
@@ -132,8 +131,11 @@ xdmffile_check.write( project( \
 xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output ), fsp.Q_f_n ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
+
 xdmffile_check.write( project( project( sqrt( (fsp.nu[i] - (mu_output.dx( i ))) * (fsp.nu[i] - (mu_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z ), fsp.Q_tau ), 0 )
+xdmffile_check.write( project( project( (geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]) * (geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]), fsp.Q_z ), fsp.Q_tau ), 0 )
+
 
 #write to file forces per unit length
 xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), 0 )
