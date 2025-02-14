@@ -87,14 +87,18 @@ solver.parameters.update(params)
 #the post-processing ('pp') variational problem used to compute tau
 J_pp_nu = derivative( vp.F_pp_nu, fsp.nu, fsp.J_pp_nu )
 J_pp_tau = derivative( vp.F_pp_tau, fsp.tau, fsp.J_pp_tau )
+J_pp_d = derivative( vp.F_pp_d, fsp.d, fsp.J_pp_d )
 problem_pp_nu = NonlinearVariationalProblem( vp.F_pp_nu, fsp.nu, [], J_pp_nu )
 problem_pp_tau = NonlinearVariationalProblem( vp.F_pp_tau, fsp.tau, [], J_pp_tau )
+problem_pp_d = NonlinearVariationalProblem( vp.F_pp_d, fsp.d, [], J_pp_d )
 solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
 solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
+solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
 solver.solve()
 solver_pp_nu.solve()
 solver_pp_tau.solve()
+solver_pp_d.solve()
 
 
 

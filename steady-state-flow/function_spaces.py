@@ -3,8 +3,6 @@ from mshr import *
 
 import boundary_geometry as bgeo
 
-# import read_mesh_ring as rmsh
-import read_mesh_square as rmsh
 
 degree_function_space = 1
 
@@ -29,27 +27,34 @@ Q_z= Q.sub( 3 ).collapse()
 Q_omega = Q.sub( 4 ).collapse()
 Q_mu = Q.sub( 5 ).collapse()
 
-#the function spaces for nu and tau are for post-processing only
+#the function spaces for nu, tau and d are for post-processing only
 Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
+Q_d = TensorFunctionSpace( bgeo.mesh, 'P', degree_function_space, shape=(2, 2) )
 
-#function space to store force fields
-Q_f = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
+# function space to store tangential force fields
+Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+#function space to store normal force fields
+Q_f_n = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
+Q_dFfl = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+
 
 # Define functions
-# the Jacobian
 J_psi = TrialFunction( Q )
 psi = Function( Q )
 nu_v, nu_w, nu_sigma,  nu_z, nu_omega, nu_mu = TestFunctions( Q )
 
 nu = Function(Q_nu)
 tau = Function(Q_tau)
+d = Function( Q_d )
 
 J_pp_nu = TrialFunction( Q_nu )
 J_pp_tau = TrialFunction( Q_tau )
+J_pp_d = TrialFunction( Q_d )
+
 nu_nu = TestFunction(Q_nu)
 nu_tau = TestFunction(Q_tau)
-
+nu_d = TestFunction(Q_d)
 
 
 #these functions are used to print the solution to file
@@ -70,6 +75,7 @@ mu_0 = Function( Q_mu )
 
 nu_0 = Function( Q_nu )
 tau_0 = Function( Q_tau )
+d_0 = Function( Q_d )
 
 v, w, sigma, z, omega, mu = split( psi )
 assigner = FunctionAssigner(Q, [Q_v, Q_w, Q_sigma, Q_z, Q_omega, Q_mu])

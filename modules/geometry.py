@@ -86,6 +86,10 @@ def Nabla_v(u, omega):
 def Nabla_f(f, omega):
     return as_tensor((f[i]).dx(j) - f[k] * Gamma(omega)[k, i, j], (i, j))
 
+#covariant derivative of a two-coavariant tensor t: Nabla_ff(t, omega)[i, j, k] = \Nabla_k t_{ij}
+def Nabla_ff(t, omega):
+    return as_tensor((t[i, j]).dx(k) - t[l, j] * Gamma(omega)[l, i, k] - t[i, l] * Gamma(omega)[l, j, k], (i, j, k))
+
 #lalplace-beltrami operator applied to a scalar function f : Nabla_LB(f, omega) = \Nabla_{LB} f_notes
 def Nabla_LB(f, omega):
     return (- 1.0/sqrt_detg(omega) * ( ( sqrt_detg(omega) * g_c(omega)[i, j] * (f.dx(j)) ).dx(i) ) )
@@ -101,3 +105,17 @@ def d_c(v, w, omega):
 #given a vector and a scalar, return the vector vector^i * scalar
 def vector_times_scalar(vector, scalar):
     return as_tensor(scalar * vector[i], (i))
+
+# vector living in the three-dimensional Euclidean space, which is orthogonal to the circle of radius r centered at c_r. N3d_c_r[k] = \vec{N}_{\gamma k}_notes
+def N3d_c_r(mesh, c_r):
+    x = ufl.SpatialCoordinate( mesh )
+    norm = sqrt((x[0] - c_r[0])**2 + (x[1] - c_r[1])**2)
+    return as_tensor( [(x[0] - c_r[0]) / norm, (x[1] - c_r[1]) / norm, 0.0] )
+
+# Nt_c_r[i] = N_{t \gamma}^i_notes
+def Nt_c_r(mesh, c_r, omega):
+    return as_tensor(g_c(omega)[i, j] * N3d_c_r(mesh, c_r)[k] * e(omega)[j, k], (i))
+
+#n_c_r[i] = n_\gamma^i_notes
+def n_c_r(mesh, c_r, omega):
+    return as_tensor((Nt_c_r(mesh, c_r, omega))[k] / sqrt(g(omega)[i, j]* (Nt_c_r(mesh, c_r, omega))[i] *  (Nt_c_r(mesh, c_r, omega))[j] ), (k))
