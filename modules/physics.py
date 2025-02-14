@@ -39,12 +39,3 @@ def fsigma_t(sigma, omega):
 #fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
 def fvisc_t(v, w, d, omega, eta):
     return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
-
-def lhs_t(v, w, sigma, d, omega, mu, rho):
-    return as_tensor( \
-        rho * (v[j] * geo.Nabla_v( v, omega )[i, j] \
-                  - 2 * v[j] * w * geo.g_c( omega )[i, k] * geo.b( omega )[k, j] \
-                  - w * geo.g_c( omega )[i, j] * (w.dx( j ))
-                  ) \
-        - (geo.g_c( omega )[i, j] * (sigma.dx( j )) + fvisc_t( v, w, d, omega, mu )[i]),
-        (i) )
