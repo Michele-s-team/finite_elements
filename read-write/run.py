@@ -2,7 +2,7 @@
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
 run with
 clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
-clear; clear; rm -rf solution-out; python3 run.py /home/fenics/shared/mesh /home/fenics/shared/solution-in/snapshots/h5  /home/fenics/shared/solution-out 12700 10
+clear; clear; rm -rf solution-out; python3 run.py /home/fenics/shared/dynamics/mesh /dynamics/solution/snapshots/h5  /home/fenics/shared/read-write/solution-out 4394 2
 '''
 
 from fenics import *
@@ -12,6 +12,8 @@ import numpy as np
 import meshio
 import ufl as ufl
 import argparse
+
+import geometry as geo
 
 parser = argparse.ArgumentParser()
 parser.add_argument("mesh_old_directory")
@@ -72,9 +74,6 @@ Q_omega_n = Q.sub(5).collapse()
 Q_z_n= Q.sub(6).collapse()
 
 
-# norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
