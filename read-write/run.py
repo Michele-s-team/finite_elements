@@ -2,7 +2,7 @@
 this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
 run with
 clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
-clear; clear; rm -rf solution-out; python3 run.py /home/fenics/shared/dynamics/mesh /dynamics/solution/snapshots/h5  /home/fenics/shared/read-write/solution-out 4394 2
+clear; clear; rm -rf solution-out; python3 run.py /home/fenics/shared/dynamics/mesh /home/fenics/shared/dynamics/solution/snapshots/h5  /home/fenics/shared/read-write/solution-out 4394 2
 '''
 
 from fenics import *
@@ -12,6 +12,12 @@ import numpy as np
 import meshio
 import ufl as ufl
 import argparse
+
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
 
 import geometry as geo
 
