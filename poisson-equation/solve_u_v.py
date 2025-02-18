@@ -9,10 +9,21 @@ clear; clear; rm -rf solution; python3 solve_u_v.py /home/fenics/shared/poisson-
 
 from fenics import *
 import argparse
+import colorama as col
 from mshr import *
 import numpy as np
 import ufl as ufl
 from dolfin import *
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append( module_path )
+
+
+import input_output as io
+import mesh as msh
+
 
 # CHANGE PARAMETERS HERE
 L = 2.2
@@ -66,8 +77,6 @@ xdmf.close()
 boundary = 'on_boundary'
 boundary_lr = 'near(x[0], 0) || near(x[0], 2.2)'
 boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
-
-
 # CHANGE PARAMETERS HERE
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
@@ -106,29 +115,17 @@ class FunctionTestIntegrals( UserExpression ):
 f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
 # print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
+msh.test_mesh_integral(0.501508, f_test_ds, dx, '\int f dx')
 
-exact_value_int_dx = 0.501508
-numerical_value_int_dx = assemble( f_test_ds * dx )
-print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
+msh.test_mesh_integral(0.373168, f_test_ds, ds_l, '\int_l f ds')
+msh.test_mesh_integral(0.00227783, f_test_ds, ds_r, '\int_r f ds')
+msh.test_mesh_integral(1.36562, f_test_ds, ds_t, '\int_t f ds')
+msh.test_mesh_integral(1.02837, f_test_ds, ds_b, '\int_b f ds')
 
-exact_value_int_ds_l = 0.373168
-numerical_value_int_ds_l = assemble( f_test_ds * ds_l )
-print( f"\int_l f ds = {numerical_value_int_ds_l}, should be  {exact_value_int_ds_l}, relative error =  {abs( (numerical_value_int_ds_l - exact_value_int_ds_l) / exact_value_int_ds_l ):e}" )
-
-exact_value_int_ds_r = 0.00227783
-numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
-print( f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
-
-exact_value_int_ds_t = 1.36562
-numerical_value_int_ds_t = assemble( f_test_ds * ds_t )
-print( f"\int_t f ds = {numerical_value_int_ds_t}, should be  {exact_value_int_ds_t}, relative error =  {abs( (numerical_value_int_ds_t - exact_value_int_ds_t) / exact_value_int_ds_t ):e}" )
-
-exact_value_int_ds_b = 1.02837
-numerical_value_int_ds_b = assemble( f_test_ds * ds_b )
-print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds_b}, relative error =  {abs( (numerical_value_int_ds_b - exact_value_int_ds_b) / exact_value_int_ds_b ):e}" )
 
 n = FacetNormal( mesh )
 
+#define elements and function spaces
 P_u = FiniteElement( 'P', triangle, function_space_degree )
 P_v = VectorElement( 'P', triangle, function_space_degree )
 element = MixedElement( [P_u, P_v] )
@@ -137,13 +134,13 @@ Q = FunctionSpace( mesh, element )
 Q_u = Q.sub( 0 ).collapse()
 Q_v = Q.sub( 1 ).collapse()
 
-
+#define exact solution to set the boundary conditions (BCs) and compare the finite-element (FE) solution with the exact one
 # CHANGE PARAMETERS HERE
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1 + cos( x[0] - x[1] ) - sin( x[1] )
+        # values[0] = 1 + cos( x[0] - x[1] ) - sin( x[1] )
         # values[0] = 1 + (x[0]**2) + 2 * (x[1]**2)
-        # values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
+        values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
 
     def value_shape(self):
         return (1,)
@@ -151,10 +148,10 @@ class u_exact_expression( UserExpression ):
 
 class v_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = - sin( x[0] - x[1] )
-        values[1] = sin( x[0] - x[1] ) - cos( x[1] )
-        # values[0] =  2 *(np.pi) *cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
-        # values[1] = 2 * (np.pi) * cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * sin(2 * (np.pi)*  ((x[0]) + (x[1])))
+        # values[0] = - sin( x[0] - x[1] )
+        # values[1] = sin( x[0] - x[1] ) - cos( x[1] )
+        values[0] =  2 *(np.pi) *cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        values[1] = 2 * (np.pi) * cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * sin(2 * (np.pi)*  ((x[0]) + (x[1])))
 
     def value_shape(self):
         return (2,)
@@ -162,17 +159,15 @@ class v_exact_expression( UserExpression ):
 
 class laplacian_u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = -2 * cos( x[0] - x[1] ) + sin( x[1] )
-        # values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
+        # values[0] = -2 * cos( x[0] - x[1] ) + sin( x[1] )
+        values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * cos(2* (np.pi)* (x[0]-(x[1]))**2)-sin(2* (np.pi) *(x[0]-(x[1]))**2))* sin(2* (np.pi)* (x[0]+(x[1])))
 
     def value_shape(self):
         return (1,)
-
-
 # CHANGE PARAMETERS HERE
 
 
-# Define variational problem
+# Define functions
 psi = Function( Q )
 nu_u, nu_v = TestFunctions( Q )
 
@@ -191,15 +186,10 @@ v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
 laplacian_u_exact.interpolate( laplacian_u_exact_expression( element=Q_u.ufl_element() ) )
 f.interpolate( laplacian_u_exact_expression( element=Q_u.ufl_element() ) )
 
-# CHANGE PARAMETERS HERE
-u_profile = Expression( '1 + cos(x[0]-x[1]) - sin(x[1])', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-# u_profile = Expression( '1 + cos(x[0]) - sin(x[1])', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-# u_profile = Expression( '1 + pow(x[0], 2) + 2 * pow(x[1], 2)', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-# u_profile = Expression( 'sin(2.0*pi*(x[0]+x[1])) * cos(2.0*pi*pow(x[0]-x[1], 2))', L=L, h=h, element=Q.sub( 0 ).ufl_element() )
-# CHANGE PARAMETERS HERE
+#define Difichlet boundary conditions
+bc_u = DirichletBC( Q.sub( 0 ), u_exact, boundary )
 
-bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
-
+#define variational problem
 F_v = (v[i] * nu_v[i] + u * (nu_v[i].dx( i ))) * dx \
       - n[i] * u * (nu_v[i]) * ds
 F_u = (v[i] * (nu_u.dx( i )) + f * nu_u) * dx \
@@ -213,55 +203,38 @@ J = derivative( F, psi, J_uv )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
-# params = {'nonlinear_solver': 'newton',
-#           'newton_solver':
-#               {
-#                   'linear_solver': 'mumps',
-#                   'absolute_tolerance': 1e-6,
-#                   'relative_tolerance': 1e-6,
-#                   'maximum_iterations': 1000000,
-#                   'relaxation_parameter': 0.95,
-#               }
-#           }
-# solver.parameters.update( params )
+params = {'nonlinear_solver': 'newton',
+          'newton_solver':
+              {
+                  'linear_solver': 'superlu',
+                  'absolute_tolerance': 1e-6,
+                  'relative_tolerance': 1e-6,
+                  'maximum_iterations': 1000000,
+                  'relaxation_parameter': 0.95,
+              }
+          }
+solver.parameters.update( params )
 
+#solve the variational problem
 solver.solve()
 
+#print out the solution
 u_output, v_output = psi.split( deepcopy=True )
 
 xdmffile_u.write( u_output, 0 )
 xdmffile_v.write( v_output, 0 )
 
+io.print_scalar_to_csvfile( u_output, (args.output_directory) + "/u.csv" );
+io.print_vector_to_csvfile( v_output, (args.output_directory) + "/v.csv" );
+
+#check if the boundary conditions are satisfied
 print( "BCs check: " )
-print( f"\t<<(u-u_exact)^2>>_\partial Omega =  {assemble( (u_output - u_exact) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
-print( f"\t<<(n.v-n.v_exact)^2>>_\partial Omega =  {assemble( (n[i] * v_output[i] - n[i] * v_exact[i]) ** 2 * ds ) / assemble( Constant( 1.0 ) * ds )}" )
+print( f"\t\t<<(u - u_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure( u_output, u_exact, ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(n.v-n.v_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(  n[i] * v_output[i] , n[i] * v_exact[i], ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-print( "Solution check: " )
-print( f"\t<<(u - u_exact)^2>> = {sqrt( assemble( ((u_output - u_exact) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<|v - v_exact|^2>> = {sqrt( assemble( ((v_output[i] - v_exact[i]) * (v_output[i] - v_exact[i])) * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
-print( f"\t<<(\partial_i v_i - f)^2>> = {sqrt( assemble( (v_output[i].dx( i ) - f) ** 2 * dx ) / assemble( Constant( 1.0 ) * dx ) )}" )
+#check if the FE solution agrees with the exact one
+print( "Comparison with exact solution: " )
+print( f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure( u_output, u_exact, dx ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<|v - v_exact|^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure( sqrt((v_output[i] - v_exact[i]) * (v_output[i] - v_exact[i])), Constant(0), dx ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-'''
-xdmffile_u.write( v_output, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), 0 )
-xdmffile_check.write( f, 0 )
-xdmffile_check.write( project( u.dx( i ).dx( i ).dx( j ).dx( j ) - f, Q_u ), 0 )
-xdmffile_check.close()
 
-def errornorm(u_e, u):
-    error = (u_e - u) ** 2 * dx
-    E = sqrt( abs( assemble( error ) ) )
-    V = u.function_space()
-    mesh = V.mesh()
-    degree = V.ufl_element().degree()
-    W = FunctionSpace( mesh, 'P', degree + 3 )
-    u_e_W = interpolate( u_e, W )
-    u_W = interpolate( u, W )
-    e_W = Function( W )
-    e_W.vector()[:] = u_e_W.vector().get_local() - u_W.vector().get_local()
-    error = e_W ** 2 * dx
-    return sqrt( abs( assemble( error ) / assemble( Constant( 1.0 ) * dx ) ) )
-
-print( f"\t<<(Nabla u - f)^2>>_no-errornorm = {assemble( ((u.dx( i ).dx( i ).dx( j ).dx( j ) - f) ** 2) * dx ) / assemble( Constant( 1.0 ) * dx )}" )
-print( f"\t<<(Nabla u - f)^2>>_errornorm = {errornorm( project( u.dx( i ).dx( i ).dx( j ).dx( j ), Q_u ), f )}" )
-'''

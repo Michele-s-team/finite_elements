@@ -107,26 +107,13 @@ class FunctionTestIntegrals( UserExpression ):
 f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
 # print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
+msh.test_mesh_integral(0.501508, f_test_ds, dx, '\int f dx')
 
-exact_value_int_dx = 0.501508
-numerical_value_int_dx = assemble( f_test_ds * dx )
-print( f"\int f dx = {numerical_value_int_dx}, should be  {exact_value_int_dx}, relative error =  {abs( (numerical_value_int_dx - exact_value_int_dx) / exact_value_int_dx ):e}" )
+msh.test_mesh_integral(0.373168, f_test_ds, ds_l, '\int_l f ds')
+msh.test_mesh_integral(0.00227783, f_test_ds, ds_r, '\int_r f ds')
+msh.test_mesh_integral(1.36562, f_test_ds, ds_t, '\int_t f ds')
+msh.test_mesh_integral(1.02837, f_test_ds, ds_b, '\int_b f ds')
 
-exact_value_int_ds_l = 0.373168
-numerical_value_int_ds_l = assemble( f_test_ds * ds_l )
-print( f"\int_l f ds = {numerical_value_int_ds_l}, should be  {exact_value_int_ds_l}, relative error =  {abs( (numerical_value_int_ds_l - exact_value_int_ds_l) / exact_value_int_ds_l ):e}" )
-
-exact_value_int_ds_r = 0.00227783
-numerical_value_int_ds_r = assemble( f_test_ds * ds_r )
-print( f"\int_r f ds = {numerical_value_int_ds_r}, should be  {exact_value_int_ds_r}, relative error =  {abs( (numerical_value_int_ds_r - exact_value_int_ds_r) / exact_value_int_ds_r ):e}" )
-
-exact_value_int_ds_t = 1.36562
-numerical_value_int_ds_t = assemble( f_test_ds * ds_t )
-print( f"\int_t f ds = {numerical_value_int_ds_t}, should be  {exact_value_int_ds_t}, relative error =  {abs( (numerical_value_int_ds_t - exact_value_int_ds_t) / exact_value_int_ds_t ):e}" )
-
-exact_value_int_ds_b = 1.02837
-numerical_value_int_ds_b = assemble( f_test_ds * ds_b )
-print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_ds_b}, relative error =  {abs( (numerical_value_int_ds_b - exact_value_int_ds_b) / exact_value_int_ds_b ):e}" )
 
 n = FacetNormal( mesh )
 
@@ -257,6 +244,9 @@ xdmffile_check.write( project( hess_u[i, i], Q ), 0 )
 xdmffile_check.write( f, 0 )
 xdmffile_check.write( project( hess_u[i, i] - f, Q ), 0 )
 xdmffile_check.close()
+
+io.print_scalar_to_csvfile( u, (args.output_directory) + "/u.csv" );
+
 
 
 def errornorm(u_e, u):
