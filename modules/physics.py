@@ -28,7 +28,7 @@ def fvisc_n(v, w, omega, mu, eta):
 def flaplace(sigma, omega):
     return (2.0 * sigma * geo.H(omega))
 
-#fv_t[i] = {\rho v^j \nabla_j v^i}_notes (convective term)
+#fv_t[i] = {\rho v^j \nabla_j v^i}_notes (convective term in the left-hand side of Eq. (1b) in 'notes')
 def fv_t(v, omega, rho):
     return as_tensor(rho * v[j] * geo.Nabla_v(v, omega)[i, j] , (i) )
 
@@ -36,6 +36,6 @@ def fv_t(v, omega, rho):
 def fsigma_t(sigma, omega):
     return as_tensor(geo.g_c(omega)[i, j] * (sigma.dx(j)) , (i) )
 
-#fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
+#fvisc_t[i] = f^{VISC i}_notes. Here the argument d is defined in the same way as geo.d
 def fvisc_t(v, w, d, omega, eta):
     return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))

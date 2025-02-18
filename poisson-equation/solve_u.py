@@ -25,8 +25,11 @@ sys.path.append( module_path )
 import input_output as io
 import mesh as msh
 
+
 L = 2.2
 h = 0.41
+
+function_space_degree = 4
 
 i, j = ufl.indices( 2 )
 
@@ -65,11 +68,7 @@ xdmf.close()
 boundary = 'on_boundary'
 boundary_lr = 'near(x[0], 0) || near(x[0], 2.2)'
 boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
-
-
 # CHANGE PARAMETERS HERE
-
-# read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 
 #  norm of vector x
 def my_norm(x):
@@ -117,15 +116,15 @@ msh.test_mesh_integral(1.02837, f_test_ds, ds_b, '\int_b f ds')
 
 n = FacetNormal( mesh )
 
-Q = FunctionSpace( mesh, 'P', 8 )
-V = VectorFunctionSpace( mesh, 'P', 8 )
-T = TensorFunctionSpace( mesh, 'P', 8, shape=(2, 2) )
+Q = FunctionSpace( mesh, 'P', function_space_degree )
+V = VectorFunctionSpace( mesh, 'P', function_space_degree )
+T = TensorFunctionSpace( mesh, 'P', function_space_degree, shape=(2, 2) )
 
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-        values[0] = np.sin( 2 * (np.pi) * (x[0] + x[1]) ) * np.cos( 2 * (np.pi) * (x[0] - x[1]) ** 2 )
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = np.sin( 2 * (np.pi) * (x[0] + x[1]) ) * np.cos( 2 * (np.pi) * (x[0] - x[1]) ** 2 )
 
     def value_shape(self):
         return (1,)
@@ -133,12 +132,12 @@ class u_exact_expression( UserExpression ):
 
 class grad_u_expression( UserExpression ):
     def eval(self, values, x):
-        # values[0] = 2.0 * x[0]
-        # values[1] = 4.0 * x[1]
-        values[0] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
-            2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
-        values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
-            2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
+        values[0] = 2.0 * x[0]
+        values[1] = 4.0 * x[1]
+        # values[0] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
+        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
+        # values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
+        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
 
     def value_shape(self):
         return (2,)
@@ -146,9 +145,9 @@ class grad_u_expression( UserExpression ):
 
 class laplacian_u_expression( UserExpression ):
     def eval(self, values, x):
-        # values[0] = 6.0
-        values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * cos( 2 * (np.pi) * (x[0] - (x[1])) ** 2 ) - sin( 2 * (np.pi) * (x[0] - (x[1])) ** 2 )) * sin(
-            2 * (np.pi) * (x[0] + (x[1])) )
+        values[0] = 6.0
+        # values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * cos( 2 * (np.pi) * (x[0] - (x[1])) ** 2 ) - sin( 2 * (np.pi) * (x[0] - (x[1])) ** 2 )) * sin(
+        #     2 * (np.pi) * (x[0] + (x[1])) )
 
     def value_shape(self):
         return (1,)
@@ -159,28 +158,28 @@ class hess_u_exact_expression( UserExpression ):
         super().init( **kwargs )
 
     def eval(self, values, x):
-        # values[0] = 2
-        # values[1] = 0
-        # values[2] = 0
-        # values[3] = 4
-        values[0] = 4 * np.pi * (
-                4 * np.pi * (-x[0] + x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
-                - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-                + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-            )
-        values[1] =  4 * np.pi * (
-                np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-                + np.sin(2 * np.pi * (x[0] - x[1])**2)
-            ) * np.sin(2 * np.pi * (x[0] + x[1]))
-        values[2] = 4 * np.pi * (
-                np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-                + np.sin(2 * np.pi * (x[0] - x[1])**2)
-            ) * np.sin(2 * np.pi * (x[0] + x[1]))
-        values[3] = 4 * np.pi * (
-                4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
-                - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-                + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-            )
+        values[0] = 2
+        values[1] = 0
+        values[2] = 0
+        values[3] = 4
+        # values[0] = 4 * np.pi * (
+        #         4 * np.pi * (-x[0] + x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
+        #         - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
+        #     )
+        # values[1] =  4 * np.pi * (
+        #         np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)
+        #     ) * np.sin(2 * np.pi * (x[0] + x[1]))
+        # values[2] = 4 * np.pi * (
+        #         np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)
+        #     ) * np.sin(2 * np.pi * (x[0] + x[1]))
+        # values[3] = 4 * np.pi * (
+        #         4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
+        #         - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
+        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
+        #     )
 
     def value_shape(self):
         return (2, 2)
@@ -209,8 +208,10 @@ hess_u_exact.interpolate( hess_u_exact_expression( element=T.ufl_element() ) )
 
 bc_u = DirichletBC( Q, u_exact, boundary_tb )
 
+#variational functional for the original problem (poisson equation)
 F = (dot( grad( u ), grad( nu_u ) ) + f * nu_u) * dx - dot( n, grad_u ) * nu_u * ds_lr - n[i] * (u.dx( i )) * nu_u * ds_tb
 
+#variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (hess_u[i, j] * nu_hess_u[i, j] + (u.dx( j )) * ((nu_hess_u[i, j]).dx( i ))) * dx \
        - (n[i] * (u.dx( j )) * nu_hess_u[i, j]) * ds
 
@@ -223,7 +224,7 @@ solver = NonlinearVariationalSolver( problem )
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
-                  'linear_solver': 'mumps',
+                  'linear_solver': 'superlu',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
                   'maximum_iterations': 1000000,
@@ -236,7 +237,9 @@ J_pp = derivative( F_pp, hess_u, J_hess_u )
 problem_pp = NonlinearVariationalProblem( F_pp, hess_u, [], J_pp )
 solver_pp = NonlinearVariationalSolver( problem_pp )
 
+#solve original problem
 solver.solve()
+#solve pp problem
 solver_pp.solve()
 
 xdmffile_u.write( u, 0 )
@@ -248,22 +251,7 @@ xdmffile_check.close()
 io.print_scalar_to_csvfile( u, (args.output_directory) + "/u.csv" );
 
 
-
-def errornorm(u_e, u):
-    error = (u_e - u) ** 2 * dx
-    E = sqrt( abs( assemble( error ) ) )
-    V = u.function_space()
-    mesh = V.mesh()
-    degree = V.ufl_element().degree()
-    W = FunctionSpace( mesh, 'P', degree + 3 )
-    u_e_W = interpolate( u_e, W )
-    u_W = interpolate( u, W )
-    e_W = Function( W )
-    e_W.vector()[:] = u_e_W.vector().get_local() - u_W.vector().get_local()
-    error = e_W ** 2 * dx
-    return sqrt( abs( assemble( error ) ) )
-
-
+#check if the boundary conditions (BCs) are satisfied
 print( "Check of BCs:" )
 print( f"\t\t<<(u - phi)^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( u, u_exact, ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
