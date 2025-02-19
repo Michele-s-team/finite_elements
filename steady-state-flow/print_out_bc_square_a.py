@@ -75,13 +75,13 @@ HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).wri
 
 #print to file the forces which appear in the RHS of the equations
 #tangential forces
-xdmffile_f.write( project( phys.fvisc_t(v_output, w_output, fsp.d, omega_output, vp.eta)  ,fsp.Q_f_t ), 0 )
+xdmffile_f.write( project(phys.fvisc_t(fsp.d, omega_output, vp.eta)  ,fsp.Q_f_t ), 0 )
 xdmffile_f.write( project( phys.fsigma_t(sigma_output, omega_output)  ,fsp.Q_f_t ), 0 )
-xdmffile_f.write( project( phys.fv_t(v_output, omega_output, vp.rho)  ,fsp.Q_f_t ), 0 )
+xdmffile_f.write( project( phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)  ,fsp.Q_f_t ), 0 )
 
-io.print_vector_to_csvfile( project( phys.fvisc_t( v_output, w_output, fsp.d, omega_output, vp.eta ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fvisc_t.csv' )
+io.print_vector_to_csvfile( project( phys.fvisc_t( fsp.d, omega_output, vp.eta ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fvisc_t.csv' )
 io.print_vector_to_csvfile( project( phys.fsigma_t( sigma_output, omega_output ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fsigma_t.csv' )
-io.print_vector_to_csvfile( project( phys.fv_t( v_output, omega_output, vp.rho ), fsp.Q_f_t ), (rarg.args.output_directory) + '/fv_t.csv' )
+io.print_vector_to_csvfile( project( phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho), fsp.Q_f_t ), (rarg.args.output_directory) + '/fv_t.csv' )
 
 #normal forces
 xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), 0 )
@@ -125,8 +125,8 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 # xdmffile_check.write( project( phys.lhs_t(v_output, w_output, sigma_output, fsp.d, omega_output, fsp.mu, vp.rho)[0] , fsp.Q_z), 0 )
 xdmffile_check.write( project( (geo.Nabla_v( v_output, omega_output )[i, i] - 2.0 * mu_output * w_output) , fsp.Q_z), 0 )
 xdmffile_check.write( project( \
-    sqrt( (phys.fvisc_t(v_output, w_output, fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.fv_t( v_output, omega_output, vp.rho )[i]) \
-    * (phys.fvisc_t(v_output, w_output, fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.fv_t( v_output, omega_output, vp.rho )[i]) ),\
+    sqrt( (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) \
+    * (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) ),\
     fsp.Q_f_n ), 0 )
 xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( sigma_output, omega_output ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
