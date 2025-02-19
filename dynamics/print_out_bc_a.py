@@ -17,6 +17,7 @@ import variational_problem_bc_a as vp
 
 i, j, k, l = ufl.indices( 4 )
 
+#set up printout of the BCs to file
 csvfile_bcs = open( (rarg.args.output_directory) + '/bcs.csv', 'a', newline='' )
 fieldnames_bcs = [ \
     '<<(n^{n-1/2}_i d^{i 1})^2>>_R', \
@@ -30,6 +31,12 @@ fieldnames_bcs = [ \
 ]
 writer_bcs = csv.DictWriter( csvfile_bcs, fieldnames=fieldnames_bcs )
 writer_bcs.writeheader()
+
+#set up printout to file of the force F on the obstacle
+csvfile_F = open( (rarg.args.output_directory) + '/F.csv', 'a', newline='' )
+fieldnames_F = [ 'F_circle^1', 'F_circle^2']
+writer_F = csv.DictWriter( csvfile_F, fieldnames=fieldnames_F )
+writer_F.writeheader()
 
 
 # this function prints out the residuals of BCs
@@ -191,3 +198,13 @@ def print_solution(psi, step, t):
     # xdmffile_check.write( project(sqrt(fsp.res_F_v_bar[i] * fsp.res_F_v_bar[i]), fsp.Q_z_n), 0 )
 
     xdmffile_check.close()
+
+    # write the force F extered on ds_circle to file
+    writer_F.writerows( [{ \
+        fieldnames_F[0]: \
+            f"{assemble( phys.dFdl( v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r( bgeo.mesh, rmsh.c_r, omega_n_12_output ) )[0] * bgeo.sqrt_deth_circle( omega_n_12_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle )}", \
+        fieldnames_F[1]: \
+            f"{assemble( phys.dFdl( v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r( bgeo.mesh, rmsh.c_r, omega_n_12_output ) )[1] * bgeo.sqrt_deth_circle( omega_n_12_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle )}", \
+        }] )
+    csvfile_F.flush()
+

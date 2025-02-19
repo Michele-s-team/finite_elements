@@ -163,3 +163,4 @@ for step in range(vp.N):
 
 
 prout.csvfile_bcs.close()
+prout.csvfile_F.close()
