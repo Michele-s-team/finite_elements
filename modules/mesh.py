@@ -176,6 +176,9 @@ def difference_in_bulk(f, g):
 def difference_wrt_measure(f, g, measure):
     return sqrt(assemble( ( ( f - g ) ** 2 * measure ) ) / assemble(Constant(1.0) * measure))
 
+# return sqrt(<f^2>_measure / <measure>), where measure can be dx, ds_...
+def abs_wrt_measure(f, measure):
+    return difference_wrt_measure(f, Constant(0), measure)
 
 '''
 compute the difference between functions f and g on the boundary of the mesh, boundary_c, given by the boundary points whose distance from point c lies between r and R, returning 
