@@ -12,15 +12,6 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-# v_r_const = 0.9950371902099891356653
-# v_R_const = 0.5000000000000000000000000000000
-# w_r_const = 0.0
-# w_R_const = 0.0
-# sigma_r_const = -0.99502487546948322183
-# z_r_const = 1.0
-# z_R_const = 1.09900076963490661833037160663
-# omega_r_const = -0.099503719020998913567
-# omega_R_const = 0.095353866240961546555843199533
 
 
 #bending rigidity
@@ -31,6 +22,8 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
+CC=1.0
+
 
 class v_exact_Expression( UserExpression ):
     def eval(self, values, x):
@@ -95,12 +88,12 @@ omega_exact = interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_eleme
 mu_exact = interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ), fsp.Q_mu )
 
 
-fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
-fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
-fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
-fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
-fsp.mu_0.interpolate( OmegaExpression( element=fsp.Q_mu.ufl_element() ))
+fsp.v_0.interpolate(v_exact_Expression(element=fsp.Q_v.ufl_element()))
+fsp.w_0.interpolate(w_exact_Expression(element=fsp.Q_w.ufl_element()))
+fsp.sigma_0.interpolate( sigma_exact_Expression( element=fsp.Q_sigma.ufl_element() ))
+fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ))
+fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 
 # fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
@@ -118,18 +111,23 @@ fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_exact, rmsh.boundary_r )
 
 # BCs for w_bar
-bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( w_r_const ), rmsh.boundary_r )
-bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R_const ), rmsh.boundary_R )
+bc_w_r = DirichletBC( fsp.Q.sub( 1 ), w_exact, rmsh.boundary_r )
+bc_w_R = DirichletBC( fsp.Q.sub( 1 ), w_exact, rmsh.boundary_R )
 
 #BC for sigma
-bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r_const ), rmsh.boundary_r )
+bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_exact, rmsh.boundary_r )
 
 # BCs for z
-bc_z_r = DirichletBC( fsp.Q.sub( 3 ), z_exact, rmsh.boundary_r )
-bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_R, rmsh.boundary_R )
+bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_exact, rmsh.boundary_R )
+
+#BCs for omega
+bc_omega_r = DirichletBC( fsp.Q.sub( 4 ), omega_exact, rmsh.boundary_r )
+
 
 # all BCs
-bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
+bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_R, bc_omega_r]
+
+
 
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
@@ -195,10 +193,10 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 
 
 F_N = alpha / rmsh.r_mesh * ( \
-            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_exact) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
-            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_exact) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
+            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
  \
-            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - v_R_const) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( omega_exact )[i] * geo.g( omega_exact )[i, j] * v_exact[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
     )
 
 
