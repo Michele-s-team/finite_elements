@@ -22,13 +22,12 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
-CC=1.0
-
+CC=0
 
 class v_exact_Expression( UserExpression ):
     def eval(self, values, x):
 
-        vr = (-2 * np.sqrt( 1 + CC ** 2 ) + np.sqrt( 6 + 7 * CC ** 2 + CC ** 4 )) / ((1 + CC ** 2) ** (3 / 2) * geo.my_norm(x))
+        vr = -((2.0/ (1.0 + CC**2) + np.sqrt(6.0 + 7.0 * CC**2 + CC**4) / (1.0 + CC**2)**(3.0/2.0)) / geo.my_norm(x))
 
         values[0] = vr * x[0] / geo.my_norm(x)
         values[1] = vr * x[1] / geo.my_norm(x)
@@ -45,7 +44,7 @@ class w_exact_Expression( UserExpression ):
 
 class sigma_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (10 + CC**2 - 4 * np.sqrt(6 + CC**2)) / (2 * (1 + CC**2) * (geo.my_norm(x)**2))
+        values[0] = (10.0 + CC**2 + 4.0 * np.sqrt(6.0 + CC**2)) / (2.0 * (1.0 + CC**2) * (geo.my_norm(x))**2)
 
     def value_shape(self):
         return (1,)
