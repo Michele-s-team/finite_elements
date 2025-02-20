@@ -98,22 +98,19 @@ io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output),
 xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
 
 print( "Check of BCs:" )
-print( f"\t\t<<|v^i - v_r^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (v_output[i] - vp.v_exact[i]) * (v_output[i] - vp.v_exact[i]), Constant( 0 ), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(v^i n_i - v_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * vp.v_exact[j], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<|v^i - v_r^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_r[i]) * (v_output[i] - vp.v_r[i])), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(v^i n_i - v_R^i n_i)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j],  bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * vp.v_r[j], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-print( f"\t\t<<(w - w_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_exact, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(w - w_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_exact, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(w - w_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-print( f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_exact, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-
-print( f"\t\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_exact, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(z - phi)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_exact, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(z - phi)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((omega_output[i]-vp.omega_exact[i]) * (omega_output[i]-vp.omega_exact[i])), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<|\omega_i - omega_r_i |^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt( (omega_output[i] - vp.omega_r[i]) * (omega_output[i] - vp.omega_r[i]) ), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((omega_output[i]-vp.omega_exact[i]) * (omega_output[i]-vp.omega_exact[i])), rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+    f"\t\t<<|\omega_i - omega_R_i |^2>>_[partial Omega R] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt( (omega_output[i] - vp.omega_R[i]) * (omega_output[i] - vp.omega_R[i]) ), rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 #print residual of the PDEs to files
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )

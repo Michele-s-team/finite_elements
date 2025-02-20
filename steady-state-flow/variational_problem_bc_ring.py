@@ -1,5 +1,4 @@
 from fenics import *
-import numpy as np
 import ufl as ufl
 
 import function_spaces as fsp
@@ -22,56 +21,72 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
-CC=0.1 
+CC = 0.1
 
-class v_exact_Expression( UserExpression ):
+v_r_const = 0.9950371902099891356653
+w_R_const = 0.0
+sigma_r_const = -0.99502487546948322183
+z_R_const = 1.09900076963490661833037160663
+omega_r_const = 0.100000000000000000000
+omega_R_const = 0.095790340774569785068426326150
+
+class v_r_Expression( UserExpression ):
     def eval(self, values, x):
 
-        vr = -((2.0/ (1.0 + CC**2) + np.sqrt(6.0 + 7.0 * CC**2 + CC**4) / (1.0 + CC**2)**(3.0/2.0)) / geo.my_norm(x))
-
-        values[0] = vr * x[0] / geo.my_norm(x)
-        values[1] = vr * x[1] / geo.my_norm(x)
+        values[0] = v_r_const * x[0] / geo.my_norm( x )
+        values[1] = v_r_const * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
 
-class w_exact_Expression( UserExpression ):
+class w_R_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0
+
+        values[0] = w_R_const
 
     def value_shape(self):
         return (1,)
 
-class sigma_exact_Expression( UserExpression ):
+class sigma_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = (10.0 + CC**2 + 4.0 * np.sqrt(6.0 + CC**2)) / (2.0 * (1.0 + CC**2) * (geo.my_norm(x))**2)
 
-    def value_shape(self):
-        return (1,)
-
-
-class z_exact_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = CC * geo.my_norm(x)
+        values[0] = sigma_r_const
 
     def value_shape(self):
         return (1,)
 
 
-class omega_exact_Expression( UserExpression ):
+class z_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        omegar = CC
+        values[0] = z_R_const
 
-        values[0] = omegar * x[0] / geo.my_norm(x)
-        values[1] = omegar * x[1] / geo.my_norm(x)
+    def value_shape(self):
+        return (1,)
+
+
+class omega_r_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = omega_r_const * x[0] / geo.my_norm(x)
+        values[1] = omega_r_const * x[1] / geo.my_norm(x)
+
+    def value_shape(self):
+        return (2,)
+
+class omega_R_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = omega_R_const * x[0] / geo.my_norm(x)
+        values[1] = omega_R_const * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] =CC / (2 * np.sqrt(1 + CC**2) * geo.my_norm(x))
+        values[0] = 0
+
 
     def value_shape(self):
         return (1,)
@@ -79,19 +94,21 @@ class mu_exact_Expression( UserExpression ):
 
 # CHANGE PARAMETERS HERE
 
-v_exact = interpolate( v_exact_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
-w_exact = interpolate( w_exact_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
-sigma_exact = interpolate( sigma_exact_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
-z_exact = interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
-omega_exact = interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
+v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
+w_R = interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
+sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
+z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_r = interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
+omega_R = interpolate( omega_R_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
+
 mu_exact = interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ), fsp.Q_mu )
 
 
-fsp.v_0.interpolate(v_exact_Expression(element=fsp.Q_v.ufl_element()))
-fsp.w_0.interpolate(w_exact_Expression(element=fsp.Q_w.ufl_element()))
-fsp.sigma_0.interpolate( sigma_exact_Expression( element=fsp.Q_sigma.ufl_element() ))
-fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ))
+fsp.v_0.interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ) )
+fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
+fsp.sigma_0.interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 
 # fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
@@ -99,7 +116,7 @@ fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
+# fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 
 # CHANGE PARAMETERS HERE
@@ -107,28 +124,15 @@ fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega
 # CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
-bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_exact, rmsh.boundary_r )
-
-# BCs for w_bar
-bc_w_r = DirichletBC( fsp.Q.sub( 1 ), w_exact, rmsh.boundary_r )
-bc_w_R = DirichletBC( fsp.Q.sub( 1 ), w_exact, rmsh.boundary_R )
-
-#BC for sigma
-bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_exact, rmsh.boundary_r )
-
-# BCs for z
-bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_exact, rmsh.boundary_R )
-
-#BCs for omega
-bc_omega_r = DirichletBC( fsp.Q.sub( 4 ), omega_exact, rmsh.boundary_r )
-bc_omega_R = DirichletBC( fsp.Q.sub( 4 ), omega_exact, rmsh.boundary_R )
-
+bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
+bc_w_R = DirichletBC( fsp.Q.sub( 1 ), w_R, rmsh.boundary_R )
+bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_R, rmsh.boundary_R )
+bc_omega_r = DirichletBC( fsp.Q.sub( 4 ), omega_r, rmsh.boundary_r )
+bc_omega_R = DirichletBC( fsp.Q.sub( 4 ), omega_R, rmsh.boundary_R )
 
 # all BCs
 bcs = [bc_v_r, bc_w_R, bc_sigma_r, bc_z_R, bc_omega_r, bc_omega_R]
-
-
-
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
@@ -194,9 +198,9 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 
 F_N = alpha / rmsh.r_mesh * ( \
             # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_exact) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
-            # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \ \
  \
-            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( omega_exact )[i] * geo.g( omega_exact )[i, j] * v_exact[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * v_r[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
     )
 
 
