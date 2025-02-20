@@ -22,7 +22,7 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
-CC=0
+CC=0.1 
 
 class v_exact_Expression( UserExpression ):
     def eval(self, values, x):
@@ -121,10 +121,11 @@ bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_exact, rmsh.boundary_R )
 
 #BCs for omega
 bc_omega_r = DirichletBC( fsp.Q.sub( 4 ), omega_exact, rmsh.boundary_r )
+bc_omega_R = DirichletBC( fsp.Q.sub( 4 ), omega_exact, rmsh.boundary_R )
 
 
 # all BCs
-bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_R, bc_omega_r]
+bcs = [bc_v_r, bc_w_R, bc_sigma_r, bc_z_R, bc_omega_r, bc_omega_R]
 
 
 
@@ -193,7 +194,7 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 
 F_N = alpha / rmsh.r_mesh * ( \
             # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_exact) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
-            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
  \
             + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( omega_exact )[i] * geo.g( omega_exact )[i, j] * v_exact[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
     )
