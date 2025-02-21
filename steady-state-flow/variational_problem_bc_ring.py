@@ -24,9 +24,9 @@ v_r_const = 0.0099995000374968752734129
 v_R_const = 0.004999734316426580907721443824762797
 w_R_const = 0.0
 sigma_r_const = 0.97995100492450629944817471419
-z_R_const = 1.01007048903147591818007317963
-omega_r_const = 0.010000000000000000000
-omega_R_const = 0.0103093113494135591463511250703
+z_R_const = 0.5
+omega_r_const = 0.1
+omega_R_const = -0.1
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
