@@ -21,20 +21,30 @@ rho = 1.0
 eta = 1.0
 #Nitche's parameter
 alpha = 1e1
-CC = 0.1
 
-v_r_const = 0.9950371902099891356653
+v_r_const = 0.0099995000374968752734129
+v_R_const = 0.004999734316426580907721443824762797
 w_R_const = 0.0
-sigma_r_const = -0.99502487546948322183
-z_R_const = 1.09900076963490661833037160663
-omega_r_const = 0.100000000000000000000
-omega_R_const = 0.095790340774569785068426326150
+sigma_r_const = 0.97995100492450629945
+z_R_const = 1.01007048903147591818007317963
+omega_r_const = 0.010000000000000000000
+omega_R_const = 0.0103093113494135591463511250703
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
 
         values[0] = v_r_const * x[0] / geo.my_norm( x )
         values[1] = v_r_const * x[1] / geo.my_norm( x )
+
+    def value_shape(self):
+        return (2,)
+
+
+class v_R_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = v_R_const * x[0] / geo.my_norm( x )
+        values[1] = v_R_const * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
@@ -95,6 +105,7 @@ class mu_exact_Expression( UserExpression ):
 # CHANGE PARAMETERS HERE
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
+v_R = interpolate( v_R_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_R = interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
@@ -200,7 +211,7 @@ F_N = alpha / rmsh.r_mesh * ( \
             # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_exact) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
             # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \ \
  \
-            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * v_r[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * v_R[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
     )
 
 
