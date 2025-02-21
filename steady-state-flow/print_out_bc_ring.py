@@ -99,7 +99,7 @@ xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
 
 print( "Check of BCs:" )
 print( f"\t\t<<|v^i - v_r^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_r[i]) * (v_output[i] - vp.v_r[i])), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(v^i n_i - v_R^i n_i)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j],  bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * vp.v_r[j], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(v^i n_i - v_R^i n_i)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j],  bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * vp.v_R[j], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print( f"\t\t<<(w - w_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_R, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
