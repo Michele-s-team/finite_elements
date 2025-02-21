@@ -21,9 +21,9 @@ eta = 1.0
 alpha = 1e1
 
 v_r_const = 0.0099995000374968752734129
-v_R_const = 0.004999734316426580907721443824762797
+v_R_const = 0.00499975001874843
 w_R_const = 0.0
-sigma_r_const = 0.97995100492450629944817471419
+sigma_R_const = 0.97995100492450629944817471419
 z_R_const = 0.5
 omega_r_const = 0.1
 omega_R_const = -0.1
@@ -55,10 +55,10 @@ class w_R_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class sigma_r_Expression( UserExpression ):
+class sigma_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = sigma_r_const
+        values[0] = sigma_R_const
 
     def value_shape(self):
         return (1,)
@@ -103,7 +103,7 @@ class mu_exact_Expression( UserExpression ):
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 v_R = interpolate( v_R_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_R = interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
-sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
+sigma_R = interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 omega_r = interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
@@ -113,7 +113,7 @@ mu_exact = interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ), f
 
 fsp.v_0.interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ) )
 fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
-fsp.sigma_0.interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.sigma_0.interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ) )
 fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
@@ -133,13 +133,13 @@ fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
 bc_w_R = DirichletBC( fsp.Q.sub( 1 ), w_R, rmsh.boundary_R )
-bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
+bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), sigma_R, rmsh.boundary_R )
 bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_R, rmsh.boundary_R )
 bc_omega_r = DirichletBC( fsp.Q.sub( 4 ), omega_r, rmsh.boundary_r )
 bc_omega_R = DirichletBC( fsp.Q.sub( 4 ), omega_R, rmsh.boundary_R )
 
 # all BCs
-bcs = [bc_v_r, bc_w_R, bc_sigma_r, bc_z_R, bc_omega_r, bc_omega_R]
+bcs = [bc_v_r, bc_w_R, bc_sigma_R, bc_z_R, bc_omega_r, bc_omega_R]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
