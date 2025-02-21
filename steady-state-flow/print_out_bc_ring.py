@@ -3,6 +3,7 @@ import ufl as ufl
 import colorama as col
 
 import boundary_geometry as bgeo
+
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
@@ -111,6 +112,9 @@ print(
     f"\t\t<<|\omega_i - omega_r_i |^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt( (omega_output[i] - vp.omega_r[i]) * (omega_output[i] - vp.omega_r[i]) ), rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t\t<<|\omega_i - omega_R_i |^2>>_[partial Omega R] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt( (omega_output[i] - vp.omega_R[i]) * (omega_output[i] - vp.omega_R[i]) ), rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+
+print( f"\t\t<<z>>_[partial Omega r] = {col.Fore.YELLOW}{assemble(z_output * rmsh.ds_r)/assemble(Constant(1.0) * rmsh.ds_r)}{col.Style.RESET_ALL}" )
+
 
 #print residual of the PDEs to files
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
