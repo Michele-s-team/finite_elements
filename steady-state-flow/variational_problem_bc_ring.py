@@ -23,7 +23,7 @@ alpha = 1e1
 
 v_r_const = 0.0099995000374968752734129
 w_R_const = 0.0
-sigma_R_const = 0
+sigma_R_const = 0.0
 z_R_const = 0.5
 omega_r_const = 0.1
 omega_R_const = 0
