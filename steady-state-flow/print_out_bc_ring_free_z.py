@@ -2,12 +2,9 @@ from symtable import Function
 
 import colorama as col
 from fenics import *
-import numpy as np
 import ufl as ufl
 
 import boundary_geometry as bgeo
-
-import function as fu
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
@@ -144,10 +141,4 @@ io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output
 
 #
 io.print_vertices_to_csv_file(bgeo.mesh, (rarg.args.output_directory) + '/vertices.csv' )
-fu.set_nodal_values_list(fsp.z_0, io.read_scalar_from_csvfile((rarg.args.output_directory) + '/zODE.csv'))
-
-xdmffile_z_0 = XDMFFile( (rarg.args.output_directory) + "/z_0.xdmf" )
-xdmffile_z_0.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-xdmffile_z_0.write( fsp.z_0, 0 )
-xdmffile_z_0.close()
 #

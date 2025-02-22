@@ -1,11 +1,14 @@
 from fenics import *
 import ufl as ufl
 
-import function_spaces as fsp
 import boundary_geometry as bgeo
+import function as fu
+import function_spaces as fsp
 import geometry as geo
+import input_output as io
 import physics as phys
 import read_mesh_ring as rmsh
+import runtime_arguments as rarg
 
 i, j, k, l, m, n, o, p = ufl.indices( 8 )
 
@@ -101,11 +104,19 @@ omega_R = interpolate( omega_R_Expression( element=fsp.Q_omega.ufl_element() ), 
 
 mu_exact = interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ), fsp.Q_mu )
 
+#set z_0 from z_ode.csv
 
 fsp.v_0.interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ) )
 fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
 fsp.sigma_0.interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ) )
-fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
+
+fu.set_nodal_values_list(fsp.z_0, io.read_scalar_from_csvfile((rarg.args.output_directory) + '/z_ode.csv'))
+xdmffile_z_0 = XDMFFile( (rarg.args.output_directory) + "/z_0.xdmf" )
+xdmffile_z_0.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+xdmffile_z_0.write( fsp.z_0, 0 )
+xdmffile_z_0.close()
+# fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
+
 fsp.omega_0.interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 
@@ -114,7 +125,7 @@ fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
+fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 
 # CHANGE PARAMETERS HERE
