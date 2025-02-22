@@ -64,5 +64,5 @@ def read_scalar_from_csvfile(filename):
         reader = csv.reader( csvfile )
         next( reader )  # Skip the header row
         data = [[float( value ) for value in row] for row in reader]
-    print(data)
+    # print(data)
     return data

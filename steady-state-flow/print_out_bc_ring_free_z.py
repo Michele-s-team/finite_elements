@@ -142,5 +142,12 @@ xdmffile_check.write( project( project( (geo.d(v_output, w_output, omega_output)
 xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), 0 )
 io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), (rarg.args.output_directory) + '/dFdl.csv' )
 
+#
 io.print_vertices_to_csv_file(bgeo.mesh, (rarg.args.output_directory) + '/vertices.csv' )
-io.read_scalar_from_csvfile((rarg.args.output_directory) + '/zODE.csv')
+fu.set_nodal_values_list(fsp.z_0, io.read_scalar_from_csvfile((rarg.args.output_directory) + '/zODE.csv'))
+
+xdmffile_z_0 = XDMFFile( (rarg.args.output_directory) + "/z_0.xdmf" )
+xdmffile_z_0.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+xdmffile_z_0.write( fsp.z_0, 0 )
+xdmffile_z_0.close()
+#
