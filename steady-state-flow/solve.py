@@ -37,7 +37,7 @@ import runtime_arguments as rarg
 import read_mesh_ring as rmsh
 # import read_mesh_square as rmsh
 
-import variational_problem_bc_ring as vp
+import variational_problem_bc_ring_free_z as vp
 # import variational_problem_bc_square_a as vp
 
 set_log_level( 20 )
@@ -103,5 +103,5 @@ solver.solve()
 
 
 
-import print_out_bc_ring
+import print_out_bc_ring_free_z
 # import print_out_bc_square_a

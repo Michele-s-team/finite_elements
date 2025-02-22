@@ -1,6 +1,5 @@
 from fenics import *
 from mshr import *
-import argparse
 import numpy as np
 
 import runtime_arguments as rarg
@@ -19,15 +18,6 @@ mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim()-1)
 with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
-
-# #read mesh
-# mesh=Mesh()
-# with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-#     infile.read(mesh)
-# mvc = MeshValueCollection("size_t", mesh, 2)
-# with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-
 
 
 #radius of the smallest cell in the mesh
