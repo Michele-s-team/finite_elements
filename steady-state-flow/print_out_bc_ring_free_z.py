@@ -1,9 +1,13 @@
-from fenics import *
-import ufl as ufl
+from symtable import Function
+
 import colorama as col
+from fenics import *
+import numpy as np
+import ufl as ufl
 
 import boundary_geometry as bgeo
 
+import function as fu
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
@@ -137,6 +141,5 @@ xdmffile_check.write( project( project( (geo.d(v_output, w_output, omega_output)
 #write to file forces per unit length
 xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), 0 )
 io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), (rarg.args.output_directory) + '/dFdl.csv' )
-
 
 io.print_vertices_to_csv_file(bgeo.mesh, (rarg.args.output_directory) + '/vertices.csv' )
