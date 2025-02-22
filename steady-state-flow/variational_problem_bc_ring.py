@@ -22,7 +22,6 @@ eta = 1.0
 alpha = 1e1
 
 v_r_const = 0.0099995000374968752734129
-v_R_const = 0.00502469
 w_R_const = 0.0
 sigma_R_const = 0
 z_R_const = 0.5
@@ -39,14 +38,6 @@ class v_r_Expression( UserExpression ):
         return (2,)
 
 
-class v_R_Expression( UserExpression ):
-    def eval(self, values, x):
-
-        values[0] = v_R_const * x[0] / geo.my_norm( x )
-        values[1] = v_R_const * x[1] / geo.my_norm( x )
-
-    def value_shape(self):
-        return (2,)
 
 class w_R_Expression( UserExpression ):
     def eval(self, values, x):
@@ -102,7 +93,6 @@ class mu_exact_Expression( UserExpression ):
 # CHANGE PARAMETERS HERE
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
-v_R = interpolate( v_R_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_R = interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_R = interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
