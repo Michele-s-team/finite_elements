@@ -143,3 +143,4 @@ xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma
 io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), (rarg.args.output_directory) + '/dFdl.csv' )
 
 io.print_vertices_to_csv_file(bgeo.mesh, (rarg.args.output_directory) + '/vertices.csv' )
+io.read_scalar_from_csvfile((rarg.args.output_directory) + '/zODE.csv')

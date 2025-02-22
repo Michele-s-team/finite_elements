@@ -1,4 +1,6 @@
+import csv
 from fenics import *
+
 
 number_of_decimals = 2
 
@@ -53,5 +55,14 @@ def print_vertices_to_csv_file(mesh, filename):
     csvfile.close()
 
 
-
-
+'''
+read the tabulated  value of a scalar written in file 'filename' and return them as a table
+table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex]
+'''
+def read_scalar_from_csvfile(filename):
+    with open( filename, newline='', encoding='utf-8' ) as csvfile:
+        reader = csv.reader( csvfile )
+        next( reader )  # Skip the header row
+        data = [[float( value ) for value in row] for row in reader]
+    print(data)
+    return data
