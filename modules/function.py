@@ -1,5 +1,7 @@
 from fenics import *
 
+import input_output as io
+
 '''
 set the nodal values of f equal to the values taken by the analytical expression 'expression' on the  points of the mesh of f, where expression should be like this
 
@@ -44,6 +46,7 @@ xdmffile_f_test.write( f_test_2, 0 )
 xdmffile_f_test.close()
 '''
 
+#set the nodal values of function 'f' according to the list 'list'
 def set_nodal_values_list(f, list):
 
     mesh = f.function_space().mesh()
@@ -53,3 +56,8 @@ def set_nodal_values_list(f, list):
 
     for i in range(Q_dummy.dim()):
         f.vector()[i] = list[i][0]
+
+
+#set nodal values of function 'f' according to the nodal values vritten in the csv file 'filename'
+def set_nodal_values_file(f, filename):
+    set_nodal_values_list(f, io.read_scalar_from_csvfile(filename))
