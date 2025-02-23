@@ -47,7 +47,7 @@ xdmffile_f_test.close()
 '''
 
 #set the nodal values of function 'f' according to the list 'list'
-def set_nodal_values_list(f, list):
+def set_from_list(f, list):
 
     mesh = f.function_space().mesh()
 
@@ -59,5 +59,5 @@ def set_nodal_values_list(f, list):
 
 
 #set nodal values of function 'f' according to the nodal values vritten in the csv file 'filename'
-def set_nodal_values_file(f, filename):
-    set_nodal_values_list(f, io.read_scalar_from_csvfile(filename))
+def set_from_file(f, filename):
+    set_from_list( f, io.read_scalar_from_csvfile( filename ) )

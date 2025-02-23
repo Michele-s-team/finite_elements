@@ -105,16 +105,20 @@ omega_R = interpolate( omega_R_Expression( element=fsp.Q_omega.ufl_element() ), 
 mu_exact = interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ), fsp.Q_mu )
 
 #set z_0 from z_ode.csv
+'''
+xdmffile_z_0 = XDMFFile( (rarg.args.output_directory) + "/z_0.xdmf" )
+xdmffile_z_0.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+xdmffile_z_0.write( fsp.z_0, 0 )
+xdmffile_z_0.close()
+print(f"z0(r) = {fsp.z_0(-1.34111, 1.20191)}")
+'''
 
 fsp.v_0.interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ) )
 fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
 fsp.sigma_0.interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ) )
 
-fu.set_nodal_values_file(fsp.z_0, (rarg.args.output_directory) + '/z_ode.csv')
-xdmffile_z_0 = XDMFFile( (rarg.args.output_directory) + "/z_0.xdmf" )
-xdmffile_z_0.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-xdmffile_z_0.write( fsp.z_0, 0 )
-xdmffile_z_0.close()
+fu.set_from_file( fsp.z_0, (rarg.args.output_directory) + '/z_ode.csv' )
+
 # fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
 
 fsp.omega_0.interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ) )
