@@ -74,5 +74,3 @@ boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (1.0 + 2.0)/2.0
 #CHANGE PARAMETERS HERE
 
 
-#print the mesh vertices to file
-io.print_vertices_to_csv_file(bgeo.mesh, (rarg.args.input_directory) + '/vertices.csv' )
