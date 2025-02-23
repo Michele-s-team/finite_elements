@@ -6,7 +6,10 @@ import geometry as geo
 import input_output as io
 
 
-
+# read the mesh form 'filename' and write it into 'mesh'
+def read_mesh(mesh, filename):
+    xdmf = XDMFFile( mesh.mpi_comm(), filename )
+    xdmf.read( mesh )
 
 
 #compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference

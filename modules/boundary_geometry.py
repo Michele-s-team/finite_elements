@@ -11,8 +11,7 @@ import runtime_arguments as rarg
 
 #read the mesh
 mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), (rarg.args.input_directory) + "/triangle_mesh.xdmf")
-xdmf.read(mesh)
+mesh_module.read_mesh(mesh, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 
 
 #the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
