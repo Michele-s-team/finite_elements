@@ -24,14 +24,14 @@ eta = 1.0
 #Nitche's parameter
 alpha = 1e1
 
-v_r_const = 0.0099995000374968752734129
+v_r_const = 0.1
 w_R_const = 0.0
 sigma_R_const = 0.0
 z_R_const = 0.5
 omega_r_const = 0.1
 omega_R_const = 0
 
-class v_r_Expression( UserExpression ):
+class v_0_Expression( UserExpression ):
     def eval(self, values, x):
 
         values[0] = fsp.v_r_0(x[0], x[1]) * x[0] / geo.my_norm( x )
@@ -40,7 +40,14 @@ class v_r_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
+class v_r_Expression( UserExpression ):
+    def eval(self, values, x):
 
+        values[0] = v_r_const * x[0] / geo.my_norm( x )
+        values[1] = v_r_const * x[1] / geo.my_norm( x )
+
+    def value_shape(self):
+        return (2,)
 
 class w_R_Expression( UserExpression ):
     def eval(self, values, x):
@@ -68,11 +75,20 @@ class z_R_Expression( UserExpression ):
         return (1,)
 
 
-class omega_r_Expression( UserExpression ):
+class omega_0_Expression( UserExpression ):
     def eval(self, values, x):
 
         values[0] = fsp.omega_r_0(x[0], x[1]) * x[0] / geo.my_norm(x)
         values[1] = fsp.omega_r_0(x[0], x[1]) * x[1] / geo.my_norm(x)
+
+    def value_shape(self):
+        return (2,)
+
+class omega_r_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = omega_r_const * x[0] / geo.my_norm(x)
+        values[1] = omega_r_const * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
@@ -114,7 +130,7 @@ print(f"z0(r) = {fsp.z_0(-1.34111, 1.20191)}")
 '''
 
 fu.set_from_file( fsp.v_r_0, (rarg.args.output_directory) + '/v_ode.csv' )
-fsp.v_0.interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ) )
+fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
 
 fu.set_from_file( fsp.w_0, (rarg.args.output_directory) + '/w_ode.csv' )
 # fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
@@ -126,7 +142,7 @@ fu.set_from_file( fsp.z_0, (rarg.args.output_directory) + '/z_ode.csv' )
 # fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
 
 fu.set_from_file( fsp.omega_r_0, (rarg.args.output_directory) + '/omega_ode.csv' )
-fsp.omega_0.interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
 
 fu.set_from_file( fsp.mu_0, (rarg.args.output_directory) + '/mu_ode.csv' )
 # fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
