@@ -66,10 +66,12 @@ mu_output = Function(Q_mu)
 
 # v_0, .... are used to store the initial conditions
 v_0 = Function( Q_v )
+v_r_0 = Function( Q_w )
 w_0 = Function( Q_w )
 sigma_0 = Function( Q_sigma )
 z_0 = Function( Q_z )
 omega_0 = Function( Q_omega )
+omega_r_0 = Function( Q_z )
 mu_0 = Function( Q_mu )
 
 nu_0 = Function( Q_nu )
