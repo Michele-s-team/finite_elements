@@ -33,11 +33,12 @@ If
 - if you fix omega_R_const -> 
 - v_R_const is no longer arbitrary and it is given by v_R_const = C1 / ( sqrt(R * (1 + omega_R_const ** 2)))
 '''
+v_R_const = 0.049999999999999999999999999999999999999
 w_R_const = 0.0
 sigma_R_const = 0.0
-z_R_const = 0.1
+z_R_const = 0
 omega_r_const = 0
-omega_R_const = 0.1
+omega_R_const = 0
 mu_R_const = 0.0
 
 class v_0_Expression( UserExpression ):
@@ -54,6 +55,15 @@ class v_r_Expression( UserExpression ):
 
         values[0] = v_r_const * x[0] / geo.my_norm( x )
         values[1] = v_r_const * x[1] / geo.my_norm( x )
+
+    def value_shape(self):
+        return (2,)
+
+class v_R_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = v_R_const * x[0] / geo.my_norm( x )
+        values[1] = v_R_const * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
@@ -123,6 +133,7 @@ class mu_R_Expression( UserExpression ):
 # CHANGE PARAMETERS HERE
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
+v_R = interpolate( v_R_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_R = interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_R = interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
@@ -173,6 +184,7 @@ fu.set_from_file( fsp.mu_0, 'solution-ode/mu_ode.csv' )
 
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
+bc_v_R = DirichletBC( fsp.Q.sub( 0 ), v_R, rmsh.boundary_R )
 bc_w_R = DirichletBC( fsp.Q.sub( 1 ), w_R, rmsh.boundary_R )
 bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), sigma_R, rmsh.boundary_R )
 bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_R, rmsh.boundary_R )
@@ -180,7 +192,7 @@ bc_omega_r = DirichletBC( fsp.Q.sub( 4 ), omega_r, rmsh.boundary_r )
 bc_omega_R = DirichletBC( fsp.Q.sub( 4 ), omega_R, rmsh.boundary_R )
 
 # all BCs
-bcs = [bc_v_r, bc_w_R, bc_sigma_R, bc_z_R, bc_omega_r, bc_omega_R]
+bcs = [bc_v_r, bc_v_R, bc_w_R, bc_sigma_R, bc_z_R, bc_omega_r, bc_omega_R]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
