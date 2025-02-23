@@ -22,7 +22,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e1
+alpha = 1e2
 
 v_r_const = 0.1
 '''
@@ -35,9 +35,10 @@ If
 '''
 w_R_const = 0.0
 sigma_R_const = 0.0
-z_R_const = 0.5
-omega_r_const = 0.1
-omega_R_const = 0
+z_R_const = 0.1
+omega_r_const = 0
+omega_R_const = 0.1
+mu_R_const = 0.0
 
 class v_0_Expression( UserExpression ):
     def eval(self, values, x):
@@ -112,10 +113,10 @@ class omega_R_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
-class mu_exact_Expression( UserExpression ):
+class mu_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = 0
+        values[0] = mu_R_const
 
     def value_shape(self):
         return (1,)
@@ -127,8 +128,7 @@ sigma_R = interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ), 
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 omega_r = interpolate( omega_r_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
-
-mu_exact = interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ), fsp.Q_mu )
+mu_R = interpolate( mu_R_Expression( element=fsp.Q_mu.ufl_element() ), fsp.Q_mu )
 
 #set z_0 from z_ode.csv
 '''
@@ -164,7 +164,7 @@ fu.set_from_file( fsp.mu_0, 'solution-ode/mu_ode.csv' )
 
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
+# fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 
 # CHANGE PARAMETERS HERE
@@ -248,9 +248,11 @@ F_N = alpha / rmsh.r_mesh * ( \
     # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \ \
     # \
     # + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * v_R[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
-        + (bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * bgeo.n_circle( fsp.omega )[k] * geo.g( fsp.omega )[k, l] * phys.Pi( fsp.v, fsp.w, fsp.omega, fsp.sigma, eta )[j, l]) \
-        * (bgeo.n_circle( fsp.omega )[m] * geo.g( fsp.omega )[m, n] * bgeo.n_circle( fsp.omega )[o] * geo.g( fsp.omega )[o, p] * phys.Pi( geo.f_to_v( fsp.nu_v, fsp.omega ), fsp.nu_w, fsp.omega, fsp.nu_sigma, eta )[n, p]) \
-        * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+    #     + (bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * bgeo.n_circle( fsp.omega )[k] * geo.g( fsp.omega )[k, l] * phys.Pi( fsp.v, fsp.w, fsp.omega, fsp.sigma, eta )[j, l]) \
+    #     * (bgeo.n_circle( fsp.omega )[m] * geo.g( fsp.omega )[m, n] * bgeo.n_circle( fsp.omega )[o] * geo.g( fsp.omega )[o, p] * phys.Pi( geo.f_to_v( fsp.nu_v, fsp.omega ), fsp.nu_w, fsp.omega, fsp.nu_sigma, eta )[n, p]) \
+    #     * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+        ((geo.H( fsp.omega ) - mu_R) * (0.5 * geo.g_c( fsp.omega )[i, j] * (geo.normal( fsp.omega ))[k] * (geo.e( geo.v_to_f( fsp.nu_omega, fsp.omega ) )[j, k]).dx( i ))) * bgeo.sqrt_deth_circle(
+    fsp.omega, rmsh.c_R ) * rmsh.ds_R \
     )
 
 
