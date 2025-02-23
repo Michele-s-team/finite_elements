@@ -149,22 +149,22 @@ print(f"z0(r) = {fsp.z_0(-1.34111, 1.20191)}")
 '''
 #uncomment this to set the initial profiles from the ODE soltion
 #
-fu.set_from_file( fsp.v_r_0, (rarg.args.output_directory) + '/v_ode.csv' )
+fu.set_from_file( fsp.v_r_0, 'solution-ode/v_ode.csv' )
 fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
 
-fu.set_from_file( fsp.w_0, (rarg.args.output_directory) + '/w_ode.csv' )
+fu.set_from_file( fsp.w_0, 'solution-ode/w_ode.csv' )
 # fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
 
-fu.set_from_file( fsp.sigma_0, (rarg.args.output_directory) + '/sigma_ode.csv' )
+fu.set_from_file( fsp.sigma_0, 'solution-ode/sigma_ode.csv' )
 # fsp.sigma_0.interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ) )
 
-fu.set_from_file( fsp.z_0, (rarg.args.output_directory) + '/z_ode.csv' )
+fu.set_from_file( fsp.z_0, 'solution-ode/z_ode.csv' )
 # fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
 
-fu.set_from_file( fsp.omega_r_0, (rarg.args.output_directory) + '/omega_ode.csv' )
+fu.set_from_file( fsp.omega_r_0, 'solution-ode/omega_ode.csv' )
 fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
 
-fu.set_from_file( fsp.mu_0, (rarg.args.output_directory) + '/mu_ode.csv' )
+fu.set_from_file( fsp.mu_0, 'solution-ode/mu_ode.csv' )
 # fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
 #
 
