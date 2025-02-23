@@ -147,6 +147,7 @@ xdmffile_z_0.write( fsp.z_0, 0 )
 xdmffile_z_0.close()
 print(f"z0(r) = {fsp.z_0(-1.34111, 1.20191)}")
 '''
+#uncomment this to set the initial profiles from the ODE soltion
 
 fu.set_from_file( fsp.v_r_0, (rarg.args.output_directory) + '/v_ode.csv' )
 fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
@@ -165,6 +166,7 @@ fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() )
 
 fu.set_from_file( fsp.mu_0, (rarg.args.output_directory) + '/mu_ode.csv' )
 # fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
+
 
 # fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )

@@ -2,10 +2,11 @@ from fenics import *
 from mshr import *
 import numpy as np
 
-import runtime_arguments as rarg
-import mesh as msh
-import geometry as geo
 import boundary_geometry as bgeo
+import geometry as geo
+import input_output as io
+import mesh as msh
+import runtime_arguments as rarg
 
 #read the triangles
 mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
@@ -71,3 +72,7 @@ boundary = 'on_boundary'
 boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (1.0 + 2.0)/2.0'
 boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (1.0 + 2.0)/2.0'
 #CHANGE PARAMETERS HERE
+
+
+#print the mesh vertices to file
+io.print_vertices_to_csv_file(bgeo.mesh, (rarg.args.input_directory) + '/vertices.csv' )
