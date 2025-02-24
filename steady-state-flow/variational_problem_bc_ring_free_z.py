@@ -183,7 +183,8 @@ xdmffile_z_0.close()
 print(f"z0(r) = {fsp.z_0(-1.34111, 1.20191)}")
 '''
 #uncomment this to set the initial profiles from the ODE soltion
-#
+'''
+print("Reading the initial profiles from file ...")
 fu.set_from_file( fsp.v_0_r_read, 'solution-ode/v_ode.csv' )
 fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
 
@@ -201,19 +202,15 @@ fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() )
 
 fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
-#
 
 # fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
-
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
+fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
+print("... done")
+'''
 
-
-# CHANGE PARAMETERS HERE
-# profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'), v_r = v_r_const, element=fsp.Q.sub( 0 ).ufl_element() )
-# CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
