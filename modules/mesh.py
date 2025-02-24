@@ -2,12 +2,14 @@ from fenics import *
 import numpy as np
 import colorama as col
 
+import geometry as geo
 import input_output as io
 
 
-#  norm of vector x
-def my_norm(x):
-    return (sqrt( np.dot( x, x ) ))
+# read the mesh form 'filename' and write it into 'mesh'
+def read_mesh(mesh, filename):
+    xdmf = XDMFFile( mesh.mpi_comm(), filename )
+    xdmf.read( mesh )
 
 
 #compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference
@@ -51,7 +53,7 @@ def boundary_points(mesh):
 
     # print("Degrees of freedom on the boundary:")
     # for degree_of_freedom in degrees_of_freedom:
-    # print(f"\t{x[degree_of_freedom]}, {my_norm( x[degree_of_freedom])}")
+    # print(f"\t{x[degree_of_freedom]}, {geo.my_norm( x[degree_of_freedom])}")
 
     return x
 
@@ -86,7 +88,7 @@ def bulk_points(mesh):
 
     # print("Degrees of freedom on the boundary:")
     # for degree_of_freedom in degrees_of_freedom:
-    # print(f"\t{x[degree_of_freedom]}, {my_norm( x[degree_of_freedom])}")
+    # print(f"\t{x[degree_of_freedom]}, {geo.my_norm( x[degree_of_freedom])}")
 
     return x
 
@@ -97,7 +99,7 @@ def boundary_points_circle(mesh, r, R, c):
 
     x = []
     for point in points:
-        if((my_norm( point - c  ) > r) and (my_norm( point - c  ) < R)):
+        if((geo.my_norm( point - c  ) > r) and (geo.my_norm( point - c  ) < R)):
             x.append( point )
 
     # csvfile = open( "test_boundary_points_circle.csv", "w" )

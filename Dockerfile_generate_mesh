@@ -1,0 +1,26 @@
+FROM quay.io/fenicsproject/stable:current
+USER root
+RUN apt-get -qq update && \
+    apt-get -y upgrade && \
+    apt-get clean && \
+    apt-get update && \
+    apt-get -y install python3-h5py && \
+    pip install --upgrade pip && \
+    apt-get install -y libglu1-mesa && \
+    apt-get install -y libxinerama1 && \
+    apt-get install -y libxrender1 && \
+    apt-get install -y libxext6 && \
+    apt-get install -y libxcursor1 && \
+    pip install meshio[all] colorama && \
+   
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+USER root
+
+RUN pip3 install scipy
+RUN pip3 install progressbar
+RUN pip3 install meshio
+RUN pip3 install gmsh
+RUN pip3 install pygmsh
+RUN pip3 install h5py
+
+  

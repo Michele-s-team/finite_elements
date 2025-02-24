@@ -1,4 +1,6 @@
+import csv
 from fenics import *
+
 
 number_of_decimals = 2
 
@@ -35,3 +37,32 @@ def print_vector_to_csvfile(f, filename):
         print( f"{val_x},{val_y},{0},{x[0]},{x[1]},{0}", file=csvfile )
 
     csvfile.close()
+
+
+#print to the csv file 'filename' the coordinates of the vertices of 'mesh'
+def print_vertices_to_csv_file(mesh, filename):
+
+    # a dummy function space of order 1 used to tabulated the vertices
+    Q = FunctionSpace( mesh, 'CG', 1 )
+    coordinates = Q.tabulate_dof_coordinates()
+
+    csvfile = open( filename, "w" )
+    print( f"\":0\",\":1\"", file=csvfile )
+
+    for i in range( Q.dim() ):
+        print( f"{coordinates[i][0]}, {coordinates[i][1]}", file=csvfile )
+
+    csvfile.close()
+
+
+'''
+read the tabulated  value of a scalar written in file 'filename' and return them as a table
+table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex]
+'''
+def read_scalar_from_csvfile(filename):
+    with open( filename, newline='', encoding='utf-8' ) as csvfile:
+        reader = csv.reader( csvfile )
+        next( reader )  # Skip the header row
+        data = [[float( value ) for value in row] for row in reader]
+    # print(data)
+    return data

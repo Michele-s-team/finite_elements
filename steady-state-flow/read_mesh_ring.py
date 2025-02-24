@@ -1,12 +1,12 @@
 from fenics import *
 from mshr import *
-import argparse
 import numpy as np
 
-import runtime_arguments as rarg
-import mesh as msh
-import geometry as geo
 import boundary_geometry as bgeo
+import geometry as geo
+import input_output as io
+import mesh as msh
+import runtime_arguments as rarg
 
 #read the triangles
 mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
@@ -19,15 +19,6 @@ mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim()-1)
 with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
-
-# #read mesh
-# mesh=Mesh()
-# with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-#     infile.read(mesh)
-# mvc = MeshValueCollection("size_t", mesh, 2)
-# with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-
 
 
 #radius of the smallest cell in the mesh
@@ -81,3 +72,5 @@ boundary = 'on_boundary'
 boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (1.0 + 2.0)/2.0'
 boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (1.0 + 2.0)/2.0'
 #CHANGE PARAMETERS HERE
+
+

@@ -3,7 +3,6 @@ from mshr import *
 
 import boundary_geometry as bgeo
 
-
 degree_function_space = 1
 
 # Define function spaces
@@ -38,6 +37,12 @@ Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_f_n = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_dFfl = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
+'''
+function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
+as in function.set_from_list and function.set_from_file
+'''
+Q_read = FunctionSpace( bgeo.mesh, 'P', 1 )
+
 
 # Define functions
 J_psi = TrialFunction( Q )
@@ -64,6 +69,14 @@ sigma_output = Function(Q_sigma)
 z_output = Function(Q_z)
 omega_output = Function(Q_omega)
 mu_output = Function(Q_mu)
+
+#functions used to store the nodal values read from a list or file
+v_0_r_read = Function( Q_read )
+w_0_read = Function( Q_read )
+sigma_0_read = Function( Q_read )
+z_0_read = Function( Q_read )
+omega_0_r_read = Function( Q_read )
+mu_0_read = Function( Q_read )
 
 # v_0, .... are used to store the initial conditions
 v_0 = Function( Q_v )
