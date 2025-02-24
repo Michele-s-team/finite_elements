@@ -46,7 +46,7 @@ xdmffile_f_test.write( f_test_2, 0 )
 xdmffile_f_test.close()
 '''
 
-#set the nodal values of function 'f' according to the list 'list'
+#set the nodal values of function 'f' according to the list 'list'. This works only if the function space of f is order-1 polynomials
 def set_from_list(f, list):
 
     mesh = f.function_space().mesh()
@@ -58,6 +58,6 @@ def set_from_list(f, list):
         f.vector()[i] = list[i][0]
 
 
-#set nodal values of function 'f' according to the nodal values vritten in the csv file 'filename'
+#set nodal values of function 'f' according to the nodal values vritten in the csv file 'filename'. . This works only if the function space of f is order-1 polynomials
 def set_from_file(f, filename):
     set_from_list( f, io.read_scalar_from_csvfile( filename ) )

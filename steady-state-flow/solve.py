@@ -97,9 +97,9 @@ solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
 solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
 solver.solve()
-# solver_pp_nu.solve()
-# solver_pp_tau.solve()
-# solver_pp_d.solve()
+solver_pp_nu.solve()
+solver_pp_tau.solve()
+solver_pp_d.solve()
 
 
 

@@ -1,5 +1,3 @@
-from symtable import Function
-
 import colorama as col
 from fenics import *
 import ufl as ufl
