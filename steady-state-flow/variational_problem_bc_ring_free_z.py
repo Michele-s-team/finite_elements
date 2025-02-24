@@ -40,14 +40,7 @@ z_R_const = 0
 omega_r_const = 1
 omega_R_const = 0
 
-class v_0_Expression( UserExpression ):
-    def eval(self, values, x):
 
-        values[0] = fsp.v_r_0(x[0], x[1]) * x[0] / geo.my_norm( x )
-        values[1] = fsp.v_r_0(x[0], x[1]) * x[1] / geo.my_norm( x )
-
-    def value_shape(self):
-        return (2,)
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
@@ -69,6 +62,7 @@ class v_R_Expression( UserExpression ):
 
 
 
+
 class w_R_Expression( UserExpression ):
     def eval(self, values, x):
 
@@ -76,6 +70,10 @@ class w_R_Expression( UserExpression ):
 
     def value_shape(self):
         return (1,)
+
+
+
+
 
 class sigma_R_Expression( UserExpression ):
     def eval(self, values, x):
@@ -95,15 +93,6 @@ class z_R_Expression( UserExpression ):
         return (1,)
 
 
-class omega_0_Expression( UserExpression ):
-    def eval(self, values, x):
-
-        values[0] = fsp.omega_r_0(x[0], x[1]) * x[0] / geo.my_norm(x)
-        values[1] = fsp.omega_r_0(x[0], x[1]) * x[1] / geo.my_norm(x)
-
-    def value_shape(self):
-        return (2,)
-
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
 
@@ -121,6 +110,59 @@ class omega_R_Expression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+
+
+
+class v_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.v_0_r_read( x[0], x[1] ) * x[0] / geo.my_norm( x )
+        values[1] = fsp.v_0_r_read( x[0], x[1] ) * x[1] / geo.my_norm( x )
+
+    def value_shape(self):
+        return (2,)
+
+class w_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.w_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
+
+class sigma_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.sigma_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
+
+class z_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.z_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
+
+class omega_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.my_norm(x)
+        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.my_norm(x)
+
+    def value_shape(self):
+        return (2,)
+
+class mu_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.mu_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
+
 
 # CHANGE PARAMETERS HERE
 
@@ -141,25 +183,25 @@ xdmffile_z_0.close()
 print(f"z0(r) = {fsp.z_0(-1.34111, 1.20191)}")
 '''
 #uncomment this to set the initial profiles from the ODE soltion
-'''
-fu.set_from_file( fsp.v_r_0, 'solution-ode/v_ode.csv' )
+#
+fu.set_from_file( fsp.v_0_r_read, 'solution-ode/v_ode.csv' )
 fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
 
-fu.set_from_file( fsp.w_0, 'solution-ode/w_ode.csv' )
-# fsp.w_0.interpolate( w_R_Expression( element=fsp.Q_w.ufl_element() ) )
+fu.set_from_file( fsp.w_0_read, 'solution-ode/w_ode.csv' )
+fsp.w_0.interpolate( w_0_Expression( element=fsp.Q_w.ufl_element() ) )
 
-fu.set_from_file( fsp.sigma_0, 'solution-ode/sigma_ode.csv' )
-# fsp.sigma_0.interpolate( sigma_R_Expression( element=fsp.Q_sigma.ufl_element() ) )
+fu.set_from_file( fsp.sigma_0_read, 'solution-ode/sigma_ode.csv' )
+fsp.sigma_0.interpolate( sigma_0_Expression( element=fsp.Q_sigma.ufl_element() ) )
 
-fu.set_from_file( fsp.z_0, 'solution-ode/z_ode.csv' )
-# fsp.z_0.interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ) )
+fu.set_from_file( fsp.z_0_read, 'solution-ode/z_ode.csv' )
+fsp.z_0.interpolate( z_0_Expression( element=fsp.Q_z.ufl_element() ) )
 
-fu.set_from_file( fsp.omega_r_0, 'solution-ode/omega_ode.csv' )
+fu.set_from_file( fsp.omega_0_r_read, 'solution-ode/omega_ode.csv' )
 fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
 
-fu.set_from_file( fsp.mu_0, 'solution-ode/mu_ode.csv' )
-# fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ))
-'''
+fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
+fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
+#
 
 # fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
