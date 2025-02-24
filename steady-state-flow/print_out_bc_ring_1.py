@@ -11,7 +11,7 @@ import physics as phys
 import read_mesh_ring as rmsh
 import runtime_arguments as rarg
 
-import variational_problem_bc_ring as vp
+import variational_problem_bc_ring_1 as vp
 
 i, j, k, l = ufl.indices( 4 )
 
