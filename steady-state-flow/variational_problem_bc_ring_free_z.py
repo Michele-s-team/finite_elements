@@ -199,7 +199,7 @@ fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
 print("... done")
-# 
+#
 
 
 # boundary conditions (BCs)
