@@ -1,3 +1,13 @@
+'''
+To check the solution against check-with-analytical-solution-bc-ring-2.nb
+- python3 generate_ring_mesh.py 0.025
+- [this point may not be needed] Make a dry run of check-with-analytical-solution-bc-ring-2.nb to generate a suitable initial condition for solve.py and uncomment the block '#uncomment this to set the initial profiles from the ODE soltion' below to read this initial condition
+- clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py /home/fenics/shared/steady-state-flow/mesh /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
+- Substitute the value of '	<z>_[partial Omega r] = ...' in 'zRmin = ...' in check-with-analytical-solution-bc-ring-2.nb so both codes have the same boundary value problem
+- check-with-analytical-solution-bc-ring-2.nb
+'''
+
+
 from fenics import *
 import ufl as ufl
 
