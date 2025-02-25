@@ -34,6 +34,14 @@ class v_l_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
+class v_circle_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
 class w_square_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = w_square_const
@@ -133,6 +141,7 @@ fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 # assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
 
 v_l = interpolate( v_l_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
+v_circle = interpolate( v_circle_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_square = interpolate( w_square_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 
@@ -142,6 +151,7 @@ z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fs
 # boundary conditions (BCs)
 # BCs for v_bar
 bc_v_l = DirichletBC( fsp.Q.sub( 0 ), v_l, rmsh.boundary_l )
+bc_v_circle = DirichletBC( fsp.Q.sub( 0 ), v_circle, rmsh.boundary_circle )
 
 # BCs for w_bar
 bc_w_square = DirichletBC( fsp.Q.sub( 1 ), w_square, rmsh.boundary_square )
@@ -156,7 +166,7 @@ bc_omega_circle = DirichletBC( fsp.Q.sub( 4 ), omega_circle, rmsh.boundary_circl
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_l, bc_w_square, bc_sigma_r, bc_z_square, bc_omega_circle]
+bcs = [bc_v_l, bc_v_circle, bc_w_square, bc_sigma_r, bc_z_square, bc_omega_circle]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
@@ -233,7 +243,7 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 F_N = alpha / rmsh.r_mesh * ( \
  \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_tb(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
-              + ( ( (bgeo.n_circle(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_circle(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
+              # + ( ( (bgeo.n_circle(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_circle(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
 \
               + ( ( (bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_lr( fsp.omega ) * ( rmsh.ds_l + rmsh.ds_r) \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * ( rmsh.ds_t + rmsh.ds_b) \
