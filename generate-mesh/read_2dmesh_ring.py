@@ -43,7 +43,7 @@ mesh = Mesh()
 xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
 xdmf.read( mesh )
 
-
+print(f"Mesh dimension = {mesh.topology().dim()}")
 
 # read the triangles
 mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
@@ -86,8 +86,8 @@ dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=6   )
 # ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 # ds_line_p1_p2 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3    )
 
-dS_p_1 = Measure("dS", domain=mesh, subdomain_data=pf, subdomain_id=4)    # Point measure for points in the mesh
-dS_p_2 = Measure("dS", domain=mesh, subdomain_data=pf, subdomain_id=5)    # Point measure for points in the mesh
+ds_custom = Measure("ds", domain=mesh, subdomain_data=pf)    # Point measure for points at the edges of the mesh
+dS_custom = Measure("dS", domain=mesh, subdomain_data=pf)    # Point measure for points in the mesh
 
 
 
@@ -107,3 +107,4 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 # msh.test_mesh_integral(0.554261, f_test_ds, ds_to, '\int_to f ds')
 
 msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
+
