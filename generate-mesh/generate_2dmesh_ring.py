@@ -46,7 +46,7 @@ gmsh.model.occ.synchronize()
 #add 2-dimensional objects
 surfaces = gmsh.model.occ.getEntities(dim=2)
 assert surfaces == ring[0]
-disk_subdomain_id = 0
+disk_subdomain_id = 6
 
 gmsh.model.addPhysicalGroup( surfaces[0][0], [surfaces[0][1]], disk_subdomain_id )
 gmsh.model.setPhysicalName( surfaces[0][0], disk_subdomain_id, "disk" )
@@ -116,7 +116,7 @@ gmsh.model.mesh.generate(2)
 gmsh.write("solution/mesh.msh")
 
 
-def create_mesh(mesh, cell_type, prune_z=True):
+def create_mesh(mesh, cell_type, prune_z=False):
     cells = mesh.get_cells_type(cell_type)
     cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
     out_mesh = meshio.Mesh(points=mesh.points, cells={
@@ -128,7 +128,7 @@ mesh_from_file = meshio.read("solution/mesh.msh")
 
 
 #create a triangle mesh in which the surfaces will be stored
-triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
+triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
 #create a line mesh
