@@ -99,7 +99,7 @@ xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
 
 print( "Check of BCs:" )
 print( f"\t\t<<|v^i - v_l^i|^2>>_[partial Omega l] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_l[i]) * (v_output[i] - vp.v_l[i])), rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<|v^i - v_circle^i|^2>>_[partial Omega circle] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_circle[i]) * (v_output[i] - vp.v_circle[i])), rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<|v^i - v_circle^i|^2>>_[partial Omega circle] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_circle[i]) * (v_output[i] - vp.v_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 # print( f"\t\t<<(v^i n_i)^2>>_[partial Omega tb + circle] = {col.Fore.RED}{msh.difference_wrt_measure( bgeo.n_circle( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], Constant(0), rmsh.ds_tb + rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print( f"\t\t<<(w - w_boundary)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_boundary, rmsh.ds ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
