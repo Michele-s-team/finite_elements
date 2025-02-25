@@ -83,7 +83,7 @@ gmsh.model.setPhysicalName( vertices[1][0], p_2_subdomain_id, "p_2" )
 
 
 
-#set the resolution 
+#set the resolution
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surfaces[0][0]])
 
@@ -116,7 +116,7 @@ gmsh.model.mesh.generate(2)
 gmsh.write("solution/mesh.msh")
 
 
-def create_mesh(mesh, cell_type, prune_z=False):
+def create_mesh(mesh, cell_type, prune_z=True):
     cells = mesh.get_cells_type(cell_type)
     cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
     out_mesh = meshio.Mesh(points=mesh.points, cells={
