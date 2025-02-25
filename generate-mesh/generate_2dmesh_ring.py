@@ -43,17 +43,17 @@ line_p_1_p_2 = gmsh.model.occ.addLine(p_1, p_2)
 gmsh.model.occ.synchronize()
 
 
-
+#add 2-dimensional objects
 surfaces = gmsh.model.occ.getEntities(dim=2)
 assert surfaces == ring[0]
 disk_subdomain_id = 0
+
 gmsh.model.addPhysicalGroup( surfaces[0][0], [surfaces[0][1]], disk_subdomain_id )
 gmsh.model.setPhysicalName( surfaces[0][0], disk_subdomain_id, "disk" )
 
-lines = gmsh.model.occ.getEntities(dim=1)
 
-print(f"lines = {lines}")
-print(f"line_p1_p_2 = {line_p_1_p_2}")
+#add 1-dimensional objects
+lines = gmsh.model.occ.getEntities(dim=1)
 #these are the subdomain_ids with which the components will be read in read_2dmesh_ring.py
 circle_r_subdomain_id = 1
 circle_R_subdomain_id = 2
@@ -69,9 +69,21 @@ gmsh.model.addPhysicalGroup( lines[2][0], [lines[2][1]], line_p_1_p_2_subdomain_
 gmsh.model.setPhysicalName( lines[2][0], line_p_1_p_2_subdomain_id, "line_p_1_p_2" )
 
 
+#add 0-dimensional objects
+vertices = gmsh.model.occ.getEntities(dim=0)
+p_1_subdomain_id = 4
+p_2_subdomain_id = 5
+
+gmsh.model.addPhysicalGroup( vertices[0][0], [vertices[0][1]], p_1_subdomain_id )
+gmsh.model.setPhysicalName( vertices[0][0], p_1_subdomain_id, "p_1" )
+
+gmsh.model.addPhysicalGroup( vertices[1][0], [vertices[1][1]], p_2_subdomain_id )
+gmsh.model.setPhysicalName( vertices[1][0], p_2_subdomain_id, "p_2" )
 
 
-#set the resolution close to circle_r
+
+
+#set the resolution 
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surfaces[0][0]])
 
@@ -122,3 +134,7 @@ meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 #create a line mesh
 line_mesh = create_mesh(mesh_from_file, "line", True)
 meshio.write("solution/line_mesh.xdmf", line_mesh)
+
+#create a vertex mesh
+vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
+meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
