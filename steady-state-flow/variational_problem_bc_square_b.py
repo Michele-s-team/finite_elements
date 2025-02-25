@@ -101,10 +101,11 @@ class OmegaExpression( UserExpression ):
 # profiles for the normal derivative
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const
+        values[0] = omega_circle_const * (x[0] - rmsh.c_r[0])/geo.my_norm(x-rmsh.c_r)
+        values[1] = omega_circle_const * (x[1] - rmsh.c_r[0])/geo.my_norm(x-rmsh.c_r)
 
     def value_shape(self):
-        return (1,)
+        return (2,)
 
 
 class omega_square_Expression( UserExpression ):
@@ -119,7 +120,7 @@ class omega_square_Expression( UserExpression ):
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
 omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
@@ -149,12 +150,13 @@ bc_w_boundary = DirichletBC( fsp.Q.sub( 1 ), w_boundary, rmsh.boundary )
 bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
 
 # CHANGE PARAMETERS HERE
-# BCs for z
+# BCs for z and omega
 bc_z_square = DirichletBC( fsp.Q.sub( 3 ), z_square, rmsh.boundary_square )
+bc_omega_circle = DirichletBC( fsp.Q.sub( 4 ), omega_circle, rmsh.boundary_circle )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_square]
+bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_square, bc_omega_circle]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
@@ -235,7 +237,7 @@ F_N = alpha / rmsh.r_mesh * ( \
 \
               + ( ( (bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_lr( fsp.omega ) * ( rmsh.ds_l + rmsh.ds_r) \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * ( rmsh.ds_t + rmsh.ds_b) \
-              + ( ( (bgeo.n_circle(fsp.omega))[i] * fsp.omega[i] - omega_circle ) * ((bgeo.n_circle(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
+              # + ( ( (bgeo.n_circle(fsp.omega))[i] * fsp.omega[i] - omega_circle ) * ((bgeo.n_circle(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
  \
       )
 
