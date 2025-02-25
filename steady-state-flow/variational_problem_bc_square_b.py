@@ -14,7 +14,6 @@ i, j, k, l = ufl.indices( 4 )
 v_l_const = 1.0
 w_boundary_const = 0.0
 sigma_r_const = 0.0
-z_circle_const = 0.0
 z_square_const = 0.0
 omega_circle_const = -0.1
 omega_square_const = 0.0
@@ -49,13 +48,6 @@ class sigma_r_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-
-class z_circle_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = z_circle_const
-
-    def value_shape(self):
-        return (1,)
 
 class z_square_Expression( UserExpression ):
     def eval(self, values, x):
@@ -143,7 +135,6 @@ v_l = interpolate( v_l_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_boundary = interpolate( w_boundary_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 
-z_circle = interpolate( z_circle_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 
@@ -159,12 +150,11 @@ bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( fsp.Q.sub( 3 ), z_circle, rmsh.boundary_circle )
 bc_z_square = DirichletBC( fsp.Q.sub( 3 ), z_square, rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_circle, bc_z_square]
+bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_square]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
