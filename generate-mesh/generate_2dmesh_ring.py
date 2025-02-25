@@ -29,9 +29,16 @@ R=2
 resolution = (float)(args.resolution)
 print(f"Mesh resolution = {resolution}")
 
+
+
+
 disk_r = gmsh.model.occ.addDisk( c_r[0], c_r[1], c_r[2], r, r )
 disk_R = gmsh.model.occ.addDisk( c_R[0], c_R[1], c_R[2], R, R )
 ring = gmsh.model.occ.cut( [(2, disk_R)], [(2, disk_r)] )
+
+p_1 = gmsh.model.occ.addPoint((r+R)/2.0, 0, 0)
+p_2 = gmsh.model.occ.addPoint((r+R)/2.0, r/10.0, 0)
+line_p_1_p_2 = gmsh.model.occ.addLine(p_1, p_2)
 
 gmsh.model.occ.synchronize()
 
@@ -44,13 +51,22 @@ gmsh.model.addPhysicalGroup( surfaces[0][0], [surfaces[0][1]], disk_subdomain_id
 gmsh.model.setPhysicalName( surfaces[0][0], disk_subdomain_id, "disk" )
 
 lines = gmsh.model.occ.getEntities(dim=1)
+
+print(f"lines = {lines}")
+print(f"line_p1_p_2 = {line_p_1_p_2}")
 #these are the subdomain_ids with which the components will be read in read_2dmesh_ring.py
 circle_r_subdomain_id = 1
 circle_R_subdomain_id = 2
+line_p_1_p_2_subdomain_id = 3
+
 gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], circle_r_subdomain_id )
 gmsh.model.setPhysicalName( lines[0][0], disk_subdomain_id, "circle_r" )
+
 gmsh.model.addPhysicalGroup( lines[1][0], [lines[1][1]], circle_R_subdomain_id )
 gmsh.model.setPhysicalName( lines[1][0], disk_subdomain_id, "circle_R" )
+
+gmsh.model.addPhysicalGroup( lines[2][0], [lines[2][1]], line_p_1_p_2_subdomain_id )
+gmsh.model.setPhysicalName( lines[2][0], line_p_1_p_2_subdomain_id, "line_p_1_p_2" )
 
 
 
@@ -81,6 +97,8 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 
 
 gmsh.model.occ.synchronize()
+
+
 gmsh.model.mesh.generate(2)
 
 gmsh.write("solution/mesh.msh")
