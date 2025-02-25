@@ -74,7 +74,7 @@ class FunctionTestIntegral(UserExpression):
     def eval(self, values, x):
         c_test = [0.3, 0.76, 0]
         r_test = 0.345
-        
+
         values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
@@ -106,4 +106,4 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 # msh.test_mesh_integral(0.519791, f_test_ds, ds_ba, '\int_ba f ds')
 # msh.test_mesh_integral(0.554261, f_test_ds, ds_to, '\int_to f ds')
 
-msh.test_mesh_integral(2.90212, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
