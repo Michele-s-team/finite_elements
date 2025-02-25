@@ -14,9 +14,20 @@ import numpy as np
 import gmsh
 import warnings
 
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+
+import mesh as msh
+
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
 args = parser.parse_args()
+
+msh_file_path = "solution/mesh.msh"
 
 warnings.filterwarnings("ignore")
 gmsh.initialize()
@@ -31,12 +42,20 @@ print(f"Mesh resolution = {resolution}")
 
 disk_r = gmsh.model.occ.addDisk( c_r[0], c_r[1], c_r[2], r, r )
 disk_R = gmsh.model.occ.addDisk( c_R[0], c_R[1], c_R[2], R, R )
+#add this every time you add a component to the mesh and every time you make modifications to the mesh
+gmsh.model.occ.synchronize()
+
 ring = gmsh.model.occ.cut( [(2, disk_R)], [(2, disk_r)] )
+gmsh.model.occ.synchronize()
 
-p_1 = gmsh.model.occ.addPoint( (r + R) / 2.0, 0, 0 )
-p_2 = gmsh.model.occ.addPoint( (r + R) / 2.0, r / 10.0, 0 )
+p_1 = gmsh.model.occ.addPoint( 1.0/4.0*r + 3.0/4.0*R, 0, 0 )
+p_2 = gmsh.model.occ.addPoint( 0, 1.0/4.0*r + 3.0/4.0*R, 0 )
+gmsh.model.occ.synchronize()
+
 line_p_1_p_2 = gmsh.model.occ.addLine( p_1, p_2 )
+gmsh.model.occ.synchronize()
 
+gmsh.model.mesh.embed( 1, [line_p_1_p_2], 2, ring[0][0][0] )
 gmsh.model.occ.synchronize()
 
 
@@ -109,7 +128,7 @@ gmsh.model.occ.synchronize()
 
 gmsh.model.mesh.generate(2)
 
-gmsh.write("solution/mesh.msh")
+gmsh.write( msh_file_path )
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -120,7 +139,7 @@ def create_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-mesh_from_file = meshio.read("solution/mesh.msh")
+mesh_from_file = meshio.read( msh_file_path )
 
 
 #create a triangle mesh in which the surfaces will be stored
@@ -134,3 +153,6 @@ meshio.write("solution/line_mesh.xdmf", line_mesh)
 #create a vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
+
+
+print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")

@@ -53,13 +53,12 @@ vf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
 xdmf.close()
 
 #read the lines
-'''
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
+sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
-'''
+
 
 #read the vertices
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-2)
@@ -82,12 +81,13 @@ class FunctionTestIntegral(UserExpression):
 
 
 dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=6   )
-# ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=1 )
-# ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=1 )
+ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+ds_line = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 # ds_line_p1_p2 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3    )
 
-ds_custom = Measure("ds", domain=mesh, subdomain_data=pf)    # Point measure for points at the edges of the mesh
-dS_custom = Measure("dS", domain=mesh, subdomain_data=pf)    # Point measure for points in the mesh
+# ds_custom = Measure("ds", domain=mesh, subdomain_data=pf)    # Point measure for points at the edges of the mesh
+# dS_custom = Measure("dS", domain=mesh, subdomain_data=pf)    # Point measure for points in the mesh
 
 
 
@@ -98,13 +98,6 @@ f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-# msh.test_mesh_integral( 0.472941, f_test_ds, dx, '\int_box_minus_ball f dx' )
-# msh.test_mesh_integral(0.309249, f_test_ds, ds_sphere, '\int_sphere f ds')
-# msh.test_mesh_integral(0.505778, f_test_ds, ds_le, '\int_l f ds')
-# msh.test_mesh_integral(0.489414, f_test_ds, ds_ri, '\int_r f ds')
-# msh.test_mesh_integral(0.487063, f_test_ds, ds_fr, '\int_fr f ds')
-# msh.test_mesh_integral(0.519791, f_test_ds, ds_ba, '\int_ba f ds')
-# msh.test_mesh_integral(0.554261, f_test_ds, ds_to, '\int_to f ds')
-
 msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
-
+msh.test_mesh_integral(2.7759459256115657, f_test_ds, ds_r, 'inft f ds_r')
+msh.test_mesh_integral(3.6717505977470717, f_test_ds, ds_R, 'inft f ds_R')
