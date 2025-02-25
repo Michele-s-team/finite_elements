@@ -80,8 +80,8 @@ gmsh.model.setPhysicalName( lines[0][0], circle_r_subdomain_id, "circle_r" )
 gmsh.model.addPhysicalGroup( lines[1][0], [lines[1][1]], circle_R_subdomain_id )
 gmsh.model.setPhysicalName( lines[1][0], circle_R_subdomain_id, "circle_R" )
 
-gmsh.model.addPhysicalGroup( lines[2][0], [lines[2][1]], line_p_1_p_2_subdomain_id )
-gmsh.model.setPhysicalName( lines[2][0], line_p_1_p_2_subdomain_id, "line_p_1_p_2" )
+gmsh.model.addPhysicalGroup(1, [line_p_1_p_2], line_p_1_p_2_subdomain_id)
+gmsh.model.setPhysicalName(1, line_p_1_p_2_subdomain_id, "line_p_1_p_2")
 
 
 #add 0-dimensional objects

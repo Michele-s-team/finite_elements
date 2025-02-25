@@ -42,6 +42,7 @@ R = 2
 mesh = Mesh()
 xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
 xdmf.read( mesh )
+xdmf.close()
 
 print(f"Mesh dimension = {mesh.topology().dim()}")
 
@@ -50,14 +51,14 @@ mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
 with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
     infile.read( mvc, "name_to_read" )
 vf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
-xdmf.close()
+# print("Volume measure tags:", vf.array())
 
 #read the lines
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
+# print("Line measure tags:", sf.array())
 
 
 #read the vertices
@@ -65,7 +66,8 @@ mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-2)
 with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 pf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
+# print("Vertex measure tags:", pf.array())
+
 
 
 #analytical expression for a  scalar function used to test the ds
@@ -99,5 +101,6 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(2.7759459256115657, f_test_ds, ds_r, 'inft f ds_r')
-msh.test_mesh_integral(3.6717505977470717, f_test_ds, ds_R, 'inft f ds_R')
+msh.test_mesh_integral(2.7759459256115657, f_test_ds, ds_r, 'int f ds_r')
+msh.test_mesh_integral(3.6717505977470717, f_test_ds, ds_R, 'int f ds_R')
+msh.test_mesh_integral(1.0, Constant(1), ds_line, 'int f ds_line')
