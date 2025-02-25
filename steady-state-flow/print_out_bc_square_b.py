@@ -95,7 +95,6 @@ io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output),
 #prind rate of deformation tensor to file
 xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
 
-#sign
 
 
 print( "Check of BCs:" )

@@ -34,8 +34,8 @@ import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
 
-import read_mesh_ring as rmsh
-# import read_mesh_square as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square as rmsh
 
 # import variational_problem_bc_ring_1 as vp
 # import variational_problem_bc_ring_2 as vp
