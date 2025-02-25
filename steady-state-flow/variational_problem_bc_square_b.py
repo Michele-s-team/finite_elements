@@ -12,7 +12,7 @@ i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 v_l_const = 1.0
-w_boundary_const = 0.0
+w_square_const = 0.0
 sigma_r_const = 0.0
 z_square_const = 0.0
 omega_circle_const = -0.1
@@ -34,9 +34,9 @@ class v_l_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
-class w_boundary_Expression( UserExpression ):
+class w_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = w_boundary_const
+        values[0] = w_square_const
 
     def value_shape(self):
         return (1,)
@@ -133,7 +133,7 @@ fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 # assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
 
 v_l = interpolate( v_l_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
-w_boundary = interpolate( w_boundary_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
+w_square = interpolate( w_square_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
 
 z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
@@ -144,7 +144,7 @@ z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fs
 bc_v_l = DirichletBC( fsp.Q.sub( 0 ), v_l, rmsh.boundary_l )
 
 # BCs for w_bar
-bc_w_boundary = DirichletBC( fsp.Q.sub( 1 ), w_boundary, rmsh.boundary )
+bc_w_square = DirichletBC( fsp.Q.sub( 1 ), w_square, rmsh.boundary_square )
 
 #BC for sigma
 bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
@@ -156,7 +156,7 @@ bc_omega_circle = DirichletBC( fsp.Q.sub( 4 ), omega_circle, rmsh.boundary_circl
 # CHANGE PARAMETERS HERE
 
 # all BCs
-bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_square, bc_omega_circle]
+bcs = [bc_v_l, bc_w_square, bc_sigma_r, bc_z_square, bc_omega_circle]
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
