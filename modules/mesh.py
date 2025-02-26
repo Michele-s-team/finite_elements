@@ -1,7 +1,6 @@
 from fenics import *
 import numpy as np
 import colorama as col
-import meshio
 
 import geometry as geo
 import input_output as io
@@ -200,31 +199,3 @@ def difference_on_boundary_circle(f, g, r, R, c):
     diff = np.sqrt( diff / len( boundary_c_points ) )
 
     return diff
-
-
-#create a mesh of tetrahedra, triangles, ...
-def create_mesh(mesh, cell_type, prune_z=False):
-    cells = mesh.get_cells_type(cell_type)
-    cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-    out_mesh = meshio.Mesh(points=mesh.points, cells={
-                           cell_type: cells}, cell_data={"name_to_read": [cell_data]})
-    return out_mesh
-
-#print a list of the vertices in the .msh file in 'filename' which belong to lines in the mesh
-def line_vertices(filename):
-    mesh_from_file = meshio.read(filename)
-    line_mesh = create_mesh( mesh_from_file, "line", False )
-    line_vertices = np.unique( line_mesh.cells_dict["line"].flatten() )
-    print(f"line vertices: {line_vertices}")
-
-    return line_vertices
-
-
-def triangle_vertices(filename):
-    mesh_from_file = meshio.read(filename)
-    triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-    triangle_vertices = np.unique( triangle_mesh.cells_dict["triangle"].flatten() )
-    print(f"triangle vertices: {triangle_vertices}")
-
-    return triangle_vertices
-

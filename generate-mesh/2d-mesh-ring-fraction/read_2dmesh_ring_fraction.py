@@ -3,13 +3,12 @@ This code reads the 2d mesh generated from generate_2dmesh_ring_fraction.py and 
 run with
 clear; clear; python3 read_2dmesh_ring_fraction.py [path where to find the mesh]
 example:
-clear; clear; python3 read_2dmesh_ring_fraction.py /home/fenics/shared/generate-mesh/solution
+clear; clear; python3 read_2dmesh_ring_fraction.py /home/fenics/shared/generate-mesh/2d-mesh-ring-fraction/solution  /home/fenics/shared/generate-mesh/2d-mesh-ring-fraction
 '''
 
 from fenics import *
 from mshr import *
 from dolfin import *
-import argparse
 import numpy as np
 
 import sys
@@ -18,12 +17,10 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
+import boundary_geometry as bgeo
 import geometry as geo
 import mesh as msh
-
-parser = argparse.ArgumentParser()
-parser.add_argument( "input_directory" )
-args = parser.parse_args()
+import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
 c_r = [0, 0, 0]
@@ -34,29 +31,29 @@ N = 128
 # CHANGE PARAMETERS HERE
 
 # read the mesh
-mesh = Mesh()
-xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
-xdmf.read( mesh )
-xdmf.close()
+# mesh = Mesh()
+# xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
+# xdmf.read( mesh )
+# xdmf.close()
 
-# read the triangles
-mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
-with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
-    infile.read( mvc, "name_to_read" )
-vf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
-# print("Volume measure tags:", vf.array())
+#read the triangles
+mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
+with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
+    infile.read(mvc, "name_to_read")
+vf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 
-# read the lines
-mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() - 1 )
-with XDMFFile( (args.input_directory) + "/line_mesh.xdmf" ) as infile:
-    infile.read( mvc, "name_to_read" )
-sf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
-# print("Line measure tags:", sf.array())
+#read the lines
+mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim()-1)
+with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
+    infile.read(mvc, "name_to_read")
+sf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+
+
 
 '''
 #read the vertices
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-2)
-with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
+with XDMFFile((rarg.args.input_directory) + "/vertex_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 pf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # print("Vertex measure tags:", pf.array())
@@ -76,15 +73,15 @@ class FunctionTestIntegral( UserExpression ):
         return (1,)
 
 
-dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=2 * N )
+dx = Measure( "dx", domain=bgeo.mesh, subdomain_data=vf, subdomain_id=2 * N )
 
-ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=0 )
-ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=N )
+ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=0 )
+ds_R = Measure( "ds", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=N )
 for id in range( 1, N ):
-    ds_r = ds_r + Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=id )
-    ds_R = ds_R + Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=N + id )
+    ds_r = ds_r + Measure( "ds", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=id )
+    ds_R = ds_R + Measure( "ds", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=N + id )
 
-Q = FunctionSpace( mesh, 'P', 1 )
+Q = FunctionSpace( bgeo.mesh, 'P', 1 )
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 f_test_ds = Function( Q )
