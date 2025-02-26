@@ -20,7 +20,9 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
+import calc as cal
 import mesh as msh
+import geometry as geo
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "resolution" )
@@ -36,11 +38,12 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
-N = 4
+N = 8
 resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
-theta = 2.0 * np.pi / N
+theta = 2 * np.pi / N
+phi = theta/2
 p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
 p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
 
@@ -125,12 +128,23 @@ print(f"center of mass of first slice: {Q(  theta + theta / 2 ).dot( np.array( [
 for line in lines:
     # compute the center of mass of each surface, and recognize according to the coordinates of the center of mass
     center_of_mass = gmsh.model.occ.getCenterOfMass( line[0], line[1] )
+    r_s = r * np.sin(phi) * (1  - np.sin(phi)**3/3 - np.cos(phi)**2)/(phi - np.sin(phi) * np.cos(phi))
 
-    print( f"center of mass: {np.sqrt(center_of_mass[0]**2 + center_of_mass[1]**2 )}" )
+    com_r = [center_of_mass[0], center_of_mass[1]]
+    # print( f"|center of mass|: {geo.my_norm(com_r)}" )
 
-    for i in range( N ):
-        if np.allclose( [center_of_mass[0], center_of_mass[1]], Q( i * theta + theta / 2 ).dot( np.array( [r, 0] ) ) ):
-            print("fount")
+
+
+    if(geo.my_norm(com_r) < r):
+        print(f"line belongs to ds_r, angle = {cal.atan_quad(com_r)}")
+
+
+
+    if((geo.my_norm(com_r) < R) & (geo.my_norm(com_r) > (r+R)/2)):
+        print(f"line belongs to ds_R, angle = {cal.atan_quad(com_r)}")
+
+    # for i in range( N ):
+    #     if np.allclose( [center_of_mass[0], center_of_mass[1]], Q( i * theta + theta / 2 ).dot( np.array( [r, 0] ) ) ):
 
 # gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], arc_12_id )
 # gmsh.model.setPhysicalName( lines[0][0], arc_12_id, "arc_12" )
