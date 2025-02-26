@@ -36,6 +36,7 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
+N = 4
 #CHANGE PARAMETERS HERE
 
 # read the mesh
@@ -44,7 +45,6 @@ xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf"
 xdmf.read( mesh )
 xdmf.close()
 
-print(f"Mesh dimension = {mesh.topology().dim()}")
 
 # read the triangles
 mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
@@ -84,9 +84,16 @@ class FunctionTestIntegral(UserExpression):
 
 
 
-dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=1   )
-ds_12 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
-ds_34 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
+dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id= 2*N    )
+
+# ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=0 )
+# ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=N )
+# for id in range(N):
+#     ds_r = ds_r + Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=id )
+#     ds_R = ds_R + Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=N+id )
+
+# ds_12 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+# ds_34 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 # ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 # ds_line = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 # ds_line_p1_p2 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3    )
@@ -102,6 +109,6 @@ f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-msh.test_mesh_integral(0.7557209324240443, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(0.36806723425691257, f_test_ds, ds_12, '\int f ds_12')
-msh.test_mesh_integral(0.06867276579076076, f_test_ds, ds_34, '\int f ds_34')
+msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
+# msh.test_mesh_integral(0.36806723425691257, f_test_ds, ds_r, '\int f ds_r')
+# msh.test_mesh_integral(0.06867276579076076, f_test_ds, ds_34, '\int f ds_34')

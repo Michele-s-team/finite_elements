@@ -38,12 +38,13 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
-N = 8
+N = 4
 resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
 theta = 2 * np.pi / N
 phi = theta/2
+epsilon = 1e-2
 p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
 p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
 
@@ -111,10 +112,10 @@ gmsh.model.occ.synchronize()
 # add 2-dimensional objects
 # # surfaces = gmsh.model.occ.getEntities(dim=2)
 # assert surfaces == surface
-surface_tot_subdomain_id = 1
+surface_tot_subdomain_id = 2*N
 
 gmsh.model.addPhysicalGroup( 2, surfaces, surface_tot_subdomain_id )
-gmsh.model.setPhysicalName( 2, surface_tot_subdomain_id, "square" )
+gmsh.model.setPhysicalName( 2, surface_tot_subdomain_id, "ring" )
 
 # add 1-dimensional objects
 lines = gmsh.model.occ.getEntities( dim=1 )
@@ -125,25 +126,33 @@ lines = gmsh.model.occ.getEntities( dim=1 )
 # the COM of slices in ds_r will have |COM|<r, the COM of slices in ds_R will have r < |COM| < R. The COM of radial lines will have |COM| = (r+R)/2
 print(f"center of mass of first slice: {Q(  theta + theta / 2 ).dot( np.array( [r, 0] ) )}")
 
+id_r = 0
+id_R = N
 for line in lines:
     # compute the center of mass of each surface, and recognize according to the coordinates of the center of mass
     center_of_mass = gmsh.model.occ.getCenterOfMass( line[0], line[1] )
-    r_s = r * np.sin(phi) * (1  - np.sin(phi)**3/3 - np.cos(phi)**2)/(phi - np.sin(phi) * np.cos(phi))
 
-    com_r = [center_of_mass[0], center_of_mass[1]]
+    x_com = [center_of_mass[0], center_of_mass[1]]
     # print( f"|center of mass|: {geo.my_norm(com_r)}" )
 
+    if(geo.my_norm( x_com ) < r):
+        print(f"line belongs to ds_r, angle = {cal.atan_quad( x_com )}" )
+
+        gmsh.model.addPhysicalGroup( line[0], [line[1]], id_r )
+        gmsh.model.setPhysicalName( line[0], id_r, "arc_" + str(id_r) )
+        id_r += 1
+
+        # for i in range(N):
+        #     if(np.isclose(cal.atan_quad(com_r) ,(theta/2 + theta * i), 1e-2)):
+        #         print(f"line has i = {i}")
 
 
-    if(geo.my_norm(com_r) < r):
-        print(f"line belongs to ds_r, angle = {cal.atan_quad(com_r)}")
-        for i in range(N):
-            if(np.isclose(cal.atan_quad(com_r) ,(theta/2 + theta * i), 1e-2)):
-                print(f"line has i = {i}")
+    if((geo.my_norm( x_com ) < R) & (geo.my_norm( x_com ) > (r + R) / 2 + epsilon)):
+        print(f"line belongs to ds_R, angle = {cal.atan_quad( x_com )}" )
 
-
-    if((geo.my_norm(com_r) < R) & (geo.my_norm(com_r) > (r+R)/2)):
-        print(f"line belongs to ds_R, angle = {cal.atan_quad(com_r)}")
+        gmsh.model.addPhysicalGroup( line[0], [line[1]], id_R )
+        gmsh.model.setPhysicalName( line[0], id_R, "arc_" + str(id_R) )
+        id_R += 1
 
     # for i in range( N ):
     #     if np.allclose( [center_of_mass[0], center_of_mass[1]], Q( i * theta + theta / 2 ).dot( np.array( [r, 0] ) ) ):
@@ -232,11 +241,11 @@ mesh_from_file = meshio.read( msh_file_path )
 triangle_mesh = create_mesh( mesh_from_file, "triangle", prune_z=True )
 meshio.write( "solution/triangle_mesh.xdmf", triangle_mesh )
 
-# # create a line mesh
-#
-# line_mesh = create_mesh(mesh_from_file, "line", True)
-# meshio.write("solution/line_mesh.xdmf", line_mesh)
-#
+# create a line mesh
+
+line_mesh = create_mesh(mesh_from_file, "line", True)
+meshio.write("solution/line_mesh.xdmf", line_mesh)
+
 
 '''
 #create a vertex mesh
