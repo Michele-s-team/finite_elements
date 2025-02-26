@@ -24,6 +24,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
 import geometry as geo
+import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "resolution" )
@@ -200,23 +201,14 @@ gmsh.model.mesh.generate( 2 )
 gmsh.write( msh_file_path )
 
 
-def create_mesh(mesh, cell_type, prune_z=False):
-    cells = mesh.get_cells_type(cell_type)
-    cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-    points = mesh.points[:, :2] if prune_z else mesh.points
-    out_mesh = meshio.Mesh(
-        points=points, cells={cell_type: cells}, cell_data={"name_to_read": [cell_data]}
-    )
-    return out_mesh
-
 mesh_from_file = meshio.read( msh_file_path )
 
 # create triangle
-triangle_mesh = create_mesh( mesh_from_file, "triangle", prune_z=True )
+triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
 meshio.write( "solution/triangle_mesh.xdmf", triangle_mesh )
 
 # create line mesh
-line_mesh = create_mesh( mesh_from_file, "line", True )
+line_mesh = msh.create_mesh( mesh_from_file, "line", True )
 meshio.write( "solution/line_mesh.xdmf", line_mesh )
 
 '''

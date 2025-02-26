@@ -1,10 +1,20 @@
 from fenics import *
 import numpy as np
 import colorama as col
+import meshio
 
 import geometry as geo
 import input_output as io
 
+
+def create_mesh(mesh, cell_type, prune_z=False):
+    cells = mesh.get_cells_type(cell_type)
+    cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
+    points = mesh.points[:, :2] if prune_z else mesh.points
+    out_mesh = meshio.Mesh(
+        points=points, cells={cell_type: cells}, cell_data={"name_to_read": [cell_data]}
+    )
+    return out_mesh
 
 # read the mesh form 'filename' and write it into 'mesh'
 def read_mesh(mesh, filename):
