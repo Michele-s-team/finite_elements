@@ -63,7 +63,7 @@ pf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegral( UserExpression ):
     def eval(self, values, x):
-        c_test = [0.3, 0.76, 0]
+        c_test = [0.3, 0.76]
         r_test = 0.345
 
         values[0] = np.cos( geo.my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
