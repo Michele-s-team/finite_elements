@@ -54,14 +54,14 @@ vf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
 # print("Volume measure tags:", vf.array())
 
 #read the lines
-'''
+
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # print("Line measure tags:", sf.array())
 
-
+'''
 #read the vertices
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-2)
 with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
@@ -85,7 +85,8 @@ class FunctionTestIntegral(UserExpression):
 
 
 dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=1   )
-# ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=1 )
+ds_12 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+ds_34 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 # ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
 # ds_line = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 # ds_line_p1_p2 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3    )
@@ -102,3 +103,5 @@ f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 msh.test_mesh_integral(0.7557209324240443, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(0.36806723425691257, f_test_ds, ds_12, '\int f ds_12')
+msh.test_mesh_integral(0.06867276579076076, f_test_ds, ds_34, '\int f ds_34')

@@ -106,24 +106,23 @@ gmsh.model.addPhysicalGroup( 2, [surface, surfacee], surface_tot_subdomain_id )
 gmsh.model.setPhysicalName( 2, surface_tot_subdomain_id, "square" )
 
 
-'''
+
 #add 1-dimensional objects
 lines = gmsh.model.occ.getEntities(dim=1)
-circle_r_subdomain_id = 1
-circle_R_subdomain_id = 2
-line_p_1_p_2_subdomain_id = 3
+arc_12_id = 2
+arc_34_id = 3
 
-gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], circle_r_subdomain_id )
-gmsh.model.setPhysicalName( lines[0][0], circle_r_subdomain_id, "circle_r" )
+gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], arc_12_id )
+gmsh.model.setPhysicalName( lines[0][0], arc_12_id, "arc_12" )
 
-gmsh.model.addPhysicalGroup( lines[1][0], [lines[1][1]], circle_R_subdomain_id )
-gmsh.model.setPhysicalName( lines[1][0], circle_R_subdomain_id, "circle_R" )
+gmsh.model.addPhysicalGroup( lines[2][0], [lines[2][1]], arc_34_id )
+gmsh.model.setPhysicalName( lines[2][0], arc_34_id, "arc_34" )
 
-gmsh.model.addPhysicalGroup( 1, [line_12], line_p_1_p_2_subdomain_id )
-gmsh.model.setPhysicalName(1, line_p_1_p_2_subdomain_id, "line_p_1_p_2")
 
-'''
+
+
 #add 0-dimensional objects
+'''
 vertices = gmsh.model.occ.getEntities(dim=0)
 p_1_subdomain_id = 4
 p_2_subdomain_id = 5
@@ -150,7 +149,7 @@ gmsh.model.setPhysicalName( vertices[6][0], pp_2_subdomain_id, "pp_2" )
 gmsh.model.addPhysicalGroup( vertices[7][0], [vertices[7][1 ]], pp_3_subdomain_id )
 gmsh.model.setPhysicalName( vertices[7][0], pp_3_subdomain_id, "pp_3" )
 
-
+'''
 
 # set the resolution
 distance = gmsh.model.mesh.field.add( "Distance" )
@@ -198,10 +197,10 @@ triangle_mesh = create_mesh( mesh_from_file, "triangle", prune_z=True )
 meshio.write( "solution/triangle_mesh.xdmf", triangle_mesh )
 
 # create a line mesh
-''' 
+
 line_mesh = create_mesh(mesh_from_file, "line", True)
 meshio.write("solution/line_mesh.xdmf", line_mesh)
-'''
+
 
 '''
 #create a vertex mesh
