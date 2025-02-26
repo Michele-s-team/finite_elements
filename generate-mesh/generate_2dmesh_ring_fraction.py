@@ -57,6 +57,8 @@ p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
 p_2 = gmsh.model.occ.addPoint( r_2[0], r_2[1], 0 )
 p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
 p_4 = gmsh.model.occ.addPoint( r_4[0], r_4[1], 0 )
+p_1_start = p_1
+p_4_start = p_4
 gmsh.model.occ.synchronize()
 
 surfaces=[]
@@ -89,6 +91,20 @@ for i in range( N-1 ):
     gmsh.model.occ.synchronize()
 
     print("...done")
+
+
+
+
+arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_1_start )
+line_23 = gmsh.model.occ.addLine( p_1_start, p_4_start )
+arc_34 = gmsh.model.occ.addCircleArc( p_4_start, p_c_R, p_4 )
+line_41 = gmsh.model.occ.addLine( p_4, p_1 )
+gmsh.model.occ.synchronize()
+#
+loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
+surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
+gmsh.model.occ.synchronize()
+
 
 ######## add first slice ########
 
