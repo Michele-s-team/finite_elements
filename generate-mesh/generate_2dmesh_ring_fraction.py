@@ -36,7 +36,7 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
-N = 9
+N = 4
 resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
@@ -48,6 +48,8 @@ p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
 def Q(theta):
     return np.array( [[np.cos( theta ), -np.sin( theta )], [np.sin( theta ), np.cos( theta )]] )
 
+
+# initialize the loop over 0 <= theta < 2 pi
 r_1 = np.array( [r, 0] )
 r_2 = Q( theta ).dot( r_1 )
 r_4 = np.array( [R, 0] )
@@ -61,9 +63,9 @@ p_1_start = p_1
 p_4_start = p_4
 gmsh.model.occ.synchronize()
 
-surfaces=[]
+surfaces = []
 
-for i in range( N-1 ):
+for i in range( N - 1 ):
     print( f"Adding slice #{i} ... " )
 
     print( f"\tr_1 = {r_1}" )
@@ -78,7 +80,7 @@ for i in range( N-1 ):
     gmsh.model.occ.synchronize()
 
     loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
-    surfaces.append(gmsh.model.occ.addPlaneSurface( [loop] ))
+    surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
     gmsh.model.occ.synchronize()
 
     r_2 = Q( theta ).dot( r_2 )
@@ -90,41 +92,46 @@ for i in range( N-1 ):
     p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
     gmsh.model.occ.synchronize()
 
-    print("...done")
+    print( "...done" )
 
-
-
-
+# close the loop with a special curve addition
 arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_1_start )
 line_23 = gmsh.model.occ.addLine( p_1_start, p_4_start )
 arc_34 = gmsh.model.occ.addCircleArc( p_4_start, p_c_R, p_4 )
 line_41 = gmsh.model.occ.addLine( p_4, p_1 )
 gmsh.model.occ.synchronize()
-#
+
 loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
 surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
 gmsh.model.occ.synchronize()
-
-
-######## add first slice ########
-
-
 
 # add 2-dimensional objects
 # # surfaces = gmsh.model.occ.getEntities(dim=2)
 # assert surfaces == surface
 surface_tot_subdomain_id = 1
-#
+
 gmsh.model.addPhysicalGroup( 2, surfaces, surface_tot_subdomain_id )
 gmsh.model.setPhysicalName( 2, surface_tot_subdomain_id, "square" )
-#
-#
-#
-# #add 1-dimensional objects
-# lines = gmsh.model.occ.getEntities(dim=1)
+
+# add 1-dimensional objects
+lines = gmsh.model.occ.getEntities( dim=1 )
 # arc_12_id = 2
 # arc_34_id = 3
-#
+
+# loop through all surfaces and find the surface in the i-th slice according to its center of mass (COM):
+# the COM of slices in ds_r will have |COM|<r, the COM of slices in ds_R will have r < |COM| < R. The COM of radial lines will have |COM| = (r+R)/2
+print(f"center of mass of first slice: {Q(  theta + theta / 2 ).dot( np.array( [r, 0] ) )}")
+
+for line in lines:
+    # compute the center of mass of each surface, and recognize according to the coordinates of the center of mass
+    center_of_mass = gmsh.model.occ.getCenterOfMass( line[0], line[1] )
+
+    print( f"center of mass: {np.sqrt(center_of_mass[0]**2 + center_of_mass[1]**2 )}" )
+
+    for i in range( N ):
+        if np.allclose( [center_of_mass[0], center_of_mass[1]], Q( i * theta + theta / 2 ).dot( np.array( [r, 0] ) ) ):
+            print("fount")
+
 # gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], arc_12_id )
 # gmsh.model.setPhysicalName( lines[0][0], arc_12_id, "arc_12" )
 #
@@ -163,31 +170,31 @@ gmsh.model.setPhysicalName( 2, surface_tot_subdomain_id, "square" )
 # gmsh.model.setPhysicalName( vertices[7][0], pp_3_subdomain_id, "pp_3" )
 #
 # '''
-#
-# # set the resolution
-# distance = gmsh.model.mesh.field.add( "Distance" )
-# gmsh.model.mesh.field.setNumbers( distance, "FacesList", [surface] )
-#
-# threshold = gmsh.model.mesh.field.add( "Threshold" )
-# gmsh.model.mesh.field.setNumber( threshold, "IField", distance )
-# gmsh.model.mesh.field.setNumber( threshold, "LcMin", resolution )
-# gmsh.model.mesh.field.setNumber( threshold, "LcMax", resolution )
-# gmsh.model.mesh.field.setNumber( threshold, "DistMin", 0.5 * r )
-# gmsh.model.mesh.field.setNumber( threshold, "DistMax", r )
-#
-# circle_r_dist = gmsh.model.mesh.field.add( "Distance" )
-# circle_r_threshold = gmsh.model.mesh.field.add( "Threshold" )
-#
-# gmsh.model.mesh.field.setNumber( circle_r_threshold, "IField", circle_r_dist )
-# gmsh.model.mesh.field.setNumber( circle_r_threshold, "LcMin", resolution )
-# gmsh.model.mesh.field.setNumber( circle_r_threshold, "LcMax", resolution )
-# gmsh.model.mesh.field.setNumber( circle_r_threshold, "DistMin", 0.1 )
-# gmsh.model.mesh.field.setNumber( circle_r_threshold, "DistMax", 0.5 )
-#
-# minimum = gmsh.model.mesh.field.add( "Min" )
-# gmsh.model.mesh.field.setNumbers( minimum, "FieldsList", [threshold, circle_r_threshold] )
-# gmsh.model.mesh.field.setAsBackgroundMesh( minimum )
-#
+
+# set the resolution
+distance = gmsh.model.mesh.field.add( "Distance" )
+gmsh.model.mesh.field.setNumbers( distance, "FacesList", surfaces )
+
+threshold = gmsh.model.mesh.field.add( "Threshold" )
+gmsh.model.mesh.field.setNumber( threshold, "IField", distance )
+gmsh.model.mesh.field.setNumber( threshold, "LcMin", resolution )
+gmsh.model.mesh.field.setNumber( threshold, "LcMax", resolution )
+gmsh.model.mesh.field.setNumber( threshold, "DistMin", 0.5 * r )
+gmsh.model.mesh.field.setNumber( threshold, "DistMax", r )
+
+circle_r_dist = gmsh.model.mesh.field.add( "Distance" )
+circle_r_threshold = gmsh.model.mesh.field.add( "Threshold" )
+
+gmsh.model.mesh.field.setNumber( circle_r_threshold, "IField", circle_r_dist )
+gmsh.model.mesh.field.setNumber( circle_r_threshold, "LcMin", resolution )
+gmsh.model.mesh.field.setNumber( circle_r_threshold, "LcMax", resolution )
+gmsh.model.mesh.field.setNumber( circle_r_threshold, "DistMin", 0.1 )
+gmsh.model.mesh.field.setNumber( circle_r_threshold, "DistMax", 0.5 )
+
+minimum = gmsh.model.mesh.field.add( "Min" )
+gmsh.model.mesh.field.setNumbers( minimum, "FieldsList", [threshold, circle_r_threshold] )
+gmsh.model.mesh.field.setAsBackgroundMesh( minimum )
+
 gmsh.model.occ.synchronize()
 
 gmsh.model.mesh.generate( 2 )
