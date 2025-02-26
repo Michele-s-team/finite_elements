@@ -137,7 +137,9 @@ for line in lines:
 
     if(geo.my_norm(com_r) < r):
         print(f"line belongs to ds_r, angle = {cal.atan_quad(com_r)}")
-
+        for i in range(N):
+            if(np.isclose(cal.atan_quad(com_r) ,(theta/2 + theta * i), 1e-2)):
+                print(f"line has i = {i}")
 
 
     if((geo.my_norm(com_r) < R) & (geo.my_norm(com_r) > (r+R)/2)):
