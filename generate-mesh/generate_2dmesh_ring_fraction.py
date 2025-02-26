@@ -39,20 +39,44 @@ R = 2
 resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
-p_1 = gmsh.model.occ.addPoint( 0, 0, 0 )
-p_2 = gmsh.model.occ.addPoint( r, r/10.0, 0 )
-p_3 = gmsh.model.occ.addPoint( R, 0, 0 )
-p_4 = gmsh.model.occ.addPoint( R, R, 0 )
-p_5 = gmsh.model.occ.addPoint( 0, R, 0 )
+theta = np.pi/8.0
+
+def Q(theta):
+    return np.array([[np.cos(theta), -np.sin(theta)],[np.sin(theta), np.cos(theta)]])
+
+r_1 = np.array([0, r])
+r_2 = Q(-theta).dot(r_1)
+r_4 = np.array([0, R])
+r_3 = Q(-theta).dot(r_4)
+
+
+print(f"r_1 = {r_1}")
+print(f"r_2 = {r_2}")
+print(f"r_3 = {r_3}")
+print( f"r_4 = {r_4}" )
+
+
+
+
+p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
+p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
+p_2 = gmsh.model.occ.addPoint( r_2[0], r_2[1], 0 )
+p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
+p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
+p_4 = gmsh.model.occ.addPoint( r_4[0], r_4[1], 0 )
 gmsh.model.occ.synchronize()
 
-arc_123 = gmsh.model.occ.addCircleArc(p_1, p_2, p_3)
-line_34 = gmsh.model.occ.addLine( p_3, p_4 )
-line_45 = gmsh.model.occ.addLine( p_4, p_5 )
-line_51 = gmsh.model.occ.addLine( p_5, p_1 )
+
+
+arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_2 )
+line_34 = gmsh.model.occ.addLine( p_2, p_3 )
+arc_34 = gmsh.model.occ.addCircleArc( p_3, p_c_R, p_4 )
+line_61 = gmsh.model.occ.addLine( p_4, p_1 )
 gmsh.model.occ.synchronize()
 
-loop = gmsh.model.occ.addCurveLoop( [arc_123, line_34, line_45, line_51] )
+
+
+loop = gmsh.model.occ.addCurveLoop( [arc_12, line_34, arc_34, line_61] )
 surface = gmsh.model.occ.addPlaneSurface( [loop] )
 gmsh.model.occ.synchronize()
 
@@ -92,8 +116,8 @@ gmsh.model.setPhysicalName( vertices[0][0], p_1_subdomain_id, "p_1" )
 gmsh.model.addPhysicalGroup( vertices[1][0], [vertices[1][1]], p_2_subdomain_id )
 gmsh.model.setPhysicalName( vertices[1][0], p_2_subdomain_id, "p_2" )
 
-'''
 
+'''
 #set the resolution
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface])
@@ -143,14 +167,15 @@ triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
 #create a line mesh
-'''
+''' 
 line_mesh = create_mesh(mesh_from_file, "line", True)
 meshio.write("solution/line_mesh.xdmf", line_mesh)
 '''
-#create a vertex mesh
+
 '''
+#create a vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
 print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")
-    '''
+'''
 
