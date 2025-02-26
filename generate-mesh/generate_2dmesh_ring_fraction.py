@@ -129,6 +129,8 @@ p_1_subdomain_id = 4
 p_2_subdomain_id = 5
 p_3_subdomain_id = 6
 p_4_subdomain_id = 7
+pp_2_subdomain_id = 8
+pp_3_subdomain_id = 9
 
 gmsh.model.addPhysicalGroup( vertices[2][0], [vertices[2][1]], p_1_subdomain_id )
 gmsh.model.setPhysicalName( vertices[2][0], p_1_subdomain_id, "p_1" )
@@ -137,10 +139,16 @@ gmsh.model.addPhysicalGroup( vertices[3][0], [vertices[3][1 ]], p_2_subdomain_id
 gmsh.model.setPhysicalName( vertices[3][0], p_2_subdomain_id, "p_2" )
 
 gmsh.model.addPhysicalGroup( vertices[4][0], [vertices[4][1 ]], p_3_subdomain_id )
-gmsh.model.setPhysicalName( vertices[4][0], p_2_subdomain_id, "p_3" )
+gmsh.model.setPhysicalName( vertices[4][0], p_3_subdomain_id, "p_3" )
 
 gmsh.model.addPhysicalGroup( vertices[5][0], [vertices[5][1 ]], p_4_subdomain_id )
-gmsh.model.setPhysicalName( vertices[5][0], p_2_subdomain_id, "p_4" )
+gmsh.model.setPhysicalName( vertices[5][0], p_4_subdomain_id, "p_4" )
+
+gmsh.model.addPhysicalGroup( vertices[6][0], [vertices[6][1 ]], pp_2_subdomain_id )
+gmsh.model.setPhysicalName( vertices[6][0], pp_2_subdomain_id, "pp_2" )
+
+gmsh.model.addPhysicalGroup( vertices[7][0], [vertices[7][1 ]], pp_3_subdomain_id )
+gmsh.model.setPhysicalName( vertices[7][0], pp_3_subdomain_id, "pp_3" )
 
 
 
