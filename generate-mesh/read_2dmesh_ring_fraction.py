@@ -1,5 +1,5 @@
 '''
-This code reads the 2d mesh generated from generate_2dmesh_ring.py and it creates dvs and dss from labelled components of the mesh
+This code reads the 2d mesh generated from generate_2dmesh_ring_fraction.py and it creates dvs and dss from labelled components of the mesh
 
 
 run with

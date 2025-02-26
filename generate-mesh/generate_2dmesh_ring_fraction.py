@@ -3,9 +3,9 @@ This code generates a 3d mesh given by a ring
 To see the values of subdomain_id assigned to each tagged element, see read_2dmesh_ring.py and the comments in this file
 
 run with
-clear; clear; python3 generate_2dmesh_ring.py [resolution]
+clear; clear; python3 generate_2dmesh_ring_fraction.py [resolution]
 example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_2dmesh_ring.py 0.1
+clear; clear; rm -r solution; mkdir solution; python3 generate_2dmesh_ring_fraction.py 0.1
 '''
 
 import meshio
@@ -16,58 +16,54 @@ import warnings
 
 import sys
 
-#add the path where to find the shared modules
+# add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
-
+sys.path.append( module_path )
 
 import mesh as msh
 
 parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
+parser.add_argument( "resolution" )
 args = parser.parse_args()
 
 msh_file_path = "solution/mesh.msh"
 
-warnings.filterwarnings("ignore")
+warnings.filterwarnings( "ignore" )
 gmsh.initialize()
 
-gmsh.model.add("my model")
+gmsh.model.add( "my model" )
 c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
-R=2
-resolution = (float)(args.resolution)
-print(f"Mesh resolution = {resolution}")
+R = 2
+resolution = (float)( args.resolution )
+print( f"Mesh resolution = {resolution}" )
 
-disk_r = gmsh.model.occ.addDisk( c_r[0], c_r[1], c_r[2], r, r )
-disk_R = gmsh.model.occ.addDisk( c_R[0], c_R[1], c_R[2], R, R )
-#add this every time you add a component to the mesh and every time you make modifications to the mesh
+p_1 = gmsh.model.occ.addPoint( 0, 0, 0 )
+p_2 = gmsh.model.occ.addPoint( r, 0, 0 )
+p_3 = gmsh.model.occ.addPoint( R, R, 0 )
+p_4 = gmsh.model.occ.addPoint( 0, R, 0 )
 gmsh.model.occ.synchronize()
 
-ring = gmsh.model.occ.cut( [(2, disk_R)], [(2, disk_r)] )
+line_12 = gmsh.model.occ.addLine( p_1, p_2 )
+line_23 = gmsh.model.occ.addLine( p_2, p_3 )
+line_34 = gmsh.model.occ.addLine( p_3, p_4 )
+line_41 = gmsh.model.occ.addLine( p_4, p_1 )
 gmsh.model.occ.synchronize()
 
-p_1 = gmsh.model.occ.addPoint( 1.0/4.0*r + 3.0/4.0*R, 0, 0 )
-p_2 = gmsh.model.occ.addPoint( 0, 1.0/4.0*r + 3.0/4.0*R, 0 )
+loop = gmsh.model.occ.addCurveLoop( [line_12, line_23, line_34, line_41] )
+surface = gmsh.model.occ.addPlaneSurface( [loop] )
 gmsh.model.occ.synchronize()
 
-line_p_1_p_2 = gmsh.model.occ.addLine( p_1, p_2 )
-gmsh.model.occ.synchronize()
+# add 2-dimensional objects
+# surfaces = gmsh.model.occ.getEntities(dim=2)
+# assert surfaces == surface
+surface_subdomain_id = 6
 
-gmsh.model.mesh.embed( 1, [line_p_1_p_2], 2, ring[0][0][0] )
-gmsh.model.occ.synchronize()
+gmsh.model.addPhysicalGroup( 2, [surface], surface_subdomain_id )
+gmsh.model.setPhysicalName( 2, surface_subdomain_id, "square" )
 
-
-#add 2-dimensional objects
-surfaces = gmsh.model.occ.getEntities(dim=2)
-assert surfaces == ring[0]
-disk_subdomain_id = 6
-
-gmsh.model.addPhysicalGroup( surfaces[0][0], [surfaces[0][1]], disk_subdomain_id )
-gmsh.model.setPhysicalName( surfaces[0][0], disk_subdomain_id, "disk" )
-
-
+'''
 #add 1-dimensional objects
 lines = gmsh.model.occ.getEntities(dim=1)
 circle_r_subdomain_id = 1
@@ -80,7 +76,7 @@ gmsh.model.setPhysicalName( lines[0][0], circle_r_subdomain_id, "circle_r" )
 gmsh.model.addPhysicalGroup( lines[1][0], [lines[1][1]], circle_R_subdomain_id )
 gmsh.model.setPhysicalName( lines[1][0], circle_R_subdomain_id, "circle_R" )
 
-gmsh.model.addPhysicalGroup(1, [line_p_1_p_2], line_p_1_p_2_subdomain_id)
+gmsh.model.addPhysicalGroup( 1, [line_12], line_p_1_p_2_subdomain_id )
 gmsh.model.setPhysicalName(1, line_p_1_p_2_subdomain_id, "line_p_1_p_2")
 
 
@@ -95,12 +91,11 @@ gmsh.model.setPhysicalName( vertices[0][0], p_1_subdomain_id, "p_1" )
 gmsh.model.addPhysicalGroup( vertices[1][0], [vertices[1][1]], p_2_subdomain_id )
 gmsh.model.setPhysicalName( vertices[1][0], p_2_subdomain_id, "p_2" )
 
-
-
+'''
 
 #set the resolution
 distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surfaces[0][0]])
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
@@ -147,12 +142,14 @@ triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
 #create a line mesh
+'''
 line_mesh = create_mesh(mesh_from_file, "line", True)
 meshio.write("solution/line_mesh.xdmf", line_mesh)
-
+'''
 #create a vertex mesh
+'''
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
-
-
 print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")
+    '''
+
