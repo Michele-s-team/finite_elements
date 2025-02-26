@@ -1,6 +1,9 @@
 '''
-This code generates a 3d mesh given by a ring
-To see the values of subdomain_id assigned to each tagged element, see read_2dmesh_ring.py and the comments in this file
+This code generates a 3d mesh given by a ring between circles with radii r and R ) with perfect spherical symmetry by dividing the ring into N slices and replicating each slide.
+dx is tagged with id = 2*N
+each ds in circle_r is tagged with id = 0, ..., N-1
+each ds in circle_r is tagged with id = N, ..., 2*N-1
+
 
 run with
 clear; clear; python3 generate_2dmesh_ring_fraction.py [resolution]
@@ -20,8 +23,6 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
-import calc as cal
-import mesh as msh
 import geometry as geo
 
 parser = argparse.ArgumentParser()
@@ -38,12 +39,12 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
-N = 4
+N = 128
 resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
 theta = 2 * np.pi / N
-phi = theta/2
+phi = theta / 2
 epsilon = 1e-2
 p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
 p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
@@ -69,6 +70,7 @@ gmsh.model.occ.synchronize()
 
 surfaces = []
 
+# loop through N-1 slices of the ring
 for i in range( N - 1 ):
     print( f"Adding slice #{i} ... " )
 
@@ -98,7 +100,7 @@ for i in range( N - 1 ):
 
     print( "...done" )
 
-# close the loop with a special curve addition
+# close the loop with a special curve addition for the last slice
 arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_1_start )
 line_23 = gmsh.model.occ.addLine( p_1_start, p_4_start )
 arc_34 = gmsh.model.occ.addCircleArc( p_4_start, p_c_R, p_4 )
@@ -110,62 +112,35 @@ surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
 gmsh.model.occ.synchronize()
 
 # add 2-dimensional objects
-# # surfaces = gmsh.model.occ.getEntities(dim=2)
+# surfaces = gmsh.model.occ.getEntities(dim=2)
 # assert surfaces == surface
-surface_tot_subdomain_id = 2*N
+surface_tot_subdomain_id = 2 * N
 
 gmsh.model.addPhysicalGroup( 2, surfaces, surface_tot_subdomain_id )
 gmsh.model.setPhysicalName( 2, surface_tot_subdomain_id, "ring" )
 
 # add 1-dimensional objects
 lines = gmsh.model.occ.getEntities( dim=1 )
-# arc_12_id = 2
-# arc_34_id = 3
 
-# loop through all surfaces and find the surface in the i-th slice according to its center of mass (COM):
-# the COM of slices in ds_r will have |COM|<r, the COM of slices in ds_R will have r < |COM| < R. The COM of radial lines will have |COM| = (r+R)/2
-print(f"center of mass of first slice: {Q(  theta + theta / 2 ).dot( np.array( [r, 0] ) )}")
-
+# loop through all lines and find whether the line belongs to the circle with radius r or to the circle with radius R by looking at the center of mass (COM) of the line
 id_r = 0
 id_R = N
 for line in lines:
-    # compute the center of mass of each surface, and recognize according to the coordinates of the center of mass
+    # compute the center of mass of each line, and recognize the line according to the coordinates of the center of mass
     center_of_mass = gmsh.model.occ.getCenterOfMass( line[0], line[1] )
 
     x_com = [center_of_mass[0], center_of_mass[1]]
-    # print( f"|center of mass|: {geo.my_norm(com_r)}" )
 
-    if(geo.my_norm( x_com ) < r):
-        print(f"line belongs to ds_r, angle = {cal.atan_quad( x_com )}" )
-
+    if (geo.my_norm( x_com ) < r):
         gmsh.model.addPhysicalGroup( line[0], [line[1]], id_r )
-        gmsh.model.setPhysicalName( line[0], id_r, "arc_" + str(id_r) )
+        gmsh.model.setPhysicalName( line[0], id_r, "arc_" + str( id_r ) )
         id_r += 1
 
-        # for i in range(N):
-        #     if(np.isclose(cal.atan_quad(com_r) ,(theta/2 + theta * i), 1e-2)):
-        #         print(f"line has i = {i}")
-
-
-    if((geo.my_norm( x_com ) < R) & (geo.my_norm( x_com ) > (r + R) / 2 + epsilon)):
-        print(f"line belongs to ds_R, angle = {cal.atan_quad( x_com )}" )
-
+    if ((geo.my_norm( x_com ) < R) & (geo.my_norm( x_com ) > (r + R) / 2 + epsilon)):
         gmsh.model.addPhysicalGroup( line[0], [line[1]], id_R )
-        gmsh.model.setPhysicalName( line[0], id_R, "arc_" + str(id_R) )
+        gmsh.model.setPhysicalName( line[0], id_R, "arc_" + str( id_R ) )
         id_R += 1
 
-    # for i in range( N ):
-    #     if np.allclose( [center_of_mass[0], center_of_mass[1]], Q( i * theta + theta / 2 ).dot( np.array( [r, 0] ) ) ):
-
-# gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], arc_12_id )
-# gmsh.model.setPhysicalName( lines[0][0], arc_12_id, "arc_12" )
-#
-# gmsh.model.addPhysicalGroup( lines[2][0], [lines[2][1]], arc_34_id )
-# gmsh.model.setPhysicalName( lines[2][0], arc_34_id, "arc_34" )
-#
-#
-#
-#
 # #add 0-dimensional objects
 # '''
 # vertices = gmsh.model.occ.getEntities(dim=0)
@@ -221,9 +196,7 @@ gmsh.model.mesh.field.setNumbers( minimum, "FieldsList", [threshold, circle_r_th
 gmsh.model.mesh.field.setAsBackgroundMesh( minimum )
 
 gmsh.model.occ.synchronize()
-
 gmsh.model.mesh.generate( 2 )
-
 gmsh.write( msh_file_path )
 
 
@@ -237,18 +210,16 @@ def create_mesh(mesh, cell_type, prune_z=False):
 
 mesh_from_file = meshio.read( msh_file_path )
 
-# create a triangle mesh in which the surfaces will be stored
+# create triangle
 triangle_mesh = create_mesh( mesh_from_file, "triangle", prune_z=True )
 meshio.write( "solution/triangle_mesh.xdmf", triangle_mesh )
 
-# create a line mesh
-
-line_mesh = create_mesh(mesh_from_file, "line", True)
-meshio.write("solution/line_mesh.xdmf", line_mesh)
-
+# create line mesh
+line_mesh = create_mesh( mesh_from_file, "line", True )
+meshio.write( "solution/line_mesh.xdmf", line_mesh )
 
 '''
-#create a vertex mesh
+#create  vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
 print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")
