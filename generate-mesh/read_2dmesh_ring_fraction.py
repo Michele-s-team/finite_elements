@@ -3,9 +3,9 @@ This code reads the 2d mesh generated from generate_2dmesh_ring_fraction.py and 
 
 
 run with
-clear; clear; python3 read_2dmesh_ring.py [path where to find the mesh]
+clear; clear; python3 read_2dmesh_ring_fraction.py [path where to find the mesh]
 example:
-clear; clear; python3 read_2dmesh_ring.py /home/fenics/shared/generate-mesh/solution
+clear; clear; python3 read_2dmesh_ring_fraction.py /home/fenics/shared/generate-mesh/solution
 '''
 
 
@@ -54,6 +54,7 @@ vf = cpp.mesh.MeshFunctionSizet( mesh, mvc )
 # print("Volume measure tags:", vf.array())
 
 #read the lines
+'''
 mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim()-1)
 with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
@@ -67,7 +68,7 @@ with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
 pf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 # print("Vertex measure tags:", pf.array())
-
+'''
 
 
 #analytical expression for a  scalar function used to test the ds
@@ -77,17 +78,17 @@ class FunctionTestIntegral(UserExpression):
         r_test = 0.345
 
         values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
+        # values[0] = 1
     def value_shape(self):
         return (1,)
 
 
 
-dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=6   )
-ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=1 )
-ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
-ds_line = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
+dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=1   )
+# ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=1 )
+# ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+# ds_line = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
 # ds_line_p1_p2 = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3    )
-
 # ds_custom = Measure("ds", domain=mesh, subdomain_data=pf)    # Point measure for points at the edges of the mesh
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=pf)    # Point measure for points in the mesh
 
@@ -100,7 +101,4 @@ f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
 
 #print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-msh.test_mesh_integral(2.9021223108952894, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(2.7759459256115657, f_test_ds, ds_r, 'int f ds_r')
-msh.test_mesh_integral(3.6717505977470717, f_test_ds, ds_R, 'int f ds_R')
-msh.test_mesh_integral(1.0, Constant(1), ds_line, 'int f ds_line')
+msh.test_mesh_integral(0.7557209324240443, f_test_ds, dx, '\int f dx')

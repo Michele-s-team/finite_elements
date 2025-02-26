@@ -36,11 +36,11 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
-N = 8
+N = 13
 resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
-theta = 2.0 * np.pi / 100
+theta = 2.0 * np.pi / N
 p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
 p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
 
@@ -50,10 +50,10 @@ def Q(theta):
 
 
 ######## add first slice ########
-r_1 = np.array( [0, r] )
-r_2 = Q( -theta ).dot( r_1 )
-r_4 = np.array( [0, R] )
-r_3 = Q( -theta ).dot( r_4 )
+r_1 = np.array( [r, 0] )
+r_2 = Q( theta ).dot( r_1 )
+r_4 = np.array( [R, 0] )
+r_3 = Q( theta ).dot( r_4 )
 
 print( f"r_1 = {r_1}" )
 print( f"r_2 = {r_2}" )
@@ -78,8 +78,8 @@ gmsh.model.occ.synchronize()
 
 
 ######## add second slice ########
-rr_2 = Q( -theta ).dot( r_2 )
-rr_3 = Q( -theta ).dot( r_3 )
+rr_2 = Q( theta ).dot( r_2 )
+rr_3 = Q( theta ).dot( r_3 )
 
 pp_1 = p_2
 pp_2 = gmsh.model.occ.addPoint( rr_2[0], rr_2[1], 0 )
