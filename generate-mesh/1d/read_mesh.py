@@ -4,7 +4,7 @@ This code reads the 1d mesh generated from generate_1dmesh.py and it creates dvs
 run with
 clear; clear; python3 read_1dmesh.py [path where to find the mesh]
 example:
-clear; clear; python3 read_1dmesh.py /home/fenics/shared/generate-mesh/solution
+ clear; clear; python3 read_1dmesh.py /home/fenics/shared/generate-mesh/1d/solution
 '''
 from fenics import *
 from mshr import *
