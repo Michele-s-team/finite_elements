@@ -10,11 +10,11 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_l_const = 1.0
+v_l_const = 4.0
 w_square_const = 0.0
 sigma_r_const = 0.0
 z_square_const = 0.0
-omega_circle_const = -0.1
+omega_circle_const = 0.2
 omega_square_const = 0.0
 #bending rigidity
 kappa = 1.0
@@ -242,11 +242,9 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 F_N = alpha / rmsh.r_mesh * ( \
  \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_tb(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
-              # + ( ( (bgeo.n_circle(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_circle(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
 \
               + ( ( (bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_lr( fsp.omega ) * ( rmsh.ds_l + rmsh.ds_r) \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * ( rmsh.ds_t + rmsh.ds_b) \
-              # + ( ( (bgeo.n_circle(fsp.omega))[i] * fsp.omega[i] - omega_circle ) * ((bgeo.n_circle(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
  \
       )
 
