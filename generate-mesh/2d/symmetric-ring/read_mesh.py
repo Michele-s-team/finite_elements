@@ -1,9 +1,9 @@
 '''
-This code reads the 2d mesh generated from generate_2dmesh_ring_fraction.py and it creates the measure ds and ds_r and ds_r from labelled components of the mesh
+This code reads the 2d mesh generated from generate_mesh.py and it creates the measure ds and ds_r and ds_r from labelled components of the mesh
 run with
-clear; clear; python3 read_2dmesh_ring_fraction.py [path where to find the mesh]
+clear; clear; python3 read_mesh.py [path where to find the mesh]
 example:
-clear; clear; python3 read_2dmesh_ring_fraction.py /home/fenics/shared/generate-mesh/2d-mesh-ring-fraction/solution  /home/fenics/shared/generate-mesh/2d-mesh-ring-fraction
+clear; clear; python3 read_mesh.py /home/fenics/shared/generate-mesh/2d/symmetric-ring/solution  /home/fenics/shared/generate-mesh/2d/symmetric-ring
 '''
 
 from fenics import *

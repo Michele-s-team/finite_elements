@@ -1,14 +1,14 @@
 '''
-This code generates a 3d mesh given by a ring between circles with radii r and R ) with perfect spherical symmetry by dividing the ring into N slices and replicating each slide.
+This code generates a 2d mesh (given by a ring between circles with radii r and R ) with perfect spherical symmetry by dividing the ring into N slices and replicating each slide.
 dx is tagged with id = 2*N
 each ds in circle_r is tagged with id = 0, ..., N-1
 each ds in circle_r is tagged with id = N, ..., 2*N-1
 
 
 run with
-clear; clear; python3 generate_2dmesh_ring_fraction.py [resolution]
+clear; clear; python3 generate_mesh.py.py [resolution]
 example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_2dmesh_ring_fraction.py 0.1
+clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1
 '''
 
 import meshio
