@@ -8,7 +8,8 @@ each ds in circle_r is tagged with id = N, ..., 2*N-1
 run with
 clear; clear; python3 generate_mesh.py.py [resolution] [output directory]
 example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1 /home/fenics/shared/generate-mesh/2d/symmetric-ring/solution
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+
 '''
 
 import meshio
