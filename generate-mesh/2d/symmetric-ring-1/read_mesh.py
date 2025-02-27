@@ -3,7 +3,7 @@ This code reads the 2d mesh generated from generate_mesh.py and it creates the m
 run with
 clear; clear; python3 read_mesh.py [path where to find the mesh]
 example:
-clear; clear; python3 read_mesh.py /home/fenics/shared/generate-mesh/2d/symmetric-ring/solution
+clear; clear; python3 read_mesh.py /home/fenics/shared/generate-mesh/2d/symmetric-ring-1/solution
 '''
 
 from fenics import *
