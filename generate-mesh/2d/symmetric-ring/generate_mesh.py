@@ -26,7 +26,7 @@ import geometry as geo
 import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 
-msh_file_path = (rarg.args.output_directory) + "/solution/mesh.msh"
+msh_file_path = (rarg.args.output_directory) + "/mesh.msh"
 
 warnings.filterwarnings( "ignore" )
 gmsh.initialize()
