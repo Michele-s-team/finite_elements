@@ -1,11 +1,11 @@
 '''
-This code reads the 3d mesh generated from generate_3dmesh.py and it creates dvs and dss from labelled components of the mesh
+This code reads the 3d mesh generated from generate_mesh.py and it creates dvs and dss from labelled components of the mesh
 
 
 run with
-clear; clear; python3 read_3dmesh.py [path where to find the mesh]
+clear; clear; python3 read_mesh.py [path where to find the mesh]
 example:
-clear; clear; python3 read_3dmesh.py /home/fenics/shared/generate-mesh/solution
+clear; clear; python3 read_mesh.py /home/fenics/shared/generate-mesh/solution
 '''
 
 from __future__ import print_function

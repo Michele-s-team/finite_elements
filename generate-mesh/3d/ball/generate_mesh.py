@@ -1,17 +1,25 @@
 '''
 run with
-clear; clear; python3 generate_3dmesh.py [resolution]
+clear; clear; python3 generate_mesh.py [resolution]
 example:
-clear; clear; rm -r solution; mkdir solution;  python3 generate_3dmesh.py 0.1
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
 import gmsh
 import pygmsh
 import argparse
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append( module_path )
+
+import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
+parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #mesh resolution
@@ -96,33 +104,28 @@ for segment in segments:
 
 
 geometry.generate_mesh(dim=3)
-gmsh.write("solution/mesh.msh")
+gmsh.write(args.output_directory + "/mesh.msh")
 model.__exit__()
 
-def create_mesh(mesh, cell_type, prune_z=False):
-    cells = mesh.get_cells_type(cell_type)
-    cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
-    out_mesh = meshio.Mesh(points=mesh.points, cells={
-                           cell_type: cells}, cell_data={"name_to_read": [cell_data]})
-    return out_mesh
 
 
-mesh_from_file = meshio.read("solution/mesh.msh")
+
+mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
 
 #create a tetrahedron mesh (containing solid objects such as a ball)
-tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
-meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
+tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", True)
+meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
 #create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
-triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
+triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=False)
+meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
 
 '''
 #create a line mesh
 line_mesh = create_mesh(mesh_from_file, "line", True)
-meshio.write("solution/line_mesh.xdmf", line_mesh)
+meshio.write(args.output_directory + "/line_mesh.xdmf", line_mesh)
 
 #create a vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
-meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
+meshio.write(args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
 '''
