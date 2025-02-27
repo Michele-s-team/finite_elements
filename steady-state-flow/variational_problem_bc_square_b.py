@@ -182,20 +182,20 @@ F_v = ( \
                        + 2.0 * eta * geo.d_c( fsp.v, fsp.w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu_v, fsp.omega )[j, i])
       ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
       - rho / 2.0 * ( \
-                    ((fsp.w ** 2) * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
-                    + ((fsp.w ** 2) * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+                    ((fsp.w ** 2) * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+                    + ((fsp.w ** 2) * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
                     + ((fsp.w ** 2) * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
       ) \
       - ( \
-                    (fsp.sigma * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
-                    + (fsp.sigma * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+                    (fsp.sigma * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+                    + (fsp.sigma * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
                     + (fsp.sigma * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
       ) \
       - 2.0 * eta * ( \
               (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_lr( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
               # BC (1g)^\omega is implemented here as a natural bc
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, 1] * geo.g( fsp.omega )[i, k] * (bgeo.n_lr( fsp.omega ))[k] * fsp.nu_v[1]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
-              + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_tb( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+              + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_tb( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
       )
 
@@ -213,13 +213,13 @@ F_w = ( \
                     ) * fsp.nu_w
       ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
 + rho * ( \
-              (fsp.w * fsp.nu_w * (bgeo.n_lr( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
-              + (fsp.w * fsp.nu_w * (bgeo.n_tb( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+              (fsp.w * fsp.nu_w * (bgeo.n_lr( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+              + (fsp.w * fsp.nu_w * (bgeo.n_tb( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + (fsp.w * fsp.nu_w * (bgeo.n_circle( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
 ) \
 + 2.0 * kappa * ( \
-              ( (bgeo.n_lr( fsp.omega ))[i] * ((fsp.mu).dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
-              + ( (bgeo.n_tb( fsp.omega ))[i] * ((fsp.mu).dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+              ( (bgeo.n_lr( fsp.omega ))[i] * ((fsp.mu).dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+              + ( (bgeo.n_tb( fsp.omega ))[i] * ((fsp.mu).dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + ( (bgeo.n_circle( fsp.omega ))[i] * ((fsp.mu).dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
 )
 
@@ -231,8 +231,8 @@ F_z = ( \
 
 F_omega = ( fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] * fsp.nu_omega[i] ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
           - ( \
-                        ( (bgeo.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_lr( fsp.omega ) * (rmsh.ds_l + rmsh.ds_r) \
-                        + ( (bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+                        ( (bgeo.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+                        + ( (bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
                         + ( (bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle \
           )
 
@@ -241,10 +241,10 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 
 F_N = alpha / rmsh.r_mesh * ( \
  \
-              + ( ( (bgeo.n_tb(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_tb(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * (rmsh.ds_t + rmsh.ds_b) \
+              + ( ( (bgeo.n_tb(fsp.omega))[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] ) * ( (bgeo.n_tb(fsp.omega))[k] * fsp.nu_v[k]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
 \
-              + ( ( (bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_lr( fsp.omega ) * ( rmsh.ds_l + rmsh.ds_r) \
-              + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * ( rmsh.ds_t + rmsh.ds_b) \
+              + ( ( (bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+              + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
  \
       )
 
