@@ -6,13 +6,12 @@ each ds in circle_r is tagged with id = N, ..., 2*N-1
 
 
 run with
-clear; clear; python3 generate_mesh.py.py [resolution]
+clear; clear; python3 generate_mesh.py.py [resolution] [output directory]
 example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1
+clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1 /home/fenics/shared/generate-mesh/2d/symmetric-ring/solution
 '''
 
 import meshio
-import argparse
 import numpy as np
 import gmsh
 import warnings
@@ -25,12 +24,9 @@ sys.path.append( module_path )
 
 import geometry as geo
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
 
-parser = argparse.ArgumentParser()
-parser.add_argument( "resolution" )
-args = parser.parse_args()
-
-msh_file_path = "solution/mesh.msh"
+msh_file_path = (rarg.args.output_directory) + "/solution/mesh.msh"
 
 warnings.filterwarnings( "ignore" )
 gmsh.initialize()
@@ -41,7 +37,7 @@ c_R = [0, 0, 0]
 r = 1
 R = 2
 N = 128
-resolution = (float)( args.resolution )
+resolution = (float)( rarg.args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
 theta = 2 * np.pi / N
@@ -205,15 +201,15 @@ mesh_from_file = meshio.read( msh_file_path )
 
 # create triangle
 triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
-meshio.write( "solution/triangle_mesh.xdmf", triangle_mesh )
+meshio.write( (rarg.args.output_directory) + "/triangle_mesh.xdmf", triangle_mesh )
 
 # create line mesh
 line_mesh = msh.create_mesh( mesh_from_file, "line", True )
-meshio.write( "solution/line_mesh.xdmf", line_mesh )
+meshio.write( (rarg.args.output_directory) + "/line_mesh.xdmf", line_mesh )
 
 '''
 #create  vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
-meshio.write("solution/vertex_mesh.xdmf", vertex_mesh)
+meshio.write((rarg.args.output_directory) + "/vertex_mesh.xdmf", vertex_mesh)
 print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")
 '''
