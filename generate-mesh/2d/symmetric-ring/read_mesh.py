@@ -20,7 +20,7 @@ sys.path.append( module_path )
 import boundary_geometry as bgeo
 import geometry as geo
 import mesh as msh
-import runtime_arguments_read_mesh as rarg
+import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
 c_r = [0, 0, 0]
