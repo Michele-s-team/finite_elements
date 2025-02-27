@@ -53,5 +53,5 @@ model.__exit__()
 mesh_from_file = meshio.read( args.output_directory + "/mesh.msh" )
 
 # create a tetrahedron mesh
-tetrahedron_mesh = msh.create_mesh( mesh_from_file, "tetra", True )
+tetrahedron_mesh = msh.create_mesh( mesh_from_file, "tetra", False )
 meshio.write( args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh )
