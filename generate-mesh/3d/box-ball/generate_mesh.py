@@ -3,12 +3,13 @@ This code generates a 3d mesh given by a box and a sphere.
 The mesh is given by a box with extremal points [0,0,0] , [L, B, H] to which we substract a sphere centered at c_r with radius r
 We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, right top bottom, fron and back edges accordingly
 
-To see the values of subdomain_id assigned to each tagged element, see read_3dmeshg_box_ball.py and the comments in this file
+To see the values of subdomain_id assigned to each tagged element, see read_mesh.py and the comments in this file
 
 run with
-clear; clear; python3 generate_3dmesh_box_ball.py [resolution]
+clear; clear; python3 generate_mesh.py [resolution]
 example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_3dmesh_box_ball.py 0.1
+clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
@@ -19,6 +20,7 @@ import warnings
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
+parser.add_argument("output_directory")
 args = parser.parse_args()
 
 warnings.filterwarnings("ignore")
@@ -134,7 +136,7 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 gmsh.model.occ.synchronize()
 gmsh.model.mesh.generate(3)
 
-gmsh.write("solution/mesh.msh")
+gmsh.write(args.output_directory + "/mesh.msh")
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -145,12 +147,12 @@ def create_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-mesh_from_file = meshio.read("solution/mesh.msh")
+mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
 
 #create a tetrahedron mesh in which the solid objects (volumes) will be stored
 tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
-meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
+meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
 #create a triangle mesh in which the surfaces will be stored
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
+meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)

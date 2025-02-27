@@ -113,11 +113,11 @@ model.__exit__()
 mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
 
 #create a tetrahedron mesh (containing solid objects such as a ball)
-tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", True)
+tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
 meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
 #create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=False)
+triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", False)
 meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
 
 '''
