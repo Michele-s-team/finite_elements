@@ -16,6 +16,7 @@ import meshio
 import numpy as np
 import gmsh
 import argparse
+from fenics import *
 
 import sys
 
@@ -24,6 +25,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
 import geometry as geo
+import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
@@ -215,3 +217,8 @@ vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write((args.output_directory) + "/vertex_mesh.xdmf", vertex_mesh)
 print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")
 '''
+
+# print the mesh vertices to file
+mesh = Mesh()
+msh.read_mesh( mesh, (args.output_directory) + "/triangle_mesh.xdmf" )
+io.print_vertices_to_csv_file( mesh, (args.output_directory) + "/vertices.csv" )
