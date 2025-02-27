@@ -14,7 +14,7 @@ clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1 /home
 import meshio
 import numpy as np
 import gmsh
-import warnings
+import argparse
 
 import sys
 
@@ -24,20 +24,22 @@ sys.path.append( module_path )
 
 import geometry as geo
 import mesh as msh
-import runtime_arguments_generate_mesh as rarg
 
-msh_file_path = (rarg.args.output_directory) + "/mesh.msh"
+parser = argparse.ArgumentParser()
+parser.add_argument( "resolution" )
+parser.add_argument( "output_directory" )
+args = parser.parse_args()
 
-warnings.filterwarnings( "ignore" )
+msh_file_path = (args.output_directory) + "/mesh.msh"
 gmsh.initialize()
-
 gmsh.model.add( "my model" )
+
 c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 r = 1
 R = 2
 N = 128
-resolution = (float)( rarg.args.resolution )
+resolution = (float)( args.resolution )
 print( f"Mesh resolution = {resolution}" )
 
 theta = 2 * np.pi / N
@@ -196,20 +198,19 @@ gmsh.model.occ.synchronize()
 gmsh.model.mesh.generate( 2 )
 gmsh.write( msh_file_path )
 
-
 mesh_from_file = meshio.read( msh_file_path )
 
 # create triangle
 triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
-meshio.write( (rarg.args.output_directory) + "/triangle_mesh.xdmf", triangle_mesh )
+meshio.write( (args.output_directory) + "/triangle_mesh.xdmf", triangle_mesh )
 
 # create line mesh
 line_mesh = msh.create_mesh( mesh_from_file, "line", True )
-meshio.write( (rarg.args.output_directory) + "/line_mesh.xdmf", line_mesh )
+meshio.write( (args.output_directory) + "/line_mesh.xdmf", line_mesh )
 
 '''
 #create  vertex mesh
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
-meshio.write((rarg.args.output_directory) + "/vertex_mesh.xdmf", vertex_mesh)
+meshio.write((args.output_directory) + "/vertex_mesh.xdmf", vertex_mesh)
 print(f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) ) }")
 '''
