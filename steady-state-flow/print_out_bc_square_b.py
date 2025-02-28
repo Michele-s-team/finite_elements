@@ -101,22 +101,11 @@ print( "Check of BCs:" )
 print( f"\t\t<<|v^i - v_l^i|^2>>_[partial Omega l] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_l[i]) * (v_output[i] - vp.v_l[i])), rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<|v^i - v_circle^i|^2>>_[partial Omega circle] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((v_output[i] - vp.v_circle[i]) * (v_output[i] - vp.v_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<(v^i n_i)^2>>_[partial Omega tb] = {col.Fore.RED}{msh.abs_wrt_measure( bgeo.n_tb( omega_output )[i] * geo.g( omega_output )[i, j] * v_output[j], rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
 print( f"\t\t<<(d^[i1] n_i)^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure(geo.d_c( v_output, w_output, omega_output )[i, 0] * geo.g( omega_output )[i, k] * (bgeo.n_lr( omega_output ))[k], rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
 print( f"\t\t<<(w - w_square)^2>>_[partial Omega square] = {col.Fore.RED}{msh.difference_wrt_measure( w_output, vp.w_square, rmsh.ds_square ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
 print( f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-
-# print( f"\t\t<<(z - z_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<(z - z_square)^2>>_[partial Omega square] = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_square, rmsh.ds_square ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-# print(
-#     f"\t\t<<(n^i \omega_i - omega_r )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"\t\t<<|omega_i - omega_circle_i|^2>>_[partial Omega circle] = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((omega_output[i] - vp.omega_circle[i]) * (omega_output[i] - vp.omega_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-
 print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
