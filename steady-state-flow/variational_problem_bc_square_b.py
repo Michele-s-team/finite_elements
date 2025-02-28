@@ -222,7 +222,6 @@ F_w = ( \
               + ( (bgeo.n_circle( fsp.omega ))[i] * ((fsp.mu).dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
 )
 
-#sign
 
 
 F_z = ( \
@@ -238,7 +237,9 @@ F_omega = ( fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] 
                         + ( (bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.z * fsp.nu_omega[j] ) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle \
           )
 
+
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
+#sign
 
 
 F_N = alpha / rmsh.r_mesh * ( \
