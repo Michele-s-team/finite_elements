@@ -61,7 +61,7 @@ class FunctionTestIntegralsds(UserExpression):
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
 msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(0.30493664448613816, f_test_ds, ds_circle, '\int f ds')
+msh.test_mesh_integral(0.30493664448613816, f_test_ds, ds_circle, '\int f ds_circle')
 msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int f ds_l')
 msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int f ds_r')
 msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int f ds_t')
