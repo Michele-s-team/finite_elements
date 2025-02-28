@@ -34,12 +34,12 @@ import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
 
-import read_mesh_ring as rmsh
-# import read_mesh_square as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square as rmsh
 
 # import variational_problem_bc_ring_1 as vp
-import variational_problem_bc_ring_2 as vp
-# import variational_problem_bc_square_a as vp
+# import variational_problem_bc_ring_2 as vp
+import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
 
 set_log_level( 20 )
@@ -106,6 +106,6 @@ solver_pp_d.solve()
 
 
 # import print_out_bc_ring_1
-import print_out_bc_ring_2
-# import print_out_bc_square_a
+# import print_out_bc_ring_2
+import print_out_bc_square_a
 # import print_out_bc_square_b
