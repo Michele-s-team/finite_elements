@@ -1,6 +1,5 @@
 from fenics import *
 from mshr import *
-import argparse
 import numpy as np
 
 import runtime_arguments as rarg
