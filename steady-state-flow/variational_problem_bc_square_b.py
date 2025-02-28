@@ -164,7 +164,6 @@ bc_omega_circle = DirichletBC( fsp.Q.sub( 4 ), omega_circle, rmsh.boundary_circl
 
 # all BCs
 bcs = [bc_v_l, bc_v_circle, bc_w_square, bc_sigma_r, bc_z_square, bc_omega_circle]
-#sign
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
@@ -197,6 +196,8 @@ F_v = ( \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_tb( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
       )
+
+#sign
 
 F_w = ( \
                     rho * (fsp.v[i] * fsp.v[k] * geo.b( fsp.omega )[k, i]) * fsp.nu_w \
