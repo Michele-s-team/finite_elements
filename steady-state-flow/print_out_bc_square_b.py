@@ -87,11 +87,12 @@ io.print_vector_to_csvfile( project( phys.conv_cn_t(v_output, v_output, v_output
 xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), 0 )
-#sign
+xdmffile_f.write( project( phys.conv_cn_n(v_output, v_output, v_output, w_output, omega_output, vp.rho), fsp.Q_f_n ), 0 )
 
 io.print_scalar_to_csvfile( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), (rarg.args.output_directory) + '/fvisc_n.csv' )
 io.print_scalar_to_csvfile( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), (rarg.args.output_directory) + '/fel_n.csv' )
 io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), (rarg.args.output_directory) + '/flaplace.csv' )
+io.print_scalar_to_csvfile( project( phys.conv_cn_n(v_output, v_output, v_output, w_output, omega_output, vp.rho), fsp.Q_f_n ), (rarg.args.output_directory) + '/conv_cn_n.csv' )
 
 #prind rate of deformation tensor to file
 xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
@@ -112,24 +113,27 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.omega_square, rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
+
 #print residual of the PDEs to files
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-
 
 xdmffile_check.write( project( (geo.Nabla_v( v_output, omega_output )[i, i] - 2.0 * mu_output * w_output) , fsp.Q_z), 0 )
 xdmffile_check.write( project( \
     sqrt( (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) \
     * (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) ),\
     fsp.Q_f_n ), 0 )
-xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( sigma_output, omega_output ), fsp.Q_z ), 0 )
+xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta) \
+                               + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) \
+                               + phys.flaplace( sigma_output, omega_output )\
+                               - phys.conv_cn_n(v_output, v_output, v_output, w_output, omega_output, vp.rho)\
+                               , fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
 
 xdmffile_check.write( project( project( sqrt( (fsp.nu[i] - (mu_output.dx( i ))) * (fsp.nu[i] - (mu_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z ), fsp.Q_tau ), 0 )
 xdmffile_check.write( project( project( (geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]) * (geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]), fsp.Q_z ), fsp.Q_tau ), 0 )
-
 
 
 #write to file forces per unit length
@@ -139,3 +143,5 @@ io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output
 
 #print out the force exerted on the circle
 print(f"F_circle = {[assemble(phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))[0] * bgeo.sqrt_deth_circle( omega_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle), assemble(phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))[1] * bgeo.sqrt_deth_circle( omega_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle)]}")
+
+#sign
