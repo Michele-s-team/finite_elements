@@ -116,7 +116,6 @@ xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 
-# xdmffile_check.write( project( phys.lhs_t(v_output, w_output, sigma_output, fsp.d, omega_output, fsp.mu, vp.rho)[0] , fsp.Q_z), 0 )
 xdmffile_check.write( project( (geo.Nabla_v( v_output, omega_output )[i, i] - 2.0 * mu_output * w_output) , fsp.Q_z), 0 )
 xdmffile_check.write( project( \
     sqrt( (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) \
