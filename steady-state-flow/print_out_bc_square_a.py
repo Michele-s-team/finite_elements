@@ -129,7 +129,11 @@ xdmffile_check.write( project( \
     sqrt( (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) \
     * (phys.fvisc_t(fsp.d, omega_output, vp.eta)[i]  + phys.fsigma_t( sigma_output, omega_output )[i] - phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)[i]) ),\
     fsp.Q_f_n ), 0 )
-xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta)  + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( sigma_output, omega_output ), fsp.Q_z ), 0 )
+xdmffile_check.write( project( phys.fvisc_n( v_output, w_output, omega_output, mu_output, vp.eta ) \
+                               + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) \
+                               + phys.flaplace( sigma_output, omega_output ) \
+                               - phys.conv_cn_n( v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho ) \
+                               , fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
 
