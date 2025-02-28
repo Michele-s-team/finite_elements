@@ -249,7 +249,6 @@ F_N = alpha / rmsh.r_mesh * ( \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
  \
       )
-#sign
 
 
 # total functional for the mixed problem
@@ -270,3 +269,4 @@ F_pp_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.
 
 
 F_pp_d = ((geo.d(fsp.v, fsp.w, fsp.omega)[i, j] - fsp.d[i, j]) * fsp.nu_d[i, j]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
+#sign
