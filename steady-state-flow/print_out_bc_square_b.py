@@ -87,12 +87,12 @@ io.print_vector_to_csvfile( project( phys.conv_cn_t(v_output, v_output, v_output
 xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), 0 )
-xdmffile_f.write( project( phys.conv_cn_n(v_output, v_output, v_output, w_output, omega_output, vp.rho), fsp.Q_f_n ), 0 )
+xdmffile_f.write( project( phys.conv_cn_n(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho), fsp.Q_f_n ), 0 )
 
 io.print_scalar_to_csvfile( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), (rarg.args.output_directory) + '/fvisc_n.csv' )
 io.print_scalar_to_csvfile( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), (rarg.args.output_directory) + '/fel_n.csv' )
 io.print_scalar_to_csvfile( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), (rarg.args.output_directory) + '/flaplace.csv' )
-io.print_scalar_to_csvfile( project( phys.conv_cn_n(v_output, v_output, v_output, w_output, omega_output, vp.rho), fsp.Q_f_n ), (rarg.args.output_directory) + '/conv_cn_n.csv' )
+io.print_scalar_to_csvfile( project( phys.conv_cn_n(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho), fsp.Q_f_n ), (rarg.args.output_directory) + '/conv_cn_n.csv' )
 
 #prind rate of deformation tensor to file
 xdmffile_d.write( project( fsp.d  ,fsp.Q_d ), 0 )
@@ -126,7 +126,7 @@ xdmffile_check.write( project( \
 xdmffile_check.write( project( phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta) \
                                + phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) \
                                + phys.flaplace( sigma_output, omega_output )\
-                               - phys.conv_cn_n(v_output, v_output, v_output, w_output, omega_output, vp.rho)\
+                               - phys.conv_cn_n(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho)\
                                , fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( mu_output - geo.H( omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
@@ -144,4 +144,3 @@ io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output
 #print out the force exerted on the circle
 print(f"F_circle = {[assemble(phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))[0] * bgeo.sqrt_deth_circle( omega_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle), assemble(phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))[1] * bgeo.sqrt_deth_circle( omega_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle)]}")
 
-#sign
