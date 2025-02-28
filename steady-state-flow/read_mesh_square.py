@@ -59,14 +59,6 @@ class FunctionTestIntegralsds(UserExpression):
         return (1,)
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
-#sign
-
-# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-# print( "Integral l = ", integral_l, " exact value = 0.462517" )
-# print( "Integral r = ", integral_r, " exact value = 0.47113" )
-# print( "Integral t = ", integral_t, " exact value = 0.498266" )
-# print( "Integral b = ", integral_b, " exact value = 0.413016" )
-# print( "Integral circle = ", integral_circle, " exact value = 0.304937" )
 
 msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
 msh.test_mesh_integral(0.30493664448613816, f_test_ds, ds_circle, '\int f ds')
@@ -79,9 +71,6 @@ msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int f ds_lr')
 msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int f ds_tb')
 
 msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int f ds_square')
-
-
-
 
 
 # Define boundaries and obstacle
