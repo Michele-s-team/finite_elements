@@ -63,7 +63,7 @@ class z_square_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class TangentVelocityExpression( UserExpression ):
+class v0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
         values[1] = 0.0
@@ -72,7 +72,7 @@ class TangentVelocityExpression( UserExpression ):
         return (2,)
 
 
-class NormalVelocityExpression( UserExpression ):
+class w0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
 
@@ -80,7 +80,7 @@ class NormalVelocityExpression( UserExpression ):
         return (1,)
 
 
-class SurfaceTensionExpression( UserExpression ):
+class sigma0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
 
@@ -88,7 +88,7 @@ class SurfaceTensionExpression( UserExpression ):
         return (1,)
 
 
-class ManifoldExpression( UserExpression ):
+class z0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
 
@@ -96,7 +96,7 @@ class ManifoldExpression( UserExpression ):
         return (1,)
 
 
-class OmegaExpression( UserExpression ):
+class omega0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
         values[1] = 0.0
@@ -130,11 +130,11 @@ class omega_square_Expression( UserExpression ):
 omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
 omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
-fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
-fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
-fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
-fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
-fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
+fsp.v_0.interpolate( v0_Expression( element=fsp.Q_v.ufl_element() ) )
+fsp.w_0.interpolate( w0_Expression( element=fsp.Q_w.ufl_element() ) )
+fsp.sigma_0.interpolate( sigma0_Expression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.omega_0.interpolate( omega0_Expression( element=fsp.Q_omega.ufl_element() ) )
+fsp.z_0.interpolate( z0_Expression( element=fsp.Q_z.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 # assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
@@ -143,16 +143,14 @@ v_l = interpolate( v_l_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 v_circle = interpolate( v_circle_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 w_square = interpolate( w_square_Expression( element=fsp.Q_w.ufl_element() ), fsp.Q_w )
 sigma_r = interpolate( sigma_r_Expression( element=fsp.Q_sigma.ufl_element() ), fsp.Q_sigma )
-
 z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
-
 # boundary conditions (BCs)
-# BCs for v_bar
+# BCs for v
 bc_v_l = DirichletBC( fsp.Q.sub( 0 ), v_l, rmsh.boundary_l )
 bc_v_circle = DirichletBC( fsp.Q.sub( 0 ), v_circle, rmsh.boundary_circle )
 
-# BCs for w_bar
+# BCs for w
 bc_w_square = DirichletBC( fsp.Q.sub( 1 ), w_square, rmsh.boundary_square )
 
 #BC for sigma
@@ -166,6 +164,7 @@ bc_omega_circle = DirichletBC( fsp.Q.sub( 4 ), omega_circle, rmsh.boundary_circl
 
 # all BCs
 bcs = [bc_v_l, bc_v_circle, bc_w_square, bc_sigma_r, bc_z_square, bc_omega_circle]
+#sign
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.
 # To be safe, I explicitly wrote each term on each part of the boundary with its own normal vector and pull-back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle,
