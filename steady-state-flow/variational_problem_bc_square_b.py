@@ -239,7 +239,6 @@ F_omega = ( fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] 
 
 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
-#sign
 
 
 F_N = alpha / rmsh.r_mesh * ( \
@@ -250,6 +249,7 @@ F_N = alpha / rmsh.r_mesh * ( \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
  \
       )
+#sign
 
 
 # total functional for the mixed problem
