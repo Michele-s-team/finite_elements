@@ -87,6 +87,7 @@ io.print_vector_to_csvfile( project( phys.conv_cn_t(v_output, v_output, v_output
 xdmffile_f.write( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), 0 )
 xdmffile_f.write( project( phys.flaplace( sigma_output, omega_output), fsp.Q_f_n ), 0 )
+#sign
 
 io.print_scalar_to_csvfile( project( phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, vp.eta), fsp.Q_f_n ), (rarg.args.output_directory) + '/fvisc_n.csv' )
 io.print_scalar_to_csvfile( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_f_n ), (rarg.args.output_directory) + '/fel_n.csv' )
