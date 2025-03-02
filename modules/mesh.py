@@ -16,11 +16,38 @@ def create_mesh(mesh, cell_type, prune_z=False):
     )
     return out_mesh
 
-# read the mesh form 'filename' and write it into 'mesh'
-def read_mesh(mesh, filename):
+# read the mesh form 'filename' and return it
+def read_mesh(filename):
+    mesh = Mesh()
+
     xdmf = XDMFFile( mesh.mpi_comm(), filename )
     xdmf.read( mesh )
+    xdmf.close()
 
+    return mesh
+
+'''
+read the mesh  from  the .msh file 'infile' and write the mesh components (tetrahedra, triangles, lines, vertices) to 'outfile' (tetrahedron_mesh.xdmf, triangle_mesh.xdmf ...)
+the component type can be "tera", "triangle", "line" or "vertex"
+if 'prune_z' = true (false), the z component will be removed from the mesh
+'''
+def write_mesh_components(infile, outfile, component_type, prune_z):
+    mesh_from_file = meshio.read( infile )
+    component_mesh = create_mesh( mesh_from_file, component_type, prune_z )
+    meshio.write( outfile, component_mesh )
+
+
+'''
+given a mesh 'mesh', read its components of dimension 'dim' stored into 'filename' and returns the collection of components
+Example: to read the lines of the mesh, call this method with 
+cf = msh.read_mesh_components(mesh, 1, (args.input_directory) + "/line_mesh.xdmf")
+'''
+def read_mesh_components(mesh, dim, filename):
+    mesh_value_collection = MeshValueCollection( "size_t", mesh, dim )
+    with XDMFFile( filename ) as infile:
+        infile.read( mesh_value_collection, "name_to_read" )
+        infile.close()
+    return cpp.mesh.MeshFunctionSizet( mesh, mesh_value_collection )
 
 #compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference
 def test_mesh_integral(exact_value, f_test, measure, label):
