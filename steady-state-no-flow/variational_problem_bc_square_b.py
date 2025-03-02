@@ -14,10 +14,9 @@ kappa = 1.0
 # Nitche's parameter
 alpha = 1e2
 
-z_circle_const = 0.0
-z_square_const = 0.1
+z_square_const = 0.0
 omega_circle_const = 0.5
-omega_square_const = 0.0
+n_omega_square_const = 0.0
 
 
 class SurfaceTensionExpression( UserExpression ):
@@ -67,18 +66,25 @@ class TauExpression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-
-class omega_circle_Expression( UserExpression ):
+class z_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const
+        values[0] = z_square_const
 
     def value_shape(self):
         return (1,)
 
-
-class omega_square_Expression( UserExpression ):
+class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_square_const
+        values[0] = omega_circle_const * x[0] / geo.my_norm( x )
+        values[1] = omega_circle_const * x[1] / geo.my_norm( x )
+
+    def value_shape(self):
+        return (2,)
+
+
+class n_omega_square_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = n_omega_square_const
 
     def value_shape(self):
         return (1,)
@@ -88,8 +94,9 @@ class omega_square_Expression( UserExpression ):
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
-omega_square = interpolate( omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+z_square = interpolate( z_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
+omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_omega.ufl_element() ), fsp.Q_omega )
+n_omega_square = interpolate( n_omega_square_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
 fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
@@ -106,12 +113,11 @@ fsp.assigner.assign( fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0] )
 
 # CHANGE PARAMETERS HERE
 # BCs for z
-bc_z_circle = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_circle_const', element=fsp.Q.sub( 0 ).ufl_element(), z_circle_const=z_circle_const ), rmsh.boundary_circle )
-bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_square_const', element=fsp.Q.sub( 0 ).ufl_element(), z_square_const=z_square_const ), rmsh.boundary_square )
-# CHANGE PARAMETERS HERE
+bc_z_square = DirichletBC( fsp.Q.sub( 0 ), z_square, rmsh.boundary_square )
+bc_omega_circle = DirichletBC( fsp.Q.sub( 1 ), omega_circle, rmsh.boundary_circle )
 
 # all BCs
-bcs = [bc_z_circle, bc_z_square]
+bcs = [bc_z_square]
 
 # Define variational problem
 
@@ -131,9 +137,8 @@ F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i]
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_N = alpha / rmsh.r_mesh * ( \
-            + (((bgeo.n_lr( fsp.omega ))[i] * fsp.omega[i] - omega_square) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
-            + (((bgeo.n_tb( fsp.omega ))[i] * fsp.omega[i] - omega_square) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
-            + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_circle) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle \
+            + (((bgeo.n_lr( fsp.omega ))[i] * fsp.omega[i] - n_omega_square) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+            + (((bgeo.n_tb( fsp.omega ))[i] * fsp.omega[i] - n_omega_square) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
     )
 
 # total functional for the mixed problem
