@@ -22,26 +22,13 @@ xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_functi
 z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 
 print( "Check of BCs:" )
-print("1)")
 print( f"\t\t<<(z - phi)^2>>_square = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_square_const, rmsh.ds_square ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"\t\t<<(z - phi)^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure( z_output, vp.z_circle_const, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print("2)")
+print( f"\t\t<<|omega_i - psi_i|^2>>_circle = {col.Fore.RED}{msh.abs_wrt_measure( sqrt((omega_output[i] - vp.omega_circle[i]) * (omega_output[i] - vp.omega_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_lr = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( omega_output ))[i] * omega_output[i], vp.n_omega_square, rmsh.ds_lr ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_tb = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_tb( omega_output ))[i] * omega_output[i], vp.n_omega_square, rmsh.ds_tb ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_circle( omega_output ))[i] * omega_output[i], vp.omega_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
-'''
-print( "Check if the intermediate PDEs are satisfied:" )
-print(
-    f"1)\t\t<<(fel + flaplace)^2>>_Omega =  {msh.difference_in_bulk( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print(
-    f"2) \t\t<<|omega - partial z|^2>>_Omega = {msh.difference_in_bulk( project( sqrt( (omega_output[i] - z_output.dx( i )) * (omega_output[i] - z_output.dx( i )) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {msh.difference_in_bulk( mu_output, project( geo.H( omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-'''
 
 xdmffile_check.write( project( project( phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ) + phys.flaplace( fsp.sigma, omega_output ), fsp.Q_z ), fsp.Q_z ), 0 )
 xdmffile_check.write( project( project( sqrt( (omega_output[i] - (z_output.dx( i ))) * (omega_output[i] - (z_output.dx( i ))) ), fsp.Q_z ), fsp.Q_z ), 0 )

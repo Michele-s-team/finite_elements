@@ -75,8 +75,8 @@ class z_square_Expression( UserExpression ):
 
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const * x[0] / geo.my_norm( x )
-        values[1] = omega_circle_const * x[1] / geo.my_norm( x )
+        values[0] = omega_circle_const * (x[0] - rmsh.c_r[0]) / geo.my_norm( x - rmsh.c_r )
+        values[1] = omega_circle_const * (x[1] - rmsh.c_r[1]) / geo.my_norm( x - rmsh.c_r )
 
     def value_shape(self):
         return (2,)
@@ -117,7 +117,7 @@ bc_z_square = DirichletBC( fsp.Q.sub( 0 ), z_square, rmsh.boundary_square )
 bc_omega_circle = DirichletBC( fsp.Q.sub( 1 ), omega_circle, rmsh.boundary_circle )
 
 # all BCs
-bcs = [bc_z_square]
+bcs = [bc_z_square, bc_omega_circle]
 
 # Define variational problem
 
