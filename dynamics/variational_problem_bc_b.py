@@ -271,12 +271,9 @@ F_mu_n = ((geo.H( fsp.omega_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_d
 F_N = alpha / rmsh.r_mesh * ( \
  \
             (fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_tb( fsp.omega_n_12 ))[j] * (bgeo.n_tb( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-            + (fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_circle( fsp.omega_n_12 ))[j] * (bgeo.n_circle( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[k]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle \
  \
             + (((bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_square) * (bgeo.n_lr( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * (rmsh.ds_l + rmsh.ds_r) \
             + (((bgeo.n_tb( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_square) * (bgeo.n_tb( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-            + (((bgeo.n_circle( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_circle) * (bgeo.n_circle( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.c_r ) * (
-                    1.0 / rmsh.r) * rmsh.ds_circle \
     )
 
 # total functional for the mixed problem
