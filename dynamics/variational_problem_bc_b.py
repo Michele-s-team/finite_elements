@@ -31,11 +31,15 @@ eta = (float)( rarg.args.e )
 
 
 v_bar_l_const = (float)( rarg.args.v )
-boundary_profile_w_bar = 0.0
-r_profile_phi = 0.0
-boundary_profile_z = 0.0
+z_square_const = 0.0
 omega_n_square_const = 0.0
 omega_n_circle_const = 0.1
+omega_r_circle_const = 0.1
+
+boundary_profile_w_bar = 0.0
+boundary_profile_z = 0.0
+r_profile_phi = 0.0
+
 alpha = 1e4
 
 class v_bar_l_Expression( UserExpression ):
@@ -46,7 +50,36 @@ class v_bar_l_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
+class w_bar_square_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
 
+    def value_shape(self):
+        return (2,)
+
+class phi_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+
+    def value_shape(self):
+        return (2,)
+
+
+class z_square_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = z_square_const
+
+    def value_shape(self):
+        return (2,)
+
+
+class omega_circle_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = omega_r_circle_const * (x[0] - rmsh.c_r[0]) / geo.my_norm( x - rmsh.c_r )
+        values[1] = omega_r_circle_const * (x[1] - rmsh.c_r[1]) / geo.my_norm( x - rmsh.c_r )
+
+    def value_shape(self):
+        return (2,)
 
 class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):
@@ -55,9 +88,6 @@ class TangentVelocityExpression( UserExpression ):
 
     def value_shape(self):
         return (2,)
-
-
-
 
 class NormalVelocityExpression( UserExpression ):
     def eval(self, values, x):
@@ -119,17 +149,15 @@ v_bar_l = interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ), 
 bc_v_bar_l = DirichletBC( fsp.Q.sub( 0 ), v_bar_l, rmsh.boundary_l )
 
 # BCs for w_bar
-bc_w_bar_lr = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_lr )
-bc_w_bar_tb = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_tb )
-bc_w_bar_circle = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_circle )
+w_bar_square = interpolate( w_bar_square_Expression( element=fsp.Q_w_bar.ufl_element() ), fsp.Q_w_bar )
+bc_w_bar_square = DirichletBC( fsp.Q.sub( 1 ), w_bar_square, rmsh.boundary_square)
 
 # BC for phi
-bc_phi = DirichletBC( fsp.Q.sub( 2 ), Constant( r_profile_phi ), rmsh.boundary_r )
+phi_r = interpolate( phi_r_Expression( element=fsp.Q_phi.ufl_element() ), fsp.Q_phi)
+bc_phi = DirichletBC( fsp.Q.sub( 2 ), phi_r, rmsh.boundary_r )
 
-# CHANGE PARAMETERS HERE
-# BCs for z^{n-1/2}
-bc_z_circle = DirichletBC( fsp.Q.sub( 5 ), Expression( 'boundary_profile_z', element=fsp.Q.sub( 5 ).ufl_element(), boundary_profile_z=boundary_profile_z ), rmsh.boundary_circle )
-bc_z_square = DirichletBC( fsp.Q.sub( 5 ), Expression( 'boundary_profile_z', element=fsp.Q.sub( 5 ).ufl_element(), boundary_profile_z=boundary_profile_z ), rmsh.boundary_square )
+z_square = interpolate( z_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
+bc_z_square = DirichletBC( fsp.Q.sub( 5 ), z_square, rmsh.boundary_square )
 # CHANGE PARAMETERS HERE
 
 
