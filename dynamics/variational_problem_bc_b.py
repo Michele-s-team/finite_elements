@@ -1,6 +1,5 @@
 from fenics import *
 from mshr import *
-import numpy as np
 import ufl as ufl
 
 
@@ -9,7 +8,6 @@ import boundary_geometry as bgeo
 import geometry as geo
 import read_mesh as rmsh
 import runtime_arguments as rarg
-from dynamics.function_spaces import omega_n_12, omega_n_12_output
 
 i, j, k, l = ufl.indices( 4 )
 

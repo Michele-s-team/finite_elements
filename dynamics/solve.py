@@ -50,7 +50,7 @@ print("T = ", vp.T)
 print("kappa = ", vp.kappa)
 print("rho = ", vp.rho)
 print("eta = ", vp.eta)
-print("v = ", vp.v_l)
+print("v = ", vp.v_bar_l_const)
 print("N = ", vp.N)
 
 
