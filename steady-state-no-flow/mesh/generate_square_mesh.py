@@ -1,3 +1,13 @@
+'''
+generate a mesh given by a square with a circular hole in it
+
+run it with
+python3 generate_square_mesh.py [resolution]
+example:
+python3 generate_square_mesh.py 0.1
+'''
+
+
 import meshio
 import gmsh
 import pygmsh
