@@ -50,6 +50,14 @@ class v_bar_l_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
 
+class v_bar_circle_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
 class w_bar_square_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
@@ -148,21 +156,27 @@ omega_n_square = interpolate( omega_n_square_Expression( element=fsp.Q_z_n.ufl_e
 v_bar_l = interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ), fsp.Q_v_bar )
 bc_v_bar_l = DirichletBC( fsp.Q.sub( 0 ), v_bar_l, rmsh.boundary_l )
 
+v_bar_circle = interpolate( v_bar_circle_Expression( element=fsp.Q_v_bar.ufl_element() ), fsp.Q_v_bar )
+bc_v_bar_circle = DirichletBC( fsp.Q.sub( 0 ), v_bar_circle, rmsh.boundary_circle )
+
 # BCs for w_bar
 w_bar_square = interpolate( w_bar_square_Expression( element=fsp.Q_w_bar.ufl_element() ), fsp.Q_w_bar )
 bc_w_bar_square = DirichletBC( fsp.Q.sub( 1 ), w_bar_square, rmsh.boundary_square)
 
 # BC for phi
 phi_r = interpolate( phi_r_Expression( element=fsp.Q_phi.ufl_element() ), fsp.Q_phi)
-bc_phi = DirichletBC( fsp.Q.sub( 2 ), phi_r, rmsh.boundary_r )
+bc_phi_r = DirichletBC( fsp.Q.sub( 2 ), phi_r, rmsh.boundary_r )
 
 z_square = interpolate( z_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 bc_z_square = DirichletBC( fsp.Q.sub( 5 ), z_square, rmsh.boundary_square )
+
+omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_omega_n.ufl_element() ), fsp.Q_omega_n )
+bc_omega_circle = DirichletBC( fsp.Q.sub( 6 ), omega_circle, rmsh.boundary_circle )
 # CHANGE PARAMETERS HERE
 
 
 # all BCs
-bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
+bcs = [bc_v_bar_l, bc_v_bar_circle, bc_w_bar_square, bc_phi_r, bc_z_square, bc_omega_circle]
 
 '''
 Define variational problem : F_vbar, F_wbar .... F_z_n_12 are related to the PDEs for v_bar, ..., z^{n-1/2} respectively . F_N enforces the BCs with Nitsche's method. 
