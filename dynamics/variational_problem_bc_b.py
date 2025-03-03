@@ -30,17 +30,22 @@ eta = (float)( rarg.args.e )
 
 
 
-v_l = (float)( rarg.args.v )
-# value of w_bar at the boundary
+v_bar_l_const = (float)( rarg.args.v )
 boundary_profile_w_bar = 0.0
-# value of phi ar r boundary
 r_profile_phi = 0.0
-#value of z at boundary
 boundary_profile_z = 0.0
 omega_n_square_const = 0.0
 omega_n_circle_const = 0.1
-# Nitche's parameter
 alpha = 1e4
+
+class v_bar_l_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = v_bar_l_const
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
 
 
 class TangentVelocityExpression( UserExpression ):
@@ -50,6 +55,8 @@ class TangentVelocityExpression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+
+
 
 
 class NormalVelocityExpression( UserExpression ):
@@ -102,18 +109,14 @@ class omega_n_circle_Expression( UserExpression ):
         return (1,)
 
 
-# CHANGE PARAMETERS HERE
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
 omega_n_circle = interpolate( omega_n_circle_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 omega_n_square = interpolate( omega_n_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 
-# CHANGE PARAMETERS HERE
-l_profile_v_bar = Expression( ('v_l', '0'), v_l=v_l, element=fsp.Q_v_n.ufl_element() )
-# CHANGE PARAMETERS HERE
-
 # boundary conditions (BCs)
 # BCs for v_bar
-bc_v_bar_l = DirichletBC( fsp.Q.sub( 0 ), l_profile_v_bar, rmsh.boundary_l )
+v_bar_l = interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ), fsp.Q_v_bar )
+bc_v_bar_l = DirichletBC( fsp.Q.sub( 0 ), v_bar_l, rmsh.boundary_l )
 
 # BCs for w_bar
 bc_w_bar_lr = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_lr )
