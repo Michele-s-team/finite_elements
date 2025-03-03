@@ -34,9 +34,6 @@ omega_n_square_const = 0.0
 omega_n_circle_const = 0.1
 omega_r_circle_const = 0.1
 
-boundary_profile_w_bar = 0.0
-boundary_profile_z = 0.0
-r_profile_phi = 0.0
 
 alpha = 1e4
 

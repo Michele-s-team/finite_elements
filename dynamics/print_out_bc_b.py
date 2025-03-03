@@ -23,14 +23,14 @@ fieldnames_bcs = [ \
     '<<|v_bar^i - g^i|^2>>_L', \
     '<<|v_bar^i - g^i|^2>>_O', \
     '<<(n^{n-1/2}_i d^{i 1})^2>>_R', \
-    '<<(n^i Nabla_i phi)^2>>_{L + W + O}', \
-    '<<(n^{n-1/2}_i \overline{v}^i)^2>>_{W + O}', \
-    '<<(n^{n-1/2}^i \omega^{n-1/2}_i)^2 >>', \
-    '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_L', \
-    '<<(w_bar - boundary_profile_w_bar)^2>>', \
-    '<<(phi - r_profile_phi)^2>>', \
-    '<<(z - boundary_profile_z)^2>>'
-]
+    '<<(v_bar^i n^{n-1/2}_i)^2>>_W', \
+    '<<w_bar^2>>_{L + R + W}', \
+    '<<phi^2>>_R', \
+    '<<(n^{n-1/2, i} Nabla_i phi)^2>>_{L + W + O}', \
+    '<<(z - psi_z)^2>>_{L+ R + W}' ,\
+    '<<|omega^{n-1/2}_i - psi^i|^2>>_O', \
+    '<<(n^{n-1/2, i} omega^{n-1/2}_i)^2>>_{L + R +  W}' \
+    ]
 writer_bcs = csv.DictWriter( csvfile_bcs, fieldnames=fieldnames_bcs )
 writer_bcs.writeheader()
 
@@ -55,19 +55,20 @@ def print_bcs(psi):
         fieldnames_bcs[2]: \
             f"{msh.abs_wrt_measure(geo.d_c( (v_bar_dummy + fsp.v_n_1) / 2.0, (w_bar_dummy + fsp.w_n_1) / 2.0, omega_n_12_dummy )[i, 0] * geo.g( omega_n_12_dummy )[i, k] * (bgeo.n_lr( omega_n_12_dummy ))[k], rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[3]: \
-            f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_l ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_tb ) + msh.abs_wrt_measure( (bgeo.n_circle( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_tb( omega_n_12_dummy ))[j], rmsh.ds_tb ) :.{io.number_of_decimals}e}", \
         fieldnames_bcs[4]: \
-            f"{msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_tb( omega_n_12_dummy ))[j], rmsh.ds_tb ) + msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_circle( omega_n_12_dummy ))[j], rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( w_bar_dummy,  rmsh.ds_square ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[5]: \
-            f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_lr ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_tb ) + msh.abs_wrt_measure( (bgeo.n_circle( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( phi_dummy, rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[6]: \
-            f"{msh.abs_wrt_measure( sqrt((vp.v_bar_l[i] - v_bar_dummy[i]) * (vp.v_bar_l[i] - v_bar_dummy[i])), rmsh.ds_l ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_l ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_tb ) + msh.abs_wrt_measure( (bgeo.n_circle( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[7]: \
-            f"{msh.abs_wrt_measure( w_bar_dummy - vp.boundary_profile_w_bar, rmsh.ds ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( z_n_12_dummy - vp.z_square, rmsh.ds_square ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[8]: \
-            f"{msh.abs_wrt_measure( phi_dummy - vp.r_profile_phi, rmsh.ds_r ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( (omega_n_12_dummy[i] - vp.omega_circle[i]) * (omega_n_12_dummy[i] - vp.omega_circle[i]), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[9]: \
-            f"{msh.abs_wrt_measure( z_n_12_dummy - vp.boundary_profile_z, rmsh.ds ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_lr ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_tb ) :.{io.number_of_decimals}e}", \
+
         }] )
     csvfile_bcs.flush()
 
