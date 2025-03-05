@@ -15,6 +15,21 @@ def print_scalar_to_csvfile(f, filename):
     csvfile.close()
 
 
+#print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
+
+    # a dummy function space of order 1 used to tabulated the vertices
+    Q = FunctionSpace( mesh, 'CG', 1 )
+    coordinates = Q.tabulate_dof_coordinates()
+
+    csvfile = open( filename, "w" )
+    print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
+
+    for i in range( Q.dim() ):
+        print( f"{f(coordinates[i][0], coordinates[i][1])}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+    csvfile.close()
+
 # this function prints a vector field to csv file
 def print_vector_to_csvfile(f, filename):
     i = 0
