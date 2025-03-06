@@ -123,9 +123,17 @@ gmsh.model.mesh.field.setAsBackgroundMesh( minimum )
 
 gmsh.model.geo.synchronize()
 
+
 geometry.generate_mesh( dim=2 )
 gmsh.write( mesh_file )
+
+
+msh.write_mesh_to_csv( mesh_file, 'solution/line_vertices.csv' )
+
+
 model.__exit__()
+
+
 
 #write mesh components to file
 msh.write_mesh_components( mesh_file, "solution/triangle_mesh.xdmf", "triangle", True )

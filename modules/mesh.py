@@ -1,6 +1,7 @@
 from fenics import *
 import numpy as np
 import colorama as col
+import gmsh
 import meshio
 
 import geometry as geo
@@ -236,3 +237,53 @@ def difference_on_boundary_circle(f, g, r, R, c):
     diff = np.sqrt( diff / len( boundary_c_points ) )
 
     return diff
+
+
+'''
+write to csv file 'outfile' the coordinates of the start and end vertices which define the lines of the triangles of the mesh in the .msh file 'infile'
+the vertices are written in the format
+edge1_start[0], edge1_start[1], edge1_start[2], edge1_end[0], edge1_end[1], edge1_end[2]
+edge2_start[0], edge2_start[1], edge2_start[2], edge2_end[0], edge2_end[1], edge2_end[2]
+...
+'''
+def write_mesh_to_csv(infile, outfile):
+    #open the .msh file
+    gmsh.open( infile )
+
+    #get the list of components with dimension 2 from the mesh (triangles)
+    triangles = gmsh.model.mesh.getElements( dim=2 )
+    # print( "triangles = ", triangles )
+
+    # construct a map which, given the tag of a node, gives its coordinates
+    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range( len( node_tags ) )}
+    # print( "node map = ", node_map )
+
+    # Store unique edges from the triangle elements
+    # initialize a 'list' of unique elements, this sets the list to empty
+    edges = set()
+
+    #loop over all triangle nodes
+    triangle_nodes = triangles[2][0] if len( triangles[2] ) > 0 else []
+    for i in range( 0, len( triangle_nodes ), 3 ):
+        #store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
+        pair_12 = tuple( sorted( [triangle_nodes[i], triangle_nodes[i + 1]] ) )
+        pair_23 = tuple( sorted( [triangle_nodes[i + 1], triangle_nodes[i + 2]] ) )
+        pair_31 = tuple( sorted( [triangle_nodes[i + 2], triangle_nodes[i]] ) )
+
+        # this pushes back the elements pair_12, pair_23, pair_31 to edges
+        edges.update( [pair_12, pair_23, pair_31] )
+        # print( f"pair_12 = {pair_12} pair_23 = {pair_23} pair_31 = {pair_31}" )
+
+
+    # loop through the edges added before and write the endoints of their lines to file
+    csvfile = open( outfile, "w" )
+    print( f"\"start:0\",\"start:1\",\"start:2\",\"end:0\",\"end:1\",\"end:2\"", file=csvfile )
+    for edge in edges:
+        # apply node_map to obtain the coordinates of the starting vertex in edge from their IDs, and similarly for p_end
+        p_start = node_map[edge[0]]
+        p_end = node_map[edge[1]]
+        # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
+        print( f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile )
+
+    csvfile.close()
