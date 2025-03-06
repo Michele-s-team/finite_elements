@@ -2,6 +2,7 @@ from fenics import *
 import numpy as np
 import ufl as ufl
 
+import function as fu
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo
@@ -22,7 +23,7 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
 z_r_const = 0
 z_R_const = C
 zp_r_const = C
-zp_R_const = -2*C
+zp_R_const = 2*C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
@@ -111,6 +112,32 @@ class omega_R_Expression( UserExpression ):
         return (1,)
 
 
+class z_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.z_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
+
+class omega_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.my_norm(x)
+        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.my_norm(x)
+
+    def value_shape(self):
+        return (2,)
+
+
+class mu_0_Expression( UserExpression ):
+    def eval(self, values, x):
+
+        values[0] = fsp.mu_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
+
 # CHANGE PARAMETERS HERE
 
 
@@ -123,22 +150,37 @@ omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 fsp.sigma.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ) )
-fsp.z_0.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_0.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
-fsp.mu_0.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
-
-fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
-fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 fsp.z_exact.interpolate( z_exact_Expression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_exact.interpolate( omega_exact_Expression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) )
 
+
+#uncomment this to set the initial profiles from the ODE soltion
+'''
+print("Reading the initial profiles from file ...")
+fu.set_from_file( fsp.z_0_read, 'solution-ode/z_ode.csv' )
+fsp.z_0.interpolate( z_0_Expression( element=fsp.Q_z.ufl_element() ) )
+
+fu.set_from_file( fsp.omega_0_r_read, 'solution-ode/omega_ode.csv' )
+fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
+
+fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
+fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
+
 fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
-# uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
+#uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
+fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
+print("... done")
+'''
+
+
+
+fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
+fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
+
 
 # boundary conditions (BCs)
 

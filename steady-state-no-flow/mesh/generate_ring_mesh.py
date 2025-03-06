@@ -2,6 +2,15 @@ import meshio
 import gmsh
 import pygmsh
 import argparse
+import sys
+
+#add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import input_output as io
+import mesh as mesh_module
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
@@ -53,3 +62,8 @@ meshio.write("line_mesh.xdmf", line_mesh)
 
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write("triangle_mesh.xdmf", triangle_mesh)
+
+
+#print the mesh vertices to file
+mesh = mesh_module.read_mesh("triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, "vertices.csv" )
