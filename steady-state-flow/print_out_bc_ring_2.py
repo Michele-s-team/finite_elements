@@ -38,6 +38,7 @@ xdmffile_dFdl = XDMFFile( (rarg.args.output_directory) + '/dFdl.xdmf' )
 xdmffile_dFdl.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 
+
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 
