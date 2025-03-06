@@ -3,8 +3,6 @@ from mshr import *
 
 import boundary_geometry as bgeo
 
-
-
 # Define function spaces
 #finite elements for sigma .... omega
 '''
