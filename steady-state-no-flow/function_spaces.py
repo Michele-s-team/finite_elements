@@ -30,6 +30,13 @@ Q_sigma = FunctionSpace( bgeo.mesh, 'P', 1 )
 Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
+'''
+function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
+as in function.set_from_list and function.set_from_file
+'''
+Q_read = FunctionSpace( bgeo.mesh, 'P', 1 )
+
+
 # Define functions
 J_psi = TrialFunction( Q )
 psi = Function( Q )
@@ -55,6 +62,12 @@ mu_exact = Function( Q_mu )
 
 nu_exact = Function( Q_nu )
 tau_exact = Function( Q_tau )
+
+#functions used to store the nodal values read from a list or file
+z_0_read = Function( Q_read )
+omega_0_r_read = Function( Q_read )
+mu_0_read = Function( Q_read )
+
 
 # omega_0, z_0 are used to store the initial conditions
 z_0 = Function( Q_z )
