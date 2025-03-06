@@ -23,7 +23,7 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
 z_r_const = 0
 z_R_const = C
 zp_r_const = C
-zp_R_const = -2*C
+zp_R_const = 2*C
 omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
 omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
@@ -157,7 +157,7 @@ fsp.mu_exact.interpolate( mu_exact_Expression( element=fsp.Q_mu.ufl_element() ) 
 
 
 #uncomment this to set the initial profiles from the ODE soltion
-#
+'''
 print("Reading the initial profiles from file ...")
 fu.set_from_file( fsp.z_0_read, 'solution-ode/z_ode.csv' )
 fsp.z_0.interpolate( z_0_Expression( element=fsp.Q_z.ufl_element() ) )
@@ -174,7 +174,7 @@ fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element()
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 print("... done")
-#
+'''
 
 
 
