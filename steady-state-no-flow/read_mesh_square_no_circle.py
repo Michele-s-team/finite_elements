@@ -62,17 +62,17 @@ class FunctionTestIntegralsds(UserExpression):
 
 f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
-msh.test_mesh_integral(5.207936539766984, f_test_ds, dx, '\int f dx')
+msh.test_mesh_integral(0.9376440450770376, f_test_ds, dx, '\int f dx')
 
-msh.test_mesh_integral(12.192561819140938, f_test_ds, ds, '\int f ds')
+msh.test_mesh_integral(3.519879453774341, f_test_ds, ds, '\int f ds')
 
-msh.test_mesh_integral(1.95813355504411, f_test_ds, ds_lr, '\int f ds_lr')
-msh.test_mesh_integral(10.234428264096827, f_test_ds, ds_tb, '\int f ds_tb')
+msh.test_mesh_integral(1.7676785508433541, f_test_ds, ds_lr, '\int f ds_lr')
+msh.test_mesh_integral(1.752200902930987, f_test_ds, ds_tb, '\int f ds_tb')
 
 msh.test_mesh_integral(0.9620471547152678, f_test_ds, ds_l, '\int f ds_l')
-msh.test_mesh_integral(0.9960864003288421, f_test_ds, ds_r, '\int f ds_r')
-msh.test_mesh_integral(5.264164431864099, f_test_ds, ds_t, '\int f ds_t')
-msh.test_mesh_integral(4.970263832232728, f_test_ds, ds_b, '\int f ds_b')
+msh.test_mesh_integral(0.8056313961280863, f_test_ds, ds_r, '\int f ds_r')
+msh.test_mesh_integral(0.9756236687066221, f_test_ds, ds_t, '\int f ds_t')
+msh.test_mesh_integral(0.7765772342243651, f_test_ds, ds_b, '\int f ds_b')
 
 
 # Define boundaries and obstacle

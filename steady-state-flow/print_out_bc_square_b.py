@@ -50,7 +50,7 @@ xdmffile_mu.write( mu_output, 0 )
 xdmffile_nu.write( fsp.nu, 0 )
 xdmffile_tau.write( fsp.tau, 0 )
 
-
+#print to csv files
 io.print_vector_to_csvfile(v_output, (rarg.args.output_directory) + '/v.csv')
 io.print_scalar_to_csvfile(w_output, (rarg.args.output_directory) + '/w.csv')
 io.print_scalar_to_csvfile(sigma_output, (rarg.args.output_directory) + '/sigma.csv')
@@ -60,6 +60,18 @@ io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
 
 io.print_vector_to_csvfile(fsp.nu, (rarg.args.output_directory) + '/nu.csv')
 io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
+
+
+io.print_nodal_values_vector_to_csvfile(v_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/v.csv')
+io.print_nodal_values_scalar_to_csvfile(w_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/w.csv')
+io.print_nodal_values_scalar_to_csvfile(sigma_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/sigma.csv')
+io.print_nodal_values_scalar_to_csvfile(z_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/z.csv')
+io.print_nodal_values_vector_to_csvfile(omega_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/omega.csv')
+io.print_nodal_values_scalar_to_csvfile(mu_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/mu.csv')
+
+io.print_nodal_values_vector_to_csvfile(fsp.nu, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/nu.csv')
+io.print_nodal_values_scalar_to_csvfile(fsp.tau, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/tau.csv')
+
 
 
 # write the solutions in .h5 format so it can be read from other codes
