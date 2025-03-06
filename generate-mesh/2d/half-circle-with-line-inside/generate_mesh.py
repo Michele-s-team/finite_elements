@@ -128,10 +128,8 @@ geometry.generate_mesh( dim=2 )
 gmsh.write( mesh_file )
 
 
-msh.write_mesh_to_csv( mesh_file, 'solution/line_vertices.csv' )
 
 
-model.__exit__()
 
 
 
@@ -139,3 +137,9 @@ model.__exit__()
 msh.write_mesh_components( mesh_file, "solution/triangle_mesh.xdmf", "triangle", True )
 msh.write_mesh_components( mesh_file, "solution/line_mesh.xdmf", "line", True )
 msh.write_mesh_components( mesh_file, "solution/vertex_mesh.xdmf", "vertex", True )
+
+msh.write_mesh_to_csv( mesh_file, 'solution/line_vertices.csv' )
+
+
+model.__exit__()
+
