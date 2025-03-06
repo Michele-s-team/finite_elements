@@ -8,7 +8,7 @@ and which are stored into finite_elements/mesh
 
 Run with
 clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
 clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
@@ -28,18 +28,16 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import input_output as io
-import physics as phys
 import runtime_arguments as rarg
 
 # import read_mesh_square as rmsh
-# import read_mesh_ring as rmsh
-import read_mesh_square_no_circle as rmsh
+import read_mesh_ring as rmsh
+# import read_mesh_square_no_circle as rmsh
 
 # import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
-# import variational_problem_bc_ring as vp
-import variational_problem_bc_square_no_circle_a as vp
+import variational_problem_bc_ring as vp
+# import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
@@ -82,56 +80,7 @@ solver.solve()
 solver_pp_nu.solve()
 solver_pp_tau.solve()
 
-# Create XDMF files for visualization output
-xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z.xdmf' )
-xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega.xdmf' )
-xdmffile_mu = XDMFFile( (rarg.args.output_directory) + '/mu.xdmf' )
-
-xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu.xdmf' )
-xdmffile_tau = XDMFFile( (rarg.args.output_directory) + '/tau.xdmf' )
-
-xdmffile_sigma = XDMFFile( (rarg.args.output_directory) + '/sigma.xdmf' )
-
-xdmffile_f = XDMFFile( (rarg.args.output_directory) + '/f.xdmf' )
-xdmffile_f.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-
-# copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
-z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
-
-# print solution to file
-xdmffile_z.write( z_output, 0 )
-xdmffile_omega.write( omega_output, 0 )
-xdmffile_mu.write( mu_output, 0 )
-
-xdmffile_nu.write( fsp.nu, 0 )
-xdmffile_tau.write( fsp.tau, 0 )
-
-xdmffile_sigma.write( fsp.sigma, 0 )
-
-io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
-io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
-io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
-
-io.print_vector_to_csvfile(fsp.nu, (rarg.args.output_directory) + '/nu.csv')
-io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
-
-io.print_scalar_to_csvfile(fsp.sigma, (rarg.args.output_directory) + '/sigma.csv')
-
-
-# write the solutions in .h5 format so it can be read from other codes
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w" ).write( z_output, "/f" )
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w" ).write( omega_output, "/f" )
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w" ).write( mu_output, "/f" )
-
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w" ).write( fsp.nu, "/f" )
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w" ).write( fsp.tau, "/f" )
-
-HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w" ).write( fsp.sigma, "/f" )
-
-xdmffile_f.write( project(phys.fel_n( omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_sigma), 0 )
-xdmffile_f.write( project(-phys.flaplace( fsp.sigma, omega_output), fsp.Q_sigma), 0 )
-
 # import print_out_bc_square_a
 # import print_out_bc_square_b
-# import print_out_bc_ring
-import print_out_bc_square_no_circle_a
+import print_out_bc_ring
+# import print_out_bc_square_no_circle_a
