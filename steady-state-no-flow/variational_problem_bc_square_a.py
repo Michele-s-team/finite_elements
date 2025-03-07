@@ -23,6 +23,7 @@ omega_square_const = 0.0
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 1.0
+        # values[0] = (x[0] - rmsh.L/2)/(rmsh.L/2)
 
     def value_shape(self):
         return (1,)
