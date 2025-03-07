@@ -12,6 +12,14 @@ import gmsh
 import pygmsh
 import argparse
 
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append( module_path )
+
+import mesh as msh
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
@@ -69,6 +77,10 @@ model.add_physical(circle_r.curve_loop.curves, "c")
 
 geometry.generate_mesh(dim=2)
 gmsh.write("mesh.msh")
+
+msh.write_mesh_to_csv( 'mesh.msh', 'line_vertices.csv' )
+
+
 gmsh.clear()
 geometry.__exit__()
 
