@@ -133,7 +133,7 @@ class omega_n_square_Expression( UserExpression ):
         return (1,)
 
 
-# profiles for the normal derivative
+# profile for the normal derivative
 class omega_n_circle_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = omega_n_circle_const

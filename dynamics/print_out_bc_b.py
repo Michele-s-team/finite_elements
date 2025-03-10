@@ -49,9 +49,9 @@ def print_bcs(psi):
 
     writer_bcs.writerows( [{ \
         fieldnames_bcs[0]: \
-            f"{msh.abs_wrt_measure((v_bar_dummy[i] - vp.v_bar_l[i]) * (v_bar_dummy[i] - vp.v_bar_l[i]), rmsh.ds_l ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(sqrt((v_bar_dummy[i] - vp.v_bar_l[i]) * (v_bar_dummy[i] - vp.v_bar_l[i])), rmsh.ds_l ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[1]: \
-            f"{msh.abs_wrt_measure((v_bar_dummy[i] - vp.v_bar_circle[i]) * (v_bar_dummy[i] - vp.v_bar_circle[i]), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(sqrt((v_bar_dummy[i] - vp.v_bar_circle[i]) * (v_bar_dummy[i] - vp.v_bar_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[2]: \
             f"{msh.abs_wrt_measure(geo.d_c( (v_bar_dummy + fsp.v_n_1) / 2.0, (w_bar_dummy + fsp.w_n_1) / 2.0, omega_n_12_dummy )[i, 0] * geo.g( omega_n_12_dummy )[i, k] * (bgeo.n_lr( omega_n_12_dummy ))[k], rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[3]: \
@@ -65,7 +65,7 @@ def print_bcs(psi):
         fieldnames_bcs[7]: \
             f"{msh.abs_wrt_measure( z_n_12_dummy - vp.z_square, rmsh.ds_square ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[8]: \
-            f"{msh.abs_wrt_measure( (omega_n_12_dummy[i] - vp.omega_circle[i]) * (omega_n_12_dummy[i] - vp.omega_circle[i]), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( sqrt((omega_n_12_dummy[i] - vp.omega_circle[i]) * (omega_n_12_dummy[i] - vp.omega_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[9]: \
             f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_lr ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_tb ) :.{io.number_of_decimals}e}", \
 
