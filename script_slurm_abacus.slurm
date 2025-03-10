@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=dynamics-4
+#SBATCH --job-name=dynamics-3
 #SBATCH --ntasks=1
-#SBATCH --mem=64gb
-#SBATCH --time=02-00:00:00
+#SBATCH --mem=128gb
+#SBATCH --time=128-00:00:00
 ##SBATCH --account=recherche_prod
 #SBATCH --partition=dev
 #SBATCH --mail-user=michele.castellana@curie.fr
@@ -15,10 +15,10 @@ k=1.0
 rho=1.0 
 eta=1.0
 v=1.0 
-N=65536
+N=1048576
 #CHANGE PARAMETERS HERE
 
-RUN="/mnt/beegfs/home/mcastel1/dynamics-4"
+RUN="/mnt/beegfs/home/mcastel1/dynamics-3"
 MESH=$RUN"/mesh"
 SOLUTION=$RUN"/solution"
 

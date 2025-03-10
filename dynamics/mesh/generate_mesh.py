@@ -1,3 +1,11 @@
+'''
+this code generates a mesh
+
+run with
+python generate_mesh.py [resolution]
+clear; clear; python3 generate_mesh.py 0.05
+'''
+
 import meshio
 import gmsh
 import pygmsh

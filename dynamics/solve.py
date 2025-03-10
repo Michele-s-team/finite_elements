@@ -8,7 +8,7 @@ and which are stored into finite_elements/mesh
 Run with
 clear; clear; rm -rf solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution] T k r e v N
 clear; clear; rm -rf solution; mkdir -p /home/fenics/shared/dynamics/solution/snapshots/csv; python3 solve.py /home/fenics/shared/dynamics/mesh /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 2
-clear; clear; SOLUTION_PATH="solution-r0.1"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv; python3 solve.py /home/fenics/shared/dynamics/mesh /home/fenics/shared/dynamics/$SOLUTION_PATH  0.01 1.0 1.0 1.0 1.0 64
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv; python3 solve.py /home/fenics/shared/dynamics/mesh /home/fenics/shared/dynamics/$SOLUTION_PATH  0.001 1.0 1.0 1.0 1.0 2
 clear; clear; rm -rf solution; mkdir -p /home/fenics/shared/dynamics/solution/snapshots/csv; mpirun -np 6 python3 solve.py /home/fenics/shared/dynamics/mesh /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 32
 time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $MESH $SOLUTION $T $k $r $e $v $N
 
@@ -31,10 +31,12 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
-import print_out_bc_a as prout
+# import print_out_bc_a as prout
+import print_out_bc_b as prout
 import read_mesh as rmsh
 import runtime_arguments as rarg
-import variational_problem_bc_a as vp
+# import variational_problem_bc_a as vp
+import variational_problem_bc_b as vp
 
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -48,12 +50,8 @@ print("T = ", vp.T)
 print("kappa = ", vp.kappa)
 print("rho = ", vp.rho)
 print("eta = ", vp.eta)
-print("v = ", vp.v_l)
+print("v = ", vp.v_bar_l_const)
 print("N = ", vp.N)
-
-
-
-
 
 
 #Option 1: set initial profiles
@@ -91,7 +89,8 @@ for step in range(vp.N):
     # Update current time
     t += vp.dt
 
-    import variational_problem_bc_a
+    # import variational_problem_bc_a
+    import variational_problem_bc_b
 
     # solve the variational problem
     J = derivative( vp.F, fsp.psi, fsp.J_psi )
