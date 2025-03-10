@@ -26,7 +26,7 @@ rho = (float)( rarg.args.r )
 # viscosity
 eta = (float)( rarg.args.e )
 # inflow velocity
-v_l = (float)( rarg.args.v )
+v_bar_l_const = (float)( rarg.args.v )
 # value of w_bar at the boundary
 boundary_profile_w_bar = 0.0
 # value of phi ar r boundary
@@ -109,7 +109,7 @@ grad_circle = interpolate( grad_circle_Expression( element=fsp.Q_z_n.ufl_element
 grad_square = interpolate( grad_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 
 # CHANGE PARAMETERS HERE
-l_profile_v_bar = Expression( ('v_l', '0'), v_l=v_l, element=fsp.Q_v_n.ufl_element() )
+l_profile_v_bar = Expression( ('v_bar_l_const', '0'), v_bar_l_const=v_bar_l_const, element=fsp.Q_v_n.ufl_element() )
 # CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)

@@ -31,12 +31,12 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
-# import print_out_bc_a as prout
-import print_out_bc_b as prout
+import print_out_bc_a as prout
+# import print_out_bc_b as prout
 import read_mesh as rmsh
 import runtime_arguments as rarg
-# import variational_problem_bc_a as vp
-import variational_problem_bc_b as vp
+import variational_problem_bc_a as vp
+# import variational_problem_bc_b as vp
 
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -89,8 +89,8 @@ for step in range(vp.N):
     # Update current time
     t += vp.dt
 
-    # import variational_problem_bc_a
-    import variational_problem_bc_b
+    import variational_problem_bc_a
+    # import variational_problem_bc_b
 
     # solve the variational problem
     J = derivative( vp.F, fsp.psi, fsp.J_psi )
