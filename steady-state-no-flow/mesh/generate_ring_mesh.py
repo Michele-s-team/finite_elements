@@ -19,7 +19,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
 import input_output as io
-import mesh as mesh_module
+import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "resolution" )
@@ -31,9 +31,7 @@ resolution = (float)( args.resolution )
 
 # add '/' to output_directory if it is missing
 output_directory = args.output_directory
-print( f"before = {output_directory}" )
 output_directory = io.add_trailing_slash( output_directory )
-print( f"after = {output_directory}" )
 
 mesh_file = output_directory + "mesh.msh"
 
@@ -63,7 +61,7 @@ model.add_physical( circle_R.curve_loop.curves, "Circle R" )
 geometry.generate_mesh( 64 )
 gmsh.write( mesh_file )
 
-mesh_module.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
 
 gmsh.clear()
 geometry.__exit__()
@@ -71,21 +69,12 @@ geometry.__exit__()
 mesh_from_file = meshio.read( mesh_file )
 
 
-def create_mesh(mesh, cell_type, prune_z=False):
-    cells = mesh.get_cells_type( cell_type )
-    cell_data = mesh.get_cell_data( "gmsh:physical", cell_type )
-    points = mesh.points[:, :2] if prune_z else mesh.points
-    out_mesh = meshio.Mesh( points=points, cells={cell_type: cells}, cell_data={
-        "name_to_read": [cell_data]} )
-    return out_mesh
-
-
-line_mesh = create_mesh( mesh_from_file, "line", prune_z=True )
+line_mesh = msh.create_mesh( mesh_from_file, "line", prune_z=True )
 meshio.write( output_directory + "line_mesh.xdmf", line_mesh )
 
-triangle_mesh = create_mesh( mesh_from_file, "triangle", prune_z=True )
+triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
 meshio.write( output_directory + "triangle_mesh.xdmf", triangle_mesh )
 
 # print the mesh vertices to file
-mesh = mesh_module.read_mesh( output_directory + "triangle_mesh.xdmf" )
+mesh = msh.read_mesh( output_directory + "triangle_mesh.xdmf" )
 io.print_vertices_to_csv_file( mesh, output_directory + "vertices.csv" )
