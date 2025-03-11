@@ -8,7 +8,7 @@ and which are stored into finite_elements/mesh
 
 Run with
 clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh/solution /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
 clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
@@ -30,13 +30,13 @@ sys.path.append(module_path)
 import function_spaces as fsp
 import runtime_arguments as rarg
 
-import read_mesh_square as rmsh
-# import read_mesh_ring as rmsh
+# import read_mesh_square as rmsh
+import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
 
 # import variational_problem_bc_square_a as vp
-import variational_problem_bc_square_b as vp
-# import variational_problem_bc_ring as vp
+# import variational_problem_bc_square_b as vp
+import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
@@ -81,6 +81,6 @@ solver_pp_nu.solve()
 solver_pp_tau.solve()
 
 # import print_out_bc_square_a
-import print_out_bc_square_b
-# import print_out_bc_ring
+# import print_out_bc_square_b
+import print_out_bc_ring
 # import print_out_bc_square_no_circle_a

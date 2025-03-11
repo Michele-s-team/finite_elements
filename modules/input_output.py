@@ -100,3 +100,10 @@ def read_scalar_from_csvfile(filename):
         data = [[float( value ) for value in row] for row in reader]
     # print(data)
     return data
+
+#if 'string' does not end by '/' add '/' to 'string'
+def add_trailing_slash(string):
+    if string[-1] != '/':
+        return string + '/'
+    else:
+        return string
