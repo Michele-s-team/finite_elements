@@ -10,9 +10,9 @@ Run with
 clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-flow/mesh /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/steady-state-flow/mesh /home/fenics/shared/steady-state-flow/solution
-clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-flow/mesh /home/fenics/shared/steady-state-flow/solution
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
+clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
+clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
 The solution files will be stored in /home/fenics/shared/steady-state-flow/solution
 
@@ -34,12 +34,12 @@ import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
 
-import read_mesh_ring as rmsh
-# import read_mesh_square as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square as rmsh
 
-import variational_problem_bc_ring_1 as vp
+# import variational_problem_bc_ring_1 as vp
 # import variational_problem_bc_ring_2 as vp
-# import variational_problem_bc_square_a as vp
+import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
 
 set_log_level( 20 )
@@ -105,7 +105,7 @@ solver_pp_d.solve()
 
 
 
-import print_out_bc_ring_1
+# import print_out_bc_ring_1
 # import print_out_bc_ring_2
-# import print_out_bc_square_a
+import print_out_bc_square_a
 # import print_out_bc_square_b
