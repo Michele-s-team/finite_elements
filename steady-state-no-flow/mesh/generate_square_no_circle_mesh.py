@@ -1,14 +1,40 @@
+'''
+generate a square mesh
+
+run it with
+python3 generate_square_no_circle_mesh.py [resolution] [output directory]
+example:
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py 0.1 $SOLUTION_PATH
+
+'''
+
 import meshio
 import gmsh
 import pygmsh
 import argparse
+import sys
+
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append( module_path )
+
+import input_output as io
+import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "resolution" )
+parser.add_argument( "output_directory" )
 args = parser.parse_args()
 
 # mesh resolution
 resolution = (float)( args.resolution )
+
+# add '/' to output_directory if it is missing
+output_directory = args.output_directory
+output_directory = io.add_trailing_slash( output_directory )
+
+mesh_file = output_directory + "mesh.msh"
 
 # CHANGE PARAMETERS HERE
 L = 1.0
@@ -47,24 +73,14 @@ model.add_physical( [channel_lines[3]], "t" )
 model.add_physical( [channel_lines[1]], "b" )
 
 geometry.generate_mesh( dim=2 )
-gmsh.write( "mesh.msh" )
+gmsh.write( mesh_file )
 gmsh.clear()
 geometry.__exit__()
 
-mesh_from_file = meshio.read( "mesh.msh" )
+mesh_from_file = meshio.read( mesh_file )
 
+line_mesh = msh.create_mesh( mesh_from_file, "line", prune_z=True )
+meshio.write( output_directory + "line_mesh.xdmf", line_mesh )
 
-def create_mesh(mesh, cell_type, prune_z=False):
-    cells = mesh.get_cells_type( cell_type )
-    cell_data = mesh.get_cell_data( "gmsh:physical", cell_type )
-    points = mesh.points[:, :2] if prune_z else mesh.points
-    out_mesh = meshio.Mesh( points=points, cells={cell_type: cells}, cell_data={
-        "name_to_read": [cell_data]} )
-    return out_mesh
-
-
-line_mesh = create_mesh( mesh_from_file, "line", prune_z=True )
-meshio.write( "line_mesh.xdmf", line_mesh )
-
-triangle_mesh = create_mesh( mesh_from_file, "triangle", prune_z=True )
-meshio.write( "triangle_mesh.xdmf", triangle_mesh )
+triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
+meshio.write( output_directory + "triangle_mesh.xdmf", triangle_mesh )

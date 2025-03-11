@@ -2,7 +2,7 @@
 generate a mesh given by a square with a circular hole in it
 
 run it with
-python3 generate_square_mesh.py [resolution] [output directory]
+python3 generate_ring_mesh.py [resolution] [output directory]
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
 
