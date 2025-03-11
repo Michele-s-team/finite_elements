@@ -1,5 +1,5 @@
 '''
-generate a mesh given by a square with a circular hole in it
+generate a mesh given by a ring
 
 run it with
 python3 generate_ring_mesh.py [resolution] [output directory]
