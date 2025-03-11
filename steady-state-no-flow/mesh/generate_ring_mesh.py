@@ -1,3 +1,13 @@
+'''
+generate a mesh given by a square with a circular hole in it
+
+run it with
+python3 generate_square_mesh.py [resolution] [output directory]
+example:
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
+
+'''
+
 import meshio
 import gmsh
 import pygmsh
@@ -14,10 +24,13 @@ import mesh as mesh_module
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
+parser.add_argument("output_directory")
 args = parser.parse_args()
 
 #mesh resolution
 resolution = (float)(args.resolution)
+
+mesh_file = args.output_directory + "/mesh.msh"
 
 # parameters
 r = 1.0
@@ -43,11 +56,11 @@ model.add_physical(circle_r.curve_loop.curves, "Circle r")
 model.add_physical(circle_R.curve_loop.curves, "Circle R")
 
 geometry.generate_mesh(64)
-gmsh.write("mesh.msh")
+gmsh.write(mesh_file)
 gmsh.clear()
 geometry.__exit__()
 
-mesh_from_file = meshio.read("mesh.msh")
+mesh_from_file = meshio.read(mesh_file)
 
 def create_mesh(mesh, cell_type, prune_z=False):
     cells = mesh.get_cells_type(cell_type)
@@ -58,12 +71,12 @@ def create_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 line_mesh = create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write("line_mesh.xdmf", line_mesh)
+meshio.write(args.output_directory + "/line_mesh.xdmf", line_mesh)
 
 triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write("triangle_mesh.xdmf", triangle_mesh)
+meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
 
 
 #print the mesh vertices to file
-mesh = mesh_module.read_mesh("triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, "vertices.csv" )
+mesh = mesh_module.read_mesh(args.output_directory + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh,args.output_directory +  "vertices.csv" )
