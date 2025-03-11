@@ -193,6 +193,8 @@ F_v = ( \
               (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_lr( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
               # BC (1g)^\omega is implemented here as a natural bc
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, 1] * geo.g( fsp.omega )[i, k] * (bgeo.n_lr( fsp.omega ))[k] * fsp.nu_v[1]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
+              # tentative natural BC which imposes zero traction and nonzero tension at outflow
+              #   + (-1.0/2.0 * (bgeo.n_lr(fsp.omega))[0] * fsp.nu_v[0]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_tb( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
       )
