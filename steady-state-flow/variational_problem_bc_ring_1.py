@@ -70,34 +70,45 @@ class omega_R_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class TangentVelocityExpression( UserExpression ):
+class v_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+
+        values[0] = fsp.v_0_r_read( x[0], x[1] ) * x[0] / geo.my_norm( x )
+        values[1] = fsp.v_0_r_read( x[0], x[1] ) * x[1] / geo.my_norm( x )
+
     def value_shape(self):
         return (2,)
 
-class NormalVelocityExpression( UserExpression ):
+class w_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.w_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
-class SurfaceTensionExpression( UserExpression ):
+class sigma_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.sigma_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
-class ManifoldExpression( UserExpression ):
+class z_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.z_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
-class OmegaExpression( UserExpression ):
+class omega_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.my_norm(x)
+        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.my_norm(x)
+
     def value_shape(self):
         return (2,)
 
@@ -131,12 +142,12 @@ omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 
-fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
-fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
-fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
-fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
-fsp.mu_0.interpolate( OmegaExpression( element=fsp.Q_mu.ufl_element() ))
+fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
+fsp.w_0.interpolate( w_0_Expression( element=fsp.Q_w.ufl_element() ) )
+fsp.sigma_0.interpolate( sigma_0_Expression( element=fsp.Q_sigma.ufl_element() ) )
+fsp.z_0.interpolate( z_0_Expression( element=fsp.Q_z.ufl_element() ) )
+fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
+# fsp.mu_0.interpolate( OmegaExpression( element=fsp.Q_mu.ufl_element() ))
 
 fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
