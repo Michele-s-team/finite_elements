@@ -1,5 +1,6 @@
 from fenics import *
 import numpy as np
+import function as fu
 import ufl as ufl
 
 import function_spaces as fsp
@@ -12,23 +13,23 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_r_const = 0.9950371902099891356653
-v_R_const = 0.5000000000000000000000000000000
+v_r_const = 1
+v_R_const = 0.010050378152592122
 w_r_const = 0.0
 w_R_const = 0.0
-sigma_r_const = -0.99502487546948322183
-z_r_const = 1.0
-z_R_const = 1.09900076963490661833037160663
-omega_r_const = -0.099503719020998913567
-omega_R_const = 0.095353866240961546555843199533
+sigma_r_const = -0.1
+z_r_const = -0.1
+z_R_const = 0
+omega_r_const = 0.1
+omega_R_const = 0
 
 
 #bending rigidity
-kappa = 1.0
+kappa = 3e-2
 #density
 rho = 1.0
 #viscosity
-eta = 1.0
+eta = 1e-2
 #Nitche's parameter
 alpha = 1e1
 
@@ -70,40 +71,53 @@ class omega_R_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class TangentVelocityExpression( UserExpression ):
+class v_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+
+        values[0] = fsp.v_0_r_read( x[0], x[1] ) * x[0] / geo.my_norm( x )
+        values[1] = fsp.v_0_r_read( x[0], x[1] ) * x[1] / geo.my_norm( x )
+
     def value_shape(self):
         return (2,)
 
-class NormalVelocityExpression( UserExpression ):
+class w_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.w_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
-class SurfaceTensionExpression( UserExpression ):
+class sigma_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.sigma_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
-class ManifoldExpression( UserExpression ):
+class z_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.z_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
-class OmegaExpression( UserExpression ):
+class omega_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.my_norm(x)
+        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.my_norm(x)
+
     def value_shape(self):
         return (2,)
 
-class MuExpression( UserExpression ):
+class mu_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = fsp.mu_0_read( x[0], x[1] )
+
     def value_shape(self):
         return (1,)
 
@@ -130,21 +144,37 @@ z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
+#uncomment this to set the initial profiles from the ODE soltion
+'''
+print("Reading the initial profiles from file ...")
+fu.set_from_file( fsp.v_0_r_read, 'solution-ode/v_ode.csv' )
+fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
 
-fsp.v_0.interpolate(TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
-fsp.w_0.interpolate(NormalVelocityExpression(element=fsp.Q_w.ufl_element()))
-fsp.sigma_0.interpolate( SurfaceTensionExpression( element=fsp.Q_sigma.ufl_element() ))
-fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
-fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ))
-fsp.mu_0.interpolate( OmegaExpression( element=fsp.Q_mu.ufl_element() ))
+fu.set_from_file( fsp.w_0_read, 'solution-ode/w_ode.csv' )
+fsp.w_0.interpolate( w_0_Expression( element=fsp.Q_w.ufl_element() ) )
 
-fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
-fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
+fu.set_from_file( fsp.sigma_0_read, 'solution-ode/sigma_ode.csv' )
+fsp.sigma_0.interpolate( sigma_0_Expression( element=fsp.Q_sigma.ufl_element() ) )
 
+fu.set_from_file( fsp.z_0_read, 'solution-ode/z_ode.csv' )
+fsp.z_0.interpolate( z_0_Expression( element=fsp.Q_z.ufl_element() ) )
+
+fu.set_from_file( fsp.omega_0_r_read, 'solution-ode/omega_ode.csv' )
+fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
+
+fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
+fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
+
+# fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
+# fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
+fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
+print("... done")
+'''
 
+# fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
+# fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'), v_r = v_r_const, element=fsp.Q.sub( 0 ).ufl_element() )
