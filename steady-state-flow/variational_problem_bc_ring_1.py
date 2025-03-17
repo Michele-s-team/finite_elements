@@ -1,5 +1,6 @@
 from fenics import *
 import numpy as np
+import function as fu
 import ufl as ufl
 
 import function_spaces as fsp
@@ -172,14 +173,8 @@ fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega
 print("... done")
 '''
 
-
 # fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
-
-
-#uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# assigner.assign(psi, [v_0, w_0, sigma_0, omega_0, z_0])
-
 
 # CHANGE PARAMETERS HERE
 # profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'), v_r = v_r_const, element=fsp.Q.sub( 0 ).ufl_element() )
