@@ -38,7 +38,7 @@ output_directory = io.add_trailing_slash( output_directory )
 mesh_file = output_directory + "mesh.msh"
 
 # parameters
-r = 0.5
+r = 0.01
 R = 1
 c_r = [0, 0, 0]
 c_R = [0, 0, 0]
@@ -48,7 +48,7 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 # Add circle
-circle_r = model.add_circle( c_r, r, mesh_size=resolution )
+circle_r = model.add_circle( c_r, r, mesh_size=resolution/100 )
 circle_R = model.add_circle( c_R, R, mesh_size=resolution )
 
 plane_surface = model.add_plane_surface( circle_R.curve_loop, holes=[circle_r.curve_loop] )
