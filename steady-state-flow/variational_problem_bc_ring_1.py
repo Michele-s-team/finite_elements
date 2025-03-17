@@ -14,13 +14,13 @@ i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 v_r_const = 1
-v_R_const = 0.010050378152592122
+v_R_const = 0.5
 w_r_const = 0.0
 w_R_const = 0.0
 sigma_r_const = -0.1
-z_r_const = -0.1
+z_r_const = -0.01
 z_R_const = 0
-omega_r_const = 0.1
+omega_r_const = 0
 omega_R_const = 0
 
 
