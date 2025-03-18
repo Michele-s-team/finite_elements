@@ -39,7 +39,7 @@ mesh_file = output_directory + "mesh.msh"
 
 # parameters
 r = 0.01
-R = 1
+R = 0.25
 c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 

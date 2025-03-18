@@ -13,11 +13,11 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_r_const = 0.1
-v_R_const = 0.001
+v_r_const = -1
+v_R_const = -0.04
 w_r_const = 0.0
 w_R_const = 0.0
-sigma_r_const = -1
+sigma_R_const = 1
 z_r_const = -0.1
 z_R_const = 0
 omega_r_const = 0
@@ -188,14 +188,14 @@ bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( w_r_const ), rmsh.boundary_r )
 bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R_const ), rmsh.boundary_R )
 
 #BC for sigma
-bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r_const ), rmsh.boundary_r )
+bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_R_const ), rmsh.boundary_R )
 
 # BCs for z
 bc_z_r = DirichletBC( fsp.Q.sub( 3 ), z_r, rmsh.boundary_r )
 bc_z_R = DirichletBC( fsp.Q.sub( 3 ), z_R, rmsh.boundary_R )
 
 # all BCs
-bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
+bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_R, bc_z_r, bc_z_R]
 
 
 # Define variational problem : F_v, F_z are related to the PDEs for v, ..., z respectively . F_N enforces the BCs with Nitsche's method.

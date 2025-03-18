@@ -26,7 +26,7 @@ r_mesh = bgeo.mesh.hmin()
 
 #CHANGE PARAMETERS HERE
 r = 0.01
-R = 1
+R = 0.25
 c_r = [0, 0]
 c_R = [0, 0]
 #CHANGE PARAMETERS HERE
@@ -69,8 +69,8 @@ msh.test_mesh_integral(3.6717505977470717, f_test_ds, ds_R, '\int f ds_R')
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (0.01 + 1.0)/2.0'
-boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (0.01 + 1.0)/2.0'
+boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (0.01 + 0.25)/2.0'
+boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (0.01 + 0.25)/2.0'
 #CHANGE PARAMETERS HERE
 
 
