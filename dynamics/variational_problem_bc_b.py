@@ -31,7 +31,7 @@ eta = (float)( rarg.args.e )
 v_bar_l_const = (float)( rarg.args.v )
 z_square_const = 0.0
 omega_n_square_const = 0.0
-omega_n_circle_const = 0.1
+omega_n_circle_const = 0.5
 omega_r_circle_const = 0.1
 
 
@@ -133,17 +133,10 @@ class omega_n_square_Expression( UserExpression ):
         return (1,)
 
 
-# profile for the normal derivative
-class omega_n_circle_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = omega_n_circle_const
 
-    def value_shape(self):
-        return (1,)
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-omega_n_circle = interpolate( omega_n_circle_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 omega_n_square = interpolate( omega_n_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 
 # boundary conditions (BCs)
