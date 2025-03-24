@@ -6,7 +6,7 @@ run with:
 clear; clear; rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution] T N
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH  0.001 2
 
-The solution files will be stored in /home/fenics/shared/solution
+The solution files will be stored in $SOLUTION_PATH
 
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
