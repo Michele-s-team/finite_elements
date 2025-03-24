@@ -10,8 +10,8 @@ def print_z_omega():
     fi.xdmffile_z.write( fsp.z, 0 )
     fi.xdmffile_omega.write( fsp.omega, 0 )
 
-    io.print_scalar_to_csvfile( fsp.z, (rarg.args.output_directory) + '/z.csv' )
-    io.print_vector_to_csvfile( fsp.omega, (rarg.args.output_directory) + '/omega.csv' )
+    io.print_nodal_values_scalar_to_csvfile (fsp.z, bgeo.mesh, (rarg.args.output_directory) + '/z.csv' )
+    io.print_nodal_values_vector_to_csvfile( fsp.omega, bgeo.mesh, (rarg.args.output_directory) + '/omega.csv' )
 
 def print_solution(t, step, dt):
 
