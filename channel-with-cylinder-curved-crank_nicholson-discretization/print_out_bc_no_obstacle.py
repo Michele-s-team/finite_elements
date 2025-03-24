@@ -6,6 +6,7 @@ import csv
 import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
+import input_output as io
 import read_mesh_bc_no_obstacle as rmsh
 import runtime_arguments as rarg
 import variational_problem_bc_no_obstacle as vp
@@ -22,6 +23,9 @@ fieldnames = [ \
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
 
+def print_z_omega():
+    io.print_scalar_to_csvfile( fsp.z, (rarg.args.output_directory) + '/z.csv' )
+    io.print_vector_to_csvfile( fsp.omega, (rarg.args.output_directory) + '/omega.csv' )
 
 # this function prints out the residuals of BCs
 def print_bcs():

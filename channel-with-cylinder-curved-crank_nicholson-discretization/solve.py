@@ -57,6 +57,8 @@ fsp.sigma_n_32.assign( fsp.sigma_n_12 )
 fsp.z.interpolate( vp.ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega.interpolate( vp.OmegaExpression( element=fsp.Q_omega.ufl_element() ) )
 
+pr_bc.print_z_omega()
+
 print( "Starting time iteration ...", flush=True )
 # Time-stepping
 t = 0
