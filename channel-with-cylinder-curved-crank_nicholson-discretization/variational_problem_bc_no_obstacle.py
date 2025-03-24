@@ -29,6 +29,12 @@ class TangentVelocityExpression(UserExpression):
     def value_shape(self):
         return (2,)
 
+class ManifoldExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+    def value_shape(self):
+        return (1,)
+
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
