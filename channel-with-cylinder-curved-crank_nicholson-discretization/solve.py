@@ -54,6 +54,7 @@ fsp.v_n_2.assign( fsp.v_n_1 )
 fsp.w.interpolate( vp.NormalVelocityExpression( element=fsp.Q.ufl_element() ) )
 fsp.sigma_n_12.interpolate( vp.SurfaceTensionExpression( element=fsp.Q.ufl_element() ) )
 fsp.sigma_n_32.assign( fsp.sigma_n_12 )
+fsp.z.interpolate( vp.ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega.interpolate( vp.OmegaExpression( element=fsp.Q_omega.ufl_element() ) )
 
 print( "Starting time iteration ...", flush=True )

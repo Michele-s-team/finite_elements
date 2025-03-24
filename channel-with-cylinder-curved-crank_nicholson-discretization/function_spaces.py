@@ -8,6 +8,7 @@ from read_mesh_bc_no_obstacle import *
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
 Q_v = VectorFunctionSpace( bgeo.mesh, 'P', 2, dim=2 )
 Q = FunctionSpace(bgeo.mesh, 'P', 1)
+Q_z = VectorFunctionSpace( bgeo.mesh, 'P', 1 )
 Q_omega = VectorFunctionSpace( bgeo.mesh, 'P', 3 )
 
 
@@ -21,6 +22,7 @@ sigma_n_12 = Function( Q )
 #sigma^{n-3/2}
 sigma_n_32 = Function( Q )
 phi = Function(Q)
+z = Function( Q_z )
 omega = Function( Q_omega )
 w = Function(Q)
 # a function used to make tests (test the differential operators etc)
