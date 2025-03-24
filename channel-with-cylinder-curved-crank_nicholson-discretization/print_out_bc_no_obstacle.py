@@ -4,6 +4,7 @@ import ufl as ufl
 import csv
 
 import boundary_geometry as bgeo
+import files as fi
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
@@ -23,9 +24,7 @@ fieldnames = [ \
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
 
-def print_z_omega():
-    io.print_scalar_to_csvfile( fsp.z, (rarg.args.output_directory) + '/z.csv' )
-    io.print_vector_to_csvfile( fsp.omega, (rarg.args.output_directory) + '/omega.csv' )
+
 
 # this function prints out the residuals of BCs
 def print_bcs():
