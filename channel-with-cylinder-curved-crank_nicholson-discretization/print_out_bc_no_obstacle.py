@@ -4,8 +4,10 @@ import ufl as ufl
 import csv
 
 import boundary_geometry as bgeo
+import files as fi
 import function_spaces as fsp
 import geometry as geo
+import input_output as io
 import read_mesh_bc_no_obstacle as rmsh
 import runtime_arguments as rarg
 import variational_problem_bc_no_obstacle as vp
@@ -21,6 +23,7 @@ fieldnames = [ \
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
+
 
 
 # this function prints out the residuals of BCs
