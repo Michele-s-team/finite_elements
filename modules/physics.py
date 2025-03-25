@@ -3,6 +3,7 @@ from mshr import *
 import ufl as ufl
 
 import geometry as geo
+import boundary_geometry as bgeo
 
 i, j, k, l = ufl.indices( 4 )
 
@@ -67,3 +68,11 @@ def fsigma_t(sigma, omega):
 #fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
 def fvisc_t(d, omega, eta):
     return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
+
+#modulus of the tangent force at the boundary per unit length (elastic contribution) 
+def force_el_modulus(mu, kappa, sigma):
+        return as_tensor((2*kappa*(mu**2)+sigma))
+
+#force_el_sigma_t[i] is the tangent vector that corresponds to the tangential force per unit length
+def force_el_sigma_t(mu, kappa, sigma, n):
+        return as_tensor((-1)*force_el_modulus(mu, kappa, sigma)*n[i], (i))

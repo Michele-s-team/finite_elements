@@ -1,6 +1,6 @@
 import csv
 from fenics import *
-
+import mesh as msh
 
 number_of_decimals = 2
 
@@ -63,6 +63,18 @@ def print_vector_to_csvfile(f, filename):
 
     csvfile.close()
 
+
+# this function prints a vector field defined on the boundary to csv file
+def print_vector_boundary_to_csvfile(f, mesh, filename):
+    points = msh.boundary_points(mesh)
+
+    csvfile = open( filename, "w" )
+    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
+
+    for point in points:
+        print( f"{f(point[0],point[1])[0]},{f(point[0],point[1])[1]},{f(point[0],point[1])[2]},{point[0]},{point[1]},{0}", file=csvfile )
+
+    csvfile.close()
 
 #print the nodal values of a vector field 'f' on the mesh 'mesh' to csv file 'filename'
 def print_nodal_values_vector_to_csvfile(f, mesh, filename):
