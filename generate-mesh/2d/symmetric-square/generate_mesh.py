@@ -91,10 +91,10 @@ gmsh.model.addPhysicalGroup( vertices[1][0], [vertices[1][1]], p_2_id )
 gmsh.model.setPhysicalName( vertices[1][0], p_2_id, "p_2" )
 
 gmsh.model.addPhysicalGroup( vertices[2][0], [vertices[2][1]], p_3_id )
-gmsh.model.setPhysicalName( vertices[2][0], p_2_id, "p_2" )
+gmsh.model.setPhysicalName( vertices[2][0], p_3_id, "p_3" )
 
 gmsh.model.addPhysicalGroup( vertices[3][0], [vertices[3][1]], p_4_id )
-gmsh.model.setPhysicalName( vertices[3][0], p_2_id, "p_2" )
+gmsh.model.setPhysicalName( vertices[3][0], p_4_id, "p_4" )
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities( dim=1 )
