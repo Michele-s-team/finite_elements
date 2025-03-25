@@ -58,32 +58,45 @@ delta_y = h / n_points_lr
 print("n_points_lr = ", n_points_lr)
 
 p_l = []
-line_l = []
 p_r = []
-line_r = []
 
 print("Adding lr points ... ")
-for i in range(n_points_lr):
+for i in range(n_points_lr - 1, -1, -1):
     print(f"\tAdding point #i = {i}")
 
     p_l.append(gmsh.model.geo.addPoint(0, delta_y * i / (n_points_lr - 1), 0))
+    gmsh.model.geo.synchronize()
+
+
+for i in range(n_points_lr):
+    print(f"\tAdding point #i = {i}")
+
     p_r.append(gmsh.model.geo.addPoint(L, delta_y * i / (n_points_lr - 1), 0))
     gmsh.model.geo.synchronize()
 
-    line_lr = gmsh.model.geo.addLine(p_l[i], p_r[i])
-    gmsh.model.geo.synchronize()
+    # line_lr = gmsh.model.geo.addLine(p_l[i], p_r[i])
+    # gmsh.model.geo.synchronize()
 
-    if i>0:
-        line_l.append(gmsh.model.geo.addLine(p_l[i-1], p_l[i]))
-        gmsh.model.geo.synchronize()
 
-        line_r.append(gmsh.model.geo.addLine(p_r[i-1], p_r[i]))
-        gmsh.model.geo.synchronize()
+    #
+
 
     # gmsh.model.mesh.embed(1, [line_lr], 2, surface)
     # gmsh.model.geo.synchronize()
 
+#add points to line_l
+line_l = []
+for i in range(n_points_lr - 1, -1, -1):
+    if i< n_points_lr-1:
+        line_l.append(gmsh.model.geo.addLine(p_l[i], p_l[i+1]))
+        gmsh.model.geo.synchronize()
 
+# add points to line_r
+line_r = []
+for i in range(n_points_lr):
+    if i>0:
+        line_r.append(gmsh.model.geo.addLine(p_r[i-1], p_r[i]))
+        gmsh.model.geo.synchronize()
 
 
 
