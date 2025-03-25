@@ -19,6 +19,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import mesh as msh
+import list as lis
 
 parser = argparse.ArgumentParser()
 parser.add_argument("n")
@@ -52,6 +53,7 @@ surface_id = 9
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
+
 # add a 0d object:
 n_points_lr = n - 2
 delta_y = h / n_points_lr
@@ -61,15 +63,16 @@ p_l = []
 p_r = []
 
 print("Adding lr points ... ")
-for i in range(n_points_lr):
+for i in reversed(range(n_points_lr)):
 
-
-    p_l.append(gmsh.model.geo.addPoint(0, h * i / (n_points_lr - 1), 0))
+    lis.prepend(gmsh.model.geo.addPoint(0, h * i / (n_points_lr - 1), 0), p_l)
     gmsh.model.geo.synchronize()
 
-    print(f"\tAdded point: {gmsh.model.getValue(0, p_l[i], [])}")
+    print(f"\tAdded point: {gmsh.model.getValue(0, p_l[0], [])}")
 
 print("... done.")
+
+lis.print_list(p_l, "p_l")
 
 ''''
 
