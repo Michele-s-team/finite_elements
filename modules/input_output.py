@@ -1,5 +1,9 @@
 import csv
 from fenics import *
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4a9dac7 (Update input_output.py)
 import mesh as msh
 
 number_of_decimals = 2
@@ -20,7 +24,7 @@ def print_scalar_boundary_to_csvfile(f, mesh, filename):
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     points = msh.boundary_points(mesh)
     for point in x:
-        print( f"{f(point)},{point[0]},{point[1]},{0}", file=csvfile )
+        print( f"{f([point[0], point[1]])},{point[0]},{point[1]},{0}", file=csvfile )
     csvfile.close()
 
 #print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
