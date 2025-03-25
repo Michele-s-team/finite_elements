@@ -20,7 +20,7 @@ def print_scalar_boundary_to_csvfile(f, mesh, filename):
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     points = msh.boundary_points(mesh)
-    for point in x:
+    for point in points:
         print( f"{f([point[0], point[1]])},{point[0]},{point[1]},{0}", file=csvfile )
     csvfile.close()
 
