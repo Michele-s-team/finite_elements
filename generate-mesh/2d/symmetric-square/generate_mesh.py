@@ -30,54 +30,56 @@ mesh_file = args.output_directory + "/mesh.msh"
 
 # mesh parameters
 # CHANGE PARAMETERS HERE
-r = 1
-c_1 = [r, 0, 0]
-c_2 = [-r, 0, 0]
-c_3 = [r / 2, -r / 8, 0]
-c_4 = [-r / 2, -r / 8, 0]
+L = 2.2
+h = 0.41
 # CHANGE PARAMETERS HERE
 
-print( "r = ", r )
-print( "c_1 = ", c_1 )
-print( "c_2 = ", c_2 )
-print( "resolution = ", resolution )
+print( "L = ", L )
+print( "h = ", h )
+
+
+
 p_1_id = 1
 p_2_id = 2
-p_3_id = 6
-p_4_id = 7
-line_12_id = 3
-arc_21_id = 4
-surface_id = 5
-line_34_id = 8
+p_3_id = 3
+p_4_id = 4
+line_12_id = 5
+line_23_id = 6
+line_34_id = 7
+line_41_id = 8
+surface_id = 9
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add a 0d object:
-p_1 = gmsh.model.geo.addPoint( c_1[0], c_1[1], c_1[2] )
-p_2 = gmsh.model.geo.addPoint( c_2[0], c_2[1], c_2[2] )
-p_c = gmsh.model.geo.addPoint( 0, 0, 0 )
-p_3 = gmsh.model.geo.addPoint( c_3[0], c_3[1], c_3[2] )
-p_4 = gmsh.model.geo.addPoint( c_4[0], c_4[1], c_4[2] )
+p_1 = gmsh.model.geo.addPoint( 0, 0, 0)
+p_2 = gmsh.model.geo.addPoint( L, 0, 0 )
+p_3 = gmsh.model.geo.addPoint( L, h, 0 )
+p_4 = gmsh.model.geo.addPoint( 0, h, 0 )
 gmsh.model.geo.synchronize()
 
 line_12 = gmsh.model.geo.addLine( p_1, p_2 )
 gmsh.model.geo.synchronize()
 
-arc_21 = gmsh.model.geo.addCircleArc( p_2, p_c, p_1 )
+line_23 = gmsh.model.geo.addLine( p_2, p_3 )
 gmsh.model.geo.synchronize()
 
 line_34 = gmsh.model.geo.addLine( p_3, p_4 )
 gmsh.model.geo.synchronize()
 
-loop = gmsh.model.geo.addCurveLoop( [line_12, arc_21] )
+line_41 = gmsh.model.geo.addLine( p_4, p_1 )
+gmsh.model.geo.synchronize()
+
+
+loop = gmsh.model.geo.addCurveLoop( [line_12, line_23, line_34, line_41] )
 gmsh.model.geo.synchronize()
 
 surface = gmsh.model.geo.addPlaneSurface( [loop] )
 gmsh.model.geo.synchronize()
 
-gmsh.model.mesh.embed( 1, [line_34], 2, surface )
-gmsh.model.geo.synchronize()
+# gmsh.model.mesh.embed( 1, [line_34], 2, surface )
+# gmsh.model.geo.synchronize()
 
 # add 0-dimensional objects
 vertices = gmsh.model.getEntities( dim=0 )
@@ -88,17 +90,26 @@ gmsh.model.setPhysicalName( vertices[0][0], p_1_id, "p_1" )
 gmsh.model.addPhysicalGroup( vertices[1][0], [vertices[1][1]], p_2_id )
 gmsh.model.setPhysicalName( vertices[1][0], p_2_id, "p_2" )
 
+gmsh.model.addPhysicalGroup( vertices[2][0], [vertices[2][1]], p_3_id )
+gmsh.model.setPhysicalName( vertices[2][0], p_2_id, "p_2" )
+
+gmsh.model.addPhysicalGroup( vertices[3][0], [vertices[3][1]], p_4_id )
+gmsh.model.setPhysicalName( vertices[3][0], p_2_id, "p_2" )
+
 # add 1-dimensional objects
 lines = gmsh.model.getEntities( dim=1 )
 
 gmsh.model.addPhysicalGroup( lines[0][0], [lines[0][1]], line_12_id )
 gmsh.model.setPhysicalName( lines[0][0], line_12_id, "line_12" )
 
-gmsh.model.addPhysicalGroup( lines[1][0], [lines[1][1]], arc_21_id )
-gmsh.model.setPhysicalName( lines[1][0], arc_21_id, "arc_12" )
+gmsh.model.addPhysicalGroup( lines[1][0], [lines[1][1]], line_23_id )
+gmsh.model.setPhysicalName( lines[1][0], line_23_id, "arc_12" )
 
 gmsh.model.addPhysicalGroup( lines[2][0], [lines[2][1]], line_34_id )
 gmsh.model.setPhysicalName( lines[2][0], line_34, "line_34" )
+
+gmsh.model.addPhysicalGroup( lines[3][0], [lines[3][1]], line_41_id )
+gmsh.model.setPhysicalName( lines[3][0], line_34, "line_34" )
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities( dim=2 )
