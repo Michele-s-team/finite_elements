@@ -27,7 +27,7 @@ def N_3D():
 #N_n_notes on \partial \Omega_O
 def Nn_circle(omega):
     N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
-    return (N3d[i] * (geo.n(omega))[i])
+    return (N3d[i] * (geo.normal(omega))[i])
 
 #vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r), see 'notes reall2013general'
 def dydtheta(c):
@@ -78,7 +78,7 @@ def Nn_lr(omega):
     L = (mesh_module.extremal_coordinates( mesh ))[0][1]
 
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
-    return (N3d[i] * (geo.n(omega))[i])
+    return (N3d[i] * (geo.normal(omega))[i])
 
 #Nt^i_notes on \partisal \Omega_W
 def Nt_tb(omega):
@@ -94,7 +94,7 @@ def Nn_tb(omega):
     h = (mesh_module.extremal_coordinates( mesh ))[1][1]
 
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
-    return (N3d[i] * (geo.n(omega))[i])
+    return (N3d[i] * (geo.normal(omega))[i])
 
 #n^i_notes on \partial \Omega_in and out
 def n_lr(omega):
