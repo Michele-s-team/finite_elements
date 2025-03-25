@@ -67,3 +67,9 @@ boundary = 'on_boundary'
 boundary_r = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) < (1.0 + 2.0)/2.0'
 boundary_R = 'on_boundary && sqrt(pow(x[0], 2) + pow(x[1], 2)) > (1.0 + 2.0)/2.0'
 #CHANGE PARAMETERS HERE
+
+# 
+import input_output as io
+io.print_scalar_boundary_to_csvfile(f_test_ds, bgeo.mesh, rarg.args.output_directory + "/f_test_ds.csv")
+
+# 
