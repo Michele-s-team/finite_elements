@@ -71,23 +71,21 @@ gmsh.model.geo.synchronize()
 
 resolution_2 = resolution / 2
 
-n_intermediate_lines = (int)(np.floor(L / resolution_2) -1 )
-print(f"n_intermediate_lines = {n_intermediate_lines}")
-
-
-
 loop = gmsh.model.geo.addCurveLoop([line_12, line_23, line_34, line_41])
 gmsh.model.geo.synchronize()
 
 surface = gmsh.model.geo.addPlaneSurface([loop])
 gmsh.model.geo.synchronize()
 
+# add intermediate lines horizontally
+n_intermediate_lines = (int)(np.floor(L / resolution_2) - 1)
+print(f"n_intermediate_lines = {n_intermediate_lines}")
+
 p_t = []
 p_b = []
 for i in range(n_intermediate_lines):
-
-    p_t.append(gmsh.model.geo.addPoint(resolution_2 * (i+1), 0 + resolution_2, 0))
-    p_b.append(gmsh.model.geo.addPoint(resolution_2 * (i+1), h - resolution_2, 0))
+    p_t.append(gmsh.model.geo.addPoint(resolution_2 * (i + 1), 0 + resolution_2, 0))
+    p_b.append(gmsh.model.geo.addPoint(resolution_2 * (i + 1), h - resolution_2, 0))
     gmsh.model.geo.synchronize()
 
     line_tb = gmsh.model.geo.addLine(p_t[i], p_b[i])
@@ -95,6 +93,31 @@ for i in range(n_intermediate_lines):
 
     gmsh.model.mesh.embed(1, [line_tb], 2, surface)
     gmsh.model.geo.synchronize()
+
+# add intermediate lines vertically
+# n_intermediate_lines = (int)(np.floor(h / resolution_2) - 1)
+# print(f"n_intermediate_lines = {n_intermediate_lines}")
+
+# p_l = []
+# p_r = []
+# for i in [1,n_intermediate_lines-2]:
+#     print(f"i = {i}")
+p_l = gmsh.model.geo.addPoint(L/4, h/2, 0)
+gmsh.model.geo.synchronize()
+
+p_r = gmsh.model.geo.addPoint(3*L/4, h/2,  0)
+gmsh.model.geo.synchronize()
+
+print("p_l = ", p_l)
+print("p_r = ", p_r)
+
+
+line_lr = gmsh.model.geo.addLine(p_l, p_r)
+gmsh.model.geo.synchronize()
+
+gmsh.model.mesh.embed(1, [line_lr], 2, surface)
+gmsh.model.geo.synchronize()
+
 
 
 # add 0-dimensional objects
@@ -122,10 +145,10 @@ gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], line_23_id)
 gmsh.model.setPhysicalName(lines[1][0], line_23_id, "arc_12")
 
 gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], line_34_id)
-gmsh.model.setPhysicalName(lines[2][0], line_34, "line_34")
+gmsh.model.setPhysicalName(lines[2][0], line_34_id, "line_34")
 
 gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], line_41_id)
-gmsh.model.setPhysicalName(lines[3][0], line_34, "line_34")
+gmsh.model.setPhysicalName(lines[3][0], line_41_id, "line_41")
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
@@ -139,7 +162,7 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution/2)
 gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", h)
 gmsh.model.mesh.field.setNumber(threshold, "DistMax", L)
