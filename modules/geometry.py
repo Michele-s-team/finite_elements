@@ -3,6 +3,9 @@ from mshr import *
 import ufl as ufl
 import numpy as np
 
+#Return the norm of a vector in the tangent space
+def norm(omega, v):
+    return as_tensor((sqrt(g(omega)[i, j] * v[j] * v[i])))
 
 #euclidean  norm of vector x
 def my_norm(x):
@@ -27,6 +30,7 @@ def X(z):
 #the vectors tangent to the curvilinear coordinates on the manifold : e(z)[i] = e_i_{al-izzi2020shear}
 def e(omega):
     return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
+
 
 #MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
 #normal(z) = \hat{n}_{al-izzi2020shear}
@@ -125,3 +129,17 @@ def f_to_v(f, omega):
 
 def v_to_f(v, omega):
     return as_tensor(g(omega)[i, j] * v[j], (i))
+
+
+#projection of a vector v on the tangent space to 3D space
+def from_t_to_3D(omega, v):
+    return as_tensor(v[1]*e(omega)[1, j]+v[0]*e(omega)[0, j], (j) )#as_tensor(v[i] * e(omega)[i, j], (j))
+
+#projection of a 3D vector on the tangent space
+def from_3D_to_t(omega, v):
+    return as_tensor(g_c(omega)[i, j] * v[k] * e(omega)[j, k], (i))
+
+#Normalization of a vector in the tangent space 
+def norm_t(omega, v):
+    return as_tensor(v[k] / (sqrt(g(omega)[i, j] * v[j] * v[i])), (k))
+

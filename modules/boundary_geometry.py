@@ -19,15 +19,15 @@ facet_normal = FacetNormal( mesh )
 
 i, j, k, l = ufl.indices(4)
 
-#Nt^i_notes on \partisal \Omega_O
-def Nt_circle(omega):
-    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
-    return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
+#3D normal vector to the mesh boundary 
+def N_3D():
+    return as_tensor([facet_normal[0], facet_normal[1], 0.0])
+
 
 #N_n_notes on \partial \Omega_O
 def Nn_circle(omega):
     N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
-    return (N3d[i] * (normal(omega))[i])
+    return (N3d[i] * (geo.normal(omega))[i])
 
 #vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r), see 'notes reall2013general'
 def dydtheta(c):
@@ -46,8 +46,10 @@ def sqrt_deth_lr(omega):
 def sqrt_deth_tb(omega):
     return sqrt(geo.g(omega)[0,0])
 
-def calc_normal_cg2(mesh):
+#This function extend the facet normal to the interior of the cells and project into the tangent space (used for visualization purposes)
+def calc_normal_cg2(omega, mesh):
     n = FacetNormal(mesh)
+    n = geo.norm_t(omega, geo.from_3D_to_t(omega, as_tensor([n[0], n[1], 0.0])))
     V = VectorFunctionSpace(mesh, "CG", 2)
     u = TrialFunction(V)
     v = TestFunction(V)
@@ -76,7 +78,7 @@ def Nn_lr(omega):
     L = (mesh_module.extremal_coordinates( mesh ))[0][1]
 
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
-    return (N3d[i] * (normal(omega))[i])
+    return (N3d[i] * (geo.normal(omega))[i])
 
 #Nt^i_notes on \partisal \Omega_W
 def Nt_tb(omega):
@@ -92,18 +94,25 @@ def Nn_tb(omega):
     h = (mesh_module.extremal_coordinates( mesh ))[1][1]
 
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
-    return (N3d[i] * (normal(omega))[i])
-
+    return (N3d[i] * (geo.normal(omega))[i])
 
 #n^i_notes on \partial \Omega_in and out
 def n_lr(omega):
-    return as_tensor((Nt_lr(omega))[k] / sqrt(geo.g(omega)[i, j]* (Nt_lr(omega))[i] *  (Nt_lr(omega))[j] ), (k))
+    return geo.norm_t(omega, geo.from_3D_to_t(omega, N_3D()))
 
 def n_tb(omega):
-    return as_tensor((Nt_tb(omega))[k] / sqrt(geo.g(omega)[i, j]* (Nt_tb(omega))[i] *  (Nt_tb(omega))[j] ), (k))
+    return geo.norm_t(omega, geo.from_3D_to_t(omega, N_3D()))
 
 def n_circle(omega):
-    return as_tensor((Nt_circle(omega))[k] / sqrt(geo.g(omega)[i, j]* (Nt_circle(omega))[i] *  (Nt_circle(omega))[j] ), (k))
+    return geo.norm_t(omega, geo.from_3D_to_t(omega, N_3D()))
+
+def n_c(omega):
+    return 0.01*as_tensor([facet_normal[0], facet_normal[1]])
+
+#tangent vector to the boundary curve in the tangent space
+def tang_t(omega):
+    return geo.from_3D_to_t(omega, as_tensor([-facet_normal[1], facet_normal[0], 0.0]))
+
 
 #the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
 def facet_normal_smooth():
