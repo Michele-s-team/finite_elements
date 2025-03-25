@@ -57,6 +57,9 @@ p_1 = gmsh.model.geo.addPoint( 0, 0, 0)
 p_2 = gmsh.model.geo.addPoint( L, 0, 0 )
 p_3 = gmsh.model.geo.addPoint( L, h, 0 )
 p_4 = gmsh.model.geo.addPoint( 0, h, 0 )
+
+p_a = gmsh.model.geo.addPoint( L/2, 0 + resolution, 0 )
+p_b = gmsh.model.geo.addPoint( L/2, h - resolution, 0 )
 gmsh.model.geo.synchronize()
 
 line_12 = gmsh.model.geo.addLine( p_1, p_2 )
@@ -72,14 +75,18 @@ line_41 = gmsh.model.geo.addLine( p_4, p_1 )
 gmsh.model.geo.synchronize()
 
 
+line_ab = gmsh.model.geo.addLine( p_a, p_b )
+gmsh.model.geo.synchronize()
+
+
 loop = gmsh.model.geo.addCurveLoop( [line_12, line_23, line_34, line_41] )
 gmsh.model.geo.synchronize()
 
 surface = gmsh.model.geo.addPlaneSurface( [loop] )
 gmsh.model.geo.synchronize()
 
-# gmsh.model.mesh.embed( 1, [line_34], 2, surface )
-# gmsh.model.geo.synchronize()
+gmsh.model.mesh.embed( 1, [line_ab], 2, surface )
+gmsh.model.geo.synchronize()
 
 # add 0-dimensional objects
 vertices = gmsh.model.getEntities( dim=0 )
