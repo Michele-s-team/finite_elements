@@ -58,7 +58,9 @@ delta_y = h / n_points_lr
 print("n_points_lr = ", n_points_lr)
 
 p_l = []
+line_l = []
 p_r = []
+line_r = []
 
 print("Adding lr points ... ")
 for i in range(n_points_lr):
@@ -71,17 +73,28 @@ for i in range(n_points_lr):
     line_lr = gmsh.model.geo.addLine(p_l[i], p_r[i])
     gmsh.model.geo.synchronize()
 
+    if i>0:
+        line_l.append(gmsh.model.geo.addLine(p_l[i-1], p_l[i]))
+        gmsh.model.geo.synchronize()
+
+        line_r.append(gmsh.model.geo.addLine(p_r[i-1], p_r[i]))
+        gmsh.model.geo.synchronize()
+
     # gmsh.model.mesh.embed(1, [line_lr], 2, surface)
     # gmsh.model.geo.synchronize()
 
+
+
+
+
 ''''
+
 
 p_2 = gmsh.model.geo.addPoint(L, 0, 0)
 p_3 = gmsh.model.geo.addPoint(L, h, 0)
 p_4 = gmsh.model.geo.addPoint(0, h, 0)
 
-line_12 = gmsh.model.geo.addLine(p_1, p_2)
-gmsh.model.geo.synchronize()
+
 
 line_23 = gmsh.model.geo.addLine(p_2, p_3)
 gmsh.model.geo.synchronize()
