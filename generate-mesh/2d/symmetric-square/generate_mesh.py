@@ -61,12 +61,17 @@ p_l = []
 p_r = []
 
 print("Adding lr points ... ")
-for i in range(n_points_lr - 1, -1, -1):
-    print(f"\tAdding point #i = {i}")
+for i in range(n_points_lr):
 
-    p_l.append(gmsh.model.geo.addPoint(0, delta_y * i / (n_points_lr - 1), 0))
+
+    p_l.append(gmsh.model.geo.addPoint(0, h * i / (n_points_lr - 1), 0))
     gmsh.model.geo.synchronize()
 
+    print(f"\tAdded point: {gmsh.model.getValue(0, p_l[i], [])}")
+
+print("... done.")
+
+''''
 
 for i in range(n_points_lr):
     print(f"\tAdding point #i = {i}")
@@ -100,7 +105,6 @@ for i in range(n_points_lr):
 
 
 
-''''
 
 
 p_2 = gmsh.model.geo.addPoint(L, 0, 0)
