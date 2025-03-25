@@ -2,9 +2,9 @@
 Ths code generates a 2d mesh given by a square, where the mesh is uniform across the square
 
 run with
-clear; clear; python3 generate_mesh.py [resolution]
+clear; clear; python3 generate_mesh.py [number of intervals in which one should divide each axis] [output directory]
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 4 $SOLUTION_PATH
 '''
 
 import gmsh
@@ -21,12 +21,12 @@ sys.path.append(module_path)
 import mesh as msh
 
 parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
+parser.add_argument("n")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
 # mesh resolution
-resolution = (float)(args.resolution)
+n = int(args.n)
 mesh_file = args.output_directory + "/mesh.msh"
 
 # mesh parameters
@@ -37,6 +37,7 @@ h = 0.41
 
 print("L = ", L)
 print("h = ", h)
+print("n = ", n)
 
 p_1_id = 1
 p_2_id = 2
@@ -52,7 +53,29 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add a 0d object:
-p_1 = gmsh.model.geo.addPoint(0, 0, 0)
+n_points_lr = n - 2
+delta_y = h / n_points_lr
+print("n_points_lr = ", n_points_lr)
+
+p_l = []
+p_r = []
+
+print("Adding lr points ... ")
+for i in range(n_points_lr):
+    print(f"\tAdding point #i = {i}")
+
+    p_l.append(gmsh.model.geo.addPoint(0, delta_y * i / (n_points_lr - 1), 0))
+    p_r.append(gmsh.model.geo.addPoint(L, delta_y * i / (n_points_lr - 1), 0))
+    gmsh.model.geo.synchronize()
+
+    line_lr = gmsh.model.geo.addLine(p_l[i], p_r[i])
+    gmsh.model.geo.synchronize()
+
+    # gmsh.model.mesh.embed(1, [line_lr], 2, surface)
+    # gmsh.model.geo.synchronize()
+
+''''
+
 p_2 = gmsh.model.geo.addPoint(L, 0, 0)
 p_3 = gmsh.model.geo.addPoint(L, h, 0)
 p_4 = gmsh.model.geo.addPoint(0, h, 0)
@@ -76,48 +99,6 @@ gmsh.model.geo.synchronize()
 
 surface = gmsh.model.geo.addPlaneSurface([loop])
 gmsh.model.geo.synchronize()
-
-# add intermediate lines horizontally
-n_intermediate_lines = (int)(np.floor(L / resolution_2) - 1)
-print(f"n_intermediate_lines = {n_intermediate_lines}")
-
-p_t = []
-p_b = []
-for i in range(n_intermediate_lines):
-    p_t.append(gmsh.model.geo.addPoint(resolution_2 * (i + 1), 0 + resolution_2, 0))
-    p_b.append(gmsh.model.geo.addPoint(resolution_2 * (i + 1), h - resolution_2, 0))
-    gmsh.model.geo.synchronize()
-
-    line_tb = gmsh.model.geo.addLine(p_t[i], p_b[i])
-    gmsh.model.geo.synchronize()
-
-    gmsh.model.mesh.embed(1, [line_tb], 2, surface)
-    gmsh.model.geo.synchronize()
-
-# add intermediate lines vertically
-# n_intermediate_lines = (int)(np.floor(h / resolution_2) - 1)
-# print(f"n_intermediate_lines = {n_intermediate_lines}")
-
-# p_l = []
-# p_r = []
-# for i in [1,n_intermediate_lines-2]:
-#     print(f"i = {i}")
-p_l = gmsh.model.geo.addPoint(L/4, h/2, 0)
-gmsh.model.geo.synchronize()
-
-p_r = gmsh.model.geo.addPoint(3*L/4, h/2,  0)
-gmsh.model.geo.synchronize()
-
-print("p_l = ", p_l)
-print("p_r = ", p_r)
-
-
-line_lr = gmsh.model.geo.addLine(p_l, p_r)
-gmsh.model.geo.synchronize()
-
-gmsh.model.mesh.embed(1, [line_lr], 2, surface)
-gmsh.model.geo.synchronize()
-
 
 
 # add 0-dimensional objects
@@ -184,3 +165,4 @@ msh.write_mesh_components(mesh_file, "solution/vertex_mesh.xdmf", "vertex", True
 msh.write_mesh_to_csv(mesh_file, 'solution/line_vertices.csv')
 
 model.__exit__()
+'''
