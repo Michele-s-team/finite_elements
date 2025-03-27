@@ -22,6 +22,7 @@ mu = 0.001
 # CHANGE PARAMETERS HERE
 
 
+
 # trial analytical expression for a vector
 class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):
@@ -30,6 +31,13 @@ class TangentVelocityExpression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+
+class ManifoldExpression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = np.sin( 2.0 * np.pi * x[0] )/(2.0 * np.pi)
+    def value_shape(self):
+        return (1,)
+
 
 
 class OmegaExpression( UserExpression ):
