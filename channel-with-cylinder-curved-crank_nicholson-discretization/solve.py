@@ -14,11 +14,11 @@ Note that all sections of the code which need to be changed when an external par
 
 For air flow:
 
-    rho_3d = 1.293 Kg/m^3
-    mu_3d = 18.5e-6 Pa * s
+    - rho_3d = 1.293 Kg/m^3
+    - mu_3d = 18.5e-6 Pa * s
     thus for a thickness Delta = 1cm
-    rho_2d = rho = 1.293e-2 Kg/m^2
-    mu_3d = mu = 1.85e-7 Kg/s
+    - rho_2d = rho = 1.293e-2 Kg/m^2
+    - mu_3d = mu = 1.85e-7 Kg/s
             The velocity at which R = 1 is v_0 = 1e-4 m/s
 
     And to reproduce air flow (figure 8):
