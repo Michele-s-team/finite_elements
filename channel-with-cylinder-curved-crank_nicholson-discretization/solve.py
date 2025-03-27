@@ -21,7 +21,7 @@ For air flow:
     - mu_3d = mu = 1.85e-7 Kg/s
             The velocity at which R = 1 is v_0 = 1e-4 m/s
 
-    And to reproduce air flow (figure 8):
+    To reproduce air flow with no obstacle (figure 8):
         - select  variational_problem_bc_no_obstacle
         - set L = 20
         - set outflow = 'near(x[0], 20)
@@ -34,6 +34,21 @@ For air flow:
         - run with
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_no_obstacle.py 0.1 $SOLUTION_PATH
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH 2048 2048
+
+    To reproduce air flow with  obstacle (figure 9):
+        - select  variational_problem_bc_no_obstacle
+        - set L = 2.2
+        - set outflow = 'near(x[0], 2.2)
+        - set
+                * rho = 1.293e-2
+                * mu = 1.85e-7
+                * v0 = 1e-4
+                * v_l = 1e2 * v0
+        - set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
+        - run with
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_no_obstacle.py 0.1 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH 2048 2048
+
 """
 
 import colorama as col
