@@ -40,6 +40,7 @@ For air flow:
         - set L = 2.2
         - set outflow = 'near(x[0], 2.2)
         - set c_r = [0.2, h/2, 0]
+        - set c_r = [0.2, 0.2]
         - set cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.05 && x[1]<0.41-0.05'
         - set
                 * rho = 1.293e-2
