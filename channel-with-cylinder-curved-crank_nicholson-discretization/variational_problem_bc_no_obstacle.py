@@ -19,7 +19,11 @@ rho = 1.0
 mu = 0.001
 # CHANGE PARAMETERS HERE
 
-
+class ManifoldExpression( UserExpression ):
+    def eval(self, values, x):
+       values[0] = 4 * x[1] * (rmsh.h - x[1]) / rmsh.h**2 * (x[1] - rmsh.h / 24) / rmsh.h
+   def value_shape(self):
+      return (1,)
 
 #trial analytical expression for a vector
 class TangentVelocityExpression(UserExpression):
