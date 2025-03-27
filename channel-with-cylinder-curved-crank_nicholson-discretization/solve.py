@@ -51,7 +51,7 @@ For air flow:
         - set
                 class ManifoldExpression( UserExpression ):
                     def eval(self, values, x):
-                        values[0] = 4 * x[1] * (rmsh.h - x[1]) / rmsh.h**2 * (x[1] - rmsh.h / 24) / rmsh.h
+                        values[0] = 2 * x[1] * (rmsh.h - x[1]) / rmsh.h**2 * (x[1] - rmsh.h / 24) / rmsh.h
                     def value_shape(self):
                         return (1,)
 
