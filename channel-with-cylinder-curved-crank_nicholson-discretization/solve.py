@@ -12,28 +12,28 @@ The solution files will be stored in $SOLUTION_PATH
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
 
-To reproduce an air flow (figure-8):
+For air flow:
 
-rho_3d = 1.293 Kg/m^3
-mu_3d = 18.5e-6 Pa * s
-thus for a thickness Delta = 1cm
-rho_2d = rho = 1.293e-2 Kg/m^2
-mu_3d = mu = 1.85e-7 Kg/s
-        The velocity at which R = 1 is v_0 = 1e-4 m/s
+    rho_3d = 1.293 Kg/m^3
+    mu_3d = 18.5e-6 Pa * s
+    thus for a thickness Delta = 1cm
+    rho_2d = rho = 1.293e-2 Kg/m^2
+    mu_3d = mu = 1.85e-7 Kg/s
+            The velocity at which R = 1 is v_0 = 1e-4 m/s
 
-
-- select  variational_problem_bc_no_obstacle
-- set L = 20
-- set outflow = 'near(x[0], 20)
-- set c_r = [0.2, h/2]
-- set cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.05 && x[1]<0.41-0.05'
-- set
-        * rho = 1.293e-2
-        * mu = 1.85e-7
-        * v0 = 1e-4
-        * v_l = 1e2 * v0
-- set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
-
+    And to reproduce air flow (figure 8):
+        - select  variational_problem_bc_no_obstacle
+        - set L = 20
+        - set outflow = 'near(x[0], 20)
+        - set
+                * rho = 1.293e-2
+                * mu = 1.85e-7
+                * v0 = 1e-4
+                * v_l = 1e2 * v0
+        - set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
+        - run with
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_no_obstacle.py 0.1 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH 2048 2048
 """
 
 import colorama as col
