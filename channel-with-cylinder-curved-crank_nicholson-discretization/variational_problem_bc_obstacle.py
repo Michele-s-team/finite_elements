@@ -15,11 +15,15 @@ T = (float)( rarg.args.T )
 num_steps = (int)( rarg.args.N )
 
 dt = T / num_steps  # time step size
-rho = 1.0
-mu = 0.001
+
+rho = 1.293e-2
+mu = 1.85e-7
+v0 = 1e-4
+v_l = 1e2 * v0
 
 
 # CHANGE PARAMETERS HERE
+
 
 
 # trial analytical expression for a vector
@@ -32,10 +36,18 @@ class TangentVelocityExpression( UserExpression ):
         return (2,)
 
 
-class OmegaExpression( UserExpression ):
+class ManifoldExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = np.cos( 2.0 * np.pi * x[0] )
-        values[1] = x[1]
+        values[0] = 2 * x[1] * (rmsh.h - x[1]) / rmsh.h ** 2 * (x[1] - rmsh.h / 24) / rmsh.h
+
+    def value_shape(self):
+        return (1,)
+
+
+class OmegaExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = -((rmsh.h ** 2) - 50.0 * rmsh.h * x[1] + 72.0 * ((x[1]) ** 2)) / (12.0 * rmsh.h ** 3)
 
     def value_shape(self):
         return (2,)
@@ -61,8 +73,7 @@ class NormalVelocityExpression( UserExpression ):
         return (1,)
 
 
-v__profile_l = Expression( ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2)', '0'), degree=2, h=rmsh.h )
-
+v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
 bc_v__inflow = DirichletBC( fsp.Q_v, v__profile_l, rmsh.inflow )
 bc_v__walls = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.walls )
 bc_v__cylinder = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.cylinder )

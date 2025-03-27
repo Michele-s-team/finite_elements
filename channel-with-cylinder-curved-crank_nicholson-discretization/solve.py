@@ -21,7 +21,7 @@ For air flow:
     - mu_3d = mu = 1.85e-7 Kg/s
             The velocity at which R = 1 is v_0 = 1e-4 m/s
 
-    And to reproduce air flow (figure 8):
+    To reproduce air flow with no obstacle (figure 8):
         - select  variational_problem_bc_no_obstacle
         - set L = 20
         - set outflow = 'near(x[0], 20)
@@ -34,6 +34,36 @@ For air flow:
         - run with
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_no_obstacle.py 0.1 $SOLUTION_PATH
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH 2048 2048
+
+    To reproduce air flow with  obstacle (figure 9):
+        - select  variational_problem_bc_obstacle
+        - set L = 2.2
+        - set c_r = [0.2, h/2, 0]
+        - set outflow = 'near(x[0], 2.2)
+        - set c_r = [0.2, h/2]
+        - set cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.05 && x[1]<0.41-0.05'
+        - set
+                * rho = 1.293e-2
+                * mu = 1.85e-7
+                * v0 = 1e-4
+                * v_l = 1e2 * v0
+        - set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
+        - set
+                class ManifoldExpression( UserExpression ):
+                    def eval(self, values, x):
+                        values[0] = 2 * x[1] * (rmsh.h - x[1]) / rmsh.h**2 * (x[1] - rmsh.h / 24) / rmsh.h
+                    def value_shape(self):
+                        return (1,)
+
+                class OmegaExpression( UserExpression ):
+                    def eval(self, values, x):
+                        values[0] = 0
+                        values[1] = -((rmsh.h**2) - 50.0*rmsh.h*x[1] + 72.0*((x[1])**2))/(12.0*rmsh.h**3)
+                    def value_shape(self):
+                        return (2,)
+        - run with
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_obstacle.py 0.05 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH  128 128
 """
 
 import colorama as col
@@ -51,13 +81,13 @@ import input_output as io
 import runtime_arguments as rarg
 import print_out_solution as pr_sol
 
-# import variational_problem_bc_obstacle as vp
-# import print_out_bc_obstacle as pr_bc
-# import read_mesh_bc_obstacle as rmsh
+import variational_problem_bc_obstacle as vp
+import print_out_bc_obstacle as pr_bc
+import read_mesh_bc_obstacle as rmsh
 
-import variational_problem_bc_no_obstacle as vp
-import print_out_bc_no_obstacle as pr_bc
-import read_mesh_bc_no_obstacle as rmsh
+# import variational_problem_bc_no_obstacle as vp
+# import print_out_bc_no_obstacle as pr_bc
+# import read_mesh_bc_no_obstacle as rmsh
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -91,8 +121,8 @@ for n in range( vp.num_steps ):
     t += vp.dt
     step += 1
 
-    # import variational_problem_bc_obstacle
-    import variational_problem_bc_no_obstacle
+    import variational_problem_bc_obstacle
+    # import variational_problem_bc_no_obstacle
 
     # step 1
     J1 = derivative( vp.F1, fsp.v_, fsp.J_v_ )

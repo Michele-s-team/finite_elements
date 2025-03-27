@@ -31,7 +31,7 @@ r_mesh = bgeo.mesh.hmin()
 L = 2.2
 h = 0.41
 r = 0.05
-c_r = [0.2, 0.2]
+c_r = [0.2, h/2]
 # CHANGE PARAMETERS HERE
 
 
