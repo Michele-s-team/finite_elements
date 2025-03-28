@@ -19,7 +19,11 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 
 
-To rproduce membrane flow: 
+To rproduce membrane flow:
+    * set
+        kappa = 3e-2
+        rho = 1.0
+        eta = 1e-2
 
 '''
 

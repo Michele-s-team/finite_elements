@@ -19,16 +19,10 @@ N = (int)( rarg.args.N )
 dt = T / N
 # time step size
 # bending rigidity
-kappa = (float)( rarg.args.k )
-# density
-rho = (float)( rarg.args.r )
-# viscosity
-eta = (float)( rarg.args.e )
-# inflow velocity
-
-
-
-v_bar_l_const = (float)( rarg.args.v )
+kappa = 3e-2
+rho = 1.0
+eta = 1e-2
+v_bar_l_const = ?
 z_square_const = 0.0
 omega_n_square_const = 0.0
 omega_r_circle_const = 0.1
