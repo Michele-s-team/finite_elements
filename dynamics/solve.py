@@ -21,7 +21,8 @@ To rproduce membrane flow:
         kappa = 3e-2
         rho = 1.0
         eta = 1e-2
-        v_bar_l_const = 1
+        sigma_r_const = 1
+        v_bar_l_const = 1e-1 (?)
         omega_r_circle_const = 0.1
         r = 0.01
         L = 2 (?)
