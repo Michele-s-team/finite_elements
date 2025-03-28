@@ -24,6 +24,7 @@ To rproduce membrane flow:
         kappa = 3e-2
         rho = 1.0
         eta = 1e-2
+        v_bar_l_const = 1
 
 '''
 
