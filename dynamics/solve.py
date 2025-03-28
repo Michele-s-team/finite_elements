@@ -17,6 +17,10 @@ The solution files will be stored in /home/fenics/shared/dynamics/solution
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
+
+
+To rproduce membrane flow: 
+
 '''
 
 import colorama as col
