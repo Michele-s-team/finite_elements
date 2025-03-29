@@ -90,9 +90,11 @@ def print_solution(psi, step, t):
     files.xdmffile_omega.write( omega_n_12_output, t - vp.dt / 2.0 )
     files.xdmffile_mu.write( mu_n_12_output, t - vp.dt / 2.0 )
 
+    '''
     files.xdmffile_nu.write( fsp.nu_n_12, t - vp.dt / 2.0 )
     files.xdmffile_tau.write( fsp.tau_n_12, t - vp.dt / 2.0 )
     files.xdmffile_d.write( fsp.d, t )
+    '''
 
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
@@ -110,6 +112,7 @@ def print_solution(psi, step, t):
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/d_n" + str( step + 1 ) + ".h5", "w" ).write( fsp.d, "/f" )
 
     # write the solutions in .xdmf format into  snapshots/xdmf
+    '''
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_n_' + str( step + 1 ) + '.xdmf' ).write( v_n_output )
@@ -131,6 +134,7 @@ def print_solution(psi, step, t):
     io.print_scalar_to_csvfile( z_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/z_n_12_' + str( step + 1 ) + '.csv' )
     io.print_vector_to_csvfile( omega_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/omega_n_12_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( mu_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/mu_n_12_' + str( step + 1 ) + '.csv' )
+    '''
 
     io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
     io.print_nodal_values_scalar_to_csvfile(w_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_bar_' + str( step + 1 ) + '.csv')
@@ -140,7 +144,7 @@ def print_solution(psi, step, t):
     io.print_nodal_values_scalar_to_csvfile(z_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/z_n_12_' + str( step + 1 ) + '.csv')
     io.print_nodal_values_vector_to_csvfile(omega_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/omega_n_12_' + str( step + 1 ) + '.csv' )
     io.print_nodal_values_scalar_to_csvfile(mu_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/mu_n_12_' + str( step + 1 ) + '.csv')
-
+    '''
     io.print_vector_to_csvfile( fsp.nu_n_12, (rarg.args.output_directory) + '/snapshots/csv/nu_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
 
@@ -222,4 +226,5 @@ def print_solution(psi, step, t):
             f"{assemble( phys.dFdl( v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r( bgeo.mesh, rmsh.c_r, omega_n_12_output ) )[1] * bgeo.sqrt_deth_circle( omega_n_12_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle )}", \
         }] )
     csvfile_F.flush()
+    '''
 

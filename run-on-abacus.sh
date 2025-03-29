@@ -18,4 +18,4 @@ rsync -av $1/*.py $OUT:$2
 rsync -av /Users/michelecastellana/Documents/finite_elements/script_slurm_abacus.slurm $OUT:$2
 rsync -av --exclude 'mesh.msh' --exclude '.DS_Store' $1/mesh $OUT:$2
 
-# ssh $OUT "cd "$2"; sbatch script_slurm_abacus.slurm"
+ssh $OUT "cd "$2"; sbatch script_slurm_abacus.slurm"
