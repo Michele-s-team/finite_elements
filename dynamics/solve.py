@@ -7,10 +7,10 @@ and which are stored into finite_elements/mesh/solution
 
 Run with
 clear; clear; rm -rf solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution] T k r e v N
-clear; clear; rm -rf solution; mkdir -p /home/fenics/shared/dynamics/solution/snapshots/csv; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 2
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH  0.001 1.0 1.0 1.0 1.0 2
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH  0.001 0.03 1.0 0.01 100.0 2
-clear; clear; rm -rf solution; mkdir -p /home/fenics/shared/dynamics/solution/snapshots/csv; mpirun -np 6 python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 32
+clear; clear; rm -rf solution; mkdir -p /home/fenics/shared/dynamics/solution/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 2
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH  0.001 1.0 1.0 1.0 1.0 2
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH  0.001 0.03 1.0 0.01 100.0 2
+clear; clear; rm -rf solution; mkdir -p /home/fenics/shared/dynamics/solution/snapshots/csv/nodal_values; mpirun -np 6 python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 32
 time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $MESH $SOLUTION $T $k $r $e $v $N
 
 The solution files will be stored in /home/fenics/shared/dynamics/solution
