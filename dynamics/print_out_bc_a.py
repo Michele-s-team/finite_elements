@@ -126,6 +126,16 @@ def print_solution(psi, step, t):
     io.print_vector_to_csvfile( omega_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/omega_n_12_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( mu_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/mu_n_12_' + str( step + 1 ) + '.csv' )
 
+
+    io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
+    io.print_nodal_values_scalar_to_csvfile(w_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_bar_' + str( step + 1 ) + '.csv')
+    io.print_nodal_values_vector_to_csvfile(v_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_n_' + str( step + 1 ) + '.csv' )
+    io.print_nodal_values_scalar_to_csvfile(w_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_n_' + str( step + 1 ) + '.csv')
+    io.print_nodal_values_scalar_to_csvfile(fsp.sigma_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/sigma_n_12_' + str( step + 1 ) + '.csv')
+    io.print_nodal_values_scalar_to_csvfile(z_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/z_n_12_' + str( step + 1 ) + '.csv')
+    io.print_nodal_values_vector_to_csvfile(omega_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/omega_n_12_' + str( step + 1 ) + '.csv' )
+    io.print_nodal_values_scalar_to_csvfile(mu_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/mu_n_12_' + str( step + 1 ) + '.csv')
+
     io.print_vector_to_csvfile( fsp.nu_n_12, (rarg.args.output_directory) + '/snapshots/csv/nu_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
 
