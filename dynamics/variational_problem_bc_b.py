@@ -96,7 +96,7 @@ class NormalVelocityExpression( UserExpression ):
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = sigma_r_const
 
     def value_shape(self):
         return (1,)
