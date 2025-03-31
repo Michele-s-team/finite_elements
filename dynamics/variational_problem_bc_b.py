@@ -26,7 +26,7 @@ v_bar_l_const = 1e-1
 z_square_const = 0.0
 sigma_r_const = 1
 omega_n_square_const = 0.0
-omega_r_circle_const = 0.1
+omega_r_circle_const = 0.5
 
 
 alpha = 1e4
