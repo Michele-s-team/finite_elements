@@ -19,14 +19,14 @@ N = (int)( rarg.args.N )
 dt = T / N
 # time step size
 # bending rigidity
-kappa = 3e-2
-rho = 1.0
+kappa = 0
+rho = 0.8
 eta = 1e-2
-v_bar_l_const = 1e-1
+v_bar_l_const = 1
 z_square_const = 0.0
-sigma_r_const = 1
+sigma_r_const = 20.0
 omega_n_square_const = 0.0
-omega_r_circle_const = 0.5
+omega_r_circle_const = 0.1
 
 
 alpha = 1e4
