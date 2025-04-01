@@ -51,6 +51,7 @@ boundary_l = 'near(x[0], 0.0)'
 boundary_r = 'near(x[0], 10.0)'
 boundary_lr = 'near(x[0], 0) || near(x[0], 10.0)'
 boundary_tb = 'near(x[1], 0) || near(x[1], 10.0)'
+boundary_tbr = 'near(x[1], 0) || near(x[1], 10.0) || near(x[0], 10.0)'
 boundary_square = 'on_boundary && sqrt(pow(x[0] - 10.0/2.0, 2) + pow(x[1] - 10.0/2.0, 2)) > (0.1 + 10.0/2.0)/2.0'
 boundary_circle = 'on_boundary && sqrt(pow(x[0] - 10.0/2.0, 2) + pow(x[1] - 10.0/2.0, 2)) < (0.1 + 10.0/2.0)/2.0'
 # CHANGE PARAMETERS HERE

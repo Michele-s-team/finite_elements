@@ -24,7 +24,7 @@ rho = 0.8
 eta = 1e-2
 v_bar_l_const = 1
 z_square_const = 0.0
-sigma_r_const = 20.0
+sigma_tbr_const = 20.0
 omega_n_square_const = 0.0
 omega_r_circle_const = 0.1
 
@@ -77,6 +77,14 @@ class omega_circle_Expression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+    
+class omega_tbr_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
 
 class TangentVelocityExpression( UserExpression ):
     def eval(self, values, x):
@@ -96,7 +104,7 @@ class NormalVelocityExpression( UserExpression ):
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = sigma_r_const
+        values[0] = sigma_tbr_const
 
     def value_shape(self):
         return (1,)
@@ -143,22 +151,25 @@ bc_v_bar_circle = DirichletBC( fsp.Q.sub( 0 ), v_bar_circle, rmsh.boundary_circl
 
 # BCs for w_bar
 w_bar_square = interpolate( w_bar_square_Expression( element=fsp.Q_w_bar.ufl_element() ), fsp.Q_w_bar )
-bc_w_bar_square = DirichletBC( fsp.Q.sub( 1 ), w_bar_square, rmsh.boundary_square)
+bc_w_bar_l = DirichletBC( fsp.Q.sub( 1 ), w_bar_square, rmsh.boundary_l)
 
 # BC for phi
-phi_r = interpolate( phi_r_Expression( element=fsp.Q_phi.ufl_element() ), fsp.Q_phi)
-bc_phi_r = DirichletBC( fsp.Q.sub( 2 ), phi_r, rmsh.boundary_r )
+phi_tbr = interpolate( phi_r_Expression( element=fsp.Q_phi.ufl_element() ), fsp.Q_phi)
+bc_phi_tbr = DirichletBC( fsp.Q.sub( 2 ), phi_tbr, rmsh.boundary_tbr )
 
 z_square = interpolate( z_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
-bc_z_square = DirichletBC( fsp.Q.sub( 5 ), z_square, rmsh.boundary_square )
+bc_z_l = DirichletBC( fsp.Q.sub( 5 ), z_square, rmsh.boundary_l )
 
 omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_omega_n.ufl_element() ), fsp.Q_omega_n )
 bc_omega_circle = DirichletBC( fsp.Q.sub( 6 ), omega_circle, rmsh.boundary_circle )
+
+omega_tbr = interpolate( omega_tbr_Expression( element=fsp.Q_omega_n.ufl_element() ), fsp.Q_omega_n )
+bc_omega_tbr = DirichletBC( fsp.Q.sub( 6 ), omega_tbr, rmsh.boundary_tbr )
 # CHANGE PARAMETERS HERE
 
 
 # all BCs
-bcs = [bc_v_bar_l, bc_v_bar_circle, bc_w_bar_square, bc_phi_r, bc_z_square, bc_omega_circle]
+bcs = [bc_v_bar_l, bc_v_bar_circle, bc_w_bar_l, bc_phi_tbr, bc_z_l, bc_omega_circle, bc_omega_tbr]
 
 '''
 Define variational problem : F_vbar, F_wbar .... F_z_n_12 are related to the PDEs for v_bar, ..., z^{n-1/2} respectively . F_N enforces the BCs with Nitsche's method. 
@@ -192,12 +203,9 @@ F_v_bar = ( \
                       (geo.d_c(fsp.V, fsp.W, fsp.omega_n_12)[i, j] * geo.g(fsp.omega_n_12)[i, k] *
                        (bgeo.n_lr(fsp.omega_n_12))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr(fsp.omega_n_12) * rmsh.ds_l \
                       # natural BC imposed here
-                      + (-1.0/(2.0 * eta) * sigma_r_const * (bgeo.n_lr(fsp.omega_n_12))[0] * fsp.nu_v_bar[0]) * bgeo.sqrt_deth_lr(
+                      + (-1.0/(2.0 * eta) * sigma_tbr_const * (bgeo.n_lr(fsp.omega_n_12))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr(
                   fsp.omega_n_12) * rmsh.ds_r \
-                      + (geo.d_c(fsp.V, fsp.W, fsp.omega_n_12)[i, 1] * geo.g(fsp.omega_n_12)[i, k] *
-                         (bgeo.n_lr(fsp.omega_n_12))[k] * fsp.nu_v_bar[1]) * bgeo.sqrt_deth_lr(
-                  fsp.omega_n_12) * rmsh.ds_r \
-                      + (geo.d_c(fsp.V, fsp.W, fsp.omega_n_12)[i, j] * geo.g(fsp.omega_n_12)[i, k] *
+                  + (geo.d_c(fsp.V, fsp.W, fsp.omega_n_12)[i, j] * geo.g(fsp.omega_n_12)[i, k] *
                          (bgeo.n_tb(fsp.omega_n_12))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_tb(
                   fsp.omega_n_12) * rmsh.ds_tb \
                       + (geo.d_c(fsp.V, fsp.W, fsp.omega_n_12)[i, j] * geo.g(fsp.omega_n_12)[i, k] *
@@ -238,6 +246,7 @@ F_phi = ( \
             ) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx \
     # natural BC implemented here
 - dt * ((bgeo.n_lr( fsp.omega_n_12 ))[i] * (fsp.phi.dx( i )) * fsp.nu_phi) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds_r
+- dt * ((bgeo.n_tb( fsp.omega_n_12 ))[i] * (fsp.phi.dx( i )) * fsp.nu_phi) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * rmsh.ds_tb
 
 F_v_n = ((rho * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.omega_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx
 
@@ -264,8 +273,8 @@ F_N = alpha / rmsh.r_mesh * ( \
  \
             (fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_tb( fsp.omega_n_12 ))[j] * (bgeo.n_tb( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * rmsh.ds_tb \
  \
-            + (((bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_square) * (bgeo.n_lr( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds_lr \
-            + (((bgeo.n_tb( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_square) * (bgeo.n_tb( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * rmsh.ds_tb \
+            + (((bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_square) * (bgeo.n_lr( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds_l \
+            # + (((bgeo.n_tb( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - omega_n_square) * (bgeo.n_tb( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * rmsh.ds_tb \
     )
 
 # total functional for the mixed problem

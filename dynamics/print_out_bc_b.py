@@ -112,16 +112,16 @@ def print_solution(psi, step, t):
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/d_n" + str( step + 1 ) + ".h5", "w" ).write( fsp.d, "/f" )
 
     # write the solutions in .xdmf format into  snapshots/xdmf
-    '''
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
+    
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_n_' + str( step + 1 ) + '.xdmf' ).write( v_n_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_n_' + str( step + 1 ) + '.xdmf' ).write( w_n_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_n_' + str( step + 1 ) + '.xdmf' ).write( w_n_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.sigma_n_12_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/z_n_12_' + str( step + 1 ) + '.xdmf' ).write( z_n_12_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step + 1 ) + '.xdmf' ).write( omega_n_12_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/mu_n_12_' + str( step + 1 ) + '.xdmf' ).write( mu_n_12_output )
-
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step + 1 ) + '.xdmf' ).write( omega_n_12_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/mu_n_12_' + str( step + 1 ) + '.xdmf' ).write( mu_n_12_output )
+    '''
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/nu_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.nu_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/tau_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.tau_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/d_n' + str( step + 1 ) + '.xdmf' ).write( fsp.d )
