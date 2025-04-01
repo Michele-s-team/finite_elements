@@ -10,18 +10,18 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_l_const = 4.0
+v_l_const = 1.0
 w_square_const = 0.0
-sigma_r_const = 0.0
+sigma_r_const = 1.0
 z_square_const = 0.0
-omega_circle_const = 0.2
+omega_circle_const = 0.1
 omega_square_const = 0.0
 #bending rigidity
-kappa = 1.0
+kappa = 3e-2
 #density
-rho = 1.0
+rho = 1e-12
 #viscosity
-eta = 1.0
+eta = 1e-2
 #Nitche's parameter
 alpha = 1e1
 
@@ -82,7 +82,7 @@ class w0_Expression( UserExpression ):
 
 class sigma0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = sigma_r_const
 
     def value_shape(self):
         return (1,)
@@ -191,10 +191,9 @@ F_v = ( \
       ) \
       - 2.0 * eta * ( \
               (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_lr( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_l \
-              # BC (1g)^\omega is implemented here as a natural bc
+              # natural BC implemented here
+              + (- 1.0/(2.0 * eta) * (bgeo.n_lr( fsp.omega ))[i] * geo.g_c(fsp.omega)[i, 0] * sigma_r * fsp.nu_v[0]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, 1] * geo.g( fsp.omega )[i, k] * (bgeo.n_lr( fsp.omega ))[k] * fsp.nu_v[1]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
-              # tentative natural BC which imposes zero traction and nonzero tension at outflow
-              #   + (-1.0/2.0 * (bgeo.n_lr(fsp.omega))[0] * fsp.nu_v[0]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_r \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_tb( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
       )
@@ -271,4 +270,3 @@ F_pp_tau = (fsp.nu[i] * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.
 
 
 F_pp_d = ((geo.d(fsp.v, fsp.w, fsp.omega)[i, j] - fsp.d[i, j]) * fsp.nu_d[i, j]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
-#sign

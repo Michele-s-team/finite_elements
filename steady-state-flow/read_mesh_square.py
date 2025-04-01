@@ -24,9 +24,9 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 r_mesh = bgeo.mesh.hmin()
 
 #CHANGE PARAMETERS HERE
-L = 0.5
+L = 1
 h = L
-r = 0.05
+r = 0.01
 c_r = [L/2.0, h/2.0]
 #CHANGE PARAMETERS HERE
 
@@ -77,9 +77,9 @@ msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int f ds_squa
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 0.5)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > (0.05+0.25)/2.0'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < (0.05+0.25)/2.0'
+boundary_r  = 'near(x[0], 1.0)'
+boundary_lr  = 'near(x[0], 0) || near(x[0], 1.0)'
+boundary_tb  = 'near(x[1], 0) || near(x[1], 1.0)'
+boundary_square = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) > (0.01+0.5)/2.0'
+boundary_circle = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) < (0.01+0.5)/2.0'
 #CHANGE PARAMETERS HERE
