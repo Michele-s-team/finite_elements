@@ -19,20 +19,18 @@ T = (float)( rarg.args.T )
 N = (int)( rarg.args.N )
 dt = T / N
 # time step size
-# bending rigidity
-kappa = (float)( rarg.args.k )
-# density
-rho = (float)( rarg.args.r )
-# viscosity
-eta = (float)( rarg.args.e )
-# inflow velocity
-v_bar_l_const = (float)( rarg.args.v )
-# value of w_bar at the boundary
+
+kappa = 0
+rho = 0.8
+eta = 1e-2
+v_bar_l_const = 1e0
+sigma_r_const = 20.0
+omega_n_square_const = 0.0
+omega_r_circle_const = 0.1
 boundary_profile_w_bar = 0.0
-# value of phi ar r boundary
 r_profile_phi = 0.0
-#value of z at boundary
 boundary_profile_z = 0.0
+
 # Nitche's parameter
 alpha = 1e4
 
@@ -56,7 +54,7 @@ class NormalVelocityExpression( UserExpression ):
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = sigma_r_const
 
     def value_shape(self):
         return (1,)
