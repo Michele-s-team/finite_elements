@@ -40,10 +40,10 @@ mesh_file = output_directory + "mesh.msh"
 
 # Channel parameters
 #CHANGE PARAMETERS HERE
-L = 2
-h = 0.5
-r = 0.01
-c_r = [L/4, h/2, 0]
+L = 10
+h = 10
+r = 0.1
+c_r = [L/2, h/2, 0]
 #CHANGE PARAMETERS HERE
 
 
