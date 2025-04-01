@@ -152,6 +152,7 @@ xdmffile_check.write( project( project( (geo.d(v_output, w_output, omega_output)
 xdmffile_dFdl.write( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), 0 )
 io.print_vector_to_csvfile( project(  phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)  ) , fsp.Q_dFfl), (rarg.args.output_directory) + '/dFdl.csv' )
 
+print( f"\n<z>_circle = {assemble(z_output * rmsh.ds_circle)/assemble(Constant(1.0) * rmsh.ds_circle)}" )
 
 #print out the force exerted on the circle
 print(f"F_circle = {[assemble(phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))[0] * bgeo.sqrt_deth_circle( omega_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle), assemble(phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))[1] * bgeo.sqrt_deth_circle( omega_output, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle)]}")
