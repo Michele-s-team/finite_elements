@@ -4,6 +4,7 @@ import colorama as col
 import gmsh
 import meshio
 
+import calc as cal
 import geometry as geo
 import input_output as io
 
@@ -302,3 +303,303 @@ def write_mesh_to_csv(infile, outfile):
         print(f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile)
 
     csvfile.close()
+
+
+'''
+print the coordinates of start and end points of line 'line'
+'''
+def print_line_info(line, label):
+    # Get the start and end points of the specific line
+    start_point, end_point = get_line_extrema(line)
+
+    print(f"\t{label}:\n\t\ttag = {line}")
+    print_point_info(start_point, 'start_point')
+    print_point_info(end_point, 'end_point')
+
+
+# print the coordiantes of point 'point'
+def print_point_info(point, label):
+    r = get_point_coordinates(point)
+    print(f"\t{label}:\n\t\ttag = {point},\n\t\tcoordinates =  {r}")
+
+    return r
+
+
+# print the info of all points in list 'list', which has label 'label'
+def print_point_list_info(list, label):
+    print(f'{label}: length = {len(list)}\ncontent:')
+    for i in range(len(list)):
+        print_point_info(list[i], f'point #{i}')
+
+
+'''
+add a line given by n-1 segments  separated by n points, between a point and a coordinate
+- 'p_start' : ID of the starting point of the line
+- 'r_end' :  coordinate of end point of the line
+- 'n': number of points
+
+Returns 
+- 'points': a list of IDs of the points added as part of the line
+- 'segments': a list of IDs of segments added as part of the line 
+'''
+
+
+def add_line_p_start_r_end_n(p_start, r_end, n, model):
+    # print("Generating line ... ")
+
+    points = [p_start]
+    segments = []
+
+    # coordinates of the start point
+    r_start = get_point_coordinates(p_start)
+
+    if n > 1:
+
+        for i in range(1, n):
+            dr = np.subtract(r_end, r_start)
+            dr *= i / (n - 1)
+            points.append(add_point(np.add(r_start, dr), model))
+
+            segments.append((add_line_p_start_p_end(points[i - 1], points[i], model))[1])
+
+            # print_point_info(points[-1], 'last added point')
+            # print_line_info(segments[-1], 'last added segment')
+
+        # print("... done.")
+
+    else:
+        print("Cannot add points!! ")
+
+    return points, segments
+
+'''
+add a line given by n-1 segments  separated by n points, between two points
+- 'p_start' : ID of the starting point of the line
+- 'r_end' :  coordinate of end point of the line
+- 'n': number of points
+
+Returns 
+- 'points': a list of IDs of the points added as part of the line
+- 'segments': a list of IDs of segments added as part of the line 
+'''
+def add_line_p_start_p_end_n(p_start, p_end, n, model):
+    # print("Generating line ... ")
+
+    points = [p_start]
+    segments = []
+
+    # coordinates of the start point
+    r_start = get_point_coordinates(p_start)
+    r_end = get_point_coordinates(p_end)
+
+    if n > 1:
+
+        for i in range(1, n - 1):
+            dr = np.subtract(r_end, r_start)
+            dr *= i / (n - 1)
+            points.append(add_point(np.add(r_start, dr), model))
+
+            segments.append(add_line_p_start_p_end(points[i - 1], points[i], model)[1])
+
+            # print_point_info(points[-1], 'last added point')
+            # print_line_info(segments[-1], 'last added segment')
+
+        # print("... done.")
+
+        points.append(p_end)
+        model.synchronize()
+
+        segments.append(add_line_p_start_p_end(points[n - 2], p_end, model)[1])
+
+        # print_point_info(points[-1], 'last added point')
+        # print_line_info(segments[-1], 'last added segment')
+
+    else:
+        print("Cannot add points!! ")
+
+    return points, segments
+
+
+'''
+add point with coordinates 'r' to model 'model' and return the result
+'''
+
+
+def add_point(r, model):
+    point = model.add_point(r[0], r[1], r[2])
+    model.synchronize()
+
+    return point
+
+
+'''
+add a line between points 'p_start' and 'p_end' in model 'model' and return the line
+'''
+
+
+def add_line_p_start_p_end(p_start, p_end, model):
+    line = model.add_line(p_start, p_end)
+    model.synchronize()
+
+    return [p_start, p_end], line
+
+
+'''
+add a line betweeen point 'p_start' and a new point with coordiantes r_end, which will be created, and return the line 
+
+'''
+
+
+def add_line_p_start_r_end(p_start, r_end, model):
+    p_end = add_point(r_end, model)
+    points_start_end, line = add_line_p_start_p_end(p_start, p_end, model)
+
+    return points_start_end, line
+
+'''
+add a line between two points by setting the point coordinates
+- 'r_start' : coordinates of the start point
+- 'r_end' : coordinates of the end point
+- 'model' : meshing model
+
+return values:
+- a list with the start and end point
+- the line
+'''
+def add_line_r_start_r_end(r_start, r_end, model):
+    p_start = add_point(r_start, model)
+    p_end = add_point(r_end, model)
+    points_start_end, line = add_line_p_start_p_end(p_start, p_end, model)
+
+    return points_start_end, line
+
+
+# get the coordinates of the vertex 'vertex', where vertex[0] is the dimension of the vertex (0) an vertex[1] the vertex tag (id)
+def get_point_coordinates(point):
+    return gmsh.model.getValue(0, point, [])  # 0 = vertex dimension
+
+
+'''
+return extermal points of line 'line'
+'''
+
+
+def get_line_extrema(line):
+    start_point, end_point = gmsh.model.getAdjacencies(1, line)[1]  # [1] gives point tags
+
+    return start_point, end_point
+
+
+'''
+return the coordinates of the center of mass of line 'line'
+'''
+
+
+def get_line_center_of_mass_coordinates(line):
+    start_point, end_point = get_line_extrema(line)
+
+    start_r = get_point_coordinates(start_point)
+    end_r = get_point_coordinates(end_point)
+
+    return (np.add(start_r, end_r) / 2)
+
+
+'''
+sort a list of vertices
+- 'vertex_list': a list of vertices: vertex_list[i] = [ vertex_dimension (=0), vertex_id ]
+- 'direction_id': the ID of the coordinate according to which the list will be sorted: 
+    * to sort according to the x coordinate set direction_id = 0, 
+    * to sort according to the y coordinate set direction_id = 1, 
+    * to sort according to the z coordinate set direction_id = 2, 
+- 'reverse': if True, the list will be sorted with respect to increasing order of the coordinate 'coordinate_id', and in reverse order otherwise
+Return values:
+- the sorted list of vertices
+'''
+
+
+def sort_vertex_list(vertex_list, direction_id, reverse):
+    point_coordinates = []
+
+    for vertex in vertex_list:
+        coordinates = get_point_coordinates(vertex[1])
+        point_coordinates.append([vertex, coordinates])
+
+    point_coordinates.sort(key=lambda x: x[1][direction_id], reverse=reverse)
+    print(f'sorted list = {point_coordinates}')
+
+    return point_coordinates
+
+'''
+create a circle composed of four arcs
+- 'c_r' : coordinates of the center of the circle
+- 'r' : circle radius
+- 'model' the meshing model used
+
+return values:
+- the circle lines (the four arcs)
+- the circle points
+'''
+def add_circle_with_arcs(c_r, r, model):
+    # add the center of the circle
+    p_c = add_point(c_r, gmsh.model.geo)
+
+    # add the point on the left, 'p_l', on the right 'p_r', on the top 'p_t' and on the bottom 'p_b'
+    p_l = add_point(np.subtract(c_r, [r, 0, 0]), model)
+    p_r = add_point(np.add(c_r, [r, 0, 0]), model)
+    p_t = add_point(np.add(c_r, [0, r, 0]), model)
+    p_b = add_point(np.subtract(c_r, [0, r, 0]), model)
+
+    # add four arcs which will make the circle: add the arc from p_r to p_t , and similarly for the other arcs
+    arc_rt = model.add_circle_arc(p_r, p_c, p_t)
+    model.synchronize()
+
+    arc_tl = model.add_circle_arc(p_t, p_c, p_l)
+    model.synchronize()
+
+    arc_lb = model.add_circle_arc(p_l, p_c, p_b)
+    model.synchronize()
+
+    arc_br = model.add_circle_arc(p_b, p_c, p_r)
+    model.synchronize()
+
+    circle_lines = [arc_rt, arc_tl, arc_lb, arc_br]
+
+    # add the circle loop
+    circle_loop = model.add_curve_loop(circle_lines)
+    model.synchronize()
+
+    return circle_lines, circle_loop
+
+
+'''
+create a circle composed of multiple segments
+- 'c_r' : coordinates of the center of the circle
+- 'r' : circle radius
+- 'n_segments': the number of segments
+- 'model' the meshing model used
+
+return values:
+- the circle points
+- the circle segments
+'''
+def add_circle_with_lines(c_r, r, n_segments, model):
+    points_circle = []
+    segments_circle = []
+
+    coord = np.add(c_r, [r, 0, 0])
+    points_circle.append(add_point(coord, model))
+
+    for i in range(1, n_segments - 1):
+        coord = np.add(c_r, np.dot(cal.R_z(i / (n_segments - 1) * 2.0 * np.pi), [r, 0, 0]))
+        points_circle.append(add_point(coord, model))
+        segments_circle.append((add_line_p_start_p_end(points_circle[i - 1], points_circle[i], model))[1])
+
+    segments_circle.append(add_line_p_start_p_end(points_circle[-1], points_circle[0], model)[1])
+
+    return points_circle, segments_circle
+
+
+# tag the objects of dimension 'dimension' contained in 'list_of_objects = [object_1, object_2, ...]' as physical objects, all with tag 'id' and with label 'label'
+def tag_group(list_of_objects, dimension, id, label):
+    gmsh.model.addPhysicalGroup(dimension, list_of_objects, id)
+    gmsh.model.setPhysicalName(dimension, id, label)
