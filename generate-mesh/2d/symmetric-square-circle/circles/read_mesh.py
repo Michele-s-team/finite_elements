@@ -4,7 +4,7 @@ This code reads the mesh generated from generate_mesh.py and it creates dvs and 
 run with
 clear; clear; python3 read_mesh.py [path where to find the mesh]
 example:
-clear; clear; python3 read_mesh.py /home/fenics/shared/generate-mesh/2d/symmetric-square/solution
+clear; clear; python3 read_mesh.py solution
 '''
 import argparse
 from dolfin import *

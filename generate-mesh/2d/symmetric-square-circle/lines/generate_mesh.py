@@ -1,9 +1,9 @@
 '''
-Ths code generates a 2d mesh given by a square with a circular holw, where the mesh is enforced to  be symmetric
-with respect to top <-> bottm by adding a set of auxiliary lines
+Ths code generates a 2d mesh given by a square with a circular hole, where the mesh is enforced to  be symmetric
+with respect to top <-> bottom by adding a set of auxiliary lines which run from the left to the right edge of the square
 
 run with
-clear; clear; python3 generate_mesh.py [resolution] [number of intervals in which one should divide each axis] [output directory]
+clear; clear; python3 generate_mesh.py [resolution] [number of segments of the circle] [number of lines] [output directory]
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 4 $SOLUTION_PATH
 '''
