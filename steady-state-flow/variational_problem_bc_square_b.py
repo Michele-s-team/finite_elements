@@ -10,7 +10,7 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-v_l_const = 100.0
+v_l_const = 1.0
 w_square_const = 0.0
 sigma_r_const = 1.0
 z_square_const = 0.0

@@ -24,14 +24,14 @@ import mesh as msh
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
 parser.add_argument("n_lines_circle")
-parser.add_argument("n_lines_lr")
+parser.add_argument("n_aux_circles")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
 # mesh resolution
 resolution = (float)(args.resolution)
 n_lines_circle = int(args.n_lines_circle)
-n_lines_lr = int(args.n_lines_lr)
+n_aux_circles = int(args.n_aux_circles)
 mesh_file = args.output_directory + "/mesh.msh"
 
 # mesh parameters
@@ -40,13 +40,15 @@ L = 1
 h = 1
 c_r = [L / 2, h / 2, 0]
 r = 0.01
+r_min = r
+r_max = L/2 * 0.9
 # CHANGE PARAMETERS HERE
 
 print("L = ", L)
 print("h = ", h)
 print("r = ", r)
 print("n_lines_circle = ", n_lines_circle)
-print("n_lines_lr = ", n_lines_lr)
+print("n_aux_circles = ", n_aux_circles)
 
 surface_id = 1
 
@@ -58,9 +60,9 @@ model = geometry.__enter__()
 p_O = msh.add_point([0, 0, 0], gmsh.model.geo)
 
 points_b, edge_b = msh.add_line_p_start_r_end(p_O, [L, 0, 0], gmsh.model.geo)
-points_r, segments_edge_r = msh.add_line_p_start_r_end_n(points_b[-1], [L, h, 0], n_lines_lr, gmsh.model.geo)
+points_r, segments_edge_r = msh.add_line_p_start_r_end_n(points_b[-1], [L, h, 0], n_aux_circles, gmsh.model.geo)
 points_t, edge_t = msh.add_line_p_start_r_end(points_r[-1], [0, h, 0], gmsh.model.geo)
-points_l, segments_edge_l = msh.add_line_p_start_p_end_n(points_t[-1], p_O, n_lines_lr, gmsh.model.geo)
+points_l, segments_edge_l = msh.add_line_p_start_p_end_n(points_t[-1], p_O, n_aux_circles, gmsh.model.geo)
 
 msh.print_point_list_info(points_l, 'points_l')
 msh.print_point_list_info(points_r, 'points_r')
@@ -90,12 +92,17 @@ gmsh.model.geo.synchronize()
 
 
 # add auxiliary horizontal lines to make the mesh symmetric under top <-> bottom
-lines_lr = []
-for j in range(1, len(points_l) - 1):
-    coord = msh.get_point_coordinates(points_l[j])
-    if ((coord[1] < c_r[1] - r) or (coord[1] > c_r[1] + r)):
-        lines_lr.append((msh.add_line_p_start_p_end(points_l[j], points_r[len(points_l) - 1 - j], gmsh.model.geo))[1])
-        gmsh.model.mesh.embed(1, lines_lr, 2, square_surface)
+aux_circles = []
+for j in range(n_aux_circles):
+    aux_r = r_min + (r_max - r_min) * j / (n_aux_circles - 1)
+    if(aux_r > r and aux_r < L):
+        print(f'aux_r = {aux_r}')
+        aux_circles.append((msh.add_circle_with_lines(c_r, aux_r, n_lines_circle, gmsh.model.geo))[1])
+
+gmsh.model.mesh.embed(1, lis.flatten_list(aux_circles), 2, square_surface)
+gmsh.model.geo.synchronize()
+
+
 
 print('Adding physical objects ...')
 # add 0-dimensional objects
