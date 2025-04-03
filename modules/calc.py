@@ -35,3 +35,7 @@ def integral_2d_curve(f, gamma_dgamma):
    # result = quad(lambda t: (f(gamma_dgamma(t)[0]) * geo.my_norm((gamma_dgamma(t))[1])), 0, 1)[0]
    result = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma( t ))[1])   ), 0, 1)[0]
    return result
+
+# return the matrix of a rotation by an angle 'theta' about the z axis
+def R_z(theta):
+    return [[np.cos(theta),-np.sin(theta),0],[np.sin(theta),np.cos(theta),0],[0,0,1]]
