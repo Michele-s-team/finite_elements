@@ -2,6 +2,9 @@
 To create an instance use "name = generate_mesh( ... )"
 To generate a specific mesh (example square mesh) ues "name.generate_square_mesh(...) "
 To save the mesh to a XDMF file use "export_mesh_as_xdmf(...)"
+
+run with
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py .1 $SOLUTION_PATH
 '''
 
 import meshio #for reading and writing mesh files
@@ -12,11 +15,12 @@ import sys
 import numpy as np
 
 # add the path where to find the shared modules
-module_path = '/home/tanos/Thesis/Fenics-files-for-thesis/modules/'
+# include path for michele
+module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
-from mesh import mesh as msh
+import mesh as msh
 
-msh = msh()
+# msh = msh()
 
 class generate_mesh:
     def __init__(self, resolution, output_dir):
