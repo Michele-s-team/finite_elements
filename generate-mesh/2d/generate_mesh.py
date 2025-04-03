@@ -9,6 +9,7 @@ import gmsh #main tool
 import pygmsh #wrapper for gmsh
 import argparse
 import sys
+import numpy as np
 
 # add the path where to find the shared modules
 module_path = '/home/tanos/Thesis/Fenics-files-for-thesis/modules/'
@@ -30,6 +31,95 @@ class generate_mesh:
         for el in self.param:
             print(el, "=", self.param[el])
 
+    def generate_square_symmetric_mesh(self, L, h, r, c_r = [0.0, 0.0, 0.0]):
+        N = int(np.round(1/self.resolution))
+        half_rectangle_points = [self.model.add_point( (L/2, 0, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    self.model.add_point( (L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    self.model.add_point( (-L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    self.model.add_point( (-L/2, 0, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    ]
+        
+        half_circle_points = [self.model.add_point( (-r*np.cos(np.pi*i/N), r*np.sin(np.pi*i/N), 0), mesh_size=resolution ) for i in range(N+1)]
+        my_points = half_rectangle_points + half_circle_points
+        channel_lines = [self.model.add_line( my_points[i], my_points[i + 1] )
+                        for i in range( -1, len( my_points ) - 1 )]
+        
+        channel_loop = self.model.add_curve_loop( channel_lines )
+        plane_surface = self.model.add_plane_surface( channel_loop )
+
+        self.model.synchronize()
+
+        self.model.add_physical( [plane_surface], "Volume" )
+        self.model.add_physical( [channel_lines[1]], "r" )
+        self.model.add_physical( [channel_lines[3]], "l" )
+        self.model.add_physical( [channel_lines[2]], "t" )
+        self.model.add_physical( [channel_lines[4],channel_lines[0]], "b" )
+        self.model.add_physical( channel_lines[5:], "c" )
+
+        self.geometry.generate_mesh( dim=2 )
+        gmsh.write( self.mesh_file)
+
+        #msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+
+        gmsh.clear()
+        self.geometry.__exit__()
+
+
+
+        '''
+        mesh = geom.generate_mesh()
+
+        points = mesh.points
+        cells = mesh.cells_dict["triangle"]  # Adjust for other element types
+
+        # Mirror points
+        mirrored_points = points.copy()
+        mirrored_points[:, axis] *= -1  # Reflect along the specified axis
+
+        # Merge original and mirrored points
+        combined_points = np.vstack((points, mirrored_points))
+
+        # Adjust cell indices for mirrored mesh
+        mirrored_cells = cells + len(points)  # Shift indices
+        combined_cells = np.vstack((cells, mirrored_cells))
+
+        return meshio.Mesh(points=combined_points, cells={"triangle": combined_cells})
+        '''
+
+    def generate_square_mesh_symm(self, L, h, r, c_r = [0.0, 0.0, 0.0]):
+        N = int(np.round(1/self.resolution))
+        half_rectangle_points = [self.model.add_point( (L/2, 0, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    self.model.add_point( (L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    self.model.add_point( (-L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    self.model.add_point( (-L/2, 0, 0), mesh_size=resolution*(min(L,h)/r) ),
+                    ]
+        
+        #half_circle_t_points = [self.model.add_point( (-r*np.cos(np.pi*i/N), r*np.sin(np.pi*i/N), 0), mesh_size=resolution ) for i in range(N+1)]
+        half_circle_t_points = [self.model.add_point( (r*np.cos(np.pi*i/N), -r*np.sin(np.pi*i/N), 0), mesh_size=resolution ) for i in range(N+1)]
+        my_points = half_rectangle_points + half_circle_points
+        channel_lines = [self.model.add_line( my_points[i], my_points[i + 1] )
+                        for i in range( -1, len( my_points ) - 1 )]
+        
+        channel_loop = self.model.add_curve_loop( channel_lines )
+        plane_surface = self.model.add_plane_surface( channel_loop )
+
+        self.model.synchronize()
+
+        self.model.add_physical( [plane_surface], "Volume" )
+        self.model.add_physical( [channel_lines[1]], "r" )
+        self.model.add_physical( [channel_lines[3]], "l" )
+        self.model.add_physical( [channel_lines[2]], "t" )
+        self.model.add_physical( [channel_lines[4],channel_lines[0]], "b" )
+        self.model.add_physical( channel_lines[5:], "c" )
+
+        self.geometry.generate_mesh( dim=2 )
+        gmsh.write( self.mesh_file)
+
+        #msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+
+        gmsh.clear()
+        self.geometry.__exit__()
+
     def generate_square_mesh(self, L, h, r, c_r = [0.0, 0.0, 0.0]):
         self.L = L
         self.h = h
@@ -42,7 +132,7 @@ class generate_mesh:
         my_points = [self.model.add_point( (L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
                     self.model.add_point( (-L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
                     self.model.add_point( (-L/2, -h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
-                    self.model.add_point( (-L/2, -h/2, 0), mesh_size=resolution*(min(L,h)/r) )]
+                    self.model.add_point( (L/2, -h/2, 0), mesh_size=resolution*(min(L,h)/r) )]
 
         # Add lines between all points creating the rectangle
         channel_lines = [self.model.add_line( my_points[i], my_points[i + 1] )
@@ -123,10 +213,14 @@ if __name__ == "__main__":
     #mesh resolution
     resolution = (float)(args.resolution)
     r = 1
-    R = 5
+    L = 6
+    h = 6
     c_r = [0, 0, 0]
     c_R = [0, 0, 0]
 
     gmesh = generate_mesh(resolution, args.output_dir)
-    gmesh.generate_ring_mesh(r,R)
+    gmesh.generate_square_symmetric_mesh(L,h,r)
     gmesh.export_mesh_as_xdmf()
+
+
+
