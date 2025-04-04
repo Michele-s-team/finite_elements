@@ -20,7 +20,7 @@ dt = T / N
 # time step size
 # bending rigidity
 kappa = 3e-2
-rho = 1.0
+rho = 1e-12
 eta = 1e-2
 v_bar_l_const = 1e-1
 z_square_const = 0.0
