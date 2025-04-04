@@ -11,7 +11,7 @@ clear; python3 solve.py [path where to read the mesh] [path where to store the s
 
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric-square/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric-square-circle/circles/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
 clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
