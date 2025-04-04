@@ -13,17 +13,17 @@ i, j, k, l = ufl.indices( 4 )
 # CHANGE PARAMETERS HERE
 v_l_const = 1.0
 w_boundary_const = 0.0
-sigma_r_const = 0.0
+sigma_r_const = 1.0
 z_circle_const = 0.0
 z_square_const = 0.0
 omega_circle_const = -0.1
 omega_square_const = 0.0
 #bending rigidity
-kappa = 1.0
+kappa = 3e-2
 #density
-rho = 1.0
+rho = 1e-12
 #viscosity
-eta = 1.0
+eta = 1e-2
 #Nitche's parameter
 alpha = 1e1
 
