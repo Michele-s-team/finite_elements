@@ -8,6 +8,8 @@ import input_output as io
 import mesh as msh
 import runtime_arguments as rarg
 
+
+
 #read the triangles
 mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
 with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:

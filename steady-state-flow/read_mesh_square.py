@@ -7,6 +7,23 @@ import mesh as msh
 import geometry as geo
 import boundary_geometry as bgeo
 
+'''
+To produce figure-2:
+
+generate the mesh with 
+~/shared/generate-mesh/2d/symmetric-square-circle/circles$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 30 10 $SOLUTION_PATH
+
+set
+L=1
+r=0.01
+
+ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
+ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
+ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
+ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=1 )
+ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
+'''
+
 
 #read the triangles
 mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())

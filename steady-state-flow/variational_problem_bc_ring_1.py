@@ -12,6 +12,7 @@ i, j, k, l = ufl.indices( 4 )
 
 '''
 To produce figure - 6 :
+select bc_ring_1
 set r = 0.01, R = 0.5 everywhere
 refactor sigma_r_const -> sigma_R_const
 set 
