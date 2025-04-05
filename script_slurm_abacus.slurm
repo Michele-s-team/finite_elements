@@ -20,7 +20,7 @@ SOLUTION=$RUN"/solution"
 
 rm -rf $SOLUTION
 mkdir $SOLUTION
-mkdir -p $SOLUTION"/snapshots/csv/"
+mkdir -p $SOLUTION"/snapshots/csv/nodal_values/"
 
 cd $RUN
 #res = 0.2
