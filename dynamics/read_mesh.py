@@ -24,19 +24,19 @@ r_mesh = bgeo.mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 2
-h = 0.5
+L = 1
+h = 1
 r = 0.01
-c_r = [L/4, h/2.0]
+c_r = [L/2, h/2.0]
 #CHANGE PARAMETERS HERE
 
 #test for surface elements
 dx = Measure( "dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1 )
-ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
-ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
-ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
-ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
-ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=6 )
+ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
+ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
+ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
+ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=1 )
+ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
