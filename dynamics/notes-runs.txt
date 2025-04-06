@@ -1,11 +1,27 @@
 *) 
 bc_a
+L = 2.2
+h = 0.41
+r = 0.05
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
  clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH  1e-1 1e-6 1.293e-2 1.85e-7 1e-1 10000
 Stop at step ~ 3800 and one sees the downstream wake
 
 *) bc_a
-
+L = 2.2
+h = 0.41
+r = 0.05
  clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
 time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $MESH $SOLUTION 0.1 1e-6 0.01293 1.85e-07 1 100000
 crashes at * step =  3794  because the membrane makes a sudden movement 
+
+
+*) bc_a
+L = 1
+h = 1
+r = 0.05
+ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+ time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $MESH $SOLUTION 1 1e-6 0.01293 1.85e-07 1e-2 1000
+
+The run does not crash
+ The dynamics is smooth and complex patterns appear

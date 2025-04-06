@@ -10,12 +10,12 @@
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
 #CHANGE PARAMETERS HERE
-T=0.1
+T=1
 kappa=1e-06
 rho=0.01293
 eta=1.85e-07
-v=1
-N=100000
+v=1e-2
+N=1000
 #CHANGE PARAMETERS HERE
 
 RUN="/mnt/beegfs/home/mcastel1/dynamics-1"
