@@ -31,13 +31,13 @@ import function_spaces as fsp
 import runtime_arguments as rarg
 
 # import read_mesh_square as rmsh
-import read_mesh_ring as rmsh
-# import read_mesh_square_no_circle as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square_no_circle as rmsh
 
 # import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
-import variational_problem_bc_ring as vp
-# import variational_problem_bc_square_no_circle_a as vp
+# import variational_problem_bc_ring as vp
+import variational_problem_bc_square_no_circle_a as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
@@ -82,5 +82,5 @@ solver_pp_tau.solve()
 
 # import print_out_bc_square_a
 # import print_out_bc_square_b
-import print_out_bc_ring
-# import print_out_bc_square_no_circle_a
+# import print_out_bc_ring
+import print_out_bc_square_no_circle_a
