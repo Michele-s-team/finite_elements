@@ -142,32 +142,32 @@ def print_solution(psi, step, t):
 
     # print to file the forces which appear in the RHS of the equations (5a) in notes
     # tangential forces
-    fsp.f_visc_t.assign( project( phys.fvisc_t( fsp.d, omega_n_12_output, vp.eta ), fsp.Q_f_t ) )
-    fsp.f_sigma_t.assign(project( phys.fsigma_t( fsp.sigma_n_32, omega_n_12_output ), fsp.Q_f_t ))
-    fsp.f_v_t.assign( project( phys.ma_cn_t( v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, vp.rho, vp.dt ), fsp.Q_f_t ) )
-
-    files.xdmffile_f.write( fsp.f_visc_t, t )
-    files.xdmffile_f.write( fsp.f_sigma_t, t )
-    files.xdmffile_f.write( fsp.f_v_t, t )
-
-    io.print_vector_to_csvfile( fsp.f_visc_t, (rarg.args.output_directory)  + '/snapshots/csv/fvisc_t_' + str( step + 1 )  + '.csv' )
-    io.print_vector_to_csvfile( fsp.f_sigma_t, (rarg.args.output_directory)  + '/snapshots/csv/fsigma_t_' + str( step + 1 )  + '.csv' )
-    io.print_vector_to_csvfile( fsp.f_v_t, (rarg.args.output_directory)  + '/snapshots/csv/fv_t_' + str( step + 1 )  + '.csv' )
-
+    # fsp.f_visc_t.assign( project( phys.fvisc_t( fsp.d, omega_n_12_output, vp.eta ), fsp.Q_f_t ) )
+    # fsp.f_sigma_t.assign(project( phys.fsigma_t( fsp.sigma_n_32, omega_n_12_output ), fsp.Q_f_t ))
+    # fsp.f_v_t.assign( project( phys.ma_cn_t( v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, vp.rho, vp.dt ), fsp.Q_f_t ) )
+    #
+    # files.xdmffile_f.write( fsp.f_visc_t, t )
+    # files.xdmffile_f.write( fsp.f_sigma_t, t )
+    # files.xdmffile_f.write( fsp.f_v_t, t )
+    #
+    # io.print_vector_to_csvfile( fsp.f_visc_t, (rarg.args.output_directory)  + '/snapshots/csv/fvisc_t_' + str( step + 1 )  + '.csv' )
+    # io.print_vector_to_csvfile( fsp.f_sigma_t, (rarg.args.output_directory)  + '/snapshots/csv/fsigma_t_' + str( step + 1 )  + '.csv' )
+    # io.print_vector_to_csvfile( fsp.f_v_t, (rarg.args.output_directory)  + '/snapshots/csv/fv_t_' + str( step + 1 )  + '.csv' )
+    #
 
     # normal forces
-    fsp.f_visc_n.assign(project( phys.fvisc_n( fsp.V, fsp.W, omega_n_12_output, fsp.mu_n_12, vp.eta ), fsp.Q_f_n ))
-    fsp.f_el_n.assign(project( phys.fel_n( omega_n_12_output, mu_n_12_output, fsp.tau_n_12, vp.kappa ), fsp.Q_f_n ))
-    fsp.f_laplace.assign( project( phys.flaplace( fsp.sigma_n_32, omega_n_12_output ), fsp.Q_f_n ) )
+    # fsp.f_visc_n.assign(project( phys.fvisc_n( fsp.V, fsp.W, omega_n_12_output, fsp.mu_n_12, vp.eta ), fsp.Q_f_n ))
+    # fsp.f_el_n.assign(project( phys.fel_n( omega_n_12_output, mu_n_12_output, fsp.tau_n_12, vp.kappa ), fsp.Q_f_n ))
+    # fsp.f_laplace.assign( project( phys.flaplace( fsp.sigma_n_32, omega_n_12_output ), fsp.Q_f_n ) )
 
-    files.xdmffile_f.write( fsp.f_visc_n, t )
-    files.xdmffile_f.write( fsp.f_el_n, t )
-    files.xdmffile_f.write( fsp.f_laplace, t )
+    # files.xdmffile_f.write( fsp.f_visc_n, t )
+    # files.xdmffile_f.write( fsp.f_el_n, t )
+    # files.xdmffile_f.write( fsp.f_laplace, t )
 
-    io.print_scalar_to_csvfile( fsp.f_visc_n, (rarg.args.output_directory) + '/snapshots/csv/fvisc_n_' + str( step + 1 )  + '.csv')
-    io.print_scalar_to_csvfile( fsp.f_el_n, (rarg.args.output_directory) + '/snapshots/csv/fel_n_' + str( step + 1 )  + '.csv' )
-    io.print_scalar_to_csvfile( fsp.f_laplace, (rarg.args.output_directory) + '/snapshots/csv/flaplace_' + str( step + 1 )  + '.csv' )
-
+    # io.print_scalar_to_csvfile( fsp.f_visc_n, (rarg.args.output_directory) + '/snapshots/csv/fvisc_n_' + str( step + 1 )  + '.csv')
+    # io.print_scalar_to_csvfile( fsp.f_el_n, (rarg.args.output_directory) + '/snapshots/csv/fel_n_' + str( step + 1 )  + '.csv' )
+    # io.print_scalar_to_csvfile( fsp.f_laplace, (rarg.args.output_directory) + '/snapshots/csv/flaplace_' + str( step + 1 )  + '.csv' )
+    #
     # print rate of deformation tensor to file
     # files.xdmffile_d.write( project( fsp.d, fsp.Q_d ), t )
 
