@@ -24,10 +24,10 @@ r_mesh = bgeo.mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 1
+L = 2
 h = 1
 r = 0.05
-c_r = [L/2.0, h/2.0]
+c_r = [L/4, h/2.0]
 #CHANGE PARAMETERS HERE
 
 #test for surface elements
@@ -48,9 +48,9 @@ import check_mesh_tags
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 1.0)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 1.0)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 1.0)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) > (0.05 + 1.0/2.0)/2.0'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) < (0.05 + 1.0/2.0)/2.0'
+boundary_r  = f'near(x[0], {L})'
+boundary_lr  = f'near(x[0], 0) || near(x[0], {L})'
+boundary_tb  = f'near(x[1], 0) || near(x[1], {h})'
+boundary_square = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > ({r} + {np.minimum(c_r[0], c_r[1])})/2.0'
+boundary_circle = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < ({r} + {np.minimum(c_r[0], c_r[1])})/2.0'
 #CHANGE PARAMETERS HERE
