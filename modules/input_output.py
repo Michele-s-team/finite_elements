@@ -1,9 +1,5 @@
 import csv
 from fenics import *
-<<<<<<< HEAD
-=======
-
->>>>>>> 4a9dac7 (Update input_output.py)
 import mesh as msh
 
 number_of_decimals = 2

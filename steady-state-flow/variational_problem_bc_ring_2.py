@@ -7,6 +7,34 @@ To check the solution against check-with-analytical-solution-bc-ring-2.nb
 - check-with-analytical-solution-bc-ring-2.nb
 '''
 
+'''
+to produce figure-7: 
+
+set  bc_ring_2
+set everywhere
+r = 0.01
+R = 0.25
+
+set
+
+#bending rigidity
+kappa = 3e-2
+#density
+rho = 1e-12
+#viscosity
+eta = 1e-2
+
+v_r_const = -1
+v_R_const = -0.040199502484483561080877059650826321556501851825
+w_R_const = 0.0
+sigma_R_const = 1.0
+z_R_const = 0
+omega_r_const = 0.1
+omega_R_const = 0
+
+
+
+'''
 
 from fenics import *
 import ufl as ufl

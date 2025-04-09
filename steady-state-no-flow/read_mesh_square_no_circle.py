@@ -79,9 +79,9 @@ msh.test_mesh_integral(0.7765772342243651, f_test_ds, ds_b, '\int f ds_b')
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 1.0)'
-boundary_t  = 'near(x[1], 1.0)'
+boundary_r  = f'near(x[0], {L})'
+boundary_t  = f'near(x[1], {h})'
 boundary_b  = 'near(x[1], 0.0)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 1.0)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 1.0)'
+boundary_lr  = f'near(x[0], 0) || near(x[0], {L})'
+boundary_tb  = f'near(x[1], 0) || near(x[1], {h})'
 #CHANGE PARAMETERS HERE

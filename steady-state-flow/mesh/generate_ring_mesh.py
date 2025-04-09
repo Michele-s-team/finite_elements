@@ -8,6 +8,21 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_P
 
 '''
 
+'''
+* To produce figure-6:
+run with resolution = 0.025
+circle_r = model.add_circle( c_r, r, mesh_size=resolution/20 )
+
+
+* to produce figure-7:
+
+run with resolution = 0.01
+circle_r = model.add_circle( c_r, r, mesh_size=resolution/20 )
+
+'''
+
+
+
 import meshio
 import gmsh
 import pygmsh
