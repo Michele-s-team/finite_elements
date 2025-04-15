@@ -63,7 +63,7 @@ Return values:
 '''
 
 
-def dFdl_tot(v, w, omega, mu, sigma, eta, kappa, nu):
+def dFdl_tot_t(v, w, omega, mu, sigma, eta, kappa, nu):
     return as_tensor((dFdl(v, w, omega, sigma, eta, nu))[i] + dFdl_kappa_t(mu, kappa, nu)[i], (i))
 
 #fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity

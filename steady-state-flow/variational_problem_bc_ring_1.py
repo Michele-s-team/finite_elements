@@ -162,6 +162,18 @@ class TauExpression( UserExpression ):
         return (1,)
 # CHANGE PARAMETERS HERE
 
+#test for 3d vector
+'''
+class v_test_3d_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[0]
+        values[1] = -x[1]
+        values[2] = 2*x[1]
+    def value_shape(self):
+        return (3,)
+v_test_3d = interpolate(v_test_3d_Expression(element=fsp.Q_3d.ufl_element()), fsp.Q_3d)
+'''
+
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 
 
