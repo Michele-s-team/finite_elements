@@ -148,3 +148,7 @@ Return values:
 '''
 def from_3D_to_tangent_space(omega, V):
     return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
+
+
+def from_tangent_normal_to_3D_space(omega, v_t, v_n):
+    return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
