@@ -163,7 +163,7 @@ class TauExpression( UserExpression ):
 # CHANGE PARAMETERS HERE
 
 #test for 3d vector
-# 
+#
 class v_test_3d_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
