@@ -149,6 +149,15 @@ Return values:
 def from_3D_to_tangent_space(omega, V):
     return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
 
-
+'''
+this method transforms the  components tangential to \Omega and normal to \Omega of a vector, 
+to the corresponding vector in the 3d Euclidean space in which \Omega is embedded
+Input values:
+- 'omega': a one-form omega_i, the gradient of z
+- 'v_t' : the tangential component  vector v_t^i 
+- 'v_n': the normal component  
+Return values:
+- the vector in 3d space (a tuple of 3 coordinates)
+'''
 def from_tangent_normal_to_3D_space(omega, v_t, v_n):
     return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
