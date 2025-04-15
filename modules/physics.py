@@ -15,6 +15,57 @@ def Pi(v, w, omega, sigma, eta):
 def dFdl(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
 
+
+
+'''
+Tangential force per unit length exerted on a line element on \partial \Omega by the bending-rigidity forces
+Input values: 
+- mu: mean curvature, H
+- kappa: bending rigidity
+- nu: vector normal to the line element in \partial Omega
+Return values: 
+- the vector {dF^i_\kappa/dl}_notes
+'''
+
+
+def dFdl_kappa_t(mu, kappa, nu):
+    return as_tensor(- 2 * kappa * (mu ** 2) * nu[i], (i))
+
+
+'''
+Normal force per unit length exerted on a line element on \partial \Omega by the bending-rigidity forces
+Input values: 
+- mu: mean curvature, H
+- kappa: bending rigidity
+- nu: vector normal to the line element in \partial Omega
+Return values: 
+- the scalar {dF^n_\kappa/dl}_notes
+'''
+
+
+def dFdl_kappa_n(mu, kappa, nu):
+    return (2 * kappa * nu[i] * (mu.dx(i)))
+
+
+'''
+Total tangential force, involving the contribution from viscous + surface-tension + bending-rigidity terms, exerted on a line element on \partial \Omega
+Input values:
+- 'v': tangential velocity
+- 'w': normale velocity
+- 'omega' : gradient of manifold height z
+- 'mu': mean curvature H
+- 'sigma' : surface tension 
+- 'eta': viscosity
+- 'kappa': bending rigidity
+- 'nu': vector normal to the line element in \partial Omega
+Return values: 
+- the vector {dF^i/dl}_notes + {dF^i_\kappa/dl}_notes 
+'''
+
+
+def dFdl_tot(v, w, omega, mu, sigma, eta, kappa, nu):
+    return as_tensor((dFdl(v, w, omega, sigma, eta, nu))[i] + dFdl_kappa_t(mu, kappa, nu)[i], (i))
+
 #fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity
 def fel_n(omega, mu, tau, kappa):
     return (kappa * ( - 2.0 * tau - 4.0 * mu * ( (mu**2) - geo.K(omega) ) ))

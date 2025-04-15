@@ -18,6 +18,9 @@ The solution files will be stored in /home/fenics/shared/steady-state-flow/solut
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
+
+All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
 import colorama as col
@@ -34,9 +37,11 @@ import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
 
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import read_mesh_ring as rmsh
 # import read_mesh_square as rmsh
 
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import variational_problem_bc_ring_1 as vp
 # import variational_problem_bc_ring_2 as vp
 # import variational_problem_bc_square_a as vp
@@ -104,7 +109,7 @@ solver_pp_tau.solve()
 solver_pp_d.solve()
 
 
-
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import print_out_bc_ring_1
 # import print_out_bc_ring_2
 # import print_out_bc_square_a
