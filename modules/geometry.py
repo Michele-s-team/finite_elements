@@ -137,14 +137,14 @@ Output values:
 def from_tangent_to_3D_space(omega, v):
     return as_tensor(v[i]*e(omega)[i, j], (j) )
 
-# '''
-# this method takes as input a vector in the in the 3d Euclidean space and
-# returns its decomposition in compoennts in the tangent bundle of \Omega and in the component normal ot \Omega
-# Input values:
-# - 'omega': a one-form omega_i, the gradient of z
-# - 'v' : the vector in 3d space (a tuple of 3 coordinates)
-# Return values:
-# - the tangential part V_t^i and the normal part V_n
-# '''
-# def from_3D_to_tangent_space(omega, V):
-#     return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
+'''
+this method takes as input a vector in the in the 3d Euclidean space and
+returns its decomposition in compoennts in the tangent bundle of \Omega and in the component normal ot \Omega
+Input values:
+- 'omega': a one-form omega_i, the gradient of z
+- 'v' : the vector in 3d space (a tuple of 3 coordinates)
+Return values:
+- the tangential part V_t^i and the normal part V_n
+'''
+def from_3D_to_tangent_space(omega, V):
+    return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
