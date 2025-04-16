@@ -173,9 +173,7 @@ field_to_write = project(
 xdmffile_dFdl_eta_sigma_t.write(field_to_write, 0)
 io.print_vector_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_eta_sigma_t.csv')
 io.print_nodal_values_vector_3d_to_csvfile(
-    project(geo.from_tangent_to_3D_space(omega_output,
-                                 phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta,
-                                                       geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output))), fsp.Q_3d),\
+    project(phys.dFdl_eta_sigma_3d(v_output,w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d), \
     bgeo.mesh,\
     (rarg.args.output_directory) + '/nodal_values/dFdl_eta_sigma_3d.csv'\
     )

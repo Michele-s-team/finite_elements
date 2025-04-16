@@ -29,6 +29,21 @@ Return values:
 def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
 
+'''
+Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface-tension forces, projected in the three-dimensional space where 
+\Omega is embedded
+Input values: 
+- 'v' : tangential velocity v^i
+- 'w': normal velocity w
+- 'omega' : gradient of manifold height z
+- 'sigma': surface tension
+- 'eta' : viscosity
+- nu: vector normal to the line element in \partial Omega
+Return values: 
+- the 3d vector (tuple of three values) of {dF^i_\kappa/dl}_notes projected in the 3d space
+'''
+def dFdl_eta_sigma_3d(v, w, omega, sigma, eta, nu):
+    return geo.from_tangent_to_3D_space(omega, dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu))
 
 '''
 Tangential force per unit length exerted on a line element on \partial \Omega by the bending-rigidity forces
