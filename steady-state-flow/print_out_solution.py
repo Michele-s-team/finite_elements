@@ -47,6 +47,9 @@ xdmffile_dFdl_kappa_t.parameters.update({"functions_share_mesh": True, "rewrite_
 xdmffile_dFdl_kappa_n = XDMFFile((rarg.args.output_directory) + '/dFdl_kappa_n.xdmf')
 xdmffile_dFdl_kappa_n.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
+xdmffile_dFdl_tot_3d = XDMFFile((rarg.args.output_directory) + '/dFdl_tot_3d.xdmf')
+xdmffile_dFdl_tot_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
@@ -72,6 +75,7 @@ io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
 io.print_vector_to_csvfile(fsp.nu, (rarg.args.output_directory) + '/nu.csv')
 io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
 
+# print nodal values of solution 
 io.print_nodal_values_vector_to_csvfile(v_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/v.csv')
 io.print_nodal_values_scalar_to_csvfile(w_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/w.csv')
 io.print_nodal_values_scalar_to_csvfile(sigma_output, bgeo.mesh,
@@ -83,6 +87,7 @@ io.print_nodal_values_scalar_to_csvfile(mu_output, bgeo.mesh, (rarg.args.output_
 
 io.print_nodal_values_vector_to_csvfile(fsp.nu, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/nu.csv')
 io.print_nodal_values_scalar_to_csvfile(fsp.tau, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/tau.csv')
+
 
 # write the solutions in .h5 format so it can be read from other codes
 HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/v.h5", "w").write(v_output, "/f")
@@ -182,4 +187,12 @@ io.print_scalar_to_csvfile(
     project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n),
     (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
 
+
+# write total force in three-dimensional space
+field_to_write = project(
+    phys.dFdl_tot_3d(v_output, w_output, omega_output, sigma_output, sigma_output, vp.eta, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)) , fsp.Q_3d)
+xdmffile_dFdl_tot_3d.write(field_to_write, 0)
+io.print_vector_3d_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_tot_3d.csv')
+io.print_nodal_values_vector_3d_to_csvfile(field_to_write, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/dFdl_tot_3d.csv')
+xdmffile_dFdl_tot_3d.close()
 
