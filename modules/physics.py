@@ -61,7 +61,7 @@ def dFdl_kappa_n(mu, kappa, nu):
 
 
 '''
-Total tangential force, involving the contribution from viscous + surface-tension + bending-rigidity terms, exerted on a line element on \partial \Omega
+Total tangential force exerted on a line element on \partial \Omega
 Input values:
 - 'v': tangential velocity
 - 'w': normale velocity
@@ -78,6 +78,19 @@ Return values:
 
 def dFdl_tot_t(v, w, omega, mu, sigma, eta, kappa, nu):
     return as_tensor((dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu))[i] + dFdl_kappa_t(mu, kappa, nu)[i], (i))
+
+'''
+Total normal force exerted on a line element on \partial \Omega
+Input values: 
+- mu: mean curvature, H
+- kappa: bending rigidity
+- nu: vector normal to the line element in \partial Omega
+Return values: 
+- the scalar {dF^n_\kappa/dl}_notes
+'''
+
+def dFdl_tot_n(mu, kappa, nu):
+    return dFdl_kappa_n(mu, kappa, nu)
 
 
 # fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity
