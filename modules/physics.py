@@ -26,7 +26,7 @@ Return values:
 '''
 
 
-def dFdl(v, w, omega, sigma, eta, nu):
+def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
 
 
@@ -77,7 +77,7 @@ Return values:
 
 
 def dFdl_tot_t(v, w, omega, mu, sigma, eta, kappa, nu):
-    return as_tensor((dFdl(v, w, omega, sigma, eta, nu))[i] + dFdl_kappa_t(mu, kappa, nu)[i], (i))
+    return as_tensor((dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu))[i] + dFdl_kappa_t(mu, kappa, nu)[i], (i))
 
 
 # fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity
