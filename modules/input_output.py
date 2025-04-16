@@ -173,3 +173,42 @@ def add_trailing_slash(string):
         return string + '/'
     else:
         return string
+
+'''
+print a field as xdmf, csv file and its nodal values on a csv file
+Input values:
+- 'f': the field
+- 'path_xdmf_file' the path of the xdmf file
+- 'path_csv_file' the path of the csv file
+- 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+- 'mesh': the mesh where 'f' is defined
+- 'type': the type of 'f', which may be 'scalar', 'vector' (for a vector in the tangent bundle of \Omega) or 'vector_3d' (for a vector in the 3d space in which 
+\Omega is embedded)
+'''
+def full_print(f, field_name, path_xdmf_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+
+    # add / to file paths, in case it is missing
+    path_xdmf_file_with_slash = add_trailing_slash(path_xdmf_file)
+    path_csv_file_with_slash = add_trailing_slash(path_csv_file)
+    path_csv_nodal_value_file_with_slash = add_trailing_slash(path_csv_nodal_value_file)
+
+    # write to xdmf file
+    xdmffile = XDMFFile(path_xdmf_file_with_slash + field_name + '.xdmf')
+    xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+    xdmffile.write(f, 0)
+    xdmffile.close()
+
+    # write to csv file and the nodal values to csv file
+    if type == 'scalar':
+        print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_nodal_values_scalar_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+    elif type == 'vector':
+        print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+    elif type == 'vector_3d':
+        print_vector_3d_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_nodal_values_vector_3d_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+
