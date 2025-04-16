@@ -136,10 +136,7 @@ Return values:
 - the three-dimensional vector (a vector with three entries) of the total force per unit length
 '''
 def dFdl_tot_3d(v, w, omega, mu, sigma, eta, kappa, nu):
-    return geo.from_tangent_normal_to_3D_space(omega,\
-                                               dFdl_tot_t(v, w, omega, mu, sigma, eta, kappa, nu),\
-                                               dFdl_tot_n(mu, kappa, nu)
-                                               )
+    return (dFdl_eta_sigma_3d(v,w,omega,sigma,eta,nu) + dFdl_kappa_3d(omega, mu, kappa, nu))
 
 
 # fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity

@@ -47,6 +47,13 @@ xdmffile_dFdl_kappa_t.parameters.update({"functions_share_mesh": True, "rewrite_
 xdmffile_dFdl_kappa_n = XDMFFile((rarg.args.output_directory) + '/dFdl_kappa_n.xdmf')
 xdmffile_dFdl_kappa_n.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
+xdmffile_dFdl_eta_sigma_3d = XDMFFile((rarg.args.output_directory) + '/dFdl_eta_sigma_3d.xdmf')
+xdmffile_dFdl_eta_sigma_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+
+xdmffile_dFdl_kappa_3d = XDMFFile((rarg.args.output_directory) + '/dFdl_kappa_3d.xdmf')
+xdmffile_dFdl_kappa_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+
+
 xdmffile_dFdl_tot_3d = XDMFFile((rarg.args.output_directory) + '/dFdl_tot_3d.xdmf')
 xdmffile_dFdl_tot_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
@@ -188,19 +195,23 @@ field_to_write = project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh
 xdmffile_dFdl_kappa_n.write(field_to_write, 0)
 io.print_scalar_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
 
+# write 3d force due to eta and sigma
+field_to_write = project(phys.dFdl_eta_sigma_3d(v_output,w_output,omega_output,sigma_output,vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d)
+xdmffile_dFdl_eta_sigma_3d.write(field_to_write, 0)
+io.print_nodal_values_vector_3d_to_csvfile(field_to_write, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/dFdl_eta_sigma_3d.csv')
+xdmffile_dFdl_eta_sigma_3d.close()
+
 # write 3d force due to bending rigidity
-io.print_nodal_values_vector_3d_to_csvfile(
-    project(phys.dFdl_kappa_3d(omega_output,mu_output,vp.kappa,geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d), \
-    bgeo.mesh,\
-    (rarg.args.output_directory) + '/nodal_values/dFdl_kappa_3d.csv'\
-    )
+field_to_write = project(phys.dFdl_kappa_3d(omega_output,mu_output,vp.kappa,geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d)
+xdmffile_dFdl_kappa_3d.write(field_to_write, 0)
+io.print_nodal_values_vector_3d_to_csvfile(field_to_write, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/dFdl_kappa_3d.csv')
+xdmffile_dFdl_kappa_3d.close()
 
 
-# write total force in three-dimensional space
-field_to_write = project(
-    phys.dFdl_tot_3d(v_output, w_output, omega_output, sigma_output, sigma_output, vp.eta, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)) , fsp.Q_3d)
+# write total 3d force
+field_to_write = project(\
+    phys.dFdl_tot_3d(v_output, w_output, omega_output, mu_output, sigma_output,vp.eta, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d)
 xdmffile_dFdl_tot_3d.write(field_to_write, 0)
-io.print_vector_3d_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_tot_3d.csv')
 io.print_nodal_values_vector_3d_to_csvfile(field_to_write, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/dFdl_tot_3d.csv')
 xdmffile_dFdl_tot_3d.close()
 
