@@ -169,9 +169,9 @@ import runtime_arguments as rarg
 
 class v_test_3d_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
-        values[1] = -x[1]
-        values[2] = 2*x[1]
+        values[0] = np.cos(x[0]**3-x[1])
+        values[1] = np.sin(x[0]**3-x[1])**2
+        values[2] = 2*x[1]/(1+x[0]**2)
     def value_shape(self):
         return (3,)
 v_test_3d = interpolate(v_test_3d_Expression(element=fsp.Q_3d.ufl_element()), fsp.Q_3d)
