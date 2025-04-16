@@ -166,26 +166,21 @@ xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i,
 
 # write to file forces per unit length
 # write tangential force due to viscosity and surface tension
-xdmffile_dFdl_eta_sigma_t.write(project(
+field_to_write = project(
     phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)),
-    fsp.Q_dFfl_t), 0)
-io.print_vector_to_csvfile(project(
-    phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)),
-    fsp.Q_dFfl_t), (rarg.args.output_directory) + '/dFdl_eta_sigma_t.csv')
+    fsp.Q_dFfl_t)
+xdmffile_dFdl_eta_sigma_t.write(field_to_write, 0)
+io.print_vector_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_eta_sigma_t.csv')
 
 # write tangential force due to bending rigidity
-xdmffile_dFdl_kappa_t.write(
-    project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t), 0)
-io.print_vector_to_csvfile(
-    project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
-    (rarg.args.output_directory) + '/dFdl_kappa_t.csv')
+field_to_write = project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t)
+xdmffile_dFdl_kappa_t.write(field_to_write, 0)
+io.print_vector_to_csvfile(field_to_write,(rarg.args.output_directory) + '/dFdl_kappa_t.csv')
 
 # write normal force due to bending rigidity
-xdmffile_dFdl_kappa_n.write(
-    project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n), 0)
-io.print_scalar_to_csvfile(
-    project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n),
-    (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
+field_to_write = project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n)
+xdmffile_dFdl_kappa_n.write(field_to_write, 0)
+io.print_scalar_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
 
 
 # write total force in three-dimensional space
