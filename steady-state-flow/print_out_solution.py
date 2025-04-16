@@ -5,32 +5,22 @@ import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
+import solution_paths as solpath
 import physics as phys
 import runtime_arguments as rarg
-
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import read_mesh_ring as rmsh
 # import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-import variational_problem_bc_ring_1 as vp
+# import variational_problem_bc_ring_1 as vp
+import variational_problem_bc_ring_2 as vp
 
-# import variational_problem_bc_ring_2 as vp
 # import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
 
 i, j, k, l = ufl.indices(4)
-
-# Create XDMF files for visualization output
-xdmffile_v = XDMFFile((rarg.args.output_directory) + '/v.xdmf')
-xdmffile_w = XDMFFile((rarg.args.output_directory) + '/w.xdmf')
-xdmffile_sigma = XDMFFile((rarg.args.output_directory) + '/sigma.xdmf')
-xdmffile_z = XDMFFile((rarg.args.output_directory) + '/z.xdmf')
-xdmffile_omega = XDMFFile((rarg.args.output_directory) + '/omega.xdmf')
-xdmffile_mu = XDMFFile((rarg.args.output_directory) + '/mu.xdmf')
-xdmffile_nu = XDMFFile((rarg.args.output_directory) + '/nu.xdmf')
-xdmffile_tau = XDMFFile((rarg.args.output_directory) + '/tau.xdmf')
 
 xdmffile_f = XDMFFile((rarg.args.output_directory) + '/f.xdmf')
 xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
@@ -38,62 +28,34 @@ xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_me
 xdmffile_d = XDMFFile((rarg.args.output_directory) + '/d.xdmf')
 xdmffile_d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
-xdmffile_dFdl = XDMFFile((rarg.args.output_directory) + '/dFdl.xdmf')
-xdmffile_dFdl.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-
-xdmffile_dFdl_kappa_t = XDMFFile((rarg.args.output_directory) + '/dFdl_kappa_t.xdmf')
-xdmffile_dFdl_kappa_t.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-
-xdmffile_dFdl_kappa_n = XDMFFile((rarg.args.output_directory) + '/dFdl_kappa_n.xdmf')
-xdmffile_dFdl_kappa_n.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
-# print solution to file
-xdmffile_v.write(v_output, 0)
-xdmffile_w.write(w_output, 0)
-xdmffile_sigma.write(sigma_output, 0)
-xdmffile_z.write(z_output, 0)
-xdmffile_omega.write(omega_output, 0)
-xdmffile_mu.write(mu_output, 0)
+io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
+              'vector')
+io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
+io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              bgeo.mesh, 'scalar')
+io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
+io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              bgeo.mesh, 'vector')
+io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
 
-xdmffile_nu.write(fsp.nu, 0)
-xdmffile_tau.write(fsp.tau, 0)
-
-# print to csv file
-io.print_vector_to_csvfile(v_output, (rarg.args.output_directory) + '/v.csv')
-io.print_scalar_to_csvfile(w_output, (rarg.args.output_directory) + '/w.csv')
-io.print_scalar_to_csvfile(sigma_output, (rarg.args.output_directory) + '/sigma.csv')
-io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
-io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
-io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
-
-io.print_vector_to_csvfile(fsp.nu, (rarg.args.output_directory) + '/nu.csv')
-io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
-
-io.print_nodal_values_vector_to_csvfile(v_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/v.csv')
-io.print_nodal_values_scalar_to_csvfile(w_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/w.csv')
-io.print_nodal_values_scalar_to_csvfile(sigma_output, bgeo.mesh,
-                                        (rarg.args.output_directory) + '/nodal_values/sigma.csv')
-io.print_nodal_values_scalar_to_csvfile(z_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/z.csv')
-io.print_nodal_values_vector_to_csvfile(omega_output, bgeo.mesh,
-                                        (rarg.args.output_directory) + '/nodal_values/omega.csv')
-io.print_nodal_values_scalar_to_csvfile(mu_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/mu.csv')
-
-io.print_nodal_values_vector_to_csvfile(fsp.nu, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/nu.csv')
-io.print_nodal_values_scalar_to_csvfile(fsp.tau, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/tau.csv')
-
-# write the solutions in .h5 format so it can be read from other codes
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/v.h5", "w").write(v_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/w.h5", "w").write(w_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w").write(sigma_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w").write(z_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w").write(omega_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w").write(mu_output, "/f")
-
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w").write(fsp.nu, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w").write(fsp.tau, "/f")
+io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
+              'vector')
+io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
 
 # print to file the forces which appear in the RHS of the equations
 # tangential forces
@@ -160,42 +122,39 @@ xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i,
         geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]), fsp.Q_z), fsp.Q_tau), 0)
 
 # write to file forces per unit length
-# write tangential force due to viscosity and surface tension
-xdmffile_dFdl.write(project(
-    phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)),
-    fsp.Q_dFfl_t), 0)
-io.print_vector_to_csvfile(project(
-    phys.dFdl(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)),
-    fsp.Q_dFfl_t), (rarg.args.output_directory) + '/dFdl.csv')
 
-# write tangential force due to bending rigidity
-xdmffile_dFdl_kappa_t.write(
-    project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t), 0)
-io.print_vector_to_csvfile(
+io.full_print(
+    project(phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta,
+                                  geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
+    'dFdl_eta_sigma_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector')
+
+io.full_print(
     project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
-    (rarg.args.output_directory) + '/dFdl_kappa_t.csv')
+    'dFdl_kappa_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector')
 
-# write normal force due to bending rigidity
-xdmffile_dFdl_kappa_n.write(
-    project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n), 0)
-io.print_scalar_to_csvfile(
+io.full_print(
     project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n),
-    (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
+    'dFdl_kappa_n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'scalar')
 
+io.full_print(
+    project(phys.dFdl_eta_sigma_3d(v_output, w_output, omega_output, sigma_output, vp.eta,
+                                   geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
+    'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+    solpath.nodal_values_path, bgeo.mesh,
+    'vector_3d')
 
-'''
-# test for 3d vector
-xdmffile_v_test_3d = XDMFFile((rarg.args.output_directory) + '/v_test_3d.xdmf')
-xdmffile_v_test_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_v_test_3d.write(vp.v_test_3d, 0)
-xdmffile_v_test_3d.close()
+io.full_print(
+    project(
+        phys.dFdl_kappa_3d(omega_output, mu_output, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
+    'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector_3d')
 
-v_test_t, v_test_n = geo.from_3D_to_tangent_space(omega_output, vp.v_test_3d)
-
-v_3d_reconstructed = geo.from_tangent_normal_to_3D_space(omega_output, v_test_t, v_test_n)
-
-xdmffile_delta_v_3d = XDMFFile((rarg.args.output_directory) + '/delta_v_3d.xdmf')
-xdmffile_delta_v_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_delta_v_3d.write(project(vp.v_test_3d -  v_3d_reconstructed, fsp.Q_3d), 0)
-xdmffile_delta_v_3d.close()
-'''
+io.full_print(
+    project( \
+        phys.dFdl_tot_3d(v_output, w_output, omega_output, mu_output, sigma_output, vp.eta, vp.kappa,
+                         geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
+    'dFdl_tot_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector_3d')
