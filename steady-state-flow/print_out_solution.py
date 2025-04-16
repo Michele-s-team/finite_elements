@@ -31,35 +31,31 @@ xdmffile_d.parameters.update({"functions_share_mesh": True, "rewrite_function_me
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
-io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
               'vector')
-io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
               'scalar')
-io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
               bgeo.mesh, 'scalar')
-io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
               'scalar')
-io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
               bgeo.mesh, 'vector')
-io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
               'scalar')
 
-io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
               'vector')
-io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, bgeo.mesh,
               'scalar')
-
-
-# write the solutions in .h5 format so it can be read from other codes
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/v.h5", "w").write(v_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/w.h5", "w").write(w_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/sigma.h5", "w").write(sigma_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/z.h5", "w").write(z_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/omega.h5", "w").write(omega_output, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/mu.h5", "w").write(mu_output, "/f")
-
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/nu.h5", "w").write(fsp.nu, "/f")
-HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/tau.h5", "w").write(fsp.tau, "/f")
 
 # print to file the forces which appear in the RHS of the equations
 # tangential forces
@@ -130,29 +126,35 @@ xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i,
 io.full_print(
     project(phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta,
                                   geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
-    'dFdl_eta_sigma_t', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'vector')
+    'dFdl_eta_sigma_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector')
 
 io.full_print(
     project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
-    'dFdl_kappa_t', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'vector')
+    'dFdl_kappa_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector')
 
 io.full_print(
     project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n),
-    'dFdl_kappa_n', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'scalar')
+    'dFdl_kappa_n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'scalar')
 
 io.full_print(
     project(phys.dFdl_eta_sigma_3d(v_output, w_output, omega_output, sigma_output, vp.eta,
                                    geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
-    'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+    'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+    solpath.nodal_values_path, bgeo.mesh,
     'vector_3d')
 
 io.full_print(
     project(
         phys.dFdl_kappa_3d(omega_output, mu_output, vp.kappa, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
-    'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'vector_3d')
+    'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector_3d')
 
 io.full_print(
     project( \
         phys.dFdl_tot_3d(v_output, w_output, omega_output, mu_output, sigma_output, vp.eta, vp.kappa,
                          geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
-    'dFdl_tot_3d', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'vector_3d')
+    'dFdl_tot_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+    bgeo.mesh, 'vector_3d')
