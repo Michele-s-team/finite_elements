@@ -171,7 +171,7 @@ xdmffile_dFdl_eta_sigma_t.write(project(
     fsp.Q_dFfl_t), 0)
 io.print_vector_to_csvfile(project(
     phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)),
-    fsp.Q_dFfl_t), (rarg.args.output_directory) + '/dFdl.csv')
+    fsp.Q_dFfl_t), (rarg.args.output_directory) + '/dFdl_eta_sigma_t.csv')
 
 # write tangential force due to bending rigidity
 xdmffile_dFdl_kappa_t.write(
