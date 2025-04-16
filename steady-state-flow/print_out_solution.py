@@ -38,8 +38,8 @@ xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_me
 xdmffile_d = XDMFFile((rarg.args.output_directory) + '/d.xdmf')
 xdmffile_d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
-xdmffile_dFdl = XDMFFile((rarg.args.output_directory) + '/dFdl.xdmf')
-xdmffile_dFdl.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+xdmffile_dFdl_eta_sigma_t = XDMFFile((rarg.args.output_directory) + '/dFdl.xdmf')
+xdmffile_dFdl_eta_sigma_t.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
 xdmffile_dFdl_kappa_t = XDMFFile((rarg.args.output_directory) + '/dFdl_kappa_t.xdmf')
 xdmffile_dFdl_kappa_t.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
@@ -161,7 +161,7 @@ xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i,
 
 # write to file forces per unit length
 # write tangential force due to viscosity and surface tension
-xdmffile_dFdl.write(project(
+xdmffile_dFdl_eta_sigma_t.write(project(
     phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)),
     fsp.Q_dFfl_t), 0)
 io.print_vector_to_csvfile(project(
@@ -183,19 +183,3 @@ io.print_scalar_to_csvfile(
     (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
 
 
-'''
-# test for 3d vector
-xdmffile_v_test_3d = XDMFFile((rarg.args.output_directory) + '/v_test_3d.xdmf')
-xdmffile_v_test_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_v_test_3d.write(vp.v_test_3d, 0)
-xdmffile_v_test_3d.close()
-
-v_test_t, v_test_n = geo.from_3D_to_tangent_space(omega_output, vp.v_test_3d)
-
-v_3d_reconstructed = geo.from_tangent_normal_to_3D_space(omega_output, v_test_t, v_test_n)
-
-xdmffile_delta_v_3d = XDMFFile((rarg.args.output_directory) + '/delta_v_3d.xdmf')
-xdmffile_delta_v_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_delta_v_3d.write(project(vp.v_test_3d -  v_3d_reconstructed, fsp.Q_3d), 0)
-xdmffile_delta_v_3d.close()
-'''

@@ -164,14 +164,24 @@ class TauExpression( UserExpression ):
 
 #test for 3d vector
 '''
+import input_output as io
+import runtime_arguments as rarg
+
 class v_test_3d_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
-        values[1] = -x[1]
-        values[2] = 2*x[1]
+        values[0] = np.cos(x[0]**3-x[1])
+        values[1] = np.sin(x[0]**3-x[1])**2
+        values[2] = 2*x[1]/(1+x[0]**2)
     def value_shape(self):
         return (3,)
 v_test_3d = interpolate(v_test_3d_Expression(element=fsp.Q_3d.ufl_element()), fsp.Q_3d)
+
+xdmffile_v_test_3d = XDMFFile((rarg.args.output_directory) + '/v_test_3d.xdmf')
+xdmffile_v_test_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+xdmffile_v_test_3d.write(v_test_3d, 0)
+xdmffile_v_test_3d.close()
+
+io.print_vector_3d_to_csvfile(v_test_3d, (rarg.args.output_directory) + '/v_test_3d.csv')
 '''
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
