@@ -188,6 +188,13 @@ field_to_write = project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(bgeo.mesh
 xdmffile_dFdl_kappa_n.write(field_to_write, 0)
 io.print_scalar_to_csvfile(field_to_write, (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
 
+# write 3d force due to bending rigidity
+io.print_nodal_values_vector_3d_to_csvfile(
+    project(phys.dFdl_kappa_3d(omega_output,mu_output,vp.kappa,geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_output)), fsp.Q_3d), \
+    bgeo.mesh,\
+    (rarg.args.output_directory) + '/nodal_values/dFdl_kappa_3d.csv'\
+    )
+
 
 # write total force in three-dimensional space
 field_to_write = project(

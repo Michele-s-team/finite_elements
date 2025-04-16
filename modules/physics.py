@@ -30,7 +30,7 @@ def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
 
 '''
-Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface-tension forces, projected in the three-dimensional space where 
+Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface tension, projected in the three-dimensional space where 
 \Omega is embedded
 Input values: 
 - 'v' : tangential velocity v^i
@@ -46,7 +46,7 @@ def dFdl_eta_sigma_3d(v, w, omega, sigma, eta, nu):
     return geo.from_tangent_to_3D_space(omega, dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu))
 
 '''
-Tangential force per unit length exerted on a line element on \partial \Omega by the bending-rigidity forces
+Tangential force per unit length exerted on a line element on \partial \Omega by  bending-rigidity 
 Input values: 
 - mu: mean curvature, H
 - kappa: bending rigidity
@@ -61,11 +61,11 @@ def dFdl_kappa_t(mu, kappa, nu):
 
 
 '''
-Normal force per unit length exerted on a line element on \partial \Omega by the bending-rigidity forces
+Normal force per unit length exerted on a line element on \partial \Omega by  bending rigidity 
 Input values: 
-- mu: mean curvature, H
-- kappa: bending rigidity
-- nu: vector normal to the line element in \partial Omega
+- 'mu': mean curvature, H
+- 'kappa': bending rigidity
+- 'nu': vector normal to the line element in \partial Omega
 Return values: 
 - the scalar {dF^n_\kappa/dl}_notes
 '''
@@ -74,6 +74,20 @@ Return values:
 def dFdl_kappa_n(mu, kappa, nu):
     return (2 * kappa * nu[i] * (mu.dx(i)))
 
+
+'''
+force per unit length exerted on a line element on \partial \Omega by bending-rigidity, projected in the three-dimensional space where 
+\Omega is embedded
+Input values: 
+- 'omega' : gradient of manifold height z
+- 'mu': mean curvature, H
+- 'kappa' : bending rigidity
+- 'nu': vector normal to the line element in \partial Omega
+Return values: 
+- the 3d vector (tuple of three values) of {dF^i_\kappa/dl}_notes projected in the 3d space
+'''
+def dFdl_kappa_3d(omega, mu, kappa, nu):
+    return geo.from_tangent_normal_to_3D_space(omega, dFdl_kappa_t(mu, kappa, nu), dFdl_kappa_n(mu, kappa, nu))
 
 '''
 Total tangential force exerted on a line element on \partial \Omega
