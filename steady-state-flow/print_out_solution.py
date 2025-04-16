@@ -22,16 +22,6 @@ import variational_problem_bc_ring_2 as vp
 
 i, j, k, l = ufl.indices(4)
 
-# Create XDMF files for visualization output
-xdmffile_v = XDMFFile((rarg.args.output_directory) + '/v.xdmf')
-xdmffile_w = XDMFFile((rarg.args.output_directory) + '/w.xdmf')
-xdmffile_sigma = XDMFFile((rarg.args.output_directory) + '/sigma.xdmf')
-xdmffile_z = XDMFFile((rarg.args.output_directory) + '/z.xdmf')
-xdmffile_omega = XDMFFile((rarg.args.output_directory) + '/omega.xdmf')
-xdmffile_mu = XDMFFile((rarg.args.output_directory) + '/mu.xdmf')
-xdmffile_nu = XDMFFile((rarg.args.output_directory) + '/nu.xdmf')
-xdmffile_tau = XDMFFile((rarg.args.output_directory) + '/tau.xdmf')
-
 xdmffile_f = XDMFFile((rarg.args.output_directory) + '/f.xdmf')
 xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
@@ -41,40 +31,24 @@ xdmffile_d.parameters.update({"functions_share_mesh": True, "rewrite_function_me
 # copy the data of the  solution psi into v_output, ..., z_output, which will be allocated or re-allocated here
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
-# print solution to file
-xdmffile_v.write(v_output, 0)
-xdmffile_w.write(w_output, 0)
-xdmffile_sigma.write(sigma_output, 0)
-xdmffile_z.write(z_output, 0)
-xdmffile_omega.write(omega_output, 0)
-xdmffile_mu.write(mu_output, 0)
+io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+              'vector')
+io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
+io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+              bgeo.mesh, 'scalar')
+io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
+io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path,
+              bgeo.mesh, 'vector')
+io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
 
-xdmffile_nu.write(fsp.nu, 0)
-xdmffile_tau.write(fsp.tau, 0)
+io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+              'vector')
+io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh,
+              'scalar')
 
-# print to csv file
-io.print_vector_to_csvfile(v_output, (rarg.args.output_directory) + '/v.csv')
-io.print_scalar_to_csvfile(w_output, (rarg.args.output_directory) + '/w.csv')
-io.print_scalar_to_csvfile(sigma_output, (rarg.args.output_directory) + '/sigma.csv')
-io.print_scalar_to_csvfile(z_output, (rarg.args.output_directory) + '/z.csv')
-io.print_vector_to_csvfile(omega_output, (rarg.args.output_directory) + '/omega.csv')
-io.print_scalar_to_csvfile(mu_output, (rarg.args.output_directory) + '/mu.csv')
-
-io.print_vector_to_csvfile(fsp.nu, (rarg.args.output_directory) + '/nu.csv')
-io.print_scalar_to_csvfile(fsp.tau, (rarg.args.output_directory) + '/tau.csv')
-
-# print nodal values of solution 
-io.print_nodal_values_vector_to_csvfile(v_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/v.csv')
-io.print_nodal_values_scalar_to_csvfile(w_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/w.csv')
-io.print_nodal_values_scalar_to_csvfile(sigma_output, bgeo.mesh,
-                                        (rarg.args.output_directory) + '/nodal_values/sigma.csv')
-io.print_nodal_values_scalar_to_csvfile(z_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/z.csv')
-io.print_nodal_values_vector_to_csvfile(omega_output, bgeo.mesh,
-                                        (rarg.args.output_directory) + '/nodal_values/omega.csv')
-io.print_nodal_values_scalar_to_csvfile(mu_output, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/mu.csv')
-
-io.print_nodal_values_vector_to_csvfile(fsp.nu, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/nu.csv')
-io.print_nodal_values_scalar_to_csvfile(fsp.tau, bgeo.mesh, (rarg.args.output_directory) + '/nodal_values/tau.csv')
 
 # write the solutions in .h5 format so it can be read from other codes
 HDF5File(MPI.comm_world, (rarg.args.output_directory) + "/h5/v.h5", "w").write(v_output, "/f")
