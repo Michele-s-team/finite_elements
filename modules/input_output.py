@@ -65,6 +65,40 @@ def print_vector_to_csvfile(f, filename):
     csvfile.close()
 
 
+
+'''
+print a vector field in the three-dimensional space to csv file 
+Input values:
+- 'V': the three-dimensional vector field, whcih returns a tuple of 3 values for each point in \Omega
+- 'filename': the name of the csv file where 'V' will be written
+'''
+def print_vector_3d_to_csvfile(V, filename):
+
+    i = 0
+    list_val_x = []
+    list_val_y = []
+    list_val_z = []
+    list_x = []
+
+    for x, val in zip(V.function_space().tabulate_dof_coordinates(), V.vector().get_local()):
+        if (i % 3 == 0):
+            list_val_x.append(val)
+            list_x.append(x)
+        elif (i % 3 == 1):
+            list_val_y.append(val)
+        elif (i % 3 == 2):
+            list_val_z.append(val)
+
+        i += 1
+
+    csvfile = open(filename, "w")
+    print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    for x, val_x, val_y, val_z in zip(list_x, list_val_x, list_val_y, list_val_z):
+        print(f"{val_x},{val_y},{val_z},{x[0]},{x[1]},{0}", file=csvfile)
+
+    csvfile.close()
+
 #print the nodal values of a vector field 'f' on the mesh 'mesh' to csv file 'filename'
 def print_nodal_values_vector_to_csvfile(f, mesh, filename):
 

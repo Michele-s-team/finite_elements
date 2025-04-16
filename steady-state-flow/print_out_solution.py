@@ -183,19 +183,3 @@ io.print_scalar_to_csvfile(
     (rarg.args.output_directory) + '/dFdl_kappa_n.csv')
 
 
-'''
-# test for 3d vector
-xdmffile_v_test_3d = XDMFFile((rarg.args.output_directory) + '/v_test_3d.xdmf')
-xdmffile_v_test_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_v_test_3d.write(vp.v_test_3d, 0)
-xdmffile_v_test_3d.close()
-
-v_test_t, v_test_n = geo.from_3D_to_tangent_space(omega_output, vp.v_test_3d)
-
-v_3d_reconstructed = geo.from_tangent_normal_to_3D_space(omega_output, v_test_t, v_test_n)
-
-xdmffile_delta_v_3d = XDMFFile((rarg.args.output_directory) + '/delta_v_3d.xdmf')
-xdmffile_delta_v_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_delta_v_3d.write(project(vp.v_test_3d -  v_3d_reconstructed, fsp.Q_3d), 0)
-xdmffile_delta_v_3d.close()
-'''
