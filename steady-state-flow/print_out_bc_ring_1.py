@@ -39,13 +39,4 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_circle(prout.omega_output))[i] * prout.omega_output[i], vp.omega_R, rmsh.ds_R):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-# print out the force exerted on the circle
-dFdl_tot_3d_to_assemble = phys.dFdl_tot_3d(prout.v_output,
-                                           prout.w_output,
-                                           prout.omega_output,
-                                           prout.mu_output,
-                                           prout.sigma_output,
-                                           vp.eta, vp.kappa,
-                                           bgeo.n_circle(prout.omega_output))
-print("F_{ds_r} = ",\
-      [assemble(dFdl * bgeo.sqrt_deth_circle(prout.omega_output, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_r) for dFdl in dFdl_tot_3d_to_assemble])
+import print_out_force_on_circle
