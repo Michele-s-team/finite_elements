@@ -115,6 +115,29 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
 
     csvfile.close()
 
+'''
+print the nodal values of a vector field 'V', defined in the three-dimensional space in which the mesh and \Omega are embeedded,  
+ to csv file 
+ Input values:
+- 'V': the three-dimensional vector field, whcih returns a tuple of 3 values for each point in \Omega
+- 'mesh' : the mesh defining \Omega
+- 'filename': the name of the csv file where 'V' will be written
+'''
+def print_nodal_values_vector_3d_to_csvfile(V, mesh, filename):
+
+    # a dummy function space of order 1 used to tabulated the vertices
+    Q = FunctionSpace( mesh, 'CG', 1 )
+    coordinates = Q.tabulate_dof_coordinates()
+
+    csvfile = open( filename, "w" )
+    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
+
+    for i in range( Q.dim() ):
+        v = V(coordinates[i][0], coordinates[i][1])
+        print( f"{v[0]}, {v[1]}, {v[2]}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+    csvfile.close()
+
 
 #print to the csv file 'filename' the coordinates of the vertices of 'mesh'
 def print_vertices_to_csv_file(mesh, filename):
