@@ -26,6 +26,9 @@ from fenics import *
 from mshr import *
 import sys
 
+
+
+
 #add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
@@ -43,6 +46,7 @@ import read_mesh_square as rmsh
 # import variational_problem_bc_square_no_circle_a as vp
 # import variational_problem_bc_square_a as vp
 import variational_problem_bc_square_b as vp
+
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 4

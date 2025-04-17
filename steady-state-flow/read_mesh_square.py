@@ -2,6 +2,7 @@ from fenics import *
 from mshr import *
 import numpy as np
 
+import calc
 import runtime_arguments as rarg
 import mesh as msh
 import geometry as geo
@@ -93,10 +94,10 @@ msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int f ds_squa
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_l  = 'near(x[0], 0.0)'
-boundary_r  = 'near(x[0], 0.5)'
-boundary_lr  = 'near(x[0], 0) || near(x[0], 0.5)'
-boundary_tb  = 'near(x[1], 0) || near(x[1], 0.5)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) > (0.05+0.25)/2.0'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 0.5/2.0, 2) + pow(x[1] - 0.5/2.0, 2)) < (0.05+0.25)/2.0'
+boundary_l  = f'near(x[0], 0.0)'
+boundary_r  = f'near(x[0], {L})'
+boundary_lr  = f'near(x[0], 0) || near(x[0], {L})'
+boundary_tb  = f'near(x[1], 0) || near(x[1], {h})'
+boundary_square = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {(r + calc.min_dist_c_r_rectangle(L, h, c_r))/2}'
+boundary_circle = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + calc.min_dist_c_r_rectangle(L, h, c_r))/2}'
 #CHANGE PARAMETERS HERE

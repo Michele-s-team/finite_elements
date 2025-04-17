@@ -39,3 +39,27 @@ def integral_2d_curve(f, gamma_dgamma):
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
     return [[np.cos(theta),-np.sin(theta),0],[np.sin(theta),np.cos(theta),0],[0,0,1]]
+
+
+'''
+given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the circle center and the rectangle boundary
+Input values: 
+- 'L', 'h': the length and  height of the rectangle
+- 'p' : the coordinates of the point
+Return values: 
+- the minimal distance
+'''
+
+def min_dist_c_r_rectangle(L, h, p):
+    if p[0] < L/2:
+        min_x = p[0]
+    else:
+        min_x = L-p[0]
+
+    if p[1] < h/2:
+        min_y = p[1]
+    else:
+        min_y = h-p[1]
+
+    return min(min_x, min_y)
+
