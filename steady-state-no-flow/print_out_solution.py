@@ -1,3 +1,14 @@
+from fenics import *
+import ufl as ufl
+
+
+import boundary_geometry as bgeo
+import function_spaces as fsp
+import geometry as geo
+import input_output as io
+import physics as phys
+import runtime_arguments as rarg
+
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
@@ -5,7 +16,6 @@ import read_mesh_ring as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import variational_problem_bc_ring as vp
-
 # import variational_problem_bc_square_no_circle_a as vp
 # import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
