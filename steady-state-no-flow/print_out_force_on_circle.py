@@ -1,5 +1,4 @@
 from fenics import *
-import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
