@@ -29,6 +29,18 @@ Return values:
 def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
 
+
+'''
+Tangential force per unit length exerted on a line element on \partial \Omega by  surface-tension forces
+Input values: 
+- 'sigma': surface tension
+- nu: vector normal to the line element in \partial Omega
+Return values: 
+- the surface-tension contribution to  {dF^i_\kappa/dl}_notes
+'''
+def dFdl_sigma_t(sigma, nu):
+    return as_tensor(- sigma * nu[i], (i))
+
 '''
 Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface tension, projected in the three-dimensional space where 
 \Omega is embedded
