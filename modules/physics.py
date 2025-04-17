@@ -41,6 +41,20 @@ Return values:
 def dFdl_sigma_t(sigma, nu):
     return as_tensor(- sigma * nu[i], (i))
 
+
+'''
+Tangential force per unit length exerted on a line element on \partial \Omega by surface tension, projected in the three-dimensional space where 
+\Omega is embedded
+Input values: 
+- 'omega' : gradient of manifold height z
+- 'sigma': surface tension
+- 'nu': vector normal to the line element in \partial Omega
+Return values: 
+- the surface-tension contribution to {dF^i/dl}_notes projected in the 3d space (tuple of three values)
+'''
+def dFdl_sigma_3d(omega, sigma, nu):
+    return geo.from_tangent_to_3D_space(omega, dFdl_sigma_t(omega, sigma, nu))
+
 '''
 Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface tension, projected in the three-dimensional space where 
 \Omega is embedded
