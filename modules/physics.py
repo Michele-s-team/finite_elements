@@ -29,6 +29,32 @@ Return values:
 def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
     return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
 
+
+'''
+Tangential force per unit length exerted on a line element on \partial \Omega by  surface-tension forces
+Input values: 
+- 'sigma': surface tension
+- nu: vector normal to the line element in \partial Omega
+Return values: 
+- the surface-tension contribution to  {dF^i_\kappa/dl}_notes
+'''
+def dFdl_sigma_t(sigma, nu):
+    return as_tensor(- sigma * nu[i], (i))
+
+
+'''
+Tangential force per unit length exerted on a line element on \partial \Omega by surface tension, projected in the three-dimensional space where 
+\Omega is embedded
+Input values: 
+- 'omega' : gradient of manifold height z
+- 'sigma': surface tension
+- 'nu': vector normal to the line element in \partial Omega
+Return values: 
+- the surface-tension contribution to {dF^i/dl}_notes projected in the 3d space (tuple of three values)
+'''
+def dFdl_sigma_3d(omega, sigma, nu):
+    return geo.from_tangent_to_3D_space(omega, dFdl_sigma_t(sigma, nu))
+
 '''
 Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface tension, projected in the three-dimensional space where 
 \Omega is embedded
@@ -106,6 +132,21 @@ Return values:
 '''
 def dFdl_tot_3d(v, w, omega, mu, sigma, eta, kappa, nu):
     return (dFdl_eta_sigma_3d(v,w,omega,sigma,eta,nu) + dFdl_kappa_3d(omega, mu, kappa, nu))
+
+'''
+force, in the three-dimensional space in which \Omega is embedded, exerted on a line element on \partial \Omega  by
+surface tension and bending rigidity
+Input values: 
+- 'omega' : gradient of manifold height z
+- 'mu': mean curvature H
+- 'sigma' : surface tension 
+- 'kappa': bending rigidity
+- 'nu': vector normal to the line element in \partial Omega
+Return values:
+- the three-dimensional vector (a vector with three entries) of the total force per unit length
+'''
+def dFdl_sigma_kappa_3d(omega, mu, sigma, kappa, nu):
+    return (dFdl_sigma_3d(omega, sigma, nu) + dFdl_kappa_3d(omega, mu, kappa, nu))
 
 
 # fel_n = f^{EL}_notes , i.e.,  part of the normal force due to the bending rigidity
