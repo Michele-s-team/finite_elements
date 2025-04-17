@@ -37,6 +37,4 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.omega_square, rmsh.ds_tb):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-# print out the force exerted on the circle
-print(
-    f"F_circle = {[assemble(phys.dFdl_eta_sigma_t(prout.v_output, prout.w_output, prout.omega_output, prout.sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, prout.omega_output))[0] * bgeo.sqrt_deth_circle(prout.omega_output, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle), assemble(phys.dFdl_eta_sigma_t(prout.v_output, prout.w_output, prout.omega_output, prout.sigma_output, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, prout.omega_output))[1] * bgeo.sqrt_deth_circle(prout.omega_output, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle)]}")
+import print_out_force_on_circle

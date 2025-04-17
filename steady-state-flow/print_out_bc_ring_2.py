@@ -37,3 +37,5 @@ print(
 
 print(
     f"\n\t\t<z>_[partial Omega r] = {col.Fore.YELLOW}{assemble(prout.z_output * rmsh.ds_r) / assemble(Constant(1.0) * rmsh.ds_r)}{col.Style.RESET_ALL}")
+
+import print_out_force_on_circle
