@@ -31,17 +31,26 @@ to make figure-4:
     h = 1
     r = 0.01
     c_r = [L/2, h/2]
+- set in read_mesh_square.py:
+    ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4 )
+    ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
+    ds_t = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
+    ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=1 )
+    ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
 - set
-    v_l_const = 10.0
-    w_boundary_const = 0.0
+    v_l_const = 1.0
+    w_square_const = 0.0
     sigma_r_const = 1.0
-    z_circle_const = 0.0
     z_square_const = 0.0
-    omega_circle_const = -0.1
+    omega_circle_const = 0.1
     omega_square_const = 0.0
+    #bending rigidity
     kappa = 3e-2
+    #density
     rho = 1e-12
+    #viscosity
     eta = 1e-2
+#Nitche's parameter
 - set the natural BC in F_v
     [...]
     - 2.0 * eta * ( \
@@ -52,7 +61,10 @@ to make figure-4:
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_tb( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
               + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
     )
-
+- generate the mesh with finite_elements/generate-mesh/2d/symmetric-square-circle/circles/generate_mesh.py with
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 12 $SOLUTION_PATH
+- run with 
+    
 '''
 
 import colorama as col
@@ -70,14 +82,14 @@ import input_output as io
 import runtime_arguments as rarg
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-import read_mesh_ring as rmsh
-# import read_mesh_square as rmsh
+# import read_mesh_ring as rmsh
+import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_ring_1 as vp
-import variational_problem_bc_ring_2 as vp
+# import variational_problem_bc_ring_2 as vp
 # import variational_problem_bc_square_a as vp
-# import variational_problem_bc_square_b as vp
+import variational_problem_bc_square_b as vp
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -143,6 +155,6 @@ solver_pp_d.solve()
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import print_out_bc_ring_1
-import print_out_bc_ring_2
+# import print_out_bc_ring_2
 # import print_out_bc_square_a
-# import print_out_bc_square_b
+import print_out_bc_square_b
