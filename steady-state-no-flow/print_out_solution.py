@@ -10,6 +10,7 @@ import solution_paths as solpath
 import runtime_arguments as rarg
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
+import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
 # import read_mesh_square as rmsh
 

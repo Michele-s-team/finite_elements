@@ -3,7 +3,6 @@ import ufl as ufl
 import colorama as col
 
 import boundary_geometry as bgeo
-import function_spaces as fsp
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
@@ -44,3 +43,4 @@ print(
     f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (fsp.nu[i] - fsp.nu_exact[i]) * (fsp.nu[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 '''
+import print_out_force_on_circle

@@ -22,3 +22,5 @@ print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_tb = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.n_omega_square, rmsh.ds_tb):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(f"\n<z>_circle = {assemble(prout.z_output * rmsh.ds_circle) / assemble(Constant(1.0) * rmsh.ds_circle)}")
+
+import print_out_force_on_circle
