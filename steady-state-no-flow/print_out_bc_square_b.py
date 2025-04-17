@@ -23,4 +23,5 @@ print(
 
 print(f"\n<z>_circle = {assemble(prout.z_output * rmsh.ds_circle) / assemble(Constant(1.0) * rmsh.ds_circle)}")
 
+import print_out_forces
 import print_out_force_on_circle

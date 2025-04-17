@@ -37,4 +37,5 @@ print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {msh.difference_in_bulk( mu_output
 print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,prout.omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
 '''
 
+import print_out_forces
 import print_out_force_on_circle

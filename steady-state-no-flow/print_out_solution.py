@@ -16,6 +16,7 @@ import read_mesh_ring as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import variational_problem_bc_ring as vp
+
 # import variational_problem_bc_square_no_circle_a as vp
 # import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
@@ -66,6 +67,3 @@ xdmffile_check.write(
 xdmffile_check.write(
     project(project(fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z),
             fsp.Q_tau), 0)
-
-
-import print_out_forces
