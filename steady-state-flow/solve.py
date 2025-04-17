@@ -38,11 +38,12 @@ to make figure-4:
     ds_b = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=1 )
     ds_circle = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5 )
 - set
-    v_l_const = 1.0
-    w_square_const = 0.0
+    v_l_const = 10.0
+    w_boundary_const = 0.0
     sigma_r_const = 1.0
+    z_circle_const = 0.0
     z_square_const = 0.0
-    omega_circle_const = 0.1
+    omega_circle_const = -0.1
     omega_square_const = 0.0
     #bending rigidity
     kappa = 3e-2
@@ -64,6 +65,7 @@ to make figure-4:
 - generate the mesh with finite_elements/generate-mesh/2d/symmetric-square-circle/circles/generate_mesh.py with
     clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 12 $SOLUTION_PATH
 - run with 
+     clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric-square-circle/circles/solution/ /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
     
 '''
 
