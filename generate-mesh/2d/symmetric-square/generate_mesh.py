@@ -34,7 +34,7 @@ args = parser.parse_args()
 
 # mesh resolution
 resolution = (float)(args.resolution)
-r = 0.25
+r = 0.3
 L = 1
 h = 1
 c_r = [0, 0, 0]
@@ -65,7 +65,7 @@ def mirror_points(points, point_data):
 
     print('Called mirror_points')
 
-    lis.print_list(points, 'old points')
+    # lis.print_list(points, 'old points')
 
     print('Looping through points...')
 
@@ -75,7 +75,7 @@ def mirror_points(points, point_data):
             offset += 1
             non_mirrored_plus_new_points_indices.append(i)
 
-            print(f'\tNot mirroring points with label {i}')
+            # print(f'\tNot mirroring points with label {i}')
 
         else:
             #  I ran into a point with x[1] != 0 -> mirror it
@@ -88,7 +88,7 @@ def mirror_points(points, point_data):
             # 2) the mirror of hte original point
             mirrored_points.append([points[i, 0], points[i, 1] * -1, points[i, 2]])
 
-            print(f'\tMirroring points with label {i}')
+            # print(f'\tMirroring points with label {i}')
 
     print('... done.')
 
@@ -96,9 +96,9 @@ def mirror_points(points, point_data):
     mirrored_points = np.array(mirrored_points)
     old_plus_new_points = np.vstack((points, mirrored_points))
 
-    lis.print_list(old_plus_new_points, 'old + new points')
-    lis.print_list(non_mirrored_plus_new_points_indices, 'non-mirrored + new points indices')
-    lis.print_list(mirrored_point_data, 'mirrored point data')
+    # lis.print_list(old_plus_new_points, 'old + new points')
+    # lis.print_list(non_mirrored_plus_new_points_indices, 'non-mirrored + new points indices')
+    # lis.print_list(mirrored_point_data, 'mirrored point data')
 
     return old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data
 
@@ -124,9 +124,9 @@ half_circle_points = [model.add_point((-r * np.cos(np.pi * i / N), r * np.sin(np
                       for i in range(N + 1)]
 model.synchronize()
 
-hald_rectangle_circle_points = half_rectangle_points + half_circle_points
-half_rectangle_circle_lines = [model.add_line(hald_rectangle_circle_points[i], hald_rectangle_circle_points[i + 1])
-                               for i in range(-1, len(hald_rectangle_circle_points) - 1)]
+half_rectangle_circle_points = half_rectangle_points + half_circle_points
+half_rectangle_circle_lines = [model.add_line(half_rectangle_circle_points[i], half_rectangle_circle_points[i + 1])
+                               for i in range(-1, len(half_rectangle_circle_points) - 1)]
 
 half_rectangle_circle_loop = model.add_curve_loop(half_rectangle_circle_lines)
 half_rectangle_circle_surface = model.add_plane_surface(half_rectangle_circle_loop)
@@ -165,10 +165,10 @@ print("original points", np.shape(mesh.points))
 old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points, mesh.point_data)
 
 old_triangles = mesh.cells_dict['triangle']
-lis.print_list(old_triangles, 'original triangles')
+# lis.print_list(old_triangles, 'original triangles')
 
 original_lines = mesh.cells_dict['line']
-lis.print_list(original_lines, 'original lines')
+# lis.print_list(original_lines, 'original lines')
 
 
 # duplicate cell blocks of type 'triangle'
@@ -182,7 +182,7 @@ for i in range(np.shape(new_triangles)[0]):
         In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
         '''
         new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
-lis.print_list(new_triangles, 'new triangles')
+# lis.print_list(new_triangles, 'new triangles')
 
 
 mesh.points = old_plus_new_points
