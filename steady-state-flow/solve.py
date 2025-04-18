@@ -11,13 +11,16 @@ clear; python3 solve.py [path where to read the mesh] [path where to store the s
 
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
+clear; clear; rm -rf solution; python solve.py /home/tanos/Thesis/finite_elements/generate-mesh/2d/symmetric-ring-new/mesh output/
 clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
 The solution files will be stored in /home/fenics/shared/steady-state-flow/solution
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
+
+All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
 import colorama as col
@@ -27,16 +30,18 @@ from mshr import *
 import sys
 
 #add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
+module_path = '/home/tanos/finite_elements/modules/'
 sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
 
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import read_mesh_ring as rmsh
 # import read_mesh_square as rmsh
 
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import variational_problem_bc_ring_1 as vp
 # import variational_problem_bc_ring_2 as vp
 # import variational_problem_bc_square_a as vp
@@ -104,7 +109,7 @@ solver_pp_tau.solve()
 solver_pp_d.solve()
 
 
-
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import print_out_bc_ring_1
 # import print_out_bc_ring_2
 # import print_out_bc_square_a

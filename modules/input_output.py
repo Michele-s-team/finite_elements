@@ -64,15 +64,37 @@ def print_vector_to_csvfile(f, filename):
     csvfile.close()
 
 
-# this function prints a vector field defined on the boundary to csv file
-def print_vector_boundary_to_csvfile(f, mesh, filename):
-    points = msh.boundary_points(mesh)
 
-    csvfile = open( filename, "w" )
-    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
+'''
+print a vector field in the three-dimensional space to csv file 
+Input values:
+- 'V': the three-dimensional vector field, whcih returns a tuple of 3 values for each point in \Omega
+- 'filename': the name of the csv file where 'V' will be written
+'''
+def print_vector_3d_to_csvfile(V, filename):
 
-    for point in points:
-        print( f"{f(point[0],point[1])[0]},{f(point[0],point[1])[1]},{f(point[0],point[1])[2]},{point[0]},{point[1]},{0}", file=csvfile )
+    i = 0
+    list_val_x = []
+    list_val_y = []
+    list_val_z = []
+    list_x = []
+
+    for x, val in zip(V.function_space().tabulate_dof_coordinates(), V.vector().get_local()):
+        if (i % 3 == 0):
+            list_val_x.append(val)
+            list_x.append(x)
+        elif (i % 3 == 1):
+            list_val_y.append(val)
+        elif (i % 3 == 2):
+            list_val_z.append(val)
+
+        i += 1
+
+    csvfile = open(filename, "w")
+    print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    for x, val_x, val_y, val_z in zip(list_x, list_val_x, list_val_y, list_val_z):
+        print(f"{val_x},{val_y},{val_z},{x[0]},{x[1]},{0}", file=csvfile)
 
     csvfile.close()
 
@@ -89,6 +111,29 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     for i in range( Q.dim() ):
         v = f( coordinates[i][0], coordinates[i][1] )
         print( f"{v[0]}, {v[1]}, {0}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+    csvfile.close()
+
+'''
+print the nodal values of a vector field 'V', defined in the three-dimensional space in which the mesh and \Omega are embeedded,  
+ to csv file 
+ Input values:
+- 'V': the three-dimensional vector field, whcih returns a tuple of 3 values for each point in \Omega
+- 'mesh' : the mesh defining \Omega
+- 'filename': the name of the csv file where 'V' will be written
+'''
+def print_nodal_values_vector_3d_to_csvfile(V, mesh, filename):
+
+    # a dummy function space of order 1 used to tabulated the vertices
+    Q = FunctionSpace( mesh, 'CG', 1 )
+    coordinates = Q.tabulate_dof_coordinates()
+
+    csvfile = open( filename, "w" )
+    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
+
+    for i in range( Q.dim() ):
+        v = V(coordinates[i][0], coordinates[i][1])
+        print( f"{v[0]}, {v[1]}, {v[2]}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
 
     csvfile.close()
 
@@ -127,3 +172,47 @@ def add_trailing_slash(string):
         return string + '/'
     else:
         return string
+
+'''
+print a field as xdmf, h5, csv file and its nodal values on a csv file
+Input values:
+- 'f': the field
+- 'path_xdmf_file' the path of the xdmf file
+- 'path_csv_file' the path of the csv file
+- 'path_h5_file' the path of the h5 file
+- 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+- 'mesh': the mesh where 'f' is defined
+- 'type': the type of 'f', which may be 'scalar', 'vector' (for a vector in the tangent bundle of \Omega) or 'vector_3d' (for a vector in the 3d space in which 
+\Omega is embedded)
+'''
+def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+
+    # add / to file paths, in case it is missing
+    path_xdmf_file_with_slash = add_trailing_slash(path_xdmf_file)
+    path_h5_file_with_slash = add_trailing_slash(path_h5_file)
+    path_csv_file_with_slash = add_trailing_slash(path_csv_file)
+    path_csv_nodal_value_file_with_slash = add_trailing_slash(path_csv_nodal_value_file)
+
+    # write to xdmf file
+    xdmffile = XDMFFile(path_xdmf_file_with_slash + field_name + '.xdmf')
+    xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+    xdmffile.write(f, 0)
+    xdmffile.close()
+
+    # write to h5 file
+    HDF5File(MPI.comm_world, path_h5_file_with_slash + field_name + '.h5', "w").write(f, "/f")
+
+    # write to csv file and the nodal values to csv file
+    if type == 'scalar':
+        print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_nodal_values_scalar_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+    elif type == 'vector':
+        print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+    elif type == 'vector_3d':
+        print_vector_3d_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_nodal_values_vector_3d_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+

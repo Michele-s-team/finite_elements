@@ -26,7 +26,7 @@ r_mesh = bgeo.mesh.hmin()
 
 #CHANGE PARAMETERS HERE
 r = 1.0
-R = 2.0
+R = 10
 c_r = [0, 0]
 c_R = [0, 0]
 #CHANGE PARAMETERS HERE

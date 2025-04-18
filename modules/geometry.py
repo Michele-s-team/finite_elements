@@ -130,16 +130,41 @@ def f_to_v(f, omega):
 def v_to_f(v, omega):
     return as_tensor(g(omega)[i, j] * v[j], (i))
 
+def normalization(v, omega):
+    return as_tensor(v[k]/norm(omega, v), (k))
 
-#projection of a vector v on the tangent space to 3D space
-def from_t_to_3D(omega, v):
-    return as_tensor(v[1]*e(omega)[1, j]+v[0]*e(omega)[0, j], (j) )#as_tensor(v[i] * e(omega)[i, j], (j))
+'''
+this method transforms a vector in the tangent bundle of \Omega to the correspoding vector in the 3d Euclidean space in which \Omega is embedded
+Input values:
+- 'omega': a one-form omega_i, the gradient of z
+- 'v' : the  vector v^i to be transformed
+Output values:
+- the vector in 3d space (a tuple of 3 coordinates)
+'''
+def from_tangent_to_3D_space(omega, v):
+    return as_tensor(v[i]*e(omega)[i, j], (j) )
 
-#projection of a 3D vector on the tangent space
-def from_3D_to_t(omega, v):
-    return as_tensor(g_c(omega)[i, j] * v[k] * e(omega)[j, k], (i))
+'''
+this method takes as input a vector in the in the 3d Euclidean space and
+returns its decomposition in compoennts in the tangent bundle of \Omega and in the component normal ot \Omega
+Input values:
+- 'omega': a one-form omega_i, the gradient of z
+- 'v' : the vector in 3d space (a tuple of 3 coordinates)
+Return values:
+- the tangential part V_t^i and the normal part V_n
+'''
+def from_3D_to_tangent_space(omega, V):
+    return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
 
-#Normalization of a vector in the tangent space 
-def norm_t(omega, v):
-    return as_tensor(v[k] / (sqrt(g(omega)[i, j] * v[j] * v[i])), (k))
-
+'''
+this method transforms the  components tangential to \Omega and normal to \Omega of a vector, 
+to the corresponding vector in the 3d Euclidean space in which \Omega is embedded
+Input values:
+- 'omega': a one-form omega_i, the gradient of z
+- 'v_t' : the tangential component  vector v_t^i 
+- 'v_n': the normal component  
+Return values:
+- the vector in 3d space (a tuple of 3 coordinates)
+'''
+def from_tangent_normal_to_3D_space(omega, v_t, v_n):
+    return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)

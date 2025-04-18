@@ -1,7 +1,11 @@
 from fenics import *
 from mshr import *
+import sys
+module_path = '/home/tanos/Thesis/finite_elements/modules/'
+sys.path.append(module_path)
 
 import boundary_geometry as bgeo
+
 
 
 degree_function_space = 1
@@ -36,7 +40,14 @@ Q_d = TensorFunctionSpace( bgeo.mesh, 'P', degree_function_space, shape=(2, 2) )
 Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 #function space to store normal force fields
 Q_f_n = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
-Q_dFfl = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+
+# function spaces for the tangential and normal forces per unit length
+Q_dFfl_t = VectorFunctionSpace(bgeo.mesh, 'P', degree_function_space)
+Q_dFfl_n = FunctionSpace(bgeo.mesh, 'P', degree_function_space)
+
+#function space for three-dimensional vector fields depending on the two coordinates on the mesh
+Q_3d = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space, dim=3 )
+
 
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 

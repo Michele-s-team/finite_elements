@@ -9,7 +9,7 @@ and which are stored into finite_elements/mesh
 Run with
 clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh/solution /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
-clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
+clear; clear; rm -r solution; python solve.py /home/tanos/Thesis/finite_elements/steady-state-no-flow/mesh /home/tanos/Thesis/finite_elements/steady-state-no-flow/solution
 clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
 The solution files will be stored in /home/fenics/shared/steady-state-no-flow/solution
@@ -24,7 +24,7 @@ from mshr import *
 import sys
 
 #add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
+module_path = '/home/tanos/Thesis/finite_elements/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp

@@ -1,6 +1,11 @@
 from fenics import *
 import numpy as np
 import ufl as ufl
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/tanos/Thesis/finite_elements/modules'
+sys.path.append( module_path )
 
 import function as fu
 import function_spaces as fsp
@@ -12,8 +17,8 @@ i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
 # bending rigidity
-kappa = 1.0
-C = 0.1
+kappa = 3.0
+C = 0.2
 # values of z at the boundaries
 '''
 if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
@@ -24,15 +29,16 @@ z_r_const = 0
 z_R_const = C
 zp_r_const = C
 zp_R_const = 2*C
-omega_r_const = - (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
-omega_R_const = (rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
+omega_r_const = 0.8 #- (rmsh.r) * zp_r_const / np.sqrt( (rmsh.r) ** 2 * (1.0 + zp_r_const ** 2) )
+omega_R_const = 0.0 #(rmsh.R) * zp_R_const / np.sqrt( (rmsh.R) ** 2 * (1.0 + zp_R_const ** 2) )
 # Nitche's parameter
 alpha = 1e1
+sigma = 0.01
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] =  1.0
+        values[0] =  sigma
         # values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
 
     def value_shape(self):

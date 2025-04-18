@@ -1,6 +1,10 @@
 from fenics import *
 from mshr import *
+import sys
 
+# add the path where to find the shared modules
+module_path = '/home/tanos/Thesis/finite_elements/modules'
+sys.path.append( module_path )
 import boundary_geometry as bgeo
 
 # Define function spaces

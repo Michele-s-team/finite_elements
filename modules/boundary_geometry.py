@@ -49,7 +49,7 @@ def sqrt_deth_tb(omega):
 #This function extend the facet normal to the interior of the cells and project into the tangent space (used for visualization purposes)
 def calc_normal_cg2(omega, mesh):
     n = FacetNormal(mesh)
-    n = geo.norm_t(omega, geo.from_3D_to_t(omega, as_tensor([n[0], n[1], 0.0])))
+    n = geo.normalization(omega, geo.from_3D_to_tangent_space(omega, as_tensor([n[0], n[1], 0.0])))
     V = VectorFunctionSpace(mesh, "CG", 2)
     u = TrialFunction(V)
     v = TestFunction(V)
@@ -98,20 +98,20 @@ def Nn_tb(omega):
 
 #n^i_notes on \partial \Omega_in and out
 def n_lr(omega):
-    return geo.norm_t(omega, geo.from_3D_to_t(omega, N_3D()))
+    return geo.normalization(omega, geo.from_3D_to_tangent_space(omega, N_3D()))
 
 def n_tb(omega):
-    return geo.norm_t(omega, geo.from_3D_to_t(omega, N_3D()))
+    return geo.normalization(omega, geo.from_3D_to_tangent_space(omega, N_3D()))
 
 def n_circle(omega):
-    return geo.norm_t(omega, geo.from_3D_to_t(omega, N_3D()))
+    return geo.normalization(omega, geo.from_3D_to_tangent_space(omega, N_3D()))
 
 def n_c(omega):
     return 0.01*as_tensor([facet_normal[0], facet_normal[1]])
 
 #tangent vector to the boundary curve in the tangent space
 def tang_t(omega):
-    return geo.from_3D_to_t(omega, as_tensor([-facet_normal[1], facet_normal[0], 0.0]))
+    return geo.from_3D_to_tangent_space(omega, as_tensor([-facet_normal[1], facet_normal[0], 0.0]))
 
 
 #the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field

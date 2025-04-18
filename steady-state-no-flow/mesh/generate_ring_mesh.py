@@ -15,7 +15,7 @@ import argparse
 import sys
 
 # add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
+module_path = '/home/tanos/Thesis/finite_elements/modules'
 sys.path.append( module_path )
 
 import input_output as io
@@ -37,7 +37,7 @@ mesh_file = output_directory + "mesh.msh"
 
 # parameters
 r = 1.0
-R = 2.0
+R = 10
 c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 
