@@ -96,7 +96,7 @@ def mirror_points(points, point_data):
     old_plus_new_points = np.vstack((points, mirrored_points))
 
     lis.print_list(old_plus_new_points, 'old + new points')
-    lis.print_list(non_mirrored_plus_new_points_indices, 'new points indices')
+    lis.print_list(non_mirrored_plus_new_points_indices, 'non-mirrored + new points indices')
     lis.print_list(mirrored_point_data, 'mirrored point data')
 
     return old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data
@@ -160,19 +160,23 @@ mesh = meshio.read(mesh_file)
 print("original points", np.shape(mesh.points))
 
 # Mirror points across X=0
-new_points, new_points_indices, new_point_data = mirror_points(mesh.points, mesh.point_data)
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points, mesh.point_data)
 
-original_triangles = mesh.cells_dict['triangle']
+old_triangles = mesh.cells_dict['triangle']
+lis.print_list(old_triangles, 'original triangles')
+
 original_lines = mesh.cells_dict['line']
+lis.print_list(original_lines, 'original lines')
+
 
 # duplicate cell blocks of type 'triangle'
-triangles = np.copy(original_triangles)
-for i in range(np.shape(triangles)[0]):
+new_triangles = np.copy(old_triangles)
+for i in range(np.shape(new_triangles)[0]):
     for j in range(3):
-        triangles[i, j] = new_points_indices[triangles[i, j]]
-mesh.points = new_points
-mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], new_point_data))
-mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((original_triangles, triangles)))
+        new_triangles[i, j] = non_mirrored_plus_new_points_indices[new_triangles[i, j]]
+mesh.points = old_plus_new_points
+mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
+mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
 print(mesh.cells[-1])
 N = np.shape(mesh.cells[-1].data)[0]
 mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
@@ -186,7 +190,7 @@ for j in range(len(mesh.cells)):
         for i in range(np.shape(lines)[0]):
             f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
             if f[0] or f[1]:
-                filtered_lines.append([new_points_indices[lines[i, 0]], new_points_indices[lines[i, 1]]])
+                filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]], non_mirrored_plus_new_points_indices[lines[i, 1]]])
         filtered_lines = np.array(filtered_lines)
         mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
         N = np.shape(mesh.cells[j].data)[0]
