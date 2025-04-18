@@ -37,7 +37,7 @@ resolution = (float)(args.resolution)
 r = 0.3
 L = 1
 h = 1
-c_r = [L/2, h/2, 0]
+c_r = [L / 2, h / 2, 0]
 
 output_dir = args.output_dir
 half_mesh_msh_file = output_dir + "/half_mesh.msh"
@@ -91,7 +91,6 @@ def mirror_points(points, point_data):
 
     print('... done.')
 
-
     mirrored_points = np.array(mirrored_points)
     old_plus_new_points = np.vstack((points, mirrored_points))
 
@@ -112,15 +111,16 @@ N = int(np.round(np.pi / resolution))
 '''
 construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
 '''
-half_rectangle_points = [model.add_point((L, h/2, 0), mesh_size=resolution * (min(L, h) / r)),
-                         model.add_point((L , h, 0), mesh_size=resolution * (min(L, h) / r)),
-                         model.add_point((0 , h , 0), mesh_size=resolution * (min(L, h) / r)),
-                         model.add_point((0, h/2, 0), mesh_size=resolution * (min(L, h) / r)),
+half_rectangle_points = [model.add_point((L, h / 2, 0), mesh_size=resolution * (min(L, h) / r)),
+                         model.add_point((L, h, 0), mesh_size=resolution * (min(L, h) / r)),
+                         model.add_point((0, h, 0), mesh_size=resolution * (min(L, h) / r)),
+                         model.add_point((0, h / 2, 0), mesh_size=resolution * (min(L, h) / r)),
                          ]
 model.synchronize()
 
-half_circle_points = [model.add_point((c_r[0] + -r * np.cos(np.pi * i / N), c_r[1] + r * np.sin(np.pi * i / N), 0), mesh_size=resolution)
-                      for i in range(N + 1)]
+half_circle_points = [
+    model.add_point((c_r[0] + -r * np.cos(np.pi * i / N), c_r[1] + r * np.sin(np.pi * i / N), 0), mesh_size=resolution)
+    for i in range(N + 1)]
 model.synchronize()
 
 half_rectangle_circle_points = half_rectangle_points + half_circle_points
@@ -154,14 +154,24 @@ except for the new physical objects that are generated from reflection (e.g. the
 
 In particular the rule 4:5 implies that the lines that in the original mesh where
 in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
+
+Here the lines are tagged as follows:
+- volume: id = 1
+- b edge: id = 1: now it is set to np.nan is because the l edge generated here, in the half mesh, will be immaterial when the mesh will be mirrored ->
+  a proper ID will be assigned to it later
+- r edge: id = 2
+- t edge: id = 3
+- l edge: id = 4
+- circle: id = 5
 '''
-ids = [0, 1, 2, 3, 5, 6]  # {1:1, 2:2, 3:3, 4:5, 5:6}
+ids = [1, np.nan, 2, 4, 3, 5]  # {1:1, 2:2, 3:3, 4:5, 5:6}
 # Load the half-mesh
 mesh = meshio.read(half_mesh_msh_file)
 print("original points", np.shape(mesh.points))
 
 # Mirror points across X=0
-old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points, mesh.point_data)
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points,
+                                                                                               mesh.point_data)
 
 old_triangles = mesh.cells_dict['triangle']
 # lis.print_list(old_triangles, 'original triangles')
@@ -200,31 +210,37 @@ for j in range(len(mesh.cells)):
         for i in range(np.shape(lines)[0]):
             f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
             if f[0] or f[1]:
-                filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]], non_mirrored_plus_new_points_indices[lines[i, 1]]])
+                filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
+                                       non_mirrored_plus_new_points_indices[lines[i, 1]]])
         filtered_lines = np.array(filtered_lines)
         mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
         N = np.shape(mesh.cells[j].data)[0]
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 
-#this assigns to all lines in the mesh the ID target_id
-target_id = 7  # or whatever physical ID you want to assign to all line elements
+
+
+# assign to the l edge the id 'lower_edge_id'
+lower_edge_id = 1
 for j in range(len(mesh.cells)):
+    # loop through  blocks of lines
+
     if mesh.cells[j].type == "line":
-        print(f'\tI am on line block {mesh.cells[j].data}')
+        # print(f'\tI am on line block {mesh.cells[j].data}')
 
         # loop through the lines in  block  mesh.cells[j].data
         for i in range(len(mesh.cells[j].data)):
+
             # obtain the extremal point of each line
             point1 = mesh.points[mesh.cells[j].data[i][0]]
             point2 = mesh.points[mesh.cells[j].data[i][1]]
 
-            if(  np.isclose(point1[1], 0, rtol=1e-3) and np.isclose(point2[1], 0, rtol=1e-3)):
-                # if the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the bottom edge of the rectangle
-                print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
+            if (np.isclose(point1[1], 0, rtol=1e-3) and np.isclose(point2[1], 0, rtol=1e-3)):
+                # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
+                # print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
                 # tag the line under consideration with ID target_id
-                mesh.cell_data['gmsh:physical'][j][i] = target_id
-#
+                mesh.cell_data['gmsh:physical'][j][i] = lower_edge_id
+
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")

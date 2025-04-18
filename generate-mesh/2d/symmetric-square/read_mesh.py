@@ -28,7 +28,7 @@ args = parser.parse_args()
 # CHANGE PARAMETERS HERE
 L = 1
 h = 1
-c_r = [L/2, h/2]
+c_r = [L / 2, h / 2]
 r = 0.3
 c_test = [0.3, 0.76]
 r_test = 0.345
@@ -36,9 +36,26 @@ r_test = 0.345
 
 # CHANGE PARAMETERS HERE
 
+def function_test_integral_expression(x):
+    return np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0
+    # return 1
+
 # remember that this function takes y as first argument, x as second argument
-def test_function(y, x):
-    return (np.cos(geo.my_norm(np.subtract([x, y], c_test)) - r_test) ** 2.0)
+def function_test_integral(y, x):
+    return function_test_integral_expression([x, y])
+
+# analytical expression for a  scalar function used to test the ds
+class FunctionTestIntegralExpression(UserExpression):
+    def eval(self, values, x):
+        # values[0] = 1
+        values[0] = function_test_integral_expression(x)
+        # values[0] = x[0]
+
+    def value_shape(self):
+        return (1,)
+
+
+
 
 
 surface_id = 1
@@ -56,27 +73,15 @@ cf = msh.read_mesh_components(mesh, 1, args.input_directory + "/line_mesh.xdmf")
 # sf = msh.read_mesh_components(mesh, 0, args.input_directory + "/vertex_mesh.xdmf")
 
 
-# analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegralExpression(UserExpression):
-    def eval(self, values, x):
-        # values[0] = 1
-        values[0] = function_test_integral_expression(x)
-        # values[0] = x[0]
 
-    def value_shape(self):
-        return (1,)
-
-
-def function_test_integral_expression(x):
-    return np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0
-    # return 1
 
 
 dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
 ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=2)
-ds_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=5)
-ds_l = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=3)
-ds_circle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=6)
+ds_t = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=3)
+ds_b = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=1)
+ds_l = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=4)
+ds_circle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=5)
 
 Q = FunctionSpace(mesh, 'P', 1)
 
@@ -85,19 +90,22 @@ f_test = Function(Q)
 f_test.interpolate(FunctionTestIntegralExpression(element=Q.ufl_element()))
 
 # compute exact integrals
-integral_exact_dx = (integrate.dblquad(test_function, -0, L, lambda x: 0, lambda x: h)[0] -
-                     integrate.dblquad(lambda rho, theta: rho * test_function(c_r[1] + rho * np.sin(theta), c_r[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: 0, lambda rho: r)[0])
-integral_exact_ds_l = (integrate.quad(lambda y: test_function(y, 0), 0, h))[0]
-integral_exact_ds_r = (integrate.quad(lambda y: test_function(y, L), 0, h))[0]
-integral_exact_ds_t = (integrate.quad(lambda x: test_function(h, x), 0, L))[0]
-integral_exact_ds_b = (integrate.quad(lambda x: test_function(0, x), 0, L))[0]
-integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
-integral_exact_ds_circle = (integrate.quad(lambda theta: r * test_function(c_r[1] + r * np.sin(theta), c_r[0] + r * np.cos(theta)), 0, 2*np.pi))[0]
-
+integral_exact_dx = (integrate.dblquad(function_test_integral, -0, L, lambda x: 0, lambda x: h)[0] -
+                     integrate.dblquad(lambda rho, theta: rho * function_test_integral(c_r[1] + rho * np.sin(theta),
+                                                                                       c_r[0] + rho * np.cos(theta)), 0,
+                                       2 * np.pi, lambda rho: 0, lambda rho: r)[0])
+integral_exact_ds_l = (integrate.quad(lambda y: function_test_integral(y, 0), 0, h))[0]
+integral_exact_ds_r = (integrate.quad(lambda y: function_test_integral(y, L), 0, h))[0]
+integral_exact_ds_t = (integrate.quad(lambda x: function_test_integral(h, x), 0, L))[0]
+integral_exact_ds_b = (integrate.quad(lambda x: function_test_integral(0, x), 0, L))[0]
+integral_exact_ds_circle = \
+(integrate.quad(lambda theta: r * function_test_integral(c_r[1] + r * np.sin(theta), c_r[0] + r * np.cos(theta)), 0, 2 * np.pi))[
+    0]
 
 msh.test_mesh_integral(integral_exact_dx, f_test, dx, '\int dx f')
 # msh.test_mesh_integral(0.7765772342243651, f_test, ds_b, '\int ds_b f')
-msh.test_mesh_integral(integral_exact_ds_tb, f_test, ds_tb, '\int ds_tb f')
+msh.test_mesh_integral(integral_exact_ds_t, f_test, ds_t, '\int ds_t f')
+msh.test_mesh_integral(integral_exact_ds_b, f_test, ds_b, '\int ds_b f')
 msh.test_mesh_integral(integral_exact_ds_l, f_test, ds_l, '\int ds_l f')
 msh.test_mesh_integral(integral_exact_ds_r, f_test, ds_r, '\int ds_r f')
 msh.test_mesh_integral(integral_exact_ds_circle, f_test, ds_circle, '\int ds_circle f')
