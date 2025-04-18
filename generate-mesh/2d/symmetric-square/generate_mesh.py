@@ -37,8 +37,7 @@ resolution = (float)(args.resolution)
 r = 0.3
 L = 1
 h = 1
-c_r = [0, 0, 0]
-c_R = [0, 0, 0]
+c_r = [L/2, h/2, 0]
 
 output_dir = args.output_dir
 half_mesh_msh_file = output_dir + "/half_mesh.msh"
@@ -86,7 +85,7 @@ def mirror_points(points, point_data):
             # 1) the original point
             mirrored_point_data.append(l)
             # 2) the mirror of hte original point
-            mirrored_points.append([points[i, 0], points[i, 1] * -1, points[i, 2]])
+            mirrored_points.append([points[i, 0], h - points[i, 1], points[i, 2]])
 
             # print(f'\tMirroring points with label {i}')
 
@@ -111,16 +110,16 @@ model = geometry.__enter__()
 
 N = int(np.round(np.pi / resolution))
 '''
-construct a rectangle with vertices [-L/2,0], [L/2,0], [L/2,h/2], [-L/2,h/2]
+construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
 '''
-half_rectangle_points = [model.add_point((L / 2, 0, 0), mesh_size=resolution * (min(L, h) / r)),
-                         model.add_point((L / 2, h / 2, 0), mesh_size=resolution * (min(L, h) / r)),
-                         model.add_point((-L / 2, h / 2, 0), mesh_size=resolution * (min(L, h) / r)),
-                         model.add_point((-L / 2, 0, 0), mesh_size=resolution * (min(L, h) / r)),
+half_rectangle_points = [model.add_point((L, h/2, 0), mesh_size=resolution * (min(L, h) / r)),
+                         model.add_point((L , h, 0), mesh_size=resolution * (min(L, h) / r)),
+                         model.add_point((0 , h , 0), mesh_size=resolution * (min(L, h) / r)),
+                         model.add_point((0, h/2, 0), mesh_size=resolution * (min(L, h) / r)),
                          ]
 model.synchronize()
 
-half_circle_points = [model.add_point((-r * np.cos(np.pi * i / N), r * np.sin(np.pi * i / N), 0), mesh_size=resolution)
+half_circle_points = [model.add_point((c_r[0] + -r * np.cos(np.pi * i / N), c_r[1] + r * np.sin(np.pi * i / N), 0), mesh_size=resolution)
                       for i in range(N + 1)]
 model.synchronize()
 
@@ -150,10 +149,10 @@ geometry.__exit__()
 
 '''
 duplicate the points and cells with the respective tags and ids
-The new mesh inherits the ids (physical id used for measure definiton) of the original one, 
+The new mesh inherits the ids (physical id used for measure definiton) of the original one,
 except for the new physical objects that are generated from reflection (e.g. the b line)
 
-In particular the rule 4:5 implies that the lines that in the original mesh where 
+In particular the rule 4:5 implies that the lines that in the original mesh where
 in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
 '''
 ids = [0, 1, 2, 3, 5, 6]  # {1:1, 2:2, 3:3, 4:5, 5:6}
@@ -213,7 +212,7 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 print("Full mesh generated successfully!")
 
 '''
-This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf 
+This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 '''
 
 mesh_from_file = meshio.read(mesh_xdmf_file)
