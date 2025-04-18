@@ -6,6 +6,7 @@ import boundary_geometry as bgeo
 import geometry as geo
 import input_output as io
 import mesh as msh
+import physics as phys
 import read_mesh_ring as rmsh
 
 import variational_problem_bc_ring_1 as vp
@@ -37,3 +38,5 @@ print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_circle(prout.omega_output))[i] * prout.omega_output[i], vp.omega_r, rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_circle(prout.omega_output))[i] * prout.omega_output[i], vp.omega_R, rmsh.ds_R):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+import print_out_force_on_circle

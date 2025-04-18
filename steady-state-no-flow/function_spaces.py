@@ -34,6 +34,14 @@ Q_sigma = FunctionSpace( bgeo.mesh, 'P', 1 )
 Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 
+# function spaces for the tangential and normal forces per unit length
+Q_dFfl_t = VectorFunctionSpace(bgeo.mesh, 'P', degree_function_space)
+Q_dFfl_n = FunctionSpace(bgeo.mesh, 'P', degree_function_space)
+
+#function space for three-dimensional vector fields depending on the two coordinates on the mesh
+Q_3d = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space, dim=3 )
+
+
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
 as in function.set_from_list and function.set_from_file

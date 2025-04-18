@@ -1,5 +1,3 @@
-from pyclbr import Function
-
 from fenics import *
 from mshr import *
 
