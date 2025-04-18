@@ -1,7 +1,7 @@
 '''
 This Code generates a symmetric square mesh.
 If you want to generate the mesh form the terminal use :
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 1.0 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
 
 
     where resolution is the mesh size and output_dir is the directory where to save the mesh

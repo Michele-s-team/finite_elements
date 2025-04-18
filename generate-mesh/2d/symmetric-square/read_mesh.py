@@ -11,6 +11,7 @@ from dolfin import *
 from fenics import *
 from mshr import *
 import numpy as np
+import scipy.integrate as integrate
 import sys
 
 # add the path where to find the shared modules
@@ -25,13 +26,21 @@ parser.add_argument("input_directory")
 args = parser.parse_args()
 
 # CHANGE PARAMETERS HERE
-
-
+L = 1
+h = 1
+c_r = [0, 0]
+r = 0.25
 c_test = [0.3, 0.76]
 r_test = 0.345
+
+
 # CHANGE PARAMETERS HERE
 
-p_O_id = 1
+# remember that this function takes y as first argument, x as second argument
+def test_function(y, x):
+    return (np.cos(geo.my_norm(np.subtract([x, y], c_test)) - r_test) ** 2.0)
+
+
 surface_id = 1
 
 # read the mesh
@@ -64,13 +73,10 @@ def function_test_integral_expression(x):
 
 
 dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
-# ds_b = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=1)
-# ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=2)
-# ds_t = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=3)
-# ds_l = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=4)
-# ds_circle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=5)
-
-
+ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=2)
+ds_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=4)
+ds_l = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=3)
+ds_circle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=6)
 
 Q = FunctionSpace(mesh, 'P', 1)
 
@@ -78,10 +84,14 @@ Q = FunctionSpace(mesh, 'P', 1)
 f_test = Function(Q)
 f_test.interpolate(FunctionTestIntegralExpression(element=Q.ufl_element()))
 
-msh.test_mesh_integral(0.9063111599974194, f_test, dx, '\int dx f_surface')
-# msh.test_mesh_integral(0.7932215226341747, f_test, dp_O, '\int dp f_{p_O}')
+# compute exact integrals
+integral_exact_dx = (integrate.dblquad(test_function, -L / 2, L / 2, lambda x: -h/2, lambda x: h/2)[0] -
+                     integrate.dblquad(lambda rho, theta: rho * test_function(c_r[1] + rho * np.sin(theta), c_r[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: 0, lambda rho: r)[0])
+
+
+msh.test_mesh_integral(integral_exact_dx, f_test, dx, '\int dx f')
 # msh.test_mesh_integral(0.7765772342243651, f_test, ds_b, '\int ds_b f')
 # msh.test_mesh_integral(0.8056313961280863, f_test, ds_r, '\int ds_r f')
 # msh.test_mesh_integral(0.9756236687066221, f_test, ds_t, '\int ds_t f')
-# msh.test_mesh_integral(0.9620471547152678, f_test, ds_l, '\int ds_l f')
+msh.test_mesh_integral(0.5070179159373025, f_test, ds_l, '\int ds_l f')
 # msh.test_mesh_integral(0.6251868570121668, f_test, ds_circle, '\int ds_circle f')
