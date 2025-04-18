@@ -213,13 +213,17 @@ for j in range(len(mesh.cells)):
     if mesh.cells[j].type == "line":
         print(f'\tI am on line block {mesh.cells[j].data}')
 
-        for line in mesh.cells[j].data:
-            point1 = mesh.points[line[0]]
-            point2 = mesh.points[line[1]]
-            print(f"\t\tLine: {line} -> Point 1: {point1}, Point 2: {point2}")
+        # loop through the lines in  block  mesh.cells[j].data
+        for i in range(len(mesh.cells[j].data)):
+            # obtain the extremal point of each line
+            point1 = mesh.points[mesh.cells[j].data[i][0]]
+            point2 = mesh.points[mesh.cells[j].data[i][1]]
 
-        num_lines = len(mesh.cells[j].data)
-        mesh.cell_data['gmsh:physical'][j] = np.full(num_lines, target_id)
+            if(  np.isclose(point1[1], 0, rtol=1e-3) and np.isclose(point2[1], 0, rtol=1e-3)):
+                # if the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the bottom edge of the rectangle
+                print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
+                # tag the line under consideration with ID target_id
+                mesh.cell_data['gmsh:physical'][j][i] = target_id
 #
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
