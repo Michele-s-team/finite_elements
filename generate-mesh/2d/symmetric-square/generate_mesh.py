@@ -1,7 +1,7 @@
 '''
 This Code generates a symmetric square mesh.
 If you want to generate the mesh form the terminal use :
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.01 $SOLUTION_PATH
 
 
     where resolution is the mesh size and output_dir is the directory where to save the mesh
@@ -157,14 +157,20 @@ in the physical group 4 (top lines), when reflected, they will be assigned the i
 
 Here the lines are tagged as follows:
 - volume: id = 1
-- b edge: id = 1: now it is set to np.nan is because the l edge generated here, in the half mesh, will be immaterial when the mesh will be mirrored ->
+- b edge: id = 4: now it is set to np.nan is because the l edge generated here, in the half mesh, will be immaterial when the mesh will be mirrored ->
   a proper ID will be assigned to it later
 - r edge: id = 2
 - t edge: id = 3
-- l edge: id = 4
+- l edge: id = 1
 - circle: id = 5
 '''
-ids = [1, np.nan, 2, 4, 3, 5]  # {1:1, 2:2, 3:3, 4:5, 5:6}
+surface_id = 1
+l_edge_id = 1
+r_edge_id = 2
+t_edge_id = 3
+b_edge_id = 4
+circle_id = 5
+ids = [1, np.nan, r_edge_id, l_edge_id, t_edge_id, circle_id]
 # Load the half-mesh
 mesh = meshio.read(half_mesh_msh_file)
 print("original points", np.shape(mesh.points))
@@ -221,7 +227,6 @@ for j in range(len(mesh.cells)):
 
 
 # assign to the l edge the id 'lower_edge_id'
-lower_edge_id = 1
 for j in range(len(mesh.cells)):
     # loop through  blocks of lines
 
@@ -239,7 +244,7 @@ for j in range(len(mesh.cells)):
                 # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
                 # print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
                 # tag the line under consideration with ID target_id
-                mesh.cell_data['gmsh:physical'][j][i] = lower_edge_id
+                mesh.cell_data['gmsh:physical'][j][i] = b_edge_id
 
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
