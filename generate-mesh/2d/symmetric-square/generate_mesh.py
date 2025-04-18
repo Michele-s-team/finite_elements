@@ -207,10 +207,17 @@ for j in range(len(mesh.cells)):
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 
-#this assigns to all lines in the mesh the ID target_id 
+#this assigns to all lines in the mesh the ID target_id
 target_id = 7  # or whatever physical ID you want to assign to all line elements
 for j in range(len(mesh.cells)):
     if mesh.cells[j].type == "line":
+        print(f'\tI am on line block {mesh.cells[j].data}')
+
+        for line in mesh.cells[j].data:
+            point1 = mesh.points[line[0]]
+            point2 = mesh.points[line[1]]
+            print(f"\t\tLine: {line} -> Point 1: {point1}, Point 2: {point2}")
+
         num_lines = len(mesh.cells[j].data)
         mesh.cell_data['gmsh:physical'][j] = np.full(num_lines, target_id)
 #
