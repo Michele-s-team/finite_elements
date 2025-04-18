@@ -1,162 +1,178 @@
 '''
-Ths code generates a 2d mesh given by a square with a circular hole, where the mesh is enforced to  be symmetric
-with respect to top <-> bottom by adding a set of auxiliary lines which run from the left to the right edge of the square
-
-run with
-clear; clear; python3 generate_mesh.py [resolution] [number of segments of the circle] [number of lines] [output directory]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 4 $SOLUTION_PATH
+This Code generates a symmetric square mesh.
+If you want to generate the mesh form the terminal use :
+    python generate_mesh.py <resolution> <output_dir>
+    where resolution is the mesh size and output_dir is the directory where to save the mesh
+    The half mesh will be saved in the output_dir as mesh.msh, while the complete mesh as mesh.xdmf
+    The mesh will be saved in the output_dir as line_mesh.xdmf and triangle_mesh.xdmf
 '''
 
-import gmsh
-import pygmsh
+import meshio #for reading and writing mesh files
+import gmsh #main tool
+import pygmsh #wrapper for gmsh
 import argparse
-import numpy as np
 import sys
+import numpy as np
 
 # add the path where to find the shared modules
+# gaetano's path
+# module_path = '/home/tanos/Thesis/finite_elements/modules/'
+# michele's path
 module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
 
-import list as lis
+sys.path.append( module_path )
 import mesh as msh
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
-parser.add_argument("n_lines_circle")
-parser.add_argument("n_lines_lr")
-parser.add_argument("output_directory")
+parser.add_argument("output_dir")
 args = parser.parse_args()
 
-# mesh resolution
+#mesh resolution
 resolution = (float)(args.resolution)
-n_lines_circle = int(args.n_lines_circle)
-n_lines_lr = int(args.n_lines_lr)
-mesh_file = args.output_directory + "/mesh.msh"
+r = 1
+L = 30
+h = 30
+c_r = [0, 0, 0]
+c_R = [0, 0, 0]
 
-# mesh parameters
-# CHANGE PARAMETERS HERE
-L = 1
-h = 1
-c_r = [L / 2, h / 2, 0]
-r = 0.1
-# CHANGE PARAMETERS HERE
 
-print("L = ", L)
-print("h = ", h)
-print("r = ", r)
-print("n_lines_circle = ", n_lines_circle)
-print("n_lines_lr = ", n_lines_lr)
 
-surface_id = 1
+output_dir = args.output_dir
+mesh_file = output_dir + "/mesh.msh"
 
+'''This function duplicates and transform all points, inverting their position with respect to the x axis
+-points : Array of points to be duplicated
+-point_data : Data that contains dimensional tag of the points (must be duplicated as well to avoid issues during the reading of the mesh)
+Outputs
+-new_points : the old and the new points
+-new-points_indices : the indices of the new points in the new array (they are not just the indices of the old points traslated by some constant since the points on the x axis has not been duplicated and they were not ordered in the old list)
+-mirrored_point_data : new point_data array
+'''
+
+def mirror_points(points, point_data):
+        offset = 0
+        new_points_indices = []
+        mirrored_points = []
+        mirrored_point_data = []
+        for i in range(len(points)):
+            if np.isclose(points[i,1] , 0, rtol=1e-3):
+                offset += 1
+                new_points_indices.append(i)       
+            else:
+                new_points_indices.append(i-offset+len(points))
+                l = list(point_data['gmsh:dim_tags'][i,:])
+                mirrored_point_data.append(l)
+                # Flip the y-coordinates
+                mirrored_points.append([points[i,0], points[i, 1]*-1, points[i,2]])
+
+        mirrored_points = np.array(mirrored_points)
+        new_points = np.vstack((points, mirrored_points))
+        return new_points, new_points_indices, mirrored_point_data
+
+'''
+Half mesh is generated used pygmsh and it's saved as mesh.msh
+'''
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-# add a 0d object:
 
-p_O = msh.add_point([0, 0, 0], gmsh.model.geo)
+N = int(np.round(np.pi/(resolution)))
+half_rectangle_points = [model.add_point( (L/2, 0, 0), mesh_size=resolution*(min(L,h)/r) ),
+            model.add_point( (L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
+            model.add_point( (-L/2, h/2, 0), mesh_size=resolution*(min(L,h)/r) ),
+            model.add_point( (-L/2, 0, 0), mesh_size=resolution*(min(L,h)/r) ),
+            ]
 
-points_b, edge_b = msh.add_line_p_start_r_end(p_O, [L, 0, 0], gmsh.model.geo)
-points_r, segments_edge_r = msh.add_line_p_start_r_end_n(points_b[-1], [L, h, 0], n_lines_lr, gmsh.model.geo)
-points_t, edge_t = msh.add_line_p_start_r_end(points_r[-1], [0, h, 0], gmsh.model.geo)
-points_l, segments_edge_l = msh.add_line_p_start_p_end_n(points_t[-1], p_O, n_lines_lr, gmsh.model.geo)
+half_circle_points = [model.add_point( (-r*np.cos(np.pi*i/N), r*np.sin(np.pi*i/N), 0), mesh_size=resolution ) for i in range(N+1)]
+my_points = half_rectangle_points + half_circle_points
+channel_lines = [model.add_line( my_points[i], my_points[i + 1] )
+                for i in range( -1, len( my_points ) - 1 )]
 
-msh.print_point_list_info(points_l, 'points_l')
-msh.print_point_list_info(points_r, 'points_r')
+channel_loop = model.add_curve_loop( channel_lines )
+plane_surface = model.add_plane_surface( channel_loop )
 
-lines = lis.flatten_list([edge_b, segments_edge_r, edge_t, segments_edge_l])
-print(f'lines = {lines}')
+model.synchronize()
 
-loop_square = gmsh.model.geo.add_curve_loop(lines)
-gmsh.model.geo.synchronize()
+model.add_physical( [plane_surface], "Volume" )
+model.add_physical( [channel_lines[1]], "r" )
+model.add_physical( [channel_lines[3]], "l" )
+model.add_physical( [channel_lines[2]], "t" )
+#model.add_physical( [channel_lines[4],channel_lines[0]], "b" )
+model.add_physical( channel_lines[5:], "c" )
 
-points_circle, segments_circle = msh.add_circle_with_lines(c_r, r, n_lines_circle, gmsh.model.geo)
+geometry.generate_mesh( dim=2 )
+gmsh.write( mesh_file)
 
-circle_loop = gmsh.model.geo.add_curve_loop(segments_circle)
-gmsh.model.geo.synchronize()
+#msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
 
-# circle_lines, circle_loop = msh.add_circle_with_arcs(c_r, r, gmsh.model.geo)
-
-
-square_surface = gmsh.model.geo.add_plane_surface([loop_square, circle_loop])
-# square_surface = gmsh.model.geo.add_plane_surface([loop_square])
-gmsh.model.geo.synchronize()
-
-# gmsh.model.mesh.embed(1, [arc_rt, arc_tl, arc_lb, arc_br], 2, square_surface)
-
-# line_aux = (msh.add_line_r_start_r_end([0.1, 0.1, 0], [0.9, 0.1, 0], gmsh.model.geo))[1]
-# gmsh.model.mesh.embed(1, [line_aux], 2, square_surface)
+gmsh.clear()
+geometry.__exit__()
 
 
-# add auxiliary horizontal lines to make the mesh symmetric under top <-> bottom
-lines_lr = []
-for j in range(1, len(points_l) - 1):
-    coord = msh.get_point_coordinates(points_l[j])
-    if ((coord[1] < c_r[1] - r) or (coord[1] > c_r[1] + r)):
-        lines_lr.append((msh.add_line_p_start_p_end(points_l[j], points_r[len(points_l) - 1 - j], gmsh.model.geo))[1])
+'''This part duplicate points and cells with the respective tags and ids
+The new mesh inherits the ids (physical id used for measure definito) of the original one, except for the new physical objects that are generated from reflection (e.g. the b line)
+'''
+# in particular the rule 4:5 implies that the lines that in the original mesh where in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
+ids = [0, 1, 2, 3, 5, 6] #{1:1, 2:2, 3:3, 4:5, 5:6} 
+# Load the half-mesh
+mesh = meshio.read(mesh_file)
+print("original points", np.shape(mesh.points))
 
-gmsh.model.mesh.embed(1, lines_lr, 2, square_surface)
+# Mirror points across X=0
+new_points, new_points_indices, new_point_data = mirror_points(mesh.points, mesh.point_data)
 
-print('Adding physical objects ...')
-# add 0-dimensional objects
-vertices = gmsh.model.getEntities(dim=0)
-for i in range(len(vertices)):
-    gmsh.model.addPhysicalGroup(vertices[i][0], [vertices[i][1]], i + 1)
-    gmsh.model.setPhysicalName(vertices[i][0], i + 1, f"vertice_p_{i}")
+original_triangles = mesh.cells_dict['triangle']
+original_lines = mesh.cells_dict['line']
 
-# add 1-dimensional objects
-lines = gmsh.model.getEntities(dim=1)
+#duplicate cell blocks of type 'triangle'
+triangles = np.copy(original_triangles)
+for i in range(np.shape(triangles)[0]):
+    for j in range(3):
+        triangles[i,j] = new_points_indices[triangles[i,j]]
+mesh.points = new_points
+mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], new_point_data))
+mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((original_triangles, triangles)))
+print(mesh.cells[-1])
+N = np.shape(mesh.cells[-1].data)[0]
+mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]]*N)
+mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]]*N)
 
-# add each of the four edges of the square
-# for i in range(4):
-#     msh.print_line_info(lines[i][1], f'linea_{i}')
-#
-#     gmsh.model.addPhysicalGroup(lines[i][0], [lines[i][1]], i + 1)
-#     gmsh.model.setPhysicalName(lines[i][0], i + 1, f"line_{i + 1}")
 
-# tag the edges and the segments of the edges
-msh.tag_group([edge_b], 1, 1, 'l_edge')
-msh.tag_group(segments_edge_r, 1, 2, 'segments_r_edge')
-msh.tag_group([edge_t], 1, 3, 't_edge')
-msh.tag_group(segments_edge_l, 1, 4, 'segments_l_edge')
+#duplicate cell blocks of type 'line'
+for j in range(len(mesh.cells)):
+    if mesh.cells[j].type == 'line':
+        lines = np.copy(mesh.cells[j].data)
+        filtered_lines = []
+        for i in range(np.shape(lines)[0]):
+            f = [mesh.points[lines[i,k]][1]!= 0 for k in range(2)] 
+            if f[0] or f[1]:
+                filtered_lines.append([new_points_indices[lines[i,0]], new_points_indices[lines[i,1]]])
+        filtered_lines = np.array(filtered_lines)
+        mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
+        N = np.shape(mesh.cells[j].data)[0]
+        mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]]*N)
+        mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]]*N)
 
-# tag the circle
-msh.tag_group(segments_circle, 1, 5, 'segments_circle')
 
-# add 2-dimensional objects
-surfaces = gmsh.model.getEntities(dim=2)
+print("new_points", np.shape(new_points))
+meshio.write(mesh_file[:-3]+"xdmf", mesh)  # XDMF for FEniCS
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], surface_id)
-gmsh.model.setPhysicalName(surfaces[0][0], surface_id, "superficie")
+print("Full mesh generated successfully!")
 
-print('... done.')
 
-# set the resolution
-distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [square_surface])
+'''
+This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf 
+'''
 
-threshold = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution / 2)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", h)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", L)
+print( output_dir + "mesh.xdmf" )
+mesh_from_file = meshio.read( output_dir + "/mesh.xdmf" )
 
-minimum = gmsh.model.mesh.field.add("Min")
-gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
-gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+line_mesh = msh.create_mesh( mesh_from_file, "line", prune_z=True )
+meshio.write( output_dir + "/line_mesh.xdmf", line_mesh )
 
-gmsh.model.geo.synchronize()
+triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
+meshio.write( output_dir + "/triangle_mesh.xdmf", triangle_mesh )
 
-geometry.generate_mesh(dim=2)
-gmsh.write(mesh_file)
-
-# write mesh components to file
-msh.write_mesh_components(mesh_file, "solution/triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, "solution/line_mesh.xdmf", "line", True)
-msh.write_mesh_components(mesh_file, "solution/vertex_mesh.xdmf", "vertex", True)
-
-msh.write_mesh_to_csv(mesh_file, 'solution/line_vertices.csv')
-
-model.__exit__()
+print("Mesh generated and saved to ", output_dir)
