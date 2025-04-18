@@ -41,7 +41,7 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 
 output_dir = args.output_dir
-mesh_file = output_dir + "/mesh.msh"
+half_mesh_file = output_dir + "/mesh.msh"
 
 '''
 This function duplicates and transform all points, inverting their position with respect to the x axis
@@ -140,7 +140,7 @@ model.add_physical([half_rectangle_circle_lines[2]], "t")
 model.add_physical(half_rectangle_circle_lines[5:], "c")
 
 geometry.generate_mesh(dim=2)
-gmsh.write(mesh_file)
+gmsh.write(half_mesh_file)
 
 # msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
 
@@ -156,7 +156,7 @@ in the physical group 4 (top lines), when reflected, they will be assigned the i
 '''
 ids = [0, 1, 2, 3, 5, 6]  # {1:1, 2:2, 3:3, 4:5, 5:6}
 # Load the half-mesh
-mesh = meshio.read(mesh_file)
+mesh = meshio.read(half_mesh_file)
 print("original points", np.shape(mesh.points))
 
 # Mirror points across X=0
@@ -171,13 +171,22 @@ lis.print_list(original_lines, 'original lines')
 
 # duplicate cell blocks of type 'triangle'
 new_triangles = np.copy(old_triangles)
+# run through the old triangles
 for i in range(np.shape(new_triangles)[0]):
+    # for each old triangle, run through each of its three vertices
     for j in range(3):
-        new_triangles[i, j] = non_mirrored_plus_new_points_indices[new_triangles[i, j]]
+        '''
+        assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
+        In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
+        '''
+        new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
+lis.print_list(new_triangles, 'new triangles')
+
+
 mesh.points = old_plus_new_points
 mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
 mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
-print(mesh.cells[-1])
+# print(mesh.cells[-1])
 N = np.shape(mesh.cells[-1].data)[0]
 mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
 mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
@@ -197,7 +206,7 @@ for j in range(len(mesh.cells)):
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 
-meshio.write(mesh_file[:-3] + "xdmf", mesh)  # XDMF for FEniCS
+meshio.write(half_mesh_file[:-3] + "xdmf", mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
 
@@ -205,7 +214,6 @@ print("Full mesh generated successfully!")
 This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf 
 '''
 
-print(output_dir + "mesh.xdmf")
 mesh_from_file = meshio.read(output_dir + "/mesh.xdmf")
 
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
