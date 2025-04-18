@@ -41,7 +41,8 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 
 output_dir = args.output_dir
-half_mesh_file = output_dir + "/mesh.msh"
+half_mesh_msh_file = output_dir + "/half_mesh.msh"
+mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 '''
 This function duplicates and transform all points, inverting their position with respect to the x axis
@@ -140,14 +141,15 @@ model.add_physical([half_rectangle_circle_lines[2]], "t")
 model.add_physical(half_rectangle_circle_lines[5:], "c")
 
 geometry.generate_mesh(dim=2)
-gmsh.write(half_mesh_file)
+gmsh.write(half_mesh_msh_file)
 
 # msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
 
 gmsh.clear()
 geometry.__exit__()
 
-'''This part duplicate points and cells with the respective tags and ids
+'''
+duplicate the points and cells with the respective tags and ids
 The new mesh inherits the ids (physical id used for measure definiton) of the original one, 
 except for the new physical objects that are generated from reflection (e.g. the b line)
 
@@ -156,7 +158,7 @@ in the physical group 4 (top lines), when reflected, they will be assigned the i
 '''
 ids = [0, 1, 2, 3, 5, 6]  # {1:1, 2:2, 3:3, 4:5, 5:6}
 # Load the half-mesh
-mesh = meshio.read(half_mesh_file)
+mesh = meshio.read(half_mesh_msh_file)
 print("original points", np.shape(mesh.points))
 
 # Mirror points across X=0
@@ -206,7 +208,7 @@ for j in range(len(mesh.cells)):
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 
-meshio.write(half_mesh_file[:-3] + "xdmf", mesh)  # XDMF for FEniCS
+meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
 
@@ -214,7 +216,7 @@ print("Full mesh generated successfully!")
 This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf 
 '''
 
-mesh_from_file = meshio.read(output_dir + "/mesh.xdmf")
+mesh_from_file = meshio.read(mesh_xdmf_file)
 
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
 meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
