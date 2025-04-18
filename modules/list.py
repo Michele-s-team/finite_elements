@@ -5,10 +5,12 @@ def prepend(x, list):
 
 def print_list(list, name):
 
-    print(f"List {name}:")
+    print(f'List {name}:')
+    print(f'\tSize = {len(list)}')
+    print(f'\tContent:')
     i=0
     for element in list:
-        print(f"\telement #{i} = {element}")
+        print(f"\t\telement #{i} = {element}")
         i+=1
 
 
