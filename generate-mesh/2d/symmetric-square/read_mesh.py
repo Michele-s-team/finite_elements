@@ -29,7 +29,7 @@ args = parser.parse_args()
 L = 1
 h = 1
 c_r = [0, 0]
-r = 0.25
+r = 0.3
 c_test = [0.3, 0.76]
 r_test = 0.345
 
@@ -74,7 +74,7 @@ def function_test_integral_expression(x):
 
 dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
 ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=2)
-ds_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=4)
+ds_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=5)
 ds_l = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=3)
 ds_circle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=6)
 
@@ -87,11 +87,17 @@ f_test.interpolate(FunctionTestIntegralExpression(element=Q.ufl_element()))
 # compute exact integrals
 integral_exact_dx = (integrate.dblquad(test_function, -L / 2, L / 2, lambda x: -h/2, lambda x: h/2)[0] -
                      integrate.dblquad(lambda rho, theta: rho * test_function(c_r[1] + rho * np.sin(theta), c_r[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: 0, lambda rho: r)[0])
+integral_exact_ds_l = (integrate.quad(lambda y: test_function(y, -L/2), -h/2, h/2))[0]
+integral_exact_ds_r = (integrate.quad(lambda y: test_function(y, L/2), -h/2, h/2))[0]
+integral_exact_ds_t = (integrate.quad(lambda x: test_function(h/2, x), -L/2, L/2))[0]
+integral_exact_ds_b = (integrate.quad(lambda x: test_function(-h/2, x), -L/2, L/2))[0]
+integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
+integral_exact_ds_circle = (integrate.quad(lambda theta: r * test_function(c_r[1] + r * np.sin(theta), c_r[0] + r * np.cos(theta)), 0, 2*np.pi))[0]
 
 
 msh.test_mesh_integral(integral_exact_dx, f_test, dx, '\int dx f')
 # msh.test_mesh_integral(0.7765772342243651, f_test, ds_b, '\int ds_b f')
-# msh.test_mesh_integral(0.8056313961280863, f_test, ds_r, '\int ds_r f')
-# msh.test_mesh_integral(0.9756236687066221, f_test, ds_t, '\int ds_t f')
-msh.test_mesh_integral(0.5070179159373025, f_test, ds_l, '\int ds_l f')
-# msh.test_mesh_integral(0.6251868570121668, f_test, ds_circle, '\int ds_circle f')
+msh.test_mesh_integral(integral_exact_ds_tb, f_test, ds_tb, '\int ds_tb f')
+msh.test_mesh_integral(integral_exact_ds_l, f_test, ds_l, '\int ds_l f')
+msh.test_mesh_integral(integral_exact_ds_r, f_test, ds_r, '\int ds_r f')
+msh.test_mesh_integral(integral_exact_ds_circle, f_test, ds_circle, '\int ds_circle f')
