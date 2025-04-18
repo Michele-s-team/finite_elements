@@ -207,6 +207,13 @@ for j in range(len(mesh.cells)):
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 
+#this assigns to all lines in the mesh the ID target_id 
+target_id = 7  # or whatever physical ID you want to assign to all line elements
+for j in range(len(mesh.cells)):
+    if mesh.cells[j].type == "line":
+        num_lines = len(mesh.cells[j].data)
+        mesh.cell_data['gmsh:physical'][j] = np.full(num_lines, target_id)
+#
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
