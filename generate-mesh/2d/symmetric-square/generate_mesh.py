@@ -146,81 +146,81 @@ gmsh.write(half_mesh_msh_file)
 
 gmsh.clear()
 geometry.__exit__()
-#
-# '''
-# duplicate the points and cells with the respective tags and ids
-# The new mesh inherits the ids (physical id used for measure definiton) of the original one,
-# except for the new physical objects that are generated from reflection (e.g. the b line)
-#
-# In particular the rule 4:5 implies that the lines that in the original mesh where
-# in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
-# '''
-# ids = [0, 1, 2, 3, 5, 6]  # {1:1, 2:2, 3:3, 4:5, 5:6}
-# # Load the half-mesh
-# mesh = meshio.read(half_mesh_msh_file)
-# print("original points", np.shape(mesh.points))
-#
-# # Mirror points across X=0
-# old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points, mesh.point_data)
-#
-# old_triangles = mesh.cells_dict['triangle']
-# # lis.print_list(old_triangles, 'original triangles')
-#
-# original_lines = mesh.cells_dict['line']
-# # lis.print_list(original_lines, 'original lines')
-#
-#
-# # duplicate cell blocks of type 'triangle'
-# new_triangles = np.copy(old_triangles)
-# # run through the old triangles
-# for i in range(np.shape(new_triangles)[0]):
-#     # for each old triangle, run through each of its three vertices
-#     for j in range(3):
-#         '''
-#         assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
-#         In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
-#         '''
-#         new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
-# # lis.print_list(new_triangles, 'new triangles')
-#
-#
-# mesh.points = old_plus_new_points
-# mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
-# mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
-# # print(mesh.cells[-1])
-# N = np.shape(mesh.cells[-1].data)[0]
-# mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
-# mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
-#
-# # duplicate cell blocks of type 'line'
-# for j in range(len(mesh.cells)):
-#     if mesh.cells[j].type == 'line':
-#         lines = np.copy(mesh.cells[j].data)
-#         filtered_lines = []
-#         for i in range(np.shape(lines)[0]):
-#             f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
-#             if f[0] or f[1]:
-#                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]], non_mirrored_plus_new_points_indices[lines[i, 1]]])
-#         filtered_lines = np.array(filtered_lines)
-#         mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
-#         N = np.shape(mesh.cells[j].data)[0]
-#         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
-#         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
-#
-# meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
-#
-# print("Full mesh generated successfully!")
-#
-# '''
-# This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
-# '''
-#
-# mesh_from_file = meshio.read(mesh_xdmf_file)
-#
-# line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-# meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
-#
-# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-# meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
-#
-# print("Mesh generated and saved to ", output_dir)
+
+'''
+duplicate the points and cells with the respective tags and ids
+The new mesh inherits the ids (physical id used for measure definiton) of the original one,
+except for the new physical objects that are generated from reflection (e.g. the b line)
+
+In particular the rule 4:5 implies that the lines that in the original mesh where
+in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
+'''
+ids = [0, 1, 2, 3, 5, 6]  # {1:1, 2:2, 3:3, 4:5, 5:6}
+# Load the half-mesh
+mesh = meshio.read(half_mesh_msh_file)
+print("original points", np.shape(mesh.points))
+
+# Mirror points across X=0
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points, mesh.point_data)
+
+old_triangles = mesh.cells_dict['triangle']
+# lis.print_list(old_triangles, 'original triangles')
+
+original_lines = mesh.cells_dict['line']
+# lis.print_list(original_lines, 'original lines')
+
+
+# duplicate cell blocks of type 'triangle'
+new_triangles = np.copy(old_triangles)
+# run through the old triangles
+for i in range(np.shape(new_triangles)[0]):
+    # for each old triangle, run through each of its three vertices
+    for j in range(3):
+        '''
+        assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
+        In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
+        '''
+        new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
+# lis.print_list(new_triangles, 'new triangles')
+
+
+mesh.points = old_plus_new_points
+mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
+mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
+# print(mesh.cells[-1])
+N = np.shape(mesh.cells[-1].data)[0]
+mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
+mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
+
+# duplicate cell blocks of type 'line'
+for j in range(len(mesh.cells)):
+    if mesh.cells[j].type == 'line':
+        lines = np.copy(mesh.cells[j].data)
+        filtered_lines = []
+        for i in range(np.shape(lines)[0]):
+            f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+            if f[0] or f[1]:
+                filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]], non_mirrored_plus_new_points_indices[lines[i, 1]]])
+        filtered_lines = np.array(filtered_lines)
+        mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
+        N = np.shape(mesh.cells[j].data)[0]
+        mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
+        mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
+
+meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
+
+print("Full mesh generated successfully!")
+
+'''
+This part read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
+'''
+
+mesh_from_file = meshio.read(mesh_xdmf_file)
+
+line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
+meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+
+triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
+meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+
+print("Mesh generated and saved to ", output_dir)

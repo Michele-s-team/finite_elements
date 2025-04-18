@@ -28,7 +28,7 @@ args = parser.parse_args()
 # CHANGE PARAMETERS HERE
 L = 1
 h = 1
-c_r = [0, 0]
+c_r = [L/2, h/2]
 r = 0.3
 c_test = [0.3, 0.76]
 r_test = 0.345
@@ -85,12 +85,12 @@ f_test = Function(Q)
 f_test.interpolate(FunctionTestIntegralExpression(element=Q.ufl_element()))
 
 # compute exact integrals
-integral_exact_dx = (integrate.dblquad(test_function, -L / 2, L / 2, lambda x: -h/2, lambda x: h/2)[0] -
+integral_exact_dx = (integrate.dblquad(test_function, -0, L, lambda x: 0, lambda x: h)[0] -
                      integrate.dblquad(lambda rho, theta: rho * test_function(c_r[1] + rho * np.sin(theta), c_r[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: 0, lambda rho: r)[0])
-integral_exact_ds_l = (integrate.quad(lambda y: test_function(y, -L/2), -h/2, h/2))[0]
-integral_exact_ds_r = (integrate.quad(lambda y: test_function(y, L/2), -h/2, h/2))[0]
-integral_exact_ds_t = (integrate.quad(lambda x: test_function(h/2, x), -L/2, L/2))[0]
-integral_exact_ds_b = (integrate.quad(lambda x: test_function(-h/2, x), -L/2, L/2))[0]
+integral_exact_ds_l = (integrate.quad(lambda y: test_function(y, 0), 0, h))[0]
+integral_exact_ds_r = (integrate.quad(lambda y: test_function(y, L), 0, h))[0]
+integral_exact_ds_t = (integrate.quad(lambda x: test_function(h, x), 0, L))[0]
+integral_exact_ds_b = (integrate.quad(lambda x: test_function(0, x), 0, L))[0]
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
 integral_exact_ds_circle = (integrate.quad(lambda theta: r * test_function(c_r[1] + r * np.sin(theta), c_r[0] + r * np.cos(theta)), 0, 2*np.pi))[0]
 
