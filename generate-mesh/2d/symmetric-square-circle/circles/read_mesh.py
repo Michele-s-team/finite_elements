@@ -7,6 +7,7 @@ example:
 clear; clear; python3 read_mesh.py solution
 '''
 import argparse
+import colorama as col
 from dolfin import *
 from fenics import *
 from mshr import *
@@ -18,6 +19,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import geometry as geo
+import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
@@ -25,7 +27,10 @@ parser.add_argument("input_directory")
 args = parser.parse_args()
 
 # CHANGE PARAMETERS HERE
-
+L = 1
+h = 1
+c_r = [L / 2, h / 2]
+r = 0.1
 
 c_test = [0.3, 0.76]
 r_test = 0.345
@@ -57,6 +62,13 @@ class FunctionTestIntegralExpression(UserExpression):
     def value_shape(self):
         return (1,)
 
+# analytical expression for a  scalar function used to test the ds
+class FunctionTestSymmetryExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[1] - h / 2
+
+    def value_shape(self):
+        return (1,)
 
 def function_test_integral_expression(x):
     return np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0
@@ -83,7 +95,9 @@ Q = FunctionSpace(mesh, 'P', 1)
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 f_test = Function(Q)
+f_test_symmetry = Function(Q)
 f_test.interpolate(FunctionTestIntegralExpression(element=Q.ufl_element()))
+f_test_symmetry.interpolate(FunctionTestSymmetryExpression(element=Q.ufl_element()))
 
 msh.test_mesh_integral(0.9063111599974194, f_test, dx, '\int dx f_surface')
 # msh.test_mesh_integral(0.7932215226341747, f_test, dp_O, '\int dp f_{p_O}')
@@ -92,6 +106,9 @@ msh.test_mesh_integral(0.8056313961280863, f_test, ds_r, '\int ds_r f')
 msh.test_mesh_integral(0.9756236687066221, f_test, ds_t, '\int ds_t f')
 msh.test_mesh_integral(0.9620471547152678, f_test, ds_l, '\int ds_l f')
 msh.test_mesh_integral(0.6251868570121668, f_test, ds_circle, '\int ds_circle f')
+
+print(
+    f'int f_test_symmetry = {col.Fore.YELLOW}{assemble(f_test_symmetry * dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}')
 
 # msh.test_mesh_integral(0.687851524196998, f_test, ds_aux, '\int ds_{aux} f')
 
