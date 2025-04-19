@@ -1,0 +1,37 @@
+Solving nonlinear variational problem.
+  Newton iteration 0: r (abs) = 4.899e+00 (tol = 1.000e-06) r (rel) = 1.000e+00 (tol = 1.000e-06)
+  Newton iteration 1: r (abs) = 2.677e-01 (tol = 1.000e-06) r (rel) = 5.464e-02 (tol = 1.000e-06)
+  Newton iteration 2: r (abs) = 1.663e-02 (tol = 1.000e-06) r (rel) = 3.395e-03 (tol = 1.000e-06)
+  Newton iteration 3: r (abs) = 8.567e-04 (tol = 1.000e-06) r (rel) = 1.749e-04 (tol = 1.000e-06)
+  Newton iteration 4: r (abs) = 4.291e-05 (tol = 1.000e-06) r (rel) = 8.758e-06 (tol = 1.000e-06)
+  Newton iteration 5: r (abs) = 2.145e-06 (tol = 1.000e-06) r (rel) = 4.379e-07 (tol = 1.000e-06)
+  Newton solver finished in 5 iterations and 5 linear solver iterations.
+Solving nonlinear variational problem.
+  Newton iteration 0: r (abs) = 2.185e-01 (tol = 1.000e-10) r (rel) = 1.000e+00 (tol = 1.000e-09)
+  Newton iteration 1: r (abs) = 5.386e-17 (tol = 1.000e-10) r (rel) = 2.465e-16 (tol = 1.000e-09)
+  Newton solver finished in 1 iterations and 1 linear solver iterations.
+Solving nonlinear variational problem.
+  Newton iteration 0: r (abs) = 5.762e+00 (tol = 1.000e-10) r (rel) = 1.000e+00 (tol = 1.000e-09)
+  Newton iteration 1: r (abs) = 1.926e-15 (tol = 1.000e-10) r (rel) = 3.342e-16 (tol = 1.000e-09)
+  Newton solver finished in 1 iterations and 1 linear solver iterations.
+\int f dx = 0.2304, should be 0.2291, relative error =  [33m5.76e-03[0m
+\int f ds_l = 0.4625, should be 0.4625, relative error =  [33m5.48e-07[0m
+\int f ds_r = 0.4711, should be 0.4711, relative error =  [33m6.16e-07[0m
+\int f ds_t = 0.4983, should be 0.4983, relative error =  [33m7.98e-07[0m
+\int f ds_b = 0.413, should be 0.413, relative error =  [33m2.32e-08[0m
+\int f ds_lr = 0.9336, should be 0.9336, relative error =  [33m5.83e-07[0m
+\int f ds_tb = 0.9113, should be 0.9113, relative error =  [33m4.47e-07[0m
+\int f ds_square = 1.845, should be 1.845, relative error =  [33m7.40e-08[0m
+\int f ds_circle = 0.2913, should be 0.3049, relative error =  [33m4.48e-02[0m
+\int f ds = 2.136, should be 2.15, relative error =  [33m6.36e-03[0m
+Input diredtory =  /home/fenics/shared/steady-state-no-flow/mesh/solution
+Output diredtory =  /home/fenics/shared/steady-state-no-flow/solution-old
+Radius of mesh cell = [36m0.05266034998824985[0m
+Check of BCs:
+		<<(z - phi)^2>>_square = [31m0.00e+00[0m
+		<<|omega_i - psi_i|^2>>_circle = [31m1.43e-07[0m
+		<<(n^i \omega_i - psi )^2>>_lr = [31m2.57e-06[0m
+		<<(n^i \omega_i - psi )^2>>_tb = [31m2.29e-06[0m
+
+<z>_circle = -0.011987305848980754
+F_{ds_r} =  [-6.711949326390463, 0.08196238838393168, 16.686692219409778]
