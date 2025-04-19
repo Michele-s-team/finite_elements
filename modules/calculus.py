@@ -53,18 +53,18 @@ Example of usage:
     line_test = lambda t: cal.line([np.sqrt(2),0.4], [1.2,1], t)
     def g(x):
         return np.sin( x[0]**2 +np.cos( x[1]**2))
-    integral_line_test = cal.integral_curve(g, line_test)
+    integral_line_test = cal.curve_integral(g, line_test)
     print(f'integral_line_test: {integral_line_test}')
     
 Example of usage:
     circle_test = lambda t: cal.circle(1.34, [np.sqrt(2), -np.sqrt(3)],  t)
     def g(x):
         return np.sin( x[0]**2 +np.cos( x[1]**2))
-    integral_line_test = cal.integral_curve(g, circle_test)
+    integral_line_test = cal.curve_integral(g, circle_test)
 '''
 
 
-def integral_curve(f, gamma_dgamma):
+def curve_integral(f, gamma_dgamma):
     # integral = quad(lambda t: (f(gamma_dgamma(t)[0]) * geo.my_norm((gamma_dgamma(t))[1])), 0, 1)[0]
     integral = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma(t))[1])), 0, 1)[0]
     return integral
@@ -80,9 +80,9 @@ Result:
 Example of usage:
     def g(x):
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
-    integral = integral_rectangle(g, [-2,0.1], [1,1])
+    integral = surface_integral_rectangle(g, [-2,0.1], [1,1])
 '''
-def integral_rectangle(f, p_bl, p_tr):
+def surface_integral_rectangle(f, p_bl, p_tr):
     f_swapped = lambda x, y: f([y, x])
     return spi.dblquad(f_swapped, p_bl[0], p_tr[0], lambda x: p_bl[1], lambda x: p_tr[1])[0]
 
@@ -98,9 +98,9 @@ Result:
 Example of usage:
     def g(x):
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
-    integral = cal.integral_ring(g, 1/np.sqrt(3), 2, [np.sqrt(11),-0.5])
+    integral = cal.surface_integral_ring(g, 1/np.sqrt(3), 2, [np.sqrt(11),-0.5])
 '''
-def integral_ring(f, r, R, c):
+def surface_integral_ring(f, r, R, c):
     f_swapped = lambda x, y: f([y, x])
 
     return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: r, lambda rho: R)[0]
@@ -118,10 +118,10 @@ Result:
 Example of usage:
     def g(x):
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
-    integral = cal.integral_disk(g, 1/np.sqrt(3), [np.sqrt(11),-0.5])
+    integral = cal.surface_integral_dsk(g, 1/np.sqrt(3), [np.sqrt(11),-0.5])
 '''
-def integral_disk(f, r, c):
-    return integral_ring(f, 0, r, c)
+def surface_integral_disk(f, r, c):
+    return surface_integral_ring(f, 0, r, c)
 
 
 '''
@@ -137,11 +137,11 @@ Return value:
 Example of usage:
     def g(x):
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
-    integral = cal.integral_rectangle_minus_disk(g, [-1,-2], [2,3], 0.3, [1,1])
+    integral = cal.surface_integral_integral_rectangle_minus_disk(g, [-1,-2], [2,3], 0.3, [1,1])
 '''
 
-def integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
-    return integral_rectangle(f, p_bl, p_tr) - integral_disk(f, r, c)
+def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
+    return surface_integral_rectangle(f, p_bl, p_tr) - surface_integral_disk(f, r, c)
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
