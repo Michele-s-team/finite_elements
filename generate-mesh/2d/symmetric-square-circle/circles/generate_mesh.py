@@ -36,10 +36,10 @@ mesh_file = args.output_directory + "/mesh.msh"
 
 # mesh parameters
 # CHANGE PARAMETERS HERE
-L = 1
-h = 1
+L = 0.5
+h = 0.5
 c_r = [L / 2, h / 2, 0]
-r = 0.1
+r = 0.05
 r_min = r
 r_max = L/2 * 0.9
 # CHANGE PARAMETERS HERE
@@ -122,13 +122,11 @@ lines = gmsh.model.getEntities(dim=1)
 #     gmsh.model.setPhysicalName(lines[i][0], i + 1, f"line_{i + 1}")
 
 # tag the edges and the segments of the edges
-msh.tag_group([edge_b], 1, 1, 'l_edge')
-msh.tag_group(segments_edge_r, 1, 2, 'segments_r_edge')
-msh.tag_group([edge_t], 1, 3, 't_edge')
-msh.tag_group(segments_edge_l, 1, 4, 'segments_l_edge')
-
-# tag the circle
-msh.tag_group(segments_circle, 1, 5, 'segments_circle')
+msh.tag_group(segments_edge_l, 1, 2, 'segments_l_edge')
+msh.tag_group(segments_edge_r, 1, 3, 'segments_r_edge')
+msh.tag_group([edge_t], 1, 4, 't_edge')
+msh.tag_group([edge_b], 1, 5, 'b_edge')
+msh.tag_group(segments_circle, 1, 6, 'segments_circle')
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
