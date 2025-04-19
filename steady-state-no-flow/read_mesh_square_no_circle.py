@@ -1,7 +1,6 @@
 from fenics import *
 from dolfin import *
 from mshr import *
-import numpy as np
 
 import runtime_arguments as rarg
 # import mesh as msh
@@ -30,11 +29,6 @@ L = 1.0
 h = 1.0
 #CHANGE PARAMETERS HERE
 
-
-
-# read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
-
-# test for surface elements
 dx = Measure( "dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1 )
 ds_l = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
 ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
