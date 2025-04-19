@@ -68,6 +68,25 @@ def curve_integral(f, gamma_dgamma):
     integral = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma(t))[1])), 0, 1)[0]
     return integral
 
+
+'''
+return the curve integral of a function  along a line 
+Input values:
+- 'f': the function f(x[0], x[1])
+- 'x_a', 'x_b': the start and end points of the line
+Return values: 
+\int_line f dl
+
+Example of usage:
+    def g(x):
+        return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+    
+    integral_line = cal.curve_integral_line(g, [1,2],[4,3])
+'''
+def curve_integral_line(f, x_a, x_b):
+    line_curve = lambda t: line(x_a, x_b, t)
+    return curve_integral(f, line_curve)
+
 '''
 return the curve integral of a function  along a circle 
 Input values:

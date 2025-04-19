@@ -1,7 +1,6 @@
 from fenics import *
 from mshr import *
 
-import calculus
 import runtime_arguments as rarg
 import boundary_geometry as bgeo
 

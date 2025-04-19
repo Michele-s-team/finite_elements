@@ -14,6 +14,7 @@ c_test = [0.3, 0.76]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
 
+
 # a function space used solely to define function_test_integrals_fenics
 Q_test = FunctionSpace(bgeo.mesh, 'P', 2)
 
@@ -40,6 +41,25 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.
 
 integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.L, rmsh.h])
 
+integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.h])
+integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.L, 0], [rmsh.L, rmsh.h])
+integral_exact_ds_t = cal.curve_integral_line(function_test_integrals, [0, rmsh.h], [rmsh.L, rmsh.h])
+integral_exact_ds_b = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.L, 0])
+
+integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
+integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
+
+integral_exact_ds = integral_exact_ds_lr + integral_exact_ds_tb
+
+
 msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
 
-# msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
+msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l')
+msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
+msh.test_mesh_integral(integral_exact_ds_t, function_test_integrals_fenics, rmsh.ds_t, '\int f ds_t')
+msh.test_mesh_integral(integral_exact_ds_b, function_test_integrals_fenics, rmsh.ds_b, '\int f ds_b')
+
+msh.test_mesh_integral(integral_exact_ds_lr, function_test_integrals_fenics, rmsh.ds_lr, '\int f ds_lr')
+msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
+
+msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
