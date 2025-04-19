@@ -72,7 +72,7 @@ def integral_curve(f, gamma_dgamma):
 '''
 compute the integral of a function of two variables over a rectangle
 Input values:
-- 'f': the function f(x, y)
+- 'f': the function f([x, y])
 - 'p_bl', 'p_rt': the bottom-left and top-right corner points of the rectangle, each is a list with two entries
 Result: 
 - the integral \int_{rectagnle} dx dy f(x,y)
@@ -85,6 +85,25 @@ Example of usage:
 def integral_rectangle(f, p_bl, p_tr):
     f_swapped = lambda x, y: f([y, x])
     return spi.dblquad(f_swapped, p_bl[0], p_tr[0], lambda x: p_bl[1], lambda x: p_tr[1])[0]
+
+'''
+integate a function of two variables over a ring delimited by two concentric circles
+Input values 
+- 'f': the function f([x, y])
+- 'r', 'R': radii of the inner and outer circle defining the ring
+- 'c' : center of the circles (a list of two values)
+Result:
+- \int_ring dx dy f
+
+Example of usage:
+    def g(x):
+        return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+    integral = cal.integral_ring(g, 1/np.sqrt(3), 2, [np.sqrt(11),-0.5])
+'''
+def integral_ring(f, r, R, c):
+    f_swapped = lambda x, y: f([y, x])
+
+    return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: r, lambda rho: R)[0]
 
 
 

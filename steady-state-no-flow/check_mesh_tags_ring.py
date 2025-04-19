@@ -19,13 +19,6 @@ r_test = 0.345
 def test_function(y, x):
     return (np.cos(geo.my_norm(np.subtract([x, y], c_test)) - r_test) ** 2.0)
 
-#####
-import calculus as cal
-def g(x):
-    return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
-integral = cal.integral_rectangle(g, [-2, 0.1], [1, 1])
-print(f'integral = {integral}')
-####
 
 
 
