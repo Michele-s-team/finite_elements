@@ -41,7 +41,7 @@ ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 ds = ds_square + ds_circle
 
-import check_mesh_tags
+import check_mesh_tags_square
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE

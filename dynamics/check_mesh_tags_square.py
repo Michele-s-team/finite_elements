@@ -7,7 +7,7 @@ import calculus as cal
 import geometry as geo
 import mesh as msh
 
-import read_mesh as rmsh
+import read_mesh_square as rmsh
 
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]

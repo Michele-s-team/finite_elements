@@ -17,6 +17,8 @@ The solution files will be stored in /home/fenics/shared/dynamics/solution
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
+All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
 '''
@@ -49,12 +51,17 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
-import print_out_bc_a as prout
-# import print_out_bc_b as prout
-import read_mesh as rmsh
+
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import print_out_bc_square_a as prout
+import print_out_bc_square_b as prout
+
+import read_mesh_square as rmsh
 import runtime_arguments as rarg
-import variational_problem_bc_a as vp
-# import variational_problem_bc_b as vp
+
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import variational_problem_bc_square_a as vp
+import variational_problem_bc_square_b as vp
 
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -107,8 +114,9 @@ for step in range(vp.N):
     # Update current time
     t += vp.dt
 
-    import variational_problem_bc_a
-    # import variational_problem_bc_b
+    # CHANGE VARIATIONAL PROBLEM OR MESH HERE
+    # import variational_problem_bc_square_a
+    import variational_problem_bc_square_b
 
     # solve the variational problem
     J = derivative( vp.F, fsp.psi, fsp.J_psi )

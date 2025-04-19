@@ -11,9 +11,9 @@ import geometry as geo
 import input_output as io
 import mesh as msh
 import physics as phys
-import read_mesh as rmsh
+import read_mesh_square as rmsh
 import runtime_arguments as rarg
-import variational_problem_bc_a as vp
+import variational_problem_bc_square_a as vp
 
 i, j, k, l = ufl.indices( 4 )
 
