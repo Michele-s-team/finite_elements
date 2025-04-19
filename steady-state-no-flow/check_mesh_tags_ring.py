@@ -4,6 +4,7 @@ import numpy as np
 import scipy.integrate as integrate
 
 import boundary_geometry as bgeo
+import calculus as cal
 import geometry as geo
 import mesh as msh
 
@@ -12,13 +13,22 @@ import read_mesh_ring as rmsh
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
 r_test = 0.345
-
-
 # CHANGE PARAMETERS HERE
 
 # remember that this function takes y as first argument, x as second argument
 def test_function(y, x):
     return (np.cos(geo.my_norm(np.subtract([x, y], c_test)) - r_test) ** 2.0)
+
+
+# check of curve integral
+line_test = lambda t: cal.line_ab([np.sqrt(2), 0.4], [1.2, 1], t)
+def g(x):
+    return np.sin( x[0]**2 +np.cos( x[1]**2))
+integral_line_test = cal.integral_2d_curve(g, line_test)
+print(f'integral_line_test: {integral_line_test}')
+#
+
+
 
 
 # a function space used solely to define f_test_ds

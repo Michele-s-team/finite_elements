@@ -15,7 +15,7 @@ def atan_quad(r):
 a line in 2d joining the points x_a and x_b, parametrized with 0 <= t <= 1
 it returns the curve and its gradient [[x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]]
 '''
-def line_x_a_x_b(x_a, x_b, t):
+def line_ab(x_a, x_b, t):
     return [x_a + np.subtract(x_b, x_a)*t, np.subtract(x_b, x_a)]
 
 
@@ -28,13 +28,24 @@ def integral_1d_segment(f, a, b):
 
 
 '''
-return the curvilinear integral of the function f(x[0], x[1]) along the curve gamma_dgamma
-gamma_dgamma must return [gamma, [grad_gamma]], where gamma = [x[0](t), x[1](t)] and grad_gamma = [x[0]'(t), x[1]'(t)], and the curve is defined for 0<= t <= 1
+return the curvilinear integral of a function  along a curve 
+Input values:
+- 'f': the function f(x[0], x[1])
+- 'gamma_dgamma': the curve and its gradient: gamma_dgamma(t) = [[x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]]
+Return values:
+- 'integral': the integral 
+
+Example of usage:
+    line_test = lambda t: cal.line_x_a_x_b([np.sqrt(2),0.4], [1.2,1], t)
+    def g(x):
+        return np.sin( x[0]**2 +np.cos( x[1]**2))
+    integral_line_test = cal.integral_2d_curve(g, line_test)
+    print(f'integral_line_test: {integral_line_test}')
 '''
 def integral_2d_curve(f, gamma_dgamma):
-   # result = quad(lambda t: (f(gamma_dgamma(t)[0]) * geo.my_norm((gamma_dgamma(t))[1])), 0, 1)[0]
-   result = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma( t ))[1])   ), 0, 1)[0]
-   return result
+   # integral = quad(lambda t: (f(gamma_dgamma(t)[0]) * geo.my_norm((gamma_dgamma(t))[1])), 0, 1)[0]
+   integral = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma( t ))[1])   ), 0, 1)[0]
+   return integral
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
