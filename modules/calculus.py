@@ -106,6 +106,42 @@ def integral_ring(f, r, R, c):
     return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: r, lambda rho: R)[0]
 
 
+'''
+integate a function of two variables over a disk
+Input values 
+- 'f': the function f([x, y])
+- 'r': radius of the disk
+- 'c' : center of the disk
+Result:
+- \int_disk dx dy f
+
+Example of usage:
+    def g(x):
+        return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+    integral = cal.integral_disk(g, 1/np.sqrt(3), [np.sqrt(11),-0.5])
+'''
+def integral_disk(f, r, c):
+    return integral_ring(f, 0, r, c)
+
+
+'''
+compute the integral of a function in the region between a disk and a rectangle (the rectangle must contain the disk)
+Input values 
+- 'f': the function f([x, y])
+- 'p_bl', 'p_rt': the bottom-left and top-right corner points of the rectangle, each is a list with two entries
+- 'r': radius of the disk
+- 'c' : center of the disk
+Return value: 
+- \int_{rectangle - disk} dx dy f
+
+Example of usage:
+    def g(x):
+        return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+    integral = cal.integral_rectangle_minus_disk(g, [-1,-2], [2,3], 0.3, [1,1])
+'''
+
+def integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
+    return integral_rectangle(f, p_bl, p_tr) - integral_disk(f, r, c)
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
