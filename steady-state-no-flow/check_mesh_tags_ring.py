@@ -7,7 +7,7 @@ import boundary_geometry as bgeo
 import geometry as geo
 import mesh as msh
 
-import read_mesh_square as rmsh
+import read_mesh_ring as rmsh
 
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
@@ -39,36 +39,22 @@ class FunctionTestIntegralsds(UserExpression):
 
 f_test_ds.interpolate(FunctionTestIntegralsds(element=Q_test.ufl_element()))
 
-integral_exact_dx = integrate.dblquad(test_function, 0, rmsh.L, lambda x: 0, lambda x: rmsh.h)[0] \
-                    - integrate.dblquad(
+integral_exact_dx = integrate.dblquad(
     lambda r, theta: r * test_function(rmsh.c_r[1] + r * np.sin(theta), rmsh.c_r[0] + r * np.cos(theta)), 0, 2 * np.pi,
-    lambda r: 0, lambda r: rmsh.r)[0]
+    lambda r: rmsh.r, lambda r: rmsh.R)[0]
 
-integral_exact_ds_l = (integrate.quad(lambda y: test_function(y, 0), 0, rmsh.h))[0]
-integral_exact_ds_r = (integrate.quad(lambda y: test_function(y, rmsh.L), 0, rmsh.h))[0]
-integral_exact_ds_t = (integrate.quad(lambda x: test_function(rmsh.h, x), 0, rmsh.L))[0]
-integral_exact_ds_b = (integrate.quad(lambda x: test_function(0, x), 0, rmsh.L))[0]
-integral_exact_ds_circle = (integrate.quad(
+integral_exact_ds_r = (integrate.quad(
     lambda theta: rmsh.r * test_function(rmsh.c_r[1] + rmsh.r * np.sin(theta), rmsh.c_r[0] + rmsh.r * np.cos(theta)), 0,
     2 * np.pi))[0]
+integral_exact_ds_R = (integrate.quad(
+    lambda theta: rmsh.R * test_function(rmsh.c_r[1] + rmsh.R * np.sin(theta), rmsh.c_r[0] + rmsh.R * np.cos(theta)), 0,
+    2 * np.pi))[0]
 
-integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
-integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
-integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
-
-integral_exact_ds = integral_exact_ds_square + integral_exact_ds_circle
+integral_exact_ds = integral_exact_ds_r + integral_exact_ds_R
 
 msh.test_mesh_integral(integral_exact_dx, f_test_ds, rmsh.dx, '\int f dx')
 
-msh.test_mesh_integral(integral_exact_ds_l, f_test_ds, rmsh.ds_l, '\int f ds_l')
 msh.test_mesh_integral(integral_exact_ds_r, f_test_ds, rmsh.ds_r, '\int f ds_r')
-msh.test_mesh_integral(integral_exact_ds_t, f_test_ds, rmsh.ds_t, '\int f ds_t')
-msh.test_mesh_integral(integral_exact_ds_b, f_test_ds, rmsh.ds_b, '\int f ds_b')
-
-msh.test_mesh_integral(integral_exact_ds_lr, f_test_ds, rmsh.ds_lr, '\int f ds_lr')
-msh.test_mesh_integral(integral_exact_ds_tb, f_test_ds, rmsh.ds_tb, '\int f ds_tb')
-
-msh.test_mesh_integral(integral_exact_ds_square, f_test_ds, rmsh.ds_square, '\int f ds_square')
-msh.test_mesh_integral(integral_exact_ds_circle, f_test_ds, rmsh.ds_circle, '\int f ds_circle')
+msh.test_mesh_integral(integral_exact_ds_R, f_test_ds, rmsh.ds_R, '\int f ds_R')
 
 msh.test_mesh_integral(integral_exact_ds, f_test_ds, rmsh.ds, '\int f ds')
