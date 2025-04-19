@@ -36,6 +36,9 @@ ds = ds_r + ds_R
 
 import check_mesh_tags_ring
 
+print(f'Module {__file__} called {check_mesh_tags_ring.__file__}', flush=True)
+
+
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
 boundary = 'on_boundary'

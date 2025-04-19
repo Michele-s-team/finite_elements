@@ -63,6 +63,8 @@ ds = ds_square + ds_circle
 
 import check_mesh_tags_square
 
+print(f'Module {__file__} called {check_mesh_tags_square.__file__}', flush=True)
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE
