@@ -2,7 +2,7 @@ from fenics import *
 from mshr import *
 
 import boundary_geometry as bgeo
-import calculus
+import calculus as cal
 import runtime_arguments as rarg
 
 
@@ -50,6 +50,6 @@ boundary_l  = f'near(x[0], 0.0)'
 boundary_r  = f'near(x[0], {L})'
 boundary_lr  = f'near(x[0], 0) || near(x[0], {L})'
 boundary_tb  = f'near(x[1], 0) || near(x[1], {h})'
-boundary_square = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {(r + calc.min_dist_c_r_rectangle(L, h, c_r))/2}'
-boundary_circle = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + calc.min_dist_c_r_rectangle(L, h, c_r))/2}'
+boundary_square = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {(r + cal.min_dist_c_r_rectangle(L, h, c_r))/2}'
+boundary_circle = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + cal.min_dist_c_r_rectangle(L, h, c_r))/2}'
 #CHANGE PARAMETERS HERE
