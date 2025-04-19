@@ -46,33 +46,35 @@ ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 
-#a function space used solely to define f_test_ds
-Q_test = FunctionSpace( bgeo.mesh, 'P', 2 )
+# #a function space used solely to define f_test_ds
+# Q_test = FunctionSpace( bgeo.mesh, 'P', 2 )
 
-# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-f_test_ds = Function( Q_test )
+# # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+# f_test_ds = Function( Q_test )
 
-#analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegralsds(UserExpression):
-    def eval(self, values, x):
-        c_test = [0.3, 0.76]
-        r_test = 0.345
-        values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
-    def value_shape(self):
-        return (1,)
+# #analytical expression for a  scalar function used to test the ds
+# class FunctionTestIntegralsds(UserExpression):
+#     def eval(self, values, x):
+#         c_test = [0.3, 0.76]
+#         r_test = 0.345
+#         values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
+#     def value_shape(self):
+#         return (1,)
 
-f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
+# f_test_ds.interpolate( FunctionTestIntegralsds( element=Q_test.ufl_element() ) )
 
-msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int_square f ds')
-msh.test_mesh_integral(0.3049366444861381, f_test_ds, ds_circle, '\int_circle f ds')
-msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int_lr f ds')
-msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int_tb f ds')
+# msh.test_mesh_integral(0.22908817224489927, f_test_ds, dx, '\int f dx')
+# msh.test_mesh_integral(1.8449287777896068, f_test_ds, ds_square, '\int_square f ds')
+# msh.test_mesh_integral(0.3049366444861381, f_test_ds, ds_circle, '\int_circle f ds')
+# msh.test_mesh_integral(0.9336461710791771, f_test_ds, ds_lr, '\int_lr f ds')
+# msh.test_mesh_integral(0.9112826067104298, f_test_ds, ds_tb, '\int_tb f ds')
+#
+# msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int_l f ds')
+# msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int_r f ds')
+# msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int_t f ds')
+# msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int_b f ds')
 
-msh.test_mesh_integral(0.4625165259025798, f_test_ds, ds_l, '\int_l f ds')
-msh.test_mesh_integral(0.47112964517659733, f_test_ds, ds_r, '\int_r f ds')
-msh.test_mesh_integral(0.4982661696490371, f_test_ds, ds_t, '\int_t f ds')
-msh.test_mesh_integral(0.41301643706139274, f_test_ds, ds_b, '\int_b f ds')
+import check_mesh_tags
 
 
 # Define boundaries and obstacle
@@ -85,3 +87,4 @@ boundary_tb  = f'near(x[1], 0) || near(x[1], {h})'
 boundary_square = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {(r + calc.min_dist_c_r_rectangle(L, h, c_r))/2}'
 boundary_circle = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + calc.min_dist_c_r_rectangle(L, h, c_r))/2}'
 #CHANGE PARAMETERS HERE
+
