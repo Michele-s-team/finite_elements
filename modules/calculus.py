@@ -69,6 +69,25 @@ def curve_integral(f, gamma_dgamma):
     return integral
 
 '''
+return the curve integral of a function  along a circle 
+Input values:
+- 'f': the function f(x[0], x[1])
+- 'r': the circle radius
+- 'c': the circle center (an array of two points)
+Return values: 
+\int_circle f dl
+
+Example of usage:
+    def g(x):
+        return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+    
+    integral_circle = cal.curve_integral_circle(g, 1, [1,np.sqrt(2)])
+'''
+def curve_integral_circle(f, r, c):
+    circle_curve = lambda t: circle(r, c, t)
+    return curve_integral(f, circle_curve)
+
+'''
 compute the integral of a function of two variables over a rectangle
 Input values:
 - 'f': the function f([x, y])

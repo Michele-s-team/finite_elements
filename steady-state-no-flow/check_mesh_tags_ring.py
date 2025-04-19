@@ -16,6 +16,17 @@ c_test = [0.3, 0.76]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
 
+######
+
+def g(x):
+    return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+
+integral_circle = cal.curve_integral_circle(g, 1, [1,np.sqrt(2)])
+print(f'integral_circle = {integral_circle}')
+
+######
+
+
 # a function space used solely to define function_test_integrals_fenics
 Q_test = FunctionSpace(bgeo.mesh, 'P', 2)
 
