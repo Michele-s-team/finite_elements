@@ -20,14 +20,6 @@ def test_function(y, x):
     return (np.cos(geo.my_norm(np.subtract([x, y], c_test)) - r_test) ** 2.0)
 
 
-# check of curve integral
-line_test = lambda t: cal.line_ab([np.sqrt(2), 0.4], [1.2, 1], t)
-def g(x):
-    return np.sin( x[0]**2 +np.cos( x[1]**2))
-integral_line_test = cal.integral_2d_curve(g, line_test)
-print(f'integral_line_test: {integral_line_test}')
-#
-
 
 
 

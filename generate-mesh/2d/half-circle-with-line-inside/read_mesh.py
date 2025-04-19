@@ -72,7 +72,7 @@ def curve_arc_21(t):
 
 #curve relative to line_12: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
 def curve_line_12(t):
-    return cal.line_ab([r, 0], [-r, 0], t)
+    return cal.line([r, 0], [-r, 0], t)
 
 
 
