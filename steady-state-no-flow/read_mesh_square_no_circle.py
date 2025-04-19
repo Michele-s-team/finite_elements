@@ -37,6 +37,8 @@ ds_tb = ds_t + ds_b
 ds = ds_lr + ds_tb
 
 import check_mesh_tags_square_no_circle
+print(f'Module {__file__} called {check_mesh_tags_square_no_circle.__file__}', flush=True)
+
 
 # Define boundaries and obstacle
 #CHANGE PARAMETERS HERE

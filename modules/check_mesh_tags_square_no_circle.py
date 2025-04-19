@@ -8,6 +8,8 @@ import geometry as geo
 import mesh as msh
 
 import read_mesh_square_no_circle as rmsh
+print(f'Module {__file__} called {rmsh.__file__}', flush=True)
+
 
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
