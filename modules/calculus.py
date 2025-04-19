@@ -65,7 +65,6 @@ Example of usage:
 
 
 def curve_integral(f, gamma_dgamma):
-    # integral = quad(lambda t: (f(gamma_dgamma(t)[0]) * geo.my_norm((gamma_dgamma(t))[1])), 0, 1)[0]
     integral = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma(t))[1])), 0, 1)[0]
     return integral
 
