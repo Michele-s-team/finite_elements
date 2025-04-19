@@ -41,6 +41,9 @@ ds_square = ds_lr + ds_tb
 
 import check_mesh_tags_square
 
+print(f'Module {__file__} called {check_mesh_tags_square.__file__}', flush=True)
+
+
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
