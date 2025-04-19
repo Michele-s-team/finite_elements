@@ -53,21 +53,39 @@ Example of usage:
     line_test = lambda t: cal.line([np.sqrt(2),0.4], [1.2,1], t)
     def g(x):
         return np.sin( x[0]**2 +np.cos( x[1]**2))
-    integral_line_test = cal.integral_2d_curve(g, line_test)
+    integral_line_test = cal.integral_curve(g, line_test)
     print(f'integral_line_test: {integral_line_test}')
     
 Example of usage:
     circle_test = lambda t: cal.circle(1.34, [np.sqrt(2), -np.sqrt(3)],  t)
     def g(x):
         return np.sin( x[0]**2 +np.cos( x[1]**2))
-    integral_line_test = cal.integral_2d_curve(g, circle_test)
+    integral_line_test = cal.integral_curve(g, circle_test)
 '''
 
 
-def integral_2d_curve(f, gamma_dgamma):
+def integral_curve(f, gamma_dgamma):
     # integral = quad(lambda t: (f(gamma_dgamma(t)[0]) * geo.my_norm((gamma_dgamma(t))[1])), 0, 1)[0]
     integral = spi.quad(lambda t: (f(gamma_dgamma(t)[0]) * np.linalg.norm((gamma_dgamma(t))[1])), 0, 1)[0]
     return integral
+
+'''
+compute the integral of a function of two variables over a rectangle
+Input values:
+- 'f': the function f(x, y)
+- 'p_bl', 'p_rt': the bottom-left and top-right corner points of the rectangle, each is a list with two entries
+Result: 
+- the integral \int_{rectagnle} dx dy f(x,y)
+
+Example of usage:
+    def g(x):
+        return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
+    integral = integral_rectangle(g, [-2,0.1], [1,1])
+'''
+def integral_rectangle(f, p_bl, p_tr):
+    f_swapped = lambda x, y: f([y, x])
+    return spi.dblquad(f_swapped, p_bl[0], p_tr[0], lambda x: p_bl[1], lambda x: p_tr[1])[0]
+
 
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
