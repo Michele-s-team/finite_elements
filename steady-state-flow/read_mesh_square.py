@@ -2,7 +2,7 @@ from fenics import *
 from mshr import *
 import numpy as np
 
-import calc
+import calculus
 import runtime_arguments as rarg
 import mesh as msh
 import geometry as geo

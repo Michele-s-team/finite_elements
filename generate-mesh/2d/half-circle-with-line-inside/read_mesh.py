@@ -17,7 +17,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
-import calc as cal
+import calculus as cal
 import geometry as geo
 import mesh as msh
 

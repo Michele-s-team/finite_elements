@@ -4,7 +4,7 @@ import colorama as col
 import gmsh
 import meshio
 
-import calc as cal
+import calculus as cal
 import geometry as geo
 import input_output as io
 
