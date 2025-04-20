@@ -32,7 +32,7 @@ For air flow:
                 * v_l = 1e2 * v0
         - set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
         - run with
-            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_no_obstacle.py 0.1 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py 0.1 $SOLUTION_PATH
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH 2048 2048
 
     To reproduce air flow with  obstacle (figure 9):
@@ -62,7 +62,7 @@ For air flow:
                     def value_shape(self):
                         return (2,)
         - run with
-            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_obstacle.py 0.05 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.05 $SOLUTION_PATH
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH  128 128
 """
 
