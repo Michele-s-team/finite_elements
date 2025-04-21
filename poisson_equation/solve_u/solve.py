@@ -5,7 +5,7 @@ run with
 
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/poisson-equation/mesh /home/fenics/shared/poisson-equation/solve_u/solution
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/$SOLUTION_PATH
 '''
 
 import colorama as col
@@ -26,8 +26,8 @@ import input_output as io
 import mesh as msh
 
 
-L = 2.2
-h = 0.41
+L = 1
+h = 1
 
 function_space_degree = 4
 
@@ -66,8 +66,8 @@ xdmf.close()
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_lr = 'near(x[0], 0) || near(x[0], 2.2)'
-boundary_tb = 'near(x[1], 0) || near(x[1], 0.41)'
+boundary_lr = f'near(x[0], 0) || near(x[0], {L})'
+boundary_tb = f'near(x[1], 0) || near(x[1], {h})'
 # CHANGE PARAMETERS HERE
 
 #  norm of vector x
