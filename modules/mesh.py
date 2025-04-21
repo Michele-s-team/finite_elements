@@ -599,7 +599,118 @@ def add_circle_with_lines(c_r, r, n_segments, model):
     return points_circle, segments_circle
 
 
-# tag the objects of dimension 'dimension' contained in 'list_of_objects = [object_1, object_2, ...]' as physical objects, all with tag 'id' and with label 'label'
-def tag_group(list_of_objects, dimension, id, label):
-    gmsh.model.addPhysicalGroup(dimension, list_of_objects, id)
-    gmsh.model.setPhysicalName(dimension, id, label)
+'''
+tag as physical entities the objects with a given dimension in a mesh
+Input values:
+- 'list_of_objects': an array containing the objects to be tagged
+- 'dimension': the dimension of the objects that one wants to tag
+- 'tag' : the tag which one wants to give to the objects
+- 'labal' : the lable which one wants to give to the objects
+'''
+def tag_group(list_of_objects, dimension, tag, label):
+    gmsh.model.addPhysicalGroup(dimension, list_of_objects, tag)
+    gmsh.model.setPhysicalName(dimension, tag, label)
+
+
+'''
+Print the information on a triangle in a mesh
+Input values:
+- 'triangle': the triangle, an element of mesh.cells[i].data
+- 'mesh': the mesh
+'''
+def print_mesh_triangle(triangle, mesh):
+    # vertex_1 = tuple(sorted([triangle[0], triangle[1]]))
+    # vertex_2 = tuple(sorted([triangle[1], triangle[2]]))
+    # vertex_3 = tuple(sorted([triangle[2], triangle[0]]))
+    coordinates_vertex_1 = mesh.points[triangle[0]]
+    coordinates_vertex_2 = mesh.points[triangle[1]]
+    coordinates_vertex_3 = mesh.points[triangle[2]]
+
+    print(f'\tTriangle {np.sort(triangle)}')
+    print(f'\t\t{coordinates_vertex_1}\n\t\t{coordinates_vertex_2}\n\t\t{coordinates_vertex_3}')
+
+
+'''
+Print all triangles of a mesh
+Input values 
+- 'mesh': the mesh, a <meshio mesh object>
+'''
+def print_mesh_triangles(mesh):
+
+    print('Cell triangles: ')
+    for cell_block in mesh.cells:
+        if cell_block.type == "triangle":
+            for triangle in cell_block.data:
+                print_mesh_triangle(triangle, mesh)
+
+'''
+Print all mesh vertices
+Input values: 
+- 'mesh': the mesh, a <meshio mesh object>
+'''
+def print_mesh_vertices(mesh):
+    for i, point in enumerate(mesh.points):
+        print(f"Vertex ID: {i}, Coordinates: {point}")
+
+'''
+Print all element types of a mesh (such as triangles, tetrahedra, lines ...)
+Input values: 
+- 'mesh': the mesh, a <meshio mesh object>
+'''
+def print_mesh_element_types(mesh):
+    print("Cell types in the mesh:")
+    for cell_block in mesh.cells:
+        print(f"\t{cell_block.type}")
+
+'''
+Print the lines of a mesh
+Input values 
+- 'mesh': the mesh, a <meshio mesh object>
+'''
+def print_mesh_lines(mesh):
+
+    print('Cell lines: ')
+
+    for j in range(len(mesh.cells)):
+        # loop through  blocks of lines
+
+        if mesh.cells[j].type == "line":
+            print(f'\tLine block {mesh.cells[j].data}')
+
+            # loop through the lines in  block  mesh.cells[j].data
+            for i in range(len(mesh.cells[j].data)):
+
+                # obtain the extremal point of each line
+                vertex_1 = mesh.points[mesh.cells[j].data[i][0]]
+                vertex_2 = mesh.points[mesh.cells[j].data[i][1]]
+
+                print(f"\t\tLine: {i}:\n\t\t\t{vertex_1}\n\t\t\t{vertex_2}")
+
+
+'''
+assign a tag to lines in a cell which satisfy a given condition
+Input values:
+- 'mesh': the mesh, a <meshio mesh object>
+- 'condition': a function of the coordinates of the extremal points of the line
+- 'tag' : the tag which one wants to assign to the lines
+'''
+def asssign_tag_to_lines(condition, tag, mesh):
+    # assign to the l edge the id 'lower_edge_id'
+    for j in range(len(mesh.cells)):
+        # loop through  blocks of lines
+
+        if mesh.cells[j].type == "line":
+            # print(f'\tI am on line block {mesh.cells[j].data}')
+
+            # loop through the lines in  block  mesh.cells[j].data
+            for i in range(len(mesh.cells[j].data)):
+
+                # obtain the extremal point of each line
+                point_start = mesh.points[mesh.cells[j].data[i][0]]
+                point_end = mesh.points[mesh.cells[j].data[i][1]]
+
+                if condition(point_start, point_end):
+                    # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
+                    # print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
+                    # tag the line under consideration with ID target_id
+                    mesh.cell_data['gmsh:physical'][j][i] = tag

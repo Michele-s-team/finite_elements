@@ -2,6 +2,8 @@ import numpy as np
 import scipy.integrate as spi
 
 
+small_number = 1e-3
+
 # return the radian angle of vector r by taking into account its quadrant
 def atan_quad(r):
     if (r[0] > 0):
