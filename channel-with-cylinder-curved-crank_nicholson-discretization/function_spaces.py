@@ -1,8 +1,9 @@
 from pyclbr import Function
 from fenics import *
 from mshr import *
-# from read_mesh_bc_obstacle import *
-from read_mesh_square_no_circle import *
+
+import boundary_geometry as bgeo
+
 
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
