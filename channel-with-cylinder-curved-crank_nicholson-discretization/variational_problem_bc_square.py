@@ -5,7 +5,7 @@ import numpy as np
 
 import function_spaces as fsp
 import geometry as geo
-import read_mesh_bc_obstacle as rmsh
+import read_mesh_square as rmsh
 import runtime_arguments as rarg
 
 i, j, k, l = ufl.indices( 4 )

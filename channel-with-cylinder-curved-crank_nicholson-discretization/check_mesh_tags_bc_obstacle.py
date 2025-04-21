@@ -6,7 +6,7 @@ import scipy.integrate as integrate
 import boundary_geometry as bgeo
 import geometry as geo
 import mesh as msh
-import read_mesh_bc_obstacle as rmsh
+import read_mesh_square as rmsh
 
 c_test = [0.3, 0.76]
 r_test = 0.345
