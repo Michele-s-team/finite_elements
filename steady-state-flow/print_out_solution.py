@@ -16,8 +16,8 @@ import read_mesh_square as rmsh
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_ring_1 as vp
 # import variational_problem_bc_ring_2 as vp
-# import variational_problem_bc_square_a as vp
-import variational_problem_bc_square_b as vp
+import variational_problem_bc_square_a as vp
+# import variational_problem_bc_square_b as vp
 
 i, j, k, l = ufl.indices(4)
 

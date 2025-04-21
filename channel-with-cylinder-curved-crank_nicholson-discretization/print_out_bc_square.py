@@ -8,9 +8,9 @@ import files as fi
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
-import read_mesh_bc_obstacle as rmsh
+import read_mesh_square as rmsh
 import runtime_arguments as rarg
-import variational_problem_bc_obstacle as vp
+import variational_problem_bc_square as vp
 
 i, j, k, l = ufl.indices( 4 )
 

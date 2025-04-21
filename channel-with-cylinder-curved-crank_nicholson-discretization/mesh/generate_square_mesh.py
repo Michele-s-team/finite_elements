@@ -2,10 +2,10 @@
 this code generates a mesh given by a square with a circular hole
 
 run with
-python generate_mesh_bc_obstacle.py [resolution] [output directory]
+python generate_square_mesh.py [resolution] [output directory]
 
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_obstacle.py 0.1 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio

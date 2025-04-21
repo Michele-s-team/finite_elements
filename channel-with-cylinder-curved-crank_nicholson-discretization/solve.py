@@ -12,6 +12,9 @@ The solution files will be stored in $SOLUTION_PATH
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
 
+All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+
 For air flow:
 
     - rho_3d = 1.293 Kg/m^3
@@ -32,7 +35,7 @@ For air flow:
                 * v_l = 1e2 * v0
         - set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
         - run with
-            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_no_obstacle.py 0.1 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py 0.1 $SOLUTION_PATH
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH 2048 2048
 
     To reproduce air flow with  obstacle (figure 9):
@@ -62,7 +65,7 @@ For air flow:
                     def value_shape(self):
                         return (2,)
         - run with
-            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_obstacle.py 0.05 $SOLUTION_PATH
+            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.05 $SOLUTION_PATH
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH  128 128
 """
 
@@ -82,13 +85,13 @@ import input_output as io
 import runtime_arguments as rarg
 import print_out_solution as pr_sol
 
-# import variational_problem_bc_obstacle as vp
-# import print_out_bc_obstacle as pr_bc
-# import read_mesh_bc_obstacle as rmsh
-
-import variational_problem_bc_no_obstacle as vp
-import print_out_bc_no_obstacle as pr_bc
-import read_mesh_bc_no_obstacle as rmsh
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import variational_problem_bc_square as vp
+# import print_out_bc_square as pr_bc
+# import read_mesh_square as rmsh
+import variational_problem_bc_square_no_circle as vp
+import print_out_bc_square_no_circle as pr_bc
+import read_mesh_square_no_circle as rmsh
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -122,8 +125,9 @@ for n in range( vp.num_steps ):
     t += vp.dt
     step += 1
 
-    # import variational_problem_bc_obstacle
-    import variational_problem_bc_no_obstacle
+    # CHANGE VARIATIONAL PROBLEM OR MESH HERE
+    # import variational_problem_bc_square
+    import variational_problem_bc_square_no_circle
 
     # step 1
     J1 = derivative( vp.F1, fsp.v_, fsp.J_v_ )

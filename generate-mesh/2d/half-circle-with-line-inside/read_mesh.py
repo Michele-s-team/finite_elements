@@ -17,7 +17,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
-import calc as cal
+import calculus as cal
 import geometry as geo
 import mesh as msh
 
@@ -72,7 +72,7 @@ def curve_arc_21(t):
 
 #curve relative to line_12: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
 def curve_line_12(t):
-    return cal.line_x_a_x_b([r, 0], [-r, 0], t)
+    return cal.line([r, 0], [-r, 0], t)
 
 
 
@@ -93,6 +93,6 @@ f_test.interpolate( FunctionTestIntegralExpression( element=Q.ufl_element() ) )
 msh.test_mesh_integral( 0.5287414193220428,   f_test,   dx,  '\int dx f_surface' )
 msh.test_mesh_integral( 0.596540161473517, f_test, dp_1, '\int dp f_{p_1}' )
 msh.test_mesh_integral( 0.1588462551091818, f_test, dp_2, '\int dp f_{p_2}' )
-msh.test_mesh_integral( cal.integral_2d_curve( function_test_integral_expression, curve_line_12 ), f_test, dline_12, '\int dl f_{line_12}' )
-msh.test_mesh_integral( cal.integral_2d_curve( function_test_integral_expression, curve_arc_21 ), f_test, darc_21, '\int dl f_{arc_21}' )
+msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_line_12), f_test, dline_12, '\int dl f_{line_12}')
+msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_arc_21), f_test, darc_21, '\int dl f_{arc_21}')
 msh.test_mesh_integral( 0.652012217844941, f_test, dline_34, '\int dl f_{line_34}' )
