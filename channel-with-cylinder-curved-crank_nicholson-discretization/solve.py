@@ -12,6 +12,9 @@ The solution files will be stored in $SOLUTION_PATH
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
 
+All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+
 For air flow:
 
     - rho_3d = 1.293 Kg/m^3
@@ -82,6 +85,7 @@ import input_output as io
 import runtime_arguments as rarg
 import print_out_solution as pr_sol
 
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_obstacle as vp
 # import print_out_bc_obstacle as pr_bc
 # import read_mesh_bc_obstacle as rmsh
@@ -122,6 +126,7 @@ for n in range( vp.num_steps ):
     t += vp.dt
     step += 1
 
+    # CHANGE VARIATIONAL PROBLEM OR MESH HERE
     # import variational_problem_bc_obstacle
     import variational_problem_bc_no_obstacle
 
