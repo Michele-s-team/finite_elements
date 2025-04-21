@@ -1,11 +1,11 @@
 '''
-this code generates a mesh given by a square with a circular hole
+this code generates a mesh given by a square
 
 run with
-python generate_mesh_bc_obstacle.py [resolution] [output directory]
+python generate_square_no_circle_mesh.py [resolution] [output directory]
 
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_bc_obstacle.py 0.1 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
@@ -37,17 +37,13 @@ mesh_file = output_directory + "mesh.msh"
 
 # Channel parameters
 # CHANGE PARAMETERS HERE
-L = 2.2
+L = 4.4
 h = 0.41
-r = 0.05
-c_r = [0.2, 0.2, 0]
 # CHANGE PARAMETERS HERE
 
 
 print( "L = ", L )
 print( "h = ", h )
-print( "r = ", r )
-print( "c_r = ", c_r )
 print( "resolution = ", resolution )
 print( "output directory = ", output_directory )
 
@@ -67,9 +63,7 @@ channel_lines = [model.add_line( my_points[i], my_points[i + 1] )
 
 channel_loop = model.add_curve_loop( channel_lines )
 
-circle_r = model.add_circle( c_r, r, mesh_size=resolution / 10 )
-
-plane_surface = model.add_plane_surface( channel_loop, holes=[circle_r.curve_loop] )
+plane_surface = model.add_plane_surface( channel_loop, holes=[] )
 
 model.synchronize()
 
@@ -78,7 +72,6 @@ model.add_physical( [channel_lines[0]], "l" )
 model.add_physical( [channel_lines[2]], "r" )
 model.add_physical( [channel_lines[3]], "t" )
 model.add_physical( [channel_lines[1]], "b" )
-model.add_physical( circle_r.curve_loop.curves, "c" )
 
 geometry.generate_mesh( dim=2 )
 gmsh.write( mesh_file )

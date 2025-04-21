@@ -4,13 +4,11 @@ import ufl as ufl
 import csv
 
 import boundary_geometry as bgeo
-import files as fi
 import function_spaces as fsp
 import geometry as geo
-import input_output as io
-import read_mesh_bc_no_obstacle as rmsh
+import read_mesh_square_no_circle as rmsh
 import runtime_arguments as rarg
-import variational_problem_bc_no_obstacle as vp
+import variational_problem_bc_square_no_circle as vp
 
 i, j, k, l = ufl.indices( 4 )
 
