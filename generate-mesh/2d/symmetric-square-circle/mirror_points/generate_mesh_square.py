@@ -51,53 +51,6 @@ mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
-'''
-This function duplicates and transform all points, inverting their position with respect to the x axis
-- 'points' : Array of points to be duplicated
-- 'point_data' : Data that contains dimensional tag of the points (must be duplicated as well to avoid issues during the reading of the mesh)
-Outputs
-- 'new_points' : the old and the new points
-- 'non_mirrored_new_points_indices' : the indices of the old points which have not been mirrored, and of the 
-newly mirrored points in the new array 
-(they are not just the indices of the old points traslated by some constant since the points on the x axis has not been duplicated and they were not ordered in the old list)
-- 'mirrored_point_data ': array of the points which have been mirrored 
-'''
-
-
-def mirror_points(points, point_data):
-    offset = 0
-    non_mirrored_plus_new_points_indices = []
-    mirrored_points = []
-    mirrored_point_data = []
-
-    print('Called mirror_points. Looping through points to mirror them ...')
-
-    for i in range(len(points)):
-        if np.isclose(points[i, 1], y_coordinate_axis_of_symmetry, rtol=cal.small_number):
-            # I ran into a point with x[1] = y_coordinate_axis_of_symmetry -> do not mirror it and append to old_plus_new_points the same index 'i' as the original point
-            offset += 1
-            non_mirrored_plus_new_points_indices.append(i)
-
-            # print(f'\tNot mirroring points with label {i}')
-
-        else:
-            #  I ran into a point with x[1] != y_coordinate_axis_of_symmetry -> mirror it
-            non_mirrored_plus_new_points_indices.append(i - offset + len(points))
-            l = list(point_data['gmsh:dim_tags'][i, :])
-
-            # append two points with indexes:
-            # 1) the original point
-            mirrored_point_data.append(l)
-            # 2) the mirror of the original point
-            mirrored_points.append([points[i, 0], h - points[i, 1], points[i, 2]])
-
-    print('... done.')
-
-    mirrored_points = np.array(mirrored_points)
-    old_plus_new_points = np.vstack((points, mirrored_points))
-
-    return old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data
-
 
 '''
 Half mesh is generated used pygmsh and it's saved as mesh.msh
@@ -183,7 +136,7 @@ msh.print_mesh_vertices(mesh)
 ################################################## mirror the mesh ##################################################
 
 # Mirror points across X=0
-old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(mesh.points,
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(y_coordinate_axis_of_symmetry, h, mesh.points,
                                                                                                mesh.point_data)
 
 old_triangles = mesh.cells_dict['triangle']
@@ -251,4 +204,4 @@ meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
 mesh = msh.read_mesh( output_dir + "/triangle_mesh.xdmf" )
-io.print_vertices_to_csv_file( mesh, output_dir + "vertices.csv" )
+io.print_vertices_to_csv_file( mesh, output_dir + "/vertices.csv" )
