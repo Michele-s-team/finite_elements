@@ -86,12 +86,12 @@ import runtime_arguments as rarg
 import print_out_solution as pr_sol
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-import variational_problem_bc_square as vp
-import print_out_bc_square as pr_bc
-import read_mesh_square as rmsh
-# import variational_problem_bc_square_no_circle as vp
-# import print_out_bc_square_no_circle as pr_bc
-# import read_mesh_square_no_circle as rmsh
+# import variational_problem_bc_square as vp
+# import print_out_bc_square as pr_bc
+# import read_mesh_square as rmsh
+import variational_problem_bc_square_no_circle as vp
+import print_out_bc_square_no_circle as pr_bc
+import read_mesh_square_no_circle as rmsh
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -126,8 +126,8 @@ for n in range( vp.num_steps ):
     step += 1
 
     # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-    import variational_problem_bc_square
-    # import variational_problem_bc_square_no_circle
+    # import variational_problem_bc_square
+    import variational_problem_bc_square_no_circle
 
     # step 1
     J1 = derivative( vp.F1, fsp.v_, fsp.J_v_ )
