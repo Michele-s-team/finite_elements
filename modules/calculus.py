@@ -241,3 +241,26 @@ def point_on_line(point, line):
     den = np.linalg.norm(delta_p)
 
     return np.isclose(num/den,0, rtol=small_number)
+
+'''
+mirrors a point with respect to the symmetry axis given by a line
+Input values: 
+- 'point': the coordinates of the point ( a list with two entries)
+- 'line': the parametric form of the line, as an output of cal.line
+Return value:
+- the mirrored point (a list with two entries) 
+
+Example of usage:
+gamma_top = lambda t: cal.line(r_2, r_3, t)
+print(f'r_1 is on gamma_top: {cal.point_on_line(np.add(r_2, r_3), gamma_top)}')
+'''
+
+
+def mirror_point_line(point, line):
+    p_start = (line(0))[0]
+    p_end = (line(1))[0]
+    delta = np.subtract(p_end, p_start)
+    denominator = np.linalg.norm(delta)
+
+    return [-point[0] + (2 * (point[0] * delta[0] ** 2 + delta[1] * (-p_start[1] * delta[0] + point[1] * delta[0] + p_start[0] * delta[1]))) / denominator, \
+            point[1] + (2 * delta[0] * (p_start[1] * delta[0] - point[1] * delta[0] + (-p_start[0] + point[0]) * delta[1])) / denominator]
