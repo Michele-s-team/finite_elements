@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.integrate as spi
 
-
 small_number = 1e-3
+
 
 # return the radian angle of vector r by taking into account its quadrant
 def atan_quad(r):
@@ -38,9 +38,6 @@ Return values:
 def circle(r, cr, t):
     return [np.add(cr, r * np.array([np.cos(2 * np.pi * t), np.sin(2 * np.pi * t)])).tolist(),
             (r * 2 * np.pi * np.array([- np.sin(2 * np.pi * t), np.cos(2 * np.pi * t)])).tolist()]
-
-
-
 
 
 '''
@@ -85,9 +82,12 @@ Example of usage:
     
     integral_line = cal.curve_integral_line(g, [1,2],[4,3])
 '''
+
+
 def curve_integral_line(f, x_a, x_b):
     line_curve = lambda t: line(x_a, x_b, t)
     return curve_integral(f, line_curve)
+
 
 '''
 return the curve integral of a function  along a circle 
@@ -104,9 +104,12 @@ Example of usage:
     
     integral_circle = cal.curve_integral_circle(g, 1, [1,np.sqrt(2)])
 '''
+
+
 def curve_integral_circle(f, r, c):
     circle_curve = lambda t: circle(r, c, t)
     return curve_integral(f, circle_curve)
+
 
 '''
 compute the integral of a function of two variables over a rectangle
@@ -121,9 +124,12 @@ Example of usage:
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
     integral = surface_integral_rectangle(g, [-2,0.1], [1,1])
 '''
+
+
 def surface_integral_rectangle(f, p_bl, p_tr):
     f_swapped = lambda x, y: f([y, x])
     return spi.dblquad(f_swapped, p_bl[0], p_tr[0], lambda x: p_bl[1], lambda x: p_tr[1])[0]
+
 
 '''
 integate a function of two variables over a ring delimited by two concentric circles
@@ -139,6 +145,8 @@ Example of usage:
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
     integral = cal.surface_integral_ring(g, 1/np.sqrt(3), 2, [np.sqrt(11),-0.5])
 '''
+
+
 def surface_integral_ring(f, r, R, c):
     f_swapped = lambda x, y: f([y, x])
 
@@ -159,6 +167,8 @@ Example of usage:
         return np.sin(x[0] ** 2 + np.cos(x[1] ** 2))
     integral = cal.surface_integral_dsk(g, 1/np.sqrt(3), [np.sqrt(11),-0.5])
 '''
+
+
 def surface_integral_disk(f, r, c):
     return surface_integral_ring(f, 0, r, c)
 
@@ -179,12 +189,15 @@ Example of usage:
     integral = cal.surface_integral_integral_rectangle_minus_disk(g, [-1,-2], [2,3], 0.3, [1,1])
 '''
 
+
 def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
     return surface_integral_rectangle(f, p_bl, p_tr) - surface_integral_disk(f, r, c)
+
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
     return [[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]]
+
 
 '''
 A rotation matrix in two dimensions
@@ -193,8 +206,10 @@ Input values:
 Return values: 
 - the rotation matrix
 '''
+
+
 def R(theta):
-    return np.array( [[np.cos( theta ), -np.sin( theta )], [np.sin( theta ), np.cos( theta )]] )
+    return np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
 
 '''
@@ -233,6 +248,8 @@ Example of usage:
 gamma_top = lambda t: cal.line(r_2, r_3, t)
 print(f'r_1 is on gamma_top: {cal.point_on_line(np.add(r_2, r_3), gamma_top)}')
 '''
+
+
 def point_on_line(point, line):
     p_start = (line(0))[0]
     delta_p = np.subtract((line(1))[0], p_start).tolist()
@@ -240,7 +257,8 @@ def point_on_line(point, line):
     num = (p_start[1] - point[1]) * delta_p[0] - (p_start[0] - point[0]) * delta_p[1]
     den = np.linalg.norm(delta_p)
 
-    return np.isclose(num/den,0, rtol=small_number)
+    return np.isclose(num / den, 0, rtol=small_number)
+
 
 '''
 mirrors a point with respect to the symmetry axis given by a line
@@ -260,8 +278,31 @@ def mirror_point_line(point, line):
     p_start = (line(0))[0]
     p_end = (line(1))[0]
     delta = np.subtract(p_end, p_start)
-    denominator = (np.linalg.norm(delta))**2
+    denominator = (np.linalg.norm(delta)) ** 2
 
-    result = [-point[0] + (2 * (point[0] * delta[0] ** 2 + delta[1] * (-p_start[1] * delta[0] + point[1] * delta[0] + p_start[0] * delta[1]))) / denominator,              point[1] + (2 * delta[0] * (p_start[1] * delta[0] - point[1] * delta[0] + (-p_start[0] + point[0]) * delta[1])) / denominator, 0]
+    result = [-point[0] + (2 * (point[0] * delta[0] ** 2 + delta[1] * (-p_start[1] * delta[0] + point[1] * delta[0] + p_start[0] * delta[1]))) / denominator, point[1] + (2 * delta[0] * (p_start[1] * delta[0] - point[1] * delta[0] + (-p_start[0] + point[0]) * delta[1])) / denominator, 0]
 
     return result
+
+'''
+tells whether a line lies on an axis
+Input values: 
+- 'line': a line in a mesh
+- 'gamma_axis': the parametric form of the line, as an output of cal.line
+- 'mesh': the mesh
+Return value:
+- True (False) if 'line' lies (does not lie) on 'gamma_axis'
+
+Example of usage:
+
+for j in range(len(mesh.cells)):
+    if mesh.cells[j].type == 'line':
+        lines = np.copy(mesh.cells[j].data)
+        for i in range(np.shape(lines)[0]):
+            if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
+[...]
+'''
+def line_on_axis(line, gamma_axis, mesh):
+
+    line_vertex_on_axis = [(point_on_line(mesh.points[line[k]], gamma_axis)) for k in range(len(line))]
+    return (line_vertex_on_axis[0] and line_vertex_on_axis[1])
