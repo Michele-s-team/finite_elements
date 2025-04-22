@@ -129,6 +129,22 @@ def curve_integral_circle(f, r, c):
 
 
 '''
+return the curve integral of a function  along a circle arc
+Input values:
+- 'f': the function f(x[0], x[1])
+- 'r': the circle radius
+- 'theta_min', 'theta_max': min and max values of the polar angles of the arc, repsectively
+- 'c': the circle-arc center (an array of two points)
+Return values: 
+\int_{circle arc} f dl
+
+'''
+
+def curve_integral_circle_arc(f, r, theta_min, theta_max, c):
+    circle_arc_curve = lambda t: circle_arc(r, c, theta_min, theta_max, t)
+    return curve_integral(f, circle_arc_curve)
+
+'''
 compute the integral of a function of two variables over a rectangle
 Input values:
 - 'f': the function f([x, y])

@@ -76,7 +76,6 @@ function_test_symmetry = Function(Q)
 
 import check_mesh_tags_ring_slice
 
-print(f'int = {assemble(Constant(1) * ds_r)}')
 
 # print(
 #     f'int f_test_symmetry = {col.Fore.YELLOW}{assemble(function_test_symmetry * dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}')
