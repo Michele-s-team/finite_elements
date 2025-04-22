@@ -34,9 +34,6 @@ import read_mesh_square as rmsh
 # import variational_problem_bc_square_no_circle as vp
 import variational_problem_bc_square as vp
 
-
-
-
 # n = FacetNormal(mesh)
 
 J = derivative(vp.F, fsp.u, fsp.J_u)
@@ -64,3 +61,8 @@ solver_pp = NonlinearVariationalSolver(problem_pp)
 solver.solve()
 # solve pp problem
 solver_pp.solve()
+
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import print_out_bc_ring
+# import print_out_bc_square_no_circle
+import print_out_bc_square
