@@ -38,15 +38,19 @@ args = parser.parse_args()
 resolution = (float)(args.resolution)
 r = 1
 R = 2
-c_r = [0,0]
-c_R = [0,0]
-
+c_r = [0, 0]
+c_R = [0, 0]
 
 output_dir = args.output_dir
 slice_mesh_msh_file = output_dir + "/slice_mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
-print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nresolution = {resolution}\noutput directory = {output_dir}')
+
+surface_id = 1
+r_edge_id = 2
+R_edge_id = 3
+ids = [surface_id, r_edge_id, R_edge_id]
+
 
 '''
 slice mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
@@ -54,172 +58,78 @@ slice mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-N = int(np.round(r * np.pi / resolution))
+# N = int(np.round(r * np.pi / resolution))
+N = 16
 
-
-
+print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nN = {N}\nresolution = {resolution}\noutput directory = {output_dir}')
 
 theta = 2 * np.pi / N
 phi = theta / 2
 epsilon = 1e-2
-p_c_r = model.add_point(( c_r[0], c_r[1], 0 ))
-p_c_R = model.add_point(( c_R[0], c_R[1], 0 ))
-
-
-# def Q(theta):
-#     return np.array( [[np.cos( theta ), -np.sin( theta )], [np.sin( theta ), np.cos( theta )]] )
-
+p_c_r = model.add_point((c_r[0], c_r[1], 0))
+p_c_R = model.add_point((c_R[0], c_R[1], 0))
 
 # initialize the loop over 0 <= theta < 2 pi
-r_1 = np.array( [r, 0] )
-r_2 = cal.R( theta ).dot( r_1 )
-r_4 = np.array( [R, 0] )
-r_3 = cal.R( theta ).dot( r_4 )
+r_1 = np.array([r, 0])
+r_2 = cal.R(theta).dot(r_1)
+r_4 = np.array([R, 0])
+r_3 = cal.R(theta).dot(r_4)
 
 # p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
 
-p_1 = model.add_point((r_1[0], r_1[1], 0))
-p_2 = model.add_point((r_2[0], r_2[1], 0))
-p_3 = model.add_point((r_3[0], r_3[1], 0))
-p_4 = model.add_point((r_4[0], r_4[1], 0))
+p_1 = model.add_point((r_1[0], r_1[1], 0), mesh_size=resolution)
+p_2 = model.add_point((r_2[0], r_2[1], 0), mesh_size=resolution)
+p_3 = model.add_point((r_3[0], r_3[1], 0), mesh_size=resolution)
+p_4 = model.add_point((r_4[0], r_4[1], 0), mesh_size=resolution)
 model.synchronize()
 
-arc_12 = model.add_circle_arc( p_1, p_c_r, p_2 )
+arc_12 = model.add_circle_arc(p_1, p_c_r, p_2)
 model.synchronize()
 
-line_23 = model.add_line( p_2, p_3 )
+line_23 = model.add_line(p_2, p_3)
 model.synchronize()
 
-arc_34 = model.add_circle_arc( p_3, p_c_r, p_4 )
+arc_34 = model.add_circle_arc(p_3, p_c_r, p_4)
 model.synchronize()
 
-line_41 = model.add_line( p_4, p_1 )
+line_41 = model.add_line(p_4, p_1)
 model.synchronize()
 
-slice_lines =  [arc_12, line_23, arc_34, line_41]
+slice_lines = [arc_12, line_23, arc_34, line_41]
 slice_loop = model.add_curve_loop(slice_lines)
 model.synchronize()
+
+slice_surface = model.add_plane_surface(slice_loop)
+model.synchronize()
+
+model.add_physical([slice_surface], "Volume")
+model.add_physical([slice_lines[0]], "r")
+model.add_physical([slice_lines[2]], "R")
+model.add_physical([slice_lines[1]], "top")
+model.add_physical(slice_lines[3], "bottom")
 
 geometry.generate_mesh(dim=2)
 gmsh.write(slice_mesh_msh_file)
 
 
-#
-# surfaces = []
-#
-# # loop through N-1 slices of the ring
-# for i in range( N - 1 ):
-#     print( f"Adding slice #{i} ... " )
-#
-#     print( f"\tr_1 = {r_1}" )
-#     print( f"\tr_2 = {r_2}" )
-#     print( f"\tr_3 = {r_3}" )
-#     print( f"\tr_4 = {r_4}" )
-#
-#     arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_2 )
-#     line_23 = gmsh.model.occ.addLine( p_2, p_3 )
-#     arc_34 = gmsh.model.occ.addCircleArc( p_3, p_c_R, p_4 )
-#     line_41 = gmsh.model.occ.addLine( p_4, p_1 )
-#     gmsh.model.occ.synchronize()
-#
-#     loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
-#     surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
-#     gmsh.model.occ.synchronize()
-#
-#     r_2 = Q( theta ).dot( r_2 )
-#     r_3 = Q( theta ).dot( r_3 )
-#
-#     p_1 = p_2
-#     p_2 = gmsh.model.occ.addPoint( r_2[0], r_2[1], 0 )
-#     p_4 = p_3
-#     p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
-#     gmsh.model.occ.synchronize()
-#
-#     print( "...done" )
-#
-# # close the loop with a special curve addition for the last slice
-# arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_1_start )
-# line_23 = gmsh.model.occ.addLine( p_1_start, p_4_start )
-# arc_34 = gmsh.model.occ.addCircleArc( p_4_start, p_c_R, p_4 )
-# line_41 = gmsh.model.occ.addLine( p_4, p_1 )
-# gmsh.model.occ.synchronize()
-#
-# loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
-# surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
-# gmsh.model.occ.synchronize()
+gmsh.clear()
+geometry.__exit__()
 
 
-#
-# # construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
-#
-# half_rectangle_points = [model.add_point((L, y_coordinate_axis_of_symmetry, 0), mesh_size=resolution),
-#                          model.add_point((L, h, 0), mesh_size=resolution),
-#                          model.add_point((0, h, 0), mesh_size=resolution),
-#                          model.add_point((0, y_coordinate_axis_of_symmetry, 0), mesh_size=resolution),
-#                          ]
-# model.synchronize()
-#
-# half_circle_points = [
-#     model.add_point((c_r[0] + -r * np.cos(np.pi * i / N), c_r[1] + r * np.sin(np.pi * i / N), 0), mesh_size=resolution)
-#     for i in range(N + 1)]
-# model.synchronize()
-#
-# half_rectangle_circle_points = half_rectangle_points + half_circle_points
-# half_rectangle_circle_lines = [model.add_line(half_rectangle_circle_points[i], half_rectangle_circle_points[i + 1])
-#                                for i in range(-1, len(half_rectangle_circle_points) - 1)]
-#
-# half_rectangle_circle_loop = model.add_curve_loop(half_rectangle_circle_lines)
-# half_rectangle_circle_surface = model.add_plane_surface(half_rectangle_circle_loop)
-#
-# model.synchronize()
-#
-# model.add_physical([half_rectangle_circle_surface], "Volume")
-# model.add_physical([half_rectangle_circle_lines[1]], "r")
-# model.add_physical([half_rectangle_circle_lines[3]], "l")
-# model.add_physical([half_rectangle_circle_lines[2]], "t")
-# # model.add_physical( [channel_lines[4],channel_lines[0]], "b" )
-# model.add_physical(half_rectangle_circle_lines[5:], "c")
-#
-# geometry.generate_mesh(dim=2)
-# gmsh.write(sliced()_mesh_msh_file)
-#
-# # msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
-#
-# gmsh.clear()
-# geometry.__exit__()
-#
-# '''
-# duplicate the points and cells with the respective tags and ids
-# The new mesh inherits the ids (physical id used for measure definiton) of the original one,
-# except for the new physical objects that are generated from reflection (e.g. the b line)
-#
-# In particular the rule 4:5 implies that the lines that in the original mesh where
-# in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
-#
-# Here the lines are tagged as follows:
-# - volume: id = 1
-# - b edge: id = 4: now it is set to np.nan is because the l edge generated here, in the half mesh, will be immaterial when the mesh will be mirrored ->
-#   a proper ID will be assigned to it later
-# - r edge: id = 2
-# - t edge: id = 3
-# - l edge: id = 1
-# - circle: id = 5
-# '''
-# surface_id = 1
-# l_edge_id = 2
-# r_edge_id = 3
-# t_edge_id = 4
-# b_edge_id = 5
-# circle_id = 6
-# ids = [1, np.nan, r_edge_id, l_edge_id, t_edge_id, circle_id]
-# # Load the half-mesh
-# mesh = meshio.read(sliced()_mesh_msh_file)
-#
-# '''
-# print('********** Mesh before mirroring: **********')
-# msh.print_mesh_element_types(mesh)
-# msh.print_mesh_triangles(mesh)
-# msh.print_mesh_vertices(mesh)
+# Load the half-mesh
+mesh = meshio.read(slice_mesh_msh_file)
+
+line_mesh = msh.create_mesh(mesh, "line", prune_z=True)
+meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+
+triangle_mesh = msh.create_mesh(mesh, "triangle", prune_z=True)
+meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
+
+
 # '''
 #
 # ################################################## mirror the mesh ##################################################
