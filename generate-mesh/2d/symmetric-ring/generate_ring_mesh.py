@@ -17,6 +17,7 @@ import argparse
 import sys
 import numpy as np
 
+
 # add the path where to find the shared modules
 # gaetano's path
 # module_path = '/home/tanos/Thesis/finite_elements/modules/'
@@ -47,9 +48,11 @@ mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 
 surface_id = 1
-r_edge_id = 2
-R_edge_id = 3
-ids = [surface_id, r_edge_id, R_edge_id]
+circle_r_edge_id = 2
+circle_R_edge_id = 3
+t_edge_id = 4
+b_edge_id = 5
+ids = [1, b_edge_id, circle_R_edge_id, circle_r_edge_id, t_edge_id]
 
 
 '''
@@ -142,69 +145,75 @@ msh.print_mesh_vertices(mesh)
 ################################################## mirror the mesh ##################################################
 
 # a curve representing the top line of the slice
-gamma_top = lambda t: cal.line([0, 1/2], [1,1/2], t)
+gamma_axis_of_symmetry = lambda t: cal.line(r_2, r_3, t)
 
-mirrored_r_4 = cal.mirror_point_line([1/2,1], gamma_top)
-print(f'mirrored_r_2 = {mirrored_r_4}')
+def point_on_axis_of_symmetry(point):
+    return cal.point_on_line(point, gamma_axis_of_symmetry)
 
-'''
-# # Mirror points across X=0
-# old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(y_coordinate_axis_of_symmetry, h, mesh.points,
-#                                                                                                    mesh.point_data)
-#
-# old_triangles = mesh.cells_dict['triangle']
-# old_lines = mesh.cells_dict['line']
-#
-# # duplicate cell blocks of type 'triangle'
-# new_triangles = np.copy(old_triangles)
-# # run through the old triangles
-# for i in range(np.shape(new_triangles)[0]):
-#     # for each old triangle, run through each of its three vertices
-#     for j in range(3):
-#         '''
-#         assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
-#         In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
-#         '''
-#         new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
-#
-# mesh.points = old_plus_new_points
-# mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
-# mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
-# N = np.shape(mesh.cells[-1].data)[0]
-# mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
-# mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
-#
-# # duplicate cell blocks of type 'line'
-# for j in range(len(mesh.cells)):
-#     if mesh.cells[j].type == 'line':
-#         lines = np.copy(mesh.cells[j].data)
-#         filtered_lines = []
-#         for i in range(np.shape(lines)[0]):
-#             f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
-#             if f[0] or f[1]:
-#                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
-#                                        non_mirrored_plus_new_points_indices[lines[i, 1]]])
-#         filtered_lines = np.array(filtered_lines)
-#         mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
-#         N = np.shape(mesh.cells[j].data)[0]
-#         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
-#         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
-#
+def mirror_function(point):
+    return cal.mirror_point_line(point, gamma_axis_of_symmetry)
+
+
+
+# Mirror points across gamma_top
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
+                                                                                                   mesh.point_data)
+
+old_triangles = mesh.cells_dict['triangle']
+old_lines = mesh.cells_dict['line']
+
+# duplicate cell blocks of type 'triangle'
+new_triangles = np.copy(old_triangles)
+# run through the old triangles
+for i in range(np.shape(new_triangles)[0]):
+    # for each old triangle, run through each of its three vertices
+    for j in range(3):
+        '''
+        assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
+        In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
+        '''
+        new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
+
+mesh.points = old_plus_new_points
+mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
+mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
+N = np.shape(mesh.cells[-1].data)[0]
+mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
+mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
+
+# duplicate cell blocks of type 'line'
+
+print(f'mesh_cell_data = {mesh.cell_data}')
+
+print('Duplicating cell blocks ... ')
+for j in range(len(mesh.cells)):
+    print(f'\tj = {j}', flush=True)
+
+    if mesh.cells[j].type == 'line':
+        lines = np.copy(mesh.cells[j].data)
+        filtered_lines = []
+        for i in range(np.shape(lines)[0]):
+            f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+            if f[0] or f[1]:
+                filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
+                                       non_mirrored_plus_new_points_indices[lines[i, 1]]])
+        filtered_lines = np.array(filtered_lines)
+        mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
+        N = np.shape(mesh.cells[j].data)[0]
+        mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
+        mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
+print('... done.')
+
 # msh.asssign_tag_to_lines(
 #     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
 #     b_edge_id, mesh
 # )
-#
+
 # meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 #
 # print("Full mesh generated successfully!")
 #
-# '''
-# print('********** Mesh after mirroring: **********')
-# msh.print_mesh_element_types(mesh)
-# msh.print_mesh_triangles(mesh)
-# msh.print_mesh_vertices(mesh)
-# '''
+
 #
 # # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 # mesh_from_file = meshio.read(mesh_xdmf_file)

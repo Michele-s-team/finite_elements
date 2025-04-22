@@ -187,13 +187,22 @@ for j in range(len(mesh.cells)):
         lines = np.copy(mesh.cells[j].data)
         filtered_lines = []
         for i in range(np.shape(lines)[0]):
-            f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
-            if f[0] or f[1]:
+
+            '''
+            point_not_on_axis is a list with two boolean entries: if the i-th entry is True (False), 
+            then the i-th coordinate of the point of the line does not lie on the axis of symmetry
+            '''
+            point_not_on_axis = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+
+            if point_not_on_axis[0] or point_not_on_axis[1]:
+
+                # none of the coordiantes of the points of the line lie on the axis of symmetry -> mirror the line
                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
                                        non_mirrored_plus_new_points_indices[lines[i, 1]]])
         filtered_lines = np.array(filtered_lines)
         mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
         N = np.shape(mesh.cells[j].data)[0]
+
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 
