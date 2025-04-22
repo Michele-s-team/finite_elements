@@ -36,9 +36,26 @@ Return values:
 
 
 def circle(r, cr, t):
-    return [np.add(cr, r * np.array([np.cos(2 * np.pi * t), np.sin(2 * np.pi * t)])).tolist(),
-            (r * 2 * np.pi * np.array([- np.sin(2 * np.pi * t), np.cos(2 * np.pi * t)])).tolist()]
+    return circle_arc(r, cr, 0, 2*np.pi, t)
 
+
+'''
+a circle arc
+Input values:
+- 'r': the circle radius
+- 'c_r': the circle center (an array of two points)
+- 'theta_min', 'theta_max': the minimal and maxmimal values of the polar angles of the arg, repsectively
+- 't' : the parameteric coordinate of the circle, 0<=t<1
+Return values:
+- the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
+'''
+
+
+def circle_arc(r, cr, theta_min, theta_max, t):
+    theta_t = theta_min + (theta_max - theta_min) * t
+
+    return [np.add(cr, r * np.array([np.cos(theta_t), np.sin(theta_t)])).tolist(),
+            (r * (theta_max - theta_min) * np.array([- np.sin(theta_t), np.cos(theta_t)])).tolist()]
 
 '''
 return the curvilinear integral of a function  along a curve 
