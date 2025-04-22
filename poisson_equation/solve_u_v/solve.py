@@ -4,7 +4,7 @@ run with
 
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/poisson-equation/mesh /home/fenics/shared/poisson-equation/solve_u_v/solution
+clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/solve_u_v/solution
 '''
 
 from fenics import *
@@ -26,8 +26,8 @@ import mesh as msh
 
 
 # CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
+L = 1
+h = 1
 alpha = 1e2
 function_space_degree = 4
 # CHANGE PARAMETERS HERE
