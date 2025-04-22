@@ -192,7 +192,8 @@ for j in range(len(mesh.cells)):
             point_not_on_axis is a list with two boolean entries: if the i-th entry is True (False), 
             then the i-th coordinate of the point of the line does not lie on the axis of symmetry
             '''
-            point_not_on_axis = [mesh.points[lines[i, k]][1] != y_coordinate_axis_of_symmetry for k in range(2)]
+            # point_not_on_axis = [mesh.points[lines[i, k]][1] != y_coordinate_axis_of_symmetry for k in range(2)]
+            point_not_on_axis = [(not point_on_axis_of_symmetry(mesh.points[lines[i, k]])) for k in range(2)]
 
             if point_not_on_axis[0] or point_not_on_axis[1]:
 
