@@ -148,9 +148,26 @@ Example of usage:
 
 
 def surface_integral_ring(f, r, R, c):
+    return surface_integral_ring_slice(f, r, R, 0, 2 * np.pi, c)
+
+
+
+'''
+integate a function of two variables over the slice of a ring delimited by two concentric circles
+Input values 
+- 'f': the function f([x, y])
+- 'r', 'R': radii of the inner and outer circle defining the ring
+- 'theta_min', 'theta_max': the polar angles delimiting the ring slice
+- 'c' : center of the circles (a list of two values)
+Result:
+- \int_{ring slice} dx dy f
+'''
+
+
+def surface_integral_ring_slice(f, r, R, theta_min, theta_max, c):
     f_swapped = lambda x, y: f([y, x])
 
-    return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: r, lambda rho: R)[0]
+    return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), theta_min, theta_max, lambda rho: r, lambda rho: R)[0]
 
 
 '''

@@ -43,7 +43,7 @@ c_r = [0, 0]
 c_R = [0, 0]
 N = 16
 theta_min = 0
-theta_max = 2*np.pi/N
+theta_max = 2 * 2*np.pi/N
 
 
 output_dir = args.output_dir

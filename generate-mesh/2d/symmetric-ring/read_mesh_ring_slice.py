@@ -29,7 +29,7 @@ c_r = [0, 0]
 c_R = [0, 0]
 N = 16
 theta_min = 0
-theta_max = 2*np.pi/N
+theta_max = 2 * 2*np.pi/N
 
 c_test = [0.3, 0.76]
 r_test = 0.345
@@ -74,7 +74,7 @@ function_test_symmetry = Function(Q)
 
 # function_test_symmetry.interpolate(FunctionTestSymmetryExpression(element=Q.ufl_element()))
 
-# import check_mesh_tags_ring_slice
+import check_mesh_tags_ring_slice
 
 print(f'int = {assemble(Constant(1) * ds_r)}')
 
