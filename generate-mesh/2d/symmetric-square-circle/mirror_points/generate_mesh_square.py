@@ -53,8 +53,8 @@ Return value:
 - True/False, if the point lies on the axis of symmetry 
 '''
 def point_on_axis_of_symmetry(point):
-    gamma_axis_of_symmetry = lambda t: cal.line([0, h / 2], [L, h / 2], t)
-    cal.point_on_line(point, gamma_axis_of_symmetry)
+    gamma_axis_of_symmetry = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
+    return cal.point_on_line(point, gamma_axis_of_symmetry)
 
 
 output_dir = args.output_dir
