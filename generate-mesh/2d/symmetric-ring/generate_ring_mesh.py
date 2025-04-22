@@ -119,6 +119,7 @@ geometry.__exit__()
 # Load the half-mesh
 mesh = meshio.read(slice_mesh_msh_file)
 
+'''
 line_mesh = msh.create_mesh(mesh, "line", prune_z=True)
 meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
 
@@ -128,6 +129,13 @@ meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
+'''
+
+
+print('********** Mesh before mirroring: **********')
+msh.print_mesh_element_types(mesh)
+msh.print_mesh_triangles(mesh)
+msh.print_mesh_vertices(mesh)
 
 
 
