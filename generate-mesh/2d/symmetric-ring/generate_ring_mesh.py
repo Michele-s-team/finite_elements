@@ -62,8 +62,8 @@ N = int(np.round(r * np.pi / resolution))
 theta = 2 * np.pi / N
 phi = theta / 2
 epsilon = 1e-2
-p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
-p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
+p_c_r = model.add_point(( c_r[0], c_r[1], 0 ))
+p_c_R = model.add_point(( c_R[0], c_R[1], 0 ))
 
 
 # def Q(theta):
@@ -76,13 +76,34 @@ r_2 = cal.R( theta ).dot( r_1 )
 r_4 = np.array( [R, 0] )
 r_3 = cal.R( theta ).dot( r_4 )
 
-p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
-p_2 = gmsh.model.occ.addPoint( r_2[0], r_2[1], 0 )
-p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
-p_4 = gmsh.model.occ.addPoint( r_4[0], r_4[1], 0 )
-p_1_start = p_1
-p_4_start = p_4
-gmsh.model.occ.synchronize()
+# p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
+
+p_1 = model.add_point((r_1[0], r_1[1], 0))
+p_2 = model.add_point((r_2[0], r_2[1], 0))
+p_3 = model.add_point((r_3[0], r_3[1], 0))
+p_4 = model.add_point((r_4[0], r_4[1], 0))
+model.synchronize()
+
+arc_12 = model.add_circle_arc( p_1, p_c_r, p_2 )
+model.synchronize()
+
+line_23 = model.add_line( p_2, p_3 )
+model.synchronize()
+
+arc_34 = model.add_circle_arc( p_3, p_c_r, p_4 )
+model.synchronize()
+
+line_41 = model.add_line( p_4, p_1 )
+model.synchronize()
+
+slice_lines =  [arc_12, line_23, arc_34, line_41]
+slice_loop = model.add_curve_loop(slice_lines)
+model.synchronize()
+
+geometry.generate_mesh(dim=2)
+gmsh.write(slice_mesh_msh_file)
+
+
 #
 # surfaces = []
 #
