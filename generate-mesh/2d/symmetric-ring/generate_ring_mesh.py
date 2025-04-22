@@ -130,10 +130,14 @@ mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
 
 
-# '''
-#
-# ################################################## mirror the mesh ##################################################
-#
+
+################################################## mirror the mesh ##################################################
+
+# a curve representing the top line of the slice
+gamma_top = lambda t: cal.line(r_2, r_3, t)
+
+
+'''
 # # Mirror points across X=0
 # old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(y_coordinate_axis_of_symmetry, h, mesh.points,
 #                                                                                                    mesh.point_data)

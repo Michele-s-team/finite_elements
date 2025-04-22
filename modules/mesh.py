@@ -734,7 +734,7 @@ Example of usage:
 '''
 
 
-def mirror_points(y_coordinate_axis_of_symmetry, h, points, point_data):
+def mirror_points(axis_of_symmetry_condition, h, points, point_data):
     offset = 0
     non_mirrored_plus_new_points_indices = []
     mirrored_points = []
@@ -743,7 +743,8 @@ def mirror_points(y_coordinate_axis_of_symmetry, h, points, point_data):
     print('Called mirror_points. Looping through points to mirror them ...')
 
     for i in range(len(points)):
-        if np.isclose(points[i, 1], y_coordinate_axis_of_symmetry, rtol=cal.small_number):
+        # if np.isclose(points[i, 1], axis_of_symmetry_condition, rtol=cal.small_number):
+        if axis_of_symmetry_condition(points[i]):
             # I ran into a point with x[1] = y_coordinate_axis_of_symmetry -> do not mirror it and append to old_plus_new_points the same index 'i' as the original point
             offset += 1
             non_mirrored_plus_new_points_indices.append(i)
