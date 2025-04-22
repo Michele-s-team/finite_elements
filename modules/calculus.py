@@ -228,6 +228,10 @@ Input values:
 - 'line': the parametric form of the line, as an output of cal.line
 Return value:
 - True (False) if 'point' lies on 'line' within accuracy 'small_number'
+
+Example of usage:
+gamma_top = lambda t: cal.line(r_2, r_3, t)
+print(f'r_1 is on gamma_top: {cal.point_on_line(np.add(r_2, r_3), gamma_top)}')
 '''
 def point_on_line(point, line):
     p_start = (line(0))[0]
