@@ -184,16 +184,17 @@ mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometri
 # duplicate cell blocks of type 'line'
 for j in range(len(mesh.cells)):
     if mesh.cells[j].type == 'line':
+
         lines = np.copy(mesh.cells[j].data)
         filtered_lines = []
         for i in range(np.shape(lines)[0]):
 
-
             if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
+                # line 'lines[i]' does not lie on the axis of symmetry -> mirror the line
 
-                # none of the coordiantes of the points of the line lie on the axis of symmetry -> mirror the line
                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
                                        non_mirrored_plus_new_points_indices[lines[i, 1]]])
+
         filtered_lines = np.array(filtered_lines)
         mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
         N = np.shape(mesh.cells[j].data)[0]
