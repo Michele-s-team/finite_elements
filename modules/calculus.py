@@ -219,3 +219,21 @@ def min_dist_c_r_rectangle(L, h, p):
         min_y = h - p[1]
 
     return min(min_x, min_y)
+
+
+'''
+checks whether a point lies on a line
+Input values: 
+- 'point': the coordinates of the point ( a tuple of two values)
+- 'line': the parametric form of the line, as an output of cal.line
+Return value:
+- True (False) if 'point' lies on 'line' within accuracy 'small_number'
+'''
+def point_on_line(point, line):
+    p_start = (line(0))[0]
+    delta_p = np.subtract((line(1))[0], p_start).tolist()
+
+    num = (p_start[1] - point[1]) * delta_p[0] - (p_start[0] - point[0]) * delta_p[1]
+    den = np.linalg.norm(delta_p)
+
+    return np.isclose(num/den,0, rtol=small_number)

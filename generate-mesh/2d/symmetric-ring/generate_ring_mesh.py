@@ -136,6 +136,7 @@ io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
 # a curve representing the top line of the slice
 gamma_top = lambda t: cal.line(r_2, r_3, t)
 
+cal.point_on_line(r_1, gamma_top)
 
 '''
 # # Mirror points across X=0
