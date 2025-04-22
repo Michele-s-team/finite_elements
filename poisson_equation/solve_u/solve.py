@@ -6,32 +6,36 @@ run with
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/$SOLUTION_PATH
+
+All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
 import colorama as col
 
 from fenics import *
-import argparse
 from mshr import *
-import ufl as ufl
-from dolfin import *
-import numpy as np
 import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
-import input_output as io
-import mesh as msh
+import function_spaces as fsp
+import runtime_arguments as rarg
 
 
-L = 1
-h = 1
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import read_mesh_ring as rmsh
+# import read_mesh_square_no_circle as rmsh
+import read_mesh_square as rmsh
 
-function_space_degree = 4
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import variational_problem_bc_ring as vp
+# import variational_problem_bc_square_no_circle as vp
+import variational_problem_bc_square as vp
 
-i, j = ufl.indices( 2 )
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "input_directory" )
@@ -116,106 +120,9 @@ msh.test_mesh_integral(1.02837, f_test_ds, ds_b, '\int_b f ds')
 
 n = FacetNormal( mesh )
 
-Q = FunctionSpace( mesh, 'P', function_space_degree )
-V = VectorFunctionSpace( mesh, 'P', function_space_degree )
-T = TensorFunctionSpace( mesh, 'P', function_space_degree, shape=(2, 2) )
 
 
-class u_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-        # values[0] = np.sin( 2 * (np.pi) * (x[0] + x[1]) ) * np.cos( 2 * (np.pi) * (x[0] - x[1]) ** 2 )
 
-    def value_shape(self):
-        return (1,)
-
-
-class grad_u_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 2.0 * x[0]
-        values[1] = 4.0 * x[1]
-        # values[0] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
-        # values[1] = 2 * (np.pi) * cos( 2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * cos( 2 * (np.pi) * ((x[0]) + (x[1])) ) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2 ) * sin( 2 * (np.pi) * ((x[0]) + (x[1])) )
-
-    def value_shape(self):
-        return (2,)
-
-
-class laplacian_u_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 6.0
-        # values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * cos( 2 * (np.pi) * (x[0] - (x[1])) ** 2 ) - sin( 2 * (np.pi) * (x[0] - (x[1])) ** 2 )) * sin(
-        #     2 * (np.pi) * (x[0] + (x[1])) )
-
-    def value_shape(self):
-        return (1,)
-
-
-class hess_u_exact_expression( UserExpression ):
-    def init(self, **kwargs):
-        super().init( **kwargs )
-
-    def eval(self, values, x):
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
-        # values[0] = 4 * np.pi * (
-        #         4 * np.pi * (-x[0] + x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
-        #         - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        #     )
-        # values[1] =  4 * np.pi * (
-        #         np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)
-        #     ) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # values[2] = 4 * np.pi * (
-        #         np.pi * (-1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)
-        #     ) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # values[3] = 4 * np.pi * (
-        #         4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1])**2)
-        #         - (np.pi * (1 + 4 * (x[0] - x[1])**2) * np.cos(2 * np.pi * (x[0] - x[1])**2)
-        #         + np.sin(2 * np.pi * (x[0] - x[1])**2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        #     )
-
-    def value_shape(self):
-        return (2, 2)
-
-
-# Define variational problem
-u = Function( Q )
-nu_u = TestFunction( Q )
-f = Function( Q )
-grad_u = Function( V )
-J_u = TrialFunction( Q )
-u_exact = Function( Q )
-
-# Define post-processing (pp) variational problem
-# hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
-hess_u = Function( T )
-nu_hess_u = TestFunction( T )
-hess_u_exact = Function( T )
-J_hess_u = TrialFunction( T )
-
-u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
-grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
-f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
-
-hess_u_exact.interpolate( hess_u_exact_expression( element=T.ufl_element() ) )
-
-bc_u = DirichletBC( Q, u_exact, boundary_tb )
-
-#variational functional for the original problem (poisson equation)
-F = (dot( grad( u ), grad( nu_u ) ) + f * nu_u) * dx - dot( n, grad_u ) * nu_u * ds_lr - n[i] * (u.dx( i )) * nu_u * ds_tb
-
-#variational functional for post-processing problem (pp) to obtain the hessian (hess)
-F_pp = (hess_u[i, j] * nu_hess_u[i, j] + (u.dx( j )) * ((nu_hess_u[i, j]).dx( i ))) * dx \
-       - (n[i] * (u.dx( j )) * nu_hess_u[i, j]) * ds
-
-bcs = [bc_u]
 J = derivative( F, u, J_u )
 problem = NonlinearVariationalProblem( F, u, bcs, J )
 solver = NonlinearVariationalSolver( problem )
