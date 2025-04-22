@@ -3,9 +3,9 @@ This code generates a  ring mesh with radial symmetry
 Symmetry is enforced by mirroring the mesh points across multiple slices
 
 run with
-python3 generate_ring_mesh.py [mesh resolution] [path where to store the mesh]
+python3 generate_mesh_ring.py [mesh resolution] [path where to store the mesh]
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.3 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py 0.3 $SOLUTION_PATH
 
 '''
 
@@ -192,15 +192,46 @@ for j in range(len(mesh.cells)):
     if mesh.cells[j].type == 'line':
         lines = np.copy(mesh.cells[j].data)
         filtered_lines = []
+
+        print(f'\t\tlines = {lines}')
+
         for i in range(np.shape(lines)[0]):
-            f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
-            if f[0] or f[1]:
+
+            print(f'\t\t\tlines[i] = {lines[i]}')
+
+            # f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+            # if f[0] or f[1]:
+            if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
+
                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
                                        non_mirrored_plus_new_points_indices[lines[i, 1]]])
+
+                print('\t\t\t\tLine has been mirrored')
+
+            else:
+                print('\t\t\t\tLine has not been mirrored')
+
+
         filtered_lines = np.array(filtered_lines)
-        mesh.cells[j] = meshio.CellBlock("line", np.vstack((lines, filtered_lines)))
+
+        print(f'\t\tfiltered_lines = {filtered_lines}', flush=True)
+
+        if filtered_lines != []:
+            lines_plus_filtered_lines = np.vstack((lines, filtered_lines))
+        else:
+            lines_plus_filtered_lines = lines
+
+        print(f'\t\tlines + filetered lines = {lines_plus_filtered_lines}', flush=True)
+
+        mesh.cells[j] = meshio.CellBlock("line", lines_plus_filtered_lines)
+
+
         N = np.shape(mesh.cells[j].data)[0]
-        mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
+
+        print(f'\t\tN = {N}', flush=True)
+        print(f'\t\tcell_data["gmsh:physical"][{j}] = {mesh.cell_data["gmsh:physical"][j]}', flush=True)
+
+        mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 print('... done.')
 
@@ -209,21 +240,27 @@ print('... done.')
 #     b_edge_id, mesh
 # )
 
-# meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
+meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 #
-# print("Full mesh generated successfully!")
-#
+print("Full mesh generated successfully!")
 
-#
-# # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
-# mesh_from_file = meshio.read(mesh_xdmf_file)
-#
-# line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-# meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
-#
-# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-# meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
-#
-# # print the mesh vertices to file
-# mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-# io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
+
+print('********** Mesh after mirroring: **********')
+msh.print_mesh_element_types(mesh)
+msh.print_mesh_triangles(mesh)
+msh.print_mesh_vertices(mesh)
+
+
+
+# read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
+mesh_from_file = meshio.read(mesh_xdmf_file)
+
+line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
+meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+
+triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
+meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")

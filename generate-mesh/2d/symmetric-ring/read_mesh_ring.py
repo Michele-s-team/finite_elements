@@ -2,9 +2,9 @@
 This code reads the mesh generated from generate_mesh_square.py and it creates dvs and dss from labelled components of the mesh
 
 run with
-clear; clear; python3 read_mesh_square.py [path where to find the mesh]
+clear; clear; python3 read_mesh_ring.py [path where to find the mesh]
 example:
-clear; clear; python3 read_mesh_square.py solution
+clear; clear; python3 read_mesh_ring.py solution
 '''
 import colorama as col
 from dolfin import *
@@ -21,7 +21,7 @@ import runtime_arguments as rarg
 import mesh as msh
 
 # CHANGE PARAMETERS HERE
-L = 1
+L = 2
 h = 1
 c_r = [L / 2, h / 2]
 r = 0.25
