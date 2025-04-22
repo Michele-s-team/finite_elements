@@ -45,6 +45,8 @@ h = 1
 y_coordinate_axis_of_symmetry = h / 2
 c_r = [L / 2, y_coordinate_axis_of_symmetry, 0]
 
+gamma_axis_of_symmetry = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
+
 '''
 this function tells whether a point lies on the axis of symmetry
 Input values:
@@ -53,8 +55,12 @@ Return value:
 - True/False, if the point lies on the axis of symmetry 
 '''
 def point_on_axis_of_symmetry(point):
-    gamma_axis_of_symmetry = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
     return cal.point_on_line(point, gamma_axis_of_symmetry)
+
+def mirror_function(point):
+    # print(f'called mirror_function for point {point}, returning {cal.mirror_point_line(point, gamma_axis_of_symmetry)}')
+
+    return cal.mirror_point_line(point, gamma_axis_of_symmetry)
 
 
 output_dir = args.output_dir
@@ -150,7 +156,7 @@ msh.print_mesh_vertices(mesh)
 
 
 # Mirror points across X=0
-old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, h, mesh.points,
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
                                                                                                    mesh.point_data)
 
 old_triangles = mesh.cells_dict['triangle']

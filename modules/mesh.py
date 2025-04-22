@@ -734,7 +734,7 @@ Example of usage:
 '''
 
 
-def mirror_points(axis_of_symmetry_condition, h, points, point_data):
+def mirror_points(axis_of_symmetry_condition, mirror_function, points, point_data):
     offset = 0
     non_mirrored_plus_new_points_indices = []
     mirrored_points = []
@@ -760,7 +760,8 @@ def mirror_points(axis_of_symmetry_condition, h, points, point_data):
             # 1) the original point
             mirrored_point_data.append(l)
             # 2) the mirror of the original point
-            mirrored_points.append([points[i, 0], h - points[i, 1], points[i, 2]])
+            # mirrored_points.append([points[i, 0], h - points[i, 1], points[i, 2]])
+            mirrored_points.append(mirror_function(points[i]))
 
     print('... done.')
 

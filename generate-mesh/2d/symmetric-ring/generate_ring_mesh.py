@@ -142,9 +142,10 @@ msh.print_mesh_vertices(mesh)
 ################################################## mirror the mesh ##################################################
 
 # a curve representing the top line of the slice
-gamma_top = lambda t: cal.line(r_2, r_3, t)
+gamma_top = lambda t: cal.line([0, 1/2], [1,1/2], t)
 
-print(f'r_1 is on gamma_top: {cal.point_on_line(np.add(r_2, r_3), gamma_top)}')
+mirrored_r_4 = cal.mirror_point_line([1/2,1], gamma_top)
+print(f'mirrored_r_2 = {mirrored_r_4}')
 
 '''
 # # Mirror points across X=0

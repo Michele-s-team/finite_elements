@@ -21,10 +21,10 @@ import runtime_arguments as rarg
 import mesh as msh
 
 # CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
+L = 2
+h = 1
 c_r = [L / 2, h / 2]
-r = 0.1
+r = 0.25
 
 c_test = [0.3, 0.76]
 r_test = 0.345

@@ -251,8 +251,8 @@ Return value:
 - the mirrored point (a list with two entries) 
 
 Example of usage:
-gamma_top = lambda t: cal.line(r_2, r_3, t)
-print(f'r_1 is on gamma_top: {cal.point_on_line(np.add(r_2, r_3), gamma_top)}')
+gamma = lambda t: cal.line([0, 1/2], [1,1/2], t)
+mirrored_point = cal.mirror_point_line([1/2,1], gamma)
 '''
 
 
@@ -260,7 +260,8 @@ def mirror_point_line(point, line):
     p_start = (line(0))[0]
     p_end = (line(1))[0]
     delta = np.subtract(p_end, p_start)
-    denominator = np.linalg.norm(delta)
+    denominator = (np.linalg.norm(delta))**2
 
-    return [-point[0] + (2 * (point[0] * delta[0] ** 2 + delta[1] * (-p_start[1] * delta[0] + point[1] * delta[0] + p_start[0] * delta[1]))) / denominator, \
-            point[1] + (2 * delta[0] * (p_start[1] * delta[0] - point[1] * delta[0] + (-p_start[0] + point[0]) * delta[1])) / denominator]
+    result = [-point[0] + (2 * (point[0] * delta[0] ** 2 + delta[1] * (-p_start[1] * delta[0] + point[1] * delta[0] + p_start[0] * delta[1]))) / denominator,              point[1] + (2 * delta[0] * (p_start[1] * delta[0] - point[1] * delta[0] + (-p_start[0] + point[0]) * delta[1])) / denominator, 0]
+
+    return result
