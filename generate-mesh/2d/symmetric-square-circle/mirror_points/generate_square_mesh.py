@@ -40,7 +40,7 @@ args = parser.parse_args()
 # mesh resolution
 resolution = (float)(args.resolution)
 r = 0.25
-L = 2
+L = 1
 h = 1
 y_coordinate_axis_of_symmetry = h / 2
 c_r = [L / 2, y_coordinate_axis_of_symmetry, 0]
@@ -192,7 +192,7 @@ for j in range(len(mesh.cells)):
             point_not_on_axis is a list with two boolean entries: if the i-th entry is True (False), 
             then the i-th coordinate of the point of the line does not lie on the axis of symmetry
             '''
-            point_not_on_axis = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+            point_not_on_axis = [mesh.points[lines[i, k]][1] != y_coordinate_axis_of_symmetry for k in range(2)]
 
             if point_not_on_axis[0] or point_not_on_axis[1]:
 
@@ -215,12 +215,14 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
 
+
 '''
 print('********** Mesh after mirroring: **********')
 msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
 '''
+
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
