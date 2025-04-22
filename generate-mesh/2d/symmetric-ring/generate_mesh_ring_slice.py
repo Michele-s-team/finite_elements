@@ -3,9 +3,9 @@ This code generates a  ring mesh with radial symmetry
 Symmetry is enforced by mirroring the mesh points across multiple slices
 
 run with
-python3 generate_mesh_ring.py [mesh resolution] [path where to store the mesh]
+python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py 0.3 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.3 $SOLUTION_PATH
 
 '''
 
@@ -41,6 +41,10 @@ r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
+N = 16
+theta_min = 0
+theta_max = 2*np.pi/N
+
 
 output_dir = args.output_dir
 slice_mesh_msh_file = output_dir + "/slice_mesh.msh"
@@ -48,11 +52,11 @@ mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 
 surface_id = 1
-circle_r_edge_id = 2
-circle_R_edge_id = 3
+circle_r_id = 2
+circle_R_id = 3
 t_edge_id = 4
 b_edge_id = 5
-ids = [1, b_edge_id, circle_R_edge_id, circle_r_edge_id, t_edge_id]
+ids = [1, b_edge_id, circle_R_id, circle_r_id, t_edge_id]
 
 
 '''
@@ -62,7 +66,6 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 # N = int(np.round(r * np.pi / resolution))
-N = 16
 
 print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nN = {N}\nresolution = {resolution}\noutput directory = {output_dir}')
 
@@ -134,12 +137,12 @@ mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
 '''
 
-
+'''
 print('********** Mesh before mirroring: **********')
 msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
-
+'''
 
 
 ################################################## mirror the mesh ##################################################
@@ -244,12 +247,12 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 #
 print("Full mesh generated successfully!")
 
-
+'''
 print('********** Mesh after mirroring: **********')
 msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
-
+'''
 
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
