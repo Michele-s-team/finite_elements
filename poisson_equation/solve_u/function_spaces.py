@@ -6,9 +6,9 @@ import boundary_geometry as bgeo
 function_space_degree = 4
 
 
-Q = FunctionSpace( mesh, 'P', function_space_degree )
-V = VectorFunctionSpace( mesh, 'P', function_space_degree )
-T = TensorFunctionSpace( mesh, 'P', function_space_degree, shape=(2, 2) )
+Q = FunctionSpace( bgeo.mesh, 'P', function_space_degree )
+V = VectorFunctionSpace( bgeo.mesh, 'P', function_space_degree )
+T = TensorFunctionSpace( bgeo.mesh, 'P', function_space_degree, shape=(2, 2) )
 
 
 # Define variational problem

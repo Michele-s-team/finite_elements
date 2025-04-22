@@ -5,7 +5,7 @@ run with
 
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
 
 All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
@@ -35,82 +35,12 @@ import read_mesh_square as rmsh
 import variational_problem_bc_square as vp
 
 
-# create mesh
-# read the mesh
-mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf")
-xdmf.read(mesh)
-
-# read the triangles
-mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim())
-with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
-
-# read the lines
-mvc = MeshValueCollection("size_t", mesh, mesh.topology().dim() - 1)
-with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
-xdmf.close()
-
-# Define boundaries and obstacle
-# CHANGE PARAMETERS HERE
-boundary = 'on_boundary'
-boundary_lr = f'near(x[0], 0) || near(x[0], {L})'
-boundary_tb = f'near(x[1], 0) || near(x[1], {h})'
 
 
-# CHANGE PARAMETERS HERE
+# n = FacetNormal(mesh)
 
-#  norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
-
-
-# test for surface elements
-dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=1)
-ds_l = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=2)
-ds_r = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=3)
-ds_t = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=4)
-ds_b = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=5)
-ds_lr = ds_l + ds_r
-ds_tb = ds_t + ds_b
-ds = ds_lr + ds_tb
-
-# a function space used solely to define f_test_ds
-Q_test = FunctionSpace(mesh, 'P', 2)
-
-# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-f_test_ds = Function(Q_test)
-
-
-# analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegrals(UserExpression):
-    def eval(self, values, x):
-        c_test = [0.3, 0.76]
-        r_test = 0.345
-        values[0] = cos(my_norm(np.subtract(x, c_test)) - r_test) ** 2.0
-
-    def value_shape(self):
-        return (1,)
-
-
-f_test_ds.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
-
-# print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
-msh.test_mesh_integral(0.501508, f_test_ds, dx, '\int f dx')
-
-msh.test_mesh_integral(0.373168, f_test_ds, ds_l, '\int_l f ds')
-msh.test_mesh_integral(0.00227783, f_test_ds, ds_r, '\int_r f ds')
-msh.test_mesh_integral(1.36562, f_test_ds, ds_t, '\int_t f ds')
-msh.test_mesh_integral(1.02837, f_test_ds, ds_b, '\int_b f ds')
-
-n = FacetNormal(mesh)
-
-J = derivative(F, u, J_u)
-problem = NonlinearVariationalProblem(F, u, bcs, J)
+J = derivative(vp.F, fsp.u, fsp.J_u)
+problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
 
 # set the solver parameters here
@@ -126,8 +56,8 @@ params = {'nonlinear_solver': 'newton',
           }
 solver.parameters.update(params)
 
-J_pp = derivative(F_pp, hess_u, J_hess_u)
-problem_pp = NonlinearVariationalProblem(F_pp, hess_u, [], J_pp)
+J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
+problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
 solver_pp = NonlinearVariationalSolver(problem_pp)
 
 # solve original problem

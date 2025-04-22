@@ -73,18 +73,18 @@ class hess_u_exact_expression( UserExpression ):
         return (2, 2)
 
 
-u_exact.interpolate( u_exact_expression( element=Q.ufl_element() ) )
-grad_u.interpolate( grad_u_expression( element=V.ufl_element() ) )
-f.interpolate( laplacian_u_expression( element=Q.ufl_element() ) )
+fsp.u_exact.interpolate( u_exact_expression( element=fsp.Q.ufl_element() ) )
+fsp.grad_u.interpolate( grad_u_expression( element=fsp.V.ufl_element() ) )
+fsp.f.interpolate( laplacian_u_expression( element=fsp.Q.ufl_element() ) )
 
-hess_u_exact.interpolate( hess_u_exact_expression( element=T.ufl_element() ) )
+fsp.hess_u_exact.interpolate( hess_u_exact_expression( element=fsp.T.ufl_element() ) )
 
-bc_u = DirichletBC( Q, u_exact, boundary_tb )
+bc_u = DirichletBC( fsp.Q, fsp.u_exact, rmsh.boundary_tb )
 bcs = [bc_u]
 
 #variational functional for the original problem (poisson equation)
-F = (dot( grad( u ), grad( nu_u ) ) + f * nu_u) * dx - dot( n, grad_u ) * nu_u * ds_lr - n[i] * (u.dx( i )) * nu_u * ds_tb
+F = (dot( grad( fsp.u ), grad( fsp.nu_u ) ) + fsp.f * fsp.nu_u) * rmsh.dx - dot( bgeo.facet_normal, fsp.grad_u ) * fsp.nu_u * rmsh.ds_lr - bgeo.facet_normal[i] * (fsp.u.dx( i )) * fsp.nu_u * rmsh.ds_tb
 
 #variational functional for post-processing problem (pp) to obtain the hessian (hess)
-F_pp = (hess_u[i, j] * nu_hess_u[i, j] + (u.dx( j )) * ((nu_hess_u[i, j]).dx( i ))) * dx \
-       - (n[i] * (u.dx( j )) * nu_hess_u[i, j]) * ds
+F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx( j )) * ((fsp.nu_hess_u[i, j]).dx( i ))) * rmsh.dx \
+       - (bgeo.facet_normal[i] * (fsp.u.dx( j )) * fsp.nu_hess_u[i, j]) * rmsh.ds
