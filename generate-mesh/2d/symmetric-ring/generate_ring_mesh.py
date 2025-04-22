@@ -56,6 +56,78 @@ model = geometry.__enter__()
 
 N = int(np.round(r * np.pi / resolution))
 
+
+
+
+theta = 2 * np.pi / N
+phi = theta / 2
+epsilon = 1e-2
+p_c_r = gmsh.model.occ.addPoint( c_r[0], c_r[1], 0 )
+p_c_R = gmsh.model.occ.addPoint( c_R[0], c_R[1], 0 )
+
+
+# def Q(theta):
+#     return np.array( [[np.cos( theta ), -np.sin( theta )], [np.sin( theta ), np.cos( theta )]] )
+
+
+# initialize the loop over 0 <= theta < 2 pi
+r_1 = np.array( [r, 0] )
+r_2 = cal.R( theta ).dot( r_1 )
+r_4 = np.array( [R, 0] )
+r_3 = cal.R( theta ).dot( r_4 )
+
+p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
+p_2 = gmsh.model.occ.addPoint( r_2[0], r_2[1], 0 )
+p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
+p_4 = gmsh.model.occ.addPoint( r_4[0], r_4[1], 0 )
+p_1_start = p_1
+p_4_start = p_4
+gmsh.model.occ.synchronize()
+#
+# surfaces = []
+#
+# # loop through N-1 slices of the ring
+# for i in range( N - 1 ):
+#     print( f"Adding slice #{i} ... " )
+#
+#     print( f"\tr_1 = {r_1}" )
+#     print( f"\tr_2 = {r_2}" )
+#     print( f"\tr_3 = {r_3}" )
+#     print( f"\tr_4 = {r_4}" )
+#
+#     arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_2 )
+#     line_23 = gmsh.model.occ.addLine( p_2, p_3 )
+#     arc_34 = gmsh.model.occ.addCircleArc( p_3, p_c_R, p_4 )
+#     line_41 = gmsh.model.occ.addLine( p_4, p_1 )
+#     gmsh.model.occ.synchronize()
+#
+#     loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
+#     surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
+#     gmsh.model.occ.synchronize()
+#
+#     r_2 = Q( theta ).dot( r_2 )
+#     r_3 = Q( theta ).dot( r_3 )
+#
+#     p_1 = p_2
+#     p_2 = gmsh.model.occ.addPoint( r_2[0], r_2[1], 0 )
+#     p_4 = p_3
+#     p_3 = gmsh.model.occ.addPoint( r_3[0], r_3[1], 0 )
+#     gmsh.model.occ.synchronize()
+#
+#     print( "...done" )
+#
+# # close the loop with a special curve addition for the last slice
+# arc_12 = gmsh.model.occ.addCircleArc( p_1, p_c_r, p_1_start )
+# line_23 = gmsh.model.occ.addLine( p_1_start, p_4_start )
+# arc_34 = gmsh.model.occ.addCircleArc( p_4_start, p_c_R, p_4 )
+# line_41 = gmsh.model.occ.addLine( p_4, p_1 )
+# gmsh.model.occ.synchronize()
+#
+# loop = gmsh.model.occ.addCurveLoop( [arc_12, line_23, arc_34, line_41] )
+# surfaces.append( gmsh.model.occ.addPlaneSurface( [loop] ) )
+# gmsh.model.occ.synchronize()
+
+
 #
 # # construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
 #

@@ -186,6 +186,16 @@ def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
 def R_z(theta):
     return [[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]]
 
+'''
+A rotation matrix in two dimensions
+Input values: 
+- 'theta': the rotation angle, in radians
+Return values: 
+- the rotation matrix
+'''
+def R(theta):
+    return np.array( [[np.cos( theta ), -np.sin( theta )], [np.sin( theta ), np.cos( theta )]] )
+
 
 '''
 given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the circle center and the rectangle boundary
