@@ -40,8 +40,8 @@ R = 2
 c_r = [0, 0]
 c_R = [0, 0]
 # M is the number of times the slice will be replicated
-M = 4
-N = 16
+M = 2
+N = 4
 theta = 2 * np.pi / N
 # N = int(np.round(r * np.pi / resolution))
 
@@ -103,12 +103,12 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 # #     b_edge_id, mesh
 # # )
 
-'''
+
 print('********** Mesh after mirroring: **********')
 msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
-'''
+
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
