@@ -11,8 +11,6 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_P
 
 import meshio
 from fenics import *
-import gmsh  # main tool
-import pygmsh  # wrapper for gmsh
 import argparse
 import math
 import sys
@@ -56,12 +54,7 @@ print(f'mesh_slice_file: {mesh_slice_file}')
 # Load the mesh slice
 mesh = meshio.read(mesh_slice_file)
 
-print('********** Mesh before mirroring: **********')
-msh.print_mesh_element_types(mesh)
-msh.print_mesh_triangles(mesh)
-msh.print_mesh_vertices(mesh)
-
-# a curve representing the top line of the slice
+# msh.print_mesh_info(mesh, 'Mesh before mirroring')
 
 # initialize the loop over 0 <= theta < 2 pi
 r_1 = np.array([r, 0])
@@ -71,12 +64,12 @@ r_3 = cal.R(theta).dot(r_4)
 
 print('Looping through circle ...')
 for i in range(1, M + 1):
-    print(f'\t i = {i}')
+    # print(f'\t i = {i}')
 
     r_1 = np.copy(r_2)
-    r_2 = cal.R(2**(i-1)* theta).dot(r_1)
+    r_2 = cal.R(2 ** (i - 1) * theta).dot(r_1)
     r_4 = np.copy(r_3)
-    r_3 = cal.R(2**(i-1)*theta).dot(r_4)
+    r_3 = cal.R(2 ** (i - 1) * theta).dot(r_4)
 
     gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
 
@@ -105,11 +98,7 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 # # )
 
 
-print('********** Mesh after mirroring: **********')
-msh.print_mesh_element_types(mesh)
-msh.print_mesh_triangles(mesh)
-msh.print_mesh_vertices(mesh)
-
+# msh.print_mesh_info(mesh, 'Mesh after mirroring')
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)

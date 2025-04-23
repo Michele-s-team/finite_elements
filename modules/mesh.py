@@ -891,3 +891,10 @@ def mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_ind
     N = np.shape(mesh.cells[-1].data)[0]
     mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
     mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
+
+
+def print_mesh_info(mesh, title):
+    print(f'{title}')
+    print_mesh_element_types(mesh)
+    print_mesh_triangles(mesh)
+    print_mesh_vertices(mesh)

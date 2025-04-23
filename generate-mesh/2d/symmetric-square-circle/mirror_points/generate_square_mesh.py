@@ -129,12 +129,8 @@ ids = [1, np.nan, r_edge_id, l_edge_id, t_edge_id, circle_id]
 # Load the half-mesh
 mesh = meshio.read(half_mesh_msh_file)
 
-'''
-print('********** Mesh before mirroring: **********')
-msh.print_mesh_element_types(mesh)
-msh.print_mesh_triangles(mesh)
-msh.print_mesh_vertices(mesh)
-'''
+msh.print_mesh_info(mesh, 'Mesh before mirroring')
+
 
 ## mirror the mesh ##
 
@@ -198,12 +194,8 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
 
-'''
-print('********** Mesh after mirroring: **********')
-msh.print_mesh_element_types(mesh)
-msh.print_mesh_triangles(mesh)
-msh.print_mesh_vertices(mesh)
-'''
+msh.print_mesh_info(mesh, 'Mesh after mirroring')
+
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
