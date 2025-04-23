@@ -75,17 +75,16 @@ function_test_symmetry = Function(Q)
 
 # function_test_symmetry.interpolate(FunctionTestSymmetryExpression(element=Q.ufl_element()))
 
-import check_mesh_tags_square
+import check_mesh_tags_ring_slice
 
-print(f'Module {__file__} called {check_mesh_tags_square.__file__}', flush=True)
-
+print(f'Module {__file__} called {check_mesh_tags_ring_slice.__file__}', flush=True)
 
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_t = f'near({cal.atan_quad(x)}, {theta_max})'
+boundary_t = f'near(atan2(x[1], x[0), {theta_max})'
 boundary_b = f'near(x[0], 0.0)'
-boundary_tb = f'near(x[0], 0.0) || near({cal.atan_quad(x)}, {theta_max})'
-boundary_r = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r+R)/2}'
-boundary_R = f'on_boundary && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {(r+R)/2}'
+boundary_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
+boundary_r = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + R) / 2}'
+boundary_R = f'on_boundary && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {(r + R) / 2}'
 # CHANGE PARAMETERS HERE
