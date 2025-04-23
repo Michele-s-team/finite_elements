@@ -86,10 +86,10 @@ print(f'Module {__file__} called {check_mesh_tags_ring_slice.__file__}', flush=T
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_line_t = f'near(atan2(x[1], x[0), {theta_max})'
-boundary_line_b = f'near(x[0], 0.0)'
-boundary_line_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
-boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}'
-boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}'
-boundary_arc_rR = f'on_boundary && ((sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}) || (sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}))'
+# boundary_line_t = f'near(atan2(x[1], x[0), {theta_max})'
+# boundary_line_b = f'near(x[0], 0.0)'
+# boundary_line_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
+# boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}'
+# boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}'
+# boundary_arc_rR = f'on_boundary && ((sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}) || (sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}))'
 # CHANGE PARAMETERS HERE
