@@ -78,6 +78,7 @@ for i in range(1, M + 1):
     # define the axis of symmetry according to the current mirroring operation
     gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
 
+    '''
     # define the function which tells whetehr a point lies on the current axis of symmetry
     def point_on_axis_of_symmetry(point):
         return cal.point_on_line(point, gamma_axis_of_symmetry)
@@ -92,6 +93,8 @@ for i in range(1, M + 1):
                                                                                                        mesh.point_data)
     msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
     msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
+    '''
+    msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS

@@ -712,6 +712,20 @@ def print_mesh_lines(mesh):
                 print(f"\t\tLine: {i}:\n\t\t\t{vertex_1}\n\t\t\t{vertex_2}")
 
 
+
+'''
+print information (element types, triangles, vertices) on a mesh
+Input values: 
+- 'mesh': the mesh, a <meshio mesh object>
+- 'title' : a title for the printout
+'''
+def print_mesh_info(mesh, title):
+    print(f'{title}')
+    print_mesh_element_types(mesh)
+    print_mesh_triangles(mesh)
+    print_mesh_vertices(mesh)
+    
+
 '''
 assign a tag to lines in a cell which satisfy a given condition
 Input values:
@@ -892,9 +906,30 @@ def mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_ind
     mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
     mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
 
+'''
+mirror a mesh with respect to an axis of symmetry
+Input values: 
+- 'mesh': the mesh, a <meshio mesh object>
+- 'gamma_axis_of_symmetry': the curve which defines the axis of symmetry
 
-def print_mesh_info(mesh, title):
-    print(f'{title}')
-    print_mesh_element_types(mesh)
-    print_mesh_triangles(mesh)
-    print_mesh_vertices(mesh)
+Example of usage:
+gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
+msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+'''
+def mirror_mesh(mesh, gamma_axis_of_symmetry):
+
+    # define the function which tells whether a point is on the axis of symmetry
+    f_on_axis_of_symmetry = lambda point: cal.point_on_line(point, gamma_axis_of_symmetry)
+
+    # define the function which mirrors the coordinates of a point with respect to the axis of symmetry
+    f_mirror = lambda point: cal.mirror_point_line(point, gamma_axis_of_symmetry)
+
+    # mirror  mesh points and return the relative data
+    old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(f_on_axis_of_symmetry, f_mirror, mesh.points,
+                                                                                                   mesh.point_data)
+    # mirror  mesh triangles
+    mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
+
+    # mirror mesh lines
+    mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
+

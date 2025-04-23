@@ -8,14 +8,14 @@ import runtime_arguments as rarg
 import solution_paths as solpath
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import read_mesh_ring as rmsh
-import read_mesh_ring_slice as rmsh
+import read_mesh_ring as rmsh
+# import read_mesh_ring_slice as rmsh
 # import read_mesh_square_no_circle as rmsh
 # import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import variational_problem_bc_ring as vp
-import variational_problem_bc_ring_slice as vp
+import variational_problem_bc_ring as vp
+# import variational_problem_bc_ring_slice as vp
 # import variational_problem_bc_square_no_circle as vp
 # import variational_problem_bc_square as vp
 

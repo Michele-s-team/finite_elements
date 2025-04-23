@@ -58,7 +58,7 @@ class hess_u_exact_expression(UserExpression):
         # values[2] = 0
         # values[3] = 4
 
-        # test case 2    
+        # test case 2
         cos_val = np.cos(np.pi * (x[0] - x[1]))
         values[0] = -np.pi ** 2 * cos_val  # [0][0]
         values[1] = np.pi ** 2 * cos_val  # [0][1]
