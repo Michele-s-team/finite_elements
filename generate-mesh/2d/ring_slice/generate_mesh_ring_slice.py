@@ -133,28 +133,8 @@ meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
 
-#
-# '''
-# print('********** Mesh before mirroring: **********')
-# msh.print_mesh_element_types(mesh)
-# msh.print_mesh_triangles(mesh)
-# msh.print_mesh_vertices(mesh)
-# '''
-#
 # ################################################## mirror the mesh ##################################################
-#
-# # a curve representing the top line of the slice
-# gamma_axis_of_symmetry = lambda t: cal.line(r_2, r_3, t)
-#
-#
-# def point_on_axis_of_symmetry(point):
-#     return cal.point_on_line(point, gamma_axis_of_symmetry)
-#
-#
-# def mirror_function(point):
-#     return cal.mirror_point_line(point, gamma_axis_of_symmetry)
-#
-#
+
 # # Mirror points across gamma_top
 # old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
 #                                                                                                    mesh.point_data)

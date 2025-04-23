@@ -42,7 +42,9 @@ R = 2
 c_r = [0, 0]
 c_R = [0, 0]
 # M is the number of times the slice will be replicated
-M = 2
+M = 1
+N = 16
+theta = 2 * np.pi / N
 # N = int(np.round(r * np.pi / resolution))
 
 output_dir = args.output_dir
@@ -59,3 +61,32 @@ print('********** Mesh before mirroring: **********')
 msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
+
+
+# a curve representing the top line of the slice
+
+# initialize the loop over 0 <= theta < 2 pi
+r_1 = np.array([r, 0])
+r_2 = cal.R(theta).dot(r_1)
+r_4 = np.array([R, 0])
+r_3 = cal.R(theta).dot(r_4)
+
+print('Looping through circle ...')
+for i in range(1, M+1):
+
+    print(f'\t i = {i}')
+
+    r_1 = np.copy(r_2)
+    r_2 = cal.R(theta).dot(r_1)
+    r_4 = np.copy(r_3)
+    r_3 = cal.R(theta).dot(r_4)
+
+    gamma_axis_of_symmetry = lambda t: cal.line(r_2, r_3, t)
+
+    def point_on_axis_of_symmetry(point):
+        return cal.point_on_line(point, gamma_axis_of_symmetry)
+
+    def mirror_function(point):
+        return cal.mirror_point_line(point, gamma_axis_of_symmetry)
+print('... done.')
+
