@@ -40,7 +40,7 @@ R = 2
 c_r = [0, 0]
 c_R = [0, 0]
 # M is the number of times the slice will be replicated
-M = 3
+M = 4
 N = 16
 theta = 2 * np.pi / N
 # N = int(np.round(r * np.pi / resolution))
