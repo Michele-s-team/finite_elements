@@ -6,7 +6,9 @@ run with
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric_ring/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATHAll sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric-square-circle/mirror_points/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
+
+change bcs or mesh geometry in line which contain
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
@@ -24,16 +26,16 @@ import function_spaces as fsp
 import runtime_arguments as rarg
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-import read_mesh_ring as rmsh
+# import read_mesh_ring as rmsh
 # import read_mesh_ring_slice as rmsh
 # import read_mesh_square_no_circle as rmsh
-# import read_mesh_square as rmsh
+import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-import variational_problem_bc_ring as vp
+# import variational_problem_bc_ring as vp
 # import variational_problem_bc_ring_slice as vp
 # import variational_problem_bc_square_no_circle as vp
-# import variational_problem_bc_square as vp
+import variational_problem_bc_square as vp
 
 # n = FacetNormal(mesh)
 
@@ -64,7 +66,7 @@ solver.solve()
 solver_pp.solve()
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-import print_out_bc_ring
+# import print_out_bc_ring
 # import print_out_bc_ring_slice
 # import print_out_bc_square_no_circle
-# import print_out_bc_square
+import print_out_bc_square
