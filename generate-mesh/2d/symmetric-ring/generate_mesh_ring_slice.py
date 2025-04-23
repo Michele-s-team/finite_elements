@@ -2,6 +2,13 @@
 This code generates a  ring mesh with radial symmetry
 Symmetry is enforced by mirroring the mesh points across multiple slices
 
+the tags are:
+- surface: tag = 1
+- inner ring arc : tag = 2
+- outer ring arc : tag = 3
+- tob and bottom radial lines : tag = 5
+- middle radial line : tag = 4
+
 run with
 python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
 Example:
