@@ -46,7 +46,7 @@ r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
-N = 4
+N = 8
 # N = int(np.round(r * np.pi / resolution))
 
 

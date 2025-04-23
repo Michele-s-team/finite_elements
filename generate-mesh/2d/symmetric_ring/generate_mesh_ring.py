@@ -14,6 +14,7 @@ from fenics import *
 import gmsh  # main tool
 import pygmsh  # wrapper for gmsh
 import argparse
+import math
 import sys
 import numpy as np
 
@@ -40,10 +41,10 @@ R = 2
 c_r = [0, 0]
 c_R = [0, 0]
 # M is the number of times the slice will be replicated
-M = 2
-N = 4
+N = 8
+M = int(np.round(math.log2(N)))
+print('M = ', M)
 theta = 2 * np.pi / N
-# N = int(np.round(r * np.pi / resolution))
 
 output_dir = args.output_dir
 input_dir = args.input_dir
