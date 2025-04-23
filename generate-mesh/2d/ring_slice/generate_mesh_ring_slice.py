@@ -52,7 +52,6 @@ N = 16
 
 output_dir = args.output_dir
 mesh_file = output_dir + "/mesh.msh"
-# mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 surface_id = 1
 circle_r_id = 2
@@ -133,39 +132,3 @@ meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
 
-# ################################################## mirror the mesh ##################################################
-
-# # Mirror points across gamma_top
-# old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
-#                                                                                                    mesh.point_data)
-# msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
-# msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
-#
-# # msh.asssign_tag_to_lines(
-# #     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
-# #     b_edge_id, mesh
-# # )
-#
-# meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
-# #
-# print("Full mesh generated successfully!")
-#
-# '''
-# print('********** Mesh after mirroring: **********')
-# msh.print_mesh_element_types(mesh)
-# msh.print_mesh_triangles(mesh)
-# msh.print_mesh_vertices(mesh)
-# '''
-#
-# # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
-# mesh_from_file = meshio.read(mesh_xdmf_file)
-#
-# line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-# meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
-#
-# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-# meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
-#
-# # print the mesh vertices to file
-# mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-# io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")

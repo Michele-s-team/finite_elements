@@ -27,8 +27,6 @@ def read_mesh(filename):
     xdmf.read(mesh)
     xdmf.close()
 
-    print(f"[read_mesh] Mesh dim: {mesh.topology().dim()}, geometry dim: {mesh.geometry().dim()}")
-
     return mesh
 
 
