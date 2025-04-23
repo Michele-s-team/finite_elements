@@ -1,18 +1,10 @@
 '''
-This code generates a  ring0slice mesh
-
-the tags are:
-- surface: tag = 1
-- inner ring arc : tag = 2
-- outer ring arc : tag = 3
-- top radial line : tag = 4
-- bottom radial line : tag = 5
+This code generates a  mesh given by a slice of a ring
 
 run with
 python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
 Example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.3 $SOLUTION_PATH
-
 '''
 
 import meshio
@@ -46,8 +38,9 @@ r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
+# the angular witdh of the slice is 2 \pi/N = theta
 N = 8
-# N = int(np.round(r * np.pi / resolution))
+theta = 2 * np.pi / N
 
 
 output_dir = args.output_dir
@@ -67,19 +60,15 @@ model = geometry.__enter__()
 
 print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nresolution = {resolution}\noutput directory = {output_dir}')
 
-theta = 2 * np.pi / N
-phi = theta / 2
-epsilon = 1e-2
+# center points, used to define the arcs
 p_c_r = model.add_point((c_r[0], c_r[1], 0))
 p_c_R = model.add_point((c_R[0], c_R[1], 0))
 
-# initialize the loop over 0 <= theta < 2 pi
+# extremal points of the ring slice
 r_1 = np.array([r, 0])
 r_2 = cal.R(theta).dot(r_1)
 r_4 = np.array([R, 0])
 r_3 = cal.R(theta).dot(r_4)
-
-# p_1 = gmsh.model.occ.addPoint( r_1[0], r_1[1], 0 )
 
 p_1 = model.add_point((r_1[0], r_1[1], 0), mesh_size=resolution)
 p_2 = model.add_point((r_2[0], r_2[1], 0), mesh_size=resolution)
