@@ -840,7 +840,6 @@ mirror the triangles in a cell
 def mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data):
 
     old_triangles = mesh.cells_dict['triangle']
-    # old_lines = mesh.cells_dict['line']
 
     # duplicate cell blocks of type 'triangle'
     new_triangles = np.copy(old_triangles)

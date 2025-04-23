@@ -158,9 +158,8 @@ msh.print_mesh_vertices(mesh)
 # Mirror points across X=0
 old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
                                                                                                    mesh.point_data)
-
+'''
 old_triangles = mesh.cells_dict['triangle']
-old_lines = mesh.cells_dict['line']
 
 # duplicate cell blocks of type 'triangle'
 new_triangles = np.copy(old_triangles)
@@ -168,10 +167,8 @@ new_triangles = np.copy(old_triangles)
 for i in range(np.shape(new_triangles)[0]):
     # for each old triangle, run through each of its three vertices
     for j in range(3):
-        '''
-        assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
-        In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
-        '''
+        # assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
+        # In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
         new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
 
 mesh.points = old_plus_new_points
@@ -180,6 +177,8 @@ mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_tria
 N = np.shape(mesh.cells[-1].data)[0]
 mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
 mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
+'''
+msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
 
 # duplicate cell blocks of type 'line'
 for j in range(len(mesh.cells)):
