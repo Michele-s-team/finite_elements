@@ -37,7 +37,10 @@ circle_r_id = 2
 circle_R_id = 3
 lines_tb_id = 5
 line_middle_id = 4
+
+epsilon_boundaries = 1e-3
 # CHANGE PARAMETERS HERE
+
 
 
 # read the mesh
@@ -52,12 +55,12 @@ cf = msh.read_mesh_components(mesh, 1, rarg.args.input_directory + "/line_mesh.x
 # sf = msh.read_mesh_components(mesh, 0, rarg.args.input_directory + "/vertex_mesh.xdmf")
 
 dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
-ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_r_id)
-ds_R = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_R_id)
-ds_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=lines_tb_id)
-ds_middle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=line_middle_id)
+ds_arc_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_r_id)
+ds_arc_R = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_R_id)
+ds_line_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=lines_tb_id)
+ds_line_middle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=line_middle_id)
 
-ds_rR = ds_r + ds_R
+ds_arc_rR = ds_arc_r + ds_arc_R
 
 # a function space used solely to define function_test_integrals_fenics
 Q = FunctionSpace(mesh, 'P', 2)
@@ -82,9 +85,9 @@ print(f'Module {__file__} called {check_mesh_tags_ring_slice.__file__}', flush=T
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_t = f'near(atan2(x[1], x[0), {theta_max})'
-boundary_b = f'near(x[0], 0.0)'
-boundary_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
-boundary_r = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + R) / 2}'
-boundary_R = f'on_boundary && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {(r + R) / 2}'
+boundary_line_t = f'near(atan2(x[1], x[0), {theta_max})'
+boundary_line_b = f'near(x[0], 0.0)'
+boundary_line_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
+boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}'
+boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}'
 # CHANGE PARAMETERS HERE

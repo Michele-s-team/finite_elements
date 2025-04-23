@@ -44,22 +44,22 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.
 
 integral_exact_dx = cal.surface_integral_ring_slice(function_test_integrals, rmsh.r, rmsh.R, rmsh.theta_min, rmsh.theta_max, rmsh.c_r)
 
-integral_exact_ds_r = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, rmsh.theta_min, rmsh.theta_max, rmsh.c_r)
-integral_exact_ds_R = cal.curve_integral_circle_arc(function_test_integrals, rmsh.R, rmsh.theta_min, rmsh.theta_max, rmsh.c_R)
+integral_exact_ds_arc_r = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, rmsh.theta_min, rmsh.theta_max, rmsh.c_r)
+integral_exact_ds_arc_R = cal.curve_integral_circle_arc(function_test_integrals, rmsh.R, rmsh.theta_min, rmsh.theta_max, rmsh.c_R)
 
 integral_exact_ds_t = cal.curve_integral_line(function_test_integrals_fenics, rmsh.r_lt, rmsh.r_rt)
 integral_exact_ds_b = cal.curve_integral_line(function_test_integrals_fenics, rmsh.r_lb, rmsh.r_rb)
-integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
+integral_exact_ds_line_tb = integral_exact_ds_t + integral_exact_ds_b
 
-integral_exact_ds_rR = integral_exact_ds_r + integral_exact_ds_R
+integral_exact_ds_arc_rR = integral_exact_ds_arc_r + integral_exact_ds_arc_R
 
 
 
 msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
 
-msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
-msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R')
-msh.test_mesh_integral(integral_exact_ds_rR, function_test_integrals_fenics, rmsh.ds_rR, '\int f ds_{rR}')
+msh.test_mesh_integral(integral_exact_ds_arc_r, function_test_integrals_fenics, rmsh.ds_arc_r, '\int f ds_arc_r')
+msh.test_mesh_integral(integral_exact_ds_arc_R, function_test_integrals_fenics, rmsh.ds_arc_R, '\int f ds_arc_R')
+msh.test_mesh_integral(integral_exact_ds_arc_rR, function_test_integrals_fenics, rmsh.ds_arc_rR, '\int f ds_arc_rR')
 
-msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
+msh.test_mesh_integral(integral_exact_ds_line_tb, function_test_integrals_fenics, rmsh.ds_line_tb, '\int f ds_line_tb')
 

@@ -63,12 +63,12 @@ cf = msh.read_mesh_components(mesh, 1, rarg.args.input_directory + "/line_mesh.x
 # sf = msh.read_mesh_components(mesh, 0, rarg.args.input_directory + "/vertex_mesh.xdmf")
 
 dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
-ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_r_id)
-ds_R = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_R_id)
-ds_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=lines_tb_id)
-ds_middle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=line_middle_id)
+ds_arc_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_r_id)
+ds_arc_R = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_R_id)
+ds_line_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=lines_tb_id)
+ds_line_middle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=line_middle_id)
 
-ds_rR = ds_r + ds_R
+ds_arc_rR = ds_arc_r + ds_arc_R
 
 # a function space used solely to define function_test_integrals_fenics
 Q = FunctionSpace(mesh, 'P', 2)
