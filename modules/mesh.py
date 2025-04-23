@@ -724,7 +724,7 @@ def print_mesh_info(mesh, title):
     print_mesh_element_types(mesh)
     print_mesh_triangles(mesh)
     print_mesh_vertices(mesh)
-    
+
 
 '''
 assign a tag to lines in a cell which satisfy a given condition
