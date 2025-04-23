@@ -1,18 +1,26 @@
-import colorama as col
 from dolfin import *
 from fenics import *
 from mshr import *
 import numpy as np
-import sys
-
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
 
 import calculus as cal
-import input_output as io
 import runtime_arguments as rarg
-import mesh as msh
+import boundary_geometry as bgeo
+
+# read the triangles
+mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
+with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
+    infile.read(mvc, "name_to_read")
+sf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+
+# read the lines
+mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim() - 1)
+with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
+    infile.read(mvc, "name_to_read")
+mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+
+# radius of the smallest cell in the mesh
+r_mesh = bgeo.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
 r = 1
@@ -41,32 +49,18 @@ line_middle_id = 4
 epsilon_boundaries = 1e-3
 # CHANGE PARAMETERS HERE
 
-
-
-# read the mesh
-mesh = msh.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
-
-# read the triangles
-vf = msh.read_mesh_components(mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
-# read the lines
-cf = msh.read_mesh_components(mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
-
-# read the vertices
-# sf = msh.read_mesh_components(mesh, 0, rarg.args.input_directory + "/vertex_mesh.xdmf")
-
-dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
-ds_arc_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_r_id)
-ds_arc_R = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=circle_R_id)
-ds_line_tb = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=lines_tb_id)
-ds_line_middle = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=line_middle_id)
-
+dx = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=surface_id)
+ds_arc_r = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=circle_r_id)
+ds_arc_R = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=circle_R_id)
+ds_line_tb = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=lines_tb_id)
+ds_line_middle = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=line_middle_id)
 ds_arc_rR = ds_arc_r + ds_arc_R
 ds = ds_arc_rR + ds_line_tb
 
-# a function space used solely to define function_test_integrals_fenics
-Q = FunctionSpace(mesh, 'P', 2)
+# # a function space used solely to define function_test_integrals_fenics
+# Q = FunctionSpace(mesh, 'P', 2)
 
-function_test_symmetry = Function(Q)
+# function_test_symmetry = Function(Q)
 
 # analytical expression for a  scalar function used to test the ds
 # class FunctionTestSymmetryExpression(UserExpression):
