@@ -30,14 +30,12 @@ c_r = [0, 0]
 c_R = [0, 0]
 N = 16
 theta = 2 * np.pi / N
-theta_min = 0
-theta_max = 2 * 2*np.pi/N
 
 
 r_lb = np.array([r, 0])
-r_lt = cal.R(theta_max).dot(r_lb)
+r_lt = cal.R(theta).dot(r_lb)
 r_rb = np.array([R, 0])
-r_rt = cal.R(theta_max).dot(r_rb)
+r_rt = cal.R(theta).dot(r_rb)
 
 
 c_test = [0.3, 0.76]

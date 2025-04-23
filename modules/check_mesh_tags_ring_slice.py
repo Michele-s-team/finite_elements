@@ -42,13 +42,13 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = cal.surface_integral_ring_slice(function_test_integrals, rmsh.r, rmsh.R, rmsh.theta_min, rmsh.theta_max, rmsh.c_r)
+integral_exact_dx = cal.surface_integral_ring_slice(function_test_integrals, rmsh.r, rmsh.R, 0, rmsh.theta, rmsh.c_r)
 
-integral_exact_ds_arc_r = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, rmsh.theta_min, rmsh.theta_max, rmsh.c_r)
-integral_exact_ds_arc_R = cal.curve_integral_circle_arc(function_test_integrals, rmsh.R, rmsh.theta_min, rmsh.theta_max, rmsh.c_R)
+integral_exact_ds_arc_r = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, 0, rmsh.theta, rmsh.c_r)
+integral_exact_ds_arc_R = cal.curve_integral_circle_arc(function_test_integrals, rmsh.R, 0, rmsh.theta, rmsh.c_R)
 
-integral_exact_ds_line_t = cal.curve_integral_line(function_test_integrals_fenics, rmsh.r_lt, rmsh.r_rt)
-integral_exact_ds_line_b = cal.curve_integral_line(function_test_integrals_fenics, rmsh.r_lb, rmsh.r_rb)
+integral_exact_ds_line_t = cal.curve_integral_line(function_test_integrals, rmsh.r_lt, rmsh.r_rt)
+integral_exact_ds_line_b = cal.curve_integral_line(function_test_integrals, rmsh.r_lb, rmsh.r_rb)
 
 integral_exact_ds_line_tb = integral_exact_ds_line_t + integral_exact_ds_line_b
 integral_exact_ds_arc_rR = integral_exact_ds_arc_r + integral_exact_ds_arc_R

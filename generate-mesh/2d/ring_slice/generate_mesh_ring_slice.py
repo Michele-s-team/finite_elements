@@ -51,8 +51,8 @@ N = 16
 
 
 output_dir = args.output_dir
-slice_mesh_msh_file = output_dir + "/slice_mesh.msh"
-mesh_xdmf_file = output_dir + "/mesh.xdmf"
+mesh_file = output_dir + "/mesh.msh"
+# mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 surface_id = 1
 circle_r_id = 2
@@ -114,13 +114,13 @@ model.add_physical([slice_lines[1]], "top")
 model.add_physical(slice_lines[3], "bottom")
 
 geometry.generate_mesh(dim=2)
-gmsh.write(slice_mesh_msh_file)
+gmsh.write(mesh_file)
 
 gmsh.clear()
 geometry.__exit__()
 
 # Load the half-mesh
-mesh = meshio.read(slice_mesh_msh_file)
+mesh = meshio.read(mesh_file)
 
 
 line_mesh = msh.create_mesh(mesh, "line", prune_z=True)
