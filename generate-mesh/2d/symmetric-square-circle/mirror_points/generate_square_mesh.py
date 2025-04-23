@@ -180,6 +180,7 @@ mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometri
 '''
 msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
 
+'''
 # duplicate cell blocks of type 'line'
 for j in range(len(mesh.cells)):
     if mesh.cells[j].type == 'line':
@@ -200,6 +201,9 @@ for j in range(len(mesh.cells)):
 
         mesh.cell_data['gmsh:physical'][j] = np.array([ids[mesh.cell_data['gmsh:physical'][j][0]]] * N)
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
+'''
+
+msh.mirror_lines(mesh,gamma_axis_of_symmetry,non_mirrored_plus_new_points_indices)
 
 msh.asssign_tag_to_lines(
     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
