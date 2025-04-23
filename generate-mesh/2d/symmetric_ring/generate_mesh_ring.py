@@ -5,7 +5,7 @@ This code generates a  ring  mesh with radial symmetry: symmetry is obtained by 
 run with
 python3 generate_mesh_ring.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py 0.1 ~/shared/generate-mesh/2d/ring_slice/solution $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py ~/shared/generate-mesh/2d/ring_slice/solution $SOLUTION_PATH
 
 '''
 
@@ -30,19 +30,17 @@ import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
 parser.add_argument("input_dir")
 parser.add_argument("output_dir")
 args = parser.parse_args()
 
 # mesh resolution
-resolution = (float)(args.resolution)
 r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
 # M is the number of times the slice will be replicated
-M = 1
+M = 3
 N = 16
 theta = 2 * np.pi / N
 # N = int(np.round(r * np.pi / resolution))
@@ -75,9 +73,9 @@ for i in range(1, M + 1):
     print(f'\t i = {i}')
 
     r_1 = np.copy(r_2)
-    r_2 = cal.R(theta).dot(r_1)
+    r_2 = cal.R(2**(i-1)* theta).dot(r_1)
     r_4 = np.copy(r_3)
-    r_3 = cal.R(theta).dot(r_4)
+    r_3 = cal.R(2**(i-1)*theta).dot(r_4)
 
     gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
 
