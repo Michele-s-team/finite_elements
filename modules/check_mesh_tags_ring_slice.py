@@ -46,7 +46,12 @@ integral_exact_dx = cal.surface_integral_ring_slice(function_test_integrals, rms
 
 integral_exact_ds_r = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, rmsh.theta_min, rmsh.theta_max, rmsh.c_r)
 integral_exact_ds_R = cal.curve_integral_circle_arc(function_test_integrals, rmsh.R, rmsh.theta_min, rmsh.theta_max, rmsh.c_R)
-integral_exact_ds = integral_exact_ds_r + integral_exact_ds_R
+
+integral_exact_ds_t = cal.curve_integral_line(function_test_integrals_fenics, rmsh.r_lt, rmsh.r_rt)
+integral_exact_ds_b = cal.curve_integral_line(function_test_integrals_fenics, rmsh.r_lb, rmsh.r_rb)
+integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
+
+integral_exact_ds_rR = integral_exact_ds_r + integral_exact_ds_R
 
 
 
@@ -54,4 +59,7 @@ msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.d
 
 msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
 msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R')
-msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+msh.test_mesh_integral(integral_exact_ds_rR, function_test_integrals_fenics, rmsh.ds_rR, '\int f ds_{rR}')
+
+msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
+
