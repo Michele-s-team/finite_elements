@@ -27,15 +27,15 @@ import runtime_arguments as rarg
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import read_mesh_ring as rmsh
-# import read_mesh_ring_slice as rmsh
+import read_mesh_ring_slice as rmsh
 # import read_mesh_square_no_circle as rmsh
-import read_mesh_square as rmsh
+# import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_ring as vp
-# import variational_problem_bc_ring_slice as vp
+import variational_problem_bc_ring_slice as vp
 # import variational_problem_bc_square_no_circle as vp
-import variational_problem_bc_square as vp
+# import variational_problem_bc_square as vp
 
 # n = FacetNormal(mesh)
 
@@ -67,6 +67,6 @@ solver_pp.solve()
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import print_out_bc_ring
-# import print_out_bc_ring_slice
+import print_out_bc_ring_slice
 # import print_out_bc_square_no_circle
-import print_out_bc_square
+# import print_out_bc_square
