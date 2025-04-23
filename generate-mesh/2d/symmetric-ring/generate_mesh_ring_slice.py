@@ -48,7 +48,7 @@ r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
-N = 16
+N = 5
 theta_min = 0
 theta_max = 2 * 2*np.pi/N
 
@@ -194,56 +194,58 @@ mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometri
 # duplicate cell blocks of type 'line'
 
 print(f'mesh_cell_data = {mesh.cell_data}')
+#
+# print('Duplicating cell lines ... ')
+# for j in range(len(mesh.cells)):
+#     print(f'\tj = {j}', flush=True)
+#
+#     if mesh.cells[j].type == 'line':
+#         lines = np.copy(mesh.cells[j].data)
+#         filtered_lines = []
+#
+#         print(f'\t\tlines = {lines}')
+#
+#         for i in range(np.shape(lines)[0]):
+#
+#             print(f'\t\t\tlines[i] = {lines[i]}')
+#
+#             # f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+#             # if f[0] or f[1]:
+#             if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
+#
+#                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
+#                                        non_mirrored_plus_new_points_indices[lines[i, 1]]])
+#
+#                 print('\t\t\t\tLine has been mirrored')
+#
+#             else:
+#                 print('\t\t\t\tLine has not been mirrored')
+#
+#
+#         filtered_lines = np.array(filtered_lines)
+#
+#         print(f'\t\tfiltered_lines = {filtered_lines}', flush=True)
+#
+#         if filtered_lines != []:
+#             lines_plus_filtered_lines = np.vstack((lines, filtered_lines))
+#         else:
+#             lines_plus_filtered_lines = lines
+#
+#         print(f'\t\tlines + filetered lines = {lines_plus_filtered_lines}', flush=True)
+#
+#         mesh.cells[j] = meshio.CellBlock("line", lines_plus_filtered_lines)
+#
+#
+#         N = np.shape(mesh.cells[j].data)[0]
+#
+#         print(f'\t\tN = {N}', flush=True)
+#         print(f'\t\tcell_data["gmsh:physical"][{j}] = {mesh.cell_data["gmsh:physical"][j]}', flush=True)
+#
+#         mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
+#         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
+# print('... done.')
 
-print('Duplicating cell blocks ... ')
-for j in range(len(mesh.cells)):
-    print(f'\tj = {j}', flush=True)
-
-    if mesh.cells[j].type == 'line':
-        lines = np.copy(mesh.cells[j].data)
-        filtered_lines = []
-
-        print(f'\t\tlines = {lines}')
-
-        for i in range(np.shape(lines)[0]):
-
-            print(f'\t\t\tlines[i] = {lines[i]}')
-
-            # f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
-            # if f[0] or f[1]:
-            if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
-
-                filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
-                                       non_mirrored_plus_new_points_indices[lines[i, 1]]])
-
-                print('\t\t\t\tLine has been mirrored')
-
-            else:
-                print('\t\t\t\tLine has not been mirrored')
-
-
-        filtered_lines = np.array(filtered_lines)
-
-        print(f'\t\tfiltered_lines = {filtered_lines}', flush=True)
-
-        if filtered_lines != []:
-            lines_plus_filtered_lines = np.vstack((lines, filtered_lines))
-        else:
-            lines_plus_filtered_lines = lines
-
-        print(f'\t\tlines + filetered lines = {lines_plus_filtered_lines}', flush=True)
-
-        mesh.cells[j] = meshio.CellBlock("line", lines_plus_filtered_lines)
-
-
-        N = np.shape(mesh.cells[j].data)[0]
-
-        print(f'\t\tN = {N}', flush=True)
-        print(f'\t\tcell_data["gmsh:physical"][{j}] = {mesh.cell_data["gmsh:physical"][j]}', flush=True)
-
-        mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
-        mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
-print('... done.')
+msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 
 # msh.asssign_tag_to_lines(
 #     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),

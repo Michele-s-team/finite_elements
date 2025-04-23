@@ -721,8 +721,7 @@ def asssign_tag_to_lines(condition, tag, mesh):
 '''
 This function mirrors the points in a rectangular mesh: 
 Input values: 
-- 'y_cordinate_axis_of_symmetry': the y coordinate of the axis of symmetry with which the mirroring will be made
-- 'h': the height of the rectangle
+- 'mirror_function': the function which performs the mirroring of each point
 - 'points' : Array of points to be duplicated
 - 'point_data' : Data that contains dimensional tag of the points (must be duplicated as well to avoid issues during the reading of the mesh)
 Return values: 
@@ -771,3 +770,63 @@ def mirror_points(axis_of_symmetry_condition, mirror_function, points, point_dat
     old_plus_new_points = np.vstack((points, mirrored_points))
 
     return old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data
+
+'''
+mirrors lines in a mesh according to an axis of symmetry
+Input values:
+- 'mesh': the mesh, a <meshio mesh object>
+- 'gamma_axis_of_symmetry': the curve which defines the axis of symmetry
+- 'non_mirrored_plus_new_points_indices': the indices of the old points which have not been mirrored, and of the new points, as returned from 'mirror_points'
+
+Example of usage: 
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
+ msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)                                                                                                  mesh.point_data)
+'''
+def mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices):
+    print('Duplicating cell lines ... ')
+    for j in range(len(mesh.cells)):
+        print(f'\tj = {j}', flush=True)
+
+        if mesh.cells[j].type == 'line':
+            lines = np.copy(mesh.cells[j].data)
+            filtered_lines = []
+
+            print(f'\t\tlines = {lines}')
+
+            for i in range(np.shape(lines)[0]):
+
+                print(f'\t\t\tlines[i] = {lines[i]}')
+
+                # f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
+                # if f[0] or f[1]:
+                if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
+
+                    filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
+                                           non_mirrored_plus_new_points_indices[lines[i, 1]]])
+
+                    print('\t\t\t\tLine has been mirrored')
+
+                else:
+                    print('\t\t\t\tLine has not been mirrored')
+
+            filtered_lines = np.array(filtered_lines)
+
+            print(f'\t\tfiltered_lines = {filtered_lines}', flush=True)
+
+            if filtered_lines != []:
+                lines_plus_filtered_lines = np.vstack((lines, filtered_lines))
+            else:
+                lines_plus_filtered_lines = lines
+
+            print(f'\t\tlines + filetered lines = {lines_plus_filtered_lines}', flush=True)
+
+            mesh.cells[j] = meshio.CellBlock("line", lines_plus_filtered_lines)
+
+            N = np.shape(mesh.cells[j].data)[0]
+
+            print(f'\t\tN = {N}', flush=True)
+            print(f'\t\tcell_data["gmsh:physical"][{j}] = {mesh.cell_data["gmsh:physical"][j]}', flush=True)
+
+            mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
+            mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
+    print('... done.')
