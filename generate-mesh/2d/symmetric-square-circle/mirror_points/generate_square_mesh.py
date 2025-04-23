@@ -165,6 +165,12 @@ msh.asssign_tag_to_lines(
     b_edge_id, mesh
 )
 
+# tag circle
+msh.asssign_tag_to_lines(
+    lambda p_start, p_end: np.isclose(p_start[0], c_r[0] - r),
+    10, mesh
+)
+
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
