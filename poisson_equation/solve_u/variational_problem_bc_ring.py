@@ -13,10 +13,10 @@ i, j = ufl.indices(2)
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
-        # values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)
+        values[0] = np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.R) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.R)
 
     def value_shape(self):
         return (1,)
@@ -25,27 +25,31 @@ class u_exact_expression(UserExpression):
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 2.0 * x[0]
-        values[1] = 4.0 * x[1]
+        # values[0] = 2.0 * x[0]
+        # values[1] = 4.0 * x[1]
 
         # test case 2
-        # values[0] = 2 * (np.pi) * np.cos(2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
-        # values[1] = 2 * (np.pi) * np.cos(2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        pi = np.pi
+        xpy = pi * (x[0] + x[1])
+        xmy = pi * (x[0] - x[1])
+        values[0] = pi * np.cos(xmy) * np.cos(xpy) - pi * np.sin(xmy) * np.sin(xpy)  # ∂u/∂x
+        values[1] = pi * np.cos(xmy) * np.cos(xpy) + pi * np.sin(xmy) * np.sin(xpy)  # ∂u/∂y
 
-    def value_shape(self):
+
+def value_shape(self):
         return (2,)
 
 
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 6.0
+        # values[0] = 6.0
 
         # test case 2
-        # values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * np.cos(2 * (np.pi) * (x[0] - (x[1])) ** 2) - np.sin(2 * (np.pi) * (x[0] - (x[1])) ** 2)) * np.sin(
-        #     2 * (np.pi) * (x[0] + (x[1])))
+        pi = np.pi
+        xpy = pi * (x[0] + x[1])
+        xmy = pi * (x[0] - x[1])
+        values[0] = -4 * pi ** 2 * np.cos(xmy) * np.sin(xpy)
 
     def value_shape(self):
         return (1,)
@@ -57,30 +61,17 @@ class hess_u_exact_expression(UserExpression):
 
     def eval(self, values, x):
         # test case 1
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
+        # values[0] = 2
+        # values[1] = 0
+        # values[2] = 0
+        # values[3] = 4
 
         # test case 2
-        # values[0] = 4 * np.pi * (
-        #         -4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2)
-        #         - (np.pi * (1 + 4 * x[0] ** 2 - 8 * x[0] * x[1] + 4 * x[1] ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
-        #            + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # )
-        #
-        # values[1] = 4 * np.pi * (
-        #         (np.pi * (-1 + 4 * x[0] ** 2 - 8 * x[0] * x[1] + 4 * x[1] ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
-        #          + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # )
-        #
-        # values[2] = values[1]
-        #
-        # values[3] = 4 * np.pi * (
-        #         4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2)
-        #         - (np.pi * (1 + 4 * x[0] ** 2 - 8 * x[0] * x[1] + 4 * x[1] ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
-        #            + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # )
+        pi = np.pi
+        values[0] = -2 * pi ** 2 * np.sin(2 * pi * x[0])  # ∂²u/∂x²
+        values[1] = 0  # ∂²u/∂x∂y
+        values[2] = 0  # ∂²u/∂y∂x
+        values[3] = -2 * pi ** 2 * np.sin(2 * pi * x[1])  # ∂²u/∂y²
 
     def value_shape(self):
         return (2, 2)
