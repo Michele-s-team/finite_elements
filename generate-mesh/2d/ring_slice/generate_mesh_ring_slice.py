@@ -57,9 +57,9 @@ mesh_file = output_dir + "/mesh.msh"
 surface_id = 1
 circle_r_id = 2
 circle_R_id = 3
-t_edge_id = 4
-b_edge_id = 5
-ids = [1, b_edge_id, circle_R_id, circle_r_id, t_edge_id]
+line_t_id = 4
+line_b_id = 5
+ids = [1, line_b_id, circle_R_id, circle_r_id, line_t_id]
 
 #  mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
 geometry = pygmsh.geo.Geometry()
