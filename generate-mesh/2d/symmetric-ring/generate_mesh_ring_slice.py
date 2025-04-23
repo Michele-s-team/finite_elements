@@ -24,7 +24,6 @@ import argparse
 import sys
 import numpy as np
 
-
 # add the path where to find the shared modules
 # gaetano's path
 # module_path = '/home/tanos/Thesis/finite_elements/modules/'
@@ -50,13 +49,11 @@ c_r = [0, 0]
 c_R = [0, 0]
 N = 5
 theta_min = 0
-theta_max = 2 * 2*np.pi/N
-
+theta_max = 2 * 2 * np.pi / N
 
 output_dir = args.output_dir
 slice_mesh_msh_file = output_dir + "/slice_mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
-
 
 surface_id = 1
 circle_r_id = 2
@@ -64,7 +61,6 @@ circle_R_id = 3
 t_edge_id = 4
 b_edge_id = 5
 ids = [1, b_edge_id, circle_R_id, circle_r_id, t_edge_id]
-
 
 '''
 slice mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
@@ -124,10 +120,8 @@ model.add_physical(slice_lines[3], "bottom")
 geometry.generate_mesh(dim=2)
 gmsh.write(slice_mesh_msh_file)
 
-
 gmsh.clear()
 geometry.__exit__()
-
 
 # Load the half-mesh
 mesh = meshio.read(slice_mesh_msh_file)
@@ -151,18 +145,18 @@ msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
 '''
 
-
 ################################################## mirror the mesh ##################################################
 
 # a curve representing the top line of the slice
 gamma_axis_of_symmetry = lambda t: cal.line(r_2, r_3, t)
 
+
 def point_on_axis_of_symmetry(point):
     return cal.point_on_line(point, gamma_axis_of_symmetry)
 
+
 def mirror_function(point):
     return cal.mirror_point_line(point, gamma_axis_of_symmetry)
-
 
 
 # Mirror points across gamma_top
@@ -194,56 +188,6 @@ mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometri
 # duplicate cell blocks of type 'line'
 
 print(f'mesh_cell_data = {mesh.cell_data}')
-#
-# print('Duplicating cell lines ... ')
-# for j in range(len(mesh.cells)):
-#     print(f'\tj = {j}', flush=True)
-#
-#     if mesh.cells[j].type == 'line':
-#         lines = np.copy(mesh.cells[j].data)
-#         filtered_lines = []
-#
-#         print(f'\t\tlines = {lines}')
-#
-#         for i in range(np.shape(lines)[0]):
-#
-#             print(f'\t\t\tlines[i] = {lines[i]}')
-#
-#             # f = [mesh.points[lines[i, k]][1] != 0 for k in range(2)]
-#             # if f[0] or f[1]:
-#             if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
-#
-#                 filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
-#                                        non_mirrored_plus_new_points_indices[lines[i, 1]]])
-#
-#                 print('\t\t\t\tLine has been mirrored')
-#
-#             else:
-#                 print('\t\t\t\tLine has not been mirrored')
-#
-#
-#         filtered_lines = np.array(filtered_lines)
-#
-#         print(f'\t\tfiltered_lines = {filtered_lines}', flush=True)
-#
-#         if filtered_lines != []:
-#             lines_plus_filtered_lines = np.vstack((lines, filtered_lines))
-#         else:
-#             lines_plus_filtered_lines = lines
-#
-#         print(f'\t\tlines + filetered lines = {lines_plus_filtered_lines}', flush=True)
-#
-#         mesh.cells[j] = meshio.CellBlock("line", lines_plus_filtered_lines)
-#
-#
-#         N = np.shape(mesh.cells[j].data)[0]
-#
-#         print(f'\t\tN = {N}', flush=True)
-#         print(f'\t\tcell_data["gmsh:physical"][{j}] = {mesh.cell_data["gmsh:physical"][j]}', flush=True)
-#
-#         mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
-#         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
-# print('... done.')
 
 msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 
@@ -262,7 +206,6 @@ msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
 '''
-
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
