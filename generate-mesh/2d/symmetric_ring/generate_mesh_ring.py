@@ -1,12 +1,13 @@
 '''
 This code generates a  ring  mesh with radial symmetry: symmetry is obtained by replicating a ring slice
 
-
 run with
 python3 generate_mesh_ring.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
+
+where [path where to read the ring slice] is the output path of generate_mesh_ring_slice.py
+
 Example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py ~/shared/generate-mesh/2d/ring_slice/solution $SOLUTION_PATH
-
 '''
 
 import meshio
@@ -38,10 +39,9 @@ r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
-# M is the number of times the slice will be replicated
+# the angle 2 \pi will be divided into N equal slices. Here N must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
 N = 8
 M = int(np.round(math.log2(N)))
-print('M = ', M)
 theta = 2 * np.pi / N
 
 output_dir = args.output_dir
@@ -49,35 +49,40 @@ input_dir = args.input_dir
 mesh_slice_file = input_dir + "/mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
-print(f'mesh_slice_file: {mesh_slice_file}')
+print(f'r = {r}, R = {R}, c_r = {c_r}, c_R = {c_R}, N = {N}, mesh_slice_file: {mesh_slice_file}')
 
 # Load the mesh slice
 mesh = meshio.read(mesh_slice_file)
 
 # msh.print_mesh_info(mesh, 'Mesh before mirroring')
 
-# initialize the loop over 0 <= theta < 2 pi
+# initialize the loop over 0 <= theta < 2 pi by setting the initial values of the extremal points of the first ring slice
 r_1 = np.array([r, 0])
 r_2 = cal.R(theta).dot(r_1)
 r_4 = np.array([R, 0])
 r_3 = cal.R(theta).dot(r_4)
 
 print('Looping through circle ...')
+
 for i in range(1, M + 1):
+    # at each step of this loop, a slice is doubled in size by mirroring, until a full ring is constructed
+
     # print(f'\t i = {i}')
 
+    # set the extremal points of the new ring slice in terms of the old ones
     r_1 = np.copy(r_2)
     r_2 = cal.R(2 ** (i - 1) * theta).dot(r_1)
     r_4 = np.copy(r_3)
     r_3 = cal.R(2 ** (i - 1) * theta).dot(r_4)
 
+    # define the axis of symmetry according to the current mirroring operation
     gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
 
-
+    # define the function which tells whetehr a point lies on the current axis of symmetry
     def point_on_axis_of_symmetry(point):
         return cal.point_on_line(point, gamma_axis_of_symmetry)
 
-
+    # define the function which makes current mirroring operation
     def mirror_function(point):
         return cal.mirror_point_line(point, gamma_axis_of_symmetry)
 
