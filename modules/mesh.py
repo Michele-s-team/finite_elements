@@ -830,3 +830,36 @@ def mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indi
             mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
             mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
     print('... done.')
+
+'''
+mirror the triangles in a cell
+- 'mesh': the mesh, a <meshio mesh object>
+- 'old_plus_new_points' : the set of old and new (mirrored) points, as returned from 'mirror_points'
+- 'non_mirrored_plus_new_points_indices': the indices of the non-mirrored and new points, as returned from 'mirror_points'
+- 'mirrored_point_data': data of the mirrored poitns, as returned from 'mirror_points'
+
+'''
+def mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data):
+
+    old_triangles = mesh.cells_dict['triangle']
+    # old_lines = mesh.cells_dict['line']
+
+    # duplicate cell blocks of type 'triangle'
+    new_triangles = np.copy(old_triangles)
+
+    # run through the old triangles
+    for i in range(np.shape(new_triangles)[0]):
+        # for each old triangle, run through each of its three vertices
+        for j in range(3):
+            '''
+            assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
+            In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
+            '''
+            new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
+
+    mesh.points = old_plus_new_points
+    mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
+    mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
+    N = np.shape(mesh.cells[-1].data)[0]
+    mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
+    mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)

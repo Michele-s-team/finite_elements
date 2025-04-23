@@ -1,6 +1,5 @@
 '''
-This code generates a  ring mesh with radial symmetry
-Symmetry is enforced by mirroring the mesh points across multiple slices
+This code generates a  ring0slice mesh
 
 the tags are:
 - surface: tag = 1
@@ -47,7 +46,8 @@ r = 1
 R = 2
 c_r = [0, 0]
 c_R = [0, 0]
-N = 5
+N = 16
+# N = int(np.round(r * np.pi / resolution))
 theta_min = 0
 theta_max = 2 * 2 * np.pi / N
 
@@ -62,15 +62,12 @@ t_edge_id = 4
 b_edge_id = 5
 ids = [1, b_edge_id, circle_R_id, circle_r_id, t_edge_id]
 
-'''
-slice mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
-'''
+#  mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-# N = int(np.round(r * np.pi / resolution))
 
-print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nN = {N}\nresolution = {resolution}\noutput directory = {output_dir}')
+print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nresolution = {resolution}\noutput directory = {output_dir}')
 
 theta = 2 * np.pi / N
 phi = theta / 2
@@ -162,33 +159,7 @@ def mirror_function(point):
 # Mirror points across gamma_top
 old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
                                                                                                    mesh.point_data)
-
-old_triangles = mesh.cells_dict['triangle']
-old_lines = mesh.cells_dict['line']
-
-# duplicate cell blocks of type 'triangle'
-new_triangles = np.copy(old_triangles)
-# run through the old triangles
-for i in range(np.shape(new_triangles)[0]):
-    # for each old triangle, run through each of its three vertices
-    for j in range(3):
-        '''
-        assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
-        In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
-        '''
-        new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
-
-mesh.points = old_plus_new_points
-mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
-mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
-N = np.shape(mesh.cells[-1].data)[0]
-mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
-mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
-
-# duplicate cell blocks of type 'line'
-
-print(f'mesh_cell_data = {mesh.cell_data}')
-
+msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
 msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 
 # msh.asssign_tag_to_lines(
