@@ -57,22 +57,6 @@ ds_line_middle = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id
 ds_arc_rR = ds_arc_r + ds_arc_R
 ds = ds_arc_rR + ds_line_tb
 
-# # a function space used solely to define function_test_integrals_fenics
-# Q = FunctionSpace(mesh, 'P', 2)
-
-# function_test_symmetry = Function(Q)
-
-# analytical expression for a  scalar function used to test the ds
-# class FunctionTestSymmetryExpression(UserExpression):
-#     def eval(self, values, x):
-#         values[0] = x[1] - h / 2
-#
-#     def value_shape(self):
-#         return (1,)
-
-
-# function_test_symmetry.interpolate(FunctionTestSymmetryExpression(element=Q.ufl_element()))
-
 import check_mesh_tags_ring_slice
 
 print(f'Module {__file__} called {check_mesh_tags_ring_slice.__file__}', flush=True)
@@ -80,10 +64,10 @@ print(f'Module {__file__} called {check_mesh_tags_ring_slice.__file__}', flush=T
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-# boundary_line_t = f'near(atan2(x[1], x[0), {theta_max})'
-# boundary_line_b = f'near(x[0], 0.0)'
-# boundary_line_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
-# boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}'
-# boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}'
-# boundary_arc_rR = f'on_boundary && ((sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}) || (sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}))'
+boundary_line_t = f'near(atan2(x[1], x[0), {theta_max})'
+boundary_line_b = f'near(x[0], 0.0)'
+boundary_line_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta_max})'
+boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}'
+boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}'
+boundary_arc_rR = f'on_boundary && ((sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}) || (sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}))'
 # CHANGE PARAMETERS HERE
