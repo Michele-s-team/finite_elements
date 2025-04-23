@@ -54,12 +54,13 @@ Input values:
 Return value:
 - True/False, if the point lies on the axis of symmetry 
 '''
+
+
 def point_on_axis_of_symmetry(point):
     return cal.point_on_line(point, gamma_axis_of_symmetry)
 
-def mirror_function(point):
-    # print(f'called mirror_function for point {point}, returning {cal.mirror_point_line(point, gamma_axis_of_symmetry)}')
 
+def mirror_function(point):
     return cal.mirror_point_line(point, gamma_axis_of_symmetry)
 
 
@@ -69,18 +70,15 @@ mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
+# Half mesh is generated used pygmsh and it's saved as mesh.msh
 
-'''
-Half mesh is generated used pygmsh and it's saved as mesh.msh
-'''
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 N = int(np.round(r * np.pi / resolution))
 
-'''
-construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
-'''
+# construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
+
 half_rectangle_points = [model.add_point((L, y_coordinate_axis_of_symmetry, 0), mesh_size=resolution),
                          model.add_point((L, h, 0), mesh_size=resolution),
                          model.add_point((0, h, 0), mesh_size=resolution),
@@ -106,7 +104,6 @@ model.add_physical([half_rectangle_circle_surface], "Volume")
 model.add_physical([half_rectangle_circle_lines[1]], "r")
 model.add_physical([half_rectangle_circle_lines[3]], "l")
 model.add_physical([half_rectangle_circle_lines[2]], "t")
-# model.add_physical( [channel_lines[4],channel_lines[0]], "b" )
 model.add_physical(half_rectangle_circle_lines[5:], "c")
 
 geometry.generate_mesh(dim=2)
@@ -121,18 +118,6 @@ geometry.__exit__()
 duplicate the points and cells with the respective tags and ids
 The new mesh inherits the ids (physical id used for measure definiton) of the original one,
 except for the new physical objects that are generated from reflection (e.g. the b line)
-
-In particular the rule 4:5 implies that the lines that in the original mesh where
-in the physical group 4 (top lines), when reflected, they will be assigned the id 5 (used to define measure in the bottom line)
-
-Here the lines are tagged as follows:
-- volume: id = 1
-- b edge: id = 4: now it is set to np.nan is because the l edge generated here, in the half mesh, will be immaterial when the mesh will be mirrored ->
-  a proper ID will be assigned to it later
-- r edge: id = 2
-- t edge: id = 3
-- l edge: id = 1
-- circle: id = 5
 '''
 surface_id = 1
 l_edge_id = 2
@@ -151,8 +136,7 @@ msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
 '''
 
-################################################## mirror the mesh ##################################################
-
+## mirror the mesh ##
 
 
 # Mirror points across X=0
@@ -203,7 +187,7 @@ for j in range(len(mesh.cells)):
         mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
 '''
 
-msh.mirror_lines(mesh,gamma_axis_of_symmetry,non_mirrored_plus_new_points_indices)
+msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 
 msh.asssign_tag_to_lines(
     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
@@ -214,14 +198,12 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
 
-
 '''
 print('********** Mesh after mirroring: **********')
 msh.print_mesh_element_types(mesh)
 msh.print_mesh_triangles(mesh)
 msh.print_mesh_vertices(mesh)
 '''
-
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
@@ -233,5 +215,5 @@ triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh( output_dir + "/triangle_mesh.xdmf" )
-io.print_vertices_to_csv_file( mesh, output_dir + "/vertices.csv" )
+mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
