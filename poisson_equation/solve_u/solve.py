@@ -6,6 +6,7 @@ run with
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric-ring/solution/ /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
 
 All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
