@@ -37,10 +37,13 @@ args = parser.parse_args()
 # mesh resolution
 r = 1
 R = 2
-c_r = [0, 0]
-c_R = [0, 0]
+c_r = [0, 0, 0]
+c_R = [0, 0, 0]
 # the angle 2 \pi will be divided into N equal slices. Here N must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
 N = 8
+circle_r_id = 7
+circle_R_id = 8
+
 M = int(np.round(math.log2(N)))
 theta = 2 * np.pi / N
 
@@ -96,14 +99,19 @@ for i in range(1, M + 1):
     '''
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
+
+# tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
+msh.asssign_tag_to_lines(
+    lambda p_start, p_end: np.linalg.norm(np.subtract(p_start, c_r)) < (r + R) / 2,
+    circle_r_id, mesh
+)
+
+
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
-#
-# # msh.asssign_tag_to_lines(
-# #     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
-# #     b_edge_id, mesh
-# # )
+
+
 
 
 # msh.print_mesh_info(mesh, 'Mesh after mirroring')
