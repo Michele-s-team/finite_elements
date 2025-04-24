@@ -11,6 +11,7 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_P
 '''
 
 import meshio
+from PIL.Image import radial_gradient
 from fenics import *
 import argparse
 import math
@@ -112,16 +113,27 @@ msh.asssign_tag_to_lines(
     circle_R_id, mesh
 )
 
-test_axis = lambda t: cal.line([r, 0], [R, 0], t)
-line_condition = lambda line: cal.line_on_axis(line, test_axis, mesh)
-
 
 print("assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################")
 
-msh.asssign_tag_to_lines_2(
-    line_condition,
-    radial_lines_id, mesh
-)
+def line_is_radial(line):
+
+    is_radial = False
+
+    for i in range(0, N):
+
+        point_r = cal.R(i * theta).dot([r, 0])
+        point_R = cal.R(i * theta).dot([R, 0])
+
+        radial_axis = lambda t: cal.line(point_r, point_R, t)
+        is_radial = cal.line_on_axis(line, radial_axis, mesh)
+
+        if is_radial:
+            break
+
+    return is_radial
+
+msh.asssign_tag_to_lines_2(line_is_radial, radial_lines_id, mesh)
 
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
