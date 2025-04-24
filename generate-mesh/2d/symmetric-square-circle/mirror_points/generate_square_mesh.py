@@ -142,32 +142,36 @@ msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indi
 msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # tag l edge
-msh.asssign_tag_to_lines_old(
-    lambda p_start, p_end: (np.isclose(p_start[0], 0, rtol=cal.small_number) and np.isclose(p_end[0], 0, rtol=1e-3)),
+msh.asssign_tag_to_lines_new(
+    lambda line: (np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))),
     l_edge_id, mesh
 )
 
 # tag r edge
-msh.asssign_tag_to_lines_old(
-    lambda p_start, p_end: (np.isclose(p_start[0], L, rtol=cal.small_number) and np.isclose(p_end[0], L, rtol=1e-3)),
+msh.asssign_tag_to_lines_new(
+    lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
     r_edge_id, mesh
 )
 
 # tag t edge
-msh.asssign_tag_to_lines_old(
-    lambda p_start, p_end: (np.isclose(p_start[1], h, rtol=cal.small_number) and np.isclose(p_end[1], h, rtol=1e-3)),
+msh.asssign_tag_to_lines_new(
+    lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
     t_edge_id, mesh
 )
 
 # tag b edge
-msh.asssign_tag_to_lines_old(
-    lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
+msh.asssign_tag_to_lines_new(
+    lambda line: (np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))),
     b_edge_id, mesh
 )
 
 # tag circle: extract the lines whose starting point is part of the circle by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines_old(
-    lambda p_start, p_end: np.linalg.norm(np.subtract(p_start, c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
+# msh.asssign_tag_to_lines_old(
+#     lambda p_start, p_end: np.linalg.norm(np.subtract(p_start, c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
+#     circle_id, mesh
+# )
+msh.asssign_tag_to_lines_new(
+    lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
     circle_id, mesh
 )
 
