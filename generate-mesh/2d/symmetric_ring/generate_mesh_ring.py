@@ -1,5 +1,6 @@
 '''
 This code generates a  ring  mesh with radial symmetry: symmetry is obtained by replicating a ring slice
+The inner ring is tagged with tag 'circle_r_id', the outer ring is tagged with tag 'circle_R_id', and all radial lines (spokes) are tagged with 'radial_lines_id'
 
 run with
 python3 generate_mesh_ring.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
@@ -44,7 +45,7 @@ c_R = [0, 0, 0]
 N = 8
 circle_r_id = 2
 circle_R_id = 3
-radial_lines_id = 10
+radial_lines_id = 4
 
 M = int(np.round(math.log2(N)))
 theta = 2 * np.pi / N
