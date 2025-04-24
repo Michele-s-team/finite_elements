@@ -113,6 +113,11 @@ msh.asssign_tag_to_lines(
     circle_R_id, mesh
 )
 
+
+test_line = lambda t: cal.line([r, 0], [R, 0], t)
+
+test_function = lambda line: cal.line_on_axis(line,test_line, mesh.points)
+
 msh.asssign_tag_to_lines(
     lambda p_start, p_end: ((np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R))) or (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
     radial_lines_id, mesh
