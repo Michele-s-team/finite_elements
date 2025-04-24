@@ -165,10 +165,10 @@ msh.asssign_tag_to_lines(
     b_edge_id, mesh
 )
 
-# tag circle
+# tag circle: extract the lines whose starting point is part of the circle by considering its distance with respect to the circle center
 msh.asssign_tag_to_lines(
-    lambda p_start, p_end: np.isclose(p_start[0], c_r[0] - r),
-    10, mesh
+    lambda p_start, p_end: np.linalg.norm(np.subtract(p_start, c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
+    circle_id, mesh
 )
 
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
