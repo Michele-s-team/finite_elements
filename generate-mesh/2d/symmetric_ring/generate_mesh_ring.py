@@ -103,19 +103,19 @@ for i in range(1, M + 1):
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines_new(
+msh.asssign_tag_to_lines(
     lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), r) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), r)),
     circle_r_id, mesh
 )
 
 # tag circle_R: extract the lines whose starting point is part of  circle_R by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines_new(
+msh.asssign_tag_to_lines(
     lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_R)), R) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_R)), R)),
     circle_R_id, mesh
 )
 
 # rag the radial lines
-msh.asssign_tag_to_lines_new(lambda line: cal.line_is_radial(line, N, mesh), radial_lines_id, mesh)
+msh.asssign_tag_to_lines(lambda line: cal.line_is_radial(line, N, mesh), radial_lines_id, mesh)
 
 
 print('... done.')

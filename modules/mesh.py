@@ -729,35 +729,12 @@ def print_mesh_info(mesh, title):
 '''
 assign a tag to lines in a cell which satisfy a given condition
 Input values:
-- 'mesh': the mesh, a <meshio mesh object>
-- 'condition': a function of the coordinates of the extremal points of the line
+- 'line_condition': a function of the line which tells whether the line satifies the condition to be tagged
 - 'tag' : the tag which one wants to assign to the lines
+- 'mesh': the mesh, a <meshio mesh object>
 '''
 
-
-def asssign_tag_to_lines_old(condition, tag, mesh):
-    # assign to the l edge the id 'lower_edge_id'
-    for j in range(len(mesh.cells)):
-        # loop through  blocks of lines
-
-        if mesh.cells[j].type == "line":
-            # print(f'\tI am on line block {mesh.cells[j].data}')
-
-            # loop through the lines in  block  mesh.cells[j].data
-            for i in range(len(mesh.cells[j].data)):
-
-                # obtain the extremal point of each line
-                point_start = mesh.points[mesh.cells[j].data[i][0]]
-                point_end = mesh.points[mesh.cells[j].data[i][1]]
-
-                if condition(point_start, point_end):
-                    # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
-                    # print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
-                    # tag the line under consideration with ID target_id
-                    mesh.cell_data['gmsh:physical'][j][i] = tag
-
-
-def asssign_tag_to_lines_new(line_condition, tag, mesh):
+def asssign_tag_to_lines(line_condition, tag, mesh):
     # assign to the l edge the id 'lower_edge_id'
     for j in range(len(mesh.cells)):
         # loop through  blocks of lines
