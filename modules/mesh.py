@@ -308,6 +308,8 @@ def write_mesh_to_csv(infile, outfile):
 '''
 print the coordinates of start and end points of line 'line'
 '''
+
+
 def print_line_info(line, label):
     # Get the start and end points of the specific line
     start_point, end_point = get_line_extrema(line)
@@ -372,6 +374,7 @@ def add_line_p_start_r_end_n(p_start, r_end, n, model):
 
     return points, segments
 
+
 '''
 add a line given by n-1 segments  separated by n points, between two points
 - 'p_start' : ID of the starting point of the line
@@ -382,6 +385,8 @@ Returns
 - 'points': a list of IDs of the points added as part of the line
 - 'segments': a list of IDs of segments added as part of the line 
 '''
+
+
 def add_line_p_start_p_end_n(p_start, p_end, n, model):
     # print("Generating line ... ")
 
@@ -456,6 +461,7 @@ def add_line_p_start_r_end(p_start, r_end, model):
 
     return points_start_end, line
 
+
 '''
 add a line between two points by setting the point coordinates
 - 'r_start' : coordinates of the start point
@@ -466,6 +472,8 @@ return values:
 - a list with the start and end point
 - the line
 '''
+
+
 def add_line_r_start_r_end(r_start, r_end, model):
     p_start = add_point(r_start, model)
     p_end = add_point(r_end, model)
@@ -529,6 +537,7 @@ def sort_vertex_list(vertex_list, direction_id, reverse):
 
     return point_coordinates
 
+
 '''
 create a circle composed of four arcs
 - 'c_r' : coordinates of the center of the circle
@@ -539,6 +548,8 @@ return values:
 - the circle lines (the four arcs)
 - the circle points
 '''
+
+
 def add_circle_with_arcs(c_r, r, model):
     # add the center of the circle
     p_c = add_point(c_r, gmsh.model.geo)
@@ -582,6 +593,8 @@ return values:
 - the circle points
 - the circle segments
 '''
+
+
 def add_circle_with_lines(c_r, r, n_segments, model):
     points_circle = []
     segments_circle = []
@@ -607,6 +620,8 @@ Input values:
 - 'tag' : the tag which one wants to give to the objects
 - 'labal' : the lable which one wants to give to the objects
 '''
+
+
 def tag_group(list_of_objects, dimension, tag, label):
     gmsh.model.addPhysicalGroup(dimension, list_of_objects, tag)
     gmsh.model.setPhysicalName(dimension, tag, label)
@@ -618,6 +633,8 @@ Input values:
 - 'triangle': the triangle, an element of mesh.cells[i].data
 - 'mesh': the mesh
 '''
+
+
 def print_mesh_triangle(triangle, mesh):
     # vertex_1 = tuple(sorted([triangle[0], triangle[1]]))
     # vertex_2 = tuple(sorted([triangle[1], triangle[2]]))
@@ -635,40 +652,49 @@ Print all triangles of a mesh
 Input values 
 - 'mesh': the mesh, a <meshio mesh object>
 '''
-def print_mesh_triangles(mesh):
 
+
+def print_mesh_triangles(mesh):
     print('Cell triangles: ')
     for cell_block in mesh.cells:
         if cell_block.type == "triangle":
             for triangle in cell_block.data:
                 print_mesh_triangle(triangle, mesh)
 
+
 '''
 Print all mesh vertices
 Input values: 
 - 'mesh': the mesh, a <meshio mesh object>
 '''
+
+
 def print_mesh_vertices(mesh):
     for i, point in enumerate(mesh.points):
         print(f"Vertex ID: {i}, Coordinates: {point}")
+
 
 '''
 Print all element types of a mesh (such as triangles, tetrahedra, lines ...)
 Input values: 
 - 'mesh': the mesh, a <meshio mesh object>
 '''
+
+
 def print_mesh_element_types(mesh):
     print("Cell types in the mesh:")
     for cell_block in mesh.cells:
         print(f"\t{cell_block.type}")
+
 
 '''
 Print the lines of a mesh
 Input values 
 - 'mesh': the mesh, a <meshio mesh object>
 '''
-def print_mesh_lines(mesh):
 
+
+def print_mesh_lines(mesh):
     print('Cell lines: ')
 
     for j in range(len(mesh.cells)):
@@ -679,7 +705,6 @@ def print_mesh_lines(mesh):
 
             # loop through the lines in  block  mesh.cells[j].data
             for i in range(len(mesh.cells[j].data)):
-
                 # obtain the extremal point of each line
                 vertex_1 = mesh.points[mesh.cells[j].data[i][0]]
                 vertex_2 = mesh.points[mesh.cells[j].data[i][1]]
@@ -687,14 +712,29 @@ def print_mesh_lines(mesh):
                 print(f"\t\tLine: {i}:\n\t\t\t{vertex_1}\n\t\t\t{vertex_2}")
 
 
+
+'''
+print information (element types, triangles, vertices) on a mesh
+Input values: 
+- 'mesh': the mesh, a <meshio mesh object>
+- 'title' : a title for the printout
+'''
+def print_mesh_info(mesh, title):
+    print(f'{title}')
+    print_mesh_element_types(mesh)
+    print_mesh_triangles(mesh)
+    print_mesh_vertices(mesh)
+
+
 '''
 assign a tag to lines in a cell which satisfy a given condition
 Input values:
-- 'mesh': the mesh, a <meshio mesh object>
-- 'condition': a function of the coordinates of the extremal points of the line
+- 'line_condition': a function of the line which tells whether the line satifies the condition to be tagged
 - 'tag' : the tag which one wants to assign to the lines
+- 'mesh': the mesh, a <meshio mesh object>
 '''
-def asssign_tag_to_lines(condition, tag, mesh):
+
+def asssign_tag_to_lines(line_condition, tag, mesh):
     # assign to the l edge the id 'lower_edge_id'
     for j in range(len(mesh.cells)):
         # loop through  blocks of lines
@@ -705,11 +745,8 @@ def asssign_tag_to_lines(condition, tag, mesh):
             # loop through the lines in  block  mesh.cells[j].data
             for i in range(len(mesh.cells[j].data)):
 
-                # obtain the extremal point of each line
-                point_start = mesh.points[mesh.cells[j].data[i][0]]
-                point_end = mesh.points[mesh.cells[j].data[i][1]]
 
-                if condition(point_start, point_end):
+                if line_condition(mesh.cells[j].data[i]):
                     # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
                     # print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
                     # tag the line under consideration with ID target_id
@@ -719,8 +756,7 @@ def asssign_tag_to_lines(condition, tag, mesh):
 '''
 This function mirrors the points in a rectangular mesh: 
 Input values: 
-- 'y_cordinate_axis_of_symmetry': the y coordinate of the axis of symmetry with which the mirroring will be made
-- 'h': the height of the rectangle
+- 'mirror_function': the function which performs the mirroring of each point
 - 'points' : Array of points to be duplicated
 - 'point_data' : Data that contains dimensional tag of the points (must be duplicated as well to avoid issues during the reading of the mesh)
 Return values: 
@@ -734,7 +770,7 @@ Example of usage:
 '''
 
 
-def mirror_points(y_coordinate_axis_of_symmetry, h, points, point_data):
+def mirror_points(axis_of_symmetry_condition, mirror_function, points, point_data):
     offset = 0
     non_mirrored_plus_new_points_indices = []
     mirrored_points = []
@@ -743,7 +779,8 @@ def mirror_points(y_coordinate_axis_of_symmetry, h, points, point_data):
     print('Called mirror_points. Looping through points to mirror them ...')
 
     for i in range(len(points)):
-        if np.isclose(points[i, 1], y_coordinate_axis_of_symmetry, rtol=cal.small_number):
+        # if np.isclose(points[i, 1], axis_of_symmetry_condition, rtol=cal.small_number):
+        if axis_of_symmetry_condition(points[i]):
             # I ran into a point with x[1] = y_coordinate_axis_of_symmetry -> do not mirror it and append to old_plus_new_points the same index 'i' as the original point
             offset += 1
             non_mirrored_plus_new_points_indices.append(i)
@@ -759,7 +796,8 @@ def mirror_points(y_coordinate_axis_of_symmetry, h, points, point_data):
             # 1) the original point
             mirrored_point_data.append(l)
             # 2) the mirror of the original point
-            mirrored_points.append([points[i, 0], h - points[i, 1], points[i, 2]])
+            # mirrored_points.append([points[i, 0], h - points[i, 1], points[i, 2]])
+            mirrored_points.append(mirror_function(points[i]))
 
     print('... done.')
 
@@ -767,3 +805,127 @@ def mirror_points(y_coordinate_axis_of_symmetry, h, points, point_data):
     old_plus_new_points = np.vstack((points, mirrored_points))
 
     return old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data
+
+
+'''
+mirrors lines in a mesh according to an axis of symmetry
+Input values:
+- 'mesh': the mesh, a <meshio mesh object>
+- 'gamma_axis_of_symmetry': the curve which defines the axis of symmetry
+- 'non_mirrored_plus_new_points_indices': the indices of the old points which have not been mirrored, and of the new points, as returned from 'mirror_points'
+
+Example of usage: 
+old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
+ msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)                                                                                                  mesh.point_data)
+'''
+
+
+def mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices):
+    print('Duplicating cell lines ... ')
+
+    for j in range(len(mesh.cells)):
+        # print(f'\tj = {j}', flush=True)
+
+        if mesh.cells[j].type == 'line':
+            lines = np.copy(mesh.cells[j].data)
+            filtered_lines = []
+
+            # print(f'\t\tlines = {lines}')
+
+            for i in range(np.shape(lines)[0]):
+
+                # print(f'\t\t\tlines[i] = {lines[i]}')
+
+                if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
+                    filtered_lines.append([non_mirrored_plus_new_points_indices[lines[i, 0]],
+                                           non_mirrored_plus_new_points_indices[lines[i, 1]]])
+
+                    # print('\t\t\t\tLine has been mirrored')
+
+                # else:
+                # print('\t\t\t\tLine has not been mirrored')
+
+            filtered_lines = np.array(filtered_lines)
+
+            # print(f'\t\tfiltered_lines = {filtered_lines}', flush=True)
+
+            if filtered_lines != []:
+                lines_plus_filtered_lines = np.vstack((lines, filtered_lines))
+            else:
+                lines_plus_filtered_lines = lines
+
+            # print(f'\t\tlines + filetered lines = {lines_plus_filtered_lines}', flush=True)
+
+            mesh.cells[j] = meshio.CellBlock("line", lines_plus_filtered_lines)
+
+            N = np.shape(mesh.cells[j].data)[0]
+
+            # print(f'\t\tN = {N}', flush=True)
+            # print(f'\t\tcell_data["gmsh:physical"][{j}] = {mesh.cell_data["gmsh:physical"][j]}', flush=True)
+
+            mesh.cell_data['gmsh:physical'][j] = np.array([mesh.cell_data['gmsh:physical'][j][0]] * N)
+            mesh.cell_data['gmsh:geometrical'][j] = np.array([mesh.cell_data['gmsh:geometrical'][j][0]] * N)
+
+    print('... done.')
+
+
+'''
+mirror the triangles in a cell
+- 'mesh': the mesh, a <meshio mesh object>
+- 'old_plus_new_points' : the set of old and new (mirrored) points, as returned from 'mirror_points'
+- 'non_mirrored_plus_new_points_indices': the indices of the non-mirrored and new points, as returned from 'mirror_points'
+- 'mirrored_point_data': data of the mirrored poitns, as returned from 'mirror_points'
+
+'''
+
+
+def mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data):
+    old_triangles = mesh.cells_dict['triangle']
+
+    # duplicate cell blocks of type 'triangle'
+    new_triangles = np.copy(old_triangles)
+
+    # run through the old triangles
+    for i in range(np.shape(new_triangles)[0]):
+        # for each old triangle, run through each of its three vertices
+        for j in range(3):
+            '''
+            assign to the new triangle the vertex tag of the old triangle, mapped towards the vertex tags of the mirrored vertices
+            In this way, one reconstructs the same pattern as the old triangles, for the flipped part of the mesh
+            '''
+            new_triangles[i, j] = non_mirrored_plus_new_points_indices[old_triangles[i, j]]
+
+    mesh.points = old_plus_new_points
+    mesh.point_data['gmsh:dim_tags'] = np.vstack((mesh.point_data['gmsh:dim_tags'], mirrored_point_data))
+    mesh.cells[-1] = meshio.CellBlock("triangle", np.vstack((old_triangles, new_triangles)))
+    N = np.shape(mesh.cells[-1].data)[0]
+    mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
+    mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
+
+'''
+mirror a mesh with respect to an axis of symmetry
+Input values: 
+- 'mesh': the mesh, a <meshio mesh object>
+- 'gamma_axis_of_symmetry': the curve which defines the axis of symmetry
+
+Example of usage:
+gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
+msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+'''
+def mirror_mesh(mesh, gamma_axis_of_symmetry):
+
+    # define the function which tells whether a point is on the axis of symmetry
+    f_on_axis_of_symmetry = lambda point: cal.point_on_line(point, gamma_axis_of_symmetry)
+
+    # define the function which mirrors the coordinates of a point with respect to the axis of symmetry
+    f_mirror = lambda point: cal.mirror_point_line(point, gamma_axis_of_symmetry)
+
+    # mirror  mesh points and return the relative data
+    old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = mirror_points(f_on_axis_of_symmetry, f_mirror, mesh.points,
+                                                                                                   mesh.point_data)
+    # mirror  mesh triangles
+    mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
+
+    # mirror mesh lines
+    mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
+
