@@ -41,8 +41,9 @@ c_r = [0, 0, 0]
 c_R = [0, 0, 0]
 # the angle 2 \pi will be divided into N equal slices. Here N must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
 N = 8
-circle_r_id = 7
-circle_R_id = 8
+circle_r_id = 2
+circle_R_id = 3
+radial_lines_id = 4
 
 M = int(np.round(math.log2(N)))
 theta = 2 * np.pi / N
@@ -110,6 +111,11 @@ msh.asssign_tag_to_lines(
 msh.asssign_tag_to_lines(
     lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R)),
     circle_R_id, mesh
+)
+
+msh.asssign_tag_to_lines(
+    lambda p_start, p_end: ((np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R))) or (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
+    radial_lines_id, mesh
 )
 
 
