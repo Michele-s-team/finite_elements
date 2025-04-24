@@ -358,3 +358,7 @@ def line_on_axis(line, gamma_axis, mesh):
 
     line_vertex_on_axis = [(point_on_line(mesh.points[line[k]], gamma_axis)) for k in range(len(line))]
     return (line_vertex_on_axis[0] and line_vertex_on_axis[1])
+
+
+
+

@@ -116,24 +116,25 @@ msh.asssign_tag_to_lines(
 
 print("assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################")
 
-def line_is_radial(line):
+def line_is_radial(line, r_in, R_out, input_N, input_mesh):
+    theta = 2 * np.pi / input_N
 
     is_radial = False
 
-    for i in range(0, N):
+    for i in range(0, input_N):
 
-        point_r = cal.R(i * theta).dot([r, 0])
-        point_R = cal.R(i * theta).dot([R, 0])
+        point_r = cal.R(i * theta).dot([r_in, 0])
+        point_R = cal.R(i * theta).dot([R_out, 0])
 
         radial_axis = lambda t: cal.line(point_r, point_R, t)
-        is_radial = cal.line_on_axis(line, radial_axis, mesh)
+        is_radial = cal.line_on_axis(line, radial_axis, input_mesh)
 
         if is_radial:
             break
 
     return is_radial
 
-msh.asssign_tag_to_lines_2(line_is_radial, radial_lines_id, mesh)
+msh.asssign_tag_to_lines_2(lambda line: line_is_radial(line, r, R, N, mesh), radial_lines_id, mesh)
 
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
