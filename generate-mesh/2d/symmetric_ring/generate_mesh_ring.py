@@ -43,7 +43,7 @@ c_R = [0, 0, 0]
 N = 8
 circle_r_id = 2
 circle_R_id = 3
-radial_lines_id = 4
+radial_lines_id = 10
 
 M = int(np.round(math.log2(N)))
 theta = 2 * np.pi / N
@@ -100,7 +100,6 @@ for i in range(1, M + 1):
     '''
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
-
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
 msh.asssign_tag_to_lines(
     lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
@@ -113,23 +112,19 @@ msh.asssign_tag_to_lines(
     circle_R_id, mesh
 )
 
+test_axis = lambda t: cal.line([r, 0], [R, 0], t)
+line_condition = lambda line: cal.line_on_axis(line, test_axis, mesh)
 
-test_line = lambda t: cal.line([r, 0], [R, 0], t)
 
-test_function = lambda line: cal.line_on_axis(line,test_line, mesh.points)
+print("assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################")
 
-msh.asssign_tag_to_lines(
-    lambda p_start, p_end: ((np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R))) or (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
+msh.asssign_tag_to_lines_2(
+    line_condition,
     radial_lines_id, mesh
 )
 
-
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
-
-
-
-
 
 # msh.print_mesh_info(mesh, 'Mesh after mirroring')
 

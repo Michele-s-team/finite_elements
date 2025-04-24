@@ -354,5 +354,7 @@ for j in range(len(mesh.cells)):
 '''
 def line_on_axis(line, gamma_axis, mesh):
 
+    print(f'Calling line_on_axis with line = {line}')
+
     line_vertex_on_axis = [(point_on_line(mesh.points[line[k]], gamma_axis)) for k in range(len(line))]
     return (line_vertex_on_axis[0] and line_vertex_on_axis[1])
