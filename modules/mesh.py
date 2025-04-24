@@ -757,6 +757,25 @@ def asssign_tag_to_lines(condition, tag, mesh):
                     mesh.cell_data['gmsh:physical'][j][i] = tag
 
 
+def asssign_tag_to_lines_2(line_condition, tag, mesh):
+    # assign to the l edge the id 'lower_edge_id'
+    for j in range(len(mesh.cells)):
+        # loop through  blocks of lines
+
+        if mesh.cells[j].type == "line":
+            # print(f'\tI am on line block {mesh.cells[j].data}')
+
+            # loop through the lines in  block  mesh.cells[j].data
+            for i in range(len(mesh.cells[j].data)):
+
+
+                if line_condition(mesh.cells[j].data[i]):
+                    # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
+                    # print(f"\t\tLine: {i} -> Point 1: {point1}, Point 2: {point2}")
+                    # tag the line under consideration with ID target_id
+                    mesh.cell_data['gmsh:physical'][j][i] = tag
+
+
 '''
 This function mirrors the points in a rectangular mesh: 
 Input values: 

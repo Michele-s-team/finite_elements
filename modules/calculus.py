@@ -354,5 +354,43 @@ for j in range(len(mesh.cells)):
 '''
 def line_on_axis(line, gamma_axis, mesh):
 
+    print(f'Calling line_on_axis with line = {line}')
+
     line_vertex_on_axis = [(point_on_line(mesh.points[line[k]], gamma_axis)) for k in range(len(line))]
     return (line_vertex_on_axis[0] and line_vertex_on_axis[1])
+
+
+
+
+'''
+given a ring mesh and multiple radial lines which start from the origin, check is a line lies on one of these radial lines
+Input values:
+- 'line': a line in the mesh, of type '<class 'numpy.ndarray'>'
+- 'N': the number of radial lines: each line has polar angle theta = 2 \pi/N * i with i = 0, ..., N-1
+- 'mesh': the mesh, a <meshio mesh object>
+Return values: 
+- True/False if 'line' lies on at least one of the 'N' radial lines 
+'''
+def line_is_radial(line_to_check, N, mesh):
+
+    # the angular size of each slice delimited by the radial lines
+    theta = 2 * np.pi / N
+
+    is_radial = False
+
+    for i in range(0, N):
+        # loop through the radial lines
+
+        # construct an axis given by the radial line under consideration
+        point_O =[0,0]
+        point_r = R(i * theta).dot([1, 0])
+        radial_axis = lambda t: line(point_O, point_r, t)
+
+        # check whether 'line_to_check' lies on the axis
+        is_radial = line_on_axis(line_to_check, radial_axis, mesh)
+
+        # if 'line_to_check' lies on the axis, stop
+        if is_radial:
+            break
+
+    return is_radial

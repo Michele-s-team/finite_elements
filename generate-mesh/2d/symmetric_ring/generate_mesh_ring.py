@@ -1,5 +1,6 @@
 '''
 This code generates a  ring  mesh with radial symmetry: symmetry is obtained by replicating a ring slice
+The inner ring is tagged with tag 'circle_r_id', the outer ring is tagged with tag 'circle_R_id', and all radial lines (spokes) are tagged with 'radial_lines_id'
 
 run with
 python3 generate_mesh_ring.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
@@ -11,6 +12,7 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_P
 '''
 
 import meshio
+from PIL.Image import radial_gradient
 from fenics import *
 import argparse
 import math
@@ -100,7 +102,6 @@ for i in range(1, M + 1):
     '''
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
-
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
 msh.asssign_tag_to_lines(
     lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
@@ -113,18 +114,15 @@ msh.asssign_tag_to_lines(
     circle_R_id, mesh
 )
 
-msh.asssign_tag_to_lines(
-    lambda p_start, p_end: ((np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R))) or (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
-    radial_lines_id, mesh
-)
 
+print("assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################assignign tags ########################")
+
+
+
+msh.asssign_tag_to_lines_2(lambda line: cal.line_is_radial(line, N, mesh), radial_lines_id, mesh)
 
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
-
-
-
-
 
 # msh.print_mesh_info(mesh, 'Mesh after mirroring')
 
