@@ -5,7 +5,8 @@ This code reads the 2d mesh generated from generate_2dmesh_ring.py and it create
 run with
 clear; clear; python3 read_mesh.py [path where to find the mesh]
 example:
-clear; clear; python3 read_mesh.py /home/fenics/shared/generate-mesh/2d/symmetric-ring-2/solution
+clear; clear; python3 read_mesh.py /home/fenics/shared/generate_mesh
+/2d/symmetric-ring-2/solution
 '''
 
 from fenics import *

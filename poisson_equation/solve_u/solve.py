@@ -6,8 +6,10 @@ run with
 clear; clear; python3 solve.py [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric-square-circle/mirror_points/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate-mesh/2d/symmetric_ring/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh
+/2d/symmetric-square-circle/mirror_points/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh
+/2d/symmetric_ring/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
 
 change bcs or mesh geometry in line which contain
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
