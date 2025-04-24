@@ -102,8 +102,14 @@ for i in range(1, M + 1):
 
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
 msh.asssign_tag_to_lines(
-    lambda p_start, p_end: np.linalg.norm(np.subtract(p_start, c_r)) < (r + R) / 2,
+    lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
     circle_r_id, mesh
+)
+
+# tag circle_R: extract the lines whose starting point is part of  circle_R by considering its distance with respect to the circle center
+msh.asssign_tag_to_lines(
+    lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R)),
+    circle_R_id, mesh
 )
 
 
