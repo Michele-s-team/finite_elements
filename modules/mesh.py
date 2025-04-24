@@ -735,7 +735,7 @@ Input values:
 '''
 
 
-def asssign_tag_to_lines(condition, tag, mesh):
+def asssign_tag_to_lines_old(condition, tag, mesh):
     # assign to the l edge the id 'lower_edge_id'
     for j in range(len(mesh.cells)):
         # loop through  blocks of lines
@@ -757,7 +757,7 @@ def asssign_tag_to_lines(condition, tag, mesh):
                     mesh.cell_data['gmsh:physical'][j][i] = tag
 
 
-def asssign_tag_to_lines_2(line_condition, tag, mesh):
+def asssign_tag_to_lines_new(line_condition, tag, mesh):
     # assign to the l edge the id 'lower_edge_id'
     for j in range(len(mesh.cells)):
         # loop through  blocks of lines

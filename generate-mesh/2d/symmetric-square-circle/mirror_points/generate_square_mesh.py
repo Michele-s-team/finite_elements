@@ -142,31 +142,31 @@ msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indi
 msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # tag l edge
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: (np.isclose(p_start[0], 0, rtol=cal.small_number) and np.isclose(p_end[0], 0, rtol=1e-3)),
     l_edge_id, mesh
 )
 
 # tag r edge
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: (np.isclose(p_start[0], L, rtol=cal.small_number) and np.isclose(p_end[0], L, rtol=1e-3)),
     r_edge_id, mesh
 )
 
 # tag t edge
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: (np.isclose(p_start[1], h, rtol=cal.small_number) and np.isclose(p_end[1], h, rtol=1e-3)),
     t_edge_id, mesh
 )
 
 # tag b edge
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: (np.isclose(p_start[1], 0, rtol=cal.small_number) and np.isclose(p_end[1], 0, rtol=1e-3)),
     b_edge_id, mesh
 )
 
 # tag circle: extract the lines whose starting point is part of the circle by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: np.linalg.norm(np.subtract(p_start, c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
     circle_id, mesh
 )

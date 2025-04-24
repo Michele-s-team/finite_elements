@@ -103,13 +103,13 @@ for i in range(1, M + 1):
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
     circle_r_id, mesh
 )
 
 # tag circle_R: extract the lines whose starting point is part of  circle_R by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines(
+msh.asssign_tag_to_lines_old(
     lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_R)), R) and np.isclose(np.linalg.norm(np.subtract(p_end, c_R)), R)),
     circle_R_id, mesh
 )
@@ -119,7 +119,7 @@ print("assignign tags ########################assignign tags ###################
 
 
 
-msh.asssign_tag_to_lines_2(lambda line: cal.line_is_radial(line, N, mesh), radial_lines_id, mesh)
+msh.asssign_tag_to_lines_new(lambda line: cal.line_is_radial(line, N, mesh), radial_lines_id, mesh)
 
 print('... done.')
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
