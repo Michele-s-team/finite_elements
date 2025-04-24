@@ -103,8 +103,8 @@ for i in range(1, M + 1):
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
-msh.asssign_tag_to_lines_old(
-    lambda p_start, p_end: (np.isclose(np.linalg.norm(np.subtract(p_start, c_r)), r) and np.isclose(np.linalg.norm(np.subtract(p_end, c_r)), r)),
+msh.asssign_tag_to_lines_new(
+    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), r) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), r)),
     circle_r_id, mesh
 )
 
