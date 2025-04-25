@@ -929,3 +929,32 @@ def mirror_mesh(mesh, gamma_axis_of_symmetry):
     # mirror mesh lines
     mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 
+'''
+check the l <-> symmetry of a square mesh
+Input values :
+- 'mesh': the mesh, a <meshio mesh object>
+- 'L': the width of the mesh square
+
+Example of usage:
+    msh.check_lr_symmetry_square_mesh(mesh, L)
+'''
+def check_lr_symmetry_square_mesh(mesh, L):
+
+    Q = FunctionSpace( mesh, 'CG', 1 )
+    coordinates = Q.tabulate_dof_coordinates()
+
+    print(f'Number of vertices = {Q.dim()}')
+
+    average = 0
+    N = 0
+
+    for i in range( Q.dim() ):
+
+        if((not np.isclose(coordinates[i][0], L/2))):
+            average += coordinates[i][0]
+            N += 1
+
+    average /= N
+
+    print( f'Check l <-> r symmetry: <x - L/2> = {col.Fore.BLUE}{(average - (L/2))/(L/2):.{io.number_of_decimals}e}{col.Fore.RESET}' )
+

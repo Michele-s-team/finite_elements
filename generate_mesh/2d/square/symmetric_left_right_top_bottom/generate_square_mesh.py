@@ -44,7 +44,7 @@ args = parser.parse_args()
 # mesh resolution
 resolution = (float)(args.resolution)
 r = 0.25
-L = 2
+L = 1
 h = 1
 x_coordinate_axis_of_symmetry = L / 2
 y_coordinate_axis_of_symmetry = h / 2
