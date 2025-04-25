@@ -75,3 +75,5 @@ msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics,
 msh.test_mesh_integral(integral_exact_ds_circle, function_test_integrals_fenics, rmsh.ds_circle, '\int f ds_circle')
 
 msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+
+msh.check_symmetry_square_mesh(bgeo.mesh, rmsh.L, rmsh.h)

@@ -47,4 +47,3 @@ ds = ds_square + ds_circle
 
 import check_mesh_tags_square
 
-msh.check_symmetry_square_mesh(mesh, L, h)
