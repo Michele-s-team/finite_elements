@@ -938,23 +938,32 @@ Input values :
 Example of usage:
     msh.check_lr_symmetry_square_mesh(mesh, L)
 '''
-def check_lr_symmetry_square_mesh(mesh, L):
+def check_symmetry_square_mesh(mesh, L, h):
 
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
 
     print(f'Number of vertices = {Q.dim()}')
 
-    average = 0
-    N = 0
+    average_lr = 0
+    n_vertices_average_lr = 0
+
+    average_tb = 0
+    n_vertices_average_tb = 0
 
     for i in range( Q.dim() ):
 
         if((not np.isclose(coordinates[i][0], L/2))):
-            average += coordinates[i][0]
-            N += 1
+            average_lr += coordinates[i][0]
+            n_vertices_average_lr += 1
 
-    average /= N
+        if((not np.isclose(coordinates[i][1], h/2))):
+            average_tb += coordinates[i][1]
+            n_vertices_average_tb += 1
 
-    print( f'Check l <-> r symmetry: <x - L/2> = {col.Fore.BLUE}{(average - (L/2))/(L/2):.{io.number_of_decimals}e}{col.Fore.RESET}' )
+    average_lr /= n_vertices_average_lr
+    average_tb /= n_vertices_average_tb
+
+    print( f'Check l <-> r symmetry: <x[0] - L/2> = {col.Fore.BLUE}{(average_lr - (L/2))/(L/2):.{io.number_of_decimals}e}{col.Fore.RESET}' )
+    print( f'Check t <-> b symmetry: <x[1] - h/2> = {col.Fore.BLUE}{(average_tb - (h/2))/(h/2):.{io.number_of_decimals}e}{col.Fore.RESET}' )
 
