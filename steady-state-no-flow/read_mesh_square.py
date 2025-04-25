@@ -21,9 +21,9 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 r_mesh = bgeo.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
-L = 0.5
-h = L
-r = 0.05
+L = 1
+h = 1
+r = 0.25
 c_r = [L / 2.0, h / 2.0]
 # CHANGE PARAMETERS HERE
 

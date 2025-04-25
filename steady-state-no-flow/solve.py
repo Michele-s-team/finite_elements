@@ -12,6 +12,13 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTIO
 clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
+Examples:
+    - to read the mesh from generate_mesh/2d/square :
+        clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+    - to read the mesh from generate_mesh/2d/square/symmetric_top_bottom/mirror_points:
+        clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/mirror_points/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+    - to read the mesh from generate_mesh/2d/square/symmetric_left_right_top_bottom:
+        clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
 The solution files will be stored in /home/fenics/shared/steady-state-no-flow/solution
 
 Note that all sections of the code which need to be changed when an external parameter (e.g. the length of the Rectangle, etc...) is changed are bracketed by
