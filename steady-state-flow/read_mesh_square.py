@@ -12,8 +12,7 @@ import boundary_geometry as bgeo
 To produce figure-2:
 
 generate the mesh with 
-~/shared/generate_mesh
-/2d/symmetric-square-circle/circles$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 30 10 $SOLUTION_PATH
+~/shared/generate_mesh/2d/symmetric_square_circle/circles$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 30 10 $SOLUTION_PATH
 
 set
 L=1

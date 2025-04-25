@@ -1,10 +1,10 @@
 '''
-Ths code generates a 1d mesh
+Ths code generates a 1d mesh given by a segment with a vertex in the segment
 
 run with
-clear; clear; python3 generate_mesh.py [resolution]
+clear; clear; python3 generate_mesh_line_vertex.py [resolution]
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py 0.1 $SOLUTION_PATH
 '''
 
 
@@ -30,18 +30,12 @@ args = parser.parse_args()
 #mesh resolution
 resolution = (float)(args.resolution)
 
-#mesh parameters
 #CHANGE PARAMETERS HERE
 L = 1.0
-h = L
-r = 1.0
-c_r = [0, 0, 0]
+x_p = np.pi / 8.0
 #CHANGE PARAMETERS HERE
 
-print("L = ", L)
-print("h = ", h)
-print("r = ", r)
-print("c_r = ", c_r)
+print(f'L = {L}, x_p = {x_p}')
 print("resolution = ", resolution)
 
 
@@ -52,7 +46,7 @@ model = geometry.__enter__()
 
 #add a 1d object a set of lines
 points = [model.add_point( (0, 0, 0), mesh_size=resolution ),
-          model.add_point((np.pi/8.0, 0, 0), mesh_size=resolution),
+          model.add_point((x_p, 0, 0), mesh_size=resolution),
           model.add_point((L, 0, 0), mesh_size=resolution)
           ]
 my_lines = [model.add_line( points[0], points[1] ), model.add_line( points[1], points[2] )]

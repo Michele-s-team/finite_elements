@@ -33,9 +33,6 @@ r_lt = cal.R(theta).dot(r_lb)
 r_rb = np.array([R, 0])
 r_rt = cal.R(theta).dot(r_rb)
 
-c_test = [0.3, 0.76]
-r_test = 0.345
-
 surface_id = 1
 circle_r_id = 2
 circle_R_id = 3

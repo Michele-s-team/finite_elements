@@ -2,9 +2,9 @@
 Ths code generates a 2d mesh given by half a circle surface with a line in the surface embedded in the mesh
 
 run with
-clear; clear; python3 generate_mesh.py [resolution]
+clear; clear; python3 generate_half_circle_with_line_mesh.py [resolution]
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_half_circle_with_line_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import gmsh

@@ -9,7 +9,6 @@ clear; clear; python3 read_mesh_ring.py solution
 import colorama as col
 from dolfin import *
 from fenics import *
-from mshr import *
 import sys
 
 # add the path where to find the shared modules

@@ -1,11 +1,11 @@
 '''
-This code generates a 3d mesh given by a ring
-To see the values of subdomain_id assigned to each tagged element, see read_mesh.py and the comments in this file
+This code generates a 3d mesh given by a ring with multiple radial lines
+IT IS NOT GUARANTEED THAT THIS MESH GENERATES A MESH WITH PERFECT RADIAL SYMMETRY
 
 run with
-clear; clear; python3 generate_mesh.py [resolution]
+clear; clear; python3 generate_ring_mesh.py [resolution]
 example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
@@ -25,7 +25,8 @@ import mesh as msh
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument( "resolution" )
+parser.add_argument("resolution")
+parser.add_argument("output_directory")
 args = parser.parse_args()
 
 msh_file_path = "solution/mesh.msh"
