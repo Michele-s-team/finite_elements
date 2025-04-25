@@ -41,7 +41,7 @@ args = parser.parse_args()
 # mesh resolution
 resolution = (float)(args.resolution)
 r = 0.25
-L = 1
+L = 2
 h = 1
 x_coordinate_axis_of_symmetry = L / 2
 y_coordinate_axis_of_symmetry = h / 2
@@ -124,6 +124,7 @@ r_edge_id = 3
 t_edge_id = 4
 b_edge_id = 5
 circle_id = 6
+interior_lines_id = 7
 
 # Load the quarter mesh
 mesh = meshio.read(quarter_mesh_msh_file)
@@ -135,36 +136,44 @@ mesh = meshio.read(quarter_mesh_msh_file)
 
 msh.mirror_mesh(mesh, gamma_axis_of_symmetry_left_right)
 msh.mirror_mesh(mesh, gamma_axis_of_symmetry_top_bottom)
-#
-# # tag l edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))),
-#     l_edge_id, mesh
-# )
-#
-# # tag r edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
-#     r_edge_id, mesh
-# )
-#
-# # tag t edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
-#     t_edge_id, mesh
-# )
-#
-# # tag b edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))),
-#     b_edge_id, mesh
-# )
-#
-# msh.asssign_tag_to_lines(
-#     lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
-#     circle_id, mesh
-# )
-#
+
+# tag l edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))),
+    l_edge_id, mesh
+)
+
+# tag r edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
+    r_edge_id, mesh
+)
+
+# tag t edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
+    t_edge_id, mesh
+)
+
+# tag b edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))),
+    b_edge_id, mesh
+)
+
+# tag circle
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), r) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), r)),
+    circle_id, mesh
+)
+
+# tag lines within the rectangle which result from mesh mirroring
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][0], x_coordinate_axis_of_symmetry, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], x_coordinate_axis_of_symmetry, rtol=cal.small_number))),
+    interior_lines_id, mesh
+)
+
+
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
