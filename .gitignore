@@ -1,2 +1,72 @@
 
+% cat .git/info/exclude
+
+
+
+
+# git ls-files --others --exclude-from=.git/info/exclude
+
+# Lines that start with '#' are comments.
+
+# For a project mostly in C, the following would be a good set of
+
+# exclude patterns (uncomment them if you want to use them):
+
+# *.[oa]
+
+# *~
+
+
+
+
+
+#launch_on_abacus.sh#
+
+**/copy_form_abacus.sh
+
+*.py~
+
 .DS_Store
+
+file_list.txt
+
+notes/**
+
+
+
+jitfailure-dolfin_expression_*/**
+
+*.csv
+
+*.xml.gz
+
+*.xdmf
+
+*.h5
+
+.idea
+
+*.msh
+
+*.pyc
+
+navier_stokes/fenics_example/__pycache__/
+
+*.cpp
+
+*.pvd
+
+*.vtu
+
+/Users/michelecastellana/Documents/finite_elements/navier_stokes/.DS_Store
+
+fenics-notes.pages
+
+fenics-on-abacus.pages
+
+jitfailure-ffc_form_*
+
+.git/info/exclude
+.DS_Store
+.devcontainer/
+modules/new_project.egg-info/

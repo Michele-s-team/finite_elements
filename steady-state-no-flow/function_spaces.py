@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+#
 
 import boundary_geometry as bgeo
 

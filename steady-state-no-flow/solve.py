@@ -23,15 +23,9 @@ All sections of the code where one needs to switch to change mesh geometry or bo
 
 import colorama as col
 from fenics import *
-from mshr import *
-import sys
-
-
-
-
-#add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
+import dolfin as dolfin
+#
+import sys,os
 
 import function_spaces as fsp
 import runtime_arguments as rarg
@@ -43,10 +37,9 @@ import read_mesh_ring as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import variational_problem_bc_ring as vp
-# import variational_problem_bc_square_no_circle_a as vp
+#import variational_problem_bc_square_no_circle_a as vp
 # import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
-
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
@@ -94,3 +87,4 @@ import print_out_bc_ring
 # import print_out_bc_square_no_circle_a
 # import print_out_bc_square_a
 # import print_out_bc_square_b
+

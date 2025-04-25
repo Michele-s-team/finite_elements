@@ -13,9 +13,7 @@ from mshr import *
 import numpy as np
 import sys
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+
 
 import calculus as cal
 import geometry as geo

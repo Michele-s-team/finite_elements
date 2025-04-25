@@ -13,9 +13,7 @@ import numpy as np
 
 import sys
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+
 
 import boundary_geometry as bgeo
 import geometry as geo

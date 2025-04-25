@@ -76,9 +76,7 @@ from mshr import *
 
 import sys
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+
 
 import function_spaces as fsp
 import input_output as io

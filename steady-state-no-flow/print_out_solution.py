@@ -1,5 +1,8 @@
 from fenics import *
-import ufl as ufl
+try:
+    import ufl
+except ImportError:
+    import ufl_legacy as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
@@ -12,12 +15,13 @@ import runtime_arguments as rarg
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
-# import read_mesh_square as rmsh
+#import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
+#
 import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
-# import variational_problem_bc_square_a as vp
+#import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
 
 i, j, k, l = ufl.indices(4)

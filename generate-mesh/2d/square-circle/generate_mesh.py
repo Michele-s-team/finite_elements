@@ -14,9 +14,6 @@ import argparse
 
 import sys
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
 
 import input_output as io
 import mesh as msh

@@ -14,9 +14,7 @@ import ufl as ufl
 
 import sys
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+
 
 import geometry as geo
 import input_output as io

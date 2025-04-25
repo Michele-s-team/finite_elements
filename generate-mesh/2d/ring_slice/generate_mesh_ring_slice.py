@@ -12,16 +12,8 @@ from fenics import *
 import gmsh  # main tool
 import pygmsh  # wrapper for gmsh
 import argparse
-import sys
+import sys,os
 import numpy as np
-
-# add the path where to find the shared modules
-# gaetano's path
-# module_path = '/home/tanos/Thesis/finite_elements/modules/'
-# michele's path
-module_path = '/home/fenics/shared/modules'
-
-sys.path.append(module_path)
 
 import calculus as cal
 import input_output as io

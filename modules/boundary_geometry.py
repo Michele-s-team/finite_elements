@@ -1,7 +1,10 @@
 from fenics import *
 from dolfin import *
-from mshr import *
-import ufl as ufl
+#
+try:
+    import ufl
+except ImportError:
+    import ufl_legacy as ufl
 
 
 import geometry as geo

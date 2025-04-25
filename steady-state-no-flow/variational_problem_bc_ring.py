@@ -1,6 +1,9 @@
 from fenics import *
 import numpy as np
-import ufl as ufl
+try:
+    import ufl
+except ImportError:
+    import ufl_legacy as ufl
 
 import function as fu
 import function_spaces as fsp

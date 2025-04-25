@@ -15,9 +15,18 @@ import argparse
 
 import sys
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+current = os.path.dirname(os.path.realpath(__file__))
+while True:
+    mods = os.path.join(current, "modules")
+    if os.path.isdir(mods):
+        project_root = current
+        break
+    parent = os.path.dirname(current)
+    if parent == current:
+        raise RuntimeError("could not find 'modules/' in any parent")
+    current = parent
+sys.path.append( project_root )
+sys.path.insert(0, mods)
 
 import input_output as io
 import mesh as msh
