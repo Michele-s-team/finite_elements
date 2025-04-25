@@ -9,6 +9,9 @@ ATTENTION: [mesh resolution] must be small enough for the circle to be properly 
 Example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.3 $SOLUTION_PATH
 
+This mesh can be read with ~/shared/generate_mesh/2d/square/read_mesh_square.py
+
+
 The quarter of a mesh will be saved in [path where to store the mesh] as quarter_mesh.msh. The complete mesh will be saved in
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
 '''
@@ -167,12 +170,17 @@ msh.asssign_tag_to_lines(
     circle_id, mesh
 )
 
-# tag lines within the rectangle which result from mesh mirroring
+# tag internal lines which result from mesh mirroring
+# tag internal lines parallel to the y axis
 msh.asssign_tag_to_lines(
     lambda line: (np.isclose(mesh.points[line[0]][0], x_coordinate_axis_of_symmetry, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], x_coordinate_axis_of_symmetry, rtol=cal.small_number))),
     interior_lines_id, mesh
 )
-
+# tag internal lines parallel to the x axis
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][1], y_coordinate_axis_of_symmetry, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], y_coordinate_axis_of_symmetry, rtol=cal.small_number))),
+    interior_lines_id, mesh
+)
 
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
