@@ -1,6 +1,7 @@
 '''
-This code generates a  square mesh with a circular hole in it, which is symmetric with respect to top <-> bottom symmetry
-Symmetry is enforced by mirroring the mesh points along a symetry axis.
+This code generates a square mesh with a circular hole in it,
+which is symmetric with respect to both left <-> right and tob <-> bottom symmetries
+Symmetry is enforced by mirroring the mesh points along two symmetry axes.
 
 run with
 python3 generate_square_mesh.py [mesh resolution] [path where to store the mesh]
