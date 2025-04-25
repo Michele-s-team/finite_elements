@@ -86,10 +86,11 @@ quarter_rectangle_circle_surface = model.add_plane_surface(quarter_rectangle_cir
 model.synchronize()
 
 model.add_physical([quarter_rectangle_circle_surface], "Volume")
-model.add_physical([quarter_rectangle_circle_lines[0]], "r")
-model.add_physical([quarter_rectangle_circle_lines[2]], "l")
-model.add_physical([quarter_rectangle_circle_lines[1]], "t")
-model.add_physical(quarter_rectangle_circle_lines[3:], "c")
+model.add_physical([quarter_rectangle_circle_lines[0]], "b")
+model.add_physical([quarter_rectangle_circle_lines[1]], "r")
+model.add_physical([quarter_rectangle_circle_lines[2]], "t")
+model.add_physical(quarter_rectangle_circle_lines[3], "l")
+model.add_physical(quarter_rectangle_circle_lines[4:], "quarter_circle")
 
 geometry.generate_mesh(dim=2)
 gmsh.write(quarter_mesh_msh_file)
