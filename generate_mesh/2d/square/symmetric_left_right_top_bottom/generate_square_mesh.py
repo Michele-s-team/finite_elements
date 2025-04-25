@@ -99,6 +99,17 @@ gmsh.write(quarter_mesh_msh_file)
 gmsh.clear()
 geometry.__exit__()
 
+mesh_from_file = meshio.read(output_dir + '/quarter_mesh.msh')
+line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
+meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+
+triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
+meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
+
 ####
 #
 # '''
