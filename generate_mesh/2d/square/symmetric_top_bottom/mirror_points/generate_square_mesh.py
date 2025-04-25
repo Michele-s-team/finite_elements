@@ -1,5 +1,5 @@
 '''
-This code generates a symmetric square mesh with a circular hole in it.
+This code generates a  square mesh with a circular hole in it, which is symmetric with respect to top <-> bottom symmetry
 Symmetry is enforced by mirroring the mesh points along a symetry axis.
 
 run with
