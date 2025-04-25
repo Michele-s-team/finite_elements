@@ -9,7 +9,7 @@ ATTENTION: [mesh resolution] must be small enough for the circle to be properly 
 Example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.3 $SOLUTION_PATH
 
-The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. The complete mesh will be saved in
+The quarter of a mesh will be saved in [path where to store the mesh] as quarter_mesh.msh. The complete mesh will be saved in
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
 '''
 
@@ -43,35 +43,20 @@ resolution = (float)(args.resolution)
 r = 0.25
 L = 1
 h = 1
+x_coordinate_axis_of_symmetry = L / 2
 y_coordinate_axis_of_symmetry = h / 2
-c_r = [L / 2, y_coordinate_axis_of_symmetry, 0]
+c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
 
-gamma_axis_of_symmetry = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
-
-'''
-this function tells whether a point lies on the axis of symmetry
-Input values:
-- 'coordinate' : the coordinates of the point (list of two values)
-Return value:
-- True/False, if the point lies on the axis of symmetry 
-'''
-
-'''
-def point_on_axis_of_symmetry(point):
-    return cal.point_on_line(point, gamma_axis_of_symmetry)
-
-
-def mirror_function(point):
-    return cal.mirror_point_line(point, gamma_axis_of_symmetry)
-'''
+gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, h], t)
+gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
 
 output_dir = args.output_dir
-half_mesh_msh_file = output_dir + "/half_mesh.msh"
+quarter_mesh_msh_file = output_dir + "/quarter_mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
-# Half mesh is generated used pygmsh and it's saved as mesh.msh
+# The quarter mesh is generated used pygmsh and it is saved as quarter_mesh.msh
 
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
@@ -108,7 +93,7 @@ model.add_physical([half_rectangle_circle_lines[2]], "t")
 model.add_physical(half_rectangle_circle_lines[5:], "c")
 
 geometry.generate_mesh(dim=2)
-gmsh.write(half_mesh_msh_file)
+gmsh.write(quarter_mesh_msh_file)
 
 # msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
 
@@ -128,7 +113,7 @@ b_edge_id = 5
 circle_id = 6
 
 # Load the half mesh
-mesh = meshio.read(half_mesh_msh_file)
+mesh = meshio.read(quarter_mesh_msh_file)
 
 # msh.print_mesh_info(mesh, 'Mesh before mirroring')
 
@@ -140,7 +125,7 @@ old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data =
 msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
 msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 '''
-msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+msh.mirror_mesh(mesh, gamma_axis_of_symmetry_top_bottom)
 
 # tag l edge
 msh.asssign_tag_to_lines(
