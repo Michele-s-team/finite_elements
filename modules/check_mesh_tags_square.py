@@ -72,5 +72,6 @@ msh.test_mesh_integral(integral_exact_ds_lr, function_test_integrals_fenics, rms
 msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
 
 msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square')
+msh.test_mesh_integral(integral_exact_ds_circle, function_test_integrals_fenics, rmsh.ds_circle, '\int f ds_circle')
 
 msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
