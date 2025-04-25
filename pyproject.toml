@@ -1,0 +1,16 @@
+# install via pip install -e . all modules directly, assuming they are located in /root/modules/, edible mode updates them with each pull
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "new_project"
+version = "0.1.0"
+dependencies = []
+
+[tool.setuptools.package-dir]
+"" = "modules"
+
+[tool.setuptools.packages.find]
+where = ["modules"]
+include = ["*"]
