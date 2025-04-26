@@ -65,9 +65,9 @@ to make figure-4:
                 + (geo.d_c( fsp.v, fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
         )
 - generate the mesh with 
-    ~/shared/generate_mesh/2d/square/symmetric_top_bottom/mirror_points$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_square.py 0.01 $SOLUTION_PATH
+    ~/shared/generate_mesh/2d/square/symmetric_top_bottom$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_square.py 0.01 $SOLUTION_PATH
 - run with 
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/mirror_points/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH    
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH    
 '''
 
 
