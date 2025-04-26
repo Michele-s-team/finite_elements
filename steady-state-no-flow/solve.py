@@ -15,10 +15,16 @@ clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/
 Examples:
     - to read the mesh from generate_mesh/2d/ring/symmetric:
         clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/ring/symmetric/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+
+    - to read the mesh from generate_mesh/2d/square_no_circle :
+        clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square_no_circle/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+
     - to read the mesh from generate_mesh/2d/square :
         clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+
     - to read the mesh from generate_mesh/2d/square/symmetric_top_bottom/mirror_points:
         clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/mirror_points/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+
     - to read the mesh from generate_mesh/2d/square/symmetric_left_right_top_bottom:
         clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
 The solution files will be stored in /home/fenics/shared/steady-state-no-flow/solution
