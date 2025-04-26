@@ -116,9 +116,16 @@ mesh = meshio.read(unit_mesh_msh_file)
 # msh.print_mesh_info(mesh, 'Mesh before mirroring')
 
 ## mirror the mesh ##
+# mirror along y axis
 for i in range(log2_N):
     gamma_axis_of_symmetry = lambda t: cal.line([0, (2**i) * h_unit], [L_unit, (2 ** i) * h_unit], t)
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+
+# mirror along x axis
+for i in range(log2_N):
+    gamma_axis_of_symmetry = lambda t: cal.line([(2**i) * L_unit, 0], [(2 ** i) * L_unit, h], t)
+    msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+
 
 '''
 # tag l edge
