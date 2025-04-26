@@ -61,24 +61,4 @@ ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 ds = ds_square + ds_circle
 
-# a function space used solely to define function_test_integrals_fenics
-Q = FunctionSpace(mesh, 'P', 2)
-
-function_test_symmetry = Function(Q)
-
-
-# analytical expression for a  scalar function used to test the ds
-class FunctionTestSymmetryExpression(UserExpression):
-    def eval(self, values, x):
-        values[0] = x[1] - h / 2
-
-    def value_shape(self):
-        return (1,)
-
-
-function_test_symmetry.interpolate(FunctionTestSymmetryExpression(element=Q.ufl_element()))
-
 import check_mesh_tags_square
-
-print(
-    f'int f_test_symmetry = {col.Fore.YELLOW}{assemble(function_test_symmetry * dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}')
