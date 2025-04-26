@@ -41,23 +41,22 @@ args = parser.parse_args()
 # mesh resolution
 resolution = (float)(args.resolution)
 
-L = 1
+L = 3
 h = 1
 
-L_unit_cell = resolution
+# number of tiles in which the mesh will be divided, along each axis
+N = np.ceil(max(L, h)/resolution)
+# given that  I will be mirroring (doubling) the mesh multiple times, N needs to be a power of two 
+N = 2**(np.ceil(np.log2(N)))
 
-if h < L:
-    h_unit_cell = resolution * h / L
-else:
-    h_unit_cell = resolution * L / h
-
-gamma_axis_of_symmetry = lambda t: cal.line([0, h_unit_cell], [L_unit_cell, h_unit_cell], t)
+L_unit_cell = L/N
+h_unit_cell = h/N
 
 output_dir = args.output_dir
 unit_mesh_msh_file = output_dir + "/unit_mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
-print(f'L = {L}\nh = {h}\nresolution = {resolution}\noutput directory = {output_dir}')
+print(f'L = {L}\nh = {h}\nresolution = {resolution}\nN = {N}\noutput directory = {output_dir}')
 
 # Unit mesh is generated used pygmsh and it's saved as unit_mesh.msh
 
@@ -92,8 +91,8 @@ gmsh.write(unit_mesh_msh_file)
 gmsh.clear()
 geometry.__exit__()
 
-
-# # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
+'''
+# read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh = meshio.read(unit_mesh_msh_file)
 
 line_mesh = msh.create_mesh(mesh, "line", prune_z=True)
@@ -101,83 +100,72 @@ meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
 
 triangle_mesh = msh.create_mesh(mesh, "triangle", prune_z=True)
 meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+'''
+
+surface_id = 1
+l_edge_id = 2
+r_edge_id = 3
+t_edge_id = 4
+b_edge_id = 5
+
+# Load the unit mesh
+
+mesh = meshio.read(unit_mesh_msh_file)
+
+# msh.print_mesh_info(mesh, 'Mesh before mirroring')
+
+## mirror the mesh ##
+gamma_axis_of_symmetry = lambda t: cal.line([0, h_unit_cell], [L_unit_cell, h_unit_cell], t)
+msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+
+'''
+# tag l edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))),
+    l_edge_id, mesh
+)
+
+# tag r edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
+    r_edge_id, mesh
+)
+
+# tag t edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
+    t_edge_id, mesh
+)
+
+# tag b edge
+msh.asssign_tag_to_lines(
+    lambda line: (np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))),
+    b_edge_id, mesh
+)
+
+msh.asssign_tag_to_lines(
+    lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
+    circle_id, mesh
+)
+'''
+
+meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
+
+print("Full mesh generated successfully!")
+
+# msh.print_mesh_info(mesh, 'Mesh after mirroring')
 
 
+# read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
+mesh_from_file = meshio.read(mesh_xdmf_file)
 
-######
+line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
+meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+
+triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
+meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
 #
-# '''
-# duplicate the points and cells with the respective tags and ids
-# The new mesh inherits the ids (physical id used for measure definiton) of the original one,
-# except for the new physical objects that are generated from reflection (e.g. the b line)
-# '''
-# surface_id = 1
-# l_edge_id = 2
-# r_edge_id = 3
-# t_edge_id = 4
-# b_edge_id = 5
-# circle_id = 6
-#
-# # Load the half mesh
-# mesh = meshio.read(unit_mesh_msh_file)
-#
-# # msh.print_mesh_info(mesh, 'Mesh before mirroring')
-#
-#
-# ## mirror the mesh ##
-# '''
-# old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data = msh.mirror_points(point_on_axis_of_symmetry, mirror_function, mesh.points,
-#                                                                                                    mesh.point_data)
-# msh.mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_indices, mirrored_point_data)
-# msh.mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
-# '''
-# msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
-#
-# # tag l edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))),
-#     l_edge_id, mesh
-# )
-#
-# # tag r edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
-#     r_edge_id, mesh
-# )
-#
-# # tag t edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
-#     t_edge_id, mesh
-# )
-#
-# # tag b edge
-# msh.asssign_tag_to_lines(
-#     lambda line: (np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))),
-#     b_edge_id, mesh
-# )
-#
-# msh.asssign_tag_to_lines(
-#     lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
-#     circle_id, mesh
-# )
-#
-# meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
-#
-# print("Full mesh generated successfully!")
-#
-# # msh.print_mesh_info(mesh, 'Mesh after mirroring')
-#
-#
-# # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
-# mesh_from_file = meshio.read(mesh_xdmf_file)
-#
-# line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-# meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
-#
-# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-# meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
-#
-# # print the mesh vertices to file
-# mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-# io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
