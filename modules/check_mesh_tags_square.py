@@ -18,7 +18,6 @@ r_test = 0.345
 # CHANGE PARAMETERS HERE
 
 
-
 # a function space used solely to define function_test_integrals_fenics
 Q_test = FunctionSpace(bgeo.mesh, 'P', 2)
 
@@ -60,7 +59,6 @@ integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
 
 integral_exact_ds = integral_exact_ds_square + integral_exact_ds_circle
 
-
 msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
 
 msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l')
@@ -76,4 +74,4 @@ msh.test_mesh_integral(integral_exact_ds_circle, function_test_integrals_fenics,
 
 msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
-msh.check_symmetry_square_mesh(bgeo.mesh, rmsh.L, rmsh.h)
+msh.check_mesh_symmetry(bgeo.mesh, rmsh.c_r)
