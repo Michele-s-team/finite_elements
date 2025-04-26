@@ -1,7 +1,9 @@
 '''
 This code generates a  square mesh which is perfectly symmetric along both the x and y axis, i.e., it is a tiled repetition of the same
 rectangular mesh unit
-Symmetry is enforced by mirroring the mesh unit
+Symmetry is enforced by mirroring the mesh unit.
+The surface is tagged with surface_id, the lines on the boundaries with l_edge_id, r_edge_id, t_edge_id and b_edge_id,
+and all lines in the bulk of the mesh with internal_lines_id
 
 run with
 python3 generate_square_no_circle_mesh.py [mesh resolution] [path where to store the mesh]
@@ -45,10 +47,10 @@ L = 3
 h = 1
 
 # number of tiles in which the mesh will be divided, along each axis
-N = np.ceil(max(L, h)/resolution)
+N = np.ceil(max(L, h) / resolution)
 # given that  I will be mirroring (doubling) the mesh multiple times, N needs to be a power of two
 log2_N = int(np.ceil(np.log2(N)))
-N = 2**log2_N
+N = 2 ** log2_N
 
 L_unit = L / N
 h_unit = h / N
@@ -108,6 +110,7 @@ l_edge_id = 2
 r_edge_id = 3
 t_edge_id = 4
 b_edge_id = 5
+internal_lines_id = 6
 
 # Load the unit mesh
 
@@ -118,16 +121,14 @@ mesh = meshio.read(unit_mesh_msh_file)
 ## mirror the mesh ##
 # mirror along y axis
 for i in range(log2_N):
-    gamma_axis_of_symmetry = lambda t: cal.line([0, (2**i) * h_unit], [L_unit, (2 ** i) * h_unit], t)
+    gamma_axis_of_symmetry = lambda t: cal.line([0, (2 ** i) * h_unit], [L_unit, (2 ** i) * h_unit], t)
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # mirror along x axis
 for i in range(log2_N):
-    gamma_axis_of_symmetry = lambda t: cal.line([(2**i) * L_unit, 0], [(2 ** i) * L_unit, h], t)
+    gamma_axis_of_symmetry = lambda t: cal.line([(2 ** i) * L_unit, 0], [(2 ** i) * L_unit, h], t)
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
-
-'''
 # tag l edge
 msh.asssign_tag_to_lines(
     lambda line: (np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))),
@@ -152,11 +153,14 @@ msh.asssign_tag_to_lines(
     b_edge_id, mesh
 )
 
+# tag internal lines
 msh.asssign_tag_to_lines(
-    lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
-    circle_id, mesh
+    lambda line: (not ((np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))))) \
+                 and (not ((np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))))) \
+                 and (not ((np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))))) \
+                 and (not ((np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))))),
+    internal_lines_id, mesh
 )
-'''
 
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
