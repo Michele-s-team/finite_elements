@@ -46,11 +46,12 @@ h = 1
 
 # number of tiles in which the mesh will be divided, along each axis
 N = np.ceil(max(L, h)/resolution)
-# given that  I will be mirroring (doubling) the mesh multiple times, N needs to be a power of two 
-N = 2**(np.ceil(np.log2(N)))
+# given that  I will be mirroring (doubling) the mesh multiple times, N needs to be a power of two
+log2_N = int(np.ceil(np.log2(N)))
+N = 2**log2_N
 
-L_unit_cell = L/N
-h_unit_cell = h/N
+L_unit = L / N
+h_unit = h / N
 
 output_dir = args.output_dir
 unit_mesh_msh_file = output_dir + "/unit_mesh.msh"
@@ -65,9 +66,9 @@ model = geometry.__enter__()
 
 # construct a rectangle with vertices [0,0], [L_unit_cell, 0], [L_unit_cell, h_unit_cell], [0, h_unit_cell]
 unit_points = [model.add_point((0, 0, 0), mesh_size=resolution),
-               model.add_point((L_unit_cell, 0, 0), mesh_size=resolution),
-               model.add_point((L_unit_cell, h_unit_cell, 0), mesh_size=resolution),
-               model.add_point((0, h_unit_cell, 0), mesh_size=resolution),
+               model.add_point((L_unit, 0, 0), mesh_size=resolution),
+               model.add_point((L_unit, h_unit, 0), mesh_size=resolution),
+               model.add_point((0, h_unit, 0), mesh_size=resolution),
                ]
 model.synchronize()
 
@@ -115,8 +116,9 @@ mesh = meshio.read(unit_mesh_msh_file)
 # msh.print_mesh_info(mesh, 'Mesh before mirroring')
 
 ## mirror the mesh ##
-gamma_axis_of_symmetry = lambda t: cal.line([0, h_unit_cell], [L_unit_cell, h_unit_cell], t)
-msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
+for i in range(log2_N):
+    gamma_axis_of_symmetry = lambda t: cal.line([0, (2**i) * h_unit], [L_unit, (2 ** i) * h_unit], t)
+    msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 '''
 # tag l edge
