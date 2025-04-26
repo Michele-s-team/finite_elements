@@ -3,12 +3,12 @@ This code generates a  ring  mesh with radial symmetry: symmetry is obtained by 
 The inner ring is tagged with tag 'circle_r_id', the outer ring is tagged with tag 'circle_R_id', and all radial lines (spokes) are tagged with 'radial_lines_id'
 
 run with
-python3 generate_mesh_ring.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
+python3 generate_ring_mesh.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
 
 where [path where to read the ring slice] is the output path of generate_mesh_ring_slice.py
 
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py ~/shared/generate_mesh/2d/ring/ring_slice/solution $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py ~/shared/generate_mesh/2d/ring/ring_slice/solution $SOLUTION_PATH
 '''
 
 import meshio
