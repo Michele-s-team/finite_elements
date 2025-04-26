@@ -13,6 +13,8 @@ clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-
 clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
 Examples:
+    - to read the mesh from generate_mesh/2d/symmetric_ring:
+        clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/symmetric_ring/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
     - to read the mesh from generate_mesh/2d/square :
         clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/solution/ /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
     - to read the mesh from generate_mesh/2d/square/symmetric_top_bottom/mirror_points:
@@ -44,14 +46,14 @@ import function_spaces as fsp
 import runtime_arguments as rarg
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import read_mesh_ring as rmsh
+import read_mesh_ring as rmsh
 # import read_mesh_square_no_circle as rmsh
-import read_mesh_square as rmsh
+# import read_mesh_square as rmsh
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import variational_problem_bc_ring as vp
+import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
-import variational_problem_bc_square_a as vp
+# import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
 
 
@@ -97,7 +99,7 @@ solver_pp_nu.solve()
 solver_pp_tau.solve()
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import print_out_bc_ring
+import print_out_bc_ring
 # import print_out_bc_square_no_circle_a
-import print_out_bc_square_a
+# import print_out_bc_square_a
 # import print_out_bc_square_b
