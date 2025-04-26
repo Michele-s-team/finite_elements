@@ -8,7 +8,7 @@ example:
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/poisson_equation/mesh/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
 clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/mirror_points/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/symmetric_ring/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/generate_mesh/2d/ring/symmetric/solution /home/fenics/shared/poisson_equation/solve_u/$SOLUTION_PATH
 
 change bcs or mesh geometry in line which contain
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
