@@ -43,7 +43,7 @@ args = parser.parse_args()
 # mesh resolution
 resolution = (float)(args.resolution)
 
-L = 3
+L = 1
 h = 1
 
 # number of tiles in which the mesh will be divided, along each axis
