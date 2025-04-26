@@ -8,7 +8,7 @@ python3 generate_mesh_ring.py [mesh resolution] [path where to read the ring sli
 where [path where to read the ring slice] is the output path of generate_mesh_ring_slice.py
 
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py ~/shared/generate_mesh/2d/ring_slice/solution $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring.py ~/shared/generate_mesh/2d/ring/ring_slice/solution $SOLUTION_PATH
 '''
 
 import meshio
