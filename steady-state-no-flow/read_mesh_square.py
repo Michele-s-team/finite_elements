@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+import dolfin
 
 import calculus as calc
 import runtime_arguments as rarg

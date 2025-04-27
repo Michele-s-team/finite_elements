@@ -38,7 +38,7 @@ All sections of the code where one needs to switch to change mesh geometry or bo
 
 import colorama as col
 from fenics import *
-from mshr import *
+import dolfin
 import sys
 
 
