@@ -14,12 +14,9 @@ Example:
     clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 32
     time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $MESH $SOLUTION $T $k $r $e $v $N
 
-
-
-
-
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
+
 All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
@@ -127,12 +124,12 @@ for step in range(vp.N):
     solver = NonlinearVariationalSolver( problem )
 
     # the post-processing ('pp') variational problem used to compute tau, ...
-    J_pp_nu = derivative( vp.F_pp_nu, fsp.nu_n_12, fsp.J_pp_nu )
-    J_pp_tau = derivative( vp.F_pp_tau, fsp.tau_n_12, fsp.J_pp_tau )
-    J_pp_d = derivative( vp.F_pp_d, fsp.d, fsp.J_pp_d )
-    problem_pp_nu = NonlinearVariationalProblem( vp.F_pp_nu, fsp.nu_n_12, [], J_pp_nu )
-    problem_pp_tau = NonlinearVariationalProblem( vp.F_pp_tau, fsp.tau_n_12, [], J_pp_tau )
-    problem_pp_d = NonlinearVariationalProblem( vp.F_pp_d, fsp.d, [], J_pp_d )
+    J_pp_nu = derivative( vp.vp_pp.F_pp_nu, fsp.nu_n_12, fsp.J_pp_nu )
+    J_pp_tau = derivative( vp.vp_pp.F_pp_tau, fsp.tau_n_12, fsp.J_pp_tau )
+    J_pp_d = derivative( vp.vp_pp.F_pp_d, fsp.d, fsp.J_pp_d )
+    problem_pp_nu = NonlinearVariationalProblem( vp.vp_pp.F_pp_nu, fsp.nu_n_12, [], J_pp_nu )
+    problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau_n_12, [], J_pp_tau )
+    problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
     solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
     solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
     solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
