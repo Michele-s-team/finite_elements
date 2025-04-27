@@ -6,13 +6,13 @@ python3 generate_mesh.py 0.1
 and which are stored into finite_elements/mesh/solution
 
 Run with
-clear; clear; rm -rf solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution] T k r e v N
+clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution] T k r e v N
 
 Example:
-    clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 2
-    clear; clear; MESH_PATH="/home/fenics/shared/dynamics/mesh/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH  0.001 1.0 1.0 1.0 1.0 2
-    clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 32
-    time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $MESH $SOLUTION $T $k $r $e $v $N
+    clear; clear; rm -rf solution; python3 solve.py square_a /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  0.001 1.0 1.0 1.0 1.0 2
+    clear; clear; MESH_PATH="/home/fenics/shared/dynamics/mesh/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH  0.001 1.0 1.0 1.0 1.0 2
+    clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution  square_a 0.001 1.0 1.0 1.0 1.0 32
+    time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py square_a $MESH $SOLUTION $T $k $r $e $v $N
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -40,6 +40,7 @@ To produce figure_10:
 
 import colorama as col
 from fenics import *
+import importlib
 import dolfin
 
 import sys
@@ -51,17 +52,25 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
+import runtime_arguments as rarg
+import switch_problem as swi
+
+
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import print_out_bc_square_a as prout_bc
-import print_out_bc_square_b as prout_bc
+# import print_out_bc_square_b as prout_bc
+prout_bc = importlib.import_module(swi.prout_bc)
 
-import read_mesh_square as rmsh
-import runtime_arguments as rarg
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import read_mesh_square as rmsh
+rmsh = importlib.import_module(swi.rmsh)
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_square_a as vp
-import variational_problem_bc_square_b as vp
+# import variational_problem_bc_square_b as vp
+vp = importlib.import_module(swi.vp)
+
 
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -116,7 +125,8 @@ for step in range(vp.N):
 
     # CHANGE VARIATIONAL PROBLEM OR MESH HERE
     # import variational_problem_bc_square_a
-    import variational_problem_bc_square_b
+    # import variational_problem_bc_square_b
+    vp = importlib.import_module(swi.vp)
 
     # solve the variational problem
     J = derivative( vp.F, fsp.psi, fsp.J_psi )
