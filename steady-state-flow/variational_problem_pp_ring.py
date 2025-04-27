@@ -3,7 +3,7 @@ import ufl as ufl
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo
-import read_mesh_square as rmsh
+import read_mesh_ring as rmsh
 
 i, j, k, l = ufl.indices(4)
 

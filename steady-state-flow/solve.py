@@ -7,34 +7,26 @@ python3 generate_ring_mesh.py 0.1
 and which are stored into /home/fenics/shared/steady-state-flow/mesh
 
 Run with
-clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
+clear; python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
 
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
-clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
+clear; clear; rm -rf solution; python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
+clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
 Examples:
-    - to read the mesh from generate_mesh/2d/ring/symmetric:
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
-    - to read the mesh from generate_mesh/2d/square_no_circle :
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_1 $MESH_PATH $SOLUTION_PATH;
 
-    - to read the mesh from generate_mesh/2d/square :
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH;
 
-    - to read the mesh from generate_mesh/2d/square/symmetric_top_bottom:
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
-    - to read the mesh from generate_mesh/2d/square/symmetric_left_right_top_bottom:
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
 
-All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
 
