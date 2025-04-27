@@ -40,7 +40,7 @@ To produce figure_10:
 
 import colorama as col
 from fenics import *
-from mshr import *
+import dolfin
 
 import sys
 
