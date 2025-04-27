@@ -42,10 +42,7 @@ import importlib
 import dolfin
 import sys
 
-
-
-
-#add the path where to find the shared modules
+# add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
@@ -60,7 +57,6 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_ring as vp
 # import variational_problem_bc_square_no_circle_a as vp
@@ -69,44 +65,40 @@ rmsh = importlib.import_module(swi.rmsh)
 
 vp = importlib.import_module(swi.vp)
 
-
-
-set_log_level( 20 )
+set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
 
-print("Input diredtory = ", rarg.args.input_directory )
-print("Output diredtory = ", rarg.args.output_directory )
+print("Input diredtory = ", rarg.args.input_directory)
+print("Output diredtory = ", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
-
 # solve the variational problem
-J = derivative( vp.F, fsp.psi, fsp.J_psi )
-problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
-solver = NonlinearVariationalSolver( problem )
+J = derivative(vp.F, fsp.psi, fsp.J_psi)
+problem = NonlinearVariationalProblem(vp.F, fsp.psi, vp.bcs, J)
+solver = NonlinearVariationalSolver(problem)
 
-#set the solver parameters here
+# set the solver parameters here
 params = {'nonlinear_solver': 'newton',
-           'newton_solver':
-            {
-                'linear_solver'           : 'superlu',
-                # 'linear_solver'           : 'mumps',
-                # 'linear_solver':   'lu',
-                'absolute_tolerance'      : 1e-6,
-                'relative_tolerance'      : 1e-6,
-                'maximum_iterations'      : 1000000,
-                'relaxation_parameter'    : 0.95,
-             }
-}
+          'newton_solver':
+              {
+                  'linear_solver': 'superlu',
+                  # 'linear_solver'           : 'mumps',
+                  # 'linear_solver':   'lu',
+                  'absolute_tolerance': 1e-6,
+                  'relative_tolerance': 1e-6,
+                  'maximum_iterations': 1000000,
+                  'relaxation_parameter': 0.95,
+              }
+          }
 solver.parameters.update(params)
 
-#the post-processing ('pp') variational problem used to compute tau
-J_pp_nu = derivative( vp.vp_pp.F_pp_nu, fsp.nu, fsp.J_pp_nu )
-J_pp_tau = derivative( vp.vp_pp.F_pp_tau, fsp.tau, fsp.J_pp_tau )
-problem_pp_nu = NonlinearVariationalProblem( vp.vp_pp.F_pp_nu, fsp.nu, [], J_pp_nu )
-problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau, [], J_pp_tau )
-solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
-solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
-
+# the post-processing ('pp') variational problem used to compute tau
+J_pp_nu = derivative(vp.vp_pp.F_pp_nu, fsp.nu, fsp.J_pp_nu)
+J_pp_tau = derivative(vp.vp_pp.F_pp_tau, fsp.tau, fsp.J_pp_tau)
+problem_pp_nu = NonlinearVariationalProblem(vp.vp_pp.F_pp_nu, fsp.nu, [], J_pp_nu)
+problem_pp_tau = NonlinearVariationalProblem(vp.vp_pp.F_pp_tau, fsp.tau, [], J_pp_tau)
+solver_pp_nu = NonlinearVariationalSolver(problem_pp_nu)
+solver_pp_tau = NonlinearVariationalSolver(problem_pp_tau)
 
 solver.solve()
 solver_pp_nu.solve()
@@ -119,6 +111,3 @@ solver_pp_tau.solve()
 # import print_out_bc_square_b
 
 prout_bc = importlib.import_module(swi.prout_bc)
-
-
-
