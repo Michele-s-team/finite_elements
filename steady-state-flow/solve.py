@@ -87,6 +87,7 @@ to make figure-4:
 
 import colorama as col
 from fenics import *
+import importlib
 import dolfin
 
 import sys
@@ -98,16 +99,22 @@ sys.path.append(module_path)
 import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
+import switch_problem as swi
+
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import read_mesh_ring as rmsh
-import read_mesh_square as rmsh
+# import read_mesh_square as rmsh
+
+rmsh = importlib.import_module(swi.rmsh)
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_ring_1 as vp
 # import variational_problem_bc_ring_2 as vp
-import variational_problem_bc_square_a as vp
+# import variational_problem_bc_square_a as vp
 # import variational_problem_bc_square_b as vp
+
+vp = importlib.import_module(swi.vp)
 
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -174,5 +181,7 @@ solver_pp_d.solve()
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import print_out_bc_ring_1
 # import print_out_bc_ring_2
-import print_out_bc_square_a
+# import print_out_bc_square_a
 # import print_out_bc_square_b
+
+prout_bc = importlib.import_module(swi.prout_bc)
