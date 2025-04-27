@@ -14,26 +14,23 @@ clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/
 
 Examples:
     - to read the mesh from generate_mesh/2d/ring/symmetric:
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
 
     - to read the mesh from generate_mesh/2d/square_no_circle :
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 square_no_circle_a solve.py $MESH_PATH $SOLUTION_PATH
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 square_no_circle_a solve.py $MESH_PATH $SOLUTION_PATH;
 
     - to read the mesh from generate_mesh/2d/square :
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
     - to read the mesh from generate_mesh/2d/square/symmetric_top_bottom:
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
     - to read the mesh from generate_mesh/2d/square/symmetric_left_right_top_bottom:
-        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
 
 Note that all sections of the code which need to be changed when an external parameter (e.g. the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
-
-All sections of the code where one needs to switch to change mesh geometry or boundary conditions are marked with
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
 '''
 
 import colorama as col
@@ -50,19 +47,8 @@ import function_spaces as fsp
 import runtime_arguments as rarg
 import switch_problem as swi
 
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import read_mesh_ring as rmsh
-# import read_mesh_square_no_circle as rmsh
-# import read_mesh_square as rmsh
 
 rmsh = importlib.import_module(swi.rmsh)
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import variational_problem_bc_ring as vp
-# import variational_problem_bc_square_no_circle_a as vp
-# import variational_problem_bc_square_a as vp
-# import variational_problem_bc_square_b as vp
-
 vp = importlib.import_module(swi.vp)
 
 set_log_level(20)
@@ -103,11 +89,5 @@ solver_pp_tau = NonlinearVariationalSolver(problem_pp_tau)
 solver.solve()
 solver_pp_nu.solve()
 solver_pp_tau.solve()
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import print_out_bc_ring
-# import print_out_bc_square_no_circle_a
-# import print_out_bc_square_a
-# import print_out_bc_square_b
 
 prout_bc = importlib.import_module(swi.prout_bc)
