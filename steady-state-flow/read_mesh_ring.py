@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+import dolfin
 
 import boundary_geometry as bgeo
 import runtime_arguments as rarg

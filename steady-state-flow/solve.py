@@ -9,12 +9,26 @@ and which are stored into /home/fenics/shared/steady-state-flow/mesh
 Run with
 clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
+Example:
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
 clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
-The solution files will be stored in /home/fenics/shared/steady-state-flow/solution
+Examples:
+    - to read the mesh from generate_mesh/2d/ring/symmetric:
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+    - to read the mesh from generate_mesh/2d/square_no_circle :
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+
+    - to read the mesh from generate_mesh/2d/square :
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+
+    - to read the mesh from generate_mesh/2d/square/symmetric_top_bottom:
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+
+    - to read the mesh from generate_mesh/2d/square/symmetric_left_right_top_bottom:
+        clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -73,7 +87,7 @@ to make figure-4:
 
 import colorama as col
 from fenics import *
-from mshr import *
+import dolfin
 
 import sys
 
