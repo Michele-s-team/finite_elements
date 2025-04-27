@@ -15,13 +15,13 @@ clear; clear; rm -rf solution; python3 solve.py square_a /home/fenics/shared/ste
 clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
 Examples:
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_2 $MESH_PATH $SOLUTION_PATH;
+    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_2 $MESH_PATH $SOLUTION_PATH;
 
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH;
+    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH;
 
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
