@@ -150,4 +150,4 @@ F = (F_z + F_omega + F_mu ) + F_N
 #            - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
 #            - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
 #            - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega , rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle
-import variational_problem_pp_square
+import variational_problem_pp_square as vp_pp
