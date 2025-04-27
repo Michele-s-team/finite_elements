@@ -1,5 +1,6 @@
 import csv
 from fenics import *
+import os
 
 import mesh as msh
 
@@ -9,6 +10,10 @@ number_of_decimals = 2
 
 #print the scalar field 'f' to csv file 'filename'
 def print_scalar_to_csvfile(f, filename):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     for x, val in zip( f.function_space().tabulate_dof_coordinates(), f.vector().get_local() ):
@@ -17,6 +22,10 @@ def print_scalar_to_csvfile(f, filename):
 
 #this function print a scalar defined only on the boundaries to csv file 
 def print_scalar_boundary_to_csvfile(f, mesh, filename):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     points = msh.boundary_points(mesh)
@@ -30,6 +39,9 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
@@ -55,6 +67,9 @@ def print_vector_to_csvfile(f, filename):
             list_val_y.append( val )
 
         i += 1
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
@@ -91,6 +106,9 @@ def print_vector_3d_to_csvfile(V, filename):
 
         i += 1
 
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open(filename, "w")
     print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
@@ -105,6 +123,9 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
@@ -129,6 +150,9 @@ def print_nodal_values_vector_3d_to_csvfile(V, mesh, filename):
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
 
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open( filename, "w" )
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
 
@@ -145,6 +169,9 @@ def print_vertices_to_csv_file(mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\":0\",\":1\"", file=csvfile )
