@@ -1,6 +1,6 @@
 from fenics import *
 from dolfin import *
-from mshr import *
+import dolfin
 import ufl as ufl
 
 

@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+import dolfin
 import ufl as ufl
 import numpy as np
 
