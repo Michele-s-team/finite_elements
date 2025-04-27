@@ -53,8 +53,8 @@ import function_spaces as fsp
 import input_output as io
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import print_out_bc_square_a as prout
-import print_out_bc_square_b as prout
+# import print_out_bc_square_a as prout_bc
+import print_out_bc_square_b as prout_bc
 
 import read_mesh_square as rmsh
 import runtime_arguments as rarg
@@ -171,8 +171,8 @@ for step in range(vp.N):
     #get the solution and write it to file
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, z_n_12_output, omega_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
-    prout.print_bcs( fsp.psi )
-    prout.print_solution( fsp.psi, step, t )
+    prout_bc.print_bcs( fsp.psi )
+    prout_bc.print_solution( fsp.psi, step, t )
 
 
     fsp.v_n_2.assign(fsp.v_n_1)
@@ -187,5 +187,5 @@ for step in range(vp.N):
 
 
 
-prout.csvfile_bcs.close()
-prout.csvfile_F.close()
+prout_bc.csvfile_bcs.close()
+prout_bc.csvfile_F.close()
