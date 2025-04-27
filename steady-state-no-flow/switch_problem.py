@@ -11,11 +11,11 @@ elif rarg.args.problem == 'square_no_circle_a':
     import print_out_bc_square_no_circle_a as prout_bc
 
 elif rarg.args.problem == 'square_a':
-    import read_mesh_square as rmsh
-    import variational_problem_bc_square_a as vp
-    import print_out_bc_square_a as prout_bc
+    rmsh = 'read_mesh_square'
+    vp = 'variational_problem_bc_square_a'
+    prout_bc =  'print_out_bc_square_a'
 
 elif rarg.args.problem == 'square_b':
-    import read_mesh_square as rmsh
-    import variational_problem_bc_square_b as vp
-    import print_out_bc_square_b as prout_bc
+    rmsh = 'read_mesh_square'
+    vp = 'variational_problem_bc_square_b'
+    prout_bc =  'print_out_bc_square_b'
