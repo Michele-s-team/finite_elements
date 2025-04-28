@@ -12,13 +12,14 @@ import colorama as col
 import os
 import sys
 
+
 #add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import input_output as io
 import runtime_arguments as rarg
-import unit_test as utes
+import unit_test as utest
 
 commit_a = rarg.args.commit_a
 commit_b = rarg.args.commit_b
@@ -28,10 +29,17 @@ root_path = io.add_trailing_slash('/home/fenics/shared')
 print(f'commit_a = {commit_a}')
 print(f'commit_b = {commit_b}')
 
-utes.checkout(commit_a)
-utes.checkout(commit_b)
+problem = 'square_a'
+code_path = root_path + 'steady-state-no-flow'
+mesh_path = root_path + 'generate_mesh/2d/square'
+
+utest.checkout(commit_a)
+os.system(f'cd {mesh_path}; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH')
+os.system(f'cd {code_path}; MESH_PATH="{mesh_path}/solution"; SOLUTION_PATH="{code_path}/solution"; rm -rf $SOLUTION_PATH; python3 solve.py {problem} $MESH_PATH $SOLUTION_PATH')
+
+utest.checkout(commit_b)
 
 
-utes.checkout('unit_test')
+utest.checkout('unit_test')
 
 
