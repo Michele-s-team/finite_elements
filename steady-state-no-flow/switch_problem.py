@@ -11,7 +11,7 @@ if rarg.args.problem == 'ring':
 elif rarg.args.problem == 'square_no_circle_a':
     rmsh = 'read_mesh_square_no_circle'
     vp = 'variational_problem_bc_square_no_circle_a'
-    prout_bc = 'import print_out_bc_square_no_circle'
+    prout_bc = 'print_out_bc_square_no_circle_a'
 
 elif rarg.args.problem == 'square_a':
     rmsh = 'read_mesh_square'
