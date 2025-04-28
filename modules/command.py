@@ -1,3 +1,5 @@
+from symbol import return_stmt
+
 import colorama as col
 import os
 import subprocess
@@ -10,9 +12,9 @@ Input values:
 '''
 def checkout(commit_sha):
 
-    print(f'{col.Fore.CYAN}Checking out {commit_sha}... {col.Fore.RESET}')
+    print(f'{col.Fore.BLUE}Checking out {commit_sha}... {col.Fore.RESET}')
     os.system(f'git checkout {commit_sha}')
-    print(f'{col.Fore.CYAN}...done.{col.Fore.RESET}')
+    print(f'{col.Fore.BLUE}...done.{col.Fore.RESET}')
 
 
 '''
@@ -21,9 +23,9 @@ Input values:
 - 'path': the path 
 '''
 def go_to_path(path):
-    print(f'{col.Fore.CYAN}Entering {path}... {col.Fore.RESET}')
+    print(f'{col.Fore.BLUE}Entering {path}... {col.Fore.RESET}')
     os.system(f'cd {path}')
-    print(f'{col.Fore.CYAN}...done.{col.Fore.RESET}')
+    print(f'{col.Fore.BLUE}...done.{col.Fore.RESET}')
 
 '''
 Run a command in command line
@@ -44,10 +46,10 @@ def run_command(command):
     return result.stdout, result.stderr
 
 
+def command_empty_err_out(command):
+    output_out, output_err = run_command(command)
+    out_is_empty = (output_out.strip() == "")
+    err_is_empty = (output_err.strip() == "")
+    result = (out_is_empty and err_is_empty)
 
-    # output_out = result.stdout
-    # output_err = result.stderr
-    # out_is_empty = (output_out.strip() == "")
-    # err_is_empty = (output_err.strip() == "")
-    # print(f"Output is empty =  {out_is_empty}")
-    # print(f"Error is empty =  {err_is_empty}")
+    return result

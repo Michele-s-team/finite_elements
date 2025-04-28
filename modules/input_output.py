@@ -1,3 +1,4 @@
+import colorama as col
 import csv
 from fenics import *
 import os
@@ -243,4 +244,15 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
         print_vector_3d_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_3d_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
+'''
+Print a text in red or green according to the value of a boolean variable. This function is used to print out tests
+Input values:
+- 'bool' : the boolean variable
+- 'text': the text
+'''
+def check_print(bool, text):
 
+    if bool:
+        print(f'{col.Back.WHITE}{col.Fore.GREEN}{text}{col.Fore.RESET}{col.Back.RESET}')
+    else:
+        print(f'{col.Back.WHITE}{col.Fore.RED}{text}{col.Fore.RESET}{col.Back.RESET}')
