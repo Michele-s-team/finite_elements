@@ -18,7 +18,7 @@ dFdl_kappa_3d_to_assemble = phys.dFdl_kappa_3d(prout.omega_output, prout.mu_outp
 print("F_circle = ", \
       [assemble(dFdl * bgeo.sqrt_deth_circle(prout.omega_output, prout.rmsh.c_r) * (1.0 / prout.rmsh.r) * prout.rmsh.ds_circle) for dFdl in dFdl_sigma_kappa_3d_to_assemble])
 
-print("{F_sigma}_circle = ", \
+print("F_sigma_circle = ", \
       [assemble(dFdl * bgeo.sqrt_deth_circle(prout.omega_output, prout.rmsh.c_r) * (1.0 / prout.rmsh.r) * prout.rmsh.ds_circle) for dFdl in dFdl_sigma_3d_to_assemble])
 
 print("F_kappa_circle = ", \
