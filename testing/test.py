@@ -74,6 +74,6 @@ problem = 'square_a'
 utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path, mesh_path, code_path,
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                            'generate_square_mesh', mesh_resolution, 'square_a')
+                            'generate_square_mesh', mesh_resolution, 'square_b')
 
 cmd.checkout('unit_test')
