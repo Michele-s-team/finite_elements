@@ -18,7 +18,7 @@ kappa = 1.0
 rho = 1.0
 eta = 1.0
 v_bar_l_const = 1.0
-N = 2
+N = 10
 dt = T / N
 
 z_square_const = 0.0

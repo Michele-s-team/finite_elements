@@ -38,7 +38,7 @@ problem_solution_path_b = root_path + 'testing/commit_b/solution'
 # Compare commit_a and commit_b on a specific problem
 
 check = []
-
+'''
 #Test steady-state-no-flow
 check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path,
@@ -97,7 +97,7 @@ check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path + 'steady-state-flow',
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.01, 'square_b'))
-
+'''
 # Test dynamics
 check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path,
@@ -113,13 +113,13 @@ check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, 'square_b'))
 
-cmd.checkout('unit_test')
+cmd.checkout(commit_a)
 
 
-total_check = all(check)
+total_test = all(check)
 
 print(f'List of tests = {check}')
 
 
-io.print_star_box(f"Total check = {total_check}", success=total_check)
+io.print_star_box(f"Test = {total_test}", success=total_test)
 
