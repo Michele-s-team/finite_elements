@@ -49,6 +49,7 @@ print("h = ", h)
 print("r = ", r)
 print("c_r = ", c_r)
 print("resolution = ", resolution)
+print(f'output_directory = "{output_directory}"')
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
