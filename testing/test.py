@@ -42,6 +42,7 @@ problem_solution_path_b = root_path + 'testing/commit_b/solution'
 
 check = []
 
+#Test steady-state-no-flow
 check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path,
                             root_path + 'generate_mesh/2d/ring',
@@ -67,6 +68,36 @@ check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path,
                             root_path + 'generate_mesh/2d/square',
                             root_path + 'steady-state-no-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_mesh', mesh_resolution, 'square_b'))
+
+
+# Test steady-state-flow
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/ring',
+                            root_path + 'steady-state-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_ring_mesh', mesh_resolution, 'ring_1'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/ring',
+                            root_path + 'steady-state-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_ring_mesh', mesh_resolution, 'ring_2'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/square',
+                            root_path + 'steady-state-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_mesh', mesh_resolution, 'square_a'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/square',
+                            root_path + 'steady-state-flow',
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', mesh_resolution, 'square_b'))
 
