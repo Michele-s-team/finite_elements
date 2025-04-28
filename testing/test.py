@@ -5,7 +5,7 @@ run with
 
 python3 test.py [sha of commit_a] [sha of commit_b]
 Example
-    python3 test.py unit_test different_square
+    python3 test.py unit_test different
 '''
 
 import sys
@@ -40,11 +40,34 @@ problem_solution_path_b = root_path + 'testing/commit_b/solution'
 
 # Compare commit_a and commit_b on a specific problem
 
-utest.test_problem_and_mesh(commit_a, commit_b,
+check = []
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/ring',
+                            root_path + 'steady-state-no-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_ring_mesh', mesh_resolution, 'ring'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/square_no_circle',
+                            root_path + 'steady-state-no-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_no_circle_mesh', mesh_resolution, 'square_no_circle_a'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path,
                             root_path + 'generate_mesh/2d/square',
                             root_path + 'steady-state-no-flow',
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                            'generate_square_mesh', mesh_resolution, 'square_a')
+                            'generate_square_mesh', mesh_resolution, 'square_a'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/square',
+                            root_path + 'steady-state-no-flow',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_mesh', mesh_resolution, 'square_b'))
 
 cmd.checkout('unit_test')
