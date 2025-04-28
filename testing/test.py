@@ -5,7 +5,7 @@ run with
 
 python3 test.py [sha of commit_a] [sha of commit_b]
 Example
-    python3 test.py unit_test different
+    python3 test.py master different
 '''
 
 import sys
@@ -97,6 +97,21 @@ check.append(utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path + 'steady-state-flow',
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.01, 'square_b'))
+
+# Test dynamics
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/square',
+                            root_path + 'dynamics',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_mesh', 0.1, 'square_a'))
+
+check.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path,
+                            root_path + 'generate_mesh/2d/square',
+                            root_path + 'dynamics',
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_mesh', 0.1, 'square_b'))
 
 cmd.checkout('unit_test')
 
