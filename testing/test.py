@@ -34,92 +34,96 @@ problem_solution_path_a = root_path + 'testing/commit_a/solution'
 mesh_solution_path_b = root_path + 'testing/commit_b/mesh/solution'
 problem_solution_path_b = root_path + 'testing/commit_b/solution'
 
-
 # Compare commit_a and commit_b on a specific problem
 
-check = []
-'''
-#Test steady-state-no-flow
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/ring',
-                            root_path + 'steady-state-no-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                            'generate_ring_mesh', 0.1, 'ring'))
+checks = {}
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square_no_circle',
-                            root_path + 'steady-state-no-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                            'generate_square_no_circle_mesh', 0.1, 'square_no_circle_a'))
+# Test steady-state-no-flow
+case_name = 'steady-state-no-flow'
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square',
-                            root_path + 'steady-state-no-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+problem_name = 'ring'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     root_path + 'generate_mesh/2d/ring',
+                                                                     root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_ring_mesh', 0.1, problem_name)
+
+problem_name = 'square_no_circle_a'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     root_path + 'generate_mesh/2d/square_no_circle',
+                                                                     root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_square_no_circle_mesh', 0.1, problem_name)
+
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/square',
+                                          root_path + 'steady-state-no-flow',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, 'square_a'))
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square',
-                            root_path + 'steady-state-no-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/square',
+                                          root_path + 'steady-state-no-flow',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, 'square_b'))
 
 
 # Test steady-state-flow
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/ring',
-                            root_path + 'steady-state-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/ring',
+                                          root_path + 'steady-state-flow',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_ring_mesh', 0.1, 'ring_1'))
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/ring',
-                            root_path + 'steady-state-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/ring',
+                                          root_path + 'steady-state-flow',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_ring_mesh', 0.1, 'ring_2'))
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square',
-                            root_path + 'steady-state-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/square',
+                                          root_path + 'steady-state-flow',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, 'square_a'))
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square',
-                            root_path + 'steady-state-flow',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/square',
+                                          root_path + 'steady-state-flow',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.01, 'square_b'))
-'''
+
 # Test dynamics
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square',
-                            root_path + 'dynamics',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/square',
+                                          root_path + 'dynamics',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, 'square_a'))
 
-check.append(utest.test_problem_and_mesh(commit_a, commit_b,
-                            root_path,
-                            root_path + 'generate_mesh/2d/square',
-                            root_path + 'dynamics',
-                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+checks.append(utest.test_problem_and_mesh(commit_a, commit_b,
+                                          root_path,
+                                          root_path + 'generate_mesh/2d/square',
+                                          root_path + 'dynamics',
+                                          mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, 'square_b'))
+
 
 cmd.checkout(commit_a)
 
+for i in range(len(checks)):
+    print(f'{list(checks.keys())[i]} \t {io.check_string(list(checks.values())[i], "OK", "NOT OK")}')
 
-total_test = all(check)
+total_test = all(list(checks.values()))
 
-print(f'List of tests = {check}')
-
+print(f'List of tests = {checks}')
 
 io.print_star_box(f"Test = {total_test}", success=total_test)
-

@@ -251,13 +251,16 @@ Input values:
 - 'bool' : the boolean variable
 - 'text': the text
 '''
-def check_print(bool, text):
+def check_print(bool, text_true, text_false):
+    print(check_string(bool, text_true, text_false))
 
+def check_string(bool, text_true, text_false):
     if bool:
-        print(f'{col.Back.WHITE}{col.Fore.GREEN}{text}{col.Fore.RESET}{col.Back.RESET}')
+        result = f'{col.Fore.GREEN}{text_true}{col.Fore.RESET}'
     else:
-        print(f'{col.Back.WHITE}{col.Fore.RED}{text}{col.Fore.RESET}{col.Back.RESET}')
+        result = f'{col.Fore.RED}{text_false}{col.Fore.RESET}'
 
+    return result
 
 # print a starred box of text 'message', in green if success = True and in red if success = False
 def print_star_box(message, success=True):
