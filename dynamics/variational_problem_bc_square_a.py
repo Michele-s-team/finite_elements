@@ -14,24 +14,16 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-# time step size
-T = (float)( rarg.args.T )
-N = (int)( rarg.args.N )
+T = 0.001
+kappa = 1.0
+rho = 1.0
+eta = 1.0
+v_bar_l_const = 1.0
+N = 2
 dt = T / N
-# time step size
-# bending rigidity
-kappa = (float)( rarg.args.k )
-# density
-rho = (float)( rarg.args.r )
-# viscosity
-eta = (float)( rarg.args.e )
-# inflow velocity
-v_bar_l_const = (float)( rarg.args.v )
-# value of w_bar at the boundary
+
 boundary_profile_w_bar = 0.0
-# value of phi ar r boundary
 r_profile_phi = 0.0
-#value of z at boundary
 boundary_profile_z = 0.0
 # Nitche's parameter
 alpha = 1e4
