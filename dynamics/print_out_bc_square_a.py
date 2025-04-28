@@ -1,5 +1,6 @@
 from fenics import *
-from mshr import *
+import dolfin
+import os
 import ufl as ufl
 
 import csv
@@ -18,6 +19,9 @@ import variational_problem_bc_square_a as vp
 i, j, k, l = ufl.indices( 4 )
 
 #set up printout of the BCs to file
+# create the path for the csv file if it does not exist
+os.makedirs(os.path.dirname(rarg.args.output_directory + '/bcs.csv'), exist_ok=True)
+
 csvfile_bcs = open( (rarg.args.output_directory) + '/bcs.csv', 'a', newline='' )
 fieldnames_bcs = [ \
     '<<(n^{n-1/2}_i d^{i 1})^2>>_R', \

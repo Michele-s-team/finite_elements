@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+import dolfin
 import numpy as np
 
 import boundary_geometry as bgeo
@@ -58,3 +58,6 @@ msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh
 msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R')
 
 msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+
+msh.check_mesh_symmetry(bgeo.mesh, rmsh.c_r)
+

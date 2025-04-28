@@ -1,7 +1,7 @@
 from fenics import *
-from mshr import *
+import dolfin
 import ufl as ufl
-
+import os
 import csv
 
 import boundary_geometry as bgeo
@@ -18,7 +18,11 @@ import variational_problem_bc_square_b as vp
 i, j, k, l = ufl.indices( 4 )
 
 #set up printout of the BCs to file
-csvfile_bcs = open( (rarg.args.output_directory) + '/bcs.csv', 'a', newline='' )
+
+# create the path for the csv file if it does not exist
+os.makedirs(os.path.dirname(rarg.args.output_directory + '/bcs.csv'), exist_ok=True)
+
+csvfile_bcs = open( rarg.args.output_directory + '/bcs.csv', 'a', newline='' )
 fieldnames_bcs = [ \
     '<<|v_bar^i - g^i|^2>>_L', \
     '<<|v_bar^i - g^i|^2>>_O', \

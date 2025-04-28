@@ -19,7 +19,7 @@ import mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
-L = 2
+L = 1
 h = 1
 r = 0.25
 c_r = [L / 2.0, h / 2.0]
@@ -46,3 +46,4 @@ ds_square = ds_lr + ds_tb
 ds = ds_square + ds_circle
 
 import check_mesh_tags_square
+
