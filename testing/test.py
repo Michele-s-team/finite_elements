@@ -8,7 +8,6 @@ Example
     python3 test.py unit_test different_square
 '''
 
-import os
 import sys
 
 # add the path where to find the shared modules
@@ -18,6 +17,7 @@ sys.path.append(module_path)
 import input_output as io
 import runtime_arguments as rarg
 import command as cmd
+import unit_test as utest
 
 commit_a = rarg.args.commit_a
 commit_b = rarg.args.commit_b
@@ -70,5 +70,10 @@ problem = 'square_a'
 #
 # io.check_print(mesh_check, f'Mesh check = {mesh_check}')
 # io.check_print(problem_check, f'Problem check = {problem_check}')
+
+utest.test_problem_and_mesh(commit_a, commit_b,
+                            root_path, mesh_path, code_path,
+                            mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                            'generate_square_mesh', mesh_resolution, 'square_a')
 
 cmd.checkout('unit_test')
