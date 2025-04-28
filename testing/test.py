@@ -5,7 +5,7 @@ run with
 
 python3 test.py [sha of commit_a] [sha of commit_b]
 Example
-python3 test.py 7e670cf2a5ba005ab77202c124d691eaa5bc17ea 0119597915ccfedf8560e5092c2cda8ae74ce152
+    clear; python3 test.py 7e670cf2a5ba005ab77202c124d691eaa5bc17ea 0119597915ccfedf8560e5092c2cda8ae74ce152
 '''
 
 import colorama as col
@@ -34,7 +34,10 @@ code_path = root_path + 'steady-state-no-flow'
 mesh_path = root_path + 'generate_mesh/2d/square'
 
 utest.checkout(commit_a)
-os.system(f'cd {mesh_path}; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH')
+utest.go_to_path(mesh_path)
+os.system(f'SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH')
+
+utest.go_to_path(code_path)
 os.system(f'cd {code_path}; MESH_PATH="{mesh_path}/solution"; SOLUTION_PATH="{code_path}/solution"; rm -rf $SOLUTION_PATH; python3 solve.py {problem} $MESH_PATH $SOLUTION_PATH')
 
 utest.checkout(commit_b)
