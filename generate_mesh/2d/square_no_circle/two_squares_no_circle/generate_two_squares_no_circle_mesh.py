@@ -38,8 +38,6 @@ mesh_file = output_directory + "mesh.msh"
 
 
 
-print("L = ", L)
-print("resolution = ", resolution)
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
@@ -62,6 +60,10 @@ tr_line_id = 7
 tl_line_id = 8
 m_line_id = 9
 # CHANGE PARAMETERS HERE
+
+print("L = ", L)
+print("h = ", h)
+print("resolution = ", resolution)
 
 
 # Create corner points
