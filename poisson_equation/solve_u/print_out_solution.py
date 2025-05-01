@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
@@ -6,18 +7,23 @@ import function_spaces as fsp
 import input_output as io
 import runtime_arguments as rarg
 import solution_paths as solpath
+import switch_problem as swi
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import read_mesh_ring as rmsh
 # import read_mesh_ring_slice as rmsh
-import read_mesh_square_no_circle as rmsh
+# import read_mesh_square_no_circle as rmsh
 # import read_mesh_square as rmsh
+
+rmsh = importlib.import_module(swi.rmsh)
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE
 # import variational_problem_bc_ring as vp
 # import variational_problem_bc_ring_slice as vp
-import variational_problem_bc_square_no_circle as vp
+# import variational_problem_bc_square_no_circle as vp
 # import variational_problem_bc_square as vp
+
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
