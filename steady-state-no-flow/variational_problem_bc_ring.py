@@ -63,14 +63,6 @@ class mu_exact_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class nu_exact_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] =  -((C * (1 + C**2) * (geo.my_norm(x))) / (2.0 * ((1 + C**2) * (geo.my_norm(x))**2)**(3.0/2.0))) * x[0]/geo.my_norm(x)
-        values[1] = -((C * (1 + C**2) * (geo.my_norm(x))) / (2.0 * ((1 + C**2) * (geo.my_norm(x))**2)**(3.0/2.0))) * x[1]/geo.my_norm(x)
-
-    def value_shape(self):
-        return (2,)
-
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
@@ -168,7 +160,6 @@ fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() )
 fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 
-fsp.nu_exact.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
@@ -176,9 +167,6 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 print("... done")
 '''
 
-
-
-fsp.nu_0.interpolate( nu_exact_Expression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 
