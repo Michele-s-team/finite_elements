@@ -1,16 +1,14 @@
+import colorama as col
+import dolfin
 from fenics import *
-from mshr import *
 
 import calculus as calc
 import boundary_geometry as bgeo
+import input_output as io
 import runtime_arguments as rarg
+import switch_problem as swi
 
-parser = rarg.argparse.ArgumentParser()
-parser.add_argument( "input_directory" )
-parser.add_argument( "output_directory" )
-parser.add_argument( "T" )
-parser.add_argument( "N" )
-args = parser.parse_args()
+
 
 # read the triangles
 mvc = MeshValueCollection( "size_t", bgeo.mesh, bgeo.mesh.topology().dim() )
@@ -26,13 +24,15 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet( bgeo.mesh, mvc )
 
 #radius of the smallest cell in the mesh
 r_mesh = bgeo.mesh.hmin()
+print( f"Radius of mesh cell = {col.Fore.BLUE}{r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+
 
 # CHANGE PARAMETERS HERE
 # r, R must be the same as in generate_mesh.py
-L = 2.2
-h = 0.41
-r = 0.05
-c_r = [0.2, 0.2]
+L = 1
+h = 1
+r = 0.25
+c_r = [L/2, h/2]
 # CHANGE PARAMETERS HERE
 
 
@@ -56,10 +56,6 @@ print(f'Module {__file__} called {check_mesh_tags_square.__file__}', flush=True)
 
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
-# inflow = 'near(x[0], 0)'
-# outflow = 'near(x[0], 2.2)'
-# walls = 'near(x[1], 0) || near(x[1], 0.41)'
-# cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
 inflow = f'near(x[0], 0.0)'
 outflow = f'near(x[0], {L})'
 walls = f'near(x[1], 0) || near(x[1], {h})'
