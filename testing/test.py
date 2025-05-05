@@ -87,7 +87,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_no_circle_mesh', 0.05, problem_name)
 
 
-'''
+
 # Test steady-state-no-flow
 case_name = 'steady-state-no-flow'
 
@@ -199,7 +199,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 cmd.checkout(commit_a)
 
-'''
+
 
 max_key_len = max(len(key) for key in checks.keys())
 
