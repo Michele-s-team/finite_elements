@@ -1,31 +1,32 @@
 import files as fi
 import function_spaces as fsp
 import input_output as io
-import runtime_arguments as rarg
 import boundary_geometry as bgeo
+import solution_paths as solpath
 
 
 def print_z_omega():
+    io.full_print(fsp.z, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'scalar')
+    io.full_print(fsp.omega, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, bgeo.mesh, 'vector')
 
-    fi.xdmffile_z.write( fsp.z, 0 )
-    fi.xdmffile_omega.write( fsp.omega, 0 )
-
-    io.print_nodal_values_scalar_to_csvfile (fsp.z, bgeo.mesh, (rarg.args.output_directory) + '/z.csv' )
-    io.print_nodal_values_vector_to_csvfile( fsp.omega, bgeo.mesh, (rarg.args.output_directory) + '/omega.csv' )
 
 def print_solution(t, step, dt):
+    # include the snapshot in xdmf files
+    fi.xdmffile_v.write(fsp.v_n, t)
+    fi.xdmffile_v_.write(fsp.v_, t)
+    fi.xdmffile_sigma.write(fsp.sigma_n_12, t - dt / 2.0)
+    fi.xdmffile_phi.write(fsp.phi, t)
 
-    fi.xdmffile_v.write( fsp.v_n, t )
-    fi.xdmffile_v_.write( fsp.v_, t )
-    fi.xdmffile_sigma.write( fsp.sigma_n_12, t - dt / 2.0 )
-    fi.xdmffile_phi.write( fsp.phi, t )
-
-    io.print_vector_to_csvfile( fsp.v_, (rarg.args.output_directory) + '/snapshots/csv/v_bar_' + str( step  ) + '.csv' )
-    io.print_vector_to_csvfile( fsp.v_n, (rarg.args.output_directory) + '/snapshots/csv/v_n' + str( step  ) + '.csv' )
-    io.print_scalar_to_csvfile( fsp.sigma_n_12, (rarg.args.output_directory) + '/snapshots/csv/sigma_n_12_' + str( step ) + '.csv' )
-    io.print_scalar_to_csvfile( fsp.phi, (rarg.args.output_directory) + '/snapshots/csv/phi_' + str( step ) + '.csv' )
-
-    io.print_nodal_values_vector_to_csvfile( fsp.v_, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step ) + '.csv' )
-    io.print_nodal_values_vector_to_csvfile( fsp.v_n, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_n_' + str( step ) + '.csv' )
-    io.print_nodal_values_scalar_to_csvfile( fsp.sigma_n_12, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/sigma_n_12_' + str( step ) + '.csv' )
-    io.print_nodal_values_scalar_to_csvfile( fsp.phi, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/phi_' + str( step ) + '.csv' )
+    # print the snapshot in a separate file
+    io.full_print(fsp.v_, 'v_bar_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'vector')
+    io.full_print(fsp.v_n, 'v_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'vector')
+    io.full_print(fsp.sigma_n_12, 'sigma_n_12_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')
+    io.full_print(fsp.phi, 'phi_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')

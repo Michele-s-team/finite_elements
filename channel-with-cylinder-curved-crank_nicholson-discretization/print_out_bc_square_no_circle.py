@@ -1,19 +1,25 @@
-from fenics import *
-from mshr import *
-import ufl as ufl
 import csv
+import importlib
+from fenics import *
+import os
+import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
-import read_mesh_square_no_circle as rmsh
 import runtime_arguments as rarg
-import variational_problem_bc_square_no_circle as vp
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices( 4 )
 
+# create the path for the csv file if it does not exist
+filename_bcs = rarg.args.output_directory + '/bcs.csv'
+os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
-csvfile = open( (rarg.args.output_directory) + '/bcs.csv', 'a', newline='' )
+csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_{l + t + b}',\
     '<<(phi - r_profile_phi)^2>>_r' ,\

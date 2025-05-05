@@ -1,6 +1,6 @@
 from pyclbr import Function
 from fenics import *
-from mshr import *
+import dolfin
 
 import boundary_geometry as bgeo
 

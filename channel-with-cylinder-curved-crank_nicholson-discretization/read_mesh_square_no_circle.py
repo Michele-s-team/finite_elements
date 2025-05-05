@@ -1,15 +1,12 @@
+import colorama as col
+import dolfin
 from fenics import *
-from mshr import *
 
 import boundary_geometry as bgeo
+import input_output as io
 import runtime_arguments as rarg
 
-parser = rarg.argparse.ArgumentParser()
-parser.add_argument("input_directory")
-parser.add_argument("output_directory")
-parser.add_argument("T")
-parser.add_argument("N")
-args = parser.parse_args()
+
 
 # read the triangles
 mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
@@ -25,10 +22,11 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 
 # radius of the smallest cell in the mesh
 r_mesh = bgeo.mesh.hmin()
+print( f"Radius of mesh cell = {col.Fore.BLUE}{r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 # CHANGE PARAMETERS HERE
-L = 4.4
-h = 0.41
+L = 1.0
+h = 1.0
 # CHANGE PARAMETERS HERE
 
 

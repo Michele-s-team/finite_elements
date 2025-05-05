@@ -1,18 +1,20 @@
 from fenics import *
-from mshr import *
+import importlib
 import ufl as ufl
 
 import function_spaces as fsp
 import geometry as geo
-import read_mesh_square_no_circle as rmsh
-import runtime_arguments as rarg
+import switch_problem as swi
+
+
+rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-T = (float)(rarg.args.T)
-num_steps = (int)(rarg.args.N)
+T = 0.001
+num_steps = 10
 
 dt = T / num_steps  # time step size
 rho = 1.0
