@@ -38,4 +38,4 @@ print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.
 '''
 
 import print_out_forces
-import print_out_force_on_circle
+import print_out_force_on_boundary_bc_square

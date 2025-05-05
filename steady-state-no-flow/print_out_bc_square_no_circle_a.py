@@ -30,7 +30,7 @@ print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.omega_b, rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
-import print_out_force_on_square
+import print_out_force_on_boundary_bc_square_no_circle
 
 '''
 print( "Check if the intermediate PDEs are satisfied:" )
