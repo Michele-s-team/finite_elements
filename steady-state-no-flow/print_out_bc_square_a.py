@@ -27,15 +27,7 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_circle(prout.omega_output))[i] * prout.omega_output[i], vp.omega_circle, rmsh.ds_circle):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-'''
-print( "Check if the intermediate PDEs are satisfied:" )
-print(
-    f"1)\t\t<<(fel + flaplace)^2>>_Omega =  {msh.difference_in_bulk( project( phys.fel_n( prout.omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, prout.omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print(
-    f"2) \t\t<<|omega - partial z|^2>>_Omega = {msh.difference_in_bulk( project( sqrt( (prout.omega_output[i] - prout.z_output.dx( i )) * (prout.omega_output[i] - prout.z_output.dx( i )) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {msh.difference_in_bulk( mu_output, project( geo.H( prout.omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,prout.omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-'''
+
 
 import print_out_forces
 import print_out_force_on_boundary_bc_square
