@@ -214,3 +214,17 @@ def fsigma_t(sigma, omega):
 # fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
 def fvisc_t(d, omega, eta):
     return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
+
+'''
+returns the left-hand side of the force-balance equation
+Input values: 
+- 'kappa': bending rigidity
+- 'omega': gradient of z
+- 'mu': mean curvature
+- 'sigma': surface tension 
+- 'tau': nabla^i nabla_i mu
+Return values: 
+- (kappa * (- 2 * tau - 4 * mu * ( (mu) ** 2 - geo.K(omega) ) ) + 2 * sigma * mu  )
+'''
+def lhs_force_balance_equation(kappa, omega, mu, sigma, tau):
+    return (kappa * (- 2 * tau - 4 * mu * ( (mu) ** 2 - geo.K(omega) ) ) + 2 * sigma * mu  )

@@ -4,7 +4,7 @@ This code generates a  mesh given by a slice of a ring
 run with
 python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.3 $SOLUTION_PATH
+clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio

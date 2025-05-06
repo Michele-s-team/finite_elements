@@ -3,6 +3,7 @@ import ufl as ufl
 import colorama as col
 
 import boundary_geometry as bgeo
+import geometry as geo
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
@@ -21,7 +22,12 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_tb = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.n_omega_square, rmsh.ds_tb):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
+print(
+    f"\t\t<<[mu - H(omega)]^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, geo.H(prout.omega_output), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+
+
 print(f"\n<z>_circle = {assemble(prout.z_output * rmsh.ds_circle) / assemble(Constant(1.0) * rmsh.ds_circle)}")
 
 import print_out_forces
-import print_out_force_on_circle
+import print_out_force_on_boundary_bc_square

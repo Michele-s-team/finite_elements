@@ -52,14 +52,6 @@ class MuExpression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class NuExpression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
-
-    def value_shape(self):
-        return (2,)
-
 class TauExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
@@ -104,7 +96,6 @@ fsp.z_0.interpolate( ManifoldExpression( element=fsp.Q_z.ufl_element() ) )
 fsp.omega_0.interpolate( OmegaExpression( element=fsp.Q_omega.ufl_element() ) )
 fsp.mu_0.interpolate( MuExpression( element=fsp.Q_mu.ufl_element() ) )
 
-fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 # uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
@@ -140,19 +131,13 @@ F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) 
 F_N = alpha / rmsh.r_mesh * ( \
             + (((bgeo.n_lr( fsp.omega ))[i] * fsp.omega[i] - n_omega_square) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
             + (((bgeo.n_tb( fsp.omega ))[i] * fsp.omega[i] - n_omega_square) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
+            # these terms constrain mu = H(omega) on the boundary
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.omega) * rmsh.ds_lr \
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_tb(fsp.omega) * rmsh.ds_tb \
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
     )
 
 # total functional for the mixed problem
 F = (F_z + F_omega + F_mu ) + F_N
 
-# post-processing variational functionals
-# F_pp_nu = (fsp.nu[i] * fsp.nu_nu[i] + fsp.mu * geo.Nabla_v( fsp.nu_nu, fsp.omega )[i, i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-#        - ((bgeo.n_lr( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
-#        - ((bgeo.n_tb( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
-#        - ((bgeo.n_circle( fsp.omega ))[i] * geo.g( fsp.omega )[i, j] * fsp.mu * fsp.nu_nu[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * (1.0 / rmsh.r) * rmsh.ds_circle
-#
-# F_pp_tau = ((fsp.mu.dx( i )) * geo.g_c( fsp.omega )[i, j] * (fsp.nu_tau.dx( j )) + fsp.tau * fsp.nu_tau) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-#            - ((bgeo.n_lr( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
-#            - ((bgeo.n_tb( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
-#            - ((bgeo.n_circle( fsp.omega ))[i] * fsp.nu_tau * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega , rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle
 import variational_problem_pp_square as vp_pp

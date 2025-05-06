@@ -32,9 +32,6 @@ io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, sol
               solpath.nodal_values_path, bgeo.mesh,
               'scalar')
 
-io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, bgeo.mesh,
-              'vector')
 io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, bgeo.mesh,
               'scalar')
@@ -55,8 +52,7 @@ xdmffile_check.write(
     project(project(sqrt((omega_output[i] - (z_output.dx(i))) * (omega_output[i] - (z_output.dx(i)))), fsp.Q_z),
             fsp.Q_z), 0)
 xdmffile_check.write(project(project(mu_output - geo.H(omega_output), fsp.Q_z), fsp.Q_z), 0)
+
 xdmffile_check.write(
-    project(project(sqrt((fsp.nu[i] - (mu_output.dx(i))) * (fsp.nu[i] - (mu_output.dx(i)))), fsp.Q_z), fsp.Q_z), 0)
-xdmffile_check.write(
-    project(project(fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z),
+    project(project( phys.lhs_force_balance_equation(vp.kappa, omega_output, mu_output, fsp.sigma, fsp.tau)  , fsp.Q_z),
             fsp.Q_tau), 0)
