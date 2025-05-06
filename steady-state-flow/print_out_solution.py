@@ -57,9 +57,6 @@ io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, sol
               solpath.nodal_values_path, bgeo.mesh,
               'scalar')
 
-io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, bgeo.mesh,
-              'vector')
 io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, bgeo.mesh,
               'scalar')
