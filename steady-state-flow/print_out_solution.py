@@ -118,8 +118,11 @@ xdmffile_check.write(
 xdmffile_check.write(project(project(mu_output - geo.H(omega_output), fsp.Q_z), fsp.Q_z), 0)
 
 xdmffile_check.write(
-    project(project(fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z),
-            fsp.Q_tau), 0)
+    project(
+        - phys.conv_cn_n(v_output, v_output, v_output, w_output, w_output, omega_output, vp.rho) \
+        + phys.lhs_force_balance_equation(vp.kappa, omega_output, mu_output, sigma_output, fsp.tau) \
+        + phys.fvisc_n(v_output, w_output, omega_output, mu_output, vp.eta),
+        fsp.Q_tau), 0)
 xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]) * (
         geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]), fsp.Q_z), fsp.Q_tau), 0)
 
