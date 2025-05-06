@@ -38,6 +38,7 @@ ds_circle = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=6)
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
+ds = ds_square + ds_circle
 
 import check_mesh_tags_square
 
