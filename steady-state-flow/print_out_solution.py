@@ -118,8 +118,6 @@ xdmffile_check.write(
 xdmffile_check.write(project(project(mu_output - geo.H(omega_output), fsp.Q_z), fsp.Q_z), 0)
 
 xdmffile_check.write(
-    project(project(sqrt((fsp.nu[i] - (mu_output.dx(i))) * (fsp.nu[i] - (mu_output.dx(i)))), fsp.Q_z), fsp.Q_z), 0)
-xdmffile_check.write(
     project(project(fsp.tau - geo.g_c(omega_output)[i, j] * geo.Nabla_f(fsp.nu, omega_output)[i, j], fsp.Q_z),
             fsp.Q_tau), 0)
 xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i, j] - fsp.d[i, j]) * (
