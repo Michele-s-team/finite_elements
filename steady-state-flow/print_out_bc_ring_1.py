@@ -42,3 +42,5 @@ print(
 print(
     f"\t\t<<[mu - H(omega)]^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, geo.H(prout.omega_output), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
+
+import print_out_force_on_boundary_bc_ring
