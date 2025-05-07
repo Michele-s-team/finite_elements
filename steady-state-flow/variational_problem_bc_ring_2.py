@@ -231,7 +231,6 @@ fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() )
 fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 
-# fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
@@ -313,15 +312,10 @@ F_omega = (fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] *
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_N = alpha / rmsh.r_mesh * ( \
-    # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_exact) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_r ) * rmsh.ds_r \
-    # + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - (bgeo.n_circle(omega_exact ))[i] * omega_exact[i]) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \ \
-    # \
-    + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * v_R[j]) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
-    #     + (bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * bgeo.n_circle( fsp.omega )[k] * geo.g( fsp.omega )[k, l] * phys.Pi( fsp.v, fsp.w, fsp.omega, fsp.sigma, eta )[j, l]) \
-    #     * (bgeo.n_circle( fsp.omega )[m] * geo.g( fsp.omega )[m, n] * bgeo.n_circle( fsp.omega )[o] * geo.g( fsp.omega )[o, p] * phys.Pi( geo.f_to_v( fsp.nu_v, fsp.omega ), fsp.nu_w, fsp.omega, fsp.nu_sigma, eta )[n, p]) \
-    #     * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
-    #     ((geo.H( fsp.omega ) - mu_R) * (0.5 * geo.g_c( fsp.omega )[i, j] * (geo.normal( fsp.omega ))[k] * (geo.e( geo.v_to_f( fsp.nu_omega, fsp.omega ) )[j, k]).dx( i ))) * bgeo.sqrt_deth_circle(
-    # fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            + ((bgeo.n_circle(fsp.omega)[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] - bgeo.n_circle(fsp.omega)[i] * geo.g(fsp.omega)[i, j] * v_R[j]) * (bgeo.n_circle(fsp.omega)[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_R) * rmsh.ds_R \
+            # these terms constrain mu = H(omega) on the boundary
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_R) * (1.0 / rmsh.R) * rmsh.ds_R \
     )
 
 

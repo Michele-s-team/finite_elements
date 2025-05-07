@@ -62,7 +62,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e1
+alpha = 1e2
 
 class v_l_Expression( UserExpression ):
     def eval(self, values, x):
@@ -288,8 +288,11 @@ F_N = alpha / rmsh.r_mesh * ( \
 \
               + ( ( (bgeo.n_lr(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_lr(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
               + ( ( (bgeo.n_tb(fsp.omega))[i] * fsp.omega[i] - omega_square ) * ((bgeo.n_tb(fsp.omega))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l]) ) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
- \
-      )
+              # these terms constrain mu = H(omega) on the boundary
+              + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.omega) * rmsh.ds_lr \
+              + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_tb(fsp.omega) * rmsh.ds_tb \
+              + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle \
+    )
 
 
 # total functional for the mixed problem

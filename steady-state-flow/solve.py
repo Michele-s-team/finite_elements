@@ -10,18 +10,16 @@ Run with
 clear; python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
 
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
-clear; clear; rm -rf solution; python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
-clear; clear; rm -rf solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
+    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/$SOLUTION_PATH
+    rm -rf solution; python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
+    rm -rf solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady-state-flow/mesh/solution /home/fenics/shared/steady-state-flow/solution
 
 Examples:
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_1 $MESH_PATH $SOLUTION_PATH;
-
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
-
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
-
-    clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_1 $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_1 $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
@@ -93,18 +91,7 @@ import input_output as io
 import runtime_arguments as rarg
 import switch_problem as swi
 
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import read_mesh_ring as rmsh
-# import read_mesh_square as rmsh
-
 rmsh = importlib.import_module(swi.rmsh)
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import variational_problem_bc_ring_1 as vp
-# import variational_problem_bc_ring_2 as vp
-# import variational_problem_bc_square_a as vp
-# import variational_problem_bc_square_b as vp
 
 vp = importlib.import_module(swi.vp)
 
@@ -136,8 +123,8 @@ params = {'nonlinear_solver': 'newton',
                 # 'linear_solver'           : 'umfpack',
                 # 'linear_solver'           : 'cg',
                 # 'linear_solver'           : 'bicgstab',
-                # 'linear_solver'           : 'superlu',
-                'linear_solver'           : 'mumps',
+                'linear_solver'           : 'superlu',
+                # 'linear_solver'           : 'mumps',
                 # 'linear_solver'           : 'lu',
                 'absolute_tolerance'      : 1e-6,
                 'relative_tolerance'      : 1e-6,
@@ -154,26 +141,15 @@ solver.parameters.update(params)
 '''
 
 #the post-processing ('pp') variational problem used to compute tau
-J_pp_nu = derivative( vp.vp_pp.F_pp_nu, fsp.nu, fsp.J_pp_nu )
 J_pp_tau = derivative( vp.vp_pp.F_pp_tau, fsp.tau, fsp.J_pp_tau )
 J_pp_d = derivative( vp.vp_pp.F_pp_d, fsp.d, fsp.J_pp_d )
-problem_pp_nu = NonlinearVariationalProblem( vp.vp_pp.F_pp_nu, fsp.nu, [], J_pp_nu )
 problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau, [], J_pp_tau )
 problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
-solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
 solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
 solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
 solver.solve()
-solver_pp_nu.solve()
 solver_pp_tau.solve()
 solver_pp_d.solve()
-
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import print_out_bc_ring_1
-# import print_out_bc_ring_2
-# import print_out_bc_square_a
-# import print_out_bc_square_b
 
 prout_bc = importlib.import_module(swi.prout_bc)

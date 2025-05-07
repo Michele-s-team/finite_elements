@@ -58,7 +58,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e1
+alpha = 1e2
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
@@ -148,13 +148,6 @@ class mu_0_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class NuExpression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
-    def value_shape(self):
-        return (2,)
-
 class TauExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0.0
@@ -162,30 +155,8 @@ class TauExpression( UserExpression ):
         return (1,)
 # CHANGE PARAMETERS HERE
 
-#test for 3d vector
-'''
-import input_output as io
-import runtime_arguments as rarg
-
-class v_test_3d_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = np.cos(x[0]**3-x[1])
-        values[1] = np.sin(x[0]**3-x[1])**2
-        values[2] = 2*x[1]/(1+x[0]**2)
-    def value_shape(self):
-        return (3,)
-v_test_3d = interpolate(v_test_3d_Expression(element=fsp.Q_3d.ufl_element()), fsp.Q_3d)
-
-xdmffile_v_test_3d = XDMFFile((rarg.args.output_directory) + '/v_test_3d.xdmf')
-xdmffile_v_test_3d.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile_v_test_3d.write(v_test_3d, 0)
-xdmffile_v_test_3d.close()
-
-io.print_vector_3d_to_csvfile(v_test_3d, (rarg.args.output_directory) + '/v_test_3d.csv')
-'''
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
-
 
 z_r = interpolate( z_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 z_R = interpolate( z_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
@@ -214,20 +185,12 @@ fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() )
 fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 
-# fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
 print("... done")
 '''
-
-# fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
-# fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
-
-# CHANGE PARAMETERS HERE
-# profile_v_r = Expression( ('v_r * x[0] / sqrt( pow(x[0], 2) + pow(x[1], 2) )', 'v_r * x[1] / sqrt( pow(x[0], 2) + pow(x[1], 2) )'), v_r = v_r_const, element=fsp.Q.sub( 0 ).ufl_element() )
-# CHANGE PARAMETERS HERE# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
@@ -314,6 +277,9 @@ F_N = alpha / rmsh.r_mesh * ( \
             + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_R) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
  \
             + ((bgeo.n_circle( fsp.omega )[i] * geo.g( fsp.omega )[i, j] * fsp.v[j] - v_R_const) * (bgeo.n_circle( fsp.omega )[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.c_R ) * rmsh.ds_R \
+            # these terms constrain mu = H(omega) on the boundary
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_r \
+            + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.c_R) * (1.0 / rmsh.R) * rmsh.ds_R \
     )
 
 
