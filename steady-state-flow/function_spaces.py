@@ -95,3 +95,12 @@ d_0 = Function( Q_d )
 
 v, w, sigma, z, omega, mu = split( psi )
 assigner = FunctionAssigner(Q, [Q_v, Q_w, Q_sigma, Q_z, Q_omega, Q_mu])
+
+'''
+v_0_r_read.set_allow_extrapolation(True)
+w_0_read.set_allow_extrapolation(True)
+sigma_0_read.set_allow_extrapolation(True)
+z_0_read.set_allow_extrapolation(True)
+omega_0_r_read.set_allow_extrapolation(True)
+mu_0_read.set_allow_extrapolation(True)
+'''
