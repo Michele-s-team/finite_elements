@@ -231,7 +231,6 @@ fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() )
 fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 
-# fsp.nu_0.interpolate( NuExpression( element=fsp.Q_nu.ufl_element() ) )
 # fsp.tau_0.interpolate( TauExpression( element=fsp.Q_tau.ufl_element() ) )
 
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
