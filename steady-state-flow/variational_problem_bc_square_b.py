@@ -62,7 +62,7 @@ rho = 1.0
 #viscosity
 eta = 1.0
 #Nitche's parameter
-alpha = 1e1
+alpha = 1e2
 
 class v_l_Expression( UserExpression ):
     def eval(self, values, x):
