@@ -206,7 +206,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                             'generate_square_mesh', 0.1, problem_name)
 '''
 
-cmd.checkout(commit_a)
+cmd.checkout(commit_a, success)
 
 
 

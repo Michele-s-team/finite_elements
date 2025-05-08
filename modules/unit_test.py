@@ -1,5 +1,3 @@
-import os
-
 import command as cmd
 import input_output as io
 from command import run_command
@@ -33,27 +31,24 @@ def test_problem_and_mesh(commit_a,
         #this method has been called with a success variable previously set to True -> The previous checks have been performed with no errors -> Proceed with this check
 
         # checkout commit_a, generate the mesh and solve the problem
-        success[0] = success[0] and (cmd.checkout(commit_a))
+        cmd.checkout(commit_a, success)
 
-        success[0] = success[0] and run_command(f'cd {mesh_path}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_a}')
-        success[0] = success[0] and run_command(f'cd {code_path}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem} {mesh_solution_path_a} {problem_solution_path_a}')
+        run_command(f'cd {mesh_path}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_a}', success)
+        run_command(f'cd {code_path}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
         # checkout commit_b, generate the mesh and solve the problem
-        success[0] = success[0] and (cmd.checkout(commit_b))
-        success[0] = success[0] and run_command(f'cd {mesh_path}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_b}')
-        success[0] = success[0] and run_command(f'cd {code_path}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem} {mesh_solution_path_b} {problem_solution_path_b}')
+        cmd.checkout(commit_b, success)
+        run_command(f'cd {mesh_path}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_b}', success)
+        run_command(f'cd {code_path}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem} {mesh_solution_path_b} {problem_solution_path_b}', success)
 
         # compare the mesh and problem solution for commit_a and commit_b
         # mesh_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
-        success_mesh, output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
+        output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}', success)
         mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
-        success[0] = success[0] and success_mesh
-
 
         # problem_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
-        success_problem, output_problem, error_problem = run_command(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
+        output_problem, error_problem = run_command(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}', success)
         problem_check = (((output_problem.strip() == "")) and ((error_problem.strip() == "")))
-        success[0] = success[0] and success_problem
 
 
         # if check = true, then commit_a and commit_b give the same result
@@ -64,7 +59,7 @@ def test_problem_and_mesh(commit_a,
 
     else:
         #this method has been called with a success variable previously set to False -> The previous checks gave  errors -> Do not proceed with the check
-
+        print('Stopping here.')
         check = False
 
     return check
