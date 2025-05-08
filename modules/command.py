@@ -32,6 +32,7 @@ Run a command in command line
 Input values: 
 - 'command' the command, e.g. 'pwd'
 Return value: 
+- True (False) if the command was executed successfully
 - the strings with the output and the error resulting from the command run
 '''
 def run_command(command):
@@ -43,11 +44,13 @@ def run_command(command):
         universal_newlines=True  # <- instead of text=True
     )
 
-    return result.stdout, result.stderr
+    success = (result.returncode == 0)
+
+    return success, result.stdout, result.stderr
 
 
 def command_empty_err_out(command):
-    output_out, output_err = run_command(command)
+    success, output_out, output_err = run_command(command)
     out_is_empty = (output_out.strip() == "")
     err_is_empty = (output_err.strip() == "")
     result = (out_is_empty and err_is_empty)
