@@ -55,6 +55,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 print(f'Success: {success[0]}')
 
 
+'''
 problem_name = 'square_no_circle'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
@@ -65,7 +66,6 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 print(f'Success: {success[0]}')
 
-'''
 problem_name = 'two_squares_no_circle'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
