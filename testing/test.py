@@ -19,8 +19,7 @@ import runtime_arguments as rarg
 import command as cmd
 import unit_test as utest
 
-success = cmd.run_command('git checkout master')[0]
-print(f'success: {success}')
+success = cmd.run_command('git checkout master')
 
 '''
 
