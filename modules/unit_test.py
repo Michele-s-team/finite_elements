@@ -52,7 +52,7 @@ def test_problem_and_mesh(commit_a,
 
 
         # if check = true, then commit_a and commit_b give the same result
-        check = (mesh_check and problem_check)
+        check = (success[0] and mesh_check and problem_check)
 
         io.check_print(mesh_check, 'Mesh check OK', 'Mesh check NOT OK')
         io.check_print(problem_check, 'Problem check OK', 'Problem check NOT OK')
