@@ -48,7 +48,11 @@ def test_problem_and_mesh(commit_a,
     success = success and success_mesh
 
 
-    problem_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
+    # problem_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
+    success_problem, output_problem, error_problem = run_command(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
+    problem_check = (((output_problem.strip() == "")) and ((error_problem.strip() == "")))
+    success = success and success_problem
+
 
     # if check = true, then commit_a and commit_b give the same result
     check = (mesh_check and problem_check)
