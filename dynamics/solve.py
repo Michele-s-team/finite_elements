@@ -123,13 +123,10 @@ for step in range(vp.N):
     solver = NonlinearVariationalSolver( problem )
 
     # the post-processing ('pp') variational problem used to compute tau, ...
-    J_pp_nu = derivative( vp.vp_pp.F_pp_nu, fsp.nu_n_12, fsp.J_pp_nu )
     J_pp_tau = derivative( vp.vp_pp.F_pp_tau, fsp.tau_n_12, fsp.J_pp_tau )
     J_pp_d = derivative( vp.vp_pp.F_pp_d, fsp.d, fsp.J_pp_d )
-    problem_pp_nu = NonlinearVariationalProblem( vp.vp_pp.F_pp_nu, fsp.nu_n_12, [], J_pp_nu )
     problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau_n_12, [], J_pp_tau )
     problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
-    solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
     solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
     solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
@@ -162,7 +159,6 @@ for step in range(vp.N):
     
     solver.solve()
 
-    solver_pp_nu.solve()
     solver_pp_tau.solve()
     solver_pp_d.solve()
 
