@@ -19,9 +19,7 @@ import runtime_arguments as rarg
 import command as cmd
 import unit_test as utest
 
-success = cmd.run_command('git checkout master')
 
-'''
 
 commit_a = rarg.args.commit_a
 commit_b = rarg.args.commit_b
@@ -77,7 +75,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name)
 
-
+'''
 
 # Test poisson_equation/solve_u/periodic
 case_name = 'poisson_equation/solve_u/periodic'
@@ -199,7 +197,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                             root_path + case_name,
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, problem_name)
-
+'''
 
 cmd.checkout(commit_a)
 
@@ -217,4 +215,3 @@ total_test = all(list(checks.values()))
 print(f'List of tests = {checks}')
 
 io.print_star_box(f"Test = {total_test}", success=total_test)
-'''
