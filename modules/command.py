@@ -36,6 +36,9 @@ Return value:
 - the strings with the output and the error resulting from the command run
 '''
 def run_command(command):
+
+    print(f'Running command {command} ...')
+
     result = subprocess.run(
         command,
         shell=True,
@@ -45,6 +48,11 @@ def run_command(command):
     )
 
     success = (result.returncode == 0)
+
+    print('... done.')
+    print(f'\tsuccess = {success}')
+    print(f'\toutput = {result.stdout}')
+    print(f'\terror = {result.stderr}')
 
     return success, result.stdout, result.stderr
 
