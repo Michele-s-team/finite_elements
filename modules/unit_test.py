@@ -42,7 +42,12 @@ def test_problem_and_mesh(commit_a,
     success = success and run_command(f'cd {code_path}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem} {mesh_solution_path_b} {problem_solution_path_b}')
 
     # compare the mesh and problem solution for commit_a and commit_b
-    mesh_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
+    # mesh_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
+    success_mesh, output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
+    mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
+    success = success and success_mesh
+
+
     problem_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
 
     # if check = true, then commit_a and commit_b give the same result
