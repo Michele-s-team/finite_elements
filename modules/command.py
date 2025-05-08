@@ -9,12 +9,16 @@ import subprocess
 checks out a commit
 Input values: 
 - 'commit_sha': the sha of the commit 
+Return values: 
+- True/False if the checkout was successful/ not successful
 '''
 def checkout(commit_sha):
 
     print(f'{col.Fore.BLUE}Checking out {commit_sha}... {col.Fore.RESET}')
-    os.system(f'git checkout {commit_sha}')
+    success = run_command(f'git checkout {commit_sha}')
     print(f'{col.Fore.BLUE}...done.{col.Fore.RESET}')
+
+    return success
 
 
 '''
