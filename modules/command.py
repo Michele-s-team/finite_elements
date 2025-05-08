@@ -23,15 +23,7 @@ def checkout(commit_sha, success):
         print('Stopping here.')
 
 
-'''
-goes to a given path
-Input values:
-- 'path': the path 
-'''
-def go_to_path(path):
-    print(f'{col.Fore.BLUE}Entering {path}... {col.Fore.RESET}')
-    os.system(f'cd {path}')
-    print(f'{col.Fore.BLUE}...done.{col.Fore.RESET}')
+
 
 '''
 Run a command in command line
@@ -65,13 +57,20 @@ def run_command(command, success):
         return result.stdout, result.stderr
 
     else:
+        print('Stopping here.')
         return '',''
 
 
-def command_empty_err_out(command):
-    success, output_out, output_err = run_command(command)
-    out_is_empty = (output_out.strip() == "")
-    err_is_empty = (output_err.strip() == "")
-    result = (out_is_empty and err_is_empty)
+def command_empty_err_out(command, success):
+
+    if success[0]:
+        output_out, output_err = run_command(command, success)
+        out_is_empty = (output_out.strip() == "")
+        err_is_empty = (output_err.strip() == "")
+        result = (out_is_empty and err_is_empty)
+
+    else:
+        print('Stopping here.')
+        result = False
 
     return result
