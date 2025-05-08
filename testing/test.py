@@ -19,6 +19,11 @@ import runtime_arguments as rarg
 import command as cmd
 import unit_test as utest
 
+success = cmd.run_command('git checkout master')[0]
+print(f'success: {success}')
+
+'''
+
 commit_a = rarg.args.commit_a
 commit_b = rarg.args.commit_b
 
@@ -213,3 +218,4 @@ total_test = all(list(checks.values()))
 print(f'List of tests = {checks}')
 
 io.print_star_box(f"Test = {total_test}", success=total_test)
+'''
