@@ -31,8 +31,9 @@ fieldnames_bcs = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_L', \
     '<<(w_bar - boundary_profile_w_bar)^2>>', \
     '<<(phi - r_profile_phi)^2>>', \
-    '<<(z - boundary_profile_z)^2>>'
-]
+    '<<(z - boundary_profile_z)^2>>', \
+    '<<[mu - H(omega)]^2>>' \
+    ]
 writer_bcs = csv.DictWriter( csvfile_bcs, fieldnames=fieldnames_bcs )
 writer_bcs.writeheader()
 
@@ -67,6 +68,8 @@ def print_bcs(psi):
             f"{msh.abs_wrt_measure( phi_dummy - vp.r_profile_phi, rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[7]: \
             f"{msh.abs_wrt_measure( z_n_12_dummy - vp.boundary_profile_z, rmsh.ds ):.{io.number_of_decimals}e}", \
+        fieldnames_bcs[8]: \
+            f"{msh.difference_wrt_measure(mu_n_12_dummy, geo.H(omega_n_12_dummy), rmsh.ds):.{io.number_of_decimals}e}", \
         }] )
     csvfile_bcs.flush()
 

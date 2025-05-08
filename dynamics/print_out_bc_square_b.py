@@ -33,7 +33,8 @@ fieldnames_bcs = [ \
     '<<(n^{n-1/2, i} Nabla_i phi)^2>>_{L + W + O}', \
     '<<(z - psi_z)^2>>_{L+ R + W}' ,\
     '<<|omega^{n-1/2}_i - psi^i|^2>>_O', \
-    '<<(n^{n-1/2, i} omega^{n-1/2}_i)^2>>_{L + R +  W}' \
+    '<<(n^{n-1/2, i} omega^{n-1/2}_i)^2>>_{L + R +  W}', \
+    '<<[mu - H(omega)]^2>>' \
     ]
 writer_bcs = csv.DictWriter( csvfile_bcs, fieldnames=fieldnames_bcs )
 writer_bcs.writeheader()
@@ -72,7 +73,8 @@ def print_bcs(psi):
             f"{msh.abs_wrt_measure( sqrt((omega_n_12_dummy[i] - vp.omega_circle[i]) * (omega_n_12_dummy[i] - vp.omega_circle[i])), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[9]: \
             f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_lr ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.omega_n_square, rmsh.ds_tb ) :.{io.number_of_decimals}e}", \
-
+        fieldnames_bcs[10]: \
+            f"{msh.difference_wrt_measure(mu_n_12_dummy, geo.H(omega_n_12_dummy), rmsh.ds):.{io.number_of_decimals}e}", \
         }] )
     csvfile_bcs.flush()
 
