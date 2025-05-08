@@ -8,8 +8,7 @@ import boundary_geometry as bgeo
 the auxiliary fields are defined as follows
 - omega_n_12_i[i] == omega^{n-1/2}_i =  \partial_i  z^{n-1/2}
 - mu_n_12 == mu^{n-1/2} = H(omega_n_12)
-- nu_n_12[i] == nu^{n-1/2}_i = Nabla_i mu^{n-1/2} = Nabla_i H(omega_{n-1/2})
-- tau_n_12 = Nabla^i nu^{n-1/2}_i
+- tau_n_12 = Nabla^i Nabla_i mu^{n-1/2}
 - d_n[i, j] = d_{ij}(V, W, omega_n_12) 
 '''
 
@@ -40,8 +39,7 @@ Q_z_n= Q.sub(5).collapse()
 Q_omega_n = Q.sub(6).collapse()
 Q_mu_n = Q.sub(7).collapse()
 
-#the function spaces for nu, tau and d are for post-processing only
-Q_nu = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+#the function spaces for tau and d are for post-processing only
 Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
 Q_d = TensorFunctionSpace( bgeo.mesh, 'P', degree_function_space, shape=(2, 2) )
 
@@ -67,15 +65,12 @@ sigma_n_32 = Function( Q_phi )
 sigma_n_12_output = Function( Q_phi )
 z_n_32 = Function( Q_z_n )
 
-nu_n_12 = Function(Q_nu)
 tau_n_12 = Function(Q_tau)
 d = Function( Q_d )
 
-J_pp_nu = TrialFunction( Q_nu )
 J_pp_tau = TrialFunction( Q_tau )
 J_pp_d = TrialFunction( Q_d )
 
-nu_nu = TestFunction(Q_nu)
 nu_tau = TestFunction(Q_tau)
 nu_d = TestFunction(Q_d)
 
@@ -102,7 +97,6 @@ z_n_12_0 = Function( Q_z_n )
 omega_n_12_0 = Function( Q_omega_n )
 mu_n_12_0 = Function( Q_mu_n )
 
-nu_0 = Function( Q_nu )
 tau_0 = Function( Q_tau )
 d_0 = Function( Q_d )
 

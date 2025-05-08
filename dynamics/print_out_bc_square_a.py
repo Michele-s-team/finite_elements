@@ -31,8 +31,9 @@ fieldnames_bcs = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_L', \
     '<<(w_bar - boundary_profile_w_bar)^2>>', \
     '<<(phi - r_profile_phi)^2>>', \
-    '<<(z - boundary_profile_z)^2>>'
-]
+    '<<(z - boundary_profile_z)^2>>', \
+    '<<[mu - H(omega)]^2>>' \
+    ]
 writer_bcs = csv.DictWriter( csvfile_bcs, fieldnames=fieldnames_bcs )
 writer_bcs.writeheader()
 
@@ -67,6 +68,8 @@ def print_bcs(psi):
             f"{msh.abs_wrt_measure( phi_dummy - vp.r_profile_phi, rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[7]: \
             f"{msh.abs_wrt_measure( z_n_12_dummy - vp.boundary_profile_z, rmsh.ds ):.{io.number_of_decimals}e}", \
+        fieldnames_bcs[8]: \
+            f"{msh.difference_wrt_measure(mu_n_12_dummy, geo.H(omega_n_12_dummy), rmsh.ds):.{io.number_of_decimals}e}", \
         }] )
     csvfile_bcs.flush()
 
@@ -88,7 +91,6 @@ def print_solution(psi, step, t):
     files.xdmffile_omega.write( omega_n_12_output, t - vp.dt / 2.0 )
     files.xdmffile_mu.write( mu_n_12_output, t - vp.dt / 2.0 )
 
-    files.xdmffile_nu.write( fsp.nu_n_12, t - vp.dt / 2.0 )
     files.xdmffile_tau.write( fsp.tau_n_12, t - vp.dt / 2.0 )
     files.xdmffile_d.write( fsp.d, t )
 
@@ -103,7 +105,6 @@ def print_solution(psi, step, t):
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/omega_n_12_" + str( step + 1 ) + ".h5", "w" ).write( omega_n_12_output, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/mu_n_12_" + str( step + 1 ) + ".h5", "w" ).write( mu_n_12_output, "/f" )
 
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/nu_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.nu_n_12, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/tau_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.tau_n_12, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/d_n" + str( step + 1 ) + ".h5", "w" ).write( fsp.d, "/f" )
 
@@ -117,7 +118,6 @@ def print_solution(psi, step, t):
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step + 1 ) + '.xdmf' ).write( omega_n_12_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/mu_n_12_' + str( step + 1 ) + '.xdmf' ).write( mu_n_12_output )
 
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/nu_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.nu_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/tau_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.tau_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/d_n' + str( step + 1 ) + '.xdmf' ).write( fsp.d )
 
@@ -140,7 +140,6 @@ def print_solution(psi, step, t):
     io.print_nodal_values_vector_to_csvfile(omega_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/omega_n_12_' + str( step + 1 ) + '.csv' )
     io.print_nodal_values_scalar_to_csvfile(mu_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/mu_n_12_' + str( step + 1 ) + '.csv')
 
-    io.print_vector_to_csvfile( fsp.nu_n_12, (rarg.args.output_directory) + '/snapshots/csv/nu_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
 
 

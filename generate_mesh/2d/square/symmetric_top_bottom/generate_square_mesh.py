@@ -6,7 +6,7 @@ run with
 python3 generate_square_mesh.py [mesh resolution] [path where to store the mesh]
 ATTENTION: [mesh resolution] must be small enough for the circle to be properly resolved
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.3 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH
 
 The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. The complete mesh will be saved in
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
