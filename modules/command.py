@@ -9,16 +9,18 @@ import subprocess
 checks out a commit
 Input values: 
 - 'commit_sha': the sha of the commit 
-Return values: 
-- True/False if the checkout was successful/ not successful
+- 'success': A list with one entry: If it is True the checkout will be done, if not the checkout will not be done. If the checkout is successful success[0] will be set to True and to False otherwise
 '''
-def checkout(commit_sha):
+def checkout(commit_sha, success):
 
-    print(f'{col.Fore.BLUE}Checking out {commit_sha}... {col.Fore.RESET}')
-    success = run_command(f'git checkout {commit_sha}')
-    print(f'{col.Fore.BLUE}...done.{col.Fore.RESET}')
+    if(success[0]):
 
-    return success
+        print(f'{col.Fore.BLUE}Checking out {commit_sha}... {col.Fore.RESET}')
+        run_command(f'git checkout {commit_sha}', success)
+        print(f'{col.Fore.BLUE}...done.{col.Fore.RESET}')
+
+    else:
+        print('Stopping here.')
 
 
 '''
@@ -35,30 +37,35 @@ def go_to_path(path):
 Run a command in command line
 Input values: 
 - 'command' the command, e.g. 'pwd'
+- 'success': A list with one entry: if it is True (False), the command will be (not) executed. If the command execution is successful, success[0] will be set to True and False otherwise. 
 Return value: 
-- True (False) if the command was executed successfully
 - the strings with the output and the error resulting from the command run
 '''
-def run_command(command):
+def run_command(command, success):
 
-    print(f'Running command {command} ...')
+    if(success[0]):
 
-    result = subprocess.run(
-        command,
-        shell=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        universal_newlines=True  # <- instead of text=True
-    )
+        print(f'Running command {command} ...')
 
-    success = (result.returncode == 0)
+        result = subprocess.run(
+            command,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True  # <- instead of text=True
+        )
 
-    print('... done.')
-    print(f'\tsuccess = {success}')
-    print(f'\toutput = {result.stdout}')
-    print(f'\terror = {result.stderr}')
+        success[0] = (result.returncode == 0)
 
-    return success, result.stdout, result.stderr
+        print('... done.')
+        print(f'\tsuccess = {success}')
+        print(f'\toutput = {result.stdout}')
+        print(f'\terror = {result.stderr}')
+
+        return result.stdout, result.stderr
+
+    else:
+        return '',''
 
 
 def command_empty_err_out(command):
