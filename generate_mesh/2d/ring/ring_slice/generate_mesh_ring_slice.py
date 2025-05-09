@@ -1,19 +1,20 @@
 '''
 This code generates a  mesh given by a slice of a ring
 
-run with
-python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
+Run with
+    python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
+
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.1 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.1 $SOLUTION_PATH
 '''
 
-import meshio
+import argparse
 from fenics import *
 import gmsh  # main tool
-import pygmsh  # wrapper for gmsh
-import argparse
-import sys
+import meshio
 import numpy as np
+import pygmsh  # wrapper for gmsh
+import sys
 
 # add the path where to find the shared modules
 # gaetano's path
