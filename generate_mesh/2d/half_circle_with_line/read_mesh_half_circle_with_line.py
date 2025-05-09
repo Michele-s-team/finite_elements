@@ -7,11 +7,13 @@ example:
 clear; clear; python3 read_mesh_half_circle_with_line.py /home/fenics/shared/generate_mesh/2d/half_circle_with_line/solution
 '''
 import argparse
-from dolfin import *
+import colorama as col
+import dolfin
 from fenics import *
-from mshr import *
 import numpy as np
 import sys
+
+from mesh import test_mesh_integral
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
@@ -89,10 +91,13 @@ Q = FunctionSpace( mesh, 'P', 1 )
 f_test = Function( Q )
 f_test.interpolate( FunctionTestIntegralExpression( element=Q.ufl_element() ) )
 
+test_mesh_integral_errors = []
 
-msh.test_mesh_integral( 0.5287414193220428,   f_test,   dx,  '\int dx f_surface' )
-msh.test_mesh_integral( 0.596540161473517, f_test, dp_1, '\int dp f_{p_1}' )
-msh.test_mesh_integral( 0.1588462551091818, f_test, dp_2, '\int dp f_{p_2}' )
-msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_line_12), f_test, dline_12, '\int dl f_{line_12}')
-msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_arc_21), f_test, darc_21, '\int dl f_{arc_21}')
-msh.test_mesh_integral( 0.652012217844941, f_test, dline_34, '\int dl f_{line_34}' )
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.5287414193220428,   f_test,   dx,  '\int dx f_surface' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.596540161473517, f_test, dp_1, '\int dp f_{p_1}' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.1588462551091818, f_test, dp_2, '\int dp f_{p_2}' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_line_12), f_test, dline_12, '\int dl f_{line_12}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_arc_21), f_test, darc_21, '\int dl f_{arc_21}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.652012217844941, f_test, dline_34, '\int dl f_{line_34}' ))
+
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors)}{col.Fore.RESET}')
