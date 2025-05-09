@@ -8,17 +8,23 @@ if rarg.args.problem == 'ring_slice':
     vp = 'variational_problem_bc_ring_slice'
     prout_bc = 'print_out_bc_ring_slice'
 
-if rarg.args.problem == 'ring':
+elif rarg.args.problem == 'ring':
 
     rmsh = 'read_mesh_ring'
     vp = 'variational_problem_bc_ring'
     prout_bc = 'print_out_bc_ring'
 
-if rarg.args.problem == 'ring_with_inner_circle':
+elif rarg.args.problem == 'ring_symmetric':
 
-    rmsh = 'read_mesh_ring_with_inner_circle'
-    vp = 'variational_problem_bc_ring_with_inner_circle'
-    prout_bc = 'print_out_bc_ring_with_inner_circle'
+    rmsh = 'read_mesh_ring_symmetric'
+    vp = 'variational_problem_bc_ring_symmetric'
+    prout_bc = 'print_out_bc_ring_symmetric'
+
+elif rarg.args.problem == 'ring_with_circle':
+
+    rmsh = 'read_mesh_ring_with_circle'
+    vp = 'variational_problem_bc_ring_with_circle'
+    prout_bc = 'print_out_bc_ring_with_circle'
 
 elif rarg.args.problem == 'square_no_circle':
     rmsh = 'read_mesh_square_no_circle'
