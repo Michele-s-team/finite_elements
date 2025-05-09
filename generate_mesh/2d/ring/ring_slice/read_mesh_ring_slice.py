@@ -1,10 +1,10 @@
 '''
 This code reads the mesh generated from generate_mesh_ring_slice.py and it creates dvs and dss from labelled components of the mesh
 
-run with
-clear; clear; python3 read_mesh_ring_slice.py [path where to find the mesh]
-example:
-clear; clear; python3 read_mesh_ring_slice.py solution
+Run with
+    clear; clear; python3 read_mesh_ring_slice.py [path where to find the mesh]
+Example:
+    clear; clear; python3 read_mesh_ring_slice.py solution
 '''
 from dolfin import *
 from fenics import *

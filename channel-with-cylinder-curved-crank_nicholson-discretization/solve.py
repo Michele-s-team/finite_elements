@@ -71,8 +71,9 @@ For air flow:
             * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/mesh/solution /home/fenics/shared/channel-with-cylinder-curved-crank_nicholson-discretization/$SOLUTION_PATH  128 128
 """
 
-from fenics import *
+import colorama as col
 import dolfin
+from fenics import *
 import importlib
 import sys
 
@@ -93,6 +94,8 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
+print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
+
 
 print("L = ", rmsh.L)
 print("h = ", rmsh.h)

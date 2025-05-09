@@ -47,7 +47,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
 
 print("Input diredtory = ", rarg.args.input_directory)
 print("Output diredtory = ", rarg.args.output_directory)
-print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh}{col.Style.RESET_ALL}")
+print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 # solve the variational problem
 J = derivative(vp.F, fsp.psi, fsp.J_psi)

@@ -1,5 +1,6 @@
-from fenics import *
+import colorama as col
 import dolfin
+from fenics import *
 import numpy as np
 
 import boundary_geometry as bgeo
@@ -7,6 +8,7 @@ import calculus as cal
 import geometry as geo
 import mesh as msh
 
+import input_output as io
 # the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
 import read_mesh_square as rmsh
 
@@ -59,19 +61,25 @@ integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
 
 integral_exact_ds = integral_exact_ds_square + integral_exact_ds_circle
 
-msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
+test_mesh_integral_errors = []
 
-msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l')
-msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
-msh.test_mesh_integral(integral_exact_ds_t, function_test_integrals_fenics, rmsh.ds_t, '\int f ds_t')
-msh.test_mesh_integral(integral_exact_ds_b, function_test_integrals_fenics, rmsh.ds_b, '\int f ds_b')
 
-msh.test_mesh_integral(integral_exact_ds_lr, function_test_integrals_fenics, rmsh.ds_lr, '\int f ds_lr')
-msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
-msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square')
-msh.test_mesh_integral(integral_exact_ds_circle, function_test_integrals_fenics, rmsh.ds_circle, '\int f ds_circle')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_t, function_test_integrals_fenics, rmsh.ds_t, '\int f ds_t'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_b, function_test_integrals_fenics, rmsh.ds_b, '\int f ds_b'))
 
-msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lr, function_test_integrals_fenics, rmsh.ds_lr, '\int f ds_lr'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_circle, function_test_integrals_fenics, rmsh.ds_circle, '\int f ds_circle'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+
 
 msh.check_mesh_symmetry(bgeo.mesh, rmsh.c_r)

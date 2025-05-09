@@ -1,10 +1,10 @@
 '''
 Ths code generates a 1d mesh given by a segment with a vertex in the segment
 
-run with
-clear; clear; python3 generate_mesh_line_vertex.py [resolution]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py 0.1 $SOLUTION_PATH
+Run with
+    clear; clear; python3 generate_mesh_line_vertex.py [resolution]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py 0.1 $SOLUTION_PATH
 '''
 
 

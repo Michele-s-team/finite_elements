@@ -2,9 +2,9 @@
 This code reads the mesh generated from generate_mesh.py and it creates dvs and dss from labelled components of the mesh
 
 run with
-clear; clear; python3 read_mesh_square.py [path where to find the mesh]
+    clear; clear; python3 read_mesh_square.py [path where to find the mesh]
 example:
-clear; clear; python3 read_mesh_square.py solution
+    clear; clear; python3 read_mesh_square.py solution
 '''
 
 from dolfin import *

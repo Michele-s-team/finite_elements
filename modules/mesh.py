@@ -58,11 +58,25 @@ def read_mesh_components(mesh, dim, filename):
     return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
 
 
-# compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference
+
+'''
+compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference and prints out the difference
+Input values: 
+- 'exact_value': the exact value of the integral
+- 'f_test': the function to integrate
+- 'meashre': the integration measure
+- 'label': the label to be printed out for the integral test
+Return values: 
+- the absolute value of the relative difference between the finite-element and the exact integral
+'''
 def test_mesh_integral(exact_value, f_test, measure, label):
     numerical_value = assemble(f_test * measure)
+
+    result = abs((numerical_value - exact_value) / exact_value)
     print(
-        f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {col.Fore.YELLOW}{abs((numerical_value - exact_value) / exact_value):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+        f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {result:.{io.number_of_decimals}e}")
+
+    return result
 
 
 class BoundaryMarker(SubDomain):

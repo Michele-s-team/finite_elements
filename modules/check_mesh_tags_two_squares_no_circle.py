@@ -1,3 +1,4 @@
+import colorama as col
 from fenics import *
 import dolfin
 import numpy as np
@@ -5,6 +6,7 @@ import numpy as np
 import boundary_geometry as bgeo
 import calculus as cal
 import geometry as geo
+import input_output as io
 import mesh as msh
 
 import read_mesh_two_squares_no_circle as rmsh
@@ -63,21 +65,27 @@ integral_exact_ds_t = integral_exact_ds_lt + integral_exact_ds_rt
 
 integral_exact_ds = integral_exact_ds_l + integral_exact_ds_r + integral_exact_ds_t + integral_exact_ds_b
 
-msh.test_mesh_integral(integral_exact_dx_l, function_test_integrals_fenics, rmsh.dx_l, '\int f dx_l')
-msh.test_mesh_integral(integral_exact_dx_r, function_test_integrals_fenics, rmsh.dx_r, '\int f dx_r')
-
-msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
+test_mesh_integral_errors = []
 
 
-msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l')
-msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
-msh.test_mesh_integral(integral_exact_ds_lb, function_test_integrals_fenics, rmsh.ds_lb, '\int f ds_lb')
-msh.test_mesh_integral(integral_exact_ds_rb, function_test_integrals_fenics, rmsh.ds_rb, '\int f ds_rb')
-msh.test_mesh_integral(integral_exact_ds_mid, function_test_integrals_fenics, rmsh.ds_m, '\int f ds_mid')
-msh.test_mesh_integral(integral_exact_ds_lt, function_test_integrals_fenics, rmsh.ds_lt, '\int f ds_lt')
-msh.test_mesh_integral(integral_exact_ds_rt, function_test_integrals_fenics, rmsh.ds_rt, '\int f ds_rt')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_l, function_test_integrals_fenics, rmsh.dx_l, '\int f dx_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_r, function_test_integrals_fenics, rmsh.dx_r, '\int f dx_r'))
 
-msh.test_mesh_integral(integral_exact_ds_t, function_test_integrals_fenics, rmsh.ds_t, '\int f ds_t')
-msh.test_mesh_integral(integral_exact_ds_b, function_test_integrals_fenics, rmsh.ds_b, '\int f ds_b')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
-msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lb, function_test_integrals_fenics, rmsh.ds_lb, '\int f ds_lb'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_rb, function_test_integrals_fenics, rmsh.ds_rb, '\int f ds_rb'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_mid, function_test_integrals_fenics, rmsh.ds_m, '\int f ds_mid'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lt, function_test_integrals_fenics, rmsh.ds_lt, '\int f ds_lt'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_rt, function_test_integrals_fenics, rmsh.ds_rt, '\int f ds_rt'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_t, function_test_integrals_fenics, rmsh.ds_t, '\int f ds_t'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_b, function_test_integrals_fenics, rmsh.ds_b, '\int f ds_b'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+

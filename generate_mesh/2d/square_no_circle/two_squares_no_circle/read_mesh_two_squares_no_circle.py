@@ -2,9 +2,9 @@
 This code reads the mesh generated from generate_two_squares_mesh.py and it creates dvs and dss from labelled components of the mesh
 
 run with
-clear; clear; python3 read_mesh_two_squares_no_circle.py [path where to find the mesh]
+    clear; clear; python3 read_mesh_two_squares_no_circle.py [path where to find the mesh]
 example:
-clear; clear; python3 read_mesh_two_squares_no_circle.py solution
+    clear; clear; python3 read_mesh_two_squares_no_circle.py solution
 '''
 
 from dolfin import *

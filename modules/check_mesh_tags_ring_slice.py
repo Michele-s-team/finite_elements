@@ -1,10 +1,12 @@
-from fenics import *
+import colorama as col
 import dolfin
+from fenics import *
 import numpy as np
 
 import boundary_geometry as bgeo
 import calculus as cal
 import geometry as geo
+import input_output as io
 import mesh as msh
 
 # the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
@@ -54,13 +56,19 @@ integral_exact_ds_line_tb = integral_exact_ds_line_t + integral_exact_ds_line_b
 integral_exact_ds_arc_rR = integral_exact_ds_arc_r + integral_exact_ds_arc_R
 integral_exact_ds = integral_exact_ds_arc_rR + integral_exact_ds_line_tb
 
-msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
+test_mesh_integral_errors = []
 
-msh.test_mesh_integral(integral_exact_ds_arc_r, function_test_integrals_fenics, rmsh.ds_arc_r, '\int f ds_arc_r')
-msh.test_mesh_integral(integral_exact_ds_arc_R, function_test_integrals_fenics, rmsh.ds_arc_R, '\int f ds_arc_R')
-msh.test_mesh_integral(integral_exact_ds_arc_rR, function_test_integrals_fenics, rmsh.ds_arc_rR, '\int f ds_arc_rR')
 
-msh.test_mesh_integral(integral_exact_ds_line_tb, function_test_integrals_fenics, rmsh.ds_line_tb, '\int f ds_line_tb')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
-msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_arc_r, function_test_integrals_fenics, rmsh.ds_arc_r, '\int f ds_arc_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_arc_R, function_test_integrals_fenics, rmsh.ds_arc_R, '\int f ds_arc_R'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_arc_rR, function_test_integrals_fenics, rmsh.ds_arc_rR, '\int f ds_arc_rR'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_line_tb, function_test_integrals_fenics, rmsh.ds_line_tb, '\int f ds_line_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+
 
