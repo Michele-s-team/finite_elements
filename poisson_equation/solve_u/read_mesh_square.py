@@ -1,5 +1,4 @@
 from fenics import *
-from mshr import *
 
 import calculus as calc
 import runtime_arguments as rarg

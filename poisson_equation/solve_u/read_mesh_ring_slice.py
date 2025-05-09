@@ -1,6 +1,5 @@
 from dolfin import *
 from fenics import *
-from mshr import *
 import numpy as np
 
 import calculus as cal

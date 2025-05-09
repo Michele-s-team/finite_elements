@@ -16,7 +16,6 @@ Examples:
 
 '''
 
-import colorama as col
 from fenics import *
 import importlib
 import dolfin
@@ -27,20 +26,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import runtime_arguments as rarg
 import switch_problem as swi
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import read_mesh_ring as rmsh
-# import read_mesh_ring_slice as rmsh
-# import read_mesh_square_no_circle as rmsh
-# import read_mesh_square as rmsh
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import variational_problem_bc_ring as vp
-# import variational_problem_bc_ring_slice as vp
-# import variational_problem_bc_square_no_circle as vp
-# import variational_problem_bc_square as vp
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
