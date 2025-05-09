@@ -1,10 +1,10 @@
 '''
 This code reads the 1d mesh generated from generate_1dmesh.py and it creates dvs and dss from labelled components of the mesh
 
-run with
-clear; clear; python3 read_line_vertex_mesh.py [path where to find the mesh]
-example:
-clear; clear; python3 read_line_vertex_mesh.py /home/fenics/shared/generate_mesh/1d/line_vertex/solution
+Run with
+    clear; clear; python3 read_line_vertex_mesh.py [path where to find the mesh]
+Example:
+    clear; clear; python3 read_line_vertex_mesh.py /home/fenics/shared/generate_mesh/1d/line_vertex/solution
 
 '''
 from fenics import *
