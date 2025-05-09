@@ -1,3 +1,4 @@
+import dolfin
 from fenics import *
 
 import calculus as calc
