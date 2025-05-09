@@ -36,9 +36,9 @@ ds_R = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3)
 ds_rho = Measure("dS", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4)
 ds = ds_r + ds_R
 
-import check_mesh_tags_ring_with_inner_circle
+import check_mesh_tags_ring_with_circle
 
-print(f'Module {__file__} called {check_mesh_tags_ring_with_inner_circle.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_tags_ring_with_circle.__file__}', flush=True)
 
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE

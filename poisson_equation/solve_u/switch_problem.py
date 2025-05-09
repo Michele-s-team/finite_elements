@@ -14,11 +14,11 @@ if rarg.args.problem == 'ring':
     vp = 'variational_problem_bc_ring'
     prout_bc = 'print_out_bc_ring'
 
-if rarg.args.problem == 'ring_with_inner_circle':
+if rarg.args.problem == 'ring_with_circle':
 
-    rmsh = 'read_mesh_ring_with_inner_circle'
-    vp = 'variational_problem_bc_ring_with_inner_circle'
-    prout_bc = 'print_out_bc_ring_with_inner_circle'
+    rmsh = 'read_mesh_ring_with_circle'
+    vp = 'variational_problem_bc_ring_with_circle'
+    prout_bc = 'print_out_bc_ring_with_circle'
 
 elif rarg.args.problem == 'square_no_circle':
     rmsh = 'read_mesh_square_no_circle'
