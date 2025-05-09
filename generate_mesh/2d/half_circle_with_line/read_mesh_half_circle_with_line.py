@@ -2,9 +2,10 @@
 This code reads the mesh generated from generate_mesh.py and it creates dvs and dss from labelled components of the mesh
 
 run with
-clear; clear; python3 read_mesh_half_circle_with_line.py [path where to find the mesh]
-example:
-clear; clear; python3 read_mesh_half_circle_with_line.py /home/fenics/shared/generate_mesh/2d/half_circle_with_line/solution
+    clear; clear; python3 read_mesh_half_circle_with_line.py [path where to find the mesh]
+
+Example:
+    clear; clear; python3 read_mesh_half_circle_with_line.py /home/fenics/shared/generate_mesh/2d/half_circle_with_line/solution
 '''
 import argparse
 import colorama as col
@@ -13,18 +14,16 @@ from fenics import *
 import numpy as np
 import sys
 
-from mesh import test_mesh_integral
-
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+sys.path.append(module_path)
 
 import calculus as cal
 import geometry as geo
 import mesh as msh
 
 parser = argparse.ArgumentParser()
-parser.add_argument( "input_directory" )
+parser.add_argument("input_directory")
 args = parser.parse_args()
 
 # CHANGE PARAMETERS HERE
@@ -44,21 +43,21 @@ r_test = 0.345
 # CHANGE PARAMETERS HERE
 
 # read the mesh
-mesh = msh.read_mesh( args.input_directory + "/triangle_mesh.xdmf" )
+mesh = msh.read_mesh(args.input_directory + "/triangle_mesh.xdmf")
 
 # read the triangles
-vf = msh.read_mesh_components( mesh, 2, args.input_directory + "/triangle_mesh.xdmf" )
+vf = msh.read_mesh_components(mesh, 2, args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
-cf = msh.read_mesh_components( mesh, 1, args.input_directory + "/line_mesh.xdmf" )
+cf = msh.read_mesh_components(mesh, 1, args.input_directory + "/line_mesh.xdmf")
 # read the vertices
-sf = msh.read_mesh_components( mesh, 0, args.input_directory + "/vertex_mesh.xdmf" )
+sf = msh.read_mesh_components(mesh, 0, args.input_directory + "/vertex_mesh.xdmf")
 
 
 # analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegralExpression( UserExpression ):
+class FunctionTestIntegralExpression(UserExpression):
     def eval(self, values, x):
         # values[0] = 1
-        values[0] = function_test_integral_expression( x )
+        values[0] = function_test_integral_expression(x)
         # values[0] = x[0]
 
     def value_shape(self):
@@ -66,38 +65,39 @@ class FunctionTestIntegralExpression( UserExpression ):
 
 
 def function_test_integral_expression(x):
-    return np.cos( geo.my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
+    return np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0
 
-#curve relative to arc_21: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
+
+# curve relative to arc_21: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
 def curve_arc_21(t):
-    return [[np.cos(np.pi * t ), -np.sin( np.pi * t )], [-  np.pi * np.sin(  np.pi * t ), -np.pi * np.cos(  np.pi * t )]]
+    return [[np.cos(np.pi * t), -np.sin(np.pi * t)], [-  np.pi * np.sin(np.pi * t), -np.pi * np.cos(np.pi * t)]]
 
-#curve relative to line_12: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
+
+# curve relative to line_12: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
 def curve_line_12(t):
     return cal.line([r, 0], [-r, 0], t)
 
 
+dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id)
+dline_12 = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=line_12_id)
+dline_34 = Measure("dS", domain=mesh, subdomain_data=cf, subdomain_id=line_34_id)
+darc_21 = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=arc_21_id)
+dp_1 = Measure("dP", domain=mesh, subdomain_data=sf, subdomain_id=p_1_id)
+dp_2 = Measure("dP", domain=mesh, subdomain_data=sf, subdomain_id=p_2_id)
 
-dx = Measure( "dx", domain=mesh, subdomain_data=vf, subdomain_id=surface_id )
-dline_12 = Measure( "ds", domain=mesh, subdomain_data=cf, subdomain_id=line_12_id )
-dline_34 = Measure( "dS", domain=mesh, subdomain_data=cf, subdomain_id=line_34_id )
-darc_21 = Measure( "ds", domain=mesh, subdomain_data=cf, subdomain_id=arc_21_id )
-dp_1 = Measure( "dP", domain=mesh, subdomain_data=sf, subdomain_id=p_1_id )
-dp_2 = Measure( "dP", domain=mesh, subdomain_data=sf, subdomain_id=p_2_id )
-
-Q = FunctionSpace( mesh, 'P', 1 )
+Q = FunctionSpace(mesh, 'P', 1)
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-f_test = Function( Q )
-f_test.interpolate( FunctionTestIntegralExpression( element=Q.ufl_element() ) )
+f_test = Function(Q)
+f_test.interpolate(FunctionTestIntegralExpression(element=Q.ufl_element()))
 
 test_mesh_integral_errors = []
 
-test_mesh_integral_errors.append(msh.test_mesh_integral( 0.5287414193220428,   f_test,   dx,  '\int dx f_surface' ))
-test_mesh_integral_errors.append(msh.test_mesh_integral( 0.596540161473517, f_test, dp_1, '\int dp f_{p_1}' ))
-test_mesh_integral_errors.append(msh.test_mesh_integral( 0.1588462551091818, f_test, dp_2, '\int dp f_{p_2}' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral(0.5287414193220428, f_test, dx, '\int dx f_surface'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(0.596540161473517, f_test, dp_1, '\int dp f_{p_1}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(0.1588462551091818, f_test, dp_2, '\int dp f_{p_2}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_line_12), f_test, dline_12, '\int dl f_{line_12}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_arc_21), f_test, darc_21, '\int dl f_{arc_21}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral( 0.652012217844941, f_test, dline_34, '\int dl f_{line_34}' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral(0.652012217844941, f_test, dline_34, '\int dl f_{line_34}'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors)}{col.Fore.RESET}')
