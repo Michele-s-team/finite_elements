@@ -60,7 +60,7 @@ def read_mesh_components(mesh, dim, filename):
 
 
 '''
-compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference
+compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference and prints out the difference
 Input values: 
 - 'exact_value': the exact value of the integral
 - 'f_test': the function to integrate
