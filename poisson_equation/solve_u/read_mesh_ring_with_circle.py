@@ -1,5 +1,5 @@
-import dolfin
 from fenics import *
+import dolfin
 
 import runtime_arguments as rarg
 import boundary_geometry as bgeo
@@ -30,10 +30,13 @@ c_rho = [0, 0]
 
 
 # test for surface elements
-dx = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1)
-ds_r = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2)
-ds_R = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3)
+dx_r_rho = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1)
+dx_rho_R = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=2)
+ds_r = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3)
 ds_rho = Measure("dS", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4)
+ds_R = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5)
+
+dx = dx_r_rho + dx_rho_R
 ds = ds_r + ds_R
 
 import check_mesh_tags_ring_with_circle
