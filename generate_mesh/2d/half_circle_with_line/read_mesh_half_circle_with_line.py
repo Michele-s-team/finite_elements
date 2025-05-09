@@ -20,6 +20,7 @@ sys.path.append(module_path)
 
 import calculus as cal
 import geometry as geo
+import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
@@ -100,4 +101,4 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(cal.curve_integral(funct
 test_mesh_integral_errors.append(msh.test_mesh_integral(cal.curve_integral(function_test_integral_expression, curve_arc_21), f_test, darc_21, '\int dl f_{arc_21}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(0.652012217844941, f_test, dline_34, '\int dl f_{line_34}'))
 
-print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors)}{col.Fore.RESET}')
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

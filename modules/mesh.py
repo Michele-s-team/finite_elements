@@ -74,7 +74,7 @@ def test_mesh_integral(exact_value, f_test, measure, label):
 
     result = abs((numerical_value - exact_value) / exact_value)
     print(
-        f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {col.Fore.YELLOW}{result:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+        f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {result:.{io.number_of_decimals}e}")
 
     return result
 
