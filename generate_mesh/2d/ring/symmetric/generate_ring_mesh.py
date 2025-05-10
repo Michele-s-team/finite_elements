@@ -2,19 +2,17 @@
 This code generates a  ring  mesh with radial symmetry: symmetry is obtained by replicating a ring slice
 The inner ring is tagged with tag 'circle_r_id', the outer ring is tagged with tag 'circle_R_id', and all radial lines (spokes) are tagged with 'radial_lines_id'
 
-run with
-    python3 generate_ring_mesh.py [mesh resolution] [path where to read the ring slice] [path where to store the mesh]
-
-where [path where to read the ring slice] is the output path of generate_mesh_ring_slice.py
+Run with
+    python3 generate_ring_mesh.py [mesh resolution]  [path where to store the mesh]
 
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py /home/fenics/shared/generate_mesh/2d/ring/ring_slice/solution $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
 '''
 
-import meshio
-from fenics import *
 import argparse
+from fenics import *
 import math
+import meshio
 import sys
 import numpy as np
 
@@ -31,7 +29,7 @@ import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
-parser.add_argument("input_dir")
+parser.add_argument("resolution")
 parser.add_argument("output_dir")
 args = parser.parse_args()
 
@@ -49,12 +47,15 @@ radial_lines_id = 4
 M = int(np.round(math.log2(N)))
 theta = 2 * np.pi / N
 
+resolution = args.resolution
 output_dir = args.output_dir
-input_dir = args.input_dir
-mesh_slice_file = input_dir + "/mesh.msh"
+mesh_slice_file = output_dir + "solution/ring_slice/mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
 print(f'r = {r}, R = {R}, c_r = {c_r}, c_R = {c_R}, N = {N}, mesh_slice_file: {mesh_slice_file}')
+
+# generate the ring slice and save it to mesh_slice_file
+msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
 
 # Load the mesh slice
 mesh = meshio.read(mesh_slice_file)

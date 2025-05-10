@@ -996,6 +996,9 @@ Input values:
 - 'theta': the angular width of the slice, in radians
 - 'resolution': the mesh resolution
 - 'output_file': the .msh file where the mesh will be stored
+
+Example of usage:
+    msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
 '''
 def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
