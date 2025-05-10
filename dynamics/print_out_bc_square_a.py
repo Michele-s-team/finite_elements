@@ -14,6 +14,7 @@ import mesh as msh
 import physics as phys
 import read_mesh_square as rmsh
 import runtime_arguments as rarg
+import solution_paths as solpath
 import variational_problem_bc_square_a as vp
 
 i, j, k, l = ufl.indices( 4 )
@@ -94,9 +95,14 @@ def print_solution(psi, step, t):
     files.xdmffile_tau.write( fsp.tau_n_12, t - vp.dt / 2.0 )
     files.xdmffile_d.write( fsp.d, t )
 
+    # print the snapshot in a separate file
+    io.full_print(v_bar_output, 'v_bar_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'vector')
+
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_bar_" + str( step + 1 ) + ".h5", "w" ).write( v_bar_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_bar_" + str( step + 1 ) + ".h5", "w" ).write( v_bar_output, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_bar_" + str( step + 1 ) + ".h5", "w" ).write( w_bar_output, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_n_" + str( step + 1 ) + ".h5", "w" ).write( v_n_output, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_n_" + str( step + 1 ) + ".h5", "w" ).write( w_n_output, "/f" )
@@ -109,7 +115,7 @@ def print_solution(psi, step, t):
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/d_n" + str( step + 1 ) + ".h5", "w" ).write( fsp.d, "/f" )
 
     # write the solutions in .xdmf format into  snapshots/xdmf
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_n_' + str( step + 1 ) + '.xdmf' ).write( v_n_output )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_n_' + str( step + 1 ) + '.xdmf' ).write( w_n_output )
@@ -121,7 +127,7 @@ def print_solution(psi, step, t):
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/tau_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.tau_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/d_n' + str( step + 1 ) + '.xdmf' ).write( fsp.d )
 
-    io.print_vector_to_csvfile( v_bar_output, (rarg.args.output_directory) + '/snapshots/csv/v_bar_' + str( step + 1 ) + '.csv' )
+    # io.print_vector_to_csvfile( v_bar_output, (rarg.args.output_directory) + '/snapshots/csv/v_bar_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( w_bar_output, (rarg.args.output_directory) + '/snapshots/csv/w_bar_' + str( step + 1 ) + '.csv' )
     io.print_vector_to_csvfile( v_n_output, (rarg.args.output_directory) + '/snapshots/csv/v_n_' + str( step + 1 ) + '.csv' )
     io.print_scalar_to_csvfile( w_n_output, (rarg.args.output_directory) + '/snapshots/csv/w_n_' + str( step + 1 ) + '.csv' )
@@ -131,7 +137,7 @@ def print_solution(psi, step, t):
     io.print_scalar_to_csvfile( mu_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/mu_n_12_' + str( step + 1 ) + '.csv' )
 
 
-    io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
+    # io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
     io.print_nodal_values_scalar_to_csvfile(w_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_bar_' + str( step + 1 ) + '.csv')
     io.print_nodal_values_vector_to_csvfile(v_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_n_' + str( step + 1 ) + '.csv' )
     io.print_nodal_values_scalar_to_csvfile(w_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_n_' + str( step + 1 ) + '.csv')
