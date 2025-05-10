@@ -7,9 +7,8 @@ Example:
     clear; clear; python3 read_mesh_square.py solution
 '''
 import colorama as col
-from dolfin import *
+import dolfin
 from fenics import *
-from mshr import *
 import sys
 
 # add the path where to find the shared modules
