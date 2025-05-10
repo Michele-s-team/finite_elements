@@ -96,7 +96,7 @@ def print_solution(psi, step, t):
     files.xdmffile_d.write( fsp.d, t )
 
     # print the snapshot in a separate file
-    io.full_print(v_bar_output, 'v_bar_' + str(step), \
+    io.full_print(v_bar_output, 'v_bar_' + str(step+1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   bgeo.mesh, 'vector')
 
