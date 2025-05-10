@@ -3,6 +3,8 @@ import numpy as np
 import colorama as col
 import gmsh
 import meshio
+import os
+import pygmsh
 
 import calculus as cal
 import geometry as geo
@@ -986,3 +988,81 @@ def check_mesh_symmetry(mesh, center):
 
     print(f'Check l <-> r symmetry: <x - center_x> = {col.Fore.BLUE}{(average_lr - center[0]):.{io.number_of_decimals}e}{col.Fore.RESET}')
     print(f'Check t <-> b symmetry: <y - center_y> = {col.Fore.BLUE}{(average_tb - center[1]):.{io.number_of_decimals}e}{col.Fore.RESET}')
+
+'''
+Generate a mesh given by a ring slice
+Input values: 
+- 'r', 'R': the inner and outer radii of the circles delimiting the ring
+- 'c_r', 'c_R' the centers of the rings
+- 'theta': the angular width of the slice, in radians
+- 'resolution': the mesh resolution
+- 'output_file': the .msh file where the mesh will be stored
+
+Example of usage:
+    msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
+'''
+def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+
+    surface_id = 1
+    circle_r_id = 2
+    circle_R_id = 3
+    line_t_id = 4
+    line_b_id = 5
+    ids = [1, line_b_id, circle_R_id, circle_r_id, line_t_id]
+
+    #  mesh is generated used pygmsh and it's saved in slice_mesh_msh_file
+    geometry = pygmsh.geo.Geometry()
+    model = geometry.__enter__()
+
+    print(f'r = {r}\nr = {R}\nc_r = {c_r}\nc_R = {c_R}\nresolution = {resolution}\noutput directory = {output_file}')
+
+    # center points, used to define the arcs
+    p_c_r = model.add_point((c_r[0], c_r[1], 0))
+    p_c_R = model.add_point((c_R[0], c_R[1], 0))
+
+    # extremal points of the ring slice
+    r_1 = np.array([r, 0])
+    r_2 = cal.R(theta).dot(r_1)
+    r_4 = np.array([R, 0])
+    r_3 = cal.R(theta).dot(r_4)
+
+    p_1 = model.add_point((r_1[0], r_1[1], 0), mesh_size=resolution)
+    p_2 = model.add_point((r_2[0], r_2[1], 0), mesh_size=resolution)
+    p_3 = model.add_point((r_3[0], r_3[1], 0), mesh_size=resolution)
+    p_4 = model.add_point((r_4[0], r_4[1], 0), mesh_size=resolution)
+    model.synchronize()
+
+    arc_12 = model.add_circle_arc(p_1, p_c_r, p_2)
+    model.synchronize()
+
+    line_23 = model.add_line(p_2, p_3)
+    model.synchronize()
+
+    arc_34 = model.add_circle_arc(p_3, p_c_r, p_4)
+    model.synchronize()
+
+    line_41 = model.add_line(p_4, p_1)
+    model.synchronize()
+
+    slice_lines = [arc_12, line_23, arc_34, line_41]
+    slice_loop = model.add_curve_loop(slice_lines)
+    model.synchronize()
+
+    slice_surface = model.add_plane_surface(slice_loop)
+    model.synchronize()
+
+    model.add_physical([slice_surface], "Volume")
+    model.add_physical([slice_lines[0]], "r")
+    model.add_physical([slice_lines[2]], "R")
+    model.add_physical([slice_lines[1]], "top")
+    model.add_physical(slice_lines[3], "bottom")
+
+    geometry.generate_mesh(dim=2)
+    gmsh.write(output_file)
+
+    gmsh.clear()
+    geometry.__exit__()
