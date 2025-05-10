@@ -36,8 +36,8 @@ args = parser.parse_args()
 # mesh resolution
 r = 1
 R = 2
-c_r = [0, 0]
-c_R = [0, 0]
+c_r = [0, 0, 0]
+c_R = [0, 0, 0]
 # the angle 2 \pi will be divided into N equal slices. Here N must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
 N = 8
 circle_r_id = 2
