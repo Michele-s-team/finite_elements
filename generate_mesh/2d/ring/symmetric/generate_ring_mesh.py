@@ -36,8 +36,8 @@ args = parser.parse_args()
 # mesh resolution
 r = 1
 R = 2
-c_r = [0, 0, 0]
-c_R = [0, 0, 0]
+c_r = [0, 0]
+c_R = [0, 0]
 # the angle 2 \pi will be divided into N equal slices. Here N must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
 N = 8
 circle_r_id = 2
@@ -47,10 +47,10 @@ radial_lines_id = 4
 M = int(np.round(math.log2(N)))
 theta = 2 * np.pi / N
 
-resolution = args.resolution
+resolution = (float)(args.resolution)
 output_dir = args.output_dir
-mesh_slice_file = output_dir + "solution/ring_slice/mesh.msh"
-mesh_xdmf_file = output_dir + "/mesh.xdmf"
+mesh_slice_file = io.add_trailing_slash(output_dir) + "ring_slice/mesh.msh"
+mesh_xdmf_file = io.add_trailing_slash(output_dir) + "mesh.xdmf"
 
 print(f'r = {r}, R = {R}, c_r = {c_r}, c_R = {c_R}, N = {N}, mesh_slice_file: {mesh_slice_file}')
 
