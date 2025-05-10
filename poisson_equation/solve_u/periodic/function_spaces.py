@@ -1,6 +1,6 @@
+import dolfin
 from fenics import *
 import importlib
-from mshr import *
 
 import boundary_geometry as bgeo
 import switch_problem as swi

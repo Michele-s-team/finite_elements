@@ -6,9 +6,8 @@ Run with
 Example:
     clear; clear; python3 read_mesh_ring_slice.py solution
 '''
-from dolfin import *
+import dolfin
 from fenics import *
-from mshr import *
 import numpy as np
 import sys
 
