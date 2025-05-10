@@ -13,6 +13,7 @@ import mesh as msh
 import physics as phys
 import read_mesh_square as rmsh
 import runtime_arguments as rarg
+import solution_paths as solpath
 import variational_problem_bc_square_b as vp
 
 i, j, k, l = ufl.indices( 4 )
@@ -99,50 +100,75 @@ def print_solution(psi, step, t):
     files.xdmffile_tau.write( fsp.tau_n_12, t - vp.dt / 2.0 )
     files.xdmffile_d.write( fsp.d, t )
 
+    io.full_print(v_bar_output, 'v_bar_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'vector')
+    io.full_print(w_bar_output, 'w_bar_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')
+    io.full_print(v_n_output, 'v_n_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'vector')
+    io.full_print(w_n_output, 'w_n_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')
+    io.full_print(fsp.sigma_n_12_output, 'sigma_n_12_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')
+    io.full_print(z_n_12_output, 'z_n_12_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')
+    io.full_print(omega_n_12_output, 'omega_n_12_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'vector')
+    io.full_print(mu_n_12_output, 'mu_n_12_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  bgeo.mesh, 'scalar')
+
     # write the solution at current step, so, in case the code crashes, it can be read back
     # write the solutions in .h5 format into  snapshots/h5
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_bar_" + str( step + 1 ) + ".h5", "w" ).write( v_bar_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_bar_" + str( step + 1 ) + ".h5", "w" ).write( w_bar_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_n_" + str( step + 1 ) + ".h5", "w" ).write( v_n_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_n_" + str( step + 1 ) + ".h5", "w" ).write( w_n_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/sigma_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.sigma_n_12_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/z_n_12_" + str( step + 1 ) + ".h5", "w" ).write( z_n_12_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/omega_n_12_" + str( step + 1 ) + ".h5", "w" ).write( omega_n_12_output, "/f" )
-    HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/mu_n_12_" + str( step + 1 ) + ".h5", "w" ).write( mu_n_12_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_bar_" + str( step + 1 ) + ".h5", "w" ).write( v_bar_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_bar_" + str( step + 1 ) + ".h5", "w" ).write( w_bar_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_n_" + str( step + 1 ) + ".h5", "w" ).write( v_n_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_n_" + str( step + 1 ) + ".h5", "w" ).write( w_n_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/sigma_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.sigma_n_12_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/z_n_12_" + str( step + 1 ) + ".h5", "w" ).write( z_n_12_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/omega_n_12_" + str( step + 1 ) + ".h5", "w" ).write( omega_n_12_output, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/mu_n_12_" + str( step + 1 ) + ".h5", "w" ).write( mu_n_12_output, "/f" )
 
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/tau_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.tau_n_12, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/d_n" + str( step + 1 ) + ".h5", "w" ).write( fsp.d, "/f" )
 
     # write the solutions in .xdmf format into  snapshots/xdmf
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_n_' + str( step + 1 ) + '.xdmf' ).write( v_n_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_n_' + str( step + 1 ) + '.xdmf' ).write( w_n_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.sigma_n_12_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/z_n_12_' + str( step + 1 ) + '.xdmf' ).write( z_n_12_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step + 1 ) + '.xdmf' ).write( omega_n_12_output )
-    XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/mu_n_12_' + str( step + 1 ) + '.xdmf' ).write( mu_n_12_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_n_' + str( step + 1 ) + '.xdmf' ).write( v_n_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_n_' + str( step + 1 ) + '.xdmf' ).write( w_n_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.sigma_n_12_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/z_n_12_' + str( step + 1 ) + '.xdmf' ).write( z_n_12_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step + 1 ) + '.xdmf' ).write( omega_n_12_output )
+    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/mu_n_12_' + str( step + 1 ) + '.xdmf' ).write( mu_n_12_output )
 
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/tau_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.tau_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/d_n' + str( step + 1 ) + '.xdmf' ).write( fsp.d )
 
-    io.print_vector_to_csvfile( v_bar_output, (rarg.args.output_directory) + '/snapshots/csv/v_bar_' + str( step + 1 ) + '.csv' )
-    io.print_scalar_to_csvfile( w_bar_output, (rarg.args.output_directory) + '/snapshots/csv/w_bar_' + str( step + 1 ) + '.csv' )
-    io.print_vector_to_csvfile( v_n_output, (rarg.args.output_directory) + '/snapshots/csv/v_n_' + str( step + 1 ) + '.csv' )
-    io.print_scalar_to_csvfile( w_n_output, (rarg.args.output_directory) + '/snapshots/csv/w_n_' + str( step + 1 ) + '.csv' )
-    io.print_scalar_to_csvfile( fsp.sigma_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/sigma_n_12_' + str( step + 1 ) + '.csv' )
-    io.print_scalar_to_csvfile( z_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/z_n_12_' + str( step + 1 ) + '.csv' )
-    io.print_vector_to_csvfile( omega_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/omega_n_12_' + str( step + 1 ) + '.csv' )
-    io.print_scalar_to_csvfile( mu_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/mu_n_12_' + str( step + 1 ) + '.csv' )
+    # io.print_vector_to_csvfile( v_bar_output, (rarg.args.output_directory) + '/snapshots/csv/v_bar_' + str( step + 1 ) + '.csv' )
+    # io.print_scalar_to_csvfile( w_bar_output, (rarg.args.output_directory) + '/snapshots/csv/w_bar_' + str( step + 1 ) + '.csv' )
+    # io.print_vector_to_csvfile( v_n_output, (rarg.args.output_directory) + '/snapshots/csv/v_n_' + str( step + 1 ) + '.csv' )
+    # io.print_scalar_to_csvfile( w_n_output, (rarg.args.output_directory) + '/snapshots/csv/w_n_' + str( step + 1 ) + '.csv' )
+    # io.print_scalar_to_csvfile( fsp.sigma_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/sigma_n_12_' + str( step + 1 ) + '.csv' )
+    # io.print_scalar_to_csvfile( z_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/z_n_12_' + str( step + 1 ) + '.csv' )
+    # io.print_vector_to_csvfile( omega_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/omega_n_12_' + str( step + 1 ) + '.csv' )
+    # io.print_scalar_to_csvfile( mu_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/mu_n_12_' + str( step + 1 ) + '.csv' )
 
-    io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
-    io.print_nodal_values_scalar_to_csvfile(w_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_bar_' + str( step + 1 ) + '.csv')
-    io.print_nodal_values_vector_to_csvfile(v_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_n_' + str( step + 1 ) + '.csv' )
-    io.print_nodal_values_scalar_to_csvfile(w_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_n_' + str( step + 1 ) + '.csv')
-    io.print_nodal_values_scalar_to_csvfile(fsp.sigma_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/sigma_n_12_' + str( step + 1 ) + '.csv')
-    io.print_nodal_values_scalar_to_csvfile(z_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/z_n_12_' + str( step + 1 ) + '.csv')
-    io.print_nodal_values_vector_to_csvfile(omega_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/omega_n_12_' + str( step + 1 ) + '.csv' )
-    io.print_nodal_values_scalar_to_csvfile(mu_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/mu_n_12_' + str( step + 1 ) + '.csv')
+    # io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
+    # io.print_nodal_values_scalar_to_csvfile(w_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_bar_' + str( step + 1 ) + '.csv')
+    # io.print_nodal_values_vector_to_csvfile(v_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_n_' + str( step + 1 ) + '.csv' )
+    # io.print_nodal_values_scalar_to_csvfile(w_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_n_' + str( step + 1 ) + '.csv')
+    # io.print_nodal_values_scalar_to_csvfile(fsp.sigma_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/sigma_n_12_' + str( step + 1 ) + '.csv')
+    # io.print_nodal_values_scalar_to_csvfile(z_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/z_n_12_' + str( step + 1 ) + '.csv')
+    # io.print_nodal_values_vector_to_csvfile(omega_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/omega_n_12_' + str( step + 1 ) + '.csv' )
+    # io.print_nodal_values_scalar_to_csvfile(mu_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/mu_n_12_' + str( step + 1 ) + '.csv')
 
     io.print_scalar_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
 
