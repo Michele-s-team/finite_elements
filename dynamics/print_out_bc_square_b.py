@@ -125,50 +125,11 @@ def print_solution(psi, step, t):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   bgeo.mesh, 'scalar')
 
-    # write the solution at current step, so, in case the code crashes, it can be read back
-    # write the solutions in .h5 format into  snapshots/h5
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_bar_" + str( step + 1 ) + ".h5", "w" ).write( v_bar_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_bar_" + str( step + 1 ) + ".h5", "w" ).write( w_bar_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/v_n_" + str( step + 1 ) + ".h5", "w" ).write( v_n_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/w_n_" + str( step + 1 ) + ".h5", "w" ).write( w_n_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/sigma_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.sigma_n_12_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/z_n_12_" + str( step + 1 ) + ".h5", "w" ).write( z_n_12_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/omega_n_12_" + str( step + 1 ) + ".h5", "w" ).write( omega_n_12_output, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/mu_n_12_" + str( step + 1 ) + ".h5", "w" ).write( mu_n_12_output, "/f" )
-
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/tau_n_12_" + str( step + 1 ) + ".h5", "w" ).write( fsp.tau_n_12, "/f" )
     HDF5File( MPI.comm_world, (rarg.args.output_directory) + "/snapshots/h5/d_n" + str( step + 1 ) + ".h5", "w" ).write( fsp.d, "/f" )
 
-    # write the solutions in .xdmf format into  snapshots/xdmf
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_bar_' + str( step + 1 ) + '.xdmf' ).write( v_bar_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_bar_' + str( step + 1 ) + '.xdmf' ).write( w_bar_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/v_n_' + str( step + 1 ) + '.xdmf' ).write( v_n_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/w_n_' + str( step + 1 ) + '.xdmf' ).write( w_n_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/sigma_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.sigma_n_12_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/z_n_12_' + str( step + 1 ) + '.xdmf' ).write( z_n_12_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/omega_n_12_' + str( step + 1 ) + '.xdmf' ).write( omega_n_12_output )
-    # XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/mu_n_12_' + str( step + 1 ) + '.xdmf' ).write( mu_n_12_output )
-
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/tau_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.tau_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/d_n' + str( step + 1 ) + '.xdmf' ).write( fsp.d )
-
-    # io.print_vector_to_csvfile( v_bar_output, (rarg.args.output_directory) + '/snapshots/csv/v_bar_' + str( step + 1 ) + '.csv' )
-    # io.print_scalar_to_csvfile( w_bar_output, (rarg.args.output_directory) + '/snapshots/csv/w_bar_' + str( step + 1 ) + '.csv' )
-    # io.print_vector_to_csvfile( v_n_output, (rarg.args.output_directory) + '/snapshots/csv/v_n_' + str( step + 1 ) + '.csv' )
-    # io.print_scalar_to_csvfile( w_n_output, (rarg.args.output_directory) + '/snapshots/csv/w_n_' + str( step + 1 ) + '.csv' )
-    # io.print_scalar_to_csvfile( fsp.sigma_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/sigma_n_12_' + str( step + 1 ) + '.csv' )
-    # io.print_scalar_to_csvfile( z_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/z_n_12_' + str( step + 1 ) + '.csv' )
-    # io.print_vector_to_csvfile( omega_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/omega_n_12_' + str( step + 1 ) + '.csv' )
-    # io.print_scalar_to_csvfile( mu_n_12_output, (rarg.args.output_directory) + '/snapshots/csv/mu_n_12_' + str( step + 1 ) + '.csv' )
-
-    # io.print_nodal_values_vector_to_csvfile(v_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_bar_' + str( step + 1 ) + '.csv' )
-    # io.print_nodal_values_scalar_to_csvfile(w_bar_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_bar_' + str( step + 1 ) + '.csv')
-    # io.print_nodal_values_vector_to_csvfile(v_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/v_n_' + str( step + 1 ) + '.csv' )
-    # io.print_nodal_values_scalar_to_csvfile(w_n_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/w_n_' + str( step + 1 ) + '.csv')
-    # io.print_nodal_values_scalar_to_csvfile(fsp.sigma_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/sigma_n_12_' + str( step + 1 ) + '.csv')
-    # io.print_nodal_values_scalar_to_csvfile(z_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/z_n_12_' + str( step + 1 ) + '.csv')
-    # io.print_nodal_values_vector_to_csvfile(omega_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/omega_n_12_' + str( step + 1 ) + '.csv' )
-    # io.print_nodal_values_scalar_to_csvfile(mu_n_12_output, bgeo.mesh, (rarg.args.output_directory) + '/snapshots/csv/nodal_values/mu_n_12_' + str( step + 1 ) + '.csv')
 
     io.print_scalar_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
 
@@ -201,11 +162,7 @@ def print_solution(psi, step, t):
     io.print_scalar_to_csvfile( fsp.f_el_n, (rarg.args.output_directory) + '/snapshots/csv/fel_n_' + str( step + 1 )  + '.csv' )
     io.print_scalar_to_csvfile( fsp.f_laplace, (rarg.args.output_directory) + '/snapshots/csv/flaplace_' + str( step + 1 )  + '.csv' )
 
-    # print rate of deformation tensor to file
-    # files.xdmffile_d.write( project( fsp.d, fsp.Q_d ), t )
-
-
-
+ 
     #print tangential (normal) force per unit length (surface)
 
     fsp.dFdl.assign(project(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12, vp.eta, geo.n_c_r(bgeo.mesh, rmsh.c_r, omega_n_12_output)), fsp.Q_dFdl))
