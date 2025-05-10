@@ -3,6 +3,7 @@ import numpy as np
 import colorama as col
 import gmsh
 import meshio
+import os
 import pygmsh
 
 import calculus as cal
@@ -1001,6 +1002,10 @@ Example of usage:
     msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
 '''
 def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
 
     surface_id = 1
     circle_r_id = 2
