@@ -1,7 +1,8 @@
-from fenics import *
 import dolfin
+from fenics import *
 
 import boundary_geometry as bgeo
+import load_mesh as lmsh
 
 
 '''
@@ -28,7 +29,7 @@ P_mu_n = FiniteElement( 'P', triangle, degree_function_space )
 
 element = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_z_n, P_omega_n, P_mu_n] )
 #total function space
-Q = FunctionSpace(bgeo.mesh, element)
+Q = FunctionSpace(lmsh.mesh, element)
 #function spaces for vbar .... zn
 Q_v_bar = Q.sub(0).collapse()
 Q_w_bar = Q.sub(1).collapse()
@@ -40,15 +41,15 @@ Q_omega_n = Q.sub(6).collapse()
 Q_mu_n = Q.sub(7).collapse()
 
 #the function spaces for tau and d are for post-processing only
-Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
-Q_d = TensorFunctionSpace( bgeo.mesh, 'P', degree_function_space, shape=(2, 2) )
+Q_tau = FunctionSpace( lmsh.mesh, 'P', degree_function_space )
+Q_d = TensorFunctionSpace( lmsh.mesh, 'P', degree_function_space, shape=(2, 2) )
 
 # function space to store tangential force fields
-Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+Q_f_t = VectorFunctionSpace( lmsh.mesh, 'P', degree_function_space )
 #function space to store normal force fields
-Q_f_n = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
-Q_dFdl = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
-Q_dFds = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
+Q_f_n = FunctionSpace( lmsh.mesh, 'P', degree_function_space )
+Q_dFdl = VectorFunctionSpace( lmsh.mesh, 'P', degree_function_space )
+Q_dFds = FunctionSpace( lmsh.mesh, 'P', degree_function_space )
 
 
 # Define functions
