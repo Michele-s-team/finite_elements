@@ -48,7 +48,7 @@ cmd.run_command('clear; clear', success)
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
 
-'''
+
 problem_name = 'ring_slice'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
@@ -56,7 +56,6 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh_ring_slice', 0.1, problem_name, success)
-'''
 
 problem_name = 'ring'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
