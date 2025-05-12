@@ -1,5 +1,5 @@
 '''
-This code reads the mesh generated from generate_ring_mesh.py and it runs some checks on it
+This code checks the mesh generated from generate_ring_mesh.py
 
 Run with
     clear; clear; python3 check_mesh_ring.py [path where to find the mesh]

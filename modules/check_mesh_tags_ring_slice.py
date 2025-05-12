@@ -9,7 +9,6 @@ import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 
-# the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
 import read_mesh_ring_slice as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
