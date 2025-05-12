@@ -170,11 +170,11 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
 
+'''
 
 # Test steady-state-flow
 case_name = 'steady-state-flow'
 
-'''
 problem_name = 'ring_1'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                             root_path,

@@ -1,7 +1,7 @@
 from fenics import *
 import dolfin
 
-import boundary_geometry as bgeo
+import load_mesh as lmsh
 
 
 degree_function_space = 1
@@ -18,7 +18,7 @@ P_mu_n = FiniteElement( 'P', triangle, degree_function_space )
 
 element = MixedElement( [P_v_n, P_w_n, P_sigma_n, P_z_n, P_omega_n, P_mu_n] )
 #total function space
-Q = FunctionSpace(bgeo.mesh, element)
+Q = FunctionSpace(lmsh.mesh, element)
 #function spaces for vbar .... zn
 Q_v = Q.sub( 0 ).collapse()
 Q_w = Q.sub( 1 ).collapse()
@@ -28,27 +28,27 @@ Q_omega = Q.sub( 4 ).collapse()
 Q_mu = Q.sub( 5 ).collapse()
 
 #the function spaces for nu, tau and d are for post-processing only
-Q_tau = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
-Q_d = TensorFunctionSpace( bgeo.mesh, 'P', degree_function_space, shape=(2, 2) )
+Q_tau = FunctionSpace( lmsh.mesh, 'P', degree_function_space )
+Q_d = TensorFunctionSpace( lmsh.mesh, 'P', degree_function_space, shape=(2, 2) )
 
 # function space to store tangential force fields
-Q_f_t = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space )
+Q_f_t = VectorFunctionSpace( lmsh.mesh, 'P', degree_function_space )
 #function space to store normal force fields
-Q_f_n = FunctionSpace( bgeo.mesh, 'P', degree_function_space )
+Q_f_n = FunctionSpace( lmsh.mesh, 'P', degree_function_space )
 
 # function spaces for the tangential and normal forces per unit length
-Q_dFfl_t = VectorFunctionSpace(bgeo.mesh, 'P', degree_function_space)
-Q_dFfl_n = FunctionSpace(bgeo.mesh, 'P', degree_function_space)
+Q_dFfl_t = VectorFunctionSpace(lmsh.mesh, 'P', degree_function_space)
+Q_dFfl_n = FunctionSpace(lmsh.mesh, 'P', degree_function_space)
 
 #function space for three-dimensional vector fields depending on the two coordinates on the mesh
-Q_3d = VectorFunctionSpace( bgeo.mesh, 'P', degree_function_space, dim=3 )
+Q_3d = VectorFunctionSpace( lmsh.mesh, 'P', degree_function_space, dim=3 )
 
 
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
 as in function.set_from_list and function.set_from_file
 '''
-Q_read = FunctionSpace( bgeo.mesh, 'P', 1 )
+Q_read = FunctionSpace( lmsh.mesh, 'P', 1 )
 
 
 # Define functions
