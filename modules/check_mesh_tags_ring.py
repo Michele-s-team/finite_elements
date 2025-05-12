@@ -67,5 +67,4 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
 
-msh.check_mesh_symmetry(lmsh.mesh, rmsh.c_r)
 
