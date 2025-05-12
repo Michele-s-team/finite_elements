@@ -3,7 +3,6 @@ from fenics import *
 
 import load_mesh as lmsh
 import runtime_arguments as rarg
-import boundary_geometry as bgeo
 
 #read the triangles
 mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())

@@ -2,9 +2,9 @@
 This code reads the mesh generated from generate_ring_mesh.py and it creates dvs and dss from labelled components of the mesh
 
 Run with
-    clear; clear; python3 read_mesh_ring.py [path where to find the mesh]
+    clear; clear; python3 check_mesh_ring.py [path where to find the mesh]
 Example:
-    clear; clear; python3 read_mesh_ring.py solution
+    clear; clear; python3 check_mesh_ring.py solution
 '''
 
 import dolfin
