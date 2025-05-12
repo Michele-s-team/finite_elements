@@ -69,11 +69,11 @@ class NormalVelocityExpression( UserExpression ):
 
 v__profile_l = Expression( ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2)', '0'), degree=2, h=rmsh.h )
 
-bc_v__inflow = DirichletBC( fsp.Q_v, v__profile_l, rmsh.inflow )
-bc_v__walls = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.walls )
-bc_v__cylinder = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.cylinder )
+bc_v__inflow = DirichletBC( fsp.Q_v, v__profile_l, rmsh.boundary_l )
+bc_v__walls = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.boundary_tb )
+bc_v__cylinder = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.boundary_circle )
 
-bc_phi_outflow = DirichletBC( fsp.Q, Constant( 0 ), rmsh.outflow )
+bc_phi_outflow = DirichletBC( fsp.Q, Constant( 0 ), rmsh.boundary_r )
 
 # boundary conditions for the surface_tension p
 bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
