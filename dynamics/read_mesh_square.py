@@ -1,5 +1,5 @@
-from fenics import *
 import dolfin
+from fenics import *
 
 import boundary_geometry as bgeo
 import calculus as cal
