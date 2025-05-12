@@ -3,7 +3,6 @@ import dolfin
 from fenics import *
 import numpy as np
 
-import boundary_geometry as bgeo
 import calculus as cal
 import geometry as geo
 import load_mesh as lmsh
