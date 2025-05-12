@@ -1,24 +1,25 @@
-import dolfin
 from fenics import *
+import dolfin
 
 import calculus as calc
+import load_mesh as lmsh
+import mesh as msh
 import runtime_arguments as rarg
-import boundary_geometry as bgeo
 
 # read the triangles
-mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
+mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
 with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 
 # read the lines
-mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim() - 1)
+mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1)
 with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 
 # radius of the smallest cell in the mesh
-r_mesh = bgeo.mesh.hmin()
+r_mesh = lmsh.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
 L = 1
@@ -29,19 +30,21 @@ c_r = [L / 2.0, h / 2.0]
 
 
 # test for surface elements
-dx = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1)
-ds_l = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2)
-ds_r = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3)
-ds_t = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=4)
-ds_b = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=5)
-ds_circle = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=6)
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
+ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
+ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
+ds_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=4)
+ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
+ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
+ds = ds_square + ds_circle
 
 import check_mesh_tags_square
-
 print(f'Module {__file__} called {check_mesh_tags_square.__file__}', flush=True)
+
+msh.check_mesh_symmetry(lmsh.mesh, c_r)
 
 
 # Define boundaries and obstacle

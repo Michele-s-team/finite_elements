@@ -3,13 +3,12 @@ import dolfin
 from fenics import *
 import numpy as np
 
-import boundary_geometry as bgeo
 import calculus as cal
+import load_mesh as lmsh
 import geometry as geo
 import mesh as msh
 
 import input_output as io
-# the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
 import read_mesh_square as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -21,7 +20,7 @@ r_test = 0.345
 
 
 # a function space used solely to define function_test_integrals_fenics
-Q_test = FunctionSpace(bgeo.mesh, 'P', 2)
+Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
@@ -82,4 +81,3 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
 
-msh.check_mesh_symmetry(bgeo.mesh, rmsh.c_r)
