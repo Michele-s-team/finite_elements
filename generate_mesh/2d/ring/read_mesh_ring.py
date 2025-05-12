@@ -7,7 +7,7 @@ Example:
     clear; clear; python3 read_mesh_ring.py solution
 '''
 
-from dolfin import *
+import dolfin
 from fenics import *
 import sys
 
@@ -15,6 +15,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
@@ -26,16 +27,16 @@ c_R = [0, 0]
 # CHANGE PARAMETERS HERE
 
 # read the mesh
-mesh = msh.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
+# mesh = msh.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
 
 # read the triangles
-vf = msh.read_mesh_components(mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
+vf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
-cf = msh.read_mesh_components(mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
+cf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
-dx = Measure("dx", domain=mesh, subdomain_data=vf, subdomain_id=1)
-ds_r = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=2)
-ds_R = Measure("ds", domain=mesh, subdomain_data=cf, subdomain_id=3)
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=1)
+ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=2)
+ds_R = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=3)
 
 ds = ds_r + ds_R
 
