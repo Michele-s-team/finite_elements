@@ -1,23 +1,23 @@
 import dolfin
 from fenics import *
 
+import load_mesh as lmsh
 import runtime_arguments as rarg
-import boundary_geometry as bgeo
 
 # read the triangles
-mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
+mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
 with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 
 # read the lines
-mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim() - 1)
+mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1)
 with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 
 # radius of the smallest cell in the mesh
-r_mesh = bgeo.mesh.hmin()
+r_mesh = lmsh.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
 L = 1
@@ -36,15 +36,15 @@ m_line_id = 9
 # CHANGE PARAMETERS HERE
 
 
-dx_l = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=l_surface_id)
-dx_r = Measure("dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=r_surface_id)
-ds_l = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=l_line_id)
-ds_r = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=r_line_id)
-ds_lb = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=lb_line_id)
-ds_rb = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=rb_line_id)
-ds_rt = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=tr_line_id)
-ds_lt = Measure("ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=tl_line_id)
-ds_m = Measure("dS", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=m_line_id)
+dx_l = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=l_surface_id)
+dx_r = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=r_surface_id)
+ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=l_line_id)
+ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=r_line_id)
+ds_lb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lb_line_id)
+ds_rb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=rb_line_id)
+ds_rt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=tr_line_id)
+ds_lt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=tl_line_id)
+ds_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=m_line_id)
 
 dx = dx_l + dx_r
 

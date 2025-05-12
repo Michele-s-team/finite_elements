@@ -3,9 +3,9 @@ from fenics import *
 import dolfin
 import numpy as np
 
-import boundary_geometry as bgeo
 import calculus as cal
 import geometry as geo
+import load_mesh as lmsh
 import input_output as io
 import mesh as msh
 
@@ -20,7 +20,7 @@ r_test = 0.345
 
 
 # a function space used solely to define function_test_integrals_fenics
-Q_test = FunctionSpace(bgeo.mesh, 'P', 2)
+Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
