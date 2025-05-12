@@ -16,9 +16,9 @@ elif rarg.args.problem == 'ring':
 
 elif rarg.args.problem == 'ring_symmetric':
 
-    rmsh = 'read_mesh_ring_symmetric'
-    vp = 'variational_problem_bc_ring_symmetric'
-    prout_bc = 'print_out_bc_ring_symmetric'
+    rmsh = 'read_mesh_ring'
+    vp = 'variational_problem_bc_ring'
+    prout_bc = 'print_out_bc_ring'
 
 elif rarg.args.problem == 'ring_with_circle':
 
