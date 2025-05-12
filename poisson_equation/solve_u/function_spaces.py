@@ -2,13 +2,14 @@ import dolfin
 from fenics import *
 
 import boundary_geometry as bgeo
+import load_mesh as lmsh
 
 function_space_degree = 4
 
 
-Q = FunctionSpace( bgeo.mesh, 'P', function_space_degree )
-V = VectorFunctionSpace( bgeo.mesh, 'P', function_space_degree )
-T = TensorFunctionSpace( bgeo.mesh, 'P', function_space_degree, shape=(2, 2) )
+Q = FunctionSpace( lmsh.mesh, 'P', function_space_degree )
+V = VectorFunctionSpace( lmsh.mesh, 'P', function_space_degree )
+T = TensorFunctionSpace( lmsh.mesh, 'P', function_space_degree, shape=(2, 2) )
 
 
 # Define variational problem
