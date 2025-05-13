@@ -2,7 +2,7 @@ import dolfin
 from fenics import *
 
 import boundary_geometry as bgeo
-import load_mesh as lmsh
+import load_2d_mesh as lmsh
 
 function_space_degree = 4
 

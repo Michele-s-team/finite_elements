@@ -9,7 +9,7 @@ import files as files
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
-import load_mesh as lmsh
+import load_2d_mesh as lmsh
 import mesh as msh
 import physics as phys
 import read_mesh_square as rmsh

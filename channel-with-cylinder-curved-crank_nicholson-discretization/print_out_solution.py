@@ -1,7 +1,7 @@
 import files as fi
 import function_spaces as fsp
 import input_output as io
-import load_mesh as lmsh
+import load_2d_mesh as lmsh
 import solution_paths as solpath
 
 

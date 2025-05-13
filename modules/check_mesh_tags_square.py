@@ -4,7 +4,7 @@ from fenics import *
 import numpy as np
 
 import calculus as cal
-import load_mesh as lmsh
+import load_2d_mesh as lmsh
 import geometry as geo
 import mesh as msh
 

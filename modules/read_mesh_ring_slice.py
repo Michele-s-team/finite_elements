@@ -3,7 +3,7 @@ from fenics import *
 import numpy as np
 
 import calculus as cal
-import load_mesh as lmsh
+import load_2d_mesh as lmsh
 import runtime_arguments as rarg
 
 # read the triangles

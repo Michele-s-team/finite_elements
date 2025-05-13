@@ -5,7 +5,7 @@ import ufl as ufl
 
 
 import geometry as geo
-import load_mesh as lmsh
+import load_2d_mesh as lmsh
 import mesh as mesh_module
 # import runtime_arguments as rarg
 
