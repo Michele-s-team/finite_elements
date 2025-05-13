@@ -31,7 +31,7 @@ Input values:
 - 'command' the command, e.g. 'pwd'
 - 'success': A list with one entry: if it is True (False), the command will be (not) executed. If the command execution is successful, success[0] will be set to True and False otherwise. 
 Return value: 
-- the strings with the output and the error resulting from the command run
+- the strings with the output and the error resulting from the command run. If this method is called with success[0] = False, then it returns '', 'run_command failed'
 '''
 def run_command(command, success):
 
@@ -58,7 +58,8 @@ def run_command(command, success):
 
     else:
         print('Stopping here.')
-        return '',''
+
+        return '', 'run_command failed'
 
 
 def command_empty_err_out(command, success):
