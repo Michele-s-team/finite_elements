@@ -1,12 +1,13 @@
 from fenics import *
+import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
-import read_mesh_square_no_circle as rmsh
-from boundary_geometry import n_circle
-from geometry import n_c_r
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 

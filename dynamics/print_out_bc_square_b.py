@@ -1,6 +1,7 @@
 import csv
 import dolfin
 from fenics import *
+import importlib
 import ufl as ufl
 import os
 
@@ -12,10 +13,12 @@ import input_output as io
 import load_2d_mesh as lmsh
 import mesh as msh
 import physics as phys
-import read_mesh_square as rmsh
 import runtime_arguments as rarg
 import solution_paths as solpath
-import variational_problem_bc_square_b as vp
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices( 4 )
 

@@ -1,14 +1,17 @@
-from fenics import *
-import ufl as ufl
 import colorama as col
+from fenics import *
+import importlib
+import ufl as ufl
 
 import boundary_geometry as bgeo
 import geometry as geo
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
-import read_mesh_square as rmsh
-import variational_problem_bc_square_b as vp
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
