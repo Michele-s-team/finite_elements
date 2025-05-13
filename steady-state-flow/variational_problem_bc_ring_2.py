@@ -37,13 +37,16 @@ omega_R_const = 0
 '''
 
 from fenics import *
+import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
 import function as fu
 import function_spaces as fsp
 import geometry as geo
-import read_mesh_ring as rmsh
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l, m, n, o, p = ufl.indices( 8 )
 
