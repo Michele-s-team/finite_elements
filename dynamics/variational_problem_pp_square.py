@@ -4,9 +4,9 @@ import ufl as ufl
 import function_spaces as fsp
 import geometry as geo
 import physics as phys
-import read_mesh_square as rmsh
 import switch_problem as swi
 
+rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
