@@ -2,10 +2,10 @@
 This code generates a 3d mesh given by a ring with multiple radial lines
 IT IS NOT GUARANTEED THAT THIS MESH GENERATES A MESH WITH PERFECT RADIAL SYMMETRY
 
-run with
-clear; clear; python3 generate_ring_mesh.py [resolution]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
+Run with
+    clear; clear; python3 generate_ring_mesh.py [resolution]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio

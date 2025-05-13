@@ -1,16 +1,16 @@
-from pyclbr import Function
-from fenics import *
 import dolfin
+from fenics import *
 
+import load_2d_mesh as lmsh
 import boundary_geometry as bgeo
 
 
 # Define function spaces
 #the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !
-Q_v = VectorFunctionSpace( bgeo.mesh, 'P', 2, dim=2 )
-Q = FunctionSpace(bgeo.mesh, 'P', 1)
-Q_z = FunctionSpace( bgeo.mesh, 'P', 1 )
-Q_omega = VectorFunctionSpace( bgeo.mesh, 'P', 3 )
+Q_v = VectorFunctionSpace( lmsh.mesh, 'P', 2, dim=2 )
+Q = FunctionSpace(lmsh.mesh, 'P', 1)
+Q_z = FunctionSpace( lmsh.mesh, 'P', 1 )
+Q_omega = VectorFunctionSpace( lmsh.mesh, 'P', 3 )
 
 
 # Define functions for solutions at previous and current time steps

@@ -5,16 +5,18 @@ import ufl as ufl
 
 
 import geometry as geo
+import load_2d_mesh as lmsh
 import mesh as mesh_module
-import runtime_arguments as rarg
+# import runtime_arguments as rarg
+
 
 
 #read the mesh
-mesh = mesh_module.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
+# lmsh.mesh = mesh_module.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
 
 
 #the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
-facet_normal = FacetNormal( mesh )
+facet_normal = FacetNormal( lmsh.mesh )
 
 
 i, j, k, l = ufl.indices(4)
@@ -31,7 +33,7 @@ def Nn_circle(omega):
 
 #vector used to define the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r), see 'notes reall2013general'
 def dydtheta(c):
-    x = ufl.SpatialCoordinate(mesh)
+    x = ufl.SpatialCoordinate(lmsh.mesh)
     return as_tensor([-(x[1]-c[1]), x[0]-c[0]])
 
 #square root of the determinant of the pull-back of the metric, h, on a circle with radius r centered at c ( it is independent of r). This pull-back is done by parameterizing the circle, \partial \Omega_O witht the polar angle \theta as a variable
@@ -64,32 +66,32 @@ def calc_normal_cg2(mesh):
 
 #Nt^i_notes on \partial \Omega_in and out
 def Nt_lr(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    L = (mesh_module.extremal_coordinates( mesh ))[0][1]
+    x = ufl.SpatialCoordinate(lmsh.mesh)
+    L = (mesh_module.extremal_coordinates( lmsh.mesh ))[0][1]
 
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
     return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 #N_n_notes on \partial \Omega_in and out
 def Nn_lr(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    L = (mesh_module.extremal_coordinates( mesh ))[0][1]
+    x = ufl.SpatialCoordinate(lmsh.mesh)
+    L = (mesh_module.extremal_coordinates( lmsh.mesh ))[0][1]
 
     N3d = as_tensor([conditional(lt(x[0], L/2.0), -1.0, 1.0), 0.0, 0.0] )
     return (N3d[i] * (normal(omega))[i])
 
 #Nt^i_notes on \partisal \Omega_W
 def Nt_tb(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    h = (mesh_module.extremal_coordinates( mesh ))[1][1]
+    x = ufl.SpatialCoordinate(lmsh.mesh)
+    h = (mesh_module.extremal_coordinates( lmsh.mesh ))[1][1]
 
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
     return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 #N_n_notes on \partial \Omega_top and bottom
 def Nn_tb(omega):
-    x = ufl.SpatialCoordinate(mesh)
-    h = (mesh_module.extremal_coordinates( mesh ))[1][1]
+    x = ufl.SpatialCoordinate(lmsh.mesh)
+    h = (mesh_module.extremal_coordinates( lmsh.mesh ))[1][1]
 
     N3d = as_tensor([0.0, conditional(lt(x[1], h/2.0), -1.0, 1.0), 0.0] )
     return (N3d[i] * (normal(omega))[i])
@@ -107,6 +109,6 @@ def n_circle(omega):
 
 #the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
 def facet_normal_smooth():
-    u = calc_normal_cg2(mesh)
+    u = calc_normal_cg2(lmsh.mesh)
     return as_tensor(u[k], (k))
 

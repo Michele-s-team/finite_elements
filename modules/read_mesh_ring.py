@@ -1,25 +1,24 @@
-from fenics import *
-from dolfin import *
 import dolfin
+from fenics import *
 
+import load_2d_mesh as lmsh
 import runtime_arguments as rarg
-import boundary_geometry as bgeo
 
 #read the triangles
-mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
+mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
 with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 
 #read the lines
-mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim()-1)
+mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim()-1)
 with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
     infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
+mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 
 
 #radius of the smallest cell in the mesh
-r_mesh = bgeo.mesh.hmin()
+r_mesh = lmsh.mesh.hmin()
 
 #CHANGE PARAMETERS HERE
 r = 1.0
@@ -31,9 +30,9 @@ c_R = [0, 0]
 
 
 # test for surface elements
-dx = Measure( "dx", domain=bgeo.mesh, subdomain_data=sf, subdomain_id=1 )
-ds_r = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=2 )
-ds_R = Measure( "ds", domain=bgeo.mesh, subdomain_data=mf, subdomain_id=3 )
+dx = Measure( "dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1 )
+ds_r = Measure( "ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2 )
+ds_R = Measure( "ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3 )
 ds = ds_r + ds_R
 
 import check_mesh_tags_ring

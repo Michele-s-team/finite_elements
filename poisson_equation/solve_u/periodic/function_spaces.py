@@ -2,7 +2,7 @@ import dolfin
 from fenics import *
 import importlib
 
-import boundary_geometry as bgeo
+import load_2d_mesh as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -42,9 +42,9 @@ class PeriodicBoundary(SubDomain):
 
 periodic_boundary = PeriodicBoundary()
 
-Q = FunctionSpace(bgeo.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
-V = VectorFunctionSpace(bgeo.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
-T = TensorFunctionSpace(bgeo.mesh, 'P', function_space_degree, shape=(2, 2), constrained_domain=periodic_boundary)
+Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
+V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
+T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(2, 2), constrained_domain=periodic_boundary)
 
 # Define variational problem
 u = Function(Q)

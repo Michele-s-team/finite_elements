@@ -16,9 +16,9 @@ elif rarg.args.problem == 'ring':
 
 elif rarg.args.problem == 'ring_symmetric':
 
-    rmsh = 'read_mesh_ring_symmetric'
-    vp = 'variational_problem_bc_ring_symmetric'
-    prout_bc = 'print_out_bc_ring_symmetric'
+    rmsh = 'read_mesh_ring'
+    vp = 'variational_problem_bc_ring'
+    prout_bc = 'print_out_bc_ring'
 
 elif rarg.args.problem == 'ring_with_circle':
 
@@ -42,12 +42,12 @@ elif rarg.args.problem == 'square':
     prout_bc =  'print_out_bc_square'
 
 elif rarg.args.problem == 'square_symmetric_top_bottom':
-    rmsh = 'read_mesh_square_symmetric_top_bottom'
+    rmsh = 'read_mesh_square'
     vp = 'variational_problem_bc_square_symmetric_top_bottom'
     prout_bc =  'print_out_bc_square_symmetric_top_bottom'
 
 elif rarg.args.problem == 'square_symmetric_left_right_top_bottom':
-    rmsh = 'read_mesh_square_symmetric_left_right_top_bottom'
+    rmsh = 'read_mesh_square'
     vp = 'variational_problem_bc_square_symmetric_left_right_top_bottom'
     prout_bc =  'print_out_bc_square_symmetric_left_right_top_bottom'
 
