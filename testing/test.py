@@ -173,7 +173,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 problem_name = 'square_no_circle_a'
-checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square_no_circle/symmetric',
                                                                      root_path + case_name,
