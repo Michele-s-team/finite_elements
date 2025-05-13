@@ -1,12 +1,3 @@
-'''
-This code reads the 1d mesh generated from generate_1dmesh.py and it creates dvs and dss from labelled components of the mesh
-
-Run with
-    clear; clear; python3 read_mesh_line_vertex.py [path where to find the mesh]
-Example:
-    clear; clear; python3 read_mesh_line_vertex.py /home/fenics/shared/generate_mesh/1d/line_vertex/solution
-
-'''
 import dolfin
 from fenics import *
 import numpy as np
@@ -16,7 +7,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import load_mesh as lmsh
+import load_1d_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 

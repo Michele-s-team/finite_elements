@@ -5,10 +5,9 @@ import numpy as np
 import scipy.integrate as spi
 
 import input_output as io
-import load_mesh as lmsh
+import load_1d_mesh as lmsh
 import mesh as msh
-
-import read_line_vertex_mesh as rmsh
+import read_mesh_line_vertex as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
@@ -19,7 +18,7 @@ r_test = 0.345
 
 
 # a function space used solely to define function_test_integrals_fenics
-Q_test = FunctionSpace(rmsh.mesh, 'P', 2)
+Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
