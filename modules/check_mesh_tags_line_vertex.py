@@ -1,11 +1,11 @@
 import colorama as col
+import dolfin
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
 
-import calculus as cal
-import geometry as geo
 import input_output as io
+import load_mesh as lmsh
 import mesh as msh
 
 import read_line_vertex_mesh as rmsh
@@ -47,7 +47,6 @@ integral_exact_dx_l = spi.quad(function_test_integrals, 0, rmsh.x_p)[0]
 integral_exact_dx_r = spi.quad(function_test_integrals, rmsh.x_p, rmsh.L)[0]
 
 test_mesh_integral_errors = []
-
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int dx f'))
 
