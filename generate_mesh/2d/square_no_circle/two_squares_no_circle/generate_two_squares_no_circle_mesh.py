@@ -1,17 +1,16 @@
 '''
 generate a  mesh given by two collated squares
 
-run it with
-python3 generate_two_squares_no_circle_mesh.py [resolution] [output directory]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py 0.1 $SOLUTION_PATH
-
+Run it with
+    python3 generate_two_squares_no_circle_mesh.py [resolution] [output directory]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py 0.1 $SOLUTION_PATH
 '''
 
-import meshio
-import gmsh
-import pygmsh
 import argparse
+import gmsh
+import meshio
+import pygmsh
 import sys
 
 # add the path where to find the shared modules
@@ -47,7 +46,7 @@ model = geometry.__enter__()
 # CHANGE PARAMETERS HERE
 # L and h are length and height of the rectangle
 L = 1
-h = 2
+h = 1
 # L_m is the coordinate on the x axis where the inner line separating the two sub-rectangles is located
 L_m = L / 3
 l_surface_id = 1

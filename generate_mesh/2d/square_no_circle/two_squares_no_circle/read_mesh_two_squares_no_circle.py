@@ -7,7 +7,7 @@ example:
     clear; clear; python3 read_mesh_two_squares_no_circle.py solution
 '''
 
-from dolfin import *
+import dolfin
 from fenics import *
 import sys
 
@@ -20,7 +20,7 @@ import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
 L = 1
-h = 2
+h = 1
 L_m = L / 3
 
 l_surface_id = 1
