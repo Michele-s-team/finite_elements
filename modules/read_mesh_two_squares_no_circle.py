@@ -21,7 +21,7 @@ r_mesh = lmsh.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
 L = 1
-h = 2
+h = 1
 L_m = L / 3
 
 l_surface_id = 1
