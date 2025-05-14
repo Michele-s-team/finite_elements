@@ -53,10 +53,10 @@ integral_exact_dp2 = function_test_integrals([-rmsh.r, 0])
 test_mesh_integral_errors = []
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integral_fenics, rmsh.dx, '\int dx f'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp1, function_test_integral_fenics, rmsh.dp_1, '\int dp f_{p_1}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp2, function_test_integral_fenics, rmsh.dp_2, '\int dp f_{p_2}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_12, function_test_integral_fenics, rmsh.dline_12, '\int dl f_{line_12}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_darc_21, function_test_integral_fenics, rmsh.darc_21, '\int dl f_{arc_21}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_34, function_test_integral_fenics, rmsh.dline_34, '\int dl f_{line_34}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp1, function_test_integral_fenics, rmsh.dp_line_in_start, '\int dp f_{p_1}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp2, function_test_integral_fenics, rmsh.dp_line_in_end, '\int dp f_{p_2}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_12, function_test_integral_fenics, rmsh.ds_line, '\int dl f_{line_12}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_darc_21, function_test_integral_fenics, rmsh.ds_arc, '\int dl f_{arc_21}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_34, function_test_integral_fenics, rmsh.ds_line_in, '\int dl f_{line_34}'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

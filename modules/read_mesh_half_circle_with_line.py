@@ -5,6 +5,7 @@ import load_2d_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
+
 # read the triangles
 vf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
@@ -35,11 +36,13 @@ line_34_id = 8
 
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=surface_id)
-dline_12 = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=line_12_id)
-dline_34 = Measure("dS", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=line_34_id)
-darc_21 = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=arc_21_id)
-dp_1 = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=p_1_id)
-dp_2 = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=p_2_id)
+ds_line = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=line_12_id)
+ds_line_in = Measure("dS", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=line_34_id)
+ds_arc = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=arc_21_id)
+dp_line_in_start = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=p_1_id)
+dp_line_in_end = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=p_2_id)
+
+ds = ds_line + ds_arc
 
 import check_mesh_tags_half_circle_with_line
 

@@ -8,6 +8,12 @@ if rarg.args.problem == 'ring_slice':
     vp = 'variational_problem_bc_ring_slice'
     prout_bc = 'print_out_bc_ring_slice'
 
+if rarg.args.problem == 'half_circle_with_line':
+
+    rmsh = 'read_mesh_half_circle_with_line'
+    vp = 'variational_problem_bc_half_circle_with_line'
+    prout_bc = 'print_out_bc_half_circle_with_line'
+
 elif rarg.args.problem == 'ring':
 
     rmsh = 'read_mesh_ring'
