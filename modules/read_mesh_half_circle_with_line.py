@@ -17,6 +17,11 @@ r_mesh = lmsh.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
 r = 1
+c_r = [0, 0]
+c_1 = [r, 0]
+c_2 = [-r, 0]
+c_3 = [r / 2, -r / 8]
+c_4 = [-r / 2, -r / 8]
 
 p_1_id = 1
 p_2_id = 2
@@ -40,6 +45,6 @@ import check_mesh_tags_half_circle_with_line
 
 print(f'Module {__file__} called {check_mesh_tags_half_circle_with_line.__file__}', flush=True)
 
-#CHANGE PARAMETERS HERE
+# CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-#CHANGE PARAMETERS HERE
+# CHANGE PARAMETERS HERE

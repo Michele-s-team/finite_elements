@@ -50,17 +50,24 @@ def curve_arc_21(t):
 def curve_line_12(t):
     return cal.line([rmsh.r, 0], [-rmsh.r, 0], t)
 
+
+integral_exact_dx = cal.surface_integral_disk_slice(function_test_integrals,  rmsh.r, np.pi, 2*np.pi, rmsh.c_r)
+
 integral_exact_dline_12 = cal.curve_integral(function_test_integrals, curve_line_12)
-integral_exact_darc_21 = cal.curve_integral(function_test_integrals, curve_arc_21)
+integral_exact_darc_21 = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, np.pi, 2 * np.pi, rmsh.c_r)
+
+integral_exact_dline_34 = cal.curve_integral_line(function_test_integrals, rmsh.c_3, rmsh.c_4)
+
 integral_exact_dp1 = function_test_integrals([rmsh.r, 0])
+integral_exact_dp2 = function_test_integrals([-rmsh.r, 0])
 
 test_mesh_integral_errors = []
 
-# test_mesh_integral_errors.append(msh.test_mesh_integral(0.5287414193220428, function_test_integral_fenics, rmsh.dx, '\int dx f_surface'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integral_fenics, rmsh.dx, '\int dx f'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp1, function_test_integral_fenics, rmsh.dp_1, '\int dp f_{p_1}'))
-# test_mesh_integral_errors.append(msh.test_mesh_integral(0.1588462551091818, function_test_integral_fenics, rmsh.dp_2, '\int dp f_{p_2}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp2, function_test_integral_fenics, rmsh.dp_2, '\int dp f_{p_2}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_12, function_test_integral_fenics, rmsh.dline_12, '\int dl f_{line_12}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_darc_21, function_test_integral_fenics, rmsh.darc_21, '\int dl f_{arc_21}'))
-# test_mesh_integral_errors.append(msh.test_mesh_integral(0.652012217844941, function_test_integral_fenics, rmsh.dline_34, '\int dl f_{line_34}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_34, function_test_integral_fenics, rmsh.dline_34, '\int dl f_{line_34}'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
