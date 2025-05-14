@@ -40,20 +40,9 @@ class FunctionTestIntegrals(UserExpression):
 function_test_integral_fenics = Function(Q_test)
 function_test_integral_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
+integral_exact_dx = cal.surface_integral_disk_slice(function_test_integrals, rmsh.r, np.pi, 2 * np.pi, rmsh.c_r)
 
-# curve relative to arc_21: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
-def curve_arc_21(t):
-    return [[np.cos(np.pi * t), -np.sin(np.pi * t)], [-  np.pi * np.sin(np.pi * t), -np.pi * np.cos(np.pi * t)]]
-
-
-# curve relative to line_12: it returns [[x[0](t), x[1](t)] , [x[0]'(t), x[1]'(t)]]
-def curve_line_12(t):
-    return cal.line([rmsh.r, 0], [-rmsh.r, 0], t)
-
-
-integral_exact_dx = cal.surface_integral_disk_slice(function_test_integrals,  rmsh.r, np.pi, 2*np.pi, rmsh.c_r)
-
-integral_exact_dline_12 = cal.curve_integral(function_test_integrals, curve_line_12)
+integral_exact_dline_12 = cal.curve_integral_line(function_test_integrals, rmsh.c_1, rmsh.c_2)
 integral_exact_darc_21 = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, np.pi, 2 * np.pi, rmsh.c_r)
 
 integral_exact_dline_34 = cal.curve_integral_line(function_test_integrals, rmsh.c_3, rmsh.c_4)
