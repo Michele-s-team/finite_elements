@@ -133,7 +133,7 @@ msh.write_mesh_components(mesh_file, "solution/line_mesh.xdmf", "line", True)
 msh.write_mesh_components(mesh_file, "solution/vertex_mesh.xdmf", "vertex", True)
 
 # print the mesh lines to file
-msh.write_mesh_to_csv(mesh_file, 'solution/line_vertices.csv')
+msh.write_mesh_to_csv(mesh_file, "solution/line_vertices.csv")
 # print the mesh vertices to file
 mesh = msh.read_mesh("solution/triangle_mesh.xdmf")
 io.print_vertices_to_csv_file(mesh, "solution/vertices.csv")
