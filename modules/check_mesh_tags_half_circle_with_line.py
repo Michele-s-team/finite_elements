@@ -52,11 +52,12 @@ def curve_line_12(t):
 
 integral_exact_dline_12 = cal.curve_integral(function_test_integrals, curve_line_12)
 integral_exact_darc_21 = cal.curve_integral(function_test_integrals, curve_arc_21)
+integral_exact_dp1 = function_test_integrals([rmsh.r, 0])
 
 test_mesh_integral_errors = []
 
 # test_mesh_integral_errors.append(msh.test_mesh_integral(0.5287414193220428, function_test_integral_fenics, rmsh.dx, '\int dx f_surface'))
-# test_mesh_integral_errors.append(msh.test_mesh_integral(0.596540161473517, function_test_integral_fenics, rmsh.dp_1, '\int dp f_{p_1}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp1, function_test_integral_fenics, rmsh.dp_1, '\int dp f_{p_1}'))
 # test_mesh_integral_errors.append(msh.test_mesh_integral(0.1588462551091818, function_test_integral_fenics, rmsh.dp_2, '\int dp f_{p_2}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_12, function_test_integral_fenics, rmsh.dline_12, '\int dl f_{line_12}'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_darc_21, function_test_integral_fenics, rmsh.darc_21, '\int dl f_{arc_21}'))
