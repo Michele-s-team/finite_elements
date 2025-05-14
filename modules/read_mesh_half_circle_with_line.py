@@ -50,4 +50,6 @@ print(f'Module {__file__} called {check_mesh_tags_half_circle_with_line.__file__
 
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
+boundary_line  = 'near(x[1], 0.0)'
+boundary_arc = f'on_boundary && ((x[1] < 0.0) || (near(x[0], {c_1[0]}) || near(x[0], {c_2[0]})))'
 # CHANGE PARAMETERS HERE
