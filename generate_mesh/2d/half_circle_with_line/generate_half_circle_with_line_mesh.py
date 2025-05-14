@@ -131,14 +131,14 @@ geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
 # write mesh components to file
-msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, output_directory + "line_mesh.xdmf", "line", True)
-msh.write_mesh_components(mesh_file, output_directory + "vertex_mesh.xdmf", "vertex", True)
+msh.write_mesh_components(mesh_file, output_directory + "/triangle_mesh.xdmf", "triangle", True)
+msh.write_mesh_components(mesh_file, output_directory + "/line_mesh.xdmf", "line", True)
+msh.write_mesh_components(mesh_file, output_directory + "/vertex_mesh.xdmf", "vertex", True)
 
 # print the mesh lines to file
-msh.write_mesh_to_csv(mesh_file, output_directory + "line_vertices.csv")
+msh.write_mesh_to_csv(mesh_file, output_directory + "/line_vertices.csv")
 # print the mesh vertices to file
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
+mesh = msh.read_mesh(output_directory + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "/vertices.csv")
 
 model.__exit__()
