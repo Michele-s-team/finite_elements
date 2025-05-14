@@ -28,6 +28,8 @@ parser.add_argument("resolution")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
+mesh_file = args.output_directory + "/mesh.msh"
+
 #mesh resolution
 resolution = (float)(args.resolution)
 
@@ -66,11 +68,13 @@ model.add_physical([points[2]], "point_r")
 model.add_physical([points[1]], "point_in")
 
 geometry.generate_mesh(dim=3)
-gmsh.write(args.output_directory + "/mesh.msh")
+gmsh.write(mesh_file)
+
+
 model.__exit__()
 
 
-mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
+mesh_from_file = meshio.read(mesh_file)
 
 '''
 #create a tetrahedron mesh
