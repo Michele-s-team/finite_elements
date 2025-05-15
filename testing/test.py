@@ -160,7 +160,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      root_path + 'generate_mesh/2d/ring',
                                                                      root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh_ring', 0.1, problem_name, success)
+                                                                     'generate_ring_mesh', 0.1, problem_name, success)
 
 
 
@@ -314,6 +314,8 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                             root_path + case_name,
                             mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                             'generate_square_mesh', 0.1, problem_name, success)
+
+
 
 
 cmd.checkout(commit_a, success)
