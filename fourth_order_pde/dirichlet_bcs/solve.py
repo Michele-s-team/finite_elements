@@ -9,17 +9,14 @@ This code solves the biharmonic equation Nabla Nabla \partial_i (z \partial_i z)
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
 
 run with
-
-clear; clear; python3 solve.py [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
+    clear; clear; python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
 example:
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/fourth-order-pde/dirichlet-bcs/mesh /home/fenics/shared/fourth-order-pde/dirichlet-bcs/solution
+    clear; clear; rm -rf solution; python3 solve.py ring /home/fenics/shared/generate_mesh/2d/ring/solution /home/fenics/shared/fourth_order_pde/dirichlet_bcs/solution
 '''
 
-from fenics import *
 import argparse
-
-import dolfin
-import ufl as ufl
+from fenics import *
+import importlib
 import termcolor
 import numpy as np
 import sys
@@ -28,9 +25,15 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
-import input_output as io
+import function_spaces as fsp
 import geometry as geo
+import input_output as io
 import mesh as msh
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
+
 #
 # '''
 # #square mesh
@@ -48,27 +51,19 @@ import mesh as msh
 # #
 
 
+#
+#
+# parser = argparse.ArgumentParser()
+# parser.add_argument( "input_directory" )
+# parser.add_argument( "output_directory" )
+# args = parser.parse_args()
 
 
-
-parser = argparse.ArgumentParser()
-parser.add_argument( "input_directory" )
-parser.add_argument( "output_directory" )
-args = parser.parse_args()
-
-xdmffile_z = XDMFFile( (args.output_directory) + "/z.xdmf" )
-xdmffile_omega = XDMFFile( (args.output_directory) + "/omega.xdmf" )
-xdmffile_mu = XDMFFile( (args.output_directory) + "/mu.xdmf" )
-xdmffile_rho = XDMFFile( (args.output_directory) + "/rho.xdmf" )
-xdmffile_tau = XDMFFile( (args.output_directory) + "/tau.xdmf" )
-
-xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
-xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 
 # read the mesh
-mesh = Mesh()
-xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
-xdmf.read( mesh )
+# mesh = Mesh()
+# xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
+# xdmf.read( mesh )
 
 # # radius of the smallest cell in the mesh
 # r_mesh = mesh.hmin()
@@ -174,8 +169,8 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 
 
-J = derivative( F, psi, J_Q )
-problem = NonlinearVariationalProblem( F, psi, bcs, J )
+J = derivative( vp.F, fsp.psi, fsp.J_Q )
+problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, fsp.J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -192,45 +187,4 @@ params = {'nonlinear_solver': 'newton',
 solver.parameters.update( params )
 
 solver.solve()
-
-z_output, omega_output, mu_output, rho_output, tau_output = psi.split( deepcopy=True )
-
-xdmffile_z.write( z_output, 0 )
-xdmffile_omega.write( omega_output, 0 )
-xdmffile_mu.write( mu_output, 0 )
-xdmffile_rho.write( rho_output, 0 )
-xdmffile_tau.write( tau_output, 0 )
-
-io.print_scalar_to_csvfile( z_output, (args.output_directory) + '/z.csv' )
-io.print_vector_to_csvfile( omega_output, (args.output_directory) + '/omega.csv' )
-io.print_scalar_to_csvfile( mu_output, (args.output_directory) + '/mu.csv' )
-io.print_vector_to_csvfile( rho_output, (args.output_directory) + '/rho.csv' )
-io.print_vector_to_csvfile( tau_output, (args.output_directory) + '/tau.csv' )
-
-print( "BCs check: " )
-print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
-print(
-    f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
-print(
-    f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, f ), 'red' )}" )
-
-
-print( "Check that the PDE is satisfied: " )
-print( f"\t<<(Nabla^2 partial_i ( z partial_i z) - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'green' )}" )
-
-print( "Comparison with exact solution: " )
-print( f"\t<<(z - z_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( z_output, z_exact ), 'blue' )}" )
-print(
-    f"\t<<|omega - omega_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (omega_output[i] - omega_exact[i]) * (omega_output[i] - omega_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
-print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( mu_output, mu_exact ), 'blue' )}" )
-print(
-    f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
-print( f"\t<<(tau - tau_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'blue' )}" )
-
-xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
-xdmffile_check.write( project( sqrt((rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i])), Q_z ), 0 )
-xdmffile_check.write( project( tau_output - f, Q_z ), 0 )
-xdmffile_check.close()
 

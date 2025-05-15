@@ -15,7 +15,7 @@ P_mu = FiniteElement('P', triangle, function_space_degree)
 P_rho = VectorElement('P', triangle, function_space_degree)
 P_tau = FiniteElement('P', triangle, function_space_degree)
 element = MixedElement([P_z, P_omega, P_mu, P_rho, P_tau])
-Q = FunctionSpace(mesh, element)
+Q = FunctionSpace(lmsh.mesh, element)
 
 Q_z = Q.sub(0).collapse()
 Q_omega = Q.sub(1).collapse()
