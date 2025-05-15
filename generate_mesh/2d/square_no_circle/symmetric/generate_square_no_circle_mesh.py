@@ -15,13 +15,14 @@ The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. 
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
 '''
 
-import meshio
+import argparse
 from fenics import *
 import gmsh  # main tool
-import pygmsh  # wrapper for gmsh
-import argparse
-import sys
+import meshio
 import numpy as np
+import os
+import pygmsh  # wrapper for gmsh
+import sys
 
 # add the path where to find the shared modules
 # gaetano's path
@@ -57,6 +58,8 @@ h_unit = h / N
 
 output_dir = io.add_trailing_slash(args.output_dir)
 unit_mesh_dir = io.add_trailing_slash(output_dir + 'unit_mesh')
+os.makedirs(unit_mesh_dir, exist_ok=True)
+
 unit_mesh_msh_file = unit_mesh_dir + "unit_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
