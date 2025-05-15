@@ -2,8 +2,8 @@
 This code generates a  square mesh with a circular hole in it, which is symmetric with respect to top <-> bottom symmetry
 Symmetry is enforced by mirroring the mesh points along a symetry axis.
 
-run with
-python3 generate_square_mesh.py [mesh resolution] [path where to store the mesh]
+Run with
+    python3 generate_square_mesh.py [mesh resolution] [path where to store the mesh]
 ATTENTION: [mesh resolution] must be small enough for the circle to be properly resolved
 Example:
     clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH
@@ -64,9 +64,9 @@ def mirror_function(point):
     return cal.mirror_point_line(point, gamma_axis_of_symmetry)
 '''
 
-output_dir = args.output_dir
-half_mesh_msh_file = output_dir + "/half_mesh.msh"
-mesh_xdmf_file = output_dir + "/mesh.xdmf"
+output_dir = io.add_trailing_slash(args.output_dir)
+half_mesh_msh_file = output_dir + "half_mesh.msh"
+mesh_xdmf_file = output_dir + "mesh.xdmf"
 
 print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
@@ -109,7 +109,7 @@ model.add_physical(half_rectangle_circle_lines[5:], "c")
 geometry.generate_mesh(dim=2)
 gmsh.write(half_mesh_msh_file)
 
-# msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+msh.write_mesh_to_csv( half_mesh_msh_file, output_dir + 'line_vertices.csv' )
 
 gmsh.clear()
 geometry.__exit__()
@@ -182,11 +182,11 @@ print("Full mesh generated successfully!")
 mesh_from_file = meshio.read(mesh_xdmf_file)
 
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+meshio.write(output_dir + "line_mesh.xdmf", line_mesh)
 
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+meshio.write(output_dir + "triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
+mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "vertices.csv")

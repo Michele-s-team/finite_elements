@@ -996,15 +996,18 @@ Input values:
 - 'c_r', 'c_R' the centers of the rings
 - 'theta': the angular width of the slice, in radians
 - 'resolution': the mesh resolution
-- 'output_file': the .msh file where the mesh will be stored
+- 'output_file': the .msh file where the mesh will be stored. The mesh lines will be written in the same folder in line_vertices.csv file
 
 Example of usage:
     msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
 '''
 def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
+
+    output_directory = io.add_trailing_slash(os.path.dirname(output_file))
+
     # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    os.makedirs(output_directory, exist_ok=True)
 
 
     surface_id = 1
@@ -1063,6 +1066,8 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
     geometry.generate_mesh(dim=2)
     gmsh.write(output_file)
+
+    write_mesh_to_csv(output_file, output_directory + 'line_vertices.csv')
 
     gmsh.clear()
     geometry.__exit__()

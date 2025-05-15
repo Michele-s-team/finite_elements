@@ -15,13 +15,14 @@ The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. 
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
 '''
 
-import meshio
+import argparse
 from fenics import *
 import gmsh  # main tool
-import pygmsh  # wrapper for gmsh
-import argparse
-import sys
+import meshio
 import numpy as np
+import os
+import pygmsh  # wrapper for gmsh
+import sys
 
 # add the path where to find the shared modules
 # gaetano's path
@@ -55,9 +56,12 @@ N = 2 ** log2_N
 L_unit = L / N
 h_unit = h / N
 
-output_dir = args.output_dir
-unit_mesh_msh_file = output_dir + "/unit_mesh.msh"
-mesh_xdmf_file = output_dir + "/mesh.xdmf"
+output_dir = io.add_trailing_slash(args.output_dir)
+unit_mesh_dir = io.add_trailing_slash(output_dir + 'unit_mesh')
+os.makedirs(unit_mesh_dir, exist_ok=True)
+
+unit_mesh_msh_file = unit_mesh_dir + "unit_mesh.msh"
+mesh_xdmf_file = output_dir + "mesh.xdmf"
 
 print(f'L = {L}\nh = {h}\nresolution = {resolution}\nN = {N}\noutput directory = {output_dir}')
 
@@ -91,19 +95,12 @@ model.add_physical([unit_lines[1]], 'b')
 geometry.generate_mesh(dim=2)
 gmsh.write(unit_mesh_msh_file)
 
+msh.write_mesh_to_csv(unit_mesh_msh_file, unit_mesh_dir + 'line_vertices.csv')
+
 gmsh.clear()
 geometry.__exit__()
 
-'''
-# read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
-mesh = meshio.read(unit_mesh_msh_file)
 
-line_mesh = msh.create_mesh(mesh, "line", prune_z=True)
-meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
-
-triangle_mesh = msh.create_mesh(mesh, "triangle", prune_z=True)
-meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
-'''
 
 surface_id = 1
 l_edge_id = 2
@@ -166,19 +163,17 @@ meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
 
-# msh.print_mesh_info(mesh, 'Mesh after mirroring')
-
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
 
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+meshio.write(output_dir + "line_mesh.xdmf", line_mesh)
 
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+meshio.write(output_dir + "triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
-#
+mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_dir + "vertices.csv")
+
