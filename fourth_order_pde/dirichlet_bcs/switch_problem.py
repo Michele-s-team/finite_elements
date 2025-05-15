@@ -2,7 +2,7 @@ import colorama as col
 
 import runtime_arguments as rarg
 
-if rarg.args.problem == 'ring':
+if rarg.args.problem == 'ring_dirichlet':
     rmsh = 'read_mesh_ring'
     vp = 'variational_problem_bc_ring'
     prout_bc = 'print_out_bc_ring'

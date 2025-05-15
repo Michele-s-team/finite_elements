@@ -11,7 +11,7 @@ where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to t
 run with
     python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
 example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/dirichlet_bcs/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/dirichlet_bcs/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_dirichlet $MESH_PATH $SOLUTION_PATH
 '''
 
 import argparse

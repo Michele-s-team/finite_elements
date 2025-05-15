@@ -154,7 +154,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 # Test fourth_order_pde/dirichlet_bcs
 case_name = 'fourth_order_pde/dirichlet_bcs'
 
-problem_name = 'ring'
+problem_name = 'ring_dirichlet'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/ring',
