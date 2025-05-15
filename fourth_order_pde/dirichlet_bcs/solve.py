@@ -31,27 +31,25 @@ sys.path.append( module_path )
 import input_output as io
 import geometry as geo
 import mesh as msh
-
-alpha = 1e2
-'''
-#square mesh
-# CHANGE PARAMETERS HERE
-L = 1.0
-h = 1.0
-# CHANGE PARAMETERS HERE
-'''
 #
-# ring mesh
-# CHANGE PARAMETERS HERE
-r = 1.0
-R = 2.0
-# CHANGE PARAMETERS HERE
-#
+# '''
+# #square mesh
+# # CHANGE PARAMETERS HERE
+# L = 1.0
+# h = 1.0
+# # CHANGE PARAMETERS HERE
+# '''
+# #
+# # ring mesh
+# # CHANGE PARAMETERS HERE
+# r = 1.0
+# R = 2.0
+# # CHANGE PARAMETERS HERE
+# #
 
 
 
 
-i, j, k, l = ufl.indices( 4 )
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "input_directory" )
@@ -72,29 +70,29 @@ mesh = Mesh()
 xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
 xdmf.read( mesh )
 
-# radius of the smallest cell in the mesh
-r_mesh = mesh.hmin()
+# # radius of the smallest cell in the mesh
+# r_mesh = mesh.hmin()
 
-print( f"Mesh radius = {r_mesh}" )
+# print( f"Mesh radius = {r_mesh}" )
 
-# read the triangles
-mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
-with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
-    infile.read( mvc, "name_to_read" )
-cf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
-xdmf.close()
-
-# read the lines
-mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() - 1 )
-with XDMFFile( (args.input_directory) + "/line_mesh.xdmf" ) as infile:
-    infile.read( mvc, "name_to_read" )
-sf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
-xdmf.close()
-
-# Define boundaries and obstacle
-# CHANGE PARAMETERS HERE
-boundary = 'on_boundary'
-# CHANGE PARAMETERS HERE
+# # read the triangles
+# mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
+# with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
+#     infile.read( mvc, "name_to_read" )
+# cf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
+# xdmf.close()
+#
+# # read the lines
+# mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() - 1 )
+# with XDMFFile( (args.input_directory) + "/line_mesh.xdmf" ) as infile:
+#     infile.read( mvc, "name_to_read" )
+# sf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
+# xdmf.close()
+#
+# # Define boundaries and obstacle
+# # CHANGE PARAMETERS HERE
+# boundary = 'on_boundary'
+# # CHANGE PARAMETERS HERE
 
 
 # test for surface elements
@@ -108,33 +106,33 @@ ds_b = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=5 )
 ds = ds_l + ds_r + ds_t + ds_b
 '''
 
-# ring mesh
-#
-dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
-ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
-ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
-ds = ds_r + ds_R
-#
+# # ring mesh
+# #
+# dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
+# ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+# ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
+# ds = ds_r + ds_R
+# #
 
 # a function space used solely to define f_test_ds
-Q_test = FunctionSpace( mesh, 'P', 2 )
+# Q_test = FunctionSpace( mesh, 'P', 2 )
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-f_test_ds = Function( Q_test )
+# f_test_ds = Function( Q_test )
 
 
 # analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegrals( UserExpression ):
-    def eval(self, values, x):
-        c_test = [0.3, 0.76]
-        r_test = 0.345
-        values[0] = cos( geo.my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
+# class FunctionTestIntegrals( UserExpression ):
+#     def eval(self, values, x):
+#         c_test = [0.3, 0.76]
+#         r_test = 0.345
+#         values[0] = cos( geo.my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
+#
+#     def value_shape(self):
+#         return (1,)
 
-    def value_shape(self):
-        return (1,)
 
-
-f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
+# f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
 # print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
 
@@ -164,109 +162,17 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 # ring mesh
 #
-msh.test_mesh_integral( 2.90212, f_test_ds, dx, '\int f dx' )
-msh.test_mesh_integral( 2.77595, f_test_ds, ds_r, '\int_r f ds' )
-msh.test_mesh_integral( 3.67175, f_test_ds, ds_R, '\int_R f ds' )
+# msh.test_mesh_integral( 2.90212, f_test_ds, dx, '\int f dx' )
+# msh.test_mesh_integral( 2.77595, f_test_ds, ds_r, '\int_r f ds' )
+# msh.test_mesh_integral( 3.67175, f_test_ds, ds_R, '\int_R f ds' )
 #
 
-n = FacetNormal( mesh )
-
-
-
-
-assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu, Q_rho, Q_tau] )
-
-
-class z_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        # values[0] = np.cos( x[0] + x[1] ) * np.sin( x[0] - x[1] )
-        values[0] = (x[0] ** 4 + x[1] ** 4) / 48.0
-
-    def value_shape(self):
-        return (1,)
-
-
-class omega_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = (x[0] ** 3) / 12.0
-        values[1] = (x[1] ** 3) / 12.0
-
-    def value_shape(self):
-        return (2,)
-
-
-class mu_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = (7 * x[0] ** 6 + 3 * x[0] ** 4 * x[1] ** 2 + 3 * x[0] ** 2 * x[1] ** 4 + 7 * x[1] ** 6) / 576.0
-
-    def value_shape(self):
-        return (1,)
-
-
-class rho_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = x[0] * (7 * x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + x[1] ** 4) / 96.0
-        values[1] = x[1] * (x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + 7 * x[1] ** 4) / 96.0
-
-    def value_shape(self):
-        return (2,)
-
-
-class f_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        # values[0] = -16 * (np.cos( 4 * x[0] ) + np.cos( 4 * x[1] ) + np.sin( 2 * x[0] ) * np.sin( 2 * x[1] ))
-        values[0] = 1 / 8.0 * (3 * x[0] ** 4 + x[0] ** 2 * x[1] ** 2 + 3 * x[1] ** 4)
-
-    def value_shape(self):
-        return (1,)
+# n = FacetNormal( mesh )
 
 
 
 
 
-z_exact.interpolate( z_exact_expression( element=Q_z.ufl_element() ) )
-omega_exact.interpolate( omega_exact_expression( element=Q_omega.ufl_element() ) )
-mu_exact.interpolate( mu_exact_expression( element=Q_mu.ufl_element() ) )
-rho_exact.interpolate( rho_exact_expression( element=Q_rho.ufl_element() ) )
-tau_exact.interpolate( f_exact_expression( element=Q_tau.ufl_element() ) )
-f.interpolate( f_exact_expression( element=Q_z.ufl_element() ) )
-
-z_profile = Expression( '(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=Q.sub( 0 ).ufl_element() )
-mu_profile = Expression( '(7 * pow(x[0], 6) + 3 * pow(x[0], 4) * pow(x[1], 2) + 3 * pow(x[0], 2) * pow(x[1], 4) + 7 * pow(x[1], 6))/576.0', element=Q.sub( 2 ).ufl_element() )
-rho_profile = Expression(
-    ('(1.0 / 96.0) * x[0] * (7.0 * pow(x[0], 4) + 2.0 * pow(x[0], 2) * pow(x[1], 2) + pow(x[1], 4))', '(1.0 / 96.0) * x[1] * (pow(x[0], 4) + 2 * pow(x[0], 2) * pow(x[1], 2) + 7 * pow(x[1], 4))'),
-    element=Q.sub( 3 ).ufl_element() )
-tau_profile = Expression( '(1.0 / 8.0) * (3 * pow(x[0], 4) + pow(x[0], 2) * pow(x[1], 2) + 3 * pow(x[1], 4))', element=Q.sub( 4 ).ufl_element() )
-
-bc_z = DirichletBC( Q.sub( 0 ), z_profile, boundary )
-bc_mu = DirichletBC( Q.sub( 2 ), mu_profile, boundary )
-bc_rho = DirichletBC( Q.sub( 3 ), rho_profile, boundary )
-bc_tau = DirichletBC( Q.sub( 4 ), tau_profile, boundary )
-
-# here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
-assigner.assign( psi, [f, omega_exact, mu_exact, rho_exact, tau_exact] )
-
-F_z = ((mu.dx( j )) * (nu_z.dx( j )) + f * nu_z) * dx \
-      - n[j] * (mu.dx( j )) * nu_z * ds
-
-F_omega = (z * ((nu_omega[i]).dx( i )) + omega[i] * nu_omega[i]) * dx \
-          - n[i] * z * nu_omega[i] * ds
-
-# F_mu = ((z * omega[i]).dx(i) * nu_mu  - mu * nu_mu) * dx
-F_mu = (z * omega[i] * (nu_mu.dx( i )) + mu * nu_mu) * dx \
-       - n[i] * z * omega[i] * nu_mu * ds
-
-F_rho = (mu * ((nu_rho[i]).dx( i )) + rho[i] * nu_rho[i]) * dx \
-        - n[i] * mu * nu_rho[i] * ds
-
-F_tau = ( tau  * nu_tau + rho[i] * (nu_tau.dx(i)) ) * dx \
-      - n[i] * rho[i] * nu_tau * ds
-
-F_N = alpha / r_mesh * (n[i] * omega[i] - n[i] * omega_exact[i]) * n[j] * nu_omega[j] * ds
-
-F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
-# bcs = [bc_z]
-bcs = [bc_z, bc_mu, bc_rho, bc_tau]
 
 J = derivative( F, psi, J_Q )
 problem = NonlinearVariationalProblem( F, psi, bcs, J )
@@ -327,5 +233,4 @@ xdmffile_check.write( project( mu_output - mu_exact, Q_z ), 0 )
 xdmffile_check.write( project( sqrt((rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i])), Q_z ), 0 )
 xdmffile_check.write( project( tau_output - f, Q_z ), 0 )
 xdmffile_check.close()
-#
-# msh.bulk_points( mesh )
+
