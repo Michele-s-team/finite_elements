@@ -7,7 +7,7 @@ import runtime_arguments as rarg
 
 i, j, k, l = ufl.indices(4)
 
-z_output, omega_output, mu_output, rho_output, tau_output = fsp.psi.split(deepcopy=True)
+fsp.z_output, fsp.omega_output, fsp.mu_output, fsp.rho_output, fsp.tau_output = fsp.psi.split(deepcopy=True)
 
 xdmffile_z = XDMFFile((rarg.args.output_directory) + "/z.xdmf")
 xdmffile_omega = XDMFFile((rarg.args.output_directory) + "/omega.xdmf")
