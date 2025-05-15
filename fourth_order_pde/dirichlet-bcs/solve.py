@@ -18,9 +18,8 @@ clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/fourth-order
 from fenics import *
 import argparse
 
-from mshr import *
+import dolfin
 import ufl as ufl
-from dolfin import *
 import termcolor
 import numpy as np
 import sys
