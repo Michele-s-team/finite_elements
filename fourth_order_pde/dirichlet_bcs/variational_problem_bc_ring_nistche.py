@@ -99,8 +99,13 @@ F_rho = (fsp.mu * ((fsp.nu_rho[i]).dx(i)) + fsp.rho[i] * fsp.nu_rho[i]) * rmsh.d
 F_tau = (fsp.tau * fsp.nu_tau + fsp.rho[i] * (fsp.nu_tau.dx(i))) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.rho[i] * fsp.nu_tau * rmsh.ds
 
-F_N = alpha / rmsh.r_mesh * (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds
+F_N = alpha / rmsh.r_mesh * ( \
+            (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds \
+ \
+            + (fsp.mu - ((fsp.z * fsp.omega[i]).dx(i))) * fsp.nu_mu * rmsh.ds \
+            + (fsp.rho[i] - (fsp.mu.dx(i))) * fsp.nu_rho[i] * rmsh.ds \
+            + (fsp.tau - ((fsp.rho[i]).dx(i))) * fsp.nu_tau * rmsh.ds \
+    )
 
 F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
-# bcs = [bc_z]
-bcs = [bc_z, bc_mu, bc_rho, bc_tau]
+bcs = [bc_z]
