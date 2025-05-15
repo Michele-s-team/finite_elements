@@ -157,3 +157,9 @@ meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
 
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
+
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
+
