@@ -48,9 +48,7 @@ R = 2.0
 # CHANGE PARAMETERS HERE
 #
 
-# CHANGE PARAMETERS HERE
-function_space_degree = 4
-# CHANGE PARAMETERS HERE
+
 
 
 i, j, k, l = ufl.indices( 4 )
@@ -173,19 +171,8 @@ msh.test_mesh_integral( 3.67175, f_test_ds, ds_R, '\int_R f ds' )
 
 n = FacetNormal( mesh )
 
-P_z = FiniteElement( 'P', triangle, function_space_degree )
-P_omega = VectorElement( 'P', triangle, function_space_degree )
-P_mu = FiniteElement( 'P', triangle, function_space_degree )
-P_rho = VectorElement( 'P', triangle, function_space_degree )
-P_tau = FiniteElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_z, P_omega, P_mu, P_rho, P_tau] )
-Q = FunctionSpace( mesh, element )
 
-Q_z = Q.sub( 0 ).collapse()
-Q_omega = Q.sub( 1 ).collapse()
-Q_mu = Q.sub( 2 ).collapse()
-Q_rho = Q.sub( 3 ).collapse()
-Q_tau = Q.sub( 4 ).collapse()
+
 
 assigner = FunctionAssigner( Q, [Q_z, Q_omega, Q_mu, Q_rho, Q_tau] )
 
@@ -234,25 +221,8 @@ class f_exact_expression( UserExpression ):
         return (1,)
 
 
-# Define variational problem
-psi = Function( Q )
-nu_z, nu_omega, nu_mu, nu_rho, nu_tau = TestFunctions( Q )
 
-z_output = Function( Q_z )
-omega_output = Function( Q_omega )
-mu_output = Function( Q_mu )
-rho_output = Function( Q_rho )
-tau_output = Function( Q_tau )
 
-z_exact = Function( Q_z )
-omega_exact = Function( Q_omega )
-mu_exact = Function( Q_mu )
-rho_exact = Function( Q_rho )
-tau_exact = Function( Q_tau )
-
-f = Function( Q_z )
-J_Q = TrialFunction( Q )
-z, omega, mu, rho, tau = split( psi )
 
 z_exact.interpolate( z_exact_expression( element=Q_z.ufl_element() ) )
 omega_exact.interpolate( omega_exact_expression( element=Q_omega.ufl_element() ) )
