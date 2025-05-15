@@ -19,6 +19,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import list as lis
 import mesh as msh
 
@@ -29,11 +30,14 @@ parser.add_argument("n_lines_lr")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
+output_directory = io.add_trailing_slash(args.output_directory)
+
+
 # mesh resolution
 resolution = (float)(args.resolution)
 n_lines_circle = int(args.n_lines_circle)
 n_lines_lr = int(args.n_lines_lr)
-mesh_file = args.output_directory + "/mesh.msh"
+mesh_file = output_directory + "mesh.msh"
 
 # mesh parameters
 # CHANGE PARAMETERS HERE
@@ -142,10 +146,14 @@ geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
 # write mesh components to file
-msh.write_mesh_components(mesh_file, "solution/triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, "solution/line_mesh.xdmf", "line", True)
-msh.write_mesh_components(mesh_file, "solution/vertex_mesh.xdmf", "vertex", True)
+msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "triangle", True)
+msh.write_mesh_components(mesh_file, output_directory + "line_mesh.xdmf", "line", True)
+msh.write_mesh_components(mesh_file, output_directory + "vertex_mesh.xdmf", "vertex", True)
 
-msh.write_mesh_to_csv(mesh_file, 'solution/line_vertices.csv')
+msh.write_mesh_to_csv(mesh_file, output_directory + "line_vertices.csv")
 
 model.__exit__()
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
