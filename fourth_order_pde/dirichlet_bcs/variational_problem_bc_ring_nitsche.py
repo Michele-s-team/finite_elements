@@ -69,16 +69,8 @@ fsp.tau_exact.interpolate(f_exact_expression(element=fsp.Q_tau.ufl_element()))
 fsp.f.interpolate(f_exact_expression(element=fsp.Q_z.ufl_element()))
 
 z_profile = Expression('(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=fsp.Q.sub(0).ufl_element())
-mu_profile = Expression('(7 * pow(x[0], 6) + 3 * pow(x[0], 4) * pow(x[1], 2) + 3 * pow(x[0], 2) * pow(x[1], 4) + 7 * pow(x[1], 6))/576.0', element=fsp.Q.sub(2).ufl_element())
-rho_profile = Expression(
-    ('(1.0 / 96.0) * x[0] * (7.0 * pow(x[0], 4) + 2.0 * pow(x[0], 2) * pow(x[1], 2) + pow(x[1], 4))', '(1.0 / 96.0) * x[1] * (pow(x[0], 4) + 2 * pow(x[0], 2) * pow(x[1], 2) + 7 * pow(x[1], 4))'),
-    element=fsp.Q.sub(3).ufl_element())
-tau_profile = Expression('(1.0 / 8.0) * (3 * pow(x[0], 4) + pow(x[0], 2) * pow(x[1], 2) + 3 * pow(x[1], 4))', element=fsp.Q.sub(4).ufl_element())
 
 bc_z = DirichletBC(fsp.Q.sub(0), z_profile, rmsh.boundary)
-bc_mu = DirichletBC(fsp.Q.sub(2), mu_profile, rmsh.boundary)
-bc_rho = DirichletBC(fsp.Q.sub(3), rho_profile, rmsh.boundary)
-bc_tau = DirichletBC(fsp.Q.sub(4), tau_profile, rmsh.boundary)
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
 assigner.assign(fsp.psi, [fsp.f, fsp.omega_exact, fsp.mu_exact, fsp.rho_exact, fsp.tau_exact])
