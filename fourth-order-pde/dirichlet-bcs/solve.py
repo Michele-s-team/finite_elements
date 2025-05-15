@@ -330,7 +330,7 @@ io.print_scalar_to_csvfile( z_output, (args.output_directory) + '/z.csv' )
 io.print_vector_to_csvfile( omega_output, (args.output_directory) + '/omega.csv' )
 io.print_scalar_to_csvfile( mu_output, (args.output_directory) + '/mu.csv' )
 io.print_vector_to_csvfile( rho_output, (args.output_directory) + '/rho.csv' )
-io.print_vector_to_csvfile( tau_output, (args.output_directory) + '/tau.csv' )
+io.print_scalar_to_csvfile( tau_output, (args.output_directory) + '/tau.csv' )
 
 print( "BCs check: " )
 print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
