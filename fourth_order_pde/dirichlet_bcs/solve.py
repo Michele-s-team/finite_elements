@@ -9,9 +9,9 @@ This code solves the biharmonic equation Nabla Nabla \partial_i (z \partial_i z)
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
 
 run with
-    clear; clear; python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
+    python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
 example:
-    clear; clear; rm -rf solution; python3 solve.py ring /home/fenics/shared/generate_mesh/2d/ring/solution /home/fenics/shared/fourth_order_pde/dirichlet_bcs/solution
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/dirichlet_bcs/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
 '''
 
 import argparse
@@ -170,7 +170,7 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 
 J = derivative( vp.F, fsp.psi, fsp.J_Q )
-problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, fsp.J )
+problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -187,4 +187,6 @@ params = {'nonlinear_solver': 'newton',
 solver.parameters.update( params )
 
 solver.solve()
+
+prout_bc = importlib.import_module(swi.prout_bc)
 

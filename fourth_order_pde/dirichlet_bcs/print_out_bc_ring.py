@@ -19,15 +19,15 @@ i, j, k, l = ufl.indices(4)
 z_output, omega_output, mu_output, rho_output, tau_output = fsp.psi.split( deepcopy=True )
 
 print( "Check of BCs: " )
-print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, z_exact ), 'red' )}" )
+print( f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( z_output, fsp.z_exact ), 'red' )}" )
 print(
-    f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (n[i] * omega_output[i] - n[i] * omega_exact[i]) ** 2 * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, mu_exact ), 'red' )}" )
+    f"\t<<|omega - omega_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (bgeo.facet_normal[i] * omega_output[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) ** 2 * rmsh.ds ) / assemble( Constant( 1 ) * rmsh.ds ) ), 'red' )}" )
+print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( mu_output, fsp.mu_exact ), 'red' )}" )
 print(
-    f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) * ds ) / assemble( Constant( 1 ) * ds ) ), 'red' )}" )
-print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, f ), 'red' )}" )
+    f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored( np.sqrt( assemble( (rho_output[i] - fsp.rho_exact[i]) * (rho_output[i] - fsp.rho_exact[i]) * rmsh.ds ) / assemble( Constant( 1 ) * rmsh.ds ) ), 'red' )}" )
+print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, fsp.f ), 'red' )}" )
 
-
+'''
 print( "Check that the PDE is satisfied: " )
 print( f"\t<<(Nabla^2 partial_i ( z partial_i z) - f)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'green' )}" )
 
@@ -39,3 +39,6 @@ print( f"\t<<(mu - mu_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_b
 print(
     f"\t<<|rho - rho_exact|^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( project( sqrt( (rho_output[i] - rho_exact[i]) * (rho_output[i] - rho_exact[i]) ), Q_z ), project( Constant( 0 ), Q_z ) ), 'blue' )}" )
 print( f"\t<<(tau - tau_exact)^2>>_Omega = {termcolor.colored( msh.difference_in_bulk( tau_output, tau_exact ), 'blue' )}" )
+'''
+
+import print_out_solution
