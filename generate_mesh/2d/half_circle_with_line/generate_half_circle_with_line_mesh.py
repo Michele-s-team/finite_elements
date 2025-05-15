@@ -27,7 +27,8 @@ args = parser.parse_args()
 
 # mesh resolution
 resolution = (float)(args.resolution)
-mesh_file = args.output_directory + "/mesh.msh"
+output_directory = args.output_directory
+mesh_file = output_directory + "/mesh.msh"
 
 # mesh parameters
 # CHANGE PARAMETERS HERE
@@ -36,12 +37,7 @@ c_1 = [r, 0, 0]
 c_2 = [-r, 0, 0]
 c_3 = [r / 2, -r / 8, 0]
 c_4 = [-r / 2, -r / 8, 0]
-# CHANGE PARAMETERS HERE
 
-print("r = ", r)
-print("c_1 = ", c_1)
-print("c_2 = ", c_2)
-print("resolution = ", resolution)
 p_1_id = 1
 p_2_id = 2
 p_3_id = 6
@@ -50,6 +46,13 @@ line_12_id = 3
 arc_21_id = 4
 surface_id = 5
 line_34_id = 8
+# CHANGE PARAMETERS HERE
+
+print("r = ", r)
+print("c_1 = ", c_1)
+print("c_2 = ", c_2)
+print("resolution = ", resolution)
+print("output_directory = ", output_directory)
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
@@ -128,14 +131,14 @@ geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
 # write mesh components to file
-msh.write_mesh_components(mesh_file, "solution/triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, "solution/line_mesh.xdmf", "line", True)
-msh.write_mesh_components(mesh_file, "solution/vertex_mesh.xdmf", "vertex", True)
+msh.write_mesh_components(mesh_file, output_directory + "/triangle_mesh.xdmf", "triangle", True)
+msh.write_mesh_components(mesh_file, output_directory + "/line_mesh.xdmf", "line", True)
+msh.write_mesh_components(mesh_file, output_directory + "/vertex_mesh.xdmf", "vertex", True)
 
 # print the mesh lines to file
-msh.write_mesh_to_csv(mesh_file, 'solution/line_vertices.csv')
+msh.write_mesh_to_csv(mesh_file, output_directory + "/line_vertices.csv")
 # print the mesh vertices to file
-mesh = msh.read_mesh("solution/triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, "solution/vertices.csv")
+mesh = msh.read_mesh(output_directory + "/triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "/vertices.csv")
 
 model.__exit__()

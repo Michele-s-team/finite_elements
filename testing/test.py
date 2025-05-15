@@ -57,6 +57,15 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh_ring_slice', 0.1, problem_name, success)
 
+problem_name = 'half_circle_with_line'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     root_path + 'generate_mesh/2d/half_circle_with_line',
+                                                                     root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_half_circle_with_line_mesh', 0.1, problem_name, success)
+
+
 problem_name = 'ring'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
