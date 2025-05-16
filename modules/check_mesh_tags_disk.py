@@ -44,7 +44,7 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = cal.surface_integral_ring(function_test_integrals, rmsh.r, rmsh.R, rmsh.c_r)
+integral_exact_dx = cal.surface_integral_disk(function_test_integrals, rmsh.r, rmsh.c_r)
 
 integral_exact_ds = cal.curve_integral_circle(function_test_integrals, rmsh.r, rmsh.c_r)
 
