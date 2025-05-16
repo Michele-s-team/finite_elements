@@ -151,6 +151,34 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 
+# Test nitsche_method
+
+
+# Test nitsche_method/one_field
+case_name = 'nitsche_method/one_field'
+
+problem_name = 'square_no_circle'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     root_path + 'generate_mesh/2d/square_no_circle',
+                                                                     root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_square_no_circle_mesh', 0.1, problem_name, success)
+
+
+# Test nitsche_method/two_fields
+case_name = 'nitsche_method/two_fields'
+
+problem_name = 'disk'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     root_path + 'generate_mesh/2d/disk',
+                                                                     root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_disk_mesh', 0.1, problem_name, success)
+
+
+
 # Test fourth_order_pde
 case_name = 'fourth_order_pde'
 
