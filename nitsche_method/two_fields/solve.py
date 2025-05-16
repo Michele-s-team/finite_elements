@@ -7,18 +7,20 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/nitsche_method/one_field/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk $MESH_PATH $SOLUTION_PATH
 '''
 
-
 from fenics import *
+import importlib
 import ufl as ufl
 import sys
 
-#add the path where to find the shared modules
+# add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import mesh as msh
-import input_output as io
+import function_spaces as fsp
+import switch_problem as swi
 
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument("input_directory")
@@ -28,7 +30,7 @@ import input_output as io
 # i, j, k, l = ufl.indices(4)
 
 
-#create mesh
+# create mesh
 # mesh=Mesh()
 # with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
 #     infile.read(mesh)
@@ -42,8 +44,6 @@ import input_output as io
 # n = FacetNormal(mesh)
 
 
- 
-
-
 solve(vp.F == 0, fsp.u)
 
+prout_bc = importlib.import_module(swi.prout_bc)
