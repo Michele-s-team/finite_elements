@@ -14,6 +14,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-
+print("Check of BCs:")
+print(
+    f"\t\t<<|u^i - u^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure((fsp.u[i] - fsp.g[i]) * (fsp.u[i] - fsp.g[i]), Constant(0), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 import print_out_solution
