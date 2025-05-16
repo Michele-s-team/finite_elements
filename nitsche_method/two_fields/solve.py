@@ -9,7 +9,6 @@ Examples:
 
 from fenics import *
 import importlib
-import ufl as ufl
 import sys
 
 # add the path where to find the shared modules
