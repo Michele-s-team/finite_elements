@@ -10,6 +10,11 @@ import solution_paths as solpath
 
 i, j, k, l = ufl.indices(4)
 
+xdmffile_u = XDMFFile( (rarg.args.output_directory) + "/u.xdmf" )
+xdmffile_v = XDMFFile( (rarg.args.output_directory) + "/v.xdmf" )
+xdmffile_w = XDMFFile( (rarg.args.output_directory) + "/w.xdmf" )
+
+
 xdmffile_check = XDMFFile( (rarg.args.output_directory) + "/check.xdmf" )
 xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
 

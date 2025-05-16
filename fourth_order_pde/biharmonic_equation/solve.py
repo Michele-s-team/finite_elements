@@ -1,10 +1,10 @@
 '''
 This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u and v = Nabla u
-run with
+Run with
+    clear; clear; python3 solve.py [problem name] [path where to read the mesh ] [path where to store the solution]
+Example:
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
 
-clear; clear; python3 solve.py [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
-example:
-clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/biharmonic-equation/two-fields/mesh /home/fenics/shared/biharmonic-equation/two-fields/solution
 '''
 
 from fenics import *
