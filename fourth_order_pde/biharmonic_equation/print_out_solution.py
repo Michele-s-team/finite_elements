@@ -10,6 +10,9 @@ import solution_paths as solpath
 
 i, j, k, l = ufl.indices(4)
 
+fsp.u_output, fsp.v_output, fsp.w_output = fsp.psi.split(deepcopy=True)
+
+
 xdmffile_u = XDMFFile( (rarg.args.output_directory) + "/u.xdmf" )
 xdmffile_v = XDMFFile( (rarg.args.output_directory) + "/v.xdmf" )
 xdmffile_w = XDMFFile( (rarg.args.output_directory) + "/w.xdmf" )
