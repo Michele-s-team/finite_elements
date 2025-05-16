@@ -14,6 +14,7 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
+print("\int_{\partial \Omnega} (u - u_D)^2 dS = ", assemble((u - u_D)**2*ds))
 
 
 import print_out_solution

@@ -14,3 +14,5 @@ vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
+xdmffile_u = XDMFFile("u.xdmf")
+xdmffile_u.write(u, 0)
