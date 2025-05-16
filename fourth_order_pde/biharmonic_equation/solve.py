@@ -7,19 +7,21 @@ example:
 clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/biharmonic-equation/two-fields/mesh /home/fenics/shared/biharmonic-equation/two-fields/solution
 '''
 
-import dolfin
 from fenics import *
-import numpy as np
-import ufl as ufl
+import importlib
 import sys
-import termcolor
 
 #add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import input_output as io
-import mesh as msh
+
+import function_spaces as fsp
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
+
 
 '''
 #square mesh
@@ -165,30 +167,12 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 
 
-u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
-v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
-w_exact.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
-f.interpolate( w_exact_expression( element=Q_w.ufl_element() ) )
 
-u_profile = Expression( 'cos(x[0]+x[1]) * sin(x[0]-x[1])', element=Q.sub( 0 ).ufl_element() )
-v_profile = Expression( '- 4 * cos(x[0])*sin(x[0]) + 4 * cos(x[1])*sin(x[1])', element=Q.sub( 1 ).ufl_element() )
-w_profile = Expression( '8 * (sin(2*x[0]) - sin(2*x[1]))', element=Q.sub( 2 ).ufl_element() )
-bc_u = DirichletBC( Q.sub( 0 ), u_profile, boundary )
-bc_v = DirichletBC( Q.sub( 1 ), v_profile, boundary )
-bc_w = DirichletBC( Q.sub( 2 ), w_profile, boundary )
 
-F_v = ((v.dx( i )) * (nu_v.dx( i )) + f * nu_v) * dx \
-      - n[i] * (v.dx( i )) * nu_v * ds
-F_u = ((u.dx( i )) * (nu_u.dx( i )) + v * nu_u) * dx \
-      - n[i] * (u.dx( i )) * nu_u * ds
-F_w = ((v.dx( i )) * (nu_w.dx( i )) + w * nu_w) * dx \
-      - n[i] * (v.dx( i )) * nu_w * ds
 
-F = F_u + F_v + F_w
-bcs = [bc_u, bc_v, bc_w]
 
-J = derivative( F, psi, J_uvw )
-problem = NonlinearVariationalProblem( F, psi, bcs, J )
+J = derivative( vp.F, fsp.psi, fsp.J_uvw )
+problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 # set the solver parameters here
 # params = {'nonlinear_solver': 'newton',
@@ -205,34 +189,9 @@ solver = NonlinearVariationalSolver( problem )
 
 solver.solve()
 
-u_output, v_output, w_output = psi.split( deepcopy=True )
+# u_output, v_output, w_output = psi.split( deepcopy=True )
 
-xdmffile_u.write( u_output, 0 )
-xdmffile_v.write( v_output, 0 )
-xdmffile_w.write( w_output, 0 )
-
-io.print_scalar_to_csvfile(u_output, (args.output_directory) + '/u.csv')
-io.print_scalar_to_csvfile(v_output, (args.output_directory) + '/v.csv')
-io.print_scalar_to_csvfile(w_output, (args.output_directory) + '/w.csv')
-
-print( "BCs check: " )
-print(f"<<(u - u_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(u_output, u_exact), 'red')}")
-print(f"<<(v - v_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(v_output, v_exact), 'red')}")
-print(f"<<(w - w_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(w_output, w_exact), 'red')}")
-
-print("Check that the PDE is satisfied: ")
-print(f"<<(w - f)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(w_output, f), 'green')}")
+prout_bc = importlib.import_module(swi.prout_bc)
 
 
-print( "Comparison with exact solution: " )
-print(f"<<(u - u_exact)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(u_output, u_exact), 'blue')}")
-print(f"<<(v - v_exact)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(v_output, v_exact), 'blue')}")
-print(f"<<(w - w_exact)^2>>_Omega = {termcolor.colored(msh.difference_in_bulk(w_output, w_exact), 'blue')}")
-
-
-
-xdmffile_check.write( project( w_output - f , Q_w ), 0 )
-xdmffile_check.close()
-
-msh.bulk_points(mesh)
 
