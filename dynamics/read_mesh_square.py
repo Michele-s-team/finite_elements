@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+import dolfin
 
 import boundary_geometry as bgeo
 import calculus as cal
@@ -23,10 +23,10 @@ r_mesh = bgeo.mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
-r = 0.05
-c_r = [0.2, h/2.0]
+L = 1
+h = 1
+r = 0.25
+c_r = [L/2, h/2.0]
 #CHANGE PARAMETERS HERE
 
 #test for surface elements

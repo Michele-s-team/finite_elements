@@ -1,5 +1,5 @@
 from fenics import *
-from mshr import *
+import dolfin
 import numpy as np
 
 import calculus as cal
@@ -12,7 +12,7 @@ import boundary_geometry as bgeo
 To produce figure-2:
 
 generate the mesh with 
-~/shared/generate-mesh/2d/symmetric-square-circle/circles$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 30 10 $SOLUTION_PATH
+~/shared/generate_mesh/2d/square/symmetric_top_bottom/circles$ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 30 10 $SOLUTION_PATH
 
 set
 L=1
@@ -42,9 +42,9 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(bgeo.mesh, mvc)
 r_mesh = bgeo.mesh.hmin()
 
 #CHANGE PARAMETERS HERE
-L = 0.5
+L = 1
 h = L
-r = 0.05
+r = 0.25
 c_r = [L/2.0, h/2.0]
 #CHANGE PARAMETERS HERE
 

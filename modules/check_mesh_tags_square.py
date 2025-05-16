@@ -1,5 +1,5 @@
 from fenics import *
-#
+import dolfin
 import numpy as np
 
 import boundary_geometry as bgeo
@@ -16,7 +16,6 @@ print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 c_test = [0.3, 0.76]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
-
 
 
 # a function space used solely to define function_test_integrals_fenics
@@ -60,7 +59,6 @@ integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
 
 integral_exact_ds = integral_exact_ds_square + integral_exact_ds_circle
 
-
 msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
 
 msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l')
@@ -72,5 +70,8 @@ msh.test_mesh_integral(integral_exact_ds_lr, function_test_integrals_fenics, rms
 msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
 
 msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square')
+msh.test_mesh_integral(integral_exact_ds_circle, function_test_integrals_fenics, rmsh.ds_circle, '\int f ds_circle')
 
 msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
+
+msh.check_mesh_symmetry(bgeo.mesh, rmsh.c_r)

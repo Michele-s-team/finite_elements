@@ -1,5 +1,8 @@
+import colorama as col
 import csv
 from fenics import *
+import os
+import shutil
 
 import mesh as msh
 
@@ -9,6 +12,10 @@ number_of_decimals = 2
 
 #print the scalar field 'f' to csv file 'filename'
 def print_scalar_to_csvfile(f, filename):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     for x, val in zip( f.function_space().tabulate_dof_coordinates(), f.vector().get_local() ):
@@ -17,6 +24,10 @@ def print_scalar_to_csvfile(f, filename):
 
 #this function print a scalar defined only on the boundaries to csv file 
 def print_scalar_boundary_to_csvfile(f, mesh, filename):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     points = msh.boundary_points(mesh)
@@ -30,6 +41,9 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
@@ -55,6 +69,9 @@ def print_vector_to_csvfile(f, filename):
             list_val_y.append( val )
 
         i += 1
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
@@ -91,6 +108,9 @@ def print_vector_3d_to_csvfile(V, filename):
 
         i += 1
 
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open(filename, "w")
     print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
@@ -105,6 +125,9 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
@@ -129,6 +152,9 @@ def print_nodal_values_vector_3d_to_csvfile(V, mesh, filename):
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
 
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
     csvfile = open( filename, "w" )
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
 
@@ -145,6 +171,9 @@ def print_vertices_to_csv_file(mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace( mesh, 'CG', 1 )
     coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
     print( f"\":0\",\":1\"", file=csvfile )
@@ -216,4 +245,52 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
         print_vector_3d_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_3d_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
+'''
+Print a text in red or green according to the value of a boolean variable. This function is used to print out tests
+Input values:
+- 'bool' : the boolean variable
+- 'text': the text
+'''
+def check_print(bool, text_true, text_false):
+    print(check_string(bool, text_true, text_false))
 
+def check_string(bool, text_true, text_false):
+    if bool:
+        result = f'{col.Fore.GREEN}{text_true}{col.Fore.RESET}'
+    else:
+        result = f'{col.Fore.RED}{text_false}{col.Fore.RESET}'
+
+    return result
+
+# print a starred box of text 'message', in green if success = True and in red if success = False
+def print_star_box(message, success=True):
+    # Choose color
+    color = col.Fore.GREEN if success else col.Fore.RED
+
+    # Add spaces around the message
+    message = f" {message} "
+
+    # Width of the box
+    box_width = len(message) + 8  # 4 spaces padding left and right inside box
+
+    # Get terminal width
+    terminal_width = shutil.get_terminal_size((80, 20)).columns  # fallback to 80 if unknown
+
+    # Compute left padding to center the box
+    left_padding = max((terminal_width - box_width) // 2, 0)  # no negative padding
+
+    # Create top and bottom borders
+    border = '#' * box_width
+
+    # Build lines
+    lines = [
+        ' ' * left_padding + border,
+        ' ' * left_padding + f"**{message.center(box_width - 4)}**",
+        ' ' * left_padding + border
+    ]
+
+    # Print all lines with color
+    for line in lines:
+        print(color + line)
+
+    print(col.Style.RESET_ALL, end='')  # Reset color after printing

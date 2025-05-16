@@ -47,4 +47,3 @@ print(
 print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 '''
 import print_out_forces
-import print_out_force_on_circle

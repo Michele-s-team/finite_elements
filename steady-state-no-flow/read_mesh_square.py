@@ -1,10 +1,10 @@
 from fenics import *
-#
+import dolfin
 
 import calculus as calc
 import runtime_arguments as rarg
 import boundary_geometry as bgeo
-import dolfin
+
 # read the triangles
 mvc = MeshValueCollection("size_t", bgeo.mesh, bgeo.mesh.topology().dim())
 with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
@@ -22,7 +22,7 @@ r_mesh = bgeo.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
 L = 1
-h = L
+h = 1
 r = 0.25
 c_r = [L / 2.0, h / 2.0]
 # CHANGE PARAMETERS HERE

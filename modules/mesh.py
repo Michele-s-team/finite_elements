@@ -712,13 +712,14 @@ def print_mesh_lines(mesh):
                 print(f"\t\tLine: {i}:\n\t\t\t{vertex_1}\n\t\t\t{vertex_2}")
 
 
-
 '''
 print information (element types, triangles, vertices) on a mesh
 Input values: 
 - 'mesh': the mesh, a <meshio mesh object>
 - 'title' : a title for the printout
 '''
+
+
 def print_mesh_info(mesh, title):
     print(f'{title}')
     print_mesh_element_types(mesh)
@@ -734,6 +735,7 @@ Input values:
 - 'mesh': the mesh, a <meshio mesh object>
 '''
 
+
 def asssign_tag_to_lines(line_condition, tag, mesh):
     # assign to the l edge the id 'lower_edge_id'
     for j in range(len(mesh.cells)):
@@ -744,7 +746,6 @@ def asssign_tag_to_lines(line_condition, tag, mesh):
 
             # loop through the lines in  block  mesh.cells[j].data
             for i in range(len(mesh.cells[j].data)):
-
 
                 if line_condition(mesh.cells[j].data[i]):
                     # the extremal points lie on the axis x[1] = 0 -> the line mesh.cells[j].data[i] belongs to the b edge of the rectangle
@@ -902,6 +903,7 @@ def mirror_triangles(mesh, old_plus_new_points, non_mirrored_plus_new_points_ind
     mesh.cell_data['gmsh:physical'][-1] = np.array([mesh.cell_data['gmsh:physical'][-1][0]] * N)
     mesh.cell_data['gmsh:geometrical'][-1] = np.array([mesh.cell_data['gmsh:geometrical'][-1][0]] * N)
 
+
 '''
 mirror a mesh with respect to an axis of symmetry
 Input values: 
@@ -912,8 +914,9 @@ Example of usage:
 gamma_axis_of_symmetry = lambda t: cal.line(r_1, r_4, t)
 msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 '''
-def mirror_mesh(mesh, gamma_axis_of_symmetry):
 
+
+def mirror_mesh(mesh, gamma_axis_of_symmetry):
     # define the function which tells whether a point is on the axis of symmetry
     f_on_axis_of_symmetry = lambda point: cal.point_on_line(point, gamma_axis_of_symmetry)
 
@@ -929,3 +932,43 @@ def mirror_mesh(mesh, gamma_axis_of_symmetry):
     # mirror mesh lines
     mirror_lines(mesh, gamma_axis_of_symmetry, non_mirrored_plus_new_points_indices)
 
+
+'''
+check the l <-> symmetry of a square mesh
+Input values :
+- 'mesh': the mesh, a <meshio mesh object>
+- 'center': the center with respect to which symmetry will be assessed. This method will assess the symmetry with respect to the lines
+  x[0] = center[0] (line parallel to the x[1] axis) and with respect to the line x[1] = center[1] (line parallel to the x[0] axis)
+
+Example of usage:
+    msh.check_lr_symmetry_square_mesh(mesh, c)
+'''
+
+
+def check_mesh_symmetry(mesh, center):
+    Q = FunctionSpace(mesh, 'CG', 1)
+    coordinates = Q.tabulate_dof_coordinates()
+
+    print(f'Number of vertices = {Q.dim()}')
+
+    average_lr = 0
+    n_vertices_average_lr = 0
+
+    average_tb = 0
+    n_vertices_average_tb = 0
+
+    for i in range(Q.dim()):
+
+        if ((not np.isclose(coordinates[i][0], center[0]))):
+            average_lr += coordinates[i][0]
+            n_vertices_average_lr += 1
+
+        if ((not np.isclose(coordinates[i][1], center[1]))):
+            average_tb += coordinates[i][1]
+            n_vertices_average_tb += 1
+
+    average_lr /= n_vertices_average_lr
+    average_tb /= n_vertices_average_tb
+
+    print(f'Check l <-> r symmetry: <x - center_x> = {col.Fore.BLUE}{(average_lr - center[0]):.{io.number_of_decimals}e}{col.Fore.RESET}')
+    print(f'Check t <-> b symmetry: <y - center_y> = {col.Fore.BLUE}{(average_tb - center[1]):.{io.number_of_decimals}e}{col.Fore.RESET}')

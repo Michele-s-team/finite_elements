@@ -1,6 +1,9 @@
 import colorama as col
 from fenics import *
-import ufl as ufl
+try: 
+    import ufl as ufl
+except ImportError:
+    import ufl_legacy as ufl
 
 import boundary_geometry as bgeo
 import geometry as geo
@@ -39,4 +42,3 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_circle(prout.omega_output))[i] * prout.omega_output[i], vp.omega_R, rmsh.ds_R):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-import print_out_force_on_circle

@@ -32,6 +32,9 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.omega_b, rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
+
+import print_out_force_on_square
+
 '''
 print( "Check if the intermediate PDEs are satisfied:" )
 print(
@@ -52,4 +55,6 @@ print(
 
 print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 '''
+
+
 
