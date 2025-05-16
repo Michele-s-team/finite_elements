@@ -7,14 +7,12 @@ example:
 clear; clear; rm -rf solution; python3 solve.py /home/fenics/shared/biharmonic-equation/two-fields/mesh /home/fenics/shared/biharmonic-equation/two-fields/solution
 '''
 
+import dolfin
 from fenics import *
-import argparse
-from mshr import *
 import numpy as np
 import ufl as ufl
-from dolfin import *
-import termcolor
 import sys
+import termcolor
 
 #add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
@@ -30,67 +28,62 @@ L = 1.0
 h = 1.0
 # CHANGE PARAMETERS HERE
 '''
-#
-#ring mesh
-# CHANGE PARAMETERS HERE
-r = 1.0
-R = 2.0
-# CHANGE PARAMETERS HERE
-#
-
-# CHANGE PARAMETERS HERE
-function_space_degree = 4
-# CHANGE PARAMETERS HERE
+# #
+# #ring mesh
+# # CHANGE PARAMETERS HERE
+# r = 1.0
+# R = 2.0
+# # CHANGE PARAMETERS HERE
+# #
 
 
-i, j, k, l = ufl.indices( 4 )
 
-parser = argparse.ArgumentParser()
-parser.add_argument( "input_directory" )
-parser.add_argument( "output_directory" )
-args = parser.parse_args()
 
-xdmffile_u = XDMFFile( (args.output_directory) + "/u.xdmf" )
-xdmffile_v = XDMFFile( (args.output_directory) + "/v.xdmf" )
-xdmffile_w = XDMFFile( (args.output_directory) + "/w.xdmf" )
 
-xdmffile_check = XDMFFile( (args.output_directory) + "/check.xdmf" )
-xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
+# parser = argparse.ArgumentParser()
+# parser.add_argument( "input_directory" )
+# parser.add_argument( "output_directory" )
+# args = parser.parse_args()
+
+# xdmffile_u = XDMFFile( (args.output_directory) + "/u.xdmf" )
+# xdmffile_v = XDMFFile( (args.output_directory) + "/v.xdmf" )
+# xdmffile_w = XDMFFile( (args.output_directory) + "/w.xdmf" )
+
 
 # read the mesh
-mesh = Mesh()
-xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
-xdmf.read( mesh )
+# mesh = Mesh()
+# xdmf = XDMFFile( mesh.mpi_comm(), (args.input_directory) + "/triangle_mesh.xdmf" )
+# xdmf.read( mesh )
 
 # radius of the smallest cell in the mesh
-r_mesh = mesh.hmin()
+# r_mesh = mesh.hmin()
 
-print( f"Mesh radius = {r_mesh}" )
+# print( f"Mesh radius = {r_mesh}" )
 
 # read the triangles
-mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
-with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
-    infile.read( mvc, "name_to_read" )
-cf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
-xdmf.close()
-
+# mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() )
+# with XDMFFile( (args.input_directory) + "/triangle_mesh.xdmf" ) as infile:
+#     infile.read( mvc, "name_to_read" )
+# cf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
+# xdmf.close()
+#
 # read the lines
-mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() - 1 )
-with XDMFFile( (args.input_directory) + "/line_mesh.xdmf" ) as infile:
-    infile.read( mvc, "name_to_read" )
-sf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
-xdmf.close()
+# mvc = MeshValueCollection( "size_t", mesh, mesh.topology().dim() - 1 )
+# with XDMFFile( (args.input_directory) + "/line_mesh.xdmf" ) as infile:
+#     infile.read( mvc, "name_to_read" )
+# sf = dolfin.cpp.mesh.MeshFunctionSizet( mesh, mvc )
+# xdmf.close()
 
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
-boundary = 'on_boundary'
+# boundary = 'on_boundary'
 # CHANGE PARAMETERS HERE
 
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 
 #  norm of vector x
-def my_norm(x):
-    return (sqrt( np.dot( x, x ) ))
+# def my_norm(x):
+#     return (sqrt( np.dot( x, x ) ))
 
 
 # test for surface elements
@@ -106,31 +99,31 @@ ds = ds_l + ds_r + ds_t + ds_b
 
 #ring mesh
 #
-dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
-ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
-ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
-ds = ds_r + ds_R
+# dx = Measure( "dx", domain=mesh, subdomain_data=cf, subdomain_id=1 )
+# ds_r = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=2 )
+# ds_R = Measure( "ds", domain=mesh, subdomain_data=sf, subdomain_id=3 )
+# ds = ds_r + ds_R
 #
 
 # a function space used solely to define f_test_ds
-Q_test = FunctionSpace( mesh, 'P', 2 )
+# Q_test = FunctionSpace( mesh, 'P', 2 )
 
 # f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-f_test_ds = Function( Q_test )
+# f_test_ds = Function( Q_test )
 
 
 # analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegrals( UserExpression ):
-    def eval(self, values, x):
-        c_test = [0.3, 0.76]
-        r_test = 0.345
-        values[0] = cos( my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
+# class FunctionTestIntegrals( UserExpression ):
+#     def eval(self, values, x):
+#         c_test = [0.3, 0.76]
+#         r_test = 0.345
+#         values[0] = cos( my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
+#
+#     def value_shape(self):
+#         return (1,)
 
-    def value_shape(self):
-        return (1,)
 
-
-f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
+# f_test_ds.interpolate( FunctionTestIntegrals( element=Q_test.ufl_element() ) )
 
 # print out the integrals on the volume and  surface elements and compare them with the exact values to double check that the elements are tagged correctly
 
@@ -160,65 +153,17 @@ print( f"\int_b f ds = {numerical_value_int_ds_b}, should be  {exact_value_int_d
 
 #ring mesh
 #
-msh.test_mesh_integral(2.90212, f_test_ds, dx, '\int f dx')
-msh.test_mesh_integral(2.77595, f_test_ds, ds_r, '\int_r f ds')
-msh.test_mesh_integral(3.67175, f_test_ds, ds_R, '\int_R f ds')
+# msh.test_mesh_integral(2.90212, f_test_ds, dx, '\int f dx')
+# msh.test_mesh_integral(2.77595, f_test_ds, ds_r, '\int_r f ds')
+# msh.test_mesh_integral(3.67175, f_test_ds, ds_R, '\int_R f ds')
 #
 
 
-n = FacetNormal( mesh )
-
-P_u = FiniteElement( 'P', triangle, function_space_degree )
-P_v = FiniteElement( 'P', triangle, function_space_degree )
-P_w = FiniteElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_u, P_v, P_w] )
-Q = FunctionSpace( mesh, element )
-
-Q_u = Q.sub( 0 ).collapse()
-Q_v = Q.sub( 1 ).collapse()
-Q_w = Q.sub( 2 ).collapse()
-Q_grad_v = VectorFunctionSpace( mesh, 'P', function_space_degree )
+# n = FacetNormal( mesh )
 
 
-class u_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = cos(x[0]+x[1]) * sin(x[0]-x[1])
-
-    def value_shape(self):
-        return (1,)
 
 
-class v_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = - 4 * cos(x[0])*sin(x[0]) + 4 * cos(x[1])*sin(x[1])
-
-    def value_shape(self):
-        return (1,)
-
-
-class w_exact_expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 8 * (sin(2*x[0]) - sin(2*x[1]))
-
-    def value_shape(self):
-        return (1,)
-
-
-# Define variational problem
-psi = Function( Q )
-nu_u, nu_v, nu_w = TestFunctions( Q )
-
-grad_v = Function( Q_grad_v )
-u_output = Function( Q_u )
-v_output = Function( Q_v )
-w_output = Function( Q_w )
-u_exact = Function( Q_u )
-v_exact = Function( Q_v )
-w_exact = Function( Q_w )
-
-f = Function( Q_w )
-J_uvw = TrialFunction( Q )
-u, v, w = split( psi )
 
 u_exact.interpolate( u_exact_expression( element=Q_u.ufl_element() ) )
 v_exact.interpolate( v_exact_expression( element=Q_v.ufl_element() ) )
