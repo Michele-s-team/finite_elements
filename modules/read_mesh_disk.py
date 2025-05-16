@@ -1,0 +1,32 @@
+import dolfin
+from fenics import *
+
+import load_2d_mesh as lmsh
+import mesh as msh
+import runtime_arguments as rarg
+
+# read the triangles
+sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
+# read the lines
+mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
+
+# radius of the smallest cell in the mesh
+r_mesh = lmsh.mesh.hmin()
+
+# CHANGE PARAMETERS HERE
+r = 1.0
+c_r = [0, 0]
+# CHANGE PARAMETERS HERE
+
+
+# test for surface elements
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
+ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
+
+import check_mesh_tags_disk
+
+print(f'Module {__file__} called {check_mesh_tags_disk.__file__}', flush=True)
+
+# CHANGE PARAMETERS HERE
+boundary = 'on_boundary'
+# CHANGE PARAMETERS HERE
