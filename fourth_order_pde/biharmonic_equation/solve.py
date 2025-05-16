@@ -3,7 +3,7 @@ This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of
 Run with
     clear; clear; python3 solve.py [problem name] [path where to read the mesh ] [path where to store the solution]
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/biharmonic_equation/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
 
 '''
 
