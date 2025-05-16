@@ -6,7 +6,7 @@ u = u_D on \partial \Omega
 by imposing the BCs with Nitsche's method. Run with  
 
 run with
-python3 example.py
+python3 solve.py
 
 '''
 
