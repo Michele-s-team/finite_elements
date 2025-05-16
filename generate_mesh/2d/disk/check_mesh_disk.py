@@ -15,8 +15,8 @@ sys.path.append(module_path)
 
 import load_2d_mesh as lmsh
 import mesh as msh
-import read_mesh_ring as rmsh
+import read_mesh_disk as rmsh
 
 
-import check_mesh_tags_ring
+import check_mesh_tags_disk
 msh.check_mesh_symmetry(lmsh.mesh, rmsh.c_r)
