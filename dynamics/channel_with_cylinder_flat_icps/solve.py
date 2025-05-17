@@ -28,10 +28,10 @@ parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-L = 1
-h = 1
+L = 2.2
+h = 0.41
 r = 0.25
-c_r = [L/2, h/2]
+c_r = [0.2, 0.2]
 
 T = 1.0  # final time
 num_steps = 1024  # number of time steps
