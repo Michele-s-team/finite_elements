@@ -261,6 +261,29 @@ def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
     return surface_integral_rectangle(f, p_bl, p_tr) - surface_integral_disk(f, r, c)
 
 
+def volume_integral_ball(f, r, c):
+    result = spi.tplquad(
+        lambda phi, theta, rho: f(
+            [c[0] + rho * np.sin(theta) * np.cos(phi),
+            c[1] + rho * np.sin(theta) * np.sin(phi),
+            c[2] + rho * np.cos(theta)]
+        ) * rho ** 2 * np.sin(theta),
+        0,  # phi lower bound
+        2 * np.pi,  # phi upper bound
+        lambda phi: 0,  # theta lower bound
+        lambda phi: np.pi,  # theta upper bound
+        lambda phi, theta: 0,  # rho lower bound
+        lambda phi, theta: r  # rho upper bound
+    )
+
+    return result
+    # f_swapped = lambda x, y: f([y, x])
+    #
+    # return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), theta_min, theta_max, lambda rho: r, lambda rho: R)[0]
+
+
+
+
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
     return [[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]]

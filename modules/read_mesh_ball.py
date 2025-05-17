@@ -11,13 +11,13 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 args = parser.parse_args()
 
 # CHANGE PARAMETERS HERE
 r = 1
+c_r = [0, 0, 0]
 
 volume_id = 1
 surface_id = 2
@@ -69,5 +69,3 @@ ds = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=surface_id)  # s
 import check_mesh_tags_ball
 
 print(f'Module {__file__} called {check_mesh_tags_ball.__file__}', flush=True)
-
-

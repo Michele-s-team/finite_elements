@@ -7,6 +7,7 @@ import load_3d_mesh as lmsh
 import mesh as msh
 
 # the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
+import calculus as cal
 import geometry as geo
 import input_output as io
 import read_mesh_ball as rmsh
@@ -38,10 +39,12 @@ class FunctionTestIntegrals(UserExpression):
     def value_shape(self):
         return (1,)
 
+
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_element()))
 
-
 test_mesh_integral_errors = []
+
+integral_exact_dv = cal.volume_integral_ball(function_test_integrals, rmsh.r, rmsh.c_r)
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 # test_mesh_integral_errors.append(msh.test_mesh_integral(2.06773, f_test_ds, rmsh.dv, '\int_ball f dx'))
