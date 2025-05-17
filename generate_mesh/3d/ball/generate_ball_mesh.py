@@ -2,9 +2,9 @@
 This code generates a 3d mesh given by a ball
 
 Run with
-    clear; clear; python3 generate_mesh.py [resolution] [output directory]
+    clear; clear; python3 generate_ball_mesh.py [resolution] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ball_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import argparse
