@@ -1,14 +1,16 @@
 '''
-run with
-clear; clear; python3 generate_mesh.py [resolution]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+This code generates a 3d mesh given by a ball
+
+Run with
+    clear; clear; python3 generate_mesh.py [resolution] [output directory]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
 '''
 
-import meshio
-import gmsh
-import pygmsh
 import argparse
+import gmsh
+import meshio
+import pygmsh
 import sys
 
 # add the path where to find the shared modules
@@ -53,6 +55,7 @@ line = [model.add_line( points[0], points[1] )]
 
 
 model.synchronize()
+
 volumes = gmsh.model.getEntities( dim=3 )
 
 #tag the volume object (ball), which will be added with subdomain_id = 2
