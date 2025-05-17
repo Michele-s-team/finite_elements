@@ -8,7 +8,7 @@ import mesh as msh
 
 # the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
 import input_output as io
-import read_mesh_ring as rmsh
+import read_mesh_ball as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
@@ -32,8 +32,8 @@ f_test_ds.interpolate(FunctionTestIntegral(element=Q.ufl_element()))
 test_mesh_integral_errors = []
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-test_mesh_integral_errors.append(msh.test_mesh_integral(2.06773, f_test_ds, dv_custom, '\int_ball f dx'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(7.06579, f_test_ds, ds_custom, '\int_sphere f ds'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(2.06773, f_test_ds, rmsh.dv_custom, '\int_ball f dx'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(7.06579, f_test_ds, rmsh.ds_custom, '\int_sphere f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
