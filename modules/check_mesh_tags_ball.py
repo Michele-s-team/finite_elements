@@ -24,8 +24,8 @@ Q = FunctionSpace(lmsh.mesh, 'P', 1)
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 def function_test_integrals(x):
-    # return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
-    return 1
+    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    # return 1
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
@@ -47,10 +47,10 @@ test_mesh_integral_errors = []
 
 integral_exact_dv = cal.volume_integral_ball(function_test_integrals, rmsh.r, rmsh.c_r)
 
-print(f'integral_exact_dv = {integral_exact_dv}')
+# print(f'integral_exact_dv = {integral_exact_dv}')
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-# test_mesh_integral_errors.append(msh.test_mesh_integral(2.06773, f_test_ds, rmsh.dv, '\int_ball f dx'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dv, function_test_integrals_fenics, rmsh.dv, '\int_ball f dx'))
 # test_mesh_integral_errors.append(msh.test_mesh_integral(7.06579, f_test_ds, rmsh.ds, '\int_sphere f ds'))
 
 # print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
