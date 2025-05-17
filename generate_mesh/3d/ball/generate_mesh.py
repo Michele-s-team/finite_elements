@@ -58,8 +58,8 @@ model.synchronize()
 
 volumes = gmsh.model.getEntities( dim=3 )
 
-#tag the volume object (ball), which will be added with subdomain_id = 2
-model.add_physical([ball], "ball")
+gmsh.model.addPhysicalGroup(3, [v[1] for v in volumes], 1)  # Tag 1 for volume
+gmsh.model.setPhysicalName(3, 1, "volume")
 
 #tag the surface objet (ball surface, i.e., sphere): find out the sphere surface and add it to the model
 #this is name_to_read which will be shown in paraview and subdomain_id which will be used in the code which reads the mesh in `ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)`
