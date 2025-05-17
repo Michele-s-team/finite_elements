@@ -28,7 +28,9 @@ args = parser.parse_args()
 
 # CHANGE PARAMETERS HERE
 r = 1
-c_r = [0, 0]
+
+volume_id = 1
+surface_id = 2
 # CHANGE PARAMETERS HERE
 
 # read the mesh
@@ -81,8 +83,8 @@ class FunctionTestIntegral(UserExpression):
         return (1,)
 
 
-dv_custom = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=2)  # volume measure
-ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)  # surface measure
+dv_custom = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
+ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=surface_id)  # surface measure
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 Q = FunctionSpace(mesh, 'P', 1)

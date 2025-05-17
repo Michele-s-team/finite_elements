@@ -15,7 +15,7 @@ import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
-sys.path.append( module_path )
+sys.path.append(module_path)
 
 import mesh as msh
 
@@ -24,85 +24,49 @@ parser.add_argument("resolution")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-#mesh resolution
+volume_id = 1
+surface_id = 2
+line_id = 3
+
+# mesh resolution
 resolution = (float)(args.resolution)
 
-#mesh parameters
-#CHANGE PARAMETERS HERE
+# mesh parameters
+# CHANGE PARAMETERS HERE
 r = 1.0
 c_r = [0, 0, 0]
-#CHANGE PARAMETERS HERE
+# CHANGE PARAMETERS HERE
 
 print("r = ", r)
 print("c_r = ", c_r)
 print("resolution = ", resolution)
 
-
-# Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.occ.Geometry()
-# Fetch model we would like to add data to
 model = geometry.__enter__()
 
-#add a volume object (a ball):
-ball = model.add_ball(c_r, r,  mesh_size=resolution)
+# add a volume object (a ball):
+ball = model.add_ball(c_r, r, mesh_size=resolution)
 
-#add a line object
-points = [model.add_point( (0, 0, 0), mesh_size=resolution ),
+# add a line object
+points = [model.add_point((0, 0, 0), mesh_size=resolution),
           model.add_point((0.2, 0.2, 0.2), mesh_size=resolution)
           ]
-line = [model.add_line( points[0], points[1] )]
-
-
+line = [model.add_line(points[0], points[1])]
 
 model.synchronize()
 
-volumes = gmsh.model.getEntities( dim=3 )
 
-gmsh.model.addPhysicalGroup(3, [v[1] for v in volumes], 1)  # Tag 1 for volume
-gmsh.model.setPhysicalName(3, 1, "volume")
+# tag 3d objects
+volumes = gmsh.model.getEntities(dim=3)
+for volume in volumes:
+    gmsh.model.addPhysicalGroup(3, [volume[1]], volume_id)  # Tag 1 for volume
+    gmsh.model.setPhysicalName(3, volume_id, "volume")
 
-#tag the surface objet (ball surface, i.e., sphere): find out the sphere surface and add it to the model
-#this is name_to_read which will be shown in paraview and subdomain_id which will be used in the code which reads the mesh in `ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=1)`
-'''
-the  surfaces are tagged with the following subdomain_ids: 
-If you have a doubt about the subdomain_ids, see name_to_read in triangle_mesh.xdmf with Paraview
-'''
-dim_facet = 2 # for facets in 3D
-sphere_boundaries = []
-#extract the boundaries from the mesh
+# tag 2d objects
+boundary_dimension = 2  # for facets in 3D
 boundaries = gmsh.model.getBoundary(volumes, oriented=False)
-#add the surface objects: loop through the surfaces in the model and add them as physical objects: here the sphere surface will be added with subdomain_id = 1
-print("*********** surfaces : ***********  ", boundaries)
-id=0
-for boundary in boundaries:
-    center_of_mass = gmsh.model.occ.getCenterOfMass(boundary[0], boundary[1])
-    sphere_boundaries.append(boundary[1])
-    gmsh.model.addPhysicalGroup(dim_facet, sphere_boundaries)
-    print(f"surface # {id}, center of mass = {center_of_mass}")
-    id+=1
-
-
-# print("dir = " , dir(gmsh.model))
-
-
-#tag the line objet : find out the line  and add it to the model
-# the lines are tagged with the following subdomain_ids:
-# If you have a doubt about the subdomain_ids, see name_to_read in line_mesh.xdmf with Paraview
-
-dim_segment = 1 # for lines in 3D
-#extract the segments from the mesh
-segments = gmsh.model.occ.getEntities(dim=1)
-
-#add the segment objects: loop through the segments in the model and add them as physical objects: here line[0] surface will be added with subdomain_id =
-print("*********** segments : *********** ", segments)
-id=0
-line_segments = []
-for segment in segments:
-    center_of_mass = gmsh.model.occ.getCenterOfMass(segment[0], segment[1])
-    line_segments.append(segment[1])
-    # gmsh.model.addPhysicalGroup(dim_segment, line_segments)
-    print(f"segment # {id}, center of mass = {center_of_mass}, segment: {segment}")
-    id+=1
+gmsh.model.addPhysicalGroup(boundary_dimension, [boundary[1] for boundary in boundaries], surface_id)  # Tag 1 for volume
+gmsh.model.setPhysicalName(boundary_dimension, surface_id, "surface")
 
 
 
@@ -110,16 +74,13 @@ geometry.generate_mesh(dim=3)
 gmsh.write(args.output_directory + "/mesh.msh")
 model.__exit__()
 
-
-
-
 mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
 
-#create a tetrahedron mesh (containing solid objects such as a ball)
+# create a tetrahedron mesh (containing solid objects such as a ball)
 tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
 meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
-#create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
+# create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", False)
 meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
 
