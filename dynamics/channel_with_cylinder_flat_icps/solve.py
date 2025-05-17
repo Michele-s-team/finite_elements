@@ -12,14 +12,26 @@ Example:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
 """
 
-from fenics import *
-from mshr import *
 import argparse
+import dolfin
+from fenics import *
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import calculus as calc
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
 parser.add_argument("output_directory")
 args = parser.parse_args()
+
+L = 1
+h = 1
+r = 0.25
+c_r = [L/2, h/2]
 
 T = 1.0  # final time
 num_steps = 1024  # number of time steps
@@ -41,9 +53,9 @@ Q = FunctionSpace(mesh, 'P', 1)
 
 # Define boundaries
 inflow = 'near(x[0], 0)'
-outflow = 'near(x[0], 2.2)'
-walls = 'near(x[1], 0) || near(x[1], 0.41)'
-cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.1 && x[1]<0.3'
+outflow = f'near(x[0], {L})'
+walls = f'near(x[1], 0) || near(x[1], {h})'
+cylinder = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {(r + calc.min_dist_c_r_rectangle(L, h, c_r)) / 2}'
 
 # Define inflow profile
 inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
