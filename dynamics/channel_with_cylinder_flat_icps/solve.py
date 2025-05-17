@@ -30,7 +30,7 @@ args = parser.parse_args()
 
 L = 2.2
 h = 0.41
-r = 0.25
+r = 0.05
 c_r = [0.2, 0.2]
 
 T = 1.0  # final time
