@@ -260,10 +260,17 @@ Example of usage:
 def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
     return surface_integral_rectangle(f, p_bl, p_tr) - surface_integral_disk(f, r, c)
 
-
+'''
+compute the volume integral of a function in a ball
+Input values 
+- 'f': the function f([x, y, z])
+- 'r', 'c_r': radius and center of the ball
+Return values: 
+- \int_ball f
+'''
 def volume_integral_ball(f, r, c):
     result = spi.tplquad(
-        lambda phi, theta, rho: f(
+        lambda rho, theta, phi: f(
             [c[0] + rho * np.sin(theta) * np.cos(phi),
             c[1] + rho * np.sin(theta) * np.sin(phi),
             c[2] + rho * np.cos(theta)]
@@ -274,12 +281,9 @@ def volume_integral_ball(f, r, c):
         lambda phi: np.pi,  # theta upper bound
         lambda phi, theta: 0,  # rho lower bound
         lambda phi, theta: r  # rho upper bound
-    )
+    )[0]
 
     return result
-    # f_swapped = lambda x, y: f([y, x])
-    #
-    # return spi.dblquad(lambda rho, theta: rho * f_swapped(c[1] + rho * np.sin(theta), c[0] + rho * np.cos(theta)), theta_min, theta_max, lambda rho: r, lambda rho: R)[0]
 
 
 
