@@ -5,21 +5,20 @@ Scheme (IPCS).
 
   u' + u . nabla(u)) - div(sigma(u, p)) = f
                                  div(u) = 0
-
-
-run with
-python ft08_navier_stokes_cylinder.py [path where to read the mesh]
-clear; clear; rm -r solution-ft08_navier_stokes_cylinder; python3 ft08_navier_stokes_cylinder.py /home/fenics/shared/channel-with-cylinder-flat-incremental-pressure-correction-scheme/mesh/solution
+Run with
+    python ft08_navier_stokes_cylinder.py [path where to read the mesh] [path where to store the solution]
+    clear; clear; rm -r solution-ft08_navier_stokes_cylinder; python3 ft08_navier_stokes_cylinder.py /home/fenics/shared/channel-with-cylinder-flat-incremental-pressure-correction-scheme/mesh/solution
 """
 
-from __future__ import print_function
 from fenics import *
 from mshr import *
 import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "input_directory" )
+parser.add_argument( "output_directory" )
 args = parser.parse_args()
+
 
 T = 1.0  # final time
 num_steps = 1024  # number of time steps
@@ -114,8 +113,8 @@ A3 = assemble( a3 )
 [bc.apply( A2 ) for bc in bcp]
 
 # Create XDMF files for visualization output
-xdmffile_u = XDMFFile( 'solution-ft08_navier_stokes_cylinder/v_n.xdmf' )
-xdmffile_p = XDMFFile( 'solution-ft08_navier_stokes_cylinder/p_n.xdmf' )
+xdmffile_u = XDMFFile( args.output_directory + '/v_n.xdmf' )
+xdmffile_p = XDMFFile( args.output_directory + '/p_n.xdmf' )
 
 # Time-stepping
 t = 0
