@@ -3,18 +3,14 @@ This code reads the 3d mesh generated from generate_ball_mesh.py and it creates 
 '''
 
 import argparse
-import colorama as col
 import dolfin
 from fenics import *
-import numpy as np
 import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import input_output as io
-import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument("input_directory")
@@ -65,8 +61,8 @@ with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 '''
-dv_custom = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
-ds_custom = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=surface_id)  # surface measure
+dv = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
+ds = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=surface_id)  # surface measure
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 
