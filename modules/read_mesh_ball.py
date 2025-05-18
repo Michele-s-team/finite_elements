@@ -61,7 +61,7 @@ with XDMFFile((args.input_directory) + "/vertex_mesh.xdmf") as infile:
 sf = cpp.mesh.MeshFunctionSizet(mesh, mvc)
 xdmf.close()
 '''
-dv = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
+dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
 ds = Measure("ds", domain=mesh, subdomain_data=sf, subdomain_id=surface_id)  # surface measure
 # dS_custom = Measure("dS", domain=mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
