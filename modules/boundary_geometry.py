@@ -1,5 +1,4 @@
 from fenics import *
-from dolfin import *
 import dolfin
 import ufl as ufl
 

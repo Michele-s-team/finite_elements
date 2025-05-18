@@ -5,6 +5,8 @@ import load_mesh as lmsh
 
 function_space_degree = 4
 
+print('mesh type = ', type(lmsh.mesh))
+
 
 Q = FunctionSpace( lmsh.mesh, 'P', function_space_degree )
 V = VectorFunctionSpace( lmsh.mesh, 'P', function_space_degree )
