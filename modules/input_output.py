@@ -58,8 +58,8 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     for i in range( Q.dim() ):
 
         coordinate = coordinates[i]
-        # convert the coordinate in the correct format by addding 0s for the unused dimensions
-        padded_coordinate = pad(coordinate, mesh.topology().dim())
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
 
         print( f"{f(*coordinate)}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
