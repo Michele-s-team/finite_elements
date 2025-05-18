@@ -57,33 +57,29 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     csvfile.close()
 
 
-#print a vector field 'f' to csv file 'filename'
 def print_vector_to_csvfile(f, filename):
+    V = f.function_space()
+    mesh = V.mesh()
+    gdim = mesh.geometry().dim()               # geometric dimension (2 or 3)
+    vdim = f.value_rank()                      # 1 for vector, 0 for scalar
+    shape = f.value_dimension(0) if vdim > 0 else 1
 
-    i = 0
-    list_val_x = []
-    list_val_y = []
-    list_x = []
-    for x, val in zip( f.function_space().tabulate_dof_coordinates(), f.vector().get_local() ):
-        if (i % 2 == 0):
-            list_val_x.append( val )
-            list_x.append( x )
-        else:
-            list_val_y.append( val )
+    coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
+    values = f.vector().get_local().reshape(-1, shape)
 
-        i += 1
+    # Subsample coordinates by skipping repeats:
+    coords = coords_all[::shape]
 
-    # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    csvfile = open( filename, "w" )
-    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
+    with open(filename, "w") as csvfile:
+        print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
-    for x, val_x, val_y in zip( list_x, list_val_x, list_val_y ):
-        print( f"{val_x},{val_y},{0},{x[0]},{x[1]},{0}", file=csvfile )
-
-    csvfile.close()
-
+        for x, v in zip(coords, values):
+            padded_v = list(v) + [0.0] * (3 - shape)
+            padded_x = list(x) + [0.0] * (3 - gdim)
+            print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
+                  f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
 
 
 '''
