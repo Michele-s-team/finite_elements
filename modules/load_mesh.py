@@ -16,3 +16,5 @@ else:
         if cmd.check_if_file_exists(rarg.args.input_directory + "/line_mesh.xdmf"):
             mesh = msh.read_mesh(rarg.args.input_directory + "/line_mesh.xdmf")
             print('1d mesh')
+        else:
+            print('No mesh could be loaded!')
