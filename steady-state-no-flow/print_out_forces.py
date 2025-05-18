@@ -4,7 +4,7 @@ import ufl as ufl
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 import physics as phys
 import solution_paths as solpath
 

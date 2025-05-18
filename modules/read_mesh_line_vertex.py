@@ -7,7 +7,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import load_1d_mesh as lmsh
+import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 

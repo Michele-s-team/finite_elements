@@ -1,7 +1,7 @@
 import dolfin
 from fenics import *
 
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 import runtime_arguments as rarg
 
 # read the triangles
