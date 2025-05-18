@@ -19,7 +19,9 @@ def print_scalar_to_csvfile(f, filename):
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     for x, val in zip( f.function_space().tabulate_dof_coordinates(), f.vector().get_local() ):
-        print( f"{val},{x[0]},{x[1]},{0}", file=csvfile )
+
+        padded_x = pad(x, 3)
+        print( f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile )
     csvfile.close()
 
 #this function print a scalar defined only on the boundaries to csv file 
