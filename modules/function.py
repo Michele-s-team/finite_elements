@@ -58,6 +58,6 @@ def set_from_list(f, list):
         f.vector()[i] = list[i][0]
 
 
-#set nodal values of function 'f' according to the nodal values vritten in the csv file 'filename'. . This works only if the function space of f is order-1 polynomials
+#set nodal values of function 'f', defined on a 2d mesh, according to the nodal values written in the csv file 'filename'. . This works only if the function space of f is order-1 polynomials
 def set_from_file(f, filename):
     set_from_list( f, io.read_scalar_from_csvfile( filename ) )
