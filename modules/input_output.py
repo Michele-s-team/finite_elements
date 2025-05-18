@@ -136,8 +136,15 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
 
     for i in range( Q.dim() ):
-        v = f( coordinates[i][0], coordinates[i][1] )
-        print( f"{v[0]}, {v[1]}, {0}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
+
+        # convert the value of the vector field in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_f = pad(f( *coordinate ), 3)
+
+        print( f"{padded_f[0]}, {padded_f[1]}, {padded_f[2]}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
     csvfile.close()
 
