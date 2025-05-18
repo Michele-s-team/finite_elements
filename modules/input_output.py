@@ -189,7 +189,13 @@ def print_vertices_to_csv_file(mesh, filename):
     print( f"\":0\",\":1\"", file=csvfile )
 
     for i in range( Q.dim() ):
-        print( f"{coordinates[i][0]}, {coordinates[i][1]}", file=csvfile )
+
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
+
+
+        print( f"{padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
     csvfile.close()
 
