@@ -294,3 +294,14 @@ def print_star_box(message, success=True):
         print(color + line)
 
     print(col.Style.RESET_ALL, end='')  # Reset color after printing
+
+'''
+pad the array x with respect to a given dimension
+Input values :
+- 'x': the array, a list
+- 'dim': the dimension
+Return value:
+- [x[0], x[1], ... , x[len(x)-1], 0, ...., 0] , an array of length 'dim'
+'''
+def pad(x, dim):
+    return( list(x) + [0.0] * (dim - len(x)))
