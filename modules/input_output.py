@@ -322,4 +322,4 @@ Return value:
 - [x[0], x[1], ... , x[len(x)-1], 0, ...., 0] , an array of length 'dim'
 '''
 def pad(x, dim):
-    return( list(x) + [0.0] * (dim - len(x)))
+    return( list(x) + [0] * (dim - len(x)))
