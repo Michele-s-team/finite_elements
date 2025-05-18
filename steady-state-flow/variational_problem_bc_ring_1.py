@@ -168,7 +168,7 @@ omega_r = interpolate( omega_r_Expression( element=fsp.Q_z.ufl_element() ), fsp.
 omega_R = interpolate( omega_R_Expression( element=fsp.Q_z.ufl_element() ), fsp.Q_z )
 
 #uncomment this to set the initial profiles from the ODE soltion
-'''
+
 print("Reading the initial profiles from file ...")
 fu.set_from_file( fsp.v_0_r_read, 'solution-ode/v_ode.csv' )
 fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
@@ -193,7 +193,7 @@ fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
 fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega_0, fsp.mu_0])
 print("... done")
-'''
+
 
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )

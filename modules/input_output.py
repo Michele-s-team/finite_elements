@@ -205,12 +205,14 @@ read the tabulated  value of a scalar defined on a 2d mesh, and  written in file
 table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex]
 '''
 def read_scalar_from_csvfile(filename):
+
     with open( filename, newline='', encoding='utf-8' ) as csvfile:
         reader = csv.reader( csvfile )
         next( reader )  # Skip the header row
         data = [[float( value ) for value in row] for row in reader]
-    # print(data)
+
     return data
+
 
 #if 'string' does not end by '/' add '/' to 'string'
 def add_trailing_slash(string):
