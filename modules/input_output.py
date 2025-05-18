@@ -24,18 +24,7 @@ def print_scalar_to_csvfile(f, filename):
         print( f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile )
     csvfile.close()
 
-#this function print a scalar defined only on the boundaries to csv file 
-def print_scalar_boundary_to_csvfile(f, mesh, filename):
 
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-    csvfile = open( filename, "w" )
-    print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
-    points = msh.boundary_points(mesh)
-    for point in points:
-        print( f"{f([point[0], point[1]])},{point[0]},{point[1]},{0}", file=csvfile )
-    csvfile.close()
 
 '''
 print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
