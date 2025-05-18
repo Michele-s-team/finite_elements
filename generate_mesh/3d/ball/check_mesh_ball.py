@@ -13,4 +13,16 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+# import load_mesh as lmsh
+# import mesh as msh
+# import read_mesh_ball as rmsh
+
+# x = [1.23]
+# import input_output as io
+# print(f'padded x = {io.pad(x,4)}')
+# def f(x):
+#     print(f'x = {x}')
+# print(f'f = {f(*x)}')
+
 import check_mesh_tags_ball
+

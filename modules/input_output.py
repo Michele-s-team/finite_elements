@@ -35,7 +35,13 @@ def print_scalar_boundary_to_csvfile(f, mesh, filename):
         print( f"{f([point[0], point[1]])},{point[0]},{point[1]},{0}", file=csvfile )
     csvfile.close()
 
-#print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+'''
+print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+Input values: 
+- 'f': the field
+- 'mesh' the mesh 
+- 'filename': the output filename
+'''
 def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
 
     # a dummy function space of order 1 used to tabulated the vertices
@@ -45,11 +51,17 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
+
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
 
     for i in range( Q.dim() ):
-        print( f"{f(coordinates[i][0], coordinates[i][1])}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions
+        padded_coordinate = pad(coordinate, mesh.topology().dim())
+
+        print( f"{f(*coordinate)}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
     csvfile.close()
 
