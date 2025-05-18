@@ -40,15 +40,19 @@ vp = importlib.import_module(swi.vp)
 # test print_vector_to_csvfile
 import input_output as io
 import runtime_arguments as rarg
+import load_mesh as lmsh
 class v_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = x[0]
         values[1] = x[1]
+        values[2] = -x[1]
 
     def value_shape(self):
-        return (2,)
+        return (3,)
 
-v = interpolate(v_Expression(element=fsp.V.ufl_element()), fsp.V)
+W = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=3)
+
+v = interpolate(v_Expression(element=W.ufl_element()), W)
 io.print_vector_to_csvfile(v,  rarg.args.output_directory + '/v.csv')
 ####
 
