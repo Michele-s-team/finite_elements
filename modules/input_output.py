@@ -186,7 +186,7 @@ def print_vertices_to_csv_file(mesh, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
-    print( f"\":0\",\":1\"", file=csvfile )
+    print( f"\":0\",\":1\",\":2\"", file=csvfile )
 
     for i in range( Q.dim() ):
 
