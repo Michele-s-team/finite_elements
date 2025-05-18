@@ -15,6 +15,23 @@ def atan_quad(r):
 
 
 '''
+convert polar to cartesian coordinates
+Input values
+- 'rho', 'theta', 'phi': polar coordinates
+- 'c': the origin of polar coordinates
+Return values: 
+- the tuple corresponding to 'rho', 'theta', 'phi', in cartesian coordinates
+
+'''
+
+
+def polar_to_cartesian(rho, theta, phi, c):
+    return [c[0] + rho * np.sin(theta) * np.cos(phi),
+            c[1] + rho * np.sin(theta) * np.sin(phi),
+            c[2] + rho * np.cos(theta)]
+
+
+'''
 a line in 2d joining the points x_a and x_b, parametrized with 0 <= t <= 1
 it returns the curve and its gradient [[x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]]
 '''
@@ -36,7 +53,7 @@ Return values:
 
 
 def circle(r, cr, t):
-    return circle_arc(r, cr, 0, 2*np.pi, t)
+    return circle_arc(r, cr, 0, 2 * np.pi, t)
 
 
 '''
@@ -56,6 +73,7 @@ def circle_arc(r, cr, theta_min, theta_max, t):
 
     return [np.add(cr, r * np.array([np.cos(theta_t), np.sin(theta_t)])).tolist(),
             (r * (theta_max - theta_min) * np.array([- np.sin(theta_t), np.cos(theta_t)])).tolist()]
+
 
 '''
 return the curvilinear integral of a function  along a curve 
@@ -140,9 +158,11 @@ Return values:
 
 '''
 
+
 def curve_integral_circle_arc(f, r, theta_min, theta_max, c):
     circle_arc_curve = lambda t: circle_arc(r, c, theta_min, theta_max, t)
     return curve_integral(f, circle_arc_curve)
+
 
 '''
 compute the integral of a function of two variables over a rectangle
@@ -184,7 +204,6 @@ def surface_integral_ring(f, r, R, c):
     return surface_integral_ring_slice(f, r, R, 0, 2 * np.pi, c)
 
 
-
 '''
 integate a function of two variables over the slice of a ring delimited by two concentric circles
 Input values 
@@ -222,6 +241,7 @@ Example of usage:
 def surface_integral_disk(f, r, c):
     return surface_integral_ring(f, 0, r, c)
 
+
 '''
 integrate a function of two variables over an angular slice of a disk
 Input values 
@@ -235,9 +255,10 @@ Result:
 Example of usage:
     cal.surface_integral_disk_slice(function_test_integrals,  rmsh.r, np.pi, 2*np.pi, rmsh.c_r)
 '''
+
+
 def surface_integral_disk_slice(f, r, theta_min, theta_max, c):
     return surface_integral_ring_slice(f, 0, r, theta_min, theta_max, c)
-
 
 
 '''
@@ -260,21 +281,42 @@ Example of usage:
 def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
     return surface_integral_rectangle(f, p_bl, p_tr) - surface_integral_disk(f, r, c)
 
+
+'''
+compute the surface integral of a function on a sphere
+Input values 
+- 'f': the function f([x, y, z])
+- 'r', 'c_r': radius and center of the ball
+Return values: 
+- \int ds_sphere f
+'''
+
+
+def surface_integral_sphere(f, r, c):
+    result = spi.dblquad(
+        lambda theta, phi: f(polar_to_cartesian(r, theta, phi, c)) * r * np.sin(theta),
+        0,  # phi lower bound
+        np.pi,  # phi upper bound
+        lambda phi: 0,  # theta lower bound
+        lambda phi: np.pi,  # theta upper bound
+    )[0]
+
+    return result
+
+
 '''
 compute the volume integral of a function in a ball
 Input values 
 - 'f': the function f([x, y, z])
 - 'r', 'c_r': radius and center of the ball
 Return values: 
-- \int_ball f
+- \int dx_ball f
 '''
+
+
 def volume_integral_ball(f, r, c):
     result = spi.tplquad(
-        lambda rho, theta, phi: f(
-            [c[0] + rho * np.sin(theta) * np.cos(phi),
-            c[1] + rho * np.sin(theta) * np.sin(phi),
-            c[2] + rho * np.cos(theta)]
-        ) * rho ** 2 * np.sin(theta),
+        lambda rho, theta, phi: f(polar_to_cartesian(rho, theta, phi, c)) * rho ** 2 * np.sin(theta),
         0,  # phi lower bound
         2 * np.pi,  # phi upper bound
         lambda phi: 0,  # theta lower bound
@@ -284,8 +326,6 @@ def volume_integral_ball(f, r, c):
     )[0]
 
     return result
-
-
 
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
@@ -378,6 +418,7 @@ def mirror_point_line(point, line):
 
     return result
 
+
 '''
 tells whether a line lies on an axis
 Input values: 
@@ -396,12 +437,11 @@ for j in range(len(mesh.cells)):
             if (not cal.line_on_axis(lines[i], gamma_axis_of_symmetry, mesh)):
 [...]
 '''
-def line_on_axis(line, gamma_axis, mesh):
 
+
+def line_on_axis(line, gamma_axis, mesh):
     line_vertex_on_axis = [(point_on_line(mesh.points[line[k]], gamma_axis)) for k in range(len(line))]
     return (line_vertex_on_axis[0] and line_vertex_on_axis[1])
-
-
 
 
 '''
@@ -413,8 +453,9 @@ Input values:
 Return values: 
 - True/False if 'line' lies on at least one of the 'N' radial lines 
 '''
-def line_is_radial(line_to_check, N, mesh):
 
+
+def line_is_radial(line_to_check, N, mesh):
     # the angular size of each slice delimited by the radial lines
     theta = 2 * np.pi / N
 
@@ -424,7 +465,7 @@ def line_is_radial(line_to_check, N, mesh):
         # loop through the radial lines
 
         # construct an axis given by the radial line under consideration
-        point_O =[0,0]
+        point_O = [0, 0]
         point_r = R(i * theta).dot([1, 0])
         radial_axis = lambda t: line(point_O, point_r, t)
 
