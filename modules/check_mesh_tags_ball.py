@@ -45,12 +45,13 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_e
 
 test_mesh_integral_errors = []
 
-integral_exact_dv = cal.volume_integral_ball(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_dx = cal.volume_integral_ball(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, rmsh.r, rmsh.c_r)
 
 # print(f'integral_exact_dv = {integral_exact_dv}')
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dv, function_test_integrals_fenics, rmsh.dx, '\int_ball f dx'))
-# test_mesh_integral_errors.append(msh.test_mesh_integral(7.06579, f_test_ds, rmsh.ds, '\int_sphere f ds'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int_ball f dx'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int_sphere f ds'))
 
 # print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

@@ -296,7 +296,7 @@ def surface_integral_sphere(f, r, c):
     result = spi.dblquad(
         lambda theta, phi: f(polar_to_cartesian(r, theta, phi, c)) * r * np.sin(theta),
         0,  # phi lower bound
-        np.pi,  # phi upper bound
+        2*np.pi,  # phi upper bound
         lambda phi: 0,  # theta lower bound
         lambda phi: np.pi,  # theta upper bound
     )[0]
