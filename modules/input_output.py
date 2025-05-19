@@ -205,10 +205,6 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     elif type == 'vector':
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
-    #
-    # elif type == 'vector_3d':
-    #     print_vector_3d_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-    #     print_nodal_values_vector_3d_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 '''
 Print a text in red or green according to the value of a boolean variable. This function is used to print out tests
