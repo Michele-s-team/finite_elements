@@ -2,8 +2,8 @@ from symbol import return_stmt
 
 import colorama as col
 import os
+from pathlib import Path
 import subprocess
-
 
 '''
 checks out a commit
@@ -11,9 +11,10 @@ Input values:
 - 'commit_sha': the sha of the commit 
 - 'success': A list with one entry: If it is True the checkout will be done, if not the checkout will not be done. If the checkout is successful success[0] will be set to True and to False otherwise
 '''
-def checkout(commit_sha, success):
 
-    if(success[0]):
+
+def checkout(commit_sha, success):
+    if (success[0]):
 
         print(f'{col.Fore.BLUE}Checking out {commit_sha}... {col.Fore.RESET}')
         run_command(f'git checkout {commit_sha}', success)
@@ -21,8 +22,6 @@ def checkout(commit_sha, success):
 
     else:
         print('Stopping here.')
-
-
 
 
 '''
@@ -33,9 +32,10 @@ Input values:
 Return value: 
 - the strings with the output and the error resulting from the command run. If this method is called with success[0] = False, then it returns '', 'run_command failed'
 '''
-def run_command(command, success):
 
-    if(success[0]):
+
+def run_command(command, success):
+    if (success[0]):
 
         print(f'Running command {command} ...')
 
@@ -63,7 +63,6 @@ def run_command(command, success):
 
 
 def command_empty_err_out(command, success):
-
     if success[0]:
         output_out, output_err = run_command(command, success)
         out_is_empty = (output_out.strip() == "")
@@ -75,3 +74,17 @@ def command_empty_err_out(command, success):
         result = False
 
     return result
+
+
+'''
+check if a file exists
+Input values: 
+- 'path': the path to the file
+Return values: 
+- 'True' ('False') if the file exists (does not exist)
+'''
+
+
+def check_if_file_exists(path):
+    file_path = Path(path)
+    return file_path.exists()

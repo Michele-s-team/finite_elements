@@ -3,7 +3,6 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'ring_slice':
-
     rmsh = 'read_mesh_ring_slice'
     vp = 'variational_problem_bc_ring_slice'
     prout_bc = 'print_out_bc_ring_slice'
@@ -40,22 +39,26 @@ elif rarg.args.problem == 'square_no_circle':
 elif rarg.args.problem == 'two_squares_no_circle':
     rmsh = 'read_mesh_two_squares_no_circle'
     vp = 'variational_problem_bc_two_squares_no_circle'
-    prout_bc =  'print_out_bc_two_squares_no_circle'
+    prout_bc = 'print_out_bc_two_squares_no_circle'
 
 elif rarg.args.problem == 'square':
     rmsh = 'read_mesh_square'
     vp = 'variational_problem_bc_square'
-    prout_bc =  'print_out_bc_square'
+    prout_bc = 'print_out_bc_square'
 
 elif rarg.args.problem == 'square_symmetric_top_bottom':
     rmsh = 'read_mesh_square'
     vp = 'variational_problem_bc_square_symmetric_top_bottom'
-    prout_bc =  'print_out_bc_square_symmetric_top_bottom'
+    prout_bc = 'print_out_bc_square_symmetric_top_bottom'
 
 elif rarg.args.problem == 'square_symmetric_left_right_top_bottom':
     rmsh = 'read_mesh_square'
     vp = 'variational_problem_bc_square_symmetric_left_right_top_bottom'
-    prout_bc =  'print_out_bc_square_symmetric_left_right_top_bottom'
+    prout_bc = 'print_out_bc_square_symmetric_left_right_top_bottom'
 
+elif rarg.args.problem == 'ball':
+    rmsh = 'read_mesh_ball'
+    vp = 'variational_problem_bc_ball'
+    prout_bc = 'print_out_bc_ball'
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')

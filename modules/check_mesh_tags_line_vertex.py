@@ -5,7 +5,7 @@ import numpy as np
 import scipy.integrate as spi
 
 import input_output as io
-import load_1d_mesh as lmsh
+import load_mesh as lmsh
 import mesh as msh
 import read_mesh_line_vertex as rmsh
 

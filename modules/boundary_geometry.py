@@ -1,11 +1,10 @@
 from fenics import *
-from dolfin import *
 import dolfin
 import ufl as ufl
 
 
 import geometry as geo
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 import mesh as mesh_module
 # import runtime_arguments as rarg
 

@@ -5,7 +5,7 @@ import ufl as ufl
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 import solution_paths as solpath
 import physics as phys
 import runtime_arguments as rarg
@@ -137,17 +137,17 @@ io.full_print(
                                    geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
     'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
     solpath.nodal_values_path, lmsh.mesh,
-    'vector_3d')
+    'vector')
 
 io.full_print(
     project(
         phys.dFdl_kappa_3d(omega_output, mu_output, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
     'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector_3d')
+    lmsh.mesh, 'vector')
 
 io.full_print(
     project( \
         phys.dFdl_tot_3d(v_output, w_output, omega_output, mu_output, sigma_output, vp.eta, vp.kappa,
                          geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
     'dFdl_tot_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector_3d')
+    lmsh.mesh, 'vector')

@@ -5,7 +5,7 @@ import numpy as np
 
 import calculus as cal
 import geometry as geo
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 import mesh as msh
 
 import input_output as io

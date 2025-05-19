@@ -195,6 +195,7 @@ fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.z_0, fsp.omega
 print("... done")
 '''
 
+
 # boundary conditions (BCs)
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
 

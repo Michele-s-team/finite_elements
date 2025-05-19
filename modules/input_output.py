@@ -19,23 +19,20 @@ def print_scalar_to_csvfile(f, filename):
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
     for x, val in zip( f.function_space().tabulate_dof_coordinates(), f.vector().get_local() ):
-        print( f"{val},{x[0]},{x[1]},{0}", file=csvfile )
+
+        padded_x = pad(x, 3)
+        print( f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile )
     csvfile.close()
 
-#this function print a scalar defined only on the boundaries to csv file 
-def print_scalar_boundary_to_csvfile(f, mesh, filename):
 
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    csvfile = open( filename, "w" )
-    print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
-    points = msh.boundary_points(mesh)
-    for point in points:
-        print( f"{f([point[0], point[1]])},{point[0]},{point[1]},{0}", file=csvfile )
-    csvfile.close()
-
-#print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+'''
+print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+Input values: 
+- 'f': the field
+- 'mesh' the mesh 
+- 'filename': the output filename
+'''
 def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
 
     # a dummy function space of order 1 used to tabulated the vertices
@@ -45,79 +42,58 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
+
     csvfile = open( filename, "w" )
     print( f"\"f\",\":0\",\":1\",\":2\"", file=csvfile )
 
     for i in range( Q.dim() ):
-        print( f"{f(coordinates[i][0], coordinates[i][1])}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
+
+        print( f"{f(*coordinate)}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
     csvfile.close()
 
 
-#print a vector field 'f' to csv file 'filename'
 def print_vector_to_csvfile(f, filename):
+    V = f.function_space()
+    mesh = V.mesh()
+    gdim = mesh.geometry().dim()               # geometric dimension (2 or 3)
+    vdim = f.value_rank()                      # 1 for vector, 0 for scalar
+    shape = f.value_dimension(0) if vdim > 0 else 1
 
-    i = 0
-    list_val_x = []
-    list_val_y = []
-    list_x = []
-    for x, val in zip( f.function_space().tabulate_dof_coordinates(), f.vector().get_local() ):
-        if (i % 2 == 0):
-            list_val_x.append( val )
-            list_x.append( x )
-        else:
-            list_val_y.append( val )
+    coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
+    '''
+     reschape the vector field: before reshaping the vector is, for example, 
+     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
+     and after reshaping it is
+     [
+        [1.0, 2.0],  # vector at point 0
+        [3.0, 4.0],  # vector at point 1
+        [5.0, 6.0],  # vector at point 2
+        ]
+     '''
+    values = f.vector().get_local().reshape(-1, shape)
 
-        i += 1
+    # Subsample coordinates by skipping repeats:
+    coords = coords_all[::shape]
 
-    # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    csvfile = open( filename, "w" )
-    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
+    with open(filename, "w") as csvfile:
+        print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
-    for x, val_x, val_y in zip( list_x, list_val_x, list_val_y ):
-        print( f"{val_x},{val_y},{0},{x[0]},{x[1]},{0}", file=csvfile )
+        for x, v in zip(coords, values):
+            # padded_v = list(v) + [0] * (3 - shape)
+            padded_v = pad(v, 3)
+            # padded_x = list(x) + [0] * (3 - gdim)
+            padded_x = pad(x, 3)
+            print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
+                  f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
 
-    csvfile.close()
 
-
-
-'''
-print a vector field in the three-dimensional space to csv file 
-Input values:
-- 'V': the three-dimensional vector field, whcih returns a tuple of 3 values for each point in \Omega
-- 'filename': the name of the csv file where 'V' will be written
-'''
-def print_vector_3d_to_csvfile(V, filename):
-
-    i = 0
-    list_val_x = []
-    list_val_y = []
-    list_val_z = []
-    list_x = []
-
-    for x, val in zip(V.function_space().tabulate_dof_coordinates(), V.vector().get_local()):
-        if (i % 3 == 0):
-            list_val_x.append(val)
-            list_x.append(x)
-        elif (i % 3 == 1):
-            list_val_y.append(val)
-        elif (i % 3 == 2):
-            list_val_z.append(val)
-
-        i += 1
-
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-    csvfile = open(filename, "w")
-    print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
-
-    for x, val_x, val_y, val_z in zip(list_x, list_val_x, list_val_y, list_val_z):
-        print(f"{val_x},{val_y},{val_z},{x[0]},{x[1]},{0}", file=csvfile)
-
-    csvfile.close()
 
 #print the nodal values of a vector field 'f' on the mesh 'mesh' to csv file 'filename'
 def print_nodal_values_vector_to_csvfile(f, mesh, filename):
@@ -133,36 +109,18 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
 
     for i in range( Q.dim() ):
-        v = f( coordinates[i][0], coordinates[i][1] )
-        print( f"{v[0]}, {v[1]}, {0}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
+
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
+
+        # convert the value of the vector field in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_f = pad(f( *coordinate ), 3)
+
+        print( f"{padded_f[0]}, {padded_f[1]}, {padded_f[2]}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
     csvfile.close()
 
-'''
-print the nodal values of a vector field 'V', defined in the three-dimensional space in which the mesh and \Omega are embeedded,  
- to csv file 
- Input values:
-- 'V': the three-dimensional vector field, whcih returns a tuple of 3 values for each point in \Omega
-- 'mesh' : the mesh defining \Omega
-- 'filename': the name of the csv file where 'V' will be written
-'''
-def print_nodal_values_vector_3d_to_csvfile(V, mesh, filename):
-
-    # a dummy function space of order 1 used to tabulated the vertices
-    Q = FunctionSpace( mesh, 'CG', 1 )
-    coordinates = Q.tabulate_dof_coordinates()
-
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-    csvfile = open( filename, "w" )
-    print( f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile )
-
-    for i in range( Q.dim() ):
-        v = V(coordinates[i][0], coordinates[i][1])
-        print( f"{v[0]}, {v[1]}, {v[2]}, {coordinates[i][0]}, {coordinates[i][1]}, {0}", file=csvfile )
-
-    csvfile.close()
 
 
 #print to the csv file 'filename' the coordinates of the vertices of 'mesh'
@@ -176,25 +134,33 @@ def print_vertices_to_csv_file(mesh, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open( filename, "w" )
-    print( f"\":0\",\":1\"", file=csvfile )
+    print( f"\":0\",\":1\",\":2\"", file=csvfile )
 
     for i in range( Q.dim() ):
-        print( f"{coordinates[i][0]}, {coordinates[i][1]}", file=csvfile )
+
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
+
+
+        print( f"{padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile )
 
     csvfile.close()
 
 
 '''
-read the tabulated  value of a scalar written in file 'filename' and return them as a table
-table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex]
+read the tabulated  value of a scalar defined on a 2d mesh, and  written in file 'filename' and return them as a table
+table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex, z coordinate of the ith vertex]
 '''
 def read_scalar_from_csvfile(filename):
+
     with open( filename, newline='', encoding='utf-8' ) as csvfile:
         reader = csv.reader( csvfile )
         next( reader )  # Skip the header row
         data = [[float( value ) for value in row] for row in reader]
-    # print(data)
+
     return data
+
 
 #if 'string' does not end by '/' add '/' to 'string'
 def add_trailing_slash(string):
@@ -212,8 +178,7 @@ Input values:
 - 'path_h5_file' the path of the h5 file
 - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
 - 'mesh': the mesh where 'f' is defined
-- 'type': the type of 'f', which may be 'scalar', 'vector' (for a vector in the tangent bundle of \Omega) or 'vector_3d' (for a vector in the 3d space in which 
-\Omega is embedded)
+- 'type': the type of 'f', which may be 'scalar', 'vector' (for a vector in the tangent bundle of \Omega)  
 '''
 def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
 
@@ -240,10 +205,6 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     elif type == 'vector':
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
-
-    elif type == 'vector_3d':
-        print_vector_3d_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        print_nodal_values_vector_3d_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 '''
 Print a text in red or green according to the value of a boolean variable. This function is used to print out tests
@@ -294,3 +255,14 @@ def print_star_box(message, success=True):
         print(color + line)
 
     print(col.Style.RESET_ALL, end='')  # Reset color after printing
+
+'''
+pad the array x with respect to a given dimension
+Input values :
+- 'x': the array, a list
+- 'dim': the dimension
+Return value:
+- [x[0], x[1], ... , x[len(x)-1], 0, ...., 0] , an array of length 'dim'
+'''
+def pad(x, dim):
+    return( list(x) + [0] * (dim - len(x)))

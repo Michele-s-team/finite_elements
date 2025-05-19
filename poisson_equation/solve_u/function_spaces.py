@@ -1,28 +1,25 @@
 import dolfin
 from fenics import *
 
-import boundary_geometry as bgeo
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 
 function_space_degree = 4
 
-
-Q = FunctionSpace( lmsh.mesh, 'P', function_space_degree )
-V = VectorFunctionSpace( lmsh.mesh, 'P', function_space_degree )
-T = TensorFunctionSpace( lmsh.mesh, 'P', function_space_degree, shape=(2, 2) )
-
+Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree)
+V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree)
+T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(lmsh.mesh.topology().dim(), lmsh.mesh.topology().dim()))
 
 # Define variational problem
-u = Function( Q )
-nu_u = TestFunction( Q )
-f = Function( Q )
-grad_u = Function( V )
-J_u = TrialFunction( Q )
-u_exact = Function( Q )
+u = Function(Q)
+nu_u = TestFunction(Q)
+f = Function(Q)
+grad_u = Function(V)
+J_u = TrialFunction(Q)
+u_exact = Function(Q)
 
 # Define post-processing (pp) variational problem
 # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
-hess_u = Function( T )
-nu_hess_u = TestFunction( T )
-hess_u_exact = Function( T )
-J_hess_u = TrialFunction( T )
+hess_u = Function(T)
+nu_hess_u = TestFunction(T)
+hess_u_exact = Function(T)
+J_hess_u = TrialFunction(T)

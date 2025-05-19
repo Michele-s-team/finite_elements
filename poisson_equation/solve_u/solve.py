@@ -15,6 +15,7 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_symmetric_top_bottom $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_symmetric_left_right_top_bottom $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/ball/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ball $MESH_PATH $SOLUTION_PATH
 
 '''
 
@@ -32,6 +33,27 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
+
+
+
+'''
+# test print_vector_to_csvfile
+import input_output as io
+import runtime_arguments as rarg
+import load_mesh as lmsh
+class v_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 2
+
+    def value_shape(self):
+        return (1,)
+
+W = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=1)
+
+v = interpolate(v_Expression(element=W.ufl_element()), W)
+io.print_vector_to_csvfile(v,  rarg.args.output_directory + '/v.csv')
+'''
+
 
 J = derivative(vp.F, fsp.u, fsp.J_u)
 problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)

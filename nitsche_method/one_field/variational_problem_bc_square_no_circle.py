@@ -5,7 +5,7 @@ import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
-import load_2d_mesh as lmsh
+import load_mesh as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
