@@ -176,7 +176,7 @@ def print_solution(psi, step, t):
     files.xdmffile_dFds.write( fsp.dFds, t )
 
     io.print_vector_to_csvfile( fsp.dFdl, (rarg.args.output_directory) + '/snapshots/csv/dFdl_' + str( step + 1 )  + '.csv' )
-    io.print_vector_to_csvfile( fsp.dFds, (rarg.args.output_directory) + '/snapshots/csv/dFds_' + str( step + 1 )  + '.csv' )
+    io.print_scalar_to_csvfile( fsp.dFds, (rarg.args.output_directory) + '/snapshots/csv/dFds_' + str( step + 1 )  + '.csv' )
 
 
     xdmffile_dFdlds = XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/dFdlds_' + str( step + 1 ) + '.xdmf' )
