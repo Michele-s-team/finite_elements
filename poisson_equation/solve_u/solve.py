@@ -43,14 +43,12 @@ import runtime_arguments as rarg
 import load_mesh as lmsh
 class v_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = x[0]
-        values[1] = x[1]
-        values[2] = -x[1]
+        values[0] = 2
 
     def value_shape(self):
-        return (3,)
+        return (1,)
 
-W = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=3)
+W = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=1)
 
 v = interpolate(v_Expression(element=W.ufl_element()), W)
 io.print_vector_to_csvfile(v,  rarg.args.output_directory + '/v.csv')
