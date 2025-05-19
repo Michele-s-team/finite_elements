@@ -34,14 +34,14 @@ io.full_print(
             fsp.Q_3d),
     'dFdl_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
     solpath.nodal_values_path, lmsh.mesh,
-    'vector_3d')
+    'vector')
 
 io.full_print(
     project(
         phys.dFdl_kappa_3d(prout.omega_output, prout.mu_output, prout.vp.kappa,
                            geo.n_c_r(lmsh.mesh, prout.rmsh.c_r, prout.omega_output)), fsp.Q_3d),
     'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector_3d')
+    lmsh.mesh, 'vector')
 
 io.full_print(
     project( \
@@ -49,4 +49,4 @@ io.full_print(
                                  geo.n_c_r(lmsh.mesh, prout.rmsh.c_r, prout.omega_output)), fsp.Q_3d),
     'dFdl_sigma_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
     solpath.nodal_values_path,
-    lmsh.mesh, 'vector_3d')
+    lmsh.mesh, 'vector')
