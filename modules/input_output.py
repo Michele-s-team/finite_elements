@@ -65,6 +65,16 @@ def print_vector_to_csvfile(f, filename):
     shape = f.value_dimension(0) if vdim > 0 else 1
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
+    '''
+     reschape the vector field: before reshaping the vector is, for example, 
+     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
+     and after reshaping it is
+     [
+        [1.0, 2.0],  # vector at point 0
+        [3.0, 4.0],  # vector at point 1
+        [5.0, 6.0],  # vector at point 2
+        ]
+     '''
     values = f.vector().get_local().reshape(-1, shape)
 
     # Subsample coordinates by skipping repeats:
