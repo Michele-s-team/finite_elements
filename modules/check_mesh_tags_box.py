@@ -10,7 +10,7 @@ import mesh as msh
 import calculus as cal
 import geometry as geo
 import input_output as io
-import read_mesh_ball as rmsh
+import read_mesh_box as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
@@ -45,7 +45,7 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_e
 
 test_mesh_integral_errors = []
 
-integral_exact_dx = cal.volume_integral_ball(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_dx = cal.volume_integral_box(function_test_integrals, rmsh.L)
 # integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, rmsh.r, rmsh.c_r)
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly

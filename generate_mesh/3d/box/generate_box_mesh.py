@@ -2,9 +2,9 @@
 This code generates a 3d mesh given by a box
 
 Run with
-    clear; clear; python3 generate_3dmesh_box.py [resolution] [output directory]
+    clear; clear; python3 generate_box_mesh.py [resolution] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import argparse
@@ -36,7 +36,7 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # CHANGE PARAMETERS HERE
-L = [2, 1, 1]
+L = [3, 2, 1]
 
 volume_id = 1
 boundary_le_id = 2
