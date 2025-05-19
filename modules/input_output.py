@@ -86,8 +86,8 @@ def print_vector_to_csvfile(f, filename):
         print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
         for x, v in zip(coords, values):
-            padded_v = list(v) + [0.0] * (3 - shape)
-            padded_x = list(x) + [0.0] * (3 - gdim)
+            padded_v = list(v) + [0] * (3 - shape)
+            padded_x = list(x) + [0] * (3 - gdim)
             print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
                   f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
 
