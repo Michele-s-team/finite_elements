@@ -150,7 +150,7 @@ def print_vertices_to_csv_file(mesh, filename):
 
 '''
 read the tabulated  value of a scalar defined on a 2d mesh, and  written in file 'filename' and return them as a table
-table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex]
+table[i] = [value of the scalar at the ith vertex, x-coordinate of the i-th vertex, y coordinate of the ith vertex, z coordinate of the ith vertex]
 '''
 def read_scalar_from_csvfile(filename):
 
