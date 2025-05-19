@@ -17,12 +17,15 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
 parser.add_argument("output_directory")
 args = parser.parse_args()
+
+mesh_file = args.output_directory + "/mesh.msh"
 
 volume_id = 1
 surface_id = 2
@@ -68,10 +71,12 @@ gmsh.model.addPhysicalGroup(boundary_dimension, [boundary[1] for boundary in bou
 gmsh.model.setPhysicalName(boundary_dimension, surface_id, "surface")
 
 geometry.generate_mesh(dim=3)
-gmsh.write(args.output_directory + "/mesh.msh")
-model.__exit__()
+gmsh.write(mesh_file)
+mesh_from_file = meshio.read(mesh_file)
 
-mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
+msh.write_mesh_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+
+model.__exit__()
 
 # create a tetrahedron mesh (containing solid objects such as a ball)
 tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
@@ -90,3 +95,7 @@ meshio.write(args.output_directory + "/line_mesh.xdmf", line_mesh)
 vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
 meshio.write(args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
 '''
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, args.output_directory + "/vertices.csv")
