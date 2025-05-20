@@ -40,13 +40,13 @@ L = [1, 2, 3]
 c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
 r = 0.25
 
-volume_id = 2
+volume_id = 1
 boundary_le_id = 2
 boundary_ri_id = 3
-boundary_fr_id = 4
-boundary_ba_id = 5
-boundary_to_id = 6
-boundary_bo_id = 7
+boundary_to_id = 4
+boundary_bo_id = 5
+boundary_fr_id = 6
+boundary_ba_id = 7
 boundary_sphere_id = 8
 # CHANGE PARAMETERS HERE
 
@@ -74,37 +74,30 @@ for surface in surfaces:
     # compute the center of mass of each surface, and recognize according to the coordinates of the center of mass
     center_of_mass = gmsh.model.occ.getCenterOfMass(surface[0], surface[1])
 
-    if np.allclose(center_of_mass, [0, L[1] / 2, L[2] / 2]):
-        # the center of mass is close to [0, L[1] / 2, L[2] / 2] -> the surface under consideration is  boundary_le
+    if np.isclose(center_of_mass[0], 0):
+        # the x coordinate of the center of mass is close to  0 -> I am on boundary_l
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
-        inlet = surface[1]
         gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
 
-    if (np.allclose(center_of_mass, [L[0], L[1] / 2, L[2] / 2])):
-        # the center of mass is close to [L, L[1] / 2, L[2] / 2] -> the surface under consideration is  boundary_ri
+    if np.isclose(center_of_mass[0], L[0]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
 
-    # the center of mass is not the inlet nor the outlet:
-    if (np.allclose(center_of_mass, [L[0] / 2, 0, L[2] / 2])):
-        # the y coordinate of the center of mass is 0 -> the surface under consideration is boundary_fr
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
+    if np.isclose(center_of_mass[1], 0):
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
 
-    if (np.allclose(center_of_mass, [L[0] / 2, L[1], L[2] / 2])):
-        # the y coordinate of the center of mass is L[1] -> the surface under consideration is boundary_ba
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
-
-    if (np.allclose(center_of_mass, [L[0] / 2, L[1] / 2, L[2]])):
-        # the z coordinate of the center of mass is L[2] -> the surface under consideration is boundary_to
+    if np.isclose(center_of_mass[1], L[1]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
         gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
 
-    if (np.allclose(center_of_mass, [L[0] / 2, L[1] / 2, 0])):
-        # the z coordinate of the center of mass is 0 -> the surface under consideration is boundary_bo
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
+    if np.isclose(center_of_mass[2], 0):
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
+
+    if np.isclose(center_of_mass[2], L[2]):
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
 
     if (np.allclose(center_of_mass, c_r)):
         # the center of mass is c_r -> the surface under consideration is the sphere
@@ -145,7 +138,7 @@ gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 
 # create a tetrahedron mesh in which the solid objects (volumes) will be stored
-tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", True)
+tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
 meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
 # create a triangle mesh in which the surfaces will be stored

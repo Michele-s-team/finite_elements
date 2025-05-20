@@ -10,12 +10,15 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as calc
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
-L = [3, 2, 1]
+L = [1, 2, 3]
+c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
+r = 0.25
 
 volume_id = 1
 boundary_le_id = 2
@@ -53,7 +56,6 @@ ds_frba = ds_fr + ds_ba
 ds = ds_leri + ds_tobo + ds_frba + ds_sphere
 
 import check_mesh_tags_box_ball
-
 print(f'Module {__file__} called {check_mesh_tags_box_ball.__file__}', flush=True)
 
 # Define boundaries
@@ -68,3 +70,6 @@ boundary_ba = f'near(x[2], 0)'
 boundary_leri = f'near(x[0], 0) || near(x[0], {L[0]})'
 boundary_tobo = f'near(x[1], 0) || near(x[1], {L[1]})'
 boundary_frba = f'near(x[2], 0) || near(x[2], {L[2]})'
+
+boundary_sphere = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2) + pow(x[2] - {c_r[2]}, 2)) < {(r + calc.min_dist_c_r_parallelepiped(L, c_r)) / 2}'
+

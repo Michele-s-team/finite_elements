@@ -349,6 +349,23 @@ def volume_integral_box(f, L):
     return result
 
 
+
+'''
+compute the integral of a function in the region between a ball and a box which has one edge centered at the origin
+Input values 
+- 'f': the function f([x, y, z])
+- 'L': a list containing the sizes of the box along each axis
+- 'r': radius of the ball
+- 'c' : center of the ball
+Return value: 
+- \int_{box - ball} d^3x  f
+'''
+
+def volume_integral_box_minus_ball(f, L, r, c):
+    return volume_integral_box(f, L) - volume_integral_ball(f, r, c)
+
+
+
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
     return [[np.cos(theta), -np.sin(theta), 0], [np.sin(theta), np.cos(theta), 0], [0, 0, 1]]
@@ -389,6 +406,29 @@ def min_dist_c_r_rectangle(L, h, p):
         min_y = h - p[1]
 
     return min(min_x, min_y)
+
+
+
+'''
+given a parallelepiped with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the circle center and the parallelepiped boundary
+Input values: 
+- 'L': a list containing the sizes of the parallelepiped along each axis
+- 'p' : the coordinates of the point
+Return values: 
+- the minimal distance
+'''
+def min_dist_c_r_parallelepiped(L, p):
+
+    m = [0] * 3
+
+    for i in range(3):
+        if p[i] < L[i] / 2:
+            m[i] = p[i]
+        else:
+            m[i] = L[i] - p[i]
+
+    return min(m)
+
 
 
 '''
