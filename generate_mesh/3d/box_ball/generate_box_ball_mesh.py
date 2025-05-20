@@ -35,6 +35,9 @@ mesh_file = args.output_directory + "/mesh.msh"
 
 gmsh.model.add("my model")
 
+resolution = (float)(args.resolution)
+print(f"Mesh resolution = {resolution}")
+
 # CHANGE PARAMETERS HERE
 L = [1, 2, 3]
 c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
@@ -48,10 +51,11 @@ boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
 boundary_sphere_id = 8
+
+sphere_resolution = resolution/2
 # CHANGE PARAMETERS HERE
 
-resolution = (float)(args.resolution)
-print(f"Mesh resolution = {resolution}")
+
 
 channel = gmsh.model.occ.addBox(0, 0, 0, L[0], L[1], L[2])
 sphere = gmsh.model.occ.addSphere(c_r[0], c_r[1], c_r[2], r)
@@ -111,10 +115,10 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", obstacles)
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", sphere_resolution)
 gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * r)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", r)
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", r)
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", 2*r)
 
 gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
