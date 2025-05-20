@@ -61,4 +61,9 @@ elif rarg.args.problem == 'ball':
     vp = 'variational_problem_bc_ball'
     prout_bc = 'print_out_bc_ball'
 
+elif rarg.args.problem == 'box':
+    rmsh = 'read_mesh_box'
+    vp = 'variational_problem_bc_box'
+    prout_bc = 'print_out_bc_box'
+
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')
