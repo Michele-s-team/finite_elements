@@ -101,6 +101,7 @@ for surface in surfaces:
 
     if (np.allclose(center_of_mass, c_r)):
         # the center of mass is c_r -> the surface under consideration is the sphere
+        obstacles.append(surface[1])  # Save the tag of the sphere surface
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_sphere_id)
         gmsh.model.setPhysicalName(surface[0], boundary_sphere_id, "sphere")
 
@@ -115,20 +116,7 @@ gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * r)
 gmsh.model.mesh.field.setNumber(threshold, "DistMax", r)
 
-# set the resolution close to the inlet
-inlet_dist = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(inlet_dist, "FacesList", [])
-
-inlet_thre = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(inlet_thre, "IField", inlet_dist)
-gmsh.model.mesh.field.setNumber(inlet_thre, "LcMin", resolution)
-gmsh.model.mesh.field.setNumber(inlet_thre, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(inlet_thre, "DistMin", 0.1)
-gmsh.model.mesh.field.setNumber(inlet_thre, "DistMax", 0.5)
-
-minimum = gmsh.model.mesh.field.add("Min")
-gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold, inlet_thre])
-gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
 gmsh.model.occ.synchronize()
 gmsh.model.mesh.generate(3)
