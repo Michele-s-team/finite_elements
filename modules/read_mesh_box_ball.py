@@ -1,5 +1,5 @@
 '''
-This code reads the 3d mesh generated from generate_box_mesh.py and it creates dvs and dss from labelled components of the mesh
+This code reads the 3d mesh generated from generate_box_ball_mesh.py and it creates dvs and dss from labelled components of the mesh
 '''
 
 import dolfin
@@ -24,6 +24,7 @@ boundary_to_id = 4
 boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
+boundary_sphere_id = 8
 # CHANGE PARAMETERS HERE
 
 # read the tetrahedra
@@ -43,19 +44,17 @@ ds_to = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary
 ds_bo = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_bo_id)
 ds_fr = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_fr_id)
 ds_ba = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_ba_id)
+ds_sphere = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_sphere_id)
 
 ds_leri = ds_le + ds_ri
 ds_tobo = ds_to + ds_bo
 ds_frba = ds_fr + ds_ba
 
-ds = ds_leri + ds_tobo + ds_frba
+ds = ds_leri + ds_tobo + ds_frba + ds_sphere
 
-# dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
+import check_mesh_tags_box_ball
 
-
-import check_mesh_tags_box
-
-print(f'Module {__file__} called {check_mesh_tags_box.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_tags_box_ball.__file__}', flush=True)
 
 # Define boundaries
 boundary = 'on_boundary'
@@ -69,4 +68,3 @@ boundary_ba = f'near(x[2], 0)'
 boundary_leri = f'near(x[0], 0) || near(x[0], {L[0]})'
 boundary_tobo = f'near(x[1], 0) || near(x[1], {L[1]})'
 boundary_frba = f'near(x[2], 0) || near(x[2], {L[2]})'
-
