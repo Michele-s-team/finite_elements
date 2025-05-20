@@ -4,9 +4,9 @@ The mesh is given by a box with extremal points [0,0,0] , L to which we subtract
 We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, right top bottom, from and back edges accordingly
 
 Run with
-    clear; clear; python3 generate_box_ball_mesh.py [resolution]
+    python3 generate_box_ball_mesh.py [resolution]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py 0.1 $SOLUTION_PATH
+    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import argparse
