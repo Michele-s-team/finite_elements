@@ -327,6 +327,27 @@ def volume_integral_ball(f, r, c):
 
     return result
 
+'''
+compute the volume integral of a function in a box with one edge centered at the origin
+Input values 
+- 'f': the function f([x, y, z])
+- 'L': list of sizes of the box [length, height, width]
+Return values: 
+- \int dx_box f
+'''
+def volume_integral_box(f, L):
+    result = spi.tplquad(
+        lambda x, y, z: f([x, y, z]) ,
+        0,  # z lower bound
+        L[2],  # z upper bound
+        lambda z: 0,  # y lower bound
+        lambda z: L[1],  # y upper bound
+        lambda z, y: 0,  # x lower bound
+        lambda z, y: L[0]  # x upper bound
+    )[0]
+
+    return result
+
 
 # return the matrix of a rotation by an angle 'theta' about the z axis
 def R_z(theta):
