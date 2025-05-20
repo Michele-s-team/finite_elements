@@ -67,12 +67,15 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-bc_u_parallelepiped = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary)
-bcs = [bc_u_parallelepiped]
+bc_u_leri = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_leri)
+bc_u_tobo = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_tobo)
+bcs = [bc_u_leri, bc_u_tobo]
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
+    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_leri \
+    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_tobo \
+    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_frba
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \

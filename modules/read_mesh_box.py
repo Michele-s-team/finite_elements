@@ -61,7 +61,12 @@ print(f'Module {__file__} called {check_mesh_tags_box.__file__}', flush=True)
 boundary = 'on_boundary'
 boundary_le = f'near(x[0], 0)'
 boundary_ri = f'near(x[0], {L[0]})'
-boundary_to = f'near(x[0], {L[1]})'
-boundary_bo = f'near(x[0], 0)'
+boundary_to = f'near(x[1], {L[1]})'
+boundary_bo = f'near(x[1], 0)'
 boundary_fr = f'near(x[2], {L[2]})'
 boundary_ba = f'near(x[2], 0)'
+
+boundary_leri = f'near(x[0], 0) || near(x[0], {L[0]})'
+boundary_tobo = f'near(x[1], 0) || near(x[1], {L[1]})'
+boundary_frba = f'near(x[2], 0) || near(x[2], {L[2]})'
+
