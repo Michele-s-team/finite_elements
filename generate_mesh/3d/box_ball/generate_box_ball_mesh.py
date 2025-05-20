@@ -1,12 +1,12 @@
 '''
 This code generates a 3d mesh given by a box with a spherical hole
-The mesh is given by a box with extremal points [0,0,0] , [L, B, H] to which we substract a sphere centered at c_r with radius r
+The mesh is given by a box with extremal points [0,0,0] , L to which we subtract a sphere centered at c_r with radius r
 We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, right top bottom, from and back edges accordingly
 
 Run with
-    clear; clear; python3 generate_mesh.py [resolution]
+    clear; clear; python3 generate_box_ball_mesh.py [resolution]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import argparse
@@ -20,6 +20,9 @@ import warnings
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
+import mesh as msh
+
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
 parser.add_argument("output_directory")
@@ -28,16 +31,17 @@ args = parser.parse_args()
 warnings.filterwarnings("ignore")
 gmsh.initialize()
 
+mesh_file = args.output_directory + "/mesh.msh"
+
+
 gmsh.model.add("my model")
-L = 1.0
-B = 1.0
-H = 1.0
-c_r = [L/2.0, B/2.0, H/2.0]
+L = [1,2,3]
+c_r = [L[0]/2.0, L[1]/2.0, L[2]/2.0]
 r = 0.25
 resolution = (float)(args.resolution)
 print(f"Mesh resolution = {resolution}")
 
-channel = gmsh.model.occ.addBox(0, 0, 0, L, B, H)
+channel = gmsh.model.occ.addBox(0, 0, 0, L[0], L[1], L[2])
 sphere = gmsh.model.occ.addSphere( c_r[0], c_r[1], c_r[2], r)
 fluid = gmsh.model.occ.cut( [(3, channel)], [(3, sphere)] )
 
@@ -54,13 +58,13 @@ gmsh.model.setPhysicalName( volumes[0][0], box_minus_ball_subdomain_id, "box_min
 
 surfaces = gmsh.model.occ.getEntities(dim=2)
 #these are the subdomain_ids with which the components will be read in read_3dmesh_box_ball.py
-boundary_le_subdomain_id = 1
-boundary_ri_subdomain_id = 2
-boundary_fr_subdomain_id = 3
-boundary_ba_subdomain_id = 4
-boundary_to_subdomain_id = 5
-boundary_bo_subdomain_id = 6
-sphere_subdomain_id = 7
+boundary_le_id = 1
+boundary_ri_id = 2
+boundary_fr_id = 3
+boundary_ba_id = 4
+boundary_to_id = 5
+boundary_bo_id = 6
+boundary_sphere_id = 7
 
 obstacles = []
 
@@ -69,42 +73,42 @@ for surface in surfaces:
     #compute the center of mass of each surface, and recognize according to the coordinates of the center of mass
     center_of_mass = gmsh.model.occ.getCenterOfMass( surface[0], surface[1] )
 
-    if np.allclose( center_of_mass, [0, B / 2, H / 2] ):
-        # the center of mass is close to [0, B / 2, H / 2] -> the surface under consideration is  boundary_le
-        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_le_subdomain_id )
+    if np.allclose( center_of_mass, [0, L[1] / 2, L[2] / 2] ):
+        # the center of mass is close to [0, L[1] / 2, L[2] / 2] -> the surface under consideration is  boundary_le
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
         inlet = surface[1]
-        gmsh.model.setPhysicalName( surface[0], boundary_le_subdomain_id, "boundary_le" )
+        gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
 
-    if (np.allclose( center_of_mass, [L, B / 2, H / 2] )):
-        # the center of mass is close to [L, B / 2, H / 2] -> the surface under consideration is  boundary_ri
-        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_ri_subdomain_id )
-        gmsh.model.setPhysicalName( surface[0], boundary_ri_subdomain_id, "boundary_ri" )
+    if (np.allclose( center_of_mass, [L[0], L[1] / 2, L[2] / 2] )):
+        # the center of mass is close to [L, L[1] / 2, L[2] / 2] -> the surface under consideration is  boundary_ri
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
 
     # the center of mass is not the inlet nor the outlet:
-    if (np.allclose( center_of_mass, [L / 2, 0, H / 2] )):
+    if (np.allclose( center_of_mass, [L[0] / 2, 0, L[2] / 2] )):
             # the y coordinate of the center of mass is 0 -> the surface under consideration is boundary_fr
-            gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_fr_subdomain_id )
-            gmsh.model.setPhysicalName( surface[0], boundary_fr_subdomain_id, "boundary_fr" )
+            gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
+            gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
 
-    if (np.allclose( center_of_mass, [L / 2, B, H / 2] )):
-        # the y coordinate of the center of mass is B -> the surface under consideration is boundary_ba
-        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_ba_subdomain_id )
-        gmsh.model.setPhysicalName( surface[0], boundary_ba_subdomain_id, "boundary_ba" )
+    if (np.allclose( center_of_mass, [L[0] / 2, L[1], L[2] / 2] )):
+        # the y coordinate of the center of mass is L[1] -> the surface under consideration is boundary_ba
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
 
-    if (np.allclose( center_of_mass, [L / 2, B / 2, H] )):
-        # the z coordinate of the center of mass is H -> the surface under consideration is boundary_to
-        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_to_subdomain_id )
-        gmsh.model.setPhysicalName( surface[0], boundary_to_subdomain_id, "boundary_to" )
+    if (np.allclose( center_of_mass, [L[0] / 2, L[1] / 2, L[2]] )):
+        # the z coordinate of the center of mass is L[2] -> the surface under consideration is boundary_to
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
 
-    if (np.allclose( center_of_mass, [L / 2, B / 2, 0] )):
+    if (np.allclose( center_of_mass, [L[0] / 2, L[1] / 2, 0] )):
         # the z coordinate of the center of mass is 0 -> the surface under consideration is boundary_bo
-        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], boundary_bo_subdomain_id )
-        gmsh.model.setPhysicalName( surface[0], boundary_bo_subdomain_id, "boundary_bo" )
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
 
     if (np.allclose( center_of_mass, c_r )):
         # the center of mass is c_r -> the surface under consideration is the sphere
-        gmsh.model.addPhysicalGroup( surface[0], [surface[1]], sphere_subdomain_id )
-        gmsh.model.setPhysicalName( surface[0], sphere_subdomain_id, "sphere" )
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_sphere_id)
+        gmsh.model.setPhysicalName(surface[0], boundary_sphere_id, "sphere")
 
 
 
@@ -122,7 +126,7 @@ gmsh.model.mesh.field.setNumber(threshold, "DistMax", r)
 
 #set the resolution close to the inlet
 inlet_dist = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(inlet_dist, "FacesList", [inlet])
+gmsh.model.mesh.field.setNumbers(inlet_dist, "FacesList", [])
 
 inlet_thre = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(inlet_thre, "IField", inlet_dist)
