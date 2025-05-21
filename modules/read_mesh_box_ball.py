@@ -16,7 +16,7 @@ import mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
-L = [1, 2, 3]
+L = [1, 0.95, 0.9]
 c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
 r = 0.25
 
