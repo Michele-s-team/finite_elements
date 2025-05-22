@@ -129,6 +129,8 @@ gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
 
+msh.write_mesh_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+
 # create a tetrahedron mesh in which the solid objects (volumes) will be stored
 tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
 meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
@@ -136,3 +138,7 @@ meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 # create a triangle mesh in which the surfaces will be stored
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=False)
 meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, args.output_directory + "/vertices.csv")
