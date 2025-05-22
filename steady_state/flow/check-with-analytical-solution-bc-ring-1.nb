@@ -37291,7 +37291,7 @@ Cell[BoxData[{
   RowBox[{"tabv", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/v.csv\>\"\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/v.csv\>\"\
 ", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabv", "=", 
   RowBox[{"Table", "[", 
@@ -47266,7 +47266,7 @@ Cell[BoxData[{
   RowBox[{"tab\[Sigma]", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/sigma.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/sigma.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tab\[Sigma]", "=", 
   RowBox[{"Table", "[", 
@@ -50356,7 +50356,7 @@ Cell[BoxData[{
   RowBox[{"tabz", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/z.csv\>\"\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/z.csv\>\"\
 ", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabz", "=", 
   RowBox[{"Table", "[", 
@@ -53298,7 +53298,7 @@ Cell[BoxData[{
   RowBox[{"tab\[Omega]", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/omega.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/omega.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tab\[Omega]", "=", 
   RowBox[{"Table", "[", 
@@ -56558,7 +56558,7 @@ Cell[BoxData[{
   RowBox[{"tab\[Mu]", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/mu.csv\>\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/mu.csv\>\
 \"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tab\[Mu]", "=", 
   RowBox[{"Table", "[", 
@@ -59747,7 +59747,7 @@ Cell[BoxData[{
   RowBox[{"\[Tau]num", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/tau.csv\>\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/tau.csv\>\
 \"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Tau]num", "=", 
   RowBox[{"Table", "[", 
@@ -63147,7 +63147,7 @@ Cell[BoxData[{
   RowBox[{"tabfeln", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fel_n.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fel_n.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabfeln", "=", 
   RowBox[{"Table", "[", 
@@ -63289,7 +63289,7 @@ Cell[BoxData[{
   RowBox[{"tabflaplacen", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/flaplace.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/flaplace.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabflaplacen", "=", 
   RowBox[{"Table", "[", 
@@ -63428,7 +63428,7 @@ Cell[BoxData[{
   RowBox[{"tabfviscn", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fvisc_n.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fvisc_n.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabfviscn", "=", 
   RowBox[{"Table", "[", 
@@ -73339,7 +73339,7 @@ Cell[BoxData[{
   RowBox[{"tabfVISCt", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fvisc_t.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fvisc_t.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabfVISCt", "=", 
   RowBox[{"Table", "[", 
@@ -76629,7 +76629,7 @@ Cell[BoxData[{
   RowBox[{"tabf\[Sigma]t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fsigma_t.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fsigma_t.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabf\[Sigma]t", "=", 
   RowBox[{"Table", "[", 
@@ -79810,7 +79810,7 @@ Cell[BoxData[{
   RowBox[{"tabfvt", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fv_t.csv\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fv_t.csv\
 \>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabfvt", "=", 
   RowBox[{"Table", "[", 
@@ -82977,19 +82977,19 @@ Cell[BoxData[{
   RowBox[{"tabfVISCt", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fvisc_t.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fvisc_t.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"tabf\[Sigma]t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fsigma_t.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fsigma_t.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"tabfvt", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/fv_t.csv\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/fv_t.csv\
 \>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabftott", "=", 
   RowBox[{"Table", "[", 
@@ -84604,7 +84604,7 @@ Cell[BoxData[{
   RowBox[{"tabdFdl\[Eta]\[Sigma]t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/dFdl_eta_\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/dFdl_eta_\
 sigma_t.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabdFdl\[Eta]\[Sigma]t", "=", 
   RowBox[{"Table", "[", 
@@ -87726,7 +87726,7 @@ Cell[BoxData[{
   RowBox[{"tabdFdl\[Kappa]t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/dFdl_\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/dFdl_\
 kappa_t.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabdFdl\[Kappa]t", "=", 
   RowBox[{"Table", "[", 
@@ -90915,7 +90915,7 @@ Cell[BoxData[{
   RowBox[{"tabdFdl\[Kappa]n", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/dFdl_\
+    "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/dFdl_\
 kappa_n.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"tabdFdl\[Kappa]n", "=", 
   RowBox[{"Table", "[", 
@@ -94081,7 +94081,7 @@ Cell[BoxData[
     RowBox[{"tabdFdl\[Eta]\[Sigma]3d", "=", 
      RowBox[{
      "Import", 
-      "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/nodal_\
+      "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/nodal_\
 values/dFdl_eta_sigma_3d.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"tabdFdl\[Eta]\[Sigma]3d", "=", 
@@ -107572,7 +107572,7 @@ Cell[BoxData[
     RowBox[{"tabdFdl\[Kappa]3d", "=", 
      RowBox[{
      "Import", 
-      "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/nodal_\
+      "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/nodal_\
 values/dFdl_kappa_3d.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"tabdFdl\[Kappa]3d", "=", 
@@ -116919,7 +116919,7 @@ Cell[BoxData[
     RowBox[{"tabdFdltot3d", "=", 
      RowBox[{
      "Import", 
-      "[", "\"\<~/Documents/finite_elements/steady-state-flow/solution/nodal_\
+      "[", "\"\<~/Documents/finite_elements/steady_state/flow/solution/nodal_\
 values/dFdl_tot_3d.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"tabdFdltot3d", "=", 
