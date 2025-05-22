@@ -7,8 +7,8 @@ performs a test for a given variational problem and mesh choice
 Input values: 
 - 'commit_a', 'commit_b': the commits (or branch names) across which the test will be done
 - 'root_path': the root path, upstream of all paths
-- 'mesh_path': the path of the code which generates the mesh
-- 'code_path': the path of the code which solves the variational problem
+- 'mesh_path_a (b)': the path of the code which generates the mesh in commit a (b)
+- 'code_path_a (b)': the path of the code which solves the variational problem in commit a (b)
 - 'mesh_solution_path_a', 'problem_solution_path_a', 'mesh_solution_path_b', 'problem_solution_path_b': the parhs where the mesh and variational-problem solution will be stored, for commit_a and commit_b
 - 'name_of_generate_mesh': the name of the code which generates the mesh, without '.py': for example: 'generate_square_mesh', 'generate_ring_mesh'...
 - 'mesh_resolution': the resolution of the mesh generated to make the test
@@ -19,7 +19,9 @@ Output values:
 '''
 def test_problem_and_mesh(commit_a,
                           commit_b,
-                          root_path, mesh_path, code_path,
+                          root_path,
+                          mesh_path_a, code_path_a,
+                          mesh_path_b, code_path_b,
                           mesh_solution_path_a, problem_solution_path_a,
                           mesh_solution_path_b, problem_solution_path_b,
                           name_of_generate_mesh, mesh_resolution,
@@ -33,13 +35,13 @@ def test_problem_and_mesh(commit_a,
         # checkout commit_a, generate the mesh and solve the problem
         cmd.checkout(commit_a, success)
 
-        run_command(f'cd {mesh_path}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_a}', success)
-        run_command(f'cd {code_path}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem} {mesh_solution_path_a} {problem_solution_path_a}', success)
+        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_a}', success)
+        run_command(f'cd {code_path_a}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
         # checkout commit_b, generate the mesh and solve the problem
         cmd.checkout(commit_b, success)
-        run_command(f'cd {mesh_path}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_b}', success)
-        run_command(f'cd {code_path}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem} {mesh_solution_path_b} {problem_solution_path_b}', success)
+        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_b}', success)
+        run_command(f'cd {code_path_b}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem} {mesh_solution_path_b} {problem_solution_path_b}', success)
 
         # compare the mesh and problem solution for commit_a and commit_b
         # mesh_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
