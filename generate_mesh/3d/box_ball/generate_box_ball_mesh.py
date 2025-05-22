@@ -39,7 +39,7 @@ resolution = (float)(args.resolution)
 print(f"Mesh resolution = {resolution}")
 
 # CHANGE PARAMETERS HERE
-L = [1, 0.95, 0.9]
+L = [3, 2, 1]
 c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
 r = 0.25
 
