@@ -18,7 +18,7 @@ i, j, k, l = ufl.indices(4)
 print("Check of BCs:")
 print(f"\t\t<<(u - phi)^2>>_[partial Omega le ri to bo] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds_leri + rmsh.ds_tobo):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega fr ba sphere] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * (fsp.u.dx(i)), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds_frba ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega fr ba sphere] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * (fsp.u.dx(i)), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds_frba + rmsh.ds_sphere):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 print("Comparison with exact solution: ")

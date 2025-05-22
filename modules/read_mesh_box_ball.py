@@ -1,5 +1,5 @@
 '''
-This code reads the 3d mesh generated from generate_box_mesh.py and it creates dvs and dss from labelled components of the mesh
+This code reads the 3d mesh generated from generate_box_ball_mesh.py and it creates dvs and dss from labelled components of the mesh
 '''
 
 import dolfin
@@ -10,12 +10,15 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as calc
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
 L = [3, 2, 1]
+c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
+r = 0.25
 
 volume_id = 1
 boundary_le_id = 2
@@ -24,6 +27,7 @@ boundary_to_id = 4
 boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
+boundary_sphere_id = 8
 # CHANGE PARAMETERS HERE
 
 # read the tetrahedra
@@ -43,19 +47,17 @@ ds_to = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary
 ds_bo = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_bo_id)
 ds_fr = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_fr_id)
 ds_ba = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_ba_id)
+ds_sphere = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_sphere_id)
 
 ds_leri = ds_le + ds_ri
 ds_tobo = ds_to + ds_bo
 ds_frba = ds_fr + ds_ba
 
-ds = ds_leri + ds_tobo + ds_frba
+ds = ds_leri + ds_tobo + ds_frba + ds_sphere
 
-# dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
+import check_mesh_tags_box_ball
 
-
-import check_mesh_tags_box
-
-print(f'Module {__file__} called {check_mesh_tags_box.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_tags_box_ball.__file__}', flush=True)
 
 # Define boundaries
 boundary = 'on_boundary'
@@ -70,3 +72,4 @@ boundary_leri = f'near(x[0], 0) || near(x[0], {L[0]})'
 boundary_tobo = f'near(x[1], 0) || near(x[1], {L[1]})'
 boundary_frba = f'near(x[2], 0) || near(x[2], {L[2]})'
 
+boundary_sphere = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2) + pow(x[2] - {c_r[2]}, 2)) < {(r + calc.min_dist_c_r_parallelepiped(L, c_r)) / 2}'
