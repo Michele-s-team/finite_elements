@@ -27155,7 +27155,7 @@ Cell[BoxData[{
   RowBox[{"znum", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/z.csv\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/z.csv\
 \>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"znum", "=", 
   RowBox[{"Table", "[", 
@@ -58613,7 +58613,7 @@ Cell[BoxData[{
   RowBox[{"\[Omega]", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/omega.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/omega.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Omega]", "=", 
   RowBox[{"Table", "[", 
@@ -91413,7 +91413,7 @@ Cell[BoxData[{
   RowBox[{"\[Mu]num", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/mu.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/mu.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Mu]num", "=", 
   RowBox[{"Table", "[", 
@@ -123860,7 +123860,7 @@ Cell[BoxData[{
   RowBox[{"\[Tau]num", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/tau.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/tau.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Tau]num", "=", 
   RowBox[{"Table", "[", 
@@ -157163,7 +157163,7 @@ Cell[BoxData[
     RowBox[{"tabdFdl\[Sigma]3d", "=", 
      RowBox[{
      "Import", 
-      "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/\
+      "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/\
 nodal_values/dFdl_sigma_3d.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"tabdFdl\[Sigma]3d", "=", 
@@ -219938,7 +219938,7 @@ Cell[BoxData[
     RowBox[{"tabdFdl\[Kappa]3d", "=", 
      RowBox[{
      "Import", 
-      "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/\
+      "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/\
 nodal_values/dFdl_kappa_3d.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"tabdFdl\[Kappa]3d", "=", 
@@ -277729,7 +277729,7 @@ Cell[BoxData[
     RowBox[{"tabdFdl\[Sigma]\[Kappa]3d", "=", 
      RowBox[{
      "Import", 
-      "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/\
+      "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/\
 nodal_values/dFdl_sigma_kappa_3d.csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
    RowBox[{
     RowBox[{"tabdFdl\[Sigma]\[Kappa]3d", "=", 
@@ -333494,7 +333494,7 @@ Cell[BoxData[
  TemplateBox[{
   "Import", "nffil", 
    "\"File \\!\\(\\*RowBox[{\\\"\\\\\\\"/Users/michelecastellana/Documents/\
-finite_elements/steady-state-no-flow/mesh/solution/vertices.csv\\\\\\\"\\\"}]\
+finite_elements/steady_state/no_flow/mesh/solution/vertices.csv\\\\\\\"\\\"}]\
 \\) not found during \\!\\(\\*RowBox[{\\\"Import\\\"}]\\).\"", 2, 1802, 166, 
    22295018600207000454, "Local"},
   "MessageTemplate",

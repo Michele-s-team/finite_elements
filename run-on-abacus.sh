@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# run with ./run-on-abacus.sh steady-state-no-flow steady_state_no_flow_1 ~/Documents/finite_elements/generate_mesh/2d/ring/symmetric/solution
+# run with ./run-on-abacus.sh steady_state/no_flow steady_state_no_flow_1 ~/Documents/finite_elements/generate_mesh/2d/ring/symmetric/solution
 
 clear
 clear

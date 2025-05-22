@@ -8,7 +8,6 @@ import geometry as geo
 import load_mesh as lmsh
 import mesh as msh
 
-# the module read_mesh_square which is being called will be in the local folder, e.g., in steady-state-no-flow
 import input_output as io
 import read_mesh_disk as rmsh
 

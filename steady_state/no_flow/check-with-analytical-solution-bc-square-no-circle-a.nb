@@ -4263,7 +4263,7 @@ Cell[BoxData[{
   RowBox[{"t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/z.csv\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/z.csv\
 \>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"znum", "=", 
   RowBox[{"Table", "[", 
@@ -43665,7 +43665,7 @@ Cell[BoxData[{
   RowBox[{"t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/omega.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/omega.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Omega]num", "=", 
   RowBox[{"Table", "[", 
@@ -83894,7 +83894,7 @@ Cell[BoxData[{
   RowBox[{"t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/mu.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/mu.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Mu]num", "=", 
   RowBox[{"Table", "[", 
@@ -124031,7 +124031,7 @@ Cell[BoxData[{
   RowBox[{"t", "=", 
    RowBox[{
    "Import", 
-    "[", "\"\<~/Documents/finite_elements/steady-state-no-flow/solution/tau.\
+    "[", "\"\<~/Documents/finite_elements/steady_state/no_flow/solution/tau.\
 csv\>\"", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"\[Tau]num", "=", 
   RowBox[{"Table", "[", 
