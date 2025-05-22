@@ -8,18 +8,18 @@ and which are stored into finite_elements/mesh
 
 Run with
     python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
-    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a /home/fenics/shared/steady-state-no-flow/mesh/solution /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
-    rm -r solution; python3 solve.py square_a /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
-    rm -r solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
+    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a /home/fenics/shared/steady_state/no_flow/mesh/solution /home/fenics/shared/steady_state/no_flow/$SOLUTION_PATH
+    rm -r solution; python3 solve.py square_a /home/fenics/shared/steady_state/no_flow/mesh /home/fenics/shared/steady_state/no_flow/solution
+    rm -r solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady_state/no_flow/mesh /home/fenics/shared/steady_state/no_flow/solution
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH;
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH;
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
 Note that all sections of the code which need to be changed when an external parameter (e.g. the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
