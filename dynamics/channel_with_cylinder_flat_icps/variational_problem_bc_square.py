@@ -26,14 +26,14 @@ print("T = ", T)
 print("N = ", num_steps)
 
 # Define inflow profile
-inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
+u_bar_l_profile = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0'), degree=2)
 
 # Define boundary conditions
-bc_u_l = DirichletBC(fsp.V, Expression(inflow_profile, degree=2), rmsh.boundary_l)
-bc_u_tb = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_tb)
-bc_u_circle = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_circle)
+bc_u_bar_l = DirichletBC(fsp.V, u_bar_l_profile, rmsh.boundary_l)
+bc_u_bar_tb = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_tb)
+bc_u_bar_circle = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_circle)
 bc_p_r = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
-bc_u = [bc_u_l, bc_u_tb, bc_u_circle]
+bc_u_bar = [bc_u_bar_l, bc_u_bar_tb, bc_u_bar_circle]
 bc_p = [bc_p_r]
 
 
@@ -70,5 +70,5 @@ A2 = assemble(a2)
 A3 = assemble(a3)
 
 # Apply boundary conditions to matrices
-[bc.apply(A1) for bc in bc_u]
+[bc.apply(A1) for bc in bc_u_bar]
 [bc.apply(A2) for bc in bc_p]

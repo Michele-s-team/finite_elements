@@ -80,7 +80,7 @@ for n in range(vp.num_steps):
 
     # Step 1: Tentative velocity step
     b1 = assemble(vp.L1)
-    [bc.apply(b1) for bc in vp.bc_u]
+    [bc.apply(b1) for bc in vp.bc_u_bar]
     solve(vp.A1, fsp.u_bar.vector(), b1, 'bicgstab', 'hypre_amg')
 
     # Step 2: Pressure correction step
