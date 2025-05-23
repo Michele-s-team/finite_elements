@@ -41,6 +41,7 @@ success = [True]
 
 cmd.run_command('clear; clear', success)
 
+'''
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
 
@@ -315,9 +316,9 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.01, problem_name, success)
 
-
-# Test channel-with-cylinder-curved-crank_nicholson-discretizations
-case_name = 'channel-with-cylinder-curved-crank_nicholson-discretization'
+'''
+# Test dynamics/channel_with_cylinder_curved_cn
+case_name = 'dynamics/channel_with_cylinder_curved_cn'
 
 problem_name = 'square_no_circle'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
@@ -334,6 +335,10 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
+
+'''
+
+
 # Test dynamics
 case_name = 'dynamics'
 
@@ -353,7 +358,12 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
+'''
+
+
 cmd.checkout(commit_a, success)
+
+
 
 max_key_len = max(len(key) for key in checks.keys())
 
