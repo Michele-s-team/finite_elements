@@ -6,10 +6,10 @@ Scheme (IPCS).
   u' + u . nabla(u)) - div(sigma(u, p)) = f
                                  div(u) = 0
 Run with
-    python ft08_navier_stokes_cylinder.py [path where to read the mesh] [path where to store the solution]
+    python solve.py [problem name] [path where to read the mesh] [path where to store the solution]
 
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution"; rm -rf $SOLUTION_PATH; python3 solve.py $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square $MESH_PATH $SOLUTION_PATH
 """
 
 import argparse
