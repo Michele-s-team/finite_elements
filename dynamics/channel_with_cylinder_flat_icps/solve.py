@@ -90,18 +90,19 @@ for n in range(vp.num_steps):
 
     # Step 3: Velocity correction step
     b3 = assemble(vp.L3)
-    solve(vp.A3, fsp.u_bar.vector(), b3, 'cg', 'sor')
+    solve(vp.A3, fsp.u_n.vector(), b3, 'cg', 'sor')
 
     # Save solution to file (XDMF/HDF5)
-    fi.xdmffile_u.write(fsp.u_bar, t)
+    fi.xdmffile_u_bar.write(fsp.u_bar, t)
+    fi.xdmffile_u_n.write(fsp.u_n, t)
     fi.xdmffile_p.write(fsp.p_, t)
 
     # Update previous solution
-    fsp.u_n.assign(fsp.u_bar)
     fsp.p_n.assign(fsp.p_)
 
     print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
 
 
-fi.xdmffile_u.close()
+fi.xdmffile_u_bar.close()
+fi.xdmffile_u_n.close()
 fi.xdmffile_p.close()
