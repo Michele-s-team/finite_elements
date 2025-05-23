@@ -74,9 +74,12 @@ print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}"
 
 # Time-stepping
 t = 0
+step = 0
+
 for n in range(vp.num_steps):
     # Update current time
     t += vp.dt
+    step += 1
 
     # Step 1: Tentative velocity step
     b1 = assemble(vp.L1)
@@ -95,16 +98,17 @@ for n in range(vp.num_steps):
     pr_bc.print_bcs()
 
     # Save solution to file (XDMF/HDF5)
-    fi.xdmffile_u_bar.write(fsp.u_bar, t)
-    fi.xdmffile_u_n.write(fsp.u_n, t)
-    fi.xdmffile_p.write(fsp.p_, t)
+    # fi.xdmffile_u_bar.write(fsp.u_bar, t)
+    # fi.xdmffile_u_n.write(fsp.u_n, t)
+    # fi.xdmffile_p.write(fsp.p_, t)
 
     # Update previous solution
     fsp.p_n.assign(fsp.p_)
 
-    print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
+    pr_sol.print_solution(t, step, vp.dt)
 
+    print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
 
 fi.xdmffile_u_bar.close()
 fi.xdmffile_u_n.close()
-fi.xdmffile_p.close()
+fi.xdmffile_p_n.close()
