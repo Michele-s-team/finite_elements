@@ -7,6 +7,7 @@ import ufl as ufl
 import boundary_geometry as bgeo
 import function_spaces as fsp
 import geometry as geo
+import mesh as msh
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -21,7 +22,10 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
-    '<<(l_profile_u_bar^i - u_bar^i)(l_profile_u_bar_i - u_bar_i)>>_l'
+    '<<(l_profile_u_bar^i - u_bar^i)(l_profile_u_bar_i - u_bar_i)>>_l',\
+    '<<|l_profile_u_bar|^2>>_{tb}',\
+    '<<|l_profile_u_bar|^2>>_circle',\
+    '<<p>>_r'
 ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -34,8 +38,13 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows([{ \
         fieldnames[0]: \
-            (sqrt(assemble((fsp.u_bar[i] - vp.u_bar_l_profile[i]) * (fsp.u_bar[i] - vp.u_bar_l_profile[i]) * rmsh.ds_l)) / \
-             assemble(Constant(1.0) * rmsh.ds_l))
+            msh.abs_wrt_measure(sqrt((fsp.u_bar[i] - vp.u_bar_l_profile[i]) * (fsp.u_bar[i] - vp.u_bar_l_profile[i])), rmsh.ds_l) ,\
+        fieldnames[1]: \
+            msh.abs_wrt_measure(sqrt(fsp.u_bar[i] * fsp.u_bar[i]),rmsh.ds_tb),\
+        fieldnames[2]: \
+            msh.abs_wrt_measure(sqrt(fsp.u_bar[i] * fsp.u_bar[i]),rmsh.ds_circle),
+        fieldnames[3]: \
+            msh.abs_wrt_measure(fsp.p_, rmsh.ds_r)
     }])
 
     csvfile.flush()
