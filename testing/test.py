@@ -316,8 +316,8 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', 0.01, problem_name, success)
 
 
-# Test channel-with-cylinder-curved-crank_nicholson-discretizations
-case_name = 'channel-with-cylinder-curved-crank_nicholson-discretization'
+# Test dynamics/channel_with_cylinder_curved_cn
+case_name = 'dynamics/channel_with_cylinder_curved_cn'
 
 problem_name = 'square_no_circle'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
