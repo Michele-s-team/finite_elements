@@ -92,6 +92,8 @@ for n in range(vp.num_steps):
     b3 = assemble(vp.L3)
     solve(vp.A3, fsp.u_n.vector(), b3, 'cg', 'sor')
 
+    pr_bc.print_bcs()
+
     # Save solution to file (XDMF/HDF5)
     fi.xdmffile_u_bar.write(fsp.u_bar, t)
     fi.xdmffile_u_n.write(fsp.u_n, t)
