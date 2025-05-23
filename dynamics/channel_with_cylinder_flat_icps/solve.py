@@ -80,24 +80,24 @@ for n in range(vp.num_steps):
 
     # Step 1: Tentative velocity step
     b1 = assemble(vp.L1)
-    [bc.apply(b1) for bc in vp.bcu]
-    solve(vp.A1, fsp.u_.vector(), b1, 'bicgstab', 'hypre_amg')
+    [bc.apply(b1) for bc in vp.bc_u]
+    solve(vp.A1, fsp.u_bar.vector(), b1, 'bicgstab', 'hypre_amg')
 
     # Step 2: Pressure correction step
     b2 = assemble(vp.L2)
-    [bc.apply(b2) for bc in vp.bcp]
+    [bc.apply(b2) for bc in vp.bc_p]
     solve(vp.A2, fsp.p_.vector(), b2, 'bicgstab', 'hypre_amg')
 
     # Step 3: Velocity correction step
     b3 = assemble(vp.L3)
-    solve(vp.A3, fsp.u_.vector(), b3, 'cg', 'sor')
+    solve(vp.A3, fsp.u_bar.vector(), b3, 'cg', 'sor')
 
     # Save solution to file (XDMF/HDF5)
-    fi.xdmffile_u.write(fsp.u_, t)
+    fi.xdmffile_u.write(fsp.u_bar, t)
     fi.xdmffile_p.write(fsp.p_, t)
 
     # Update previous solution
-    fsp.u_n.assign(fsp.u_)
+    fsp.u_n.assign(fsp.u_bar)
     fsp.p_n.assign(fsp.p_)
 
     print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)

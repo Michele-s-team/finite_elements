@@ -29,12 +29,12 @@ print("N = ", num_steps)
 inflow_profile = ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(0.41, 2)', '0')
 
 # Define boundary conditions
-bcu_inflow = DirichletBC(fsp.V, Expression(inflow_profile, degree=2), rmsh.boundary_l)
-bcu_walls = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_tb)
-bcu_cylinder = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_circle)
-bcp_outflow = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
-bcu = [bcu_inflow, bcu_walls, bcu_cylinder]
-bcp = [bcp_outflow]
+bc_u_l = DirichletBC(fsp.V, Expression(inflow_profile, degree=2), rmsh.boundary_l)
+bc_u_tb = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_tb)
+bc_u_circle = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_circle)
+bc_p_r = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
+bc_u = [bc_u_l, bc_u_tb, bc_u_circle]
+bc_p = [bc_p_r]
 
 
 # Define symmetric gradient
@@ -58,11 +58,11 @@ L1 = rhs(F1)
 
 # Define variational problem for step 2
 a2 = dot(nabla_grad(fsp.p), nabla_grad(fsp.q)) * rmsh.dx
-L2 = dot(nabla_grad(fsp.p_n), nabla_grad(fsp.q)) * rmsh.dx - (1 / dt) * div(fsp.u_) * fsp.q * rmsh.dx
+L2 = dot(nabla_grad(fsp.p_n), nabla_grad(fsp.q)) * rmsh.dx - (1 / dt) * div(fsp.u_bar) * fsp.q * rmsh.dx
 
 # Define variational problem for step 3
 a3 = dot(fsp.u, fsp.v) * rmsh.dx
-L3 = dot(fsp.u_, fsp.v) * rmsh.dx - dt * dot(nabla_grad(fsp.p_ - fsp.p_n), fsp.v) * rmsh.dx
+L3 = dot(fsp.u_bar, fsp.v) * rmsh.dx - dt * dot(nabla_grad(fsp.p_ - fsp.p_n), fsp.v) * rmsh.dx
 
 # Assemble matrices
 A1 = assemble(a1)
@@ -70,5 +70,5 @@ A2 = assemble(a2)
 A3 = assemble(a3)
 
 # Apply boundary conditions to matrices
-[bc.apply(A1) for bc in bcu]
-[bc.apply(A2) for bc in bcp]
+[bc.apply(A1) for bc in bc_u]
+[bc.apply(A2) for bc in bc_p]

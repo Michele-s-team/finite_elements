@@ -17,7 +17,7 @@ q = TestFunction(Q)
 
 # Define functions for solutions at previous and current time steps
 u_n = Function(V)
-u_ = Function(V)
+u_bar = Function(V)
 p_n = Function(Q)
 p_ = Function(Q)
 
