@@ -22,10 +22,10 @@ mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
 r_mesh = lmsh.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
-L = 1
-h = 1
-r = 0.25
-c_r = [L / 2.0, h / 2.0]
+L = 2.2
+h = 0.41
+r = 0.05
+c_r = [0.2, 0.2]
 # CHANGE PARAMETERS HERE
 
 
