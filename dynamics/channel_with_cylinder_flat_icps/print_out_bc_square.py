@@ -23,10 +23,10 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
     '<<(l_profile_u_bar^i - u_bar^i)(l_profile_u_bar_i - u_bar_i)>>_l',\
-    '<<|l_profile_u_bar|^2>>_{tb}',\
-    '<<|l_profile_u_bar|^2>>_circle',\
+    '<<|u_bar|^2>>_{tb}',\
+    '<<|u_bar|^2>>_circle',\
     '<<p>>_r',\
-    '<<n^i \partial_i ((u_bar + u_n)/2)>>_r'
+    '<(n^j \partial_j ((u_bar^i + u_n^i)/2)) (n^k \partial_k ((u_bar^i + u_n^i)/2))>>_r'
 ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
