@@ -317,6 +317,20 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', 0.01, problem_name, success)
 
 
+# Test dynamics/channel_with_cylinder_flat_icps
+case_name = 'dynamics/channel_with_cylinder_flat_icps'
+
+
+problem_name = 'square'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_square_mesh', 0.1, problem_name, success)
+
+
+
 # Test dynamics/channel_with_cylinder_curved_cn
 case_name = 'dynamics/channel_with_cylinder_curved_cn'
 
@@ -324,7 +338,7 @@ problem_name = 'square_no_circle'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square_no_circle', root_path + case_name,
-                                                                     root_path + 'generate_mesh/2d/square_no_circle', root_path + 'channel-with-cylinder-curved-crank_nicholson-discretization',
+                                                                     root_path + 'generate_mesh/2d/square_no_circle', root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_no_circle_mesh', 0.1, problem_name, success)
 
@@ -332,7 +346,7 @@ problem_name = 'square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
-                                                                     root_path + 'generate_mesh/2d/square', root_path + 'channel-with-cylinder-curved-crank_nicholson-discretization',
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
