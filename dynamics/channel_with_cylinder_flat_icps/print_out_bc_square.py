@@ -25,7 +25,8 @@ fieldnames = [ \
     '<<(l_profile_u_bar^i - u_bar^i)(l_profile_u_bar_i - u_bar_i)>>_l',\
     '<<|l_profile_u_bar|^2>>_{tb}',\
     '<<|l_profile_u_bar|^2>>_circle',\
-    '<<p>>_r'
+    '<<p>>_r',\
+    '<<n^i \partial_i ((u_bar + u_n)/2)>>_r'
 ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -44,7 +45,9 @@ def print_bcs():
         fieldnames[2]: \
             msh.abs_wrt_measure(sqrt(fsp.u_bar[i] * fsp.u_bar[i]),rmsh.ds_circle),
         fieldnames[3]: \
-            msh.abs_wrt_measure(fsp.p_, rmsh.ds_r)
+            msh.abs_wrt_measure(fsp.p_, rmsh.ds_r),
+        fieldnames[4]:
+        msh.abs_wrt_measure(sqrt((bgeo.facet_normal[i] * ((fsp.u_bar[j] + fsp.u_n[j])/2).dx(i)) * (bgeo.facet_normal[k] * ((fsp.u_bar[j] + fsp.u_n[j])/2).dx(k))),rmsh.ds_r)
     }])
 
     csvfile.flush()
