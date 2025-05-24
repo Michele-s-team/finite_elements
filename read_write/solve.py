@@ -4,7 +4,7 @@ Run with
     clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
 
 Example:
-    clear; clear; rm -rf solution-out; python3 solve.py /home/fenics/shared/dynamics/mesh /home/fenics/shared/dynamics/solution/snapshots/h5  /home/fenics/shared/read_write/solution-out 2673 10
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH 2673 10
 '''
 
 from fenics import *
