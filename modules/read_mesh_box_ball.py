@@ -35,6 +35,11 @@ cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 
+
+#radius of the smallest cell in the mesh
+r_mesh = lmsh.mesh.hmin()
+
+
 boundary_mesh = BoundaryMesh(lmsh.mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
     xdmf.write(boundary_mesh)
