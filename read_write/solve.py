@@ -26,38 +26,31 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 
 print("mesh old folder =", rarg.args.mesh_old_directory)
-print("solution old folder =", rarg.args.solution_old_directory)
-print("solution new folder =", rarg.args.solution_new_directory)
+print("solution in folder =", rarg.args.path_solution_in)
+print("solution out folder =", rarg.args.path_solution_out)
 
 # CHANGE PARAMETERS HERE
-# L = 1.0
-# h = L
-# r = 0.125
-# c_r = [L/2.0, h/2.0]
 N = (int)(rarg.args.N)
 increment = (int)(rarg.args.i)
-# time step size
 # CHANGE PARAMETERS HERE
-
 
 # read mesh
 mesh = Mesh()
-with XDMFFile((rarg.args.mesh_old_directory) + "/triangle_mesh.xdmf") as infile:
+with XDMFFile((rarg.args.mesh_old_directory) + "/tetrahedron_mesh.xdmf") as infile:
     infile.read(mesh)
-# mvc = MeshValueCollection("size_t", mesh, 2)
-# with XDMFFile((rarg.args.mesh_old_directory) + "/line_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
 
+# mesh_element = triangle
+mesh_element = tetrahedron
 
 # Define function spaces
 # finite elements for sigma .... omega
-P_v_bar = VectorElement('P', triangle, 2)
-P_w_bar = FiniteElement('P', triangle, 1)
-P_phi = FiniteElement('P', triangle, 2)
-P_v_n = VectorElement('P', triangle, 2)
-P_w_n = FiniteElement('P', triangle, 1)
-P_omega_n = VectorElement('P', triangle, 3)
-P_z_n = FiniteElement('P', triangle, 1)
+P_v_bar = VectorElement('P', mesh_element, 2)
+P_w_bar = FiniteElement('P', mesh_element, 1)
+P_phi = FiniteElement('P', mesh_element, 2)
+P_v_n = VectorElement('P', mesh_element, 2)
+P_w_n = FiniteElement('P', mesh_element, 1)
+P_omega_n = VectorElement('P', mesh_element, 3)
+P_z_n = FiniteElement('P', mesh_element, 1)
 
 element = MixedElement([P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_omega_n, P_z_n])
 # total function space
@@ -73,24 +66,24 @@ Q_z_n = Q.sub(6).collapse()
 
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
-boundary = 'on_boundary'
-boundary_l = 'near(x[0], 0.0)'
-boundary_r = 'near(x[0], 1.0)'
-boundary_lr = 'near(x[0], 0) || near(x[0], 1.0)'
-boundary_tb = 'near(x[1], 0) || near(x[1], 1.0)'
-boundary_square = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) > (0.125 + 1.0/2.0)/2.0'
-boundary_circle = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) < (0.125 + 1.0/2.0)/2.0'
+# boundary = 'on_boundary'
+# boundary_l = 'near(x[0], 0.0)'
+# boundary_r = 'near(x[0], 1.0)'
+# boundary_lr = 'near(x[0], 0) || near(x[0], 1.0)'
+# boundary_tb = 'near(x[1], 0) || near(x[1], 1.0)'
+# boundary_square = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) > (0.125 + 1.0/2.0)/2.0'
+# boundary_circle = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) < (0.125 + 1.0/2.0)/2.0'
 # CHANGE PARAMETERS HERE
 
 
-XDMF_file_v_n = XDMFFile((rarg.args.solution_new_directory) + '/v_n.xdmf')
-XDMF_file_v_bar = XDMFFile((rarg.args.solution_new_directory) + '/v_bar.xdmf')
-XDMF_file_w_n = XDMFFile((rarg.args.solution_new_directory) + '/w_n.xdmf')
-XDMF_file_w_bar = XDMFFile((rarg.args.solution_new_directory) + '/w_bar.xdmf')
-# XDMF_file_phi = XDMFFile( (rarg.args.solution_new_directory) + '/phi.xdmf' )
-XDMF_file_sigma_n_12 = XDMFFile((rarg.args.solution_new_directory) + '/sigma_n_12.xdmf')
-XDMF_file_omega_n_12 = XDMFFile((rarg.args.solution_new_directory) + '/omega_n_12.xdmf')
-XDMF_file_z_n_12 = XDMFFile((rarg.args.solution_new_directory) + '/z_n_12.xdmf')
+XDMF_file_v_n = XDMFFile((rarg.args.path_solution_out) + '/v_n.xdmf')
+XDMF_file_v_bar = XDMFFile((rarg.args.path_solution_out) + '/v_bar.xdmf')
+XDMF_file_w_n = XDMFFile((rarg.args.path_solution_out) + '/w_n.xdmf')
+XDMF_file_w_bar = XDMFFile((rarg.args.path_solution_out) + '/w_bar.xdmf')
+# XDMF_file_phi = XDMFFile( (rarg.args.path_solution_out) + '/phi.xdmf' )
+XDMF_file_sigma_n_12 = XDMFFile((rarg.args.path_solution_out) + '/sigma_n_12.xdmf')
+XDMF_file_omega_n_12 = XDMFFile((rarg.args.path_solution_out) + '/omega_n_12.xdmf')
+XDMF_file_z_n_12 = XDMFFile((rarg.args.path_solution_out) + '/z_n_12.xdmf')
 
 v_n = Function(Q_v_n)
 v_bar = Function(Q_v_bar)
@@ -108,24 +101,24 @@ for step in range(1, N, increment):
     print("* step = ", step, "\n")
 
     # Read the contents of the .h5 files and write them in v, w, .... :
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/v_n_" + str(step) + ".h5", "r" ).read( v_n, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.solution_old_directory) + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
-    HDF5File(MPI.comm_world, (rarg.args.solution_old_directory) + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
+    HDF5File(MPI.comm_world, (rarg.args.path_solution_in) + "/v_n_" + str(step) + ".h5", "r").read(v_n, "/f")
+    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
+    # HDF5File(MPI.comm_world, (rarg.args.path_solution_in) + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
 
     # append into the xdmf files the current time step stored in v, w, ...
-    # XDMF_file_v_n.write( v_n, step )
+    XDMF_file_v_n.write(v_n, step)
     # XDMF_file_v_bar.write( v_bar, step )
     # XDMF_file_w_n.write( w_n, step )
     # XDMF_file_w_bar.write( w_bar, step )
     # XDMF_file_phi.write( phi, step )
     # XDMF_file_sigma_n_12.write( sigma_n_12, step )
     # XDMF_file_omega_n_12.write( omega_n_12, step )
-    XDMF_file_z_n_12.write(z_n_12, step)
+    # XDMF_file_z_n_12.write(z_n_12, step)
 
     # HDF5_file_write = HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n" + str(step) + ".h5", "w" )
     # HDF5_file_write.write( v, "/f" )
