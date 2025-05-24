@@ -101,14 +101,14 @@ for step in range(1, N, increment):
     print(f'\tsnapshot # {step}', flush=True)
 
     # Read the contents of the .h5 files and write them in v, w, .... :
-    HDF5File(MPI.comm_world, rarg.args.input_directory + "/v_n_" + str(step) + ".h5", "r").read(v_n, "/f")
-    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
-    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
-    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
-    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
-    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
-    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
-    # HDF5File(MPI.comm_world, rarg.args.input_directory + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
+    HDF5File(MPI.comm_world,  rarg.args.solution_input_directory + "/u_n_" + str(step) + ".h5", "r").read(v_n, "/f")
+    # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
+    # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
+    # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
+    # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
+    # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
+    # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
+    # HDF5File(MPI.comm_world,  rarg.args.solution_input_directory + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
 
     # append into the xdmf files the current time step stored in v, w, ...
     XDMF_file_v_n.write(v_n, step)
