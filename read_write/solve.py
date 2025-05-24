@@ -4,7 +4,7 @@ Run with
     clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
 
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH 2673 10
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py box_ball $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH 100 2
 '''
 
 from fenics import *
@@ -24,10 +24,10 @@ import geometry as geo
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-
+'''
 print("mesh old folder =", rarg.args.mesh_old_directory)
-print("solution in folder =", rarg.args.path_solution_in)
-print("solution out folder =", rarg.args.path_solution_out)
+print("solution in folder =", rarg.args.input_directory)
+print("solution out folder =", rarg.args.output_directory)
 
 # CHANGE PARAMETERS HERE
 N = (int)(rarg.args.N)
@@ -76,14 +76,14 @@ Q_z_n = Q.sub(6).collapse()
 # CHANGE PARAMETERS HERE
 
 
-XDMF_file_v_n = XDMFFile((rarg.args.path_solution_out) + '/v_n.xdmf')
-XDMF_file_v_bar = XDMFFile((rarg.args.path_solution_out) + '/v_bar.xdmf')
-XDMF_file_w_n = XDMFFile((rarg.args.path_solution_out) + '/w_n.xdmf')
-XDMF_file_w_bar = XDMFFile((rarg.args.path_solution_out) + '/w_bar.xdmf')
-# XDMF_file_phi = XDMFFile( (rarg.args.path_solution_out) + '/phi.xdmf' )
-XDMF_file_sigma_n_12 = XDMFFile((rarg.args.path_solution_out) + '/sigma_n_12.xdmf')
-XDMF_file_omega_n_12 = XDMFFile((rarg.args.path_solution_out) + '/omega_n_12.xdmf')
-XDMF_file_z_n_12 = XDMFFile((rarg.args.path_solution_out) + '/z_n_12.xdmf')
+XDMF_file_v_n = XDMFFile((rarg.args.output_directory) + '/v_n.xdmf')
+XDMF_file_v_bar = XDMFFile((rarg.args.output_directory) + '/v_bar.xdmf')
+XDMF_file_w_n = XDMFFile((rarg.args.output_directory) + '/w_n.xdmf')
+XDMF_file_w_bar = XDMFFile((rarg.args.output_directory) + '/w_bar.xdmf')
+# XDMF_file_phi = XDMFFile( (rarg.args.output_directory) + '/phi.xdmf' )
+XDMF_file_sigma_n_12 = XDMFFile((rarg.args.output_directory) + '/sigma_n_12.xdmf')
+XDMF_file_omega_n_12 = XDMFFile((rarg.args.output_directory) + '/omega_n_12.xdmf')
+XDMF_file_z_n_12 = XDMFFile((rarg.args.output_directory) + '/z_n_12.xdmf')
 
 v_n = Function(Q_v_n)
 v_bar = Function(Q_v_bar)
@@ -101,14 +101,14 @@ for step in range(1, N, increment):
     print("* step = ", step, "\n")
 
     # Read the contents of the .h5 files and write them in v, w, .... :
-    HDF5File(MPI.comm_world, (rarg.args.path_solution_in) + "/v_n_" + str(step) + ".h5", "r").read(v_n, "/f")
-    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.path_solution_in) + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
-    # HDF5File(MPI.comm_world, (rarg.args.path_solution_in) + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
+    HDF5File(MPI.comm_world, (rarg.args.input_directory) + "/v_n_" + str(step) + ".h5", "r").read(v_n, "/f")
+    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
+    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
+    # HDF5File(MPI.comm_world, (rarg.args.input_directory) + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
 
     # append into the xdmf files the current time step stored in v, w, ...
     XDMF_file_v_n.write(v_n, step)
@@ -123,3 +123,4 @@ for step in range(1, N, increment):
     # HDF5_file_write = HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n" + str(step) + ".h5", "w" )
     # HDF5_file_write.write( v, "/f" )
     # HDF5_file_write.close()
+'''
