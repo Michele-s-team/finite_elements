@@ -21,14 +21,14 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import geometry as geo
-import runtime_arguments as rarg    
+import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-'''
-print("mesh old folder =", rarg.args.mesh_old_directory)
-print("solution in folder =", rarg.args.input_directory)
-print("solution out folder =", rarg.args.output_directory)
+
+print("mesh path =", rarg.args.input_directory)
+print("solution in path =", rarg.args.solution_input_directory)
+print("solution out path =", rarg.args.output_directory)
 
 # CHANGE PARAMETERS HERE
 N = (int)(rarg.args.N)
@@ -36,9 +36,9 @@ increment = (int)(rarg.args.i)
 # CHANGE PARAMETERS HERE
 
 # read mesh
-mesh = Mesh()
-with XDMFFile((rarg.args.mesh_old_directory) + "/tetrahedron_mesh.xdmf") as infile:
-    infile.read(mesh)
+# mesh = Mesh()
+# with XDMFFile((rarg.args.mesh_old_directory) + "/tetrahedron_mesh.xdmf") as infile:
+#     infile.read(mesh)
 
 # mesh_element = triangle
 mesh_element = tetrahedron
@@ -54,9 +54,7 @@ P_omega_n = VectorElement('P', mesh_element, 3)
 P_z_n = FiniteElement('P', mesh_element, 1)
 
 element = MixedElement([P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_omega_n, P_z_n])
-# total function space
-Q = FunctionSpace(mesh, element)
-# function spaces for vbar .... zn
+Q = FunctionSpace(lmsh.mesh, element)
 Q_v_bar = Q.sub(0).collapse()
 Q_w_bar = Q.sub(1).collapse()
 Q_phi = Q.sub(2).collapse()
@@ -96,20 +94,21 @@ omega_n_12 = Function(Q_omega_n)
 z_n_12 = Function(Q_z_n)
 
 # Time-stepping
+print('Reading snapshots ... ')
 for step in range(1, N, increment):
     # time.sleep( 1 )  # Makes Python wait for 5 seconds
 
-    print("* step = ", step, "\n")
+    print(f'\tsnapshot # {step}', flush=True)
 
     # Read the contents of the .h5 files and write them in v, w, .... :
-    HDF5File(MPI.comm_world, (rarg.args.input_directory) + "/v_n_" + str(step) + ".h5", "r").read(v_n, "/f")
-    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
-    # HDF5File( MPI.comm_world, (rarg.args.input_directory) + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
-    # HDF5File(MPI.comm_world, (rarg.args.input_directory) + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
+    HDF5File(MPI.comm_world, rarg.args.input_directory + "/v_n_" + str(step) + ".h5", "r").read(v_n, "/f")
+    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
+    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
+    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )
+    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/phi_" + str(step) + ".h5", "r" ).read( phi, "/f" )
+    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/sigma_n_12_" + str(step) + ".h5", "r" ).read( sigma_n_12, "/f" )
+    # HDF5File( MPI.comm_world, rarg.args.input_directory + "/omega_n_12_" + str(step) + ".h5", "r" ).read( omega_n_12, "/f" )
+    # HDF5File(MPI.comm_world, rarg.args.input_directory + "/z_n_12_" + str(step) + ".h5", "r").read(z_n_12, "/f")
 
     # append into the xdmf files the current time step stored in v, w, ...
     XDMF_file_v_n.write(v_n, step)
@@ -124,4 +123,4 @@ for step in range(1, N, increment):
     # HDF5_file_write = HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n" + str(step) + ".h5", "w" )
     # HDF5_file_write.write( v, "/f" )
     # HDF5_file_write.close()
-'''
+print('... done.')
