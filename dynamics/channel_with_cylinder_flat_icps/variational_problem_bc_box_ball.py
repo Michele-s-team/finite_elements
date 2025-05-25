@@ -11,10 +11,10 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-T = 0.001 # final time
-num_steps = 10  # number of time steps
+T = 1 # final time
+num_steps = int(1e4)  # number of time steps
 dt = T / num_steps  # time step size
-mu = 0.001  # dynamic viscosity
+mu = 1e-4  # dynamic viscosity
 rho = 1  # density
 
 f = Constant((0, 0, 0))
