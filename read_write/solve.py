@@ -1,10 +1,10 @@
 '''
-this code reads a sequence of .h5 files, collates them into a time series in xdmf format and writes it into an xdmf file
+This code reads a sequence all .h5 files in a folder, collates them into a time series in xdmf format and writes it into an xdmf file
 Run with
-    clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [number of .h5 files to be read] [increment with which to step from one .h5 file to the next one]
+    clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [increment with which to step from one .h5 file to the next one]
 
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py box_ball $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH 100 2
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py box_ball $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH  2
 '''
 
 from fenics import *
@@ -19,27 +19,26 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import load_mesh as lmsh
-import geometry as geo
 import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-print("mesh path =", rarg.args.input_directory)
-print("solution in path =", rarg.args.solution_input_directory)
-print("solution out path =", rarg.args.output_directory)
-
 # CHANGE PARAMETERS HERE
-N = (int)(rarg.args.N)
+# N = (int)(rarg.args.N)
+namefile_for_counting = 'u_n_'
+N = io.count_files(f'/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/csv/nodal_values/{namefile_for_counting}', ".csv")
 increment = (int)(rarg.args.i)
 # CHANGE PARAMETERS HERE
 
-# read mesh
-# mesh = Mesh()
-# with XDMFFile((rarg.args.mesh_old_directory) + "/tetrahedron_mesh.xdmf") as infile:
-#     infile.read(mesh)
+print("Mesh path =", rarg.args.input_directory)
+print("Solution in path =", rarg.args.solution_input_directory)
+print("Number of snapshots =", N)
+print("Solution out path =", rarg.args.output_directory)
 
+# select the appropriate mesh element according to the mesh dimension
 # mesh_element = triangle
 mesh_element = tetrahedron
 
@@ -62,18 +61,6 @@ Q_v_n = Q.sub(3).collapse()
 Q_w_n = Q.sub(4).collapse()
 Q_omega_n = Q.sub(5).collapse()
 Q_z_n = Q.sub(6).collapse()
-
-# Define boundaries and obstacle
-# CHANGE PARAMETERS HERE
-# boundary = 'on_boundary'
-# boundary_l = 'near(x[0], 0.0)'
-# boundary_r = 'near(x[0], 1.0)'
-# boundary_lr = 'near(x[0], 0) || near(x[0], 1.0)'
-# boundary_tb = 'near(x[1], 0) || near(x[1], 1.0)'
-# boundary_square = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) > (0.125 + 1.0/2.0)/2.0'
-# boundary_circle = 'on_boundary && sqrt(pow(x[0] - 1.0/2.0, 2) + pow(x[1] - 1.0/2.0, 2)) < (0.125 + 1.0/2.0)/2.0'
-# CHANGE PARAMETERS HERE
-
 
 XDMF_file_v_n = XDMFFile((rarg.args.output_directory) + '/v_n.xdmf')
 XDMF_file_v_bar = XDMFFile((rarg.args.output_directory) + '/v_bar.xdmf')
@@ -101,7 +88,7 @@ for step in range(1, N, increment):
     print(f'\tsnapshot # {step}', flush=True)
 
     # Read the contents of the .h5 files and write them in v, w, .... :
-    HDF5File(MPI.comm_world,  rarg.args.solution_input_directory + "/u_n_" + str(step) + ".h5", "r").read(v_n, "/f")
+    HDF5File(MPI.comm_world, rarg.args.solution_input_directory + "/u_n_" + str(step) + ".h5", "r").read(v_n, "/f")
     # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/v_bar_" + str(step) + ".h5", "r" ).read(v_bar, "/f" )
     # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/w_n_" + str(step) + ".h5", "r" ).read( w_n, "/f" )
     # HDF5File( MPI.comm_world,  rarg.args.solution_input_directory + "/w_bar_" + str(step) + ".h5", "r" ).read(w_bar, "/f" )

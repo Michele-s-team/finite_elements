@@ -282,4 +282,4 @@ To count all files  /home/fenics/shared/dynamics/channel_with_cylinder_flat_icps
 
 
 def count_files(path_before_asterisk, path_after_asterisk):
-    return len(glob.glob(path_after_asterisk + '*' + path_after_asterisk))
+    return len(glob.glob(path_before_asterisk + '*' + path_after_asterisk))
