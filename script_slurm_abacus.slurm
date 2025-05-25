@@ -9,14 +9,6 @@
 
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
-#CHANGE PARAMETERS HERE
-# T=0.1
-# k=1.0 
-# rho=1.0 
-# eta=1.0
-# v=1.0 
-# N=1048576
-#CHANGE PARAMETERS HERE
 
 RUN="/mnt/beegfs/home/mcastel1/steady_state_no_flow_1"
 MESH=$RUN"/mesh/solution"
