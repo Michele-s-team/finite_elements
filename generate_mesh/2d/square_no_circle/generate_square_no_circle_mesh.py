@@ -35,8 +35,8 @@ output_directory = io.add_trailing_slash(output_directory)
 mesh_file = output_directory + "mesh.msh"
 
 # CHANGE PARAMETERS HERE
-L = 1.0
-h = 1.0
+L = 2 * 2.2
+h = 0.41
 # CHANGE PARAMETERS HERE
 
 

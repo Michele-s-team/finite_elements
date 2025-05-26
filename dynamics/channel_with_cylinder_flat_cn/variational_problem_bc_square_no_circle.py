@@ -11,8 +11,8 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices(4)
 
 # CHANGE PARAMETERS HERE
-T = 0.001
-num_steps = 10
+T = 1.0
+num_steps = 128
 
 dt = T / num_steps  # time step size
 rho = 1.0
