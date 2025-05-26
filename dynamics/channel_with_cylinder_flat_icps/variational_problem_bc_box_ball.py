@@ -11,30 +11,30 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-T = 1e-2  # final time
-num_steps = 10 # number of time steps
+T = 1e-3 # final time
+num_steps = 10  # number of time steps
 dt = T / num_steps  # time step size
-mu = 0.001  # dynamic viscosity
+mu = 1e-4  # dynamic viscosity
 rho = 1  # density
 
-f = Constant((0, 0))
+f = Constant((0, 0, 0))
 
 print("L = ", rmsh.L)
-print("h = ", rmsh.h)
 print("mu = ", mu)
 print("T = ", T)
 print("N = ", num_steps)
 
 # Define inflow profile
-u_bar_l_profile = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2)
+u_bar_le_profile = Expression((f'4.0*1.5*x[1]*({rmsh.L[1]} - x[1]) / pow({rmsh.L[1]}, 2) * 4.0*1.5*x[2]*({rmsh.L[2]} - x[2]) / pow({rmsh.L[2]}, 2)', '0', '0'), degree=2)
 
 # Define boundary conditions
-bc_u_bar_l = DirichletBC(fsp.V, u_bar_l_profile, rmsh.boundary_l)
-bc_u_bar_tb = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_tb)
-bc_u_bar_circle = DirichletBC(fsp.V, Constant((0, 0)), rmsh.boundary_circle)
-bc_p_r = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
-bc_u_bar = [bc_u_bar_l, bc_u_bar_tb, bc_u_bar_circle]
-bc_p = [bc_p_r]
+bc_u_bar_le = DirichletBC(fsp.V, u_bar_le_profile, rmsh.boundary_le)
+bc_u_bar_tobo = DirichletBC(fsp.V, Constant((0, 0, 0)), rmsh.boundary_tobo)
+bc_u_bar_frba = DirichletBC(fsp.V, Constant((0, 0, 0)), rmsh.boundary_frba)
+bc_u_bar_sphere = DirichletBC(fsp.V, Constant((0, 0, 0)), rmsh.boundary_sphere)
+bc_p_ri = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_ri)
+bc_u_bar = [bc_u_bar_le, bc_u_bar_tobo, bc_u_bar_frba, bc_u_bar_sphere]
+bc_p = [bc_p_ri]
 
 
 # Define symmetric gradient

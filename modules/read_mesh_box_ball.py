@@ -16,9 +16,9 @@ import mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
-L = [3, 2, 1]
-c_r = [L[0] / 2.0, L[1] / 2.0, L[2] / 2.0]
-r = 0.25
+L = [2.2, 0.41, 0.41]
+c_r = [0.2, 0.2, 0.2]
+r = 0.05
 
 volume_id = 1
 boundary_le_id = 2
@@ -34,6 +34,11 @@ boundary_sphere_id = 8
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetrahedron_mesh.xdmf")
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
+
+
+#radius of the smallest cell in the mesh
+r_mesh = lmsh.mesh.hmin()
+
 
 boundary_mesh = BoundaryMesh(lmsh.mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
