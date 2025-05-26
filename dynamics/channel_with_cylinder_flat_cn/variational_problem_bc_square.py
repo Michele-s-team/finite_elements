@@ -70,8 +70,8 @@ bc_phi = [bc_phi_outflow]
 F1 = ( \
                  rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
                         + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu[i] \
-                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * geo.Nabla_f(fsp.nu, fsp.omega)[j, i] \
-         ) * geo.sqrt_detg(fsp.omega) * rmsh.dx
+                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
+         ) * rmsh.dx
 
 # step 2
 F2 = (geo.g_c(fsp.omega)[i, j] * (fsp.phi.dx(i)) * (fsp.q.dx(j)) + (rho / dt) * (geo.Nabla_v(fsp.v_, fsp.omega)[i, i]) * fsp.q) * geo.sqrt_detg(fsp.omega) * rmsh.dx
