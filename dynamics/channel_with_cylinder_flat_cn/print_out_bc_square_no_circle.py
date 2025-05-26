@@ -23,7 +23,7 @@ csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_{l + t + b}',\
     '<<(phi - r_profile_phi)^2>>_r' ,\
-    '<<(n^i Nabla_i phi)^2>>_{l + t + b}' \
+    '<<(n^i \partial_i phi)^2>>_{l + t + b}' \
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -37,11 +37,11 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows( [{ \
         fieldnames[0]: \
-            (sqrt( assemble( (fsp.v_[i] - vp.v__profile_l[i]) * geo.g( fsp.omega )[i, j] * (fsp.v_[j] -vp.v__profile_l[j]) * rmsh.ds_l ) + assemble( fsp.v_[i] * geo.g( fsp.omega )[i, j] * fsp.v_[j] * (rmsh.ds_t + rmsh.ds_b) ) ) / \
+            (sqrt( assemble( (fsp.v_[i] - vp.v__profile_l[i])  * (fsp.v_[i] -vp.v__profile_l[i]) * rmsh.ds_l ) + assemble( fsp.v_[i] * fsp.v_[i] * (rmsh.ds_t + rmsh.ds_b) ) ) / \
              assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_t + rmsh.ds_b) )), \
         fieldnames[1]: \
-            sqrt( (assemble( ((bgeo.n_lr( fsp.omega ))[i] * (fsp.phi.dx( i ))) ** 2 * rmsh.ds_l ) \
-                   + assemble( ((bgeo.n_tb( fsp.omega ))[i] * (fsp.phi.dx( i ))) ** 2 * (rmsh.ds_t + rmsh.ds_b) ) ) \
+            sqrt( (assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * rmsh.ds_l ) \
+                   + assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * (rmsh.ds_t + rmsh.ds_b) ) ) \
                   / assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_t + rmsh.ds_b ) ) ), \
         fieldnames[2]: \
             sqrt( assemble( (fsp.phi) ** 2 * rmsh.ds_r ) /
