@@ -5,11 +5,6 @@ import load_mesh as lmsh
 import solution_paths as solpath
 
 
-def print_z_omega():
-    io.full_print(fsp.z, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, lmsh.mesh, 'scalar')
-    io.full_print(fsp.omega, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, lmsh.mesh, 'vector')
-
-
 def print_solution(t, step, dt):
     # include the snapshot in xdmf files
     fi.xdmffile_v.write(fsp.v_n, t)
