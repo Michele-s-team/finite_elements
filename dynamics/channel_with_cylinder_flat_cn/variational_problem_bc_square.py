@@ -44,15 +44,6 @@ class SurfaceTensionExpression(UserExpression):
         return (1,)
 
 
-# trial analytical expression for w
-class NormalVelocityExpression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0.0
-
-    def value_shape(self):
-        return (1,)
-
-
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
 
 bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
@@ -74,7 +65,7 @@ F1 = ( \
          ) * rmsh.dx
 
 # step 2
-F2 = (geo.g_c(fsp.omega)[i, j] * (fsp.phi.dx(i)) * (fsp.q.dx(j)) + (rho / dt) * (geo.Nabla_v(fsp.v_, fsp.omega)[i, i]) * fsp.q) * geo.sqrt_detg(fsp.omega) * rmsh.dx
+F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx
 
 # Define variational problem for step 3
-F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * geo.g_c(fsp.omega)[i, j] * (fsp.phi.dx(j))) * fsp.nu[i]) * geo.sqrt_detg(fsp.omega) * rmsh.dx
+F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * (fsp.phi.dx(i))) * fsp.nu[i]) * rmsh.dx

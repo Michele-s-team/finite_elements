@@ -19,9 +19,6 @@ sigma_n_12 = Function(Q)
 # sigma^{n-3/2}
 sigma_n_32 = Function(Q)
 phi = Function(Q)
-omega = Function(Q_omega)
-w = Function(Q)
-# a function used to make tests (test the differential operators etc)
 
 # Define test functions
 nu = TestFunction(Q_v)
