@@ -13,7 +13,7 @@ i, j, k, l = ufl.indices(4)
 
 # CHANGE PARAMETERS HERE
 T = 0.1
-num_steps = int(1e3)
+num_steps = int(128)
 
 dt = T / num_steps  # time step size
 rho = 1.0
