@@ -25,7 +25,7 @@ r_mesh = lmsh.mesh.hmin()
 L = 1
 h = 1
 r = 0.25
-c_r = [L/2, h/2]
+c_r = [L / 2, h / 2]
 # CHANGE PARAMETERS HERE
 
 

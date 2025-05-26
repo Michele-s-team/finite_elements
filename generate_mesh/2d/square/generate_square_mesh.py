@@ -40,7 +40,7 @@ mesh_file = output_directory + "mesh.msh"
 L = 1
 h = 1
 r = 0.25
-c_r = [L/2, h/2, 0]
+c_r = [L / 2, h / 2, 0]
 # CHANGE PARAMETERS HERE
 
 

@@ -21,8 +21,8 @@ r_mesh = lmsh.mesh.hmin()
 
 
 #CHANGE PARAMETERS HERE
-L = 1.0
-h = 1.0
+L = 1
+h = 1
 #CHANGE PARAMETERS HERE
 
 dx = Measure( "dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1 )
