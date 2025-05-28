@@ -26,7 +26,7 @@ a = 0.2
 # ellipse semi-minor axis
 b = 0.1
 # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-phi = np.pi / 8
+phi = np.pi / 3
 # CHANGE PARAMETERS HERE
 
 focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
