@@ -37,7 +37,6 @@ output_directory = io.add_trailing_slash(output_directory)
 
 mesh_file = output_directory + "mesh.msh"
 
-# Channel parameters
 # CHANGE PARAMETERS HERE
 L = 1
 h = 1

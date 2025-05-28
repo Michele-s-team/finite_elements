@@ -385,7 +385,7 @@ def R(theta):
 
 
 '''
-given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the circle center and the rectangle boundary
+given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the point and the rectangle boundary
 Input values: 
 - 'L', 'h': the length and  height of the rectangle
 - 'p' : the coordinates of the point
