@@ -26,7 +26,7 @@ Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 def function_test_integrals(x):
     return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
-    # return 1
+    # return x[0] + 1
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
@@ -44,10 +44,12 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-# print(f'ellipse integral = {cal.surface_integral_ellipse(function_test_integrals, rmsh.a, rmsh.b, rmsh.c, rmsh.phi)}')
-
 integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.L, rmsh.h]) - \
-                    cal.surface_integral_ellipse(function_test_integrals, rmsh.a, rmsh.b, rmsh.c, rmsh.phi)
+                    cal.surface_integral_ellipse(function_test_integrals,
+                                                 rmsh.a, rmsh.b,
+                                                 # the ellipse here is rotated about its focal point by phi, thus its center is the following
+                                                 np.add(rmsh.focus, np.dot(cal.R_z(rmsh.phi), np.subtract(rmsh.c, rmsh.focus)))[:2],
+                                                 rmsh.phi)
 
 integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.h])
 integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.L, 0], [rmsh.L, rmsh.h])
@@ -65,7 +67,7 @@ integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
 
 integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
 
-# integral_exact_ds = integral_exact_ds_square + integral_exact_ds_ellipse
+integral_exact_ds = integral_exact_ds_square + integral_exact_ds_ellipse
 
 test_mesh_integral_errors = []
 
@@ -82,6 +84,6 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb, fu
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_ellipse, function_test_integrals_fenics, rmsh.ds_ellipse, '\int f ds_ellipse'))
 
-# test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

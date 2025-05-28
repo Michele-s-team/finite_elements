@@ -338,19 +338,14 @@ Input values
 
 Return value: 
 - \int_{ellipse} dx dy f
-
-The integral is made with the change of variable : 
-x = a rho cos theta
-y = b rho sin theta
-
-J = {{a cos theta,- a rho sin theta},{b sin that, b rho cos theta}}
-|J| = a b rho cos^2 theta + a b  rho sin^2 that = a b rho
 '''
 
 def surface_integral_ellipse(f, a, b, c, phi):
     f_swapped = lambda x, y: f([y, x])
+    # rotate the coordinate along the ellipse by phi
+    r = lambda rho, theta: np.dot(R(phi), [a * rho * np.cos(theta), b * rho * np.sin(theta)])
 
-    return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + b * rho * np.sin(theta), c[0] + a * rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
+    return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + (r(rho, theta))[1], c[0] + (r(rho, theta))[0]), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
 
 
 
