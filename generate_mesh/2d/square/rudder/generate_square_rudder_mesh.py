@@ -9,6 +9,7 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_P
 
 import meshio
 import gmsh
+import numpy as np
 import pygmsh
 import argparse
 
@@ -41,17 +42,23 @@ L = 1
 h = 1
 # ellipse center
 c = [L / 2, h / 2, 0]
-# ellipse semi-axes
-a = 0.1
-b = 0.2
+# ellipse semi-major axis
+a = 0.2
+# ellipse semi-minor axis
+b = 0.1
+# rotation angle of the ellipse with respect to the x axis
+theta = np.pi / 8
 # CHANGE PARAMETERS HERE
 
 
 print("L = ", L)
 print("h = ", h)
-print("c_rudder = ", c)
+print(f"c = {c}, a = {a}, b = {b}, theta = {theta}")
 print("resolution = ", resolution)
 print(f'output_directory = "{output_directory}"')
+
+# left focal point  of the ellipse
+focus = np.subtract(c, [a * np.sqrt(a ** 2 - b ** 2), 0, 0])
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
@@ -69,21 +76,26 @@ channel_lines = [model.add_line(my_points[i], my_points[i + 1])
 
 channel_loop = model.add_curve_loop(channel_lines)
 
-p_ellipse_c = model.add_point((c[0], c[1], c[2]), mesh_size=resolution)
-p_ellipse_r = model.add_point((c[0] + a, c[1], 0), mesh_size=resolution)
-p_ellipse_t = model.add_point((c[0], c[1] + b, 0), mesh_size=resolution)
-p_ellipse_l = model.add_point((c[0] - a, c[1], 0), mesh_size=resolution)
-p_ellipse_b = model.add_point((c[0], c[1] - b, 0), mesh_size=resolution)
+p_ellipse_c = model.add_point(c, mesh_size=resolution)
+p_ellipse_r = model.add_point(np.add(c, [a, 0, 0]), mesh_size=resolution)
+p_ellipse_t = model.add_point(np.add(c, [0, b, 0]), mesh_size=resolution)
+p_ellipse_l = model.add_point(np.subtract(c, [a, 0, 0]), mesh_size=resolution)
+p_ellipse_b = model.add_point(np.subtract(c, [0, b, 0]), mesh_size=resolution)
+model.synchronize()
 
 ellipse_arc_rt = model.add_ellipse_arc(p_ellipse_r, p_ellipse_c, p_ellipse_r, p_ellipse_t)
 ellipse_arc_tl = model.add_ellipse_arc(p_ellipse_t, p_ellipse_c, p_ellipse_r, p_ellipse_l)
 ellipse_arc_lb = model.add_ellipse_arc(p_ellipse_l, p_ellipse_c, p_ellipse_r, p_ellipse_b)
 ellipse_arc_br = model.add_ellipse_arc(p_ellipse_b, p_ellipse_c, p_ellipse_r, p_ellipse_r)
+model.synchronize()
 
+ellipse_lines = [ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br]
+ellipse_loop = model.add_curve_loop(ellipse_lines)
+model.synchronize()
 
 # circle_r = model.add_circle(c, r, mesh_size=resolution)
 
-plane_surface = model.add_plane_surface(channel_loop, holes=[])
+plane_surface = model.add_plane_surface(channel_loop, holes=[ellipse_loop])
 
 model.synchronize()
 
@@ -92,7 +104,7 @@ model.add_physical([channel_lines[0]], "i")
 model.add_physical([channel_lines[2]], "o")
 model.add_physical([channel_lines[3]], "t")
 model.add_physical([channel_lines[1]], "b")
-# model.add_physical(circle_r.curve_loop.curves, "c")
+model.add_physical(ellipse_loop.curves, "c")
 
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
