@@ -4,6 +4,7 @@ import dolfin
 import calculus as calc
 import load_mesh as lmsh
 import mesh as msh
+import numpy as np
 import runtime_arguments as rarg
 
 # read the triangles
