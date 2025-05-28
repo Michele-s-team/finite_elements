@@ -74,6 +74,39 @@ def circle_arc(r, cr, theta_min, theta_max, t):
     return [np.add(cr, r * np.array([np.cos(theta_t), np.sin(theta_t)])).tolist(),
             (r * (theta_max - theta_min) * np.array([- np.sin(theta_t), np.cos(theta_t)])).tolist()]
 
+'''
+an ellipse arc
+Input values:
+- 'a', 'b': the ellipse major and minor axes
+- 'c': the ellipse center (an array of two points)
+- 'phi': the angle by which the major axis is rotated with respect to the x axis
+- 'theta_min', 'theta_max': the minimal and maxmimal values of the polar angles of the arg, respectively
+- 't' : the parametric coordinate of the ellipse arc, 0<=t<1
+Return values:
+- the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
+'''
+
+def ellipse_arc(a, b, c, phi, theta_min, theta_max, t):
+    theta_t = theta_min + (theta_max - theta_min) * t
+
+    return [np.add(c, np.dot(R(phi), [a * np.cos(theta_t), b * np.sin(theta_t)])).tolist(),
+            ((theta_max - theta_min) * np.dot(R(phi), [- a * np.sin(theta_t), b * np.cos(theta_t)])).tolist() ]
+
+
+'''
+an ellipse
+Input values:
+- 'a', 'b': the ellipse major and minor axes
+- 'c': the ellipse center (an array of two points)
+- 'phi': the angle by which the major axis is rotated with respect to the x axis
+- 't' : the parametric coordinate of the ellipse, 0<=t<1
+Return values:
+- the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
+'''
+
+def ellipse(a, b, c, phi, t):
+    return ellipse_arc(a, b, c, phi, 0, 2 * np.pi, t)
+
 
 '''
 return the curvilinear integral of a function  along a curve 
@@ -145,6 +178,19 @@ def curve_integral_circle(f, r, c):
     circle_curve = lambda t: circle(r, c, t)
     return curve_integral(f, circle_curve)
 
+'''
+return the curve integral of a function  along an ellipse 
+Input values:
+- 'f': the function f(x[0], x[1])
+- 'a', 'b': the ellipse minor and major axes
+- 'c': the circle center (an array of two points)
+- 'phi': the angle by which the major axis is rotated with respect to the x axis
+Return values: 
+    \int_ellipse f dl
+'''
+def curve_integral_ellipse(f, a, b, c, phi):
+    ellipse_curve = lambda t: ellipse(a, b, c, phi, t)
+    return curve_integral(f, ellipse_curve)
 
 '''
 return the curve integral of a function  along a circle arc
@@ -283,12 +329,34 @@ def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
 
 
 '''
+compute the surface integral of a function over an ellipse
+Input values 
+- 'f': the function f([x, y])
+- 'a', 'b': the major and minor axes of the ellipse, respectively
+- 'c': the center of the ellipse
+- 'phi' : the rotation angle of the major axis with respct to the x axis
+
+Return value: 
+- \int_{ellipse} dx dy f
+'''
+
+def surface_integral_ellipse(f, a, b, c, phi):
+    f_swapped = lambda x, y: f([y, x])
+    # rotate the coordinate along the ellipse by phi
+    r = lambda rho, theta: np.dot(R(phi), [a * rho * np.cos(theta), b * rho * np.sin(theta)])
+
+    return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + (r(rho, theta))[1], c[0] + (r(rho, theta))[0]), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
+
+
+
+'''
 compute the surface integral of a function on a sphere
 Input values 
 - 'f': the function f([x, y, z])
 - 'r', 'c_r': radius and center of the ball
 Return values: 
 - \int ds_sphere f
+
 '''
 
 
@@ -385,7 +453,7 @@ def R(theta):
 
 
 '''
-given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the circle center and the rectangle boundary
+given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the point and the rectangle boundary
 Input values: 
 - 'L', 'h': the length and  height of the rectangle
 - 'p' : the coordinates of the point
