@@ -39,14 +39,17 @@ mesh_file = output_directory + "mesh.msh"
 # CHANGE PARAMETERS HERE
 L = 1
 h = 1
-c_rudder = [L / 2, h / 2, 0]
+# ellipse center
+c = [L / 2, h / 2, 0]
+# ellipse semi-axes
+a = 0.1
+b = 0.2
 # CHANGE PARAMETERS HERE
 
 
 print("L = ", L)
 print("h = ", h)
-print("r = ", r)
-print("c_r = ", c_rudder)
+print("c_rudder = ", c)
 print("resolution = ", resolution)
 print(f'output_directory = "{output_directory}"')
 
@@ -66,9 +69,21 @@ channel_lines = [model.add_line(my_points[i], my_points[i + 1])
 
 channel_loop = model.add_curve_loop(channel_lines)
 
-circle_r = model.add_circle(c_rudder, r, mesh_size=resolution)
+p_ellipse_c = model.add_point((c[0], c[1], c[2]), mesh_size=resolution)
+p_ellipse_r = model.add_point((c[0] + a, c[1], 0), mesh_size=resolution)
+p_ellipse_t = model.add_point((c[0], c[1] + b, 0), mesh_size=resolution)
+p_ellipse_l = model.add_point((c[0] - a, c[1], 0), mesh_size=resolution)
+p_ellipse_b = model.add_point((c[0], c[1] - b, 0), mesh_size=resolution)
 
-plane_surface = model.add_plane_surface(channel_loop, holes=[circle_r.curve_loop])
+ellipse_arc_rt = model.add_ellipse_arc(p_ellipse_r, p_ellipse_c, p_ellipse_r, p_ellipse_t)
+ellipse_arc_tl = model.add_ellipse_arc(p_ellipse_t, p_ellipse_c, p_ellipse_r, p_ellipse_l)
+ellipse_arc_lb = model.add_ellipse_arc(p_ellipse_l, p_ellipse_c, p_ellipse_r, p_ellipse_b)
+ellipse_arc_br = model.add_ellipse_arc(p_ellipse_b, p_ellipse_c, p_ellipse_r, p_ellipse_r)
+
+
+# circle_r = model.add_circle(c, r, mesh_size=resolution)
+
+plane_surface = model.add_plane_surface(channel_loop, holes=[])
 
 model.synchronize()
 
@@ -77,7 +92,7 @@ model.add_physical([channel_lines[0]], "i")
 model.add_physical([channel_lines[2]], "o")
 model.add_physical([channel_lines[3]], "t")
 model.add_physical([channel_lines[1]], "b")
-model.add_physical(circle_r.curve_loop.curves, "c")
+# model.add_physical(circle_r.curve_loop.curves, "c")
 
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
