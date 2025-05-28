@@ -51,7 +51,11 @@ integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.L, 
 integral_exact_ds_t = cal.curve_integral_line(function_test_integrals, [0, rmsh.h], [rmsh.L, rmsh.h])
 integral_exact_ds_b = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.L, 0])
 
-integral_exact_ds_ellipse = cal.curve_integral_ellipse(function_test_integrals, rmsh.a, rmsh.b, [rmsh.c[0], rmsh.c[1]], rmsh.phi)
+integral_exact_ds_ellipse = cal.curve_integral_ellipse(function_test_integrals,
+                                                       rmsh.a, rmsh.b,
+# the ellipse here is rotated about its focal point by phi, thus its center is the following
+                                                       np.add(rmsh.focus, np.dot(cal.R_z(rmsh.phi), np.subtract(rmsh.c, rmsh.focus)))[:2],
+                                                       rmsh.phi)
 
 integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b

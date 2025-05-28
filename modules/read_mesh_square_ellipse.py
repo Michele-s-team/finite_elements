@@ -29,6 +29,9 @@ b = 0.1
 phi = np.pi / 8
 # CHANGE PARAMETERS HERE
 
+focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
+
+
 
 # test for surface elements
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
