@@ -74,6 +74,23 @@ def circle_arc(r, cr, theta_min, theta_max, t):
     return [np.add(cr, r * np.array([np.cos(theta_t), np.sin(theta_t)])).tolist(),
             (r * (theta_max - theta_min) * np.array([- np.sin(theta_t), np.cos(theta_t)])).tolist()]
 
+'''
+an ellipse arc
+Input values:
+- 'a', 'b': the ellipse major and minor axes
+- 'c': the ellipse center (an array of two points)
+- 'theta_min', 'theta_max': the minimal and maxmimal values of the polar angles of the arg, respectively
+- 't' : the parametric coordinate of the ellipse arc, 0<=t<1
+Return values:
+- the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
+'''
+
+def ellipse_arc(a, b, c, theta_min, theta_max, t):
+    theta_t = theta_min + (theta_max - theta_min) * t
+
+    return [np.add(c, np.array([a * np.cos(theta_t), b * np.sin(theta_t)])).tolist(),
+            ((theta_max - theta_min) * np.array([- a * np.sin(theta_t), b * np.cos(theta_t)])).tolist()]
+
 
 '''
 return the curvilinear integral of a function  along a curve 
