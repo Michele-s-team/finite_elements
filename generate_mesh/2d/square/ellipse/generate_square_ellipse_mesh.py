@@ -1,10 +1,10 @@
 '''
-generate a mesh given by a square with a rudder-spahed hole in it
+generate a mesh given by a square with a ellipse-shaped hole in it: the ellipse has the shape of an ellipse
 
 run it with
-python3 generate_square_rudder_mesh.py [resolution] [output directory]
+    python3 generate_square_ellipse_mesh.py [resolution] [output directory]
 example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_rudder_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
@@ -19,6 +19,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as cal
 import input_output as io
 import mesh as msh
 
@@ -46,8 +47,8 @@ c = [L / 2, h / 2, 0]
 a = 0.2
 # ellipse semi-minor axis
 b = 0.1
-# rotation angle of the ellipse with respect to the x axis
-theta = np.pi / 8
+# rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
+theta = np.pi / 4
 # CHANGE PARAMETERS HERE
 
 
@@ -58,7 +59,7 @@ print("resolution = ", resolution)
 print(f'output_directory = "{output_directory}"')
 
 # left focal point  of the ellipse
-focus = np.subtract(c, [a * np.sqrt(a ** 2 - b ** 2), 0, 0])
+focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
@@ -76,11 +77,23 @@ channel_lines = [model.add_line(my_points[i], my_points[i + 1])
 
 channel_loop = model.add_curve_loop(channel_lines)
 
-p_ellipse_c = model.add_point(c, mesh_size=resolution)
-p_ellipse_r = model.add_point(np.add(c, [a, 0, 0]), mesh_size=resolution)
-p_ellipse_t = model.add_point(np.add(c, [0, b, 0]), mesh_size=resolution)
-p_ellipse_l = model.add_point(np.subtract(c, [a, 0, 0]), mesh_size=resolution)
-p_ellipse_b = model.add_point(np.subtract(c, [0, b, 0]), mesh_size=resolution)
+p_ellipse_c = model.add_point(
+    np.add(focus, np.dot(cal.R_z(theta), np.subtract(c, focus)))
+    , mesh_size=resolution)
+p_ellipse_r = model.add_point(
+    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.add(c, [a, 0, 0]), focus))),
+    mesh_size=resolution)
+p_ellipse_t = model.add_point(
+    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.add(c, [0, b, 0]), focus))),
+    mesh_size=resolution)
+p_ellipse_l = model.add_point(
+    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
+    mesh_size=resolution)
+p_ellipse_b = model.add_point(
+    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.subtract(c, [0, b, 0]), focus))),
+    mesh_size=resolution)
+# p_ellipse_focus = model.add_point(focus, mesh_size=resolution)
+
 model.synchronize()
 
 ellipse_arc_rt = model.add_ellipse_arc(p_ellipse_r, p_ellipse_c, p_ellipse_r, p_ellipse_t)
@@ -92,8 +105,6 @@ model.synchronize()
 ellipse_lines = [ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br]
 ellipse_loop = model.add_curve_loop(ellipse_lines)
 model.synchronize()
-
-# circle_r = model.add_circle(c, r, mesh_size=resolution)
 
 plane_surface = model.add_plane_surface(channel_loop, holes=[ellipse_loop])
 
