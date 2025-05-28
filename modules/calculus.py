@@ -329,12 +329,39 @@ def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
 
 
 '''
+compute the surface integral of a function over an ellipse
+Input values 
+- 'f': the function f([x, y])
+- 'a', 'b': the major and minor axes of the ellipse, respectively
+- 'c': the center of the ellipse
+- 'phi' : the rotation angle of the major axis with respct to the x axis
+
+Return value: 
+- \int_{ellipse} dx dy f
+
+The integral is made with the change of variable : 
+x = a rho cos theta
+y = b rho sin theta
+
+J = {{a cos theta,- a rho sin theta},{b sin that, b rho cos theta}}
+|J| = a b rho cos^2 theta + a b  rho sin^2 that = a b rho
+'''
+
+def surface_integral_ellipse(f, a, b, c, phi):
+    f_swapped = lambda x, y: f([y, x])
+
+    return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + b * rho * np.sin(theta), c[0] + a * rho * np.cos(theta)), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
+
+
+
+'''
 compute the surface integral of a function on a sphere
 Input values 
 - 'f': the function f([x, y, z])
 - 'r', 'c_r': radius and center of the ball
 Return values: 
 - \int ds_sphere f
+
 '''
 
 
