@@ -79,17 +79,18 @@ an ellipse arc
 Input values:
 - 'a', 'b': the ellipse major and minor axes
 - 'c': the ellipse center (an array of two points)
+- 'phi': the angle by which the major axis is rotated with respect to the x axis
 - 'theta_min', 'theta_max': the minimal and maxmimal values of the polar angles of the arg, respectively
 - 't' : the parametric coordinate of the ellipse arc, 0<=t<1
 Return values:
 - the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
 '''
 
-def ellipse_arc(a, b, c, theta_min, theta_max, t):
+def ellipse_arc(a, b, c, phi, theta_min, theta_max, t):
     theta_t = theta_min + (theta_max - theta_min) * t
 
-    return [np.add(c, np.array([a * np.cos(theta_t), b * np.sin(theta_t)])).tolist(),
-            ((theta_max - theta_min) * np.array([- a * np.sin(theta_t), b * np.cos(theta_t)])).tolist()]
+    return [np.add(c, np.dot(R(phi), [a * np.cos(theta_t), b * np.sin(theta_t)])).tolist(),
+            ((theta_max - theta_min) * np.dot(R(phi), [- a * np.sin(theta_t), b * np.cos(theta_t)])).tolist() ]
 
 
 '''
@@ -97,13 +98,14 @@ an ellipse
 Input values:
 - 'a', 'b': the ellipse major and minor axes
 - 'c': the ellipse center (an array of two points)
+- 'phi': the angle by which the major axis is rotated with respect to the x axis
 - 't' : the parametric coordinate of the ellipse, 0<=t<1
 Return values:
 - the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
 '''
 
-def ellipse(a, b, c, t):
-    return ellipse_arc(a, b, c, 0, 2 * np.pi, t)
+def ellipse(a, b, c, phi, t):
+    return ellipse_arc(a, b, c, phi, 0, 2 * np.pi, t)
 
 
 '''
@@ -182,11 +184,12 @@ Input values:
 - 'f': the function f(x[0], x[1])
 - 'a', 'b': the ellipse minor and major axes
 - 'c': the circle center (an array of two points)
+- 'phi': the angle by which the major axis is rotated with respect to the x axis
 Return values: 
-\int_ellipse f dl
+    \int_ellipse f dl
 '''
-def curve_integral_ellipse(f, a, b, c):
-    ellipse_curve = lambda t: ellipse(a, b, c, t)
+def curve_integral_ellipse(f, a, b, c, phi):
+    ellipse_curve = lambda t: ellipse(a, b, c, phi, t)
     return curve_integral(f, ellipse_curve)
 
 '''

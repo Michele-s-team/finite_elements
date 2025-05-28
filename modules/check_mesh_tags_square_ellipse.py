@@ -51,7 +51,7 @@ integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.L, 
 integral_exact_ds_t = cal.curve_integral_line(function_test_integrals, [0, rmsh.h], [rmsh.L, rmsh.h])
 integral_exact_ds_b = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.L, 0])
 
-integral_exact_ds_ellipse = cal.curve_integral_circle(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_ds_ellipse = cal.curve_integral_ellipse(function_test_integrals, rmsh.a, rmsh.b, [rmsh.c[0], rmsh.c[1]], rmsh.phi)
 
 integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
@@ -74,7 +74,7 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lr, fu
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb, function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square'))
-# test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_ellipse, function_test_integrals_fenics, rmsh.ds_circle, '\int f ds_circle'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_ellipse, function_test_integrals_fenics, rmsh.ds_ellipse, '\int f ds_ellipse'))
 
 # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 

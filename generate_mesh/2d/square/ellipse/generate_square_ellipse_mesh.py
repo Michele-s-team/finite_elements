@@ -4,7 +4,7 @@ generate a mesh given by a square with a ellipse-shaped hole in it: the ellipse 
 run it with
     python3 generate_square_ellipse_mesh.py [resolution] [output directory]
 example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py 0.1 $SOLUTION_PATH
+    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
@@ -47,13 +47,13 @@ a = 0.2
 # ellipse semi-minor axis
 b = 0.1
 # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-theta = np.pi / 4
+phi = np.pi/8
 # CHANGE PARAMETERS HERE
 
 
 print("L = ", L)
 print("h = ", h)
-print(f"c = {c}, a = {a}, b = {b}, theta = {theta}")
+print(f"c = {c}, a = {a}, b = {b}, phi = {phi}")
 print("resolution = ", resolution)
 print(f'output_directory = "{output_directory}"')
 
@@ -77,19 +77,19 @@ channel_lines = [model.add_line(my_points[i], my_points[i + 1])
 channel_loop = model.add_curve_loop(channel_lines)
 
 p_ellipse_c = model.add_point(
-    np.add(focus, np.dot(cal.R_z(theta), np.subtract(c, focus)))
+    np.add(focus, np.dot(cal.R_z(phi), np.subtract(c, focus)))
     , mesh_size=resolution)
 p_ellipse_r = model.add_point(
-    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.add(c, [a, 0, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.add(c, [a, 0, 0]), focus))),
     mesh_size=resolution)
 p_ellipse_t = model.add_point(
-    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.add(c, [0, b, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.add(c, [0, b, 0]), focus))),
     mesh_size=resolution)
 p_ellipse_l = model.add_point(
-    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
     mesh_size=resolution)
 p_ellipse_b = model.add_point(
-    np.add(focus, np.dot(cal.R_z(theta), np.subtract(np.subtract(c, [0, b, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.subtract(c, [0, b, 0]), focus))),
     mesh_size=resolution)
 # p_ellipse_focus = model.add_point(focus, mesh_size=resolution)
 
