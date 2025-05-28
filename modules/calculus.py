@@ -93,6 +93,20 @@ def ellipse_arc(a, b, c, theta_min, theta_max, t):
 
 
 '''
+an ellipse
+Input values:
+- 'a', 'b': the ellipse major and minor axes
+- 'c': the ellipse center (an array of two points)
+- 't' : the parametric coordinate of the ellipse, 0<=t<1
+Return values:
+- the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
+'''
+
+def ellipse(a, b, c, t):
+    return ellipse_arc(a, b, c, 0, 2 * np.pi, t)
+
+
+'''
 return the curvilinear integral of a function  along a curve 
 Input values:
 - 'f': the function f(x[0], x[1])
