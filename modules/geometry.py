@@ -161,3 +161,15 @@ Return values:
 '''
 def from_tangent_normal_to_3D_space(omega, v_t, v_n):
     return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
+
+
+'''
+return the shape of a scalar, vector or tensor t
+Input values: 
+- 't': the scalar, vector or tensor
+Return values:
+- the shape: [1] for a scalar, [number_of_components] for a vector with 'number_of_components' components', [3,3] for a 3x3 tensor, etc... 
+'''
+def shape(t):
+    shape = t.function_space().ufl_element().value_shape()
+    return [1] if shape == () else list(shape)
