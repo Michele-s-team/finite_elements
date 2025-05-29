@@ -19,7 +19,7 @@ i, j, k = ufl.indices(3)
 
 # CHANGE PARAMETERS HERE
 exponent = 3
-psi = np.pi/20
+psi = np.pi/10
 # CHANGE PARAMETERS HERE
 
 class u_in_expression(UserExpression):
