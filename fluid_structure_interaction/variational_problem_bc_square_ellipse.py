@@ -24,7 +24,7 @@ exponent = 3
 
 class u_in_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = 0.1
         values[1] = 0
 
     def value_shape(self):
