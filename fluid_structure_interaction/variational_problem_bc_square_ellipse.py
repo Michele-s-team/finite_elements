@@ -18,29 +18,29 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j = ufl.indices(2)
 
 
-class u_exact_expression(UserExpression):
+class u_in_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-        values[1] = 1 + x[0] ** 2 - 2 * x[1] ** 2
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (1,)
+
+class u_out_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (1,)
 
 
-class laplacian_u_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 6
-        values[1] = -2
+fsp.u_in.interpolate(u_in_expression(element=fsp.U.ufl_element()))
+fsp.u_out.interpolate(u_out_expression(element=fsp.U.ufl_element()))
 
-    def value_shape(self):
-        return (1,)
-
-
-fsp.u_exact.interpolate(u_exact_expression(element=fsp.U.ufl_element()))
-fsp.f.interpolate(laplacian_u_expression(element=fsp.U.ufl_element()))
-
-bc_u = DirichletBC(fsp.U, fsp.u_exact, rmsh.boundary)
-bcs = [bc_u]
+bc_u_in = DirichletBC(fsp.U, fsp.u_in, rmsh.boundary_ellipse)
+bc_u_out = DirichletBC(fsp.U, fsp.u_out, rmsh.boundary_square)
+bcs = [bc_u_in, bc_u_out]
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u[j].dx(i) * fsp.nu_u[j].dx(i) + fsp.f[j] * fsp.nu_u[j]) * rmsh.dx \

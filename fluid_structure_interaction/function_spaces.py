@@ -12,7 +12,8 @@ T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(lmsh.mesh.
 u = Function(U)
 nu_u = TestFunction(U)
 J_u = TrialFunction(U)
-u_exact = Function(U)
+u_in = Function(U)
+u_out = Function(U)
 f = Function(U)
 
 t = Function(T)
