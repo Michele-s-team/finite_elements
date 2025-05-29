@@ -44,8 +44,8 @@ bc_u_out = DirichletBC(fsp.U, fsp.u_out, rmsh.boundary_square)
 bcs = [bc_u_in, bc_u_out]
 
 # variational functional for the original problem
-F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u)[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
+F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, K, mu)[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
-# variational functional for post-processing problem (pp) 
+# variational functional for post-processing problem (pp)
 # F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
 #        - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds

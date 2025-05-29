@@ -45,3 +45,31 @@ Return values:
 def S(u, K, mu):
     I = ufl.Identity(len(u))
     return as_tensor(K * E(u)[k, k] * I[i, j] + 2 * mu * (E(u)[i, j] - E(u)[k, k] / len(u) * I[i, j]), (i, j))
+
+
+'''
+fictitious bulk modulus which depends on the deformation-gradient tensor
+Input values:
+- 'u': displacement vector field
+- 'exponent': a power exponent for the determinant of F
+Return values:
+- 1/det(F(u))^exponent
+'''
+
+
+def K(u, exponent):
+    return 1 / ((ufl.det(F(u))) ** exponent)
+
+
+'''
+fictitious  modulus of hydrostatic compression, which depends on the deformation-gradient tensor
+Input values:
+- 'u': displacement vector field
+- 'exponent': a power exponent for the determinant of F
+Return values:
+- 1/det(F(u))^exponent
+'''
+
+
+def mu(u, exponent):
+    return 1 / ((ufl.det(F(u))) ** exponent)
