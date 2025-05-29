@@ -21,3 +21,12 @@ xdmffile_check.parameters.update({"functions_share_mesh": True, "rewrite_functio
 io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               lmsh.mesh, 'scalar')
+
+
+#test: write tensor to xdmf file
+import solution_paths as solpath
+import elasticity as ela
+xdmffile = XDMFFile(solpath.xdmf_file_path +   't.xdmf')
+xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+xdmffile.write(project(ela.F(fsp.u), fsp.T), 0)
+xdmffile.close()

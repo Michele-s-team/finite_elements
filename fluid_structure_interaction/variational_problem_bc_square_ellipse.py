@@ -7,13 +7,11 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
 import boundary_geometry as bgeo
 import elasticity as ela
 import geometry as geo
 import function_spaces as fsp
 import switch_problem as swi
-
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -38,12 +36,8 @@ class laplacian_u_expression(UserExpression):
         return (1,)
 
 
-
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.U.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.U.ufl_element()))
-
-
-
 
 bc_u = DirichletBC(fsp.U, fsp.u_exact, rmsh.boundary)
 bcs = [bc_u]

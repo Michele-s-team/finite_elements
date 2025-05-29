@@ -6,6 +6,7 @@ import load_mesh as lmsh
 function_space_degree = 1
 
 U = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree)
+T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(lmsh.mesh.topology().dim(), lmsh.mesh.topology().dim()))
 
 # Define variational problem
 u = Function(U)
@@ -13,6 +14,10 @@ nu_u = TestFunction(U)
 J_u = TrialFunction(U)
 u_exact = Function(U)
 f = Function(U)
+
+t = Function(T)
+
+
 
 # Define post-processing (pp) variational problem
 # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
