@@ -18,11 +18,6 @@ i, j, k, l = ufl.indices(4)
 xdmffile_check = XDMFFile(rarg.args.output_directory + "/check.xdmf")
 xdmffile_check.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
-xdmffile_check.write(project(fsp.hess_u[i, i], fsp.Q), 0)
-xdmffile_check.write(fsp.f, 0)
-xdmffile_check.write(project(fsp.hess_u[i, i] - fsp.f, fsp.Q), 0)
-xdmffile_check.close()
-
 io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               lmsh.mesh, 'scalar')
