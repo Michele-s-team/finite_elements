@@ -15,7 +15,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j = ufl.indices(2)
+i, j, k = ufl.indices(3)
 
 
 class u_in_expression(UserExpression):
@@ -25,6 +25,7 @@ class u_in_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+
 
 class u_out_expression(UserExpression):
     def eval(self, values, x):
@@ -42,12 +43,9 @@ bc_u_in = DirichletBC(fsp.U, fsp.u_in, rmsh.boundary_ellipse)
 bc_u_out = DirichletBC(fsp.U, fsp.u_out, rmsh.boundary_square)
 bcs = [bc_u_in, bc_u_out]
 
-# variational functional for the original problem (poisson equation)
-F = (fsp.u[j].dx(i) * fsp.nu_u[j].dx(i) + fsp.f[j] * fsp.nu_u[j]) * rmsh.dx \
-    - bgeo.facet_normal[i] * ((fsp.u[j]).dx(i)) * fsp.nu_u[j] * rmsh.ds_lr \
-    - bgeo.facet_normal[i] * ((fsp.u[j]).dx(i)) * fsp.nu_u[j] * rmsh.ds_tb \
-    - bgeo.facet_normal[i] * ((fsp.u[j]).dx(i)) * fsp.nu_u[j] * rmsh.ds_ellipse
+# variational functional for the original problem
+F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u)[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
-# variational functional for post-processing problem (pp) to obtain the hessian (hess)
+# variational functional for post-processing problem (pp) 
 # F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
 #        - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
