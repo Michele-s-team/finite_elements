@@ -5,12 +5,12 @@ import ufl as ufl
 import function_spaces as fsp
 import input_output as io
 import load_mesh as lmsh
+import mesh as msh
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-
 vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
@@ -22,11 +22,13 @@ io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.
               solpath.nodal_values_path,
               lmsh.mesh, 'scalar')
 
+# #test: write tensor to xdmf file
+# import solution_paths as solpath
+# import elasticity as ela
+# xdmffile = XDMFFile(solpath.xdmf_file_path +   't.xdmf')
+# xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+# xdmffile.write(project(ela.F(fsp.u), fsp.T), 0)
+# xdmffile.close()
 
-#test: write tensor to xdmf file
-import solution_paths as solpath
-import elasticity as ela
-xdmffile = XDMFFile(solpath.xdmf_file_path +   't.xdmf')
-xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-xdmffile.write(project(ela.F(fsp.u), fsp.T), 0)
-xdmffile.close()
+
+msh.deform_mesh(lmsh.mesh, fsp.u)
