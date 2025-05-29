@@ -5,6 +5,7 @@ import gmsh
 import meshio
 import os
 import pygmsh
+from ffc.backends.ufc import dofmap_header
 
 import calculus as cal
 import geometry as geo
@@ -1071,3 +1072,34 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
     gmsh.clear()
     geometry.__exit__()
+
+
+from dolfin import *
+
+"""
+Translates the coordinates of each point in the mesh by the displacement field u.
+This function returns a new mesh with the translated coordinates.
+
+Parameters:
+- 'mesh': the original Mesh
+- 'u': the displacement field, a Function in a VectorFunctionSpace defined over the mesh
+
+Returns:
+- a Mesh object with translated coordinates
+"""
+def deform_mesh(mesh, u):
+    # Copy the mesh to avoid modifying the original
+    new_mesh = Mesh(mesh)
+
+    # Create a coordinate map for modifying vertex coordinates
+    new_mesh_coordinates = new_mesh.coordinates()
+    mesh_dimension = mesh.geometry().dim()
+
+    # Loop over all vertex coordinates and apply displacement
+    for i in range(len(new_mesh_coordinates)):
+        new_mesh_coordinate = new_mesh_coordinates[i]
+        value_u = u(new_mesh_coordinates[i])  # Evaluate displacement at this point
+        new_mesh_coordinates[i] = new_mesh_coordinate + value_u
+
+    return new_mesh
+
