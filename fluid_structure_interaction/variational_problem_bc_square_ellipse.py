@@ -1,10 +1,20 @@
 from fenics import *
 import importlib
 import ufl as ufl
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
 
 import boundary_geometry as bgeo
+import elasticity as ela
 import function_spaces as fsp
 import switch_problem as swi
+
+ela.test(fsp.u)
+
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -29,8 +39,11 @@ class laplacian_u_expression(UserExpression):
         return (1,)
 
 
+
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.U.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.U.ufl_element()))
+
+
 
 
 bc_u = DirichletBC(fsp.U, fsp.u_exact, rmsh.boundary)
