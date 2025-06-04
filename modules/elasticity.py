@@ -78,9 +78,21 @@ def mu(u, exponent):
 '''
 time derivative of F
 Input values:
-- 'u_dot': du^t(y)/dt_notes
+- 'u_dot': {du^t/dt}_notes
 Return values:
 - dF_{ij}^t/dt_notes
 '''
 def F_dot(u_dot):
     return as_tensor(u_dot[i].dx(j), (i, j))
+
+
+'''
+time derivative of E
+Input values:
+- 'u': {u^t}_notes
+- 'u_dot': {du^t/dt}_notes
+Return values:
+- dE_{ij}^t/dt_notes
+'''
+def E_dot(u, u_dot):
+    return as_tensor(1.0/2.0 * (F_dot(u_dot)[k, i] * F(u)[k, j] + F_dot(u_dot)[k, j] * F(u)[k, i]), (i, j))
