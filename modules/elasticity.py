@@ -96,3 +96,14 @@ Return values:
 '''
 def E_dot(u, u_dot):
     return as_tensor(1.0/2.0 * (F_dot(u_dot)[k, i] * F(u)[k, j] + F_dot(u_dot)[k, j] * F(u)[k, i]), (i, j))
+
+'''
+time derivative of S
+Input values:
+- 'u': {u^t}_notes
+- 'u_dot': {du^t/dt}_notesReturn values:
+- dS_{ij}^t/dt_notes
+'''
+def S_dot(u, u_dot, K, mu):
+    I = ufl.Identity(len(u))
+    return as_tensor(K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] + 2 * mu * ( E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) /len(u) * I[i, j] ), (i, j))
