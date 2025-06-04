@@ -25,12 +25,3 @@ u_dot_out = Function(U_dot)
 # f = Function(U)
 
 t = Function(T)
-
-
-
-# Define post-processing (pp) variational problem
-# hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
-# hess_u = Function(T)
-# nu_hess_u = TestFunction(T)
-# hess_u_exact = Function(T)
-# J_hess_u = TrialFunction(T)
