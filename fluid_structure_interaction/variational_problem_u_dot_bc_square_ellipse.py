@@ -41,8 +41,8 @@ class u_dot_in_expression(UserExpression):
 class u_dot_out_expression(UserExpression):
     def eval(self, values, x):
 
-    # values[0] = 0
-    # values[1] = 0
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
