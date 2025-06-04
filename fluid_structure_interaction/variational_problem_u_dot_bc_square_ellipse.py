@@ -18,21 +18,15 @@ vp = importlib.import_module(swi.vp)
 
 i, j, k = ufl.indices(3)
 
-# CHANGE PARAMETERS HERE
-# exponent = 3
-psi = np.pi / 10
-
-
-# CHANGE PARAMETERS HERE
 
 class u_dot_in_expression(UserExpression):
     def eval(self, values, x):
 
-    # x_minus_focus = np.subtract(x, rmsh.focus[:2])
-    # displacement = np.subtract(np.dot(cal.R(psi), x_minus_focus), x_minus_focus)
-    #
-    # values[0] = displacement[0]
-    # values[1] = displacement[1]
+        x_minus_focus = np.subtract(x, rmsh.focus[:2])
+        displacement_dot = vp.psi_dot * np.dot(cal.dRddtheta(vp.psi), x_minus_focus)
+
+        values[0] = displacement_dot[0]
+        values[1] = displacement_dot[1]
 
     def value_shape(self):
         return (2,)
