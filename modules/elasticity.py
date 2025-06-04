@@ -58,8 +58,8 @@ Return values:
 
 
 def K(u, exponent):
-    return 1 / ((ufl.det(F(u))) ** exponent)
-
+    # return 1 / ((ufl.det(F(u))) ** exponent)
+    return 1
 
 '''
 fictitious  modulus of hydrostatic compression, which depends on the deformation-gradient tensor
@@ -72,4 +72,5 @@ Return values:
 
 
 def mu(u, exponent):
-    return 1 / ((ufl.det(F(u))) ** exponent)
+    # return 1 / ((ufl.det(F(u))) ** exponent)
+    return 1
