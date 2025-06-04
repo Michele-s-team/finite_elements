@@ -74,3 +74,13 @@ Return values:
 def mu(u, exponent):
     # return 1 / ((ufl.det(F(u))) ** exponent)
     return 1
+
+'''
+time derivative of F
+Input values:
+- 'dudt': du^t(y)/dt_notes
+Return values:
+- dF_{ij}^t/dt_notes
+'''
+def dFdt(dudt):
+    return as_tensor( dudt[i].dx(j), (i, j))
