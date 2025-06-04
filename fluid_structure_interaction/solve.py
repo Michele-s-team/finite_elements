@@ -53,3 +53,4 @@ solver.solve()
 solver_dot.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
+prout_bc_dot = importlib.import_module(swi.prout_bc_dot)

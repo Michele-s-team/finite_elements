@@ -20,6 +20,7 @@ i, j, k = ufl.indices(3)
 # CHANGE PARAMETERS HERE
 exponent = 3
 psi = np.pi / 10
+psi_dot = -1
 
 
 # CHANGE PARAMETERS HERE
