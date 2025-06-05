@@ -62,7 +62,7 @@ def print_vector_to_csvfile(f, filename):
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
     '''
-     reschape the vector field: before reshaping the vector is, for example, 
+     reshape the vector field: before reshaping the vector is, for example, 
      [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
      and after reshaping it is
      [
@@ -169,7 +169,7 @@ Input values:
 - 'path_h5_file' the path of the h5 file
 - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
 - 'mesh': the mesh where 'f' is defined
-- 'type': the type of 'f', which may be 'scalar', 'vector' (for a vector in the tangent bundle of \Omega)  
+- 'type': the type of 'f', which may be 'scalar', 'vector'
 '''
 
 
