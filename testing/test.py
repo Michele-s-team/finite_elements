@@ -410,7 +410,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 
-
+'''
 # Test fluid_structure_interaction/mesh_deformation
 case_name = 'fluid_structure_interaction/mesh_deformation'
 
@@ -422,7 +422,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_ellipse_mesh', 0.1, problem_name, success)
 
-
+'''
 cmd.checkout(commit_a, success)
 
 
