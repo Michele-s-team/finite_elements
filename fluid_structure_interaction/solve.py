@@ -21,10 +21,16 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
+vp_dot = importlib.import_module(swi.vp_dot)
 
 J = derivative(vp.F, fsp.u, fsp.J_u)
 problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
+
+J_dot = derivative(vp_dot.F_dot, fsp.u_dot, fsp.J_u_dot)
+problem_dot = NonlinearVariationalProblem(vp_dot.F_dot, fsp.u_dot, vp_dot.bcs_dot, J_dot)
+solver_dot = NonlinearVariationalSolver(problem_dot)
+
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -38,14 +44,13 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 solver.parameters.update(params)
+solver_dot.parameters.update(params)
 
-# J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
-# problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
-# solver_pp = NonlinearVariationalSolver(problem_pp)
 
-# solve original problem
+# solve  problem for u
 solver.solve()
-# solve pp problem
-# solver_pp.solve()
+# solve problem for u_dot
+solver_dot.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
+prout_bc_dot = importlib.import_module(swi.prout_bc_dot)

@@ -19,7 +19,10 @@ i, j, k = ufl.indices(3)
 
 # CHANGE PARAMETERS HERE
 exponent = 3
-psi = np.pi/10
+psi = np.pi / 10
+psi_dot = -1
+
+
 # CHANGE PARAMETERS HERE
 
 class u_in_expression(UserExpression):
@@ -52,7 +55,3 @@ bcs = [bc_u_in, bc_u_out]
 
 # variational functional for the original problem
 F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
-
-# variational functional for post-processing problem (pp)
-# F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
-#        - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds

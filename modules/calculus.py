@@ -451,6 +451,17 @@ Return values:
 def R(theta):
     return np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
 
+'''
+derivative of R(theta) with respect to thetat
+Input values: 
+- 'theta': the rotation angle, in radians
+Return values: 
+- dR(theta)/ dtheta
+'''
+def dRddtheta(theta):
+    return np.array([[-np.sin(theta), -np.cos(theta)], [np.cos(theta), -np.sin(theta)]])
+
+
 
 '''
 given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the point and the rectangle boundary

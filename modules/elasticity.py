@@ -58,8 +58,8 @@ Return values:
 
 
 def K(u, exponent):
-    return 1 / ((ufl.det(F(u))) ** exponent)
-
+    # return 1 / ((ufl.det(F(u))) ** exponent)
+    return 1
 
 '''
 fictitious  modulus of hydrostatic compression, which depends on the deformation-gradient tensor
@@ -72,4 +72,38 @@ Return values:
 
 
 def mu(u, exponent):
-    return 1 / ((ufl.det(F(u))) ** exponent)
+    # return 1 / ((ufl.det(F(u))) ** exponent)
+    return 1
+
+'''
+time derivative of F
+Input values:
+- 'u_dot': {du^t/dt}_notes
+Return values:
+- dF_{ij}^t/dt_notes
+'''
+def F_dot(u_dot):
+    return as_tensor(u_dot[i].dx(j), (i, j))
+
+
+'''
+time derivative of E
+Input values:
+- 'u': {u^t}_notes
+- 'u_dot': {du^t/dt}_notes
+Return values:
+- dE_{ij}^t/dt_notes
+'''
+def E_dot(u, u_dot):
+    return as_tensor(1.0/2.0 * (F_dot(u_dot)[k, i] * F(u)[k, j] + F_dot(u_dot)[k, j] * F(u)[k, i]), (i, j))
+
+'''
+time derivative of S
+Input values:
+- 'u': {u^t}_notes
+- 'u_dot': {du^t/dt}_notesReturn values:
+- dS_{ij}^t/dt_notes
+'''
+def S_dot(u, u_dot, K, mu):
+    I = ufl.Identity(len(u))
+    return as_tensor(K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] + 2 * mu * ( E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) /len(u) * I[i, j] ), (i, j))
