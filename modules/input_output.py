@@ -62,7 +62,7 @@ def print_vector_to_csvfile(f, filename):
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
     '''
-     reschape the vector field: before reshaping the vector is, for example, 
+     reshape the vector field: before reshaping the vector is, for example, 
      [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
      and after reshaping it is
      [
@@ -169,7 +169,7 @@ Input values:
 - 'path_h5_file' the path of the h5 file
 - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
 - 'mesh': the mesh where 'f' is defined
-- 'type': the type of 'f', which may be 'scalar', 'vector' (for a vector in the tangent bundle of \Omega)  
+- 'type': the type of 'f', which may be 'scalar', 'vector'
 '''
 
 
@@ -283,3 +283,18 @@ To count all files  /home/fenics/shared/dynamics/channel_with_cylinder_flat_icps
 
 def count_files(path_before_asterisk, path_after_asterisk):
     return len(glob.glob(path_before_asterisk + '*' + path_after_asterisk))
+
+
+'''
+read a set of parameters in a csv file
+Input values:
+- 'file_path': the path of the file
+- 'parameter_name': the name of the parameter to be read (the name of one of the columns in the csv file)
+Return value:
+- the value of the parameter
+'''
+def read_parameter_from_csv_file(file_path, parameter_name, return_type=float):
+    with open(file_path, mode='r', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        row = next(reader)  # jump the first row with parameter names
+        return return_type(row[parameter_name])

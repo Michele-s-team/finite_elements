@@ -5,6 +5,7 @@ import gmsh
 import meshio
 import os
 import pygmsh
+from ffc.backends.ufc import dofmap_header
 
 import calculus as cal
 import geometry as geo
@@ -60,7 +61,6 @@ def read_mesh_components(mesh, dim, filename):
     return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
 
 
-
 '''
 compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference and prints out the difference
 Input values: 
@@ -71,6 +71,8 @@ Input values:
 Return values: 
 - the absolute value of the relative difference between the finite-element and the exact integral
 '''
+
+
 def test_mesh_integral(exact_value, f_test, measure, label):
     numerical_value = assemble(f_test * measure)
 
@@ -989,6 +991,7 @@ def check_mesh_symmetry(mesh, center):
     print(f'Check l <-> r symmetry: <x - center_x> = {col.Fore.BLUE}{(average_lr - center[0]):.{io.number_of_decimals}e}{col.Fore.RESET}')
     print(f'Check t <-> b symmetry: <y - center_y> = {col.Fore.BLUE}{(average_tb - center[1]):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
+
 '''
 Generate a mesh given by a ring slice
 Input values: 
@@ -1001,14 +1004,13 @@ Input values:
 Example of usage:
     msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
 '''
+
+
 def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
-
-
     output_directory = io.add_trailing_slash(os.path.dirname(output_file))
 
     # create the path for the csv file if it does not exist
     os.makedirs(output_directory, exist_ok=True)
-
 
     surface_id = 1
     circle_r_id = 2
@@ -1071,3 +1073,33 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
     gmsh.clear()
     geometry.__exit__()
+
+
+"""
+Translates the coordinates of each point in the mesh by the displacement field u.
+This function returns a new mesh with the translated coordinates.
+
+Parameters:
+- 'mesh': the original Mesh
+- 'u': the displacement field, a Function in a VectorFunctionSpace defined over the mesh
+
+Returns:
+- a Mesh object with deformed coordinates, and same ids and mesh structure
+"""
+
+
+def deform_mesh(mesh, u):
+    # Copy the mesh to avoid modifying the original
+    deformed_mesh = Mesh(mesh)
+
+    # Create a coordinate map for modifying vertex coordinates
+    new_mesh_coordinates = deformed_mesh.coordinates()
+    mesh_dimension = mesh.geometry().dim()
+
+    # Loop over all vertex coordinates and apply displacement
+    for i in range(len(new_mesh_coordinates)):
+        new_mesh_coordinate = new_mesh_coordinates[i]
+        value_u = u(new_mesh_coordinates[i])  # Evaluate displacement at this point
+        new_mesh_coordinates[i] = new_mesh_coordinate + value_u
+
+    return deformed_mesh
