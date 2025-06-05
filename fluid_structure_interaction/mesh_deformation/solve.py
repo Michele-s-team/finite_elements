@@ -1,10 +1,10 @@
 '''
 This code solves for the deformation field of a mesh, obtained from elasticity theory
 
-clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+Run with
+    python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/mesh_deformation/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse $MESH_PATH $SOLUTION_PATH
-
 '''
 
 from fenics import *
