@@ -11,24 +11,18 @@ sys.path.append(module_path)
 import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
+import read_parameters as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k = ufl.indices(3)
 
-# CHANGE PARAMETERS HERE
-exponent = 3
-psi = np.pi / 10
-psi_dot = -1
-
-
-# CHANGE PARAMETERS HERE
 
 class u_in_expression(UserExpression):
     def eval(self, values, x):
         x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement = np.subtract(np.dot(cal.R(psi), x_minus_focus), x_minus_focus)
+        displacement = np.subtract(np.dot(cal.R(rpam.psi), x_minus_focus), x_minus_focus)
 
         values[0] = displacement[0]
         values[1] = displacement[1]
@@ -54,4 +48,4 @@ bc_u_out = DirichletBC(fsp.U, fsp.u_out, rmsh.boundary_square)
 bcs = [bc_u_in, bc_u_out]
 
 # variational functional for the original problem
-F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
+F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, rpam.exponent), ela.mu(fsp.u, rpam.exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
