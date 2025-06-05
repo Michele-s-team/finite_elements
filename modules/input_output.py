@@ -293,8 +293,8 @@ Input values:
 Return value:
 - the value of the parameter
 '''
-def read_parameter_from_csv_file(file_path, parameter_name):
+def read_parameter_from_csv_file(file_path, parameter_name, return_type=float):
     with open(file_path, mode='r', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         row = next(reader)  # jump the first row with parameter names
-        return row[parameter_name]
+        return return_type(row[parameter_name])
