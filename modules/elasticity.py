@@ -107,3 +107,13 @@ Input values:
 def S_dot(u, u_dot, K, mu):
     I = ufl.Identity(len(u))
     return as_tensor(K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] + 2 * mu * ( E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) /len(u) * I[i, j] ), (i, j))
+
+'''
+tensor {G^t_{ij}}_notes
+Input values: 
+- 'u': displacement vector field
+Return values:
+- G[i,j] = {G^t_{ij}}_notes
+'''
+def G(u):
+    return ufl.inv(F(u))
