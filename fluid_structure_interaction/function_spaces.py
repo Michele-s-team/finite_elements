@@ -14,8 +14,9 @@ the variables for the problem are
 - 'u', 'u_dot' = u_notes, \dot{u}_notes
 '''
 
-theta = 0
-omega = 0
+
+theta : float
+omega : float
 
 # Define function spaces
 Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=2)
@@ -37,6 +38,11 @@ sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
 u = Function(Q_u)
 u_dot = Function(Q_u_dot)
+
+u_ellipse = Function(Q_u)
+u_square = Function(Q_u)
+u_dot_ellipse = Function(Q_u_dot)
+u_dot_square = Function(Q_u_dot)
 
 # Define test functions
 nu_v_n = TestFunction(Q_v)

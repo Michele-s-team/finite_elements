@@ -2,8 +2,9 @@ from fenics import *
 import importlib
 import ufl as ufl
 
+import calculus as cal
 import function_spaces as fsp
-import geometry as geo
+import numpy as np
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -35,12 +36,38 @@ class TangentVelocityExpression(UserExpression):
 # trial analytical expression for the  surface tension sigma(x,y)
 class SurfaceTensionExpression(UserExpression):
     def eval(self, values, x):
-        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        # values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         values[0] = 0.0
 
     def value_shape(self):
         return (1,)
+
+
+
+class u_ellipse_expression(UserExpression):
+    def eval(self, values, x):
+        x_minus_focus = np.subtract(x, rmsh.focus[:2])
+        displacement = np.subtract(np.dot(cal.R(fsp.theta), x_minus_focus), x_minus_focus)
+
+        values[0] = displacement[0]
+        values[1] = displacement[1]
+
+    def value_shape(self):
+        return (2,)
+
+
+class u_square_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+fsp.u_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u.ufl_element()))
+fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u.ufl_element()))
+
+
+
 
 
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)

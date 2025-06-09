@@ -7,7 +7,7 @@ import solution_paths as solpath
 
 def print_solution(t, step, dt):
     # include the snapshot in xdmf files
-    fi.xdmffile_v.write(fsp.v_n, t)
+    fi.xdmffile_v_n.write(fsp.v_n, t)
     fi.xdmffile_v_.write(fsp.v_, t)
     fi.xdmffile_sigma.write(fsp.sigma_n_12, t - dt / 2.0)
     fi.xdmffile_phi.write(fsp.phi, t)

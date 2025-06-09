@@ -22,13 +22,16 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+
 import function_spaces as fsp
 import runtime_arguments as rarg
 import switch_problem as swi
+
 import print_out_solution as pr_sol
 
+
 rmsh = importlib.import_module(swi.rmsh)
-vp = importlib.import_module(swi.vp)
+vp = importlib.import_module(swi.vp_fluid)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -58,7 +61,7 @@ for n in range(vp.num_steps):
     t += vp.dt
     step += 1
 
-    vp = importlib.import_module(swi.vp)
+    vp = importlib.import_module(swi.vp_fluid)
 
     # step 1
     J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
@@ -94,3 +97,4 @@ for n in range(vp.num_steps):
     print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
 
 print("... done.", flush=True)
+
