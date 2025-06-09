@@ -46,11 +46,6 @@ class SurfaceTensionExpression(UserExpression):
         return (1,)
 
 
-
-
-
-
-
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
 
 bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
@@ -64,15 +59,15 @@ bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
 bc_phi = [bc_phi_outflow]
 
 # Define variational problem for step 1
-# step 1 for v
-F1 = ( \
-                 rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                        + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu_v_n[i] \
-                 + fsp.sigma_n_32 * (fsp.nu_v_n[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu_v_n[j]).dx(i) \
-         ) * rmsh.dx
+# step 1 for v_
+F_v_ = ( \
+                   rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
+                          + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu_v_n[i] \
+                   + fsp.sigma_n_32 * (fsp.nu_v_n[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu_v_n[j]).dx(i) \
+           ) * rmsh.dx
 
-# step 2
-F2 = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.nu_phi) * rmsh.dx
+# step 2 for phi
+F_phi = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.nu_phi) * rmsh.dx
 
-# Define variational problem for step 3
-F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx
+# step 3 for v_n
+F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx

@@ -78,7 +78,7 @@ bc_u_square = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.boundary_square)
 bcs = [bc_u_ellipse, bc_u_square]
 
 # variational functional for the original problem
-F = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
+F_u = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
 
 
@@ -89,7 +89,7 @@ bc_u_dot_ellipse = DirichletBC(fsp.Q_u_dot, fsp.u_dot_ellipse, rmsh.boundary_ell
 bc_u_dot_square = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.boundary_square)
 bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
 
-F_dot = ( \
+F_u_dot = ( \
                     (ela.F_dot(fsp.u_dot)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] \
                      + ela.F(fsp.u)[k, j] * ela.S_dot(fsp.u, fsp.u_dot, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i]) \
                     * (fsp.nu_u_dot[k].dx(i))) * rmsh.dx
