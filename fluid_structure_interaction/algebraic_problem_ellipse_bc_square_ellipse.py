@@ -26,7 +26,7 @@ i, j, k, l = ufl.indices(4)
 
 class dyds_expression(UserExpression):
     def eval(self, values, x):
-        s = 1 / (2 * np.pi) * atan_quad([rmsh.a * (x[1] - rmsh.c[1]), rmsh.b * (x[0] - rmsh.c[0])])
+        s = 1 / (2 * np.pi) * atan_quad([rmsh.b * (x[0] - rmsh.c[0]), rmsh.a * (x[1] - rmsh.c[1])])
 
         t = cal.ellipse(rmsh.a, rmsh.b, rmsh.c[:2], 0, s)[1]
 
