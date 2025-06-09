@@ -1,7 +1,6 @@
 from fenics import *
 import dolfin
 
-import calculus as calc
 import load_mesh as lmsh
 import mesh as msh
 import numpy as np
