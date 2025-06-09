@@ -4,23 +4,50 @@ this module solves for the variables theta, omega whic define the state of the e
 
 from fenics import *
 import importlib
+import numpy as np
 import ufl as ufl
 
 import calculus as cal
+import function_spaces as fsp
 import geometry as geo
+import input_output as io
+import load_mesh as lmsh
 import read_parameters as rpam
+import solution_paths as solpath
 import switch_problem as swi
+from calculus import atan_quad
 
 rmsh = importlib.import_module(swi.rmsh)
 
 dt = rpam.T / rpam.num_steps  # time step size
 
-
 i, j, k, l = ufl.indices(4)
 
 
-print(f'curve = {cal.ellipse(rmsh.a, rmsh.b,rmsh.c, rmsh.phi, 0.5)})
+class dyds_expression(UserExpression):
+    def eval(self, values, x):
+        s = 1 / (2 * np.pi) * atan_quad([rmsh.a * (x[1] - rmsh.c[1]), rmsh.b * (x[0] - rmsh.c[0])])
 
-domega = assemble(Constant(1) * rmsh.ds_ellipse)
+        t = cal.ellipse(rmsh.a, rmsh.b, rmsh.c[:2], 0, s)[1]
 
-print(f'domega = {domega}')
+        # print(f't={t}')
+
+        values[0] = t[0]
+        values[1] = t[1]
+
+    def value_shape(self):
+        return (2,)
+
+fsp.dyds.interpolate(dyds_expression(element=fsp.Q_dyds.ufl_element()))
+
+io.full_print(fsp.dyds, 'dyds', \
+              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
+              lmsh.mesh, 'vector')
+
+
+# print(f'curve = {cal.ellipse(rmsh.a, rmsh.b, rmsh.c[:2], rmsh.phi, 0.5)}')
+
+# domega = assemble(1/sqrt(fsp.dyds[i] * fsp.dyds[i]) * rmsh.ds_ellipse)
+# domega = assemble(Constant(1) * rmsh.ds_ellipse)
+
+# print(f'domega = {domega}')

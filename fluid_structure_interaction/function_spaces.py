@@ -21,11 +21,15 @@ theta_n_1 : float
 omega_n_1 : float
 
 # Define function spaces
-Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=2)
-Q_v_ = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=2)
+Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2)
+Q_v_ = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_phi = FunctionSpace(lmsh.mesh, 'P', 1)
 Q_u = VectorFunctionSpace(lmsh.mesh, 'P', 1)
 Q_u_dot = VectorFunctionSpace(lmsh.mesh, 'P', 1)
+
+# function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
+Q_dyds = VectorFunctionSpace(lmsh.mesh, 'P', 2)
+
 
 
 # Define functions for solutions at previous and current time steps
@@ -45,6 +49,7 @@ u_ellipse = Function(Q_u)
 u_square = Function(Q_u)
 u_dot_ellipse = Function(Q_u_dot)
 u_dot_square = Function(Q_u_dot)
+dyds = Function(Q_dyds)
 
 # Define test functions
 nu_v_n = TestFunction(Q_v)

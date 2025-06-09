@@ -1,0 +1,59 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      1568,         51]
+NotebookOptionsPosition[      1103,         35]
+NotebookOutlinePosition[      1522,         52]
+CellTagsIndexPosition[      1479,         49]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"ClearAll", "[", "\"\<Global`*\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.9479161635527973`*^9, 3.947916163554933*^9}},
+ CellLabel->
+  "In[510]:=",ExpressionUUID->"4b96183c-f90e-4be4-8c5e-7bf224e15c39"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"a", "=", "0.2"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"b", "=", "0.1"}], ";"}], "\[IndentingNewLine]"}], "Input",
+ CellChangeTimes->{{3.9584681903457527`*^9, 3.958468235004897*^9}},
+ CellLabel->
+  "In[284]:=",ExpressionUUID->"901ab37b-f502-45bd-8293-78f9acd9108a"]
+},
+WindowSize->{1920, 1027},
+WindowMargins->{{1920, Automatic}, {95, Automatic}},
+Magnification->1.25,
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (March 16, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"1971ed8f-28f5-44af-aafc-3770b06311bc"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 227, 4, 36, "Input",ExpressionUUID->"4b96183c-f90e-4be4-8c5e-7bf224e15c39"],
+Cell[784, 26, 315, 7, 137, "Input",ExpressionUUID->"901ab37b-f502-45bd-8293-78f9acd9108a"]
+}
+]
+*)
+
