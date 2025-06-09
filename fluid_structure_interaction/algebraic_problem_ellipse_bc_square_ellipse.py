@@ -47,7 +47,7 @@ io.full_print(fsp.dyds, 'dyds', \
 
 # print(f'curve = {cal.ellipse(rmsh.a, rmsh.b, rmsh.c[:2], rmsh.phi, 0.5)}')
 
-# domega = assemble(1/sqrt(fsp.dyds[i] * fsp.dyds[i]) * rmsh.ds_ellipse)
+domega = assemble(1/sqrt(fsp.dyds[i] * fsp.dyds[i]) * rmsh.ds_ellipse)
 # domega = assemble(Constant(1) * rmsh.ds_ellipse)
 
-# print(f'domega = {domega}')
+print(f'domega = {domega}')
