@@ -9,22 +9,16 @@ import ufl as ufl
 import calculus as cal
 import function_spaces as fsp
 import numpy as np
+import read_parameters as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-# CHANGE PARAMETERS HERE
-T = 0.1
-num_steps = int(10)
+dt = rpam.T / rpam.num_steps  # time step size
 
-dt = T / num_steps  # time step size
-rho = 1.0
-mu = 0.001
-
-
-# CHANGE PARAMETERS HERE
+print(f"xxx T = {rpam.T}")
 
 
 # trial analytical expression for a vector
@@ -61,13 +55,13 @@ bc_phi = [bc_phi_outflow]
 # Define variational problem for step 1
 # step 1 for v_
 F_v_ = ( \
-                   rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
+                   rpam.rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
                           + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu_v_n[i] \
-                   + fsp.sigma_n_32 * (fsp.nu_v_n[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu_v_n[j]).dx(i) \
+                   + fsp.sigma_n_32 * (fsp.nu_v_n[i]).dx(i) + rpam.mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu_v_n[j]).dx(i) \
            ) * rmsh.dx
 
 # step 2 for phi
-F_phi = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.nu_phi) * rmsh.dx
+F_phi = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rpam.rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.nu_phi) * rmsh.dx
 
 # step 3 for v_n
-F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx
+F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx

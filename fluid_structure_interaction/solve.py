@@ -12,7 +12,6 @@ Note that all sections of the code which need to be changed when an external par
 #CHANGE PARAMETERS HERE
 """
 
-import colorama as col
 import dolfin
 from fenics import *
 import importlib
@@ -31,20 +30,18 @@ import print_out_solution as pr_sol
 
 
 rmsh = importlib.import_module(swi.rmsh)
-vp = importlib.import_module(swi.vp_fluid)
+ap_fluid = importlib.import_module(swi.ap_ellipse)
+vp_fluid = importlib.import_module(swi.vp_fluid)
+vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
-print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 
-print("mu = ", vp.mu)
-print("T = ", vp.T)
-print("N = ", vp.num_steps)
-
+'''
 # set the initial profiles
 fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
@@ -98,3 +95,4 @@ for n in range(vp.num_steps):
 
 print("... done.", flush=True)
 
+'''

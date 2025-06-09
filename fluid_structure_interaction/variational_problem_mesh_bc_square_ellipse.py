@@ -10,22 +10,14 @@ import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
 import numpy as np
+import read_parameters as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-# CHANGE PARAMETERS HERE
-T = 0.1
-num_steps = int(10)
-
 dt = T / num_steps  # time step size
-rho = 1.0
-mu = 0.001
-exponent = 0
-# CHANGE PARAMETERS HERE
-
 
 
 class u_ellipse_expression(UserExpression):
@@ -78,9 +70,7 @@ bc_u_square = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.boundary_square)
 bcs = [bc_u_ellipse, bc_u_square]
 
 # variational functional for the original problem
-F_u = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
-
-
+F_u = (ela.F(fsp.u)[k, j] * ela.S(fsp.u, ela.K(fsp.u, rpam.exponent), ela.mu(fsp.u, rpam.exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
 fsp.u_dot_ellipse.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_dot.ufl_element()))
 fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
@@ -90,8 +80,6 @@ bc_u_dot_square = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.boundary_squar
 bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
 
 F_u_dot = ( \
-                    (ela.F_dot(fsp.u_dot)[k, j] * ela.S(fsp.u, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i] \
-                     + ela.F(fsp.u)[k, j] * ela.S_dot(fsp.u, fsp.u_dot, ela.K(fsp.u, exponent), ela.mu(fsp.u, exponent))[j, i]) \
-                    * (fsp.nu_u_dot[k].dx(i))) * rmsh.dx
-
-
+                      (ela.F_dot(fsp.u_dot)[k, j] * ela.S(fsp.u, ela.K(fsp.u, rpam.exponent), ela.mu(fsp.u, rpam.exponent))[j, i] \
+                       + ela.F(fsp.u)[k, j] * ela.S_dot(fsp.u, fsp.u_dot, ela.K(fsp.u, rpam.exponent), ela.mu(fsp.u, rpam.exponent))[j, i]) \
+                      * (fsp.nu_u_dot[k].dx(i))) * rmsh.dx
