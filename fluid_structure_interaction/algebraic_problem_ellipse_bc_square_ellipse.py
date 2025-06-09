@@ -16,7 +16,6 @@ import read_parameters as rpam
 import solution_paths as solpath
 import switch_problem as swi
 from calculus import atan_quad
-from check_mesh_tags_square_no_circle import integral_exact_ds
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -51,4 +50,4 @@ by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellips
 '''
 integral_ellipse = assemble(1 / sqrt(fsp.dyds[i] * fsp.dyds[i]) * rmsh.ds_ellipse)
 
-print(f'domega = {integral_ellipse}')
+print(f'int_ellipse = {integral_ellipse}')
