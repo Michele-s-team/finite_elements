@@ -5,8 +5,8 @@ import load_mesh as lmsh
 
 '''
 the variables for the problem are
-- 'theta'
-- 'omega': scalar functions of t
+- 'theta_n', 'theta_n_1' : \theta^n, \theta^{n-1} in notes
+- 'omega_n', 'omega_n_1' : \omega^n, \omega^{n-1} in notes
 - 'v^n' = \textrm{v}^n_notes
 - 'v_' = \textrm{v}^*_notes
 - 'phi' = phi_notes
@@ -15,8 +15,10 @@ the variables for the problem are
 '''
 
 
-theta : float
-omega : float
+theta_n : float
+omega_n : float
+theta_n_1 : float
+omega_n_1 : float
 
 # Define function spaces
 Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=2)

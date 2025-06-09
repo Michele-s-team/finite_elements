@@ -30,7 +30,8 @@ import print_out_solution as pr_sol
 
 
 rmsh = importlib.import_module(swi.rmsh)
-ap_fluid = importlib.import_module(swi.ap_ellipse)
+ap_ellipse = importlib.import_module(swi.ap_ellipse)
+'''
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -41,7 +42,6 @@ print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
 
-'''
 # set the initial profiles
 fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)

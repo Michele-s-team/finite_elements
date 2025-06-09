@@ -23,7 +23,7 @@ dt = T / num_steps  # time step size
 class u_ellipse_expression(UserExpression):
     def eval(self, values, x):
         x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement = np.subtract(np.dot(cal.R(fsp.theta), x_minus_focus), x_minus_focus)
+        displacement = np.subtract(np.dot(cal.R(fsp.theta_n), x_minus_focus), x_minus_focus)
 
         values[0] = displacement[0]
         values[1] = displacement[1]
@@ -44,7 +44,7 @@ class u_square_expression(UserExpression):
 class u_dot_ellipse_expression(UserExpression):
     def eval(self, values, x):
         x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement_dot = fsp.omega * np.dot(cal.dRddtheta(fsp.theta), x_minus_focus)
+        displacement_dot = fsp.omega_n * np.dot(cal.dRddtheta(fsp.theta_n), x_minus_focus)
 
         values[0] = displacement_dot[0]
         values[1] = displacement_dot[1]
