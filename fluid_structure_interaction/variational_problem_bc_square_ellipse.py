@@ -59,12 +59,12 @@ bc_phi = [bc_phi_outflow]
 # step 1 for v
 F1 = ( \
                  rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                        + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu[i] \
-                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
+                        + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu_v_n[i] \
+                 + fsp.sigma_n_32 * (fsp.nu_v_n[i]).dx(i) + mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu_v_n[j]).dx(i) \
          ) * rmsh.dx
 
 # step 2
-F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx
+F2 = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.nu_phi) * rmsh.dx
 
 # Define variational problem for step 3
-F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * (fsp.phi.dx(i))) * fsp.nu[i]) * rmsh.dx
+F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx
