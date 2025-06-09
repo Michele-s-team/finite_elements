@@ -1,3 +1,7 @@
+'''
+this module solves for the fields, v^n, sigma,  which define the state of the fluid
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl

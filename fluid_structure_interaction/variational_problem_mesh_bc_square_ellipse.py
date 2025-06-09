@@ -1,3 +1,7 @@
+'''
+this module solves for the variables u, \dot{u} which define the state of the mesh
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
