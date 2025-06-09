@@ -49,7 +49,7 @@ bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
 bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
 bc_v__cylinder = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_circle)
 
-bc_phi_outflow = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
+bc_phi_outflow = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary_r)
 
 # boundary conditions for the surface_tension p
 bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]

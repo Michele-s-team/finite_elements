@@ -30,6 +30,8 @@ phi = 0
 
 focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
 
+print(f'L = {L}, h = {h}, c = {c}, a = {a}, b = {b}, phi = {phi}, focus = {focus}')
+
 
 
 # test for surface elements

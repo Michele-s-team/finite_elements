@@ -38,8 +38,6 @@ print("Output directory", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 
-print("L = ", rmsh.L)
-print("h = ", rmsh.h)
 print("mu = ", vp.mu)
 print("T = ", vp.T)
 print("N = ", vp.num_steps)
@@ -47,7 +45,7 @@ print("N = ", vp.num_steps)
 # set the initial profiles
 fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp.SurfaceTensionExpression(element=fsp.Q.ufl_element()))
+fsp.sigma_n_12.interpolate(vp.SurfaceTensionExpression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
 
