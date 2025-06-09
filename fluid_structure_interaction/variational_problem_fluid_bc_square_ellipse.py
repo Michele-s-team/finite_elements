@@ -47,29 +47,6 @@ class SurfaceTensionExpression(UserExpression):
 
 
 
-class u_ellipse_expression(UserExpression):
-    def eval(self, values, x):
-        x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement = np.subtract(np.dot(cal.R(fsp.theta), x_minus_focus), x_minus_focus)
-
-        values[0] = displacement[0]
-        values[1] = displacement[1]
-
-    def value_shape(self):
-        return (2,)
-
-
-class u_square_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-fsp.u_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u.ufl_element()))
-fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u.ufl_element()))
-
 
 
 
