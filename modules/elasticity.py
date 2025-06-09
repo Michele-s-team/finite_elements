@@ -146,3 +146,14 @@ Return values:
 def var_sigma_tensor(var_sigma, var_v, u, eta):
     I = ufl.Identity(len(u))
     return as_tensor(var_sigma * I[i, j] + eta * (G(u)[k, j] * (var_v[i]).dx(k) + G(u)[k, i] * (var_v[j]).dx(k)), (i, j))
+
+
+'''
+determinant of F
+Input values:
+- 'u': displacement vector field
+Return values:
+- det(F_{ij}(u))
+'''
+def detF(u):
+    return ufl.det(F(u))
