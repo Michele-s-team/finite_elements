@@ -24,8 +24,8 @@ print(f"xxx T = {rpam.T}")
 # trial analytical expression for a vector
 class TangentVelocityExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+        values[0] = -1.0
+        values[1] = -x[1]**2
 
     def value_shape(self):
         return (2,)
@@ -39,6 +39,7 @@ class SurfaceTensionExpression(UserExpression):
     def value_shape(self):
         return (1,)
 
+'''
 
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
 
@@ -65,3 +66,4 @@ F_phi = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rpam.rho / dt) * ((fsp.v_)[i].d
 
 # step 3 for v_n
 F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx
+'''
