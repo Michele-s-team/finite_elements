@@ -21,7 +21,6 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
 import function_spaces as fsp
 import read_parameters as rpam
 import runtime_arguments as rarg
@@ -31,6 +30,17 @@ import print_out_solution as pr_sol
 
 dt = rpam.T / rpam.num_steps  # time step size
 
+# set the solver parameters here
+params = {'nonlinear_solver': 'newton',
+          'newton_solver':
+              {
+                  'linear_solver': 'superlu',
+                  'absolute_tolerance': 1e-6,
+                  'relative_tolerance': 1e-6,
+                  'maximum_iterations': 1000000,
+                  'relaxation_parameter': 0.95,
+              }
+          }
 
 # initialize values
 fsp.theta_n = rpam.theta_0
@@ -38,27 +48,22 @@ fsp.omega_n = rpam.omega_0
 fsp.theta_n_1 = rpam.theta_0
 fsp.omega_n_1 = rpam.omega_0
 
-
 rmsh = importlib.import_module(swi.rmsh)
 ap_ellipse = importlib.import_module(swi.ap_ellipse)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
-
-
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
-
 
 # set the initial profiles
 fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
-
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping
@@ -68,6 +73,32 @@ for n in range(rpam.num_steps):
     # Update current time
     t += dt
     step += 1
+
+    # step 1)
+    ap_ellipse = importlib.reload(ap_ellipse)
+
+    fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
+    fsp.omega_n = fsp.omega_n_1 + dt / rpam.I_ellipse * ap_ellipse.M_ellipse
+
+    # step 2)
+    vp_mesh = importlib.reload(vp_mesh)
+
+    J_u = derivative(vp_mesh.F_u, fsp.u_n, fsp.J_u)
+    problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs, J_u)
+    solver_u = NonlinearVariationalSolver(problem_u)
+
+    J_u_dot = derivative(vp_mesh.F_u_dot, fsp.u_dot_n, fsp.J_u_dot)
+    problem_u_dot = NonlinearVariationalProblem(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_dot, J_u_dot)
+    solver_u_dot = NonlinearVariationalSolver(problem_u_dot)
+
+
+    solver_u.parameters.update(params)
+    solver_u_dot.parameters.update(params)
+
+    # solve for u and u_dot
+    solver_u.solve()
+    solver_u_dot.solve()
+
 
     '''
 
@@ -103,8 +134,7 @@ for n in range(rpam.num_steps):
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
-
-    #ADD UPDATE RULE FOR u_n_2
+    # ADD UPDATE RULE FOR u_n_2
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     pr_sol.print_solution(t, step, dt)
@@ -112,5 +142,3 @@ for n in range(rpam.num_steps):
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
 
 print("... done.", flush=True)
-
-
