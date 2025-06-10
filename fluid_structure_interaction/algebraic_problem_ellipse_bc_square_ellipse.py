@@ -70,6 +70,7 @@ by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellips
 '''
 
 fsp.v_n_1.interpolate(vp_fluid.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
+fsp.sigma_n_32.interpolate(vp_fluid.SurfaceTensionExpression(element=fsp.Q_phi.ufl_element()))
 
 io.full_print(fsp.v_n_1, 'v_n_1', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \

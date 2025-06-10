@@ -34,7 +34,7 @@ class TangentVelocityExpression(UserExpression):
 # trial analytical expression for the  surface tension sigma(x,y)
 class SurfaceTensionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.0
+        values[0] = x[1]**2
 
     def value_shape(self):
         return (1,)
