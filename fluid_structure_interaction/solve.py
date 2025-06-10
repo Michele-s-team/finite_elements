@@ -23,16 +23,20 @@ sys.path.append(module_path)
 
 
 import function_spaces as fsp
+import read_parameters as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
 import print_out_solution as pr_sol
 
+dt = rpam.T / rpam.num_steps  # time step size
+
+
 # initialize values
-fsp.theta_n = 0
-fsp.omega_n = 0
-fsp.theta_n_1 = 0
-fsp.omega_n_1 = 0
+fsp.theta_n = rpam.theta_0
+fsp.omega_n = rpam.omega_0
+fsp.theta_n_1 = rpam.theta_0
+fsp.omega_n_1 = rpam.omega_0
 
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -52,18 +56,20 @@ print("Output directory", rarg.args.output_directory)
 # set the initial profiles
 fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp_fluid.SurfaceTensionExpression(element=fsp.Q_phi.ufl_element()))
+fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-'''
+
 print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
-for n in range(vp.num_steps):
+for n in range(rpam.num_steps):
     # Update current time
-    t += vp.dt
+    t += dt
     step += 1
+
+    '''
 
     vp = importlib.import_module(swi.vp_fluid)
 
@@ -88,6 +94,7 @@ for n in range(vp.num_steps):
 
 
     pr_bc.print_bcs()
+    '''
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
@@ -100,10 +107,10 @@ for n in range(vp.num_steps):
     #ADD UPDATE RULE FOR u_n_2
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    pr_sol.print_solution(t, step, vp.dt)
+    pr_sol.print_solution(t, step, dt)
 
-    print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
+    print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
 
 print("... done.", flush=True)
 
-'''
+

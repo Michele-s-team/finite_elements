@@ -34,7 +34,7 @@ class v_expression(UserExpression):
 
 
 # trial analytical expression for the  surface tension sigma(x,y)
-class SurfaceTensionExpression(UserExpression):
+class sigma_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
 
