@@ -41,14 +41,12 @@ class SurfaceTensionExpression(UserExpression):
         return (1,)
 
 
-
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.h)
 bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary_l)
 bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
 
 v__profile_ellipse = Expression((f'{fsp.omega_n} * (-sin({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - cos({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))', f'{fsp.omega_n} * (cos({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - sin({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))'), element=fsp.Q_v_.ufl_element())
 bc_v__ellipse = DirichletBC(fsp.Q_v_, v__profile_ellipse, rmsh.boundary_ellipse)
-
 
 bc_phi_r = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary_r)
 
@@ -63,7 +61,7 @@ bc_phi = [bc_phi_r]
 # step 1 for v_
 F_v_ = ( \
                    rpam.rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                          + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k] ) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
+                               + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k]) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
                    + fsp.sigma_n_32 * ela.G(fsp.u_n_1)[l, i] * (fsp.nu_v_[i]).dx(l) + rpam.mu * ela.G(fsp.u_n_1)[k, j] * ((fsp.V[i]).dx(k)) * ela.G(fsp.u_n_1)[l, j] * (fsp.nu_v_[i]).dx(l) \
            ) * ela.detF(fsp.u_n_1) * rmsh.dx
 
