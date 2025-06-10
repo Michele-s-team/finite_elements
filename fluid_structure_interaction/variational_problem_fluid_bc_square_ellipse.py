@@ -39,18 +39,18 @@ class SurfaceTensionExpression(UserExpression):
     def value_shape(self):
         return (1,)
 
-'''
+
 
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
-
 bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
 bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
-bc_v__cylinder = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_circle)
+# sign
+bc_v__ellipse = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_ellipse)
 
 bc_phi_outflow = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary_r)
 
 # boundary conditions for the surface_tension p
-bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
+bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__ellipse]
 bc_phi = [bc_phi_outflow]
 
 # Define variational problem for step 1
@@ -66,4 +66,3 @@ F_phi = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rpam.rho / dt) * ((fsp.v_)[i].d
 
 # step 3 for v_n
 F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho) * (fsp.phi.dx(i))) * fsp.nu_v_n[i]) * rmsh.dx
-'''
