@@ -22,8 +22,11 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import input_output as io
+import load_mesh as lmsh
 import read_parameters as rpam
 import runtime_arguments as rarg
+import solution_paths as solpath
 import switch_problem as swi
 
 import print_out_solution as pr_sol
@@ -98,7 +101,6 @@ for n in range(rpam.num_steps):
     # solve for u and u_dot
     solver_u.solve()
     solver_u_dot.solve()
-
 
     '''
 
