@@ -24,7 +24,7 @@ print(f"xxx T = {rpam.T}")
 
 
 # trial analytical expression for a vector
-class TangentVelocityExpression(UserExpression):
+class v_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0

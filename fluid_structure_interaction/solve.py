@@ -50,7 +50,7 @@ print("Output directory", rarg.args.output_directory)
 
 
 # set the initial profiles
-fsp.v_n_1.interpolate(vp_fluid.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
+fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(vp_fluid.SurfaceTensionExpression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
