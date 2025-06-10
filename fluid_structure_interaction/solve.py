@@ -85,6 +85,8 @@ for n in range(vp.num_steps):
     solver3 = NonlinearVariationalSolver(problem3)
     solver3.solve()
 
+
+
     pr_bc.print_bcs()
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
@@ -94,6 +96,8 @@ for n in range(vp.num_steps):
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
+
+    #ADD UPDATE RULE FOR u_n_2
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     pr_sol.print_solution(t, step, vp.dt)
