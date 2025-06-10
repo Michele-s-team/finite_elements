@@ -7,6 +7,7 @@ import importlib
 import ufl as ufl
 
 import calculus as cal
+import elasticity as ela
 import function_spaces as fsp
 import numpy as np
 import read_parameters as rpam
@@ -62,8 +63,8 @@ bc_phi = [bc_phi_r]
 # step 1 for v_
 F_v_ = ( \
                    rpam.rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                          + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu_v_n[i] \
-                   + fsp.sigma_n_32 * (fsp.nu_v_n[i]).dx(i) + rpam.mu * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu_v_n[j]).dx(i) \
+                          + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k] ) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
+                   + fsp.sigma_n_32 * ela.G(fsp.u_n_1)[l, i] * (fsp.nu_v_[i]).dx(l) + rpam.mu * ela.G(fsp.u_n_1)[k, j] * ((fsp.V[i]).dx(k)) * ela.G(fsp.u_n_1)[l, j] * (fsp.nu_v_[i]).dx(l) \
            ) * rmsh.dx
 
 # step 2 for phi
