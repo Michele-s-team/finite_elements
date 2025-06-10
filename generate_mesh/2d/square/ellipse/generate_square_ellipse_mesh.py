@@ -38,14 +38,14 @@ output_directory = io.add_trailing_slash(output_directory)
 mesh_file = output_directory + "mesh.msh"
 
 # CHANGE PARAMETERS HERE
-L = 1
-h = 1
+L = 2.2
+h = 0.41
 # ellipse center
-c = [L / 2, h / 2, 0]
+c = [0.3, 0.2, 0]
 # ellipse semi-major axis
-a = 0.2
+a = 0.1
 # ellipse semi-minor axis
-b = 0.1
+b = 0.05
 # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
 phi = 0
 # CHANGE PARAMETERS HERE

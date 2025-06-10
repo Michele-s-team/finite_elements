@@ -14,8 +14,8 @@ os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
 
 csvfile = open(filename_theta_omega, 'a', newline='')
 fieldnames = [ \
-    'theta', \
-    'omega', \
+    "theta", \
+    "omega", \
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()

@@ -139,7 +139,7 @@ for n in range(rpam.num_steps):
     # 2)
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(fsp.u_n)
-    
+
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
 
