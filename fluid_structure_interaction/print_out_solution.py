@@ -47,7 +47,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_sigma.write(fsp.sigma_n_12, t - dt / 2.0)
     fi.xdmffile_phi.write(fsp.phi, t)
 
-    # 3) print the solution of the fluid problem 
+    # 3) print the solution of the fluid problem
     io.full_print(fsp.v_, 'v_bar_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.mesh, 'vector')

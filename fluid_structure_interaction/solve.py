@@ -17,16 +17,14 @@ from fenics import *
 import importlib
 import sys
 
+
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import input_output as io
-import load_mesh as lmsh
 import read_parameters as rpam
 import runtime_arguments as rarg
-import solution_paths as solpath
 import switch_problem as swi
 
 import print_out_solution as pr_sol
@@ -123,18 +121,28 @@ for n in range(rpam.num_steps):
     solver_fluid_3.solve()
 
     pr_bc.print_bcs()
-    '''
 
-    # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
+
+
+    # update the fields
+    # 1)
+    fsp.theta_n_1 = fsp.theta_n
+    fsp.omega_n_1 = fsp.omega_n
+
+    # 2)
+    fsp.u_n_2.assign(fsp.u_n_1)
+    fsp.u_n_1.assign(fsp.u_n)
+    fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
+    fsp.u_dot_n_1.assign(fsp.u_dot_n)
+
+    # 3)
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
-    # Update previous solution
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
-    # ADD UPDATE RULE FOR u_n_2
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
-'''
+
     pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)

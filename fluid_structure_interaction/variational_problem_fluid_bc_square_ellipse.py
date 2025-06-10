@@ -20,7 +20,6 @@ i, j, k, l = ufl.indices(4)
 
 dt = rpam.T / rpam.num_steps  # time step size
 
-print(f"xxx T = {rpam.T}")
 
 
 # trial analytical expression for a vector
