@@ -28,6 +28,7 @@ Q_u = VectorFunctionSpace(lmsh.mesh, 'P', 1)
 Q_u_dot = VectorFunctionSpace(lmsh.mesh, 'P', 1)
 
 # function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
+Q_y = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_dyds = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 
 
@@ -42,14 +43,20 @@ sigma_n_12 = Function(Q_phi)
 # sigma^{n-3/2}
 sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
-u = Function(Q_u)
-u_dot = Function(Q_u_dot)
+u_n = Function(Q_u)
+u_dot_n = Function(Q_u_dot)
+u_n_1 = Function(Q_u)
+u_dot_n_1 = Function(Q_u_dot)
 
 u_ellipse = Function(Q_u)
 u_square = Function(Q_u)
 u_dot_ellipse = Function(Q_u_dot)
 u_dot_square = Function(Q_u_dot)
-dyds = Function(Q_dyds)
+
+# y_ellipse = {y^s}_notes
+ys_ellipse = Function(Q_y)
+# dyds_ellipse = {dy^s/ds}_notes
+dyds_ellipse = Function(Q_dyds)
 
 # Define test functions
 nu_v_n = TestFunction(Q_v)
