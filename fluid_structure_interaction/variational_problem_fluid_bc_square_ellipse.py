@@ -44,7 +44,7 @@ class sigma_expression(UserExpression):
 
 v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.h)
 bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary_l)
-bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
+bc_v__walls = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.boundary_tb)
 
 v__profile_ellipse = Expression((f'{fsp.omega_n} * (-sin({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - cos({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))', f'{fsp.omega_n} * (cos({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - sin({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))'), element=fsp.Q_v_.ufl_element())
 bc_v__ellipse = DirichletBC(fsp.Q_v_, v__profile_ellipse, rmsh.boundary_ellipse)
