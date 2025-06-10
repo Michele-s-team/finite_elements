@@ -28,13 +28,20 @@ import switch_problem as swi
 
 import print_out_solution as pr_sol
 
+# initialize values
+fsp.theta_n = 0
+fsp.omega_n = 0
+fsp.theta_n_1 = 0
+fsp.omega_n_1 = 0
+
 
 rmsh = importlib.import_module(swi.rmsh)
 ap_ellipse = importlib.import_module(swi.ap_ellipse)
 vp_fluid = importlib.import_module(swi.vp_fluid)
-'''
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
+
+'''
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 

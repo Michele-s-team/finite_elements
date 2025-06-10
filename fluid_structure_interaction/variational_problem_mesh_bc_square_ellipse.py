@@ -17,8 +17,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-dt = T / num_steps  # time step size
-
 
 class u_ellipse_expression(UserExpression):
     def eval(self, values, x):

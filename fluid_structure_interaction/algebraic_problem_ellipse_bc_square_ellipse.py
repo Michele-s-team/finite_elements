@@ -76,11 +76,11 @@ io.full_print(fsp.v_n_1, 'v_n_1', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
               lmsh.mesh, 'vector')
 
-
-integral_ellipse = assemble( \
+# momentum of forces exerted by the fluid on the ellipse
+M_ellipse = assemble( \
     (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.mu)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 
 
 
-print(f'int_ellipse = {integral_ellipse}')
+print(f'int_ellipse = {M_ellipse}')
