@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=fluid_structure_interaction
+#SBATCH --job-name=fluid_structure_interaction_3
 #SBATCH --ntasks=1
-#SBATCH --mem=128gb
+#SBATCH --mem=8gb
 #SBATCH --time=01-00:00:00
 ##SBATCH --account=recherche_prod
 #SBATCH --partition=dev
@@ -10,7 +10,7 @@
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
 
-RUN="/mnt/beegfs/home/mcastel1/fluid_structure_interaction_1"
+RUN="/mnt/beegfs/home/mcastel1/fluid_structure_interaction_3"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
 PROBLEM="square_ellipse"
