@@ -17,7 +17,6 @@ from fenics import *
 import importlib
 import sys
 
-
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
@@ -76,12 +75,16 @@ for n in range(rpam.num_steps):
     step += 1
 
     # step 1): update theta and omega
+    print('Solving theta problem ...', flush=True)
     ap_ellipse = importlib.reload(ap_ellipse)
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
     fsp.omega_n = fsp.omega_n_1 + dt / rpam.I_ellipse * ap_ellipse.M_ellipse
+    print('... done.', flush=True)
 
     # step 2): update u and u_dot (mesh problem)
+    print('Solving mesh problem ...', flush=True)
+
     vp_mesh = importlib.reload(vp_mesh)
 
     J_u = derivative(vp_mesh.F_u, fsp.u_n, fsp.J_u)
@@ -99,30 +102,34 @@ for n in range(rpam.num_steps):
     solver_u.solve()
     solver_u_dot.solve()
 
+    print('... done.', flush=True)
+
     # step 3) update v_n and sigma_n_12 (fluid problem)
+    print('Solving fluid problem ...', flush=True)
+
     vp_fluid = importlib.reload(vp_fluid)
 
-    # step 1
+    # step 3.1
     J_fluid_1 = derivative(vp_fluid.F_v_, fsp.v_, fsp.J_v_)
     problem_fluid_1 = NonlinearVariationalProblem(vp_fluid.F_v_, fsp.v_, vp_fluid.bc_v_, J_fluid_1)
     solver_fluid_1 = NonlinearVariationalSolver(problem_fluid_1)
     solver_fluid_1.solve()
 
-    # Step 2: surface_tension correction step
+    # Step 3.2: surface_tension correction step
     J_fluid_2 = derivative(vp_fluid.F_phi, fsp.phi, fsp.J_phi)
     problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi, fsp.phi, vp_fluid.bc_phi, J_fluid_2)
     solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
     solver_fluid_2.solve()
 
-    # step 3
+    # step 3.3
     J_fluid_3 = derivative(vp_fluid.F_v_n, fsp.v_n, fsp.J_v_n)
     problem_fluid_3 = NonlinearVariationalProblem(vp_fluid.F_v_n, fsp.v_n, [], J_fluid_3)
     solver_fluid_3 = NonlinearVariationalSolver(problem_fluid_3)
     solver_fluid_3.solve()
 
+    print('... done.', flush=True)
+
     pr_bc.print_bcs()
-
-
 
     # update the fields
     # 1)
@@ -132,6 +139,7 @@ for n in range(rpam.num_steps):
     # 2)
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(fsp.u_n)
+    
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
 
