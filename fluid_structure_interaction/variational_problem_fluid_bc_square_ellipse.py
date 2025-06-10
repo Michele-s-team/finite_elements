@@ -65,7 +65,7 @@ F_v_ = ( \
                    rpam.rho * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
                           + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k] ) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
                    + fsp.sigma_n_32 * ela.G(fsp.u_n_1)[l, i] * (fsp.nu_v_[i]).dx(l) + rpam.mu * ela.G(fsp.u_n_1)[k, j] * ((fsp.V[i]).dx(k)) * ela.G(fsp.u_n_1)[l, j] * (fsp.nu_v_[i]).dx(l) \
-           ) * rmsh.dx
+           ) * ela.detF(fsp.u_n_1) * rmsh.dx
 
 # step 2 for phi
 F_phi = ((fsp.phi.dx(i)) * (fsp.nu_phi.dx(i)) + (rpam.rho / dt) * ((fsp.v_)[i].dx(i)) * fsp.nu_phi) * rmsh.dx
