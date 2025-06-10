@@ -22,7 +22,7 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
-    '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_{l + t + b + ellipse}',\
+    '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_{l + t + b}',\
     '<<(phi - r_profile_phi)^2>>_r' ,\
     '<<(n^i  \partial_i phi)^2>>_{l + t + b + ellipse}' \
     ]
@@ -37,8 +37,8 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows( [{ \
         fieldnames[0]: \
-            (sqrt( assemble( (fsp.v_[i] - vp.v__profile_l[i])  * (fsp.v_[i] - vp.v__profile_l[i]) * rmsh.ds_l ) + assemble( fsp.v_[i] * fsp.v_[i] * (rmsh.ds_t + rmsh.ds_b + rmsh.ds_ellipse) ) ) / \
-             assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_tb + rmsh.ds_ellipse) )), \
+            (sqrt( assemble( (fsp.v_[i] - vp.v__profile_l[i])  * (fsp.v_[i] - vp.v__profile_l[i]) * rmsh.ds_l ) + assemble( fsp.v_[i] * fsp.v_[i] * rmsh.ds_tb ) ) / \
+             assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_tb) )), \
         fieldnames[1]: \
             sqrt( (assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * rmsh.ds_l ) \
                    + assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * rmsh.ds_tb ) \
