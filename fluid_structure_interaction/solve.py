@@ -41,7 +41,7 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
-'''
+
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -50,12 +50,12 @@ print("Output directory", rarg.args.output_directory)
 
 
 # set the initial profiles
-fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
+fsp.v_n_1.interpolate(vp_fluid.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp.SurfaceTensionExpression(element=fsp.Q_phi.ufl_element()))
+fsp.sigma_n_12.interpolate(vp_fluid.SurfaceTensionExpression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-
+'''
 print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0

@@ -47,6 +47,8 @@ u_n = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
 u_n_1 = Function(Q_u)
 u_dot_n_1 = Function(Q_u_dot)
+u_n_2 = Function(Q_u)
+u_dot_n_2 = Function(Q_u_dot)
 
 u_ellipse = Function(Q_u)
 u_square = Function(Q_u)
