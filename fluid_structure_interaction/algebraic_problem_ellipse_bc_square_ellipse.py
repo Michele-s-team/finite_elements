@@ -25,6 +25,7 @@ dt = rpam.T / rpam.num_steps  # time step size
 i, j, k, l, m, n = ufl.indices(6)
 
 
+
 class ys_ellipse_expression(UserExpression):
     def eval(self, values, x):
         s = 1 / (2 * np.pi) * atan_quad([rmsh.b * (x[0] - rmsh.c[0]), rmsh.a * (x[1] - rmsh.c[1])])
