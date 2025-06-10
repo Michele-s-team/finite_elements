@@ -41,16 +41,18 @@ class SurfaceTensionExpression(UserExpression):
 
 
 
-v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
-bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
+v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.h)
+bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary_l)
 bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
 # sign
-bc_v__ellipse = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_ellipse)
+
+v__profile_ellipse = Expression((f'{fsp.omega_n} * (-sin({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - cos({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))', f'{fsp.omega_n} * (cos({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - sin({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))'), element=fsp.Q_v_.ufl_element())
+bc_v__ellipse = DirichletBC(fsp.Q_v_, v__profile_ellipse, rmsh.boundary_ellipse)
 
 bc_phi_outflow = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary_r)
 
 # boundary conditions for the surface_tension p
-bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__ellipse]
+bc_v_ = [bc_v__walls, bc_v__l, bc_v__ellipse]
 bc_phi = [bc_phi_outflow]
 
 # Define variational problem for step 1
