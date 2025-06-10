@@ -52,7 +52,7 @@ class dyds_ellipse_expression(UserExpression):
         return (2,)
 
 
-fsp.ys_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_y.ufl_element()))
+fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_y.ufl_element()))
 fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
 
 io.full_print(fsp.dyds_ellipse, 'dyds', \
@@ -62,8 +62,13 @@ io.full_print(fsp.dyds_ellipse, 'dyds', \
 '''
 by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellipse gives \int ds f(s)
 '''
+'''
 integral_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.c[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.mu)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
+    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.mu)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
+    / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
+'''
+integral_ellipse = assemble( \
+    ( fsp.ys_ellipse[1] ) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 
 print(f'int_ellipse = {integral_ellipse}')
