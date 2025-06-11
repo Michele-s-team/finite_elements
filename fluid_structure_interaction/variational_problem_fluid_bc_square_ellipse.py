@@ -21,7 +21,6 @@ i, j, k, l = ufl.indices(4)
 dt = rpam.T / rpam.num_steps  # time step size
 
 
-
 # trial analytical expression for a vector
 class v_expression(UserExpression):
     def eval(self, values, x):
@@ -41,7 +40,7 @@ class sigma_expression(UserExpression):
         return (1,)
 
 
-v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.h)
+v__profile_l = Expression((f'{rpam.v_l}* 4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.h)
 bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary_l)
 bc_v__walls = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.boundary_tb)
 
@@ -53,9 +52,6 @@ bc_phi_r = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary_r)
 # boundary conditions for the surface_tension p
 bc_v_ = [bc_v__l, bc_v__walls, bc_v__ellipse]
 bc_phi = [bc_phi_r]
-
-# sign
-
 
 # Define variational problem for step 1
 # step 1 for v_
