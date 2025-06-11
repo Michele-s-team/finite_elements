@@ -20,7 +20,7 @@ r_mesh = lmsh.mesh.hmin()
 L = 2.2
 h = 0.41
 # ellipse center
-c = [0.3, 0.2, 0]
+c = [0.25, 0.2, 0]
 # ellipse semi-major axis
 a = 0.1
 # ellipse semi-minor axis
