@@ -8,8 +8,8 @@ clear
 OUT=mcastel1@abacus
 
 # CHANGE PARAMETERS HERE
-SCRIPT_SLURM="script_slurm_abacus.slurm"
-# SCRIPT_SLURM="script_slurm_abacus_read_write.slurm"
+# SCRIPT_SLURM="script_slurm_abacus.slurm"
+SCRIPT_SLURM="script_slurm_abacus_read_write.slurm"
 # CHANGE PARAMETERS HERE
 
 ssh $OUT "rm -rf "$2
