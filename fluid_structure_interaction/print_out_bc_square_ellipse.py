@@ -5,10 +5,12 @@ import os
 import ufl as ufl
 
 import boundary_geometry as bgeo
+import elasticity as ela
 import function_spaces as fsp
 import geometry as geo
 import input_output as io
 import mesh as msh
+import read_parameters as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -26,8 +28,9 @@ fieldnames = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
     '<<v_bar^i v_bar_i>>_{tb}', \
     '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
-    '<<(phi - r_profile_phi)^2>>_r', \
-    '<<(n^i  \partial_i phi)^2>>_{l + t + b + ellipse}' \
+    '<<\mu G^{n-1}_{j1} \partial_j V_i>>_r', \
+    '<<(n^i  \partial_i phi)^2>>_{l + t + b + ellipse}' ,\
+    '<<phi^2>>_r'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -46,11 +49,12 @@ def print_bcs():
         fieldnames[2]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(vp.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[3]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.mu * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
+        fieldnames[4]: \
             sqrt((assemble((bgeo.facet_normal[i] * (fsp.phi.dx(i))) ** 2 * rmsh.ds_l)) \
                  / assemble(Constant(1.0) * rmsh.ds_l)), \
-        fieldnames[4]: \
-            sqrt(assemble((fsp.phi) ** 2 * rmsh.ds_r) /
-                 assemble(Constant(1.0) * rmsh.ds_r)) \
+        fieldnames[5]: \
+            f"{msh.abs_wrt_measure(fsp.phi, rmsh.ds_r):.{io.number_of_decimals}e}", \
         }])
 
     csvfile.flush()
