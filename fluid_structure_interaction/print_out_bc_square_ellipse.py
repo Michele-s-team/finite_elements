@@ -39,9 +39,9 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows([{ \
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(sqrt((vp.v__profile_l[i] - fsp.v_[i]) * (vp.v__profile_l[i] - fsp.v_[i])), rmsh.ds_l):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(ufl.sqrt((vp.v__profile_l[i] - fsp.v_[i]) * (vp.v__profile_l[i] - fsp.v_[i])), rmsh.ds_l):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(sqrt(fsp.v_[i] * fsp.v_[i]), rmsh.ds_tb):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(ufl.sqrt(fsp.v_[i] * fsp.v_[i]), rmsh.ds_tb):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
             sqrt((assemble((bgeo.facet_normal[i] * (fsp.phi.dx(i))) ** 2 * rmsh.ds_l)) \
                  / assemble(Constant(1.0) * rmsh.ds_l)), \
