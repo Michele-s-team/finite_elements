@@ -48,7 +48,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_u_n.write(fsp.u_n, t)
     fi.xdmffile_u_dot_n.write(fsp.u_dot_n, t)
 
-    # Write the deformed mesh to XDMF
+    # Write the deformed mesh to file
     deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u_n)
     with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
         xdmf.write(deformed_mesh)
