@@ -15,7 +15,7 @@ import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-vp = importlib.import_module(swi.vp_fluid)
+vp_fluid = importlib.import_module(swi.vp_fluid)
 
 i, j, k, l = ufl.indices(4)
 
@@ -43,11 +43,11 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows([{ \
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(vp.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_tb):.{io.number_of_decimals}e}", \
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(vp.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[3]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.mu * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
         fieldnames[4]: \
