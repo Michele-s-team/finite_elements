@@ -46,6 +46,7 @@ ds_ellipse = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
+ds_l_tb_ellipse = ds_l + ds_t + ds_b + ds_ellipse
 ds = ds_square + ds_ellipse
 
 import check_mesh_tags_square_ellipse

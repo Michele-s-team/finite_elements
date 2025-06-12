@@ -84,6 +84,8 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb, fu
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_square, function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_ellipse, function_test_integrals_fenics, rmsh.ds_ellipse, '\int f ds_ellipse'))
 
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l + integral_exact_ds_tb + integral_exact_ds_ellipse, function_test_integrals_fenics, rmsh.ds_l_tb_ellipse, '\int f ds_{l + tb + ellipse}'))
+
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

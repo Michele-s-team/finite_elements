@@ -29,7 +29,7 @@ fieldnames = [ \
     '<<v_bar^i v_bar_i>>_{tb}', \
     '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
     '<<\mu G^{n-1}_{j1} \partial_j V_i>>_r', \
-    '<<(n^i  \partial_i phi)^2>>_{l + t + b + ellipse}' ,\
+    '<<(G^{n-1}_{ji} nu_j G^{n-1}_{li} \partial_l phi)^2>>_{l + tb + ellipse}' ,\
     '<<phi^2>>_r'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -51,8 +51,7 @@ def print_bcs():
         fieldnames[3]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.mu * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
         fieldnames[4]: \
-            sqrt((assemble((bgeo.facet_normal[i] * (fsp.phi.dx(i))) ** 2 * rmsh.ds_l)) \
-                 / assemble(Constant(1.0) * rmsh.ds_l)), \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[j, i] * bgeo.facet_normal[j] * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l)), rmsh.ds_l_tb_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[5]: \
             f"{msh.abs_wrt_measure(fsp.phi, rmsh.ds_r):.{io.number_of_decimals}e}", \
         }])
