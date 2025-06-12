@@ -1,3 +1,6 @@
+from fenics import *
+
+
 import csv
 import files as fi
 import function_spaces as fsp
