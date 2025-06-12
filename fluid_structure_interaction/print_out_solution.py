@@ -3,6 +3,7 @@ import files as fi
 import function_spaces as fsp
 import input_output as io
 import load_mesh as lmsh
+import mesh as msh
 import os
 import solution_paths as solpath
 
@@ -43,6 +44,11 @@ def print_solution(t, step, dt):
     # include the snapshot in xdmf files
     fi.xdmffile_u_n.write(fsp.u_n, t)
     fi.xdmffile_u_dot_n.write(fsp.u_dot_n, t)
+
+    # Write the deformed mesh to XDMF
+    deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u_n)
+    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
+        xdmf.write(deformed_mesh)
 
 
     # 3) print the solution of the fluid problem
