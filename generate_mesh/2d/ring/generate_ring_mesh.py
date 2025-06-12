@@ -64,7 +64,7 @@ model.add_physical( circle_R.curve_loop.curves, "Circle R" )
 geometry.generate_mesh( 64 )
 gmsh.write( mesh_file )
 
-msh.write_mesh_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+msh.print_mesh_lines_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
 
 gmsh.clear()
 geometry.__exit__()

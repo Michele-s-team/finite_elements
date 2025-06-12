@@ -130,7 +130,7 @@ gmsh.model.mesh.generate( 2 )
 gmsh.write( msh_file_path )
 
 
-msh.write_mesh_to_csv(msh_file_path, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(msh_file_path, output_directory + 'line_vertices.csv')
 
 
 

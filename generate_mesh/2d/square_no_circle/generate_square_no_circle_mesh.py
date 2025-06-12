@@ -73,7 +73,7 @@ model.add_physical([channel_lines[1]], 'b')
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.write_mesh_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 
 gmsh.clear()

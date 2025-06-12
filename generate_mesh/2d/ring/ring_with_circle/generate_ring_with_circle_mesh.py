@@ -71,7 +71,7 @@ geometry.generate_mesh(64)
 gmsh.write(mesh_file)
 
 # Write the mesh and components to file
-msh.write_mesh_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 # Clean up
 gmsh.clear()
