@@ -153,4 +153,4 @@ print( f"Check if all line vertices are triangle vertices : {np.isin( msh.line_v
 
 #print the mesh vertices to file
 mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv" )
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv" )

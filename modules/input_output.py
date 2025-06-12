@@ -116,7 +116,7 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
 
 
 # print to the csv file 'filename' the coordinates of the vertices of 'mesh'
-def print_vertices_to_csv_file(mesh, filename):
+def print_mesh_vertices_to_csv(mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q.tabulate_dof_coordinates()
