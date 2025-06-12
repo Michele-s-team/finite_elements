@@ -2,6 +2,7 @@ import colorama as col
 import csv
 from fenics import *
 import glob
+import numpy as np
 import os
 import shutil
 
@@ -149,32 +150,40 @@ Input values:
 - 'outfile': path of the csv file
 '''
 def print_mesh_lines_to_csv(mesh, outfile):
-    # Store edges as unique pairs of vertex indices: this creates an empty python set, to be filled later with the edges present in the mesh
-    edge_set = set()
+    """
+    Export unique edges of a FEniCS mesh to CSV with 3D coordinates (padded using np.pad).
+    Compatible with 1D, 2D, and 3D meshes.
+    """
 
+    mesh.init()  # Ensure all connectivities exist
 
-    mesh.init(2)  # Initialize cell-to-vertex connectivity
-    # Map vertex index to coordinates
+    # Ensure edge-to-vertex connectivity exists
+    try:
+        mesh.init(1, 0)
+    except RuntimeError:
+        pass  # Already initialized
+
     coordinates = mesh.coordinates()
+    gdim = mesh.geometry().dim()
 
-    # Loop over all triangles (cells)
-    for cell in cells(mesh):
-        v = cell.entities(0)  # vertex indices of the triangle
-        pairs = [
-            tuple(sorted([v[0], v[1]])),
-            tuple(sorted([v[1], v[2]])),
-            tuple(sorted([v[2], v[0]])),
-        ]
-        edge_set.update(pairs)
+    edge_set = set()
+    for edge in edges(mesh):
+        v = edge.entities(0)
+        edge_set.add(tuple(sorted(v)))
 
-    # Write to CSV
     with open(outfile, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["start:0", "start:1", "start:2", "end:0", "end:1", "end:2"])
-        for v_start, v_end in edge_set:
+
+        for v_start, v_end in sorted(edge_set):
             p_start = coordinates[v_start]
             p_end = coordinates[v_end]
-            writer.writerow([*p_start, *p_end])
+
+            # Pad to 3D
+            p_start_padded = np.pad(p_start, (0, 3 - len(p_start)), mode='constant')
+            p_end_padded = np.pad(p_end, (0, 3 - len(p_end)), mode='constant')
+
+            writer.writerow(np.concatenate([p_start_padded, p_end_padded]))
 
 
 '''

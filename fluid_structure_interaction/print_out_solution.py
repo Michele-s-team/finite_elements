@@ -52,8 +52,8 @@ def print_solution(t, step, dt):
     deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u_n)
     with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
         xdmf.write(deformed_mesh)
-    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertices_mesh_n' + str(step) + '.csv')
-    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'lines_mesh_n' + str(step) + '.csv')
+    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
 
 
     # 3) print the solution of the fluid problem
