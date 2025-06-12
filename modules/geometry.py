@@ -8,7 +8,13 @@ import numpy as np
 def my_norm(x):
     return (sqrt( np.dot( x, x ) ))
 
-#norm for UFL vectors
+'''
+compute the norm of an ufl vector
+Input values:
+- 'v': an ufl vector
+Return values:
+- the norm of v, sqrt(v[i]*v[i]), computed with ufl
+'''
 def ufl_norm(x):
     return(sqrt(ufl.dot(x, x)))
 
