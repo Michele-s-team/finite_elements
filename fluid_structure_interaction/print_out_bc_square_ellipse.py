@@ -24,7 +24,8 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
-    '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_{tb}', \
+    '<<v_bar^i v_bar_i>>_{tb}', \
+    '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
     '<<(phi - r_profile_phi)^2>>_r', \
     '<<(n^i  \partial_i phi)^2>>_{l + t + b + ellipse}' \
     ]
@@ -39,13 +40,15 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows([{ \
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(ufl.sqrt((vp.v__profile_l[i] - fsp.v_[i]) * (vp.v__profile_l[i] - fsp.v_[i])), rmsh.ds_l):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(ufl.sqrt(fsp.v_[i] * fsp.v_[i]), rmsh.ds_tb):.{io.number_of_decimals}e}", \
-        fieldnames[1]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_tb):.{io.number_of_decimals}e}", \
+        fieldnames[2]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
+        fieldnames[3]: \
             sqrt((assemble((bgeo.facet_normal[i] * (fsp.phi.dx(i))) ** 2 * rmsh.ds_l)) \
                  / assemble(Constant(1.0) * rmsh.ds_l)), \
-        fieldnames[2]: \
+        fieldnames[4]: \
             sqrt(assemble((fsp.phi) ** 2 * rmsh.ds_r) /
                  assemble(Constant(1.0) * rmsh.ds_r)) \
         }])
