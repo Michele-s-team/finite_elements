@@ -74,7 +74,7 @@ geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 
-msh.write_mesh_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
 
 model.__exit__()
 

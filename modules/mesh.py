@@ -281,7 +281,7 @@ edge2_start[0], edge2_start[1], edge2_start[2], edge2_end[0], edge2_end[1], edge
 '''
 
 
-def write_mesh_to_csv(infile, outfile):
+def print_mesh_lines_to_csv(infile, outfile):
     # open the .msh file
     gmsh.open(infile)
 
@@ -1069,7 +1069,7 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
     geometry.generate_mesh(dim=2)
     gmsh.write(output_file)
 
-    write_mesh_to_csv(output_file, output_directory + 'line_vertices.csv')
+    print_mesh_lines_to_csv(output_file, output_directory + 'line_vertices.csv')
 
     gmsh.clear()
     geometry.__exit__()

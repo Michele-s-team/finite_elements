@@ -119,7 +119,7 @@ model.add_physical(ellipse_loop.curves, "c")
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.write_mesh_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 gmsh.clear()
 geometry.__exit__()
