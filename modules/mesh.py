@@ -273,7 +273,7 @@ def difference_on_boundary_circle(f, g, r, R, c):
 
 
 '''
-write to csv file 'outfile' the coordinates of the start and end vertices which define the lines of the triangles of the mesh in the .msh file 'infile'
+write to csv file 'outfile' the coordinates of the start and end vertices which define the lines of the triangles of a 2d mesh stored in the .msh file 'infile'
 the vertices are written in the format
 edge1_start[0], edge1_start[1], edge1_start[2], edge1_end[0], edge1_end[1], edge1_end[2]
 edge2_start[0], edge2_start[1], edge2_start[2], edge2_end[0], edge2_end[1], edge2_end[2]
