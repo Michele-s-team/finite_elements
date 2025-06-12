@@ -73,7 +73,7 @@ model.add_physical([channel_lines[1]], 'b')
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.write_mesh_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 
 gmsh.clear()
@@ -89,4 +89,4 @@ meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")

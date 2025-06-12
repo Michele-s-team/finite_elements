@@ -130,7 +130,7 @@ gmsh.model.mesh.generate( 2 )
 gmsh.write( msh_file_path )
 
 
-msh.write_mesh_to_csv(msh_file_path, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(msh_file_path, output_directory + 'line_vertices.csv')
 
 
 
@@ -153,4 +153,4 @@ print( f"Check if all line vertices are triangle vertices : {np.isin( msh.line_v
 
 #print the mesh vertices to file
 mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv" )
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv" )

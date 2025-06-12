@@ -96,4 +96,4 @@ meshio.write(args.output_directory +  "/vertex_mesh.xdmf", vertex_mesh)
 
 # print the mesh vertices to file
 mesh = msh.read_mesh( args.output_directory + "/line_mesh.xdmf" )
-io.print_vertices_to_csv_file( mesh, args.output_directory + "/vertices.csv" )
+io.print_mesh_vertices_to_csv( mesh, args.output_directory + "/vertices.csv" )

@@ -161,10 +161,10 @@ msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "t
 msh.write_mesh_components(mesh_file, output_directory + "line_mesh.xdmf", "line", True)
 msh.write_mesh_components(mesh_file, output_directory + "vertex_mesh.xdmf", "vertex", True)
 
-msh.write_mesh_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 model.__exit__()
 
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")

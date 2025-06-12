@@ -56,4 +56,4 @@ meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_dir + "/vertices.csv")
+io.print_mesh_vertices_to_csv(mesh, output_dir + "/vertices.csv")
