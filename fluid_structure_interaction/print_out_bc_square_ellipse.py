@@ -41,9 +41,7 @@ writer.writeheader()
 
 # this function prints out the residuals of BCs
 def print_bcs():
-    # get the solution and write it to file
-
-    # write the residual of natural BCs on step 2 to file
+    # write the residual of natural BCs  to file
     writer.writerows([{
         fieldnames[0]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_ellipse - fsp.u_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
