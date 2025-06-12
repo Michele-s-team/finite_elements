@@ -15,6 +15,7 @@ import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
+vp_mesh = importlib.import_module(swi.vp_mesh)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 
 i, j, k, l = ufl.indices(4)
@@ -25,6 +26,8 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
+    '<<(u^n_i - u_ellipse_i)(u^n_i - u_ellipse_i)>>_ellipse', \
+    '<<(u^n_i - u_square_i)(u^n_i - u_square_i)>>_square', \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
     '<<v_bar^i v_bar_i>>_{tb}', \
     '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
@@ -41,18 +44,22 @@ def print_bcs():
     # get the solution and write it to file
 
     # write the residual of natural BCs on step 2 to file
-    writer.writerows([{ \
+    writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_ellipse - fsp.u_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_tb):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_square - fsp.u_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.mu * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_tb):.{io.number_of_decimals}e}", \
         fieldnames[4]: \
-            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[j, i] * bgeo.facet_normal[j] * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l)), rmsh.ds_l_tb_ellipse):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[5]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.mu * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
+        fieldnames[6]: \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[j, i] * bgeo.facet_normal[j] * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l)), rmsh.ds_l_tb_ellipse):.{io.number_of_decimals}e}", \
+        fieldnames[7]: \
             f"{msh.abs_wrt_measure(fsp.phi, rmsh.ds_r):.{io.number_of_decimals}e}", \
         }])
 
