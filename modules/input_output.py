@@ -115,7 +115,12 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     csvfile.close()
 
 
-# print to the csv file 'filename' the coordinates of the vertices of 'mesh'
+'''
+print the coordinates of the vertices of a mesh to csv file
+Input values: 
+- 'mesh' <dolfin.Mesh>: the mesh
+- 'outfile': path of the csv file
+'''
 def print_mesh_vertices_to_csv(mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
@@ -135,6 +140,41 @@ def print_mesh_vertices_to_csv(mesh, filename):
         print(f"{padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
 
     csvfile.close()
+
+
+'''
+print the coordinates of the extermal points of the lines of a mesh to csv file
+Input values: 
+- 'mesh' <dolfin.Mesh>: the mesh
+- 'outfile': path of the csv file
+'''
+def print_mesh_lines_to_csv(mesh, outfile):
+    # Store edges as unique pairs of vertex indices: this creates an empty python set, to be filled later with the edges present in the mesh
+    edge_set = set()
+
+
+    mesh.init(2)  # Initialize cell-to-vertex connectivity
+    # Map vertex index to coordinates
+    coordinates = mesh.coordinates()
+
+    # Loop over all triangles (cells)
+    for cell in cells(mesh):
+        v = cell.entities(0)  # vertex indices of the triangle
+        pairs = [
+            tuple(sorted([v[0], v[1]])),
+            tuple(sorted([v[1], v[2]])),
+            tuple(sorted([v[2], v[0]])),
+        ]
+        edge_set.update(pairs)
+
+    # Write to CSV
+    with open(outfile, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["start:0", "start:1", "start:2", "end:0", "end:1", "end:2"])
+        for v_start, v_end in edge_set:
+            p_start = coordinates[v_start]
+            p_end = coordinates[v_end]
+            writer.writerow([*p_start, *p_end])
 
 
 '''
