@@ -63,5 +63,5 @@ def evaluate_on_deformed_mesh(f, u):
     else:
         raise ValueError(f"Unsupported value shape: {shape}")
 
-    Q_new = FunctionSpace(deformed_mesh, degree)
+    Q_new = FunctionSpace(deformed_mesh, element)
 
