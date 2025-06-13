@@ -2,22 +2,22 @@
 This code reads the 3d mesh generated from generate_mesh.py and it creates dvs and dss from labelled components of the mesh
 
 
-run with
-clear; clear; python3 read_mesh.py [path where to find the mesh]
-example:
-clear; clear; python3 read_mesh.py /home/fenics/shared/generate_mesh/3d/box_ball/solution
+Run with
+    clear; clear; python3 read_mesh.py [path where to find the mesh]
+Example:
+    clear; clear; python3 read_mesh.py /home/fenics/shared/generate_mesh/3d/box_ball/solution
 '''
 
-from fenics import *
-from mshr import *
-from dolfin import *
-import numpy as np
 import argparse
-
+import colorama as col
+import dolfin
+from fenics import *
+import numpy as np
 import sys
 
 
 
+import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
@@ -73,12 +73,18 @@ Q = FunctionSpace( mesh, 'P', 1 )
 f_test_ds = Function( Q )
 f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ) )
 
+test_mesh_integral_errors = []
+
+
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-msh.test_mesh_integral( 0.472941, f_test_ds, dx_box_minus_ball, '\int_box_minus_ball f dx' )
-msh.test_mesh_integral( 0.309249, f_test_ds, ds_sphere, '\int_sphere f ds' )
-msh.test_mesh_integral( 0.505778, f_test_ds, ds_le, '\int_l f ds' )
-msh.test_mesh_integral( 0.489414, f_test_ds, ds_ri, '\int_r f ds' )
-msh.test_mesh_integral( 0.487063, f_test_ds, ds_fr, '\int_fr f ds' )
-msh.test_mesh_integral( 0.519791, f_test_ds, ds_ba, '\int_ba f ds' )
-msh.test_mesh_integral( 0.554261, f_test_ds, ds_to, '\int_to f ds' )
-msh.test_mesh_integral( 0.603353, f_test_ds, ds_bo, '\int_bo f ds' )
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.472941, f_test_ds, dx_box_minus_ball, '\int_box_minus_ball f dx' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.309249, f_test_ds, ds_sphere, '\int_sphere f ds' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.505778, f_test_ds, ds_le, '\int_l f ds' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.489414, f_test_ds, ds_ri, '\int_r f ds' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.487063, f_test_ds, ds_fr, '\int_fr f ds' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.519791, f_test_ds, ds_ba, '\int_ba f ds' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.554261, f_test_ds, ds_to, '\int_to f ds' ))
+test_mesh_integral_errors.append(msh.test_mesh_integral( 0.603353, f_test_ds, ds_bo, '\int_bo f ds' ))
+
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+

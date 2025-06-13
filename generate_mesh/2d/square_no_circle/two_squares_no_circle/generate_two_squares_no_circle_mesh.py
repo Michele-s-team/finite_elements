@@ -1,17 +1,16 @@
 '''
 generate a  mesh given by two collated squares
 
-run it with
-python3 generate_two_squares_no_circle_mesh.py [resolution] [output directory]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py 0.1 $SOLUTION_PATH
-
+Run it with
+    python3 generate_two_squares_no_circle_mesh.py [resolution] [output directory]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py 0.1 $SOLUTION_PATH
 '''
 
-import meshio
-import gmsh
-import pygmsh
 import argparse
+import gmsh
+import meshio
+import pygmsh
 import sys
 
 # add the path where to find the shared modules
@@ -158,3 +157,9 @@ meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
 
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
+
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
+

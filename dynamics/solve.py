@@ -8,11 +8,15 @@ and which are stored into finite_elements/mesh/solution
 Run with
 clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
 
-Example:
+Examples:
     rm -rf solution; python3 solve.py square_a /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
     rm -rf solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/solution
     time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py square_a $MESH $SOLUTION
+
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -65,7 +69,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input diredtory = ", rarg.args.input_directory)
 print("Output diredtory = ", rarg.args.output_directory)
-print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 print("T = ", vp.T)
@@ -119,13 +123,10 @@ for step in range(vp.N):
     solver = NonlinearVariationalSolver( problem )
 
     # the post-processing ('pp') variational problem used to compute tau, ...
-    J_pp_nu = derivative( vp.vp_pp.F_pp_nu, fsp.nu_n_12, fsp.J_pp_nu )
     J_pp_tau = derivative( vp.vp_pp.F_pp_tau, fsp.tau_n_12, fsp.J_pp_tau )
     J_pp_d = derivative( vp.vp_pp.F_pp_d, fsp.d, fsp.J_pp_d )
-    problem_pp_nu = NonlinearVariationalProblem( vp.vp_pp.F_pp_nu, fsp.nu_n_12, [], J_pp_nu )
     problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau_n_12, [], J_pp_tau )
     problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
-    solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
     solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
     solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
@@ -158,7 +159,6 @@ for step in range(vp.N):
     
     solver.solve()
 
-    solver_pp_nu.solve()
     solver_pp_tau.solve()
     solver_pp_d.solve()
 

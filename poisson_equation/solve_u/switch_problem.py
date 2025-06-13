@@ -8,17 +8,29 @@ if rarg.args.problem == 'ring_slice':
     vp = 'variational_problem_bc_ring_slice'
     prout_bc = 'print_out_bc_ring_slice'
 
-if rarg.args.problem == 'ring':
+if rarg.args.problem == 'half_circle_with_line':
+
+    rmsh = 'read_mesh_half_circle_with_line'
+    vp = 'variational_problem_bc_half_circle_with_line'
+    prout_bc = 'print_out_bc_half_circle_with_line'
+
+elif rarg.args.problem == 'ring':
 
     rmsh = 'read_mesh_ring'
     vp = 'variational_problem_bc_ring'
     prout_bc = 'print_out_bc_ring'
 
-if rarg.args.problem == 'ring_with_inner_circle':
+elif rarg.args.problem == 'ring_symmetric':
 
-    rmsh = 'read_mesh_ring_with_inner_circle'
-    vp = 'variational_problem_bc_ring_with_inner_circle'
-    prout_bc = 'print_out_bc_ring_with_inner_circle'
+    rmsh = 'read_mesh_ring'
+    vp = 'variational_problem_bc_ring'
+    prout_bc = 'print_out_bc_ring'
+
+elif rarg.args.problem == 'ring_with_circle':
+
+    rmsh = 'read_mesh_ring_with_circle'
+    vp = 'variational_problem_bc_ring_with_circle'
+    prout_bc = 'print_out_bc_ring_with_circle'
 
 elif rarg.args.problem == 'square_no_circle':
     rmsh = 'read_mesh_square_no_circle'
@@ -34,6 +46,16 @@ elif rarg.args.problem == 'square':
     rmsh = 'read_mesh_square'
     vp = 'variational_problem_bc_square'
     prout_bc =  'print_out_bc_square'
+
+elif rarg.args.problem == 'square_symmetric_top_bottom':
+    rmsh = 'read_mesh_square'
+    vp = 'variational_problem_bc_square_symmetric_top_bottom'
+    prout_bc =  'print_out_bc_square_symmetric_top_bottom'
+
+elif rarg.args.problem == 'square_symmetric_left_right_top_bottom':
+    rmsh = 'read_mesh_square'
+    vp = 'variational_problem_bc_square_symmetric_left_right_top_bottom'
+    prout_bc =  'print_out_bc_square_symmetric_left_right_top_bottom'
 
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')

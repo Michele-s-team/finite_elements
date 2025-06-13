@@ -222,6 +222,23 @@ Example of usage:
 def surface_integral_disk(f, r, c):
     return surface_integral_ring(f, 0, r, c)
 
+'''
+integrate a function of two variables over an angular slice of a disk
+Input values 
+- 'f': the function f([x, y])
+- 'r': radius of the disk
+- 'theta_min', 'theta_max': the polar angles delimiting the ring slice
+- 'c' : center of the disk
+Result:
+- \int_{disk slice} dx dy f
+
+Example of usage:
+    cal.surface_integral_disk_slice(function_test_integrals,  rmsh.r, np.pi, 2*np.pi, rmsh.c_r)
+'''
+def surface_integral_disk_slice(f, r, theta_min, theta_max, c):
+    return surface_integral_ring_slice(f, 0, r, theta_min, theta_max, c)
+
+
 
 '''
 compute the integral of a function in the region between a disk and a rectangle (the rectangle must contain the disk)

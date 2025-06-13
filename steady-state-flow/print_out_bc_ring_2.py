@@ -1,14 +1,16 @@
 import colorama as col
 from fenics import *
+import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
 import geometry as geo
 import input_output as io
 import mesh as msh
-import read_mesh_ring as rmsh
+import switch_problem as swi
 
-import variational_problem_bc_ring_2 as vp
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
@@ -36,5 +38,11 @@ print(
     f"\t\t<<|\omega_i - omega_R_i |^2>>_[partial Omega R] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.omega_output[i] - vp.omega_R[i]) * (prout.omega_output[i] - vp.omega_R[i])), rmsh.ds_R):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(
+    f"\t\t<<[mu - H(omega)]^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, geo.H(prout.omega_output), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+
+print(
     f"\n\t\t<z>_[partial Omega r] = {col.Fore.YELLOW}{assemble(prout.z_output * rmsh.ds_r) / assemble(Constant(1.0) * rmsh.ds_r)}{col.Style.RESET_ALL}")
 
+
+import print_out_force_on_boundary_bc_ring

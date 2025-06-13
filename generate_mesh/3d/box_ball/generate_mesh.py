@@ -5,11 +5,11 @@ We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, ri
 
 To see the values of subdomain_id assigned to each tagged element, see read_mesh.py and the comments in this file
 
-run with
-clear; clear; python3 generate_mesh.py [resolution]
-example:
-clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
+Run with
+    clear; clear; python3 generate_mesh.py [resolution]
+Example:
+    clear; clear; rm -r solution; mkdir solution; python3 generate_mesh.py 0.1
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio

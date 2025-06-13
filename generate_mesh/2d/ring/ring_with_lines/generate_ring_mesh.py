@@ -2,10 +2,10 @@
 This code generates a 3d mesh given by a ring with multiple radial lines
 IT IS NOT GUARANTEED THAT THIS MESH GENERATES A MESH WITH PERFECT RADIAL SYMMETRY
 
-run with
-clear; clear; python3 generate_ring_mesh.py [resolution]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
+Run with
+    clear; clear; python3 generate_ring_mesh.py [resolution]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
 '''
 
 import meshio
@@ -27,7 +27,9 @@ parser.add_argument("resolution")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-msh_file_path = "solution/mesh.msh"
+output_directory = io.add_trailing_slash(args.output_directory)
+
+msh_file_path = output_directory + "mesh.msh"
 
 warnings.filterwarnings( "ignore" )
 gmsh.initialize()
@@ -126,6 +128,7 @@ gmsh.model.mesh.generate( 2 )
 gmsh.write( msh_file_path )
 
 
+msh.write_mesh_to_csv(msh_file_path, output_directory + 'line_vertices.csv')
 
 
 
@@ -133,19 +136,19 @@ mesh_from_file = meshio.read( msh_file_path )
 
 # create a triangle mesh in which the surfaces will be stored
 triangle_mesh = msh.create_mesh( mesh_from_file, "triangle", prune_z=True )
-meshio.write( "solution/triangle_mesh.xdmf", triangle_mesh )
+meshio.write( output_directory + "triangle_mesh.xdmf", triangle_mesh )
 
 # create a line mesh
 line_mesh = msh.create_mesh( mesh_from_file, "line", True )
-meshio.write( "solution/line_mesh.xdmf", line_mesh )
+meshio.write( output_directory + "line_mesh.xdmf", line_mesh )
 
 # create a vertex mesh
 '''
 vertex_mesh = msh.create_mesh( mesh_from_file, "vertex", True )
-meshio.write( "solution/vertex_mesh.xdmf", vertex_mesh )
+meshio.write( output_directory + "vertex_mesh.xdmf", vertex_mesh )
 print( f"Check if all line vertices are triangle vertices : {np.isin( msh.line_vertices( msh_file_path ), msh.triangle_vertices( msh_file_path ) )}" )
 '''
 
 #print the mesh vertices to file
-mesh = msh.read_mesh("solution/triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, "solution/vertices.csv" )
+mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv" )

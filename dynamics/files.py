@@ -14,7 +14,6 @@ xdmffile_z = XDMFFile( (rarg.args.output_directory) + '/z_n_12.xdmf' )
 xdmffile_omega = XDMFFile( (rarg.args.output_directory) + '/omega_n_12.xdmf' )
 xdmffile_mu = XDMFFile( (rarg.args.output_directory) + '/mu_n_12.xdmf' )
 
-xdmffile_nu = XDMFFile( (rarg.args.output_directory) + '/nu_n_12.xdmf' )
 xdmffile_tau = XDMFFile( (rarg.args.output_directory) + '/tau_n_12.xdmf' )
 xdmffile_d = XDMFFile( (rarg.args.output_directory) + '/d_n.xdmf' )
 

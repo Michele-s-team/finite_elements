@@ -7,12 +7,19 @@ python3 generate_ring_mesh.py 0.1
 and which are stored into finite_elements/mesh
 
 Run with
-clear; python3 solve.py [path where to read the mesh] [path where to store the solution]
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh/solution /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
-clear; clear; rm -r solution; python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
-clear; clear; rm -r solution; mpirun -np 6 python3 solve.py /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
+    python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
+    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a /home/fenics/shared/steady-state-no-flow/mesh/solution /home/fenics/shared/steady-state-no-flow/$SOLUTION_PATH
+    rm -r solution; python3 solve.py square_a /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
+    rm -r solution; mpirun -np 6 python3 solve.py square_a /home/fenics/shared/steady-state-no-flow/mesh /home/fenics/shared/steady-state-no-flow/solution
 
-The solution files will be stored in /home/fenics/shared/steady-state-no-flow/solution
+Examples:
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/steady-state-no-flow/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH;
 
 Note that all sections of the code which need to be changed when an external parameter (e.g. the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -44,10 +51,9 @@ import variational_problem_bc_ring as vp
 set_log_level( 20 )
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
 
-print("Input diredtory = ", rarg.args.input_directory )
-print("Output diredtory = ", rarg.args.output_directory )
-print(f"Radius of mesh cell = {col.Fore.CYAN}{rmsh.r_mesh}{col.Style.RESET_ALL}")
-
+print("Input diredtory = ", rarg.args.input_directory)
+print("Output diredtory = ", rarg.args.output_directory)
+print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 # solve the variational problem
 J = derivative( vp.F, fsp.psi, fsp.J_psi )
@@ -69,17 +75,12 @@ params = {'nonlinear_solver': 'newton',
 }
 solver.parameters.update(params)
 
-#the post-processing ('pp') variational problem used to compute tau
-J_pp_nu = derivative( vp.F_pp_nu, fsp.nu, fsp.J_pp_nu )
-J_pp_tau = derivative( vp.F_pp_tau, fsp.tau, fsp.J_pp_tau )
-problem_pp_nu = NonlinearVariationalProblem( vp.F_pp_nu, fsp.nu, [], J_pp_nu )
-problem_pp_tau = NonlinearVariationalProblem( vp.F_pp_tau, fsp.tau, [], J_pp_tau )
-solver_pp_nu = NonlinearVariationalSolver( problem_pp_nu )
-solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
-
+# the post-processing ('pp') variational problem used to compute tau
+J_pp_tau = derivative(vp.vp_pp.F_pp_tau, fsp.tau, fsp.J_pp_tau)
+problem_pp_tau = NonlinearVariationalProblem(vp.vp_pp.F_pp_tau, fsp.tau, [], J_pp_tau)
+solver_pp_tau = NonlinearVariationalSolver(problem_pp_tau)
 
 solver.solve()
-solver_pp_nu.solve()
 solver_pp_tau.solve()
 
 # CHANGE VARIATIONAL PROBLEM OR MESH HERE

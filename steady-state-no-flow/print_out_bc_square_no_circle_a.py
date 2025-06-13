@@ -1,3 +1,4 @@
+import colorama as col
 from fenics import *
 try:
     import ufl
@@ -6,11 +7,14 @@ except ImportError:
 import colorama as col
 
 import boundary_geometry as bgeo
+import geometry as geo
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
-import read_mesh_square_no_circle as rmsh
-import variational_problem_bc_square_no_circle_a as vp
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
@@ -23,38 +27,16 @@ print(
 print(
     f"\t\t<<(z - phi)^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, vp.z_b_const, rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print("2)")
-# print(
-#     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega l = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( prout.omega_output ))[i] * prout.omega_output[i], vp.omega_l, rmsh.ds_l ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print(
-#     f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega r = {col.Fore.RED}{msh.difference_wrt_measure( (bgeo.n_lr( prout.omega_output ))[i] * prout.omega_output[i], vp.omega_r, rmsh.ds_r ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.omega_t, rmsh.ds_t):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.n_omega_t, rmsh.ds_t):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.omega_b, rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.n_omega_b, rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print("3)")
+print(
+    f"\t\t<<[mu - H(omega)]^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, geo.H(prout.omega_output), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
-import print_out_force_on_square
-
-'''
-print( "Check if the intermediate PDEs are satisfied:" )
-print(
-    f"1)\t\t<<(fel + flaplace)^2>>_Omega =  {msh.difference_in_bulk( project( phys.fel_n( prout.omega_output, mu_output, fsp.tau, vp.kappa ), fsp.Q_z ), project( -phys.flaplace( fsp.sigma, prout.omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print(
-    f"2) \t\t<<|omega - partial z|^2>>_Omega = {msh.difference_in_bulk( project( sqrt( (prout.omega_output[i] - prout.z_output.dx( i )) * (prout.omega_output[i] - prout.z_output.dx( i )) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print( f"3)\t\t<<[mu - H(omega)]^2>>_Omega =  {msh.difference_in_bulk( mu_output, project( geo.H( prout.omega_output ), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-print( f"4)\t\t<<[tau - Nabla^i nu_i]^2>>_Omega =  {msh.difference_in_bulk( fsp.tau, project( - geo.Nabla_LB(mu_output,prout.omega_output), fsp.Q_z ) ):.{io.number_of_decimals}e}" )
-'''
-'''
-print( "Comparison with exact solution: " )
-print( f"1)\t\t<<(z - z_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( prout.z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print(
-    f"2)\t\t<<|omega - omega_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (prout.omega_output[i] - fsp.omega_exact[i]) * (prout.omega_output[i] - fsp.omega_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print( f"3)\t\t<<(mu - mu_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( mu_output, fsp.mu_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-print(
-    f"4)\t\t<<|nu - nu_exact|^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( project( sqrt( (nu_output[i] - fsp.nu_exact[i]) * (nu_output[i] - fsp.nu_exact[i]) ), fsp.Q_z ), project( Constant( 0 ), fsp.Q_z ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-print( f"5)\t\t<<(tau - tau_exact)^2>>_Omega = {col.Fore.BLUE}{msh.difference_in_bulk( fsp.tau, fsp.tau_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-'''
+import print_out_force_on_boundary_bc_square_no_circle
 
 
 

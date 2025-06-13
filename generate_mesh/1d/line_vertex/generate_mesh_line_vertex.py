@@ -1,10 +1,10 @@
 '''
 Ths code generates a 1d mesh given by a segment with a vertex in the segment
 
-run with
-clear; clear; python3 generate_mesh_line_vertex.py [resolution]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py 0.1 $SOLUTION_PATH
+Run with
+    clear; clear; python3 generate_mesh_line_vertex.py [resolution]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py 0.1 $SOLUTION_PATH
 '''
 
 
@@ -18,12 +18,15 @@ import sys
 
 
 
+import input_output as io
 import mesh as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
 parser.add_argument("output_directory")
 args = parser.parse_args()
+
+mesh_file = args.output_directory + "/mesh.msh"
 
 #mesh resolution
 resolution = (float)(args.resolution)
@@ -63,11 +66,13 @@ model.add_physical([points[2]], "point_r")
 model.add_physical([points[1]], "point_in")
 
 geometry.generate_mesh(dim=3)
-gmsh.write(args.output_directory + "/mesh.msh")
+gmsh.write(mesh_file)
+
+
 model.__exit__()
 
 
-mesh_from_file = meshio.read(args.output_directory + "/mesh.msh")
+mesh_from_file = meshio.read(mesh_file)
 
 '''
 #create a tetrahedron mesh
@@ -86,3 +91,7 @@ meshio.write(args.output_directory +  "/line_mesh.xdmf", line_mesh)
 #create a vertex mesh
 vertex_mesh = msh.create_mesh(mesh_from_file, "vertex", True)
 meshio.write(args.output_directory +  "/vertex_mesh.xdmf", vertex_mesh)
+
+# print the mesh vertices to file
+mesh = msh.read_mesh( args.output_directory + "/line_mesh.xdmf" )
+io.print_vertices_to_csv_file( mesh, args.output_directory + "/vertices.csv" )

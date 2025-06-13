@@ -4,10 +4,10 @@ which is symmetric with respect to both left <-> right and tob <-> bottom symmet
 Symmetry is enforced by mirroring the mesh points along two symmetry axes.
 
 run with
-python3 generate_square_mesh.py [mesh resolution] [path where to store the mesh]
+    python3 generate_square_mesh.py [mesh resolution] [path where to store the mesh]
 ATTENTION: [mesh resolution] must be small enough for the circle to be properly resolved
 Example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.3 $SOLUTION_PATH
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.1 $SOLUTION_PATH
 
 This mesh can be read with ~/shared/generate_mesh/2d/square/read_mesh_square.py
 
@@ -43,9 +43,9 @@ args = parser.parse_args()
 
 # mesh resolution
 resolution = (float)(args.resolution)
-r = 0.25
 L = 1
 h = 1
+r = 0.25
 x_coordinate_axis_of_symmetry = L / 2
 y_coordinate_axis_of_symmetry = h / 2
 c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
@@ -57,7 +57,7 @@ output_dir = args.output_dir
 quarter_mesh_msh_file = output_dir + "/quarter_mesh.msh"
 mesh_xdmf_file = output_dir + "/mesh.xdmf"
 
-print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
+print(f'L = {L}\nh = {h}\nr={r}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
 # The quarter mesh is generated used pygmsh and it is saved as quarter_mesh.msh
 

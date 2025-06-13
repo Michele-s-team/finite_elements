@@ -2,10 +2,10 @@
 Ths code generates a 2d mesh given by a square with a circular hole, where the mesh is enforced to  be symmetric
 with respect to top <-> bottom by adding a set of auxiliary lines which run from the left to the right edge of the square
 
-run with
-clear; clear; python3 generate_mesh.py [resolution] [number of segments of the circle] [number of lines] [output directory]
-example:
-clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 8 $SOLUTION_PATH
+Run with
+    clear; clear; python3 generate_mesh.py [resolution] [number of segments of the circle] [number of lines] [output directory]
+Example:
+    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 8 $SOLUTION_PATH
 
 The mesh generated with this code can be read with ~/shared/generate_mesh/2d/square/read_mesh_square.py
 '''
@@ -19,6 +19,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import list as lis
 import mesh as msh
 
@@ -29,11 +30,14 @@ parser.add_argument("n_lines_lr")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
+output_directory = io.add_trailing_slash(args.output_directory)
+
+
 # mesh resolution
 resolution = (float)(args.resolution)
 n_lines_circle = int(args.n_lines_circle)
 n_lines_lr = int(args.n_lines_lr)
-mesh_file = args.output_directory + "/mesh.msh"
+mesh_file = output_directory + "mesh.msh"
 
 # mesh parameters
 # CHANGE PARAMETERS HERE
@@ -77,17 +81,10 @@ points_circle, segments_circle = msh.add_circle_with_lines(c_r, r, n_lines_circl
 circle_loop = gmsh.model.geo.add_curve_loop(segments_circle)
 gmsh.model.geo.synchronize()
 
-# circle_lines, circle_loop = msh.add_circle_with_arcs(c_r, r, gmsh.model.geo)
-
 
 square_surface = gmsh.model.geo.add_plane_surface([loop_square, circle_loop])
-# square_surface = gmsh.model.geo.add_plane_surface([loop_square])
 gmsh.model.geo.synchronize()
 
-# gmsh.model.mesh.embed(1, [arc_rt, arc_tl, arc_lb, arc_br], 2, square_surface)
-
-# line_aux = (msh.add_line_r_start_r_end([0.1, 0.1, 0], [0.9, 0.1, 0], gmsh.model.geo))[1]
-# gmsh.model.mesh.embed(1, [line_aux], 2, square_surface)
 
 
 # add auxiliary horizontal lines to make the mesh symmetric under top <-> bottom
@@ -109,12 +106,7 @@ for i in range(len(vertices)):
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
-# add each of the four edges of the square
-# for i in range(4):
-#     msh.print_line_info(lines[i][1], f'linea_{i}')
-#
-#     gmsh.model.addPhysicalGroup(lines[i][0], [lines[i][1]], i + 1)
-#     gmsh.model.setPhysicalName(lines[i][0], i + 1, f"line_{i + 1}")
+
 
 # tag the edges and the segments of the edges
 msh.tag_group([edge_b], 1, 5, 'l_edge')
@@ -154,10 +146,14 @@ geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
 # write mesh components to file
-msh.write_mesh_components(mesh_file, "solution/triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, "solution/line_mesh.xdmf", "line", True)
-msh.write_mesh_components(mesh_file, "solution/vertex_mesh.xdmf", "vertex", True)
+msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "triangle", True)
+msh.write_mesh_components(mesh_file, output_directory + "line_mesh.xdmf", "line", True)
+msh.write_mesh_components(mesh_file, output_directory + "vertex_mesh.xdmf", "vertex", True)
 
-msh.write_mesh_to_csv(mesh_file, 'solution/line_vertices.csv')
+msh.write_mesh_to_csv(mesh_file, output_directory + "line_vertices.csv")
 
 model.__exit__()
+
+# print the mesh vertices to file
+mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")

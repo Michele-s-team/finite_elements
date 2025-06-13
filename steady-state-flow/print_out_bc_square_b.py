@@ -1,5 +1,6 @@
 import colorama as col
 from fenics import *
+import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
@@ -7,9 +8,10 @@ import geometry as geo
 import input_output as io
 import mesh as msh
 import physics as phys
-import read_mesh_square as rmsh
+import switch_problem as swi
 
-import variational_problem_bc_square_b as vp
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
@@ -37,4 +39,8 @@ print(
 print(
     f"\t\t<<(n^i \omega_i - omega_square )^2>>_[partial Omega tb] = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.omega_square, rmsh.ds_tb):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-import print_out_force_on_circle
+print(
+    f"\t\t<<[mu - H(omega)]^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, geo.H(prout.omega_output), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+
+import print_out_force_on_boundary_bc_square
