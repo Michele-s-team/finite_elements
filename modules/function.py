@@ -88,3 +88,5 @@ def deform_function(f, u):
     g = Function(Q)
     copy_function_values(f, g)
 
+    return g
+

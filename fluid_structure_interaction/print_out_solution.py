@@ -77,5 +77,11 @@ def print_solution(t, step, dt):
     fi.xdmffile_sigma.write(fsp.sigma_n_12, t - dt / 2.0)
     fi.xdmffile_phi.write(fsp.phi, t)
 
-    fu.deform_function(fsp.phi, fsp.u_n)
+
+    phi_def = fu.deform_function(fsp.phi, fsp.u_n)
+    io.full_print(phi_def, 'phi_def_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  phi_def.function_space().mesh(), 'scalar')
+
+
 
