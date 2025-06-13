@@ -1,3 +1,4 @@
+import dolfin
 from fenics import *
 from ufl import FunctionSpace
 
@@ -69,14 +70,21 @@ def deform_function_space(Q, u):
     else:
         raise ValueError(f"Unsupported value shape: {shape}")
 
-    return FunctionSpace(deformed_mesh, element)
+    return dolfin.FunctionSpace(deformed_mesh, element)
 
 '''
-copy the values of a function (nodal values, values within the triangles, etc.) to another function
+copy the values of a function (nodal values, values within the triangles, etc.) to another function. This works for scalars, vectors, tensors. 
 Input values:
 - 'f_in', 'f_out': source and destination function
 '''
-def copy(f_in, f_out):
+def copy_function_values(f_in, f_out):
     f_out.vector()[:] = f_in.vector()[:]
 
+def deform_function(f, u):
+
+    Q = deform_function_space(f.function_space(), u)
+    # print(f'type of Q = {type(Q)}')  # should be <class 'dolfin.cpp.function.FunctionSpace'>
+
+    g = Function(Q)
+    copy_function_values(f, g)
 

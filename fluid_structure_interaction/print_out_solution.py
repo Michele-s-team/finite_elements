@@ -77,5 +77,5 @@ def print_solution(t, step, dt):
     fi.xdmffile_sigma.write(fsp.sigma_n_12, t - dt / 2.0)
     fi.xdmffile_phi.write(fsp.phi, t)
 
-    fu.deform_function_space(fsp.Q_phi, fsp.u_n)
+    fu.deform_function(fsp.phi, fsp.u_n)
 
