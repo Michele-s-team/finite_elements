@@ -71,3 +71,12 @@ def deform_function_space(Q, u):
 
     return FunctionSpace(deformed_mesh, element)
 
+'''
+copy the values of a function (nodal values, values within the triangles, etc.) to another function
+Input values:
+- 'f_in', 'f_out': source and destination function
+'''
+def copy(f_in, f_out):
+    f_out.vector()[:] = f_in.vector()[:]
+
+
