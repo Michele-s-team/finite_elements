@@ -38,19 +38,25 @@ def set_from_list(f, list):
 def set_from_file(f, filename):
     set_from_list( f, io.read_scalar_from_csvfile( filename ) )
 
-def evaluate_on_deformed_mesh(f, u):
 
-    deformed_mesh = msh.deform_mesh(Mesh(f.function_space().mesh()), u)
+'''
+given a function space and its mesh, return a function space on the deformed mesh, deformed according to a displacement field
+Input values:
+- 'Q': the function space
+- 'u': the displacement field
+Return values:
+- the new function space on the deformed mesh
+'''
+def deform_function_space(Q, u):
 
+    deformed_mesh = msh.deform_mesh(Mesh(Q.mesh()), u)
 
-    Q_old = f.function_space()
-
-    # Extract the features of the vector space of f
+    # Extract the features of the vector space Q
     element = Q_old.ufl_element()
     family = element.family()
     cell = element.cell()
     shape = element.value_shape()
-    degree = f.function_space().ufl_element().degree()
+    degree = Q.ufl_element().degree()
 
 
     # Construct the new element with the same shape
@@ -63,5 +69,5 @@ def evaluate_on_deformed_mesh(f, u):
     else:
         raise ValueError(f"Unsupported value shape: {shape}")
 
-    Q_new = FunctionSpace(deformed_mesh, element)
+    return FunctionSpace(deformed_mesh, element)
 
