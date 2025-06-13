@@ -7,11 +7,11 @@ clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fe
 '''
 
 from fenics import *
-from mshr import *
+
 import argparse
 import numpy as np
-import ufl as ufl
-
+import ufl_legacy as ufl
+import dolfin as dolfin
 import sys
 
 
