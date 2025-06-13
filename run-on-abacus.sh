@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# run with ./run-on-abacus.sh fluid_structure_interaction fluid_structure_interaction_1 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse/solution
+# run with ./run-on-abacus.sh fluid_structure_interaction fluid_structure_interaction_2 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse/solution
 
 clear
 clear
