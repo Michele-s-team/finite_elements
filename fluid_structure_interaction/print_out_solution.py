@@ -78,10 +78,10 @@ def print_solution(t, step, dt):
     fi.xdmffile_phi.write(fsp.phi, t)
 
 
-    phi_def = fu.deform_function(fsp.phi, fsp.u_n)
-    io.full_print(phi_def, 'phi_def_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  phi_def.function_space().mesh(), 'scalar')
+    io.full_print_deformed(fsp.v_, fsp.u_n,  'v_bar_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.mesh, 'vector')
+    io.full_print_deformed(fsp.phi, fsp.u_n,  'phi_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.mesh, 'scalar')
 
 
 
