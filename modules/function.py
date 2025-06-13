@@ -1,6 +1,8 @@
 from fenics import *
+from ufl import FunctionSpace
 
 import input_output as io
+import mesh as msh
 
 '''
 set the nodal values of f equal to the values taken by the analytical expression 'expression' on the  points of the mesh of f, where expression should be like this
@@ -35,3 +37,31 @@ def set_from_list(f, list):
 #set nodal values of function 'f', defined on a 2d mesh, according to the nodal values written in the csv file 'filename'. . This works only if the function space of f is order-1 polynomials
 def set_from_file(f, filename):
     set_from_list( f, io.read_scalar_from_csvfile( filename ) )
+
+def evaluate_on_deformed_mesh(f, u):
+
+    deformed_mesh = msh.deform_mesh(Mesh(f.function_space().mesh()), u)
+
+
+    Q_old = f.function_space()
+
+    # Extract the features of the vector space of f
+    element = Q_old.ufl_element()
+    family = element.family()
+    cell = element.cell()
+    shape = element.value_shape()
+    degree = f.function_space().ufl_element().degree()
+
+
+    # Construct the new element with the same shape
+    if shape == ():  # scalar
+        element = FiniteElement(family, cell, degree)
+    elif len(shape) == 1:  # vector
+        element = VectorElement(family, cell, degree, dim=shape[0])
+    elif len(shape) == 2:  # tensor
+        element = TensorElement(family, cell, degree, shape=shape)
+    else:
+        raise ValueError(f"Unsupported value shape: {shape}")
+
+    Q_new = FunctionSpace(deformed_mesh, degree)
+
