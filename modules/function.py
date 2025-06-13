@@ -52,7 +52,7 @@ def deform_function_space(Q, u):
     deformed_mesh = msh.deform_mesh(Mesh(Q.mesh()), u)
 
     # Extract the features of the vector space Q
-    element = Q_old.ufl_element()
+    element = Q.ufl_element()
     family = element.family()
     cell = element.cell()
     shape = element.value_shape()
