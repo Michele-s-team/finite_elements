@@ -1,0 +1,68 @@
+#!/usr/bin/env wolframscript
+
+In[102]:= RA = 1.0;
+B2[i_,j_]:=(4Pi/3)*(i+j)^3;
+
+
+(*2) System‑Parameter& Diskretisierung*)
+kBT=1.0;cA0=1.0;cB0=1.0;
+DA=1.0;DB=1.0;
+kappa0=1.0;
+nPts=50;L=100.0;h=L/(nPts-1);
+D2=SparseArray[{{1,1}->-1/h^2,{1,2}->1/h^2,{nPts,nPts-1}->1/h^2,{nPts,nPts}->-1/h^2,Band[{2,2}]->ConstantArray[-2/h^2,nPts-2],Band[{2,3}]->ConstantArray[1/h^2,nPts-2],Band[{3,2}]->ConstantArray[1/h^2,nPts-2]},{nPts,nPts}];
+D4=D2.D2;
+
+(*3) Sweep über rB und Berechnung des größten Eigenwerts*)
+rBList=Exp[Subdivide[Log[0.00001],Log[5.0],1000]];
+
+results=Table[Module[{B2AA,B2BB,B2AB,sigmaAA,sigmaBB,sigmaAB,kappaAA,kappaBB,kappaAB,fAA,fBB,fAB,JAA,JBB,JAB,JBA,Jsys,eig},(*Virialkoeffizienten& Sigmas wie gehabt*)B2AA=B2[RA,RA];B2BB=B2[rB,rB];B2AB=B2[RA,rB];
+sigmaAA=Pi*(RA+RA)^2;
+sigmaBB=Pi*(rB+rB)^2;
+sigmaAB=Pi*(RA+rB)^2;
+(*kappa0=0 führt automatisch zu kappaAA=0 etc.*)(*Hessian-Matrixelemente*)fAA=kBT*(1/cA0+B2AA/sigmaAA);
+fBB=kBT*(1/cB0+B2BB/sigmaBB);
+fAB=kBT*(B2AB/sigmaAB);
+(*Real-Space Operator Jsys wie gehabt,allerdings mit kappa0=0 fällt der D4-Term weg*)JAA=DA*cA0*(fAA*D2- kappa0*D4);
+JBB=DB*cB0*(fBB*D2- kappa0*D4);
+JAB=DA*cA0*(fAB*D2- kappa0*D4);
+JBA=DB*cB0*(fAB*D2- kappa0*D4);
+Jsys=ArrayFlatten[{{JAA,JAB},{JBA,JBB}}];
+(*nur den einen Eigenwert mit größtem Realteil holen*)eig=First@Eigenvalues[Jsys,1,Method->{"Arnoldi","Criteria"->"RealPart","MaxIterations"->5000,"Tolerance"->10.^-8,"BasisSize"->20}];
+{rB,Re[eig]}],{rB,rBList}];
+
+(*3) Kritischen Wert extrahieren*)
+critData=Select[results,#[[2]]>0&];
+If[Length[critData]>0,critRB=critData[[1,1]];
+Print["Kritisches R_B \[TildeTilde] ",N[critRB,4]],Print["Kein Instabilitätsübergang in der Range gefunden."]];
+
+(*4) Plot*)
+ListLinePlot[results,Frame->True,FrameLabel->{"r_B","maxEig"},PlotRange->All,GridLines->True]
+During evaluation of In[102]:= Eigenvalues::maxit2: Warning: the maximum number of iterations, 5000, has been reached by the Arnoldi algorithm without convergence to the specified tolerance, but the current best computed value has been returned. You can use method options with Method -> {Arnoldi, opts} to increase the size of basis vectors, the maximum number of iterations, reduce the tolerance or use an estimate as a shift, any of which may help.
+During evaluation of In[102]:= Eigenvalues::maxit2: Warning: the maximum number of iterations, 5000, has been reached by the Arnoldi algorithm without convergence to the specified tolerance, but the current best computed value has been returned. You can use method options with Method -> {Arnoldi, opts} to increase the size of basis vectors, the maximum number of iterations, reduce the tolerance or use an estimate as a shift, any of which may help.
+During evaluation of In[102]:= Eigenvalues::maxit2: Warning: the maximum number of iterations, 5000, has been reached by the Arnoldi algorithm without convergence to the specified tolerance, but the current best computed value has been returned. You can use method options with Method -> {Arnoldi, opts} to increase the size of basis vectors, the maximum number of iterations, reduce the tolerance or use an estimate as a shift, any of which may help.
+During evaluation of In[102]:= General::stop: Further output of Eigenvalues::maxit2 will be suppressed during this calculation.
+During evaluation of In[102]:= Kritisches R_B \[TildeTilde] 3.7957
+Out[114]= 
+ClearAll[rB];
+RA=1.0;kBT=1.0;cA0=1.0;cB0=1.0;
+B2[i_,j_]:=(4 Pi/3)*(i+j)^3;
+sigma[i_,j_]:=Pi*(i+j)^2;
+M={{1+B2[RA,RA],B2[RA,rB]},{B2[RA,rB],1/cB0+B2[rB,rB]}};
+eq=Det[M]==0;
+sol=FindRoot[eq,{rB,0.5}];  (*Setze als Startwert z.B.0.5*)
+rBcritAnalytisch=rB/. sol
+Out[99]= -0.28101
+
+In[100]:= F[cA_,cB_]:=Total[kBT (cA Log[cA/cA0]+cB Log[cB/cB0])+(kBT/(2 sigma[RA,RA])) B2[RA,RA] cA^2+(kBT/(2 sigma[rB,rB])) B2[rB,rB] cB^2+(kBT/(sigma[RA,rB])) B2[RA,rB] cA cB+(*ggf.Gradiententerm,wenn kappa0>0*)0];
+{cAopt,cBopt}=Nest[Function[{cb},Module[{cA=cb[[;;nPts]],cB=cb[[nPts+1;;]]},gradA=D[F[cA,cB],cA];
+gradB=D[F[cA,cB],cB];
+Join[cA,cB]-0.01 Join[gradA,gradB]  (*Schrittweite anpassen*)]],Join[cAinit,cBinit],1000];
+During evaluation of In[100]:= Thread::tdlen: Objects of unequal length in {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.}+{0.,0.,0.,0.,<<43>>,0.,0.,0.,<<100>>} cannot be combined.
+During evaluation of In[100]:= Thread::tdlen: Objects of unequal length in {0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.,0.}+{0.,0.,0.,0.,<<43>>,0.,0.,0.,<<100>>} cannot be combined.
+During evaluation of In[100]:= Thread::tdlen: Objects of unequal length in 1/((1. +rB)^2 3)0.31831 <<4>> {1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,<<29>>,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,<<100>>} cannot be combined.
+During evaluation of In[100]:= General::stop: Further output of Thread::tdlen will be suppressed during this calculation.
+During evaluation of In[100]:= D::dvar: Multiple derivative specifier {1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.} does not have the form {variable, n}, where n is symbolic or a non-negative integer.
+During evaluation of In[100]:= D::dvar: Multiple derivative specifier {1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,<<100>>} does not have the form {variable, n}, where n is symbolic or a non-negative integer.
+During evaluation of In[100]:= D::dvar: Multiple derivative specifier {1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.,1.} does not have the form {variable, n}, where n is symbolic or a non-negative integer.
+During evaluation of In[100]:= General::stop: Further output of D::dvar will be suppressed during this calculation.
+Out[101]= $Aborted

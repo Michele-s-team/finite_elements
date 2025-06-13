@@ -1,7 +1,7 @@
 import sympy as sp
 from sympy import symbols, Function, sqrt, simplify, diff, Matrix, det
 import mpmath as mp
-mp.mp.dps = 10
+mp.mp.dps = 8
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -117,7 +117,7 @@ f_NablaNablaH = sp.lambdify(
   NablaNablaH.subs(subs_map_nabla),
   'mpmath'
 )
-solver = mp.odefun(ode_system, Rmin, y0, tol = 1e-20)
+solver = mp.odefun(ode_system, Rmin, y0, tol = 1e-10)
 
 r_vals = np.linspace(Rmin, Rmax, 10001)
 sol = [solver(float(rv)) for rv in r_vals]
@@ -249,13 +249,78 @@ plt.legend()
 plt.show()
 '''
 print("Solved ODE")
+# here we have the option to reset the grid coarsening
 npts = len(r_vals)
+npts = 5
+r_vals = np.linspace(Rmin, Rmax, npts)
+print('Number of points:',npts)
 dr = r_vals[1] - r_vals[0]
 M = np.zeros((3*npts, 3*npts))
-
+sol = [solver(float(rv)) for rv in r_vals]
+z_vals   = np.array([ float(s[0]) for s in sol])
+zp_vals  = np.array([ float(s[1]) for s in sol])
+zpp_vals = np.array([ float(s[2]) for s in sol])
+z3_vals  = np.array([ float(s[3]) for s in sol])
+sigma_vals = np.array([float(s[4]) for s in sol])
+v_vals = C1_val / (r_vals * np.sqrt(1 + zp_vals**2))
+v_prime_vals = -C1_val*(
+    1.0/(r_vals**2 * np.sqrt(1+zp_vals**2))
+    + zp_vals*zpp_vals/(r_vals*(1+zp_vals**2)**1.5)
+)
+grr_vals = 1.0 + zp_vals**2
+g_rr_inv_vals = 1.0/grr_vals
+f_vpp = sp.lambdify((r, zp, zpp, C1), vpp_expr, 'numpy')
+v_pp_vals = f_vpp(r_vals, zp_vals, zpp_vals, C1_val)
+H_vals = H_fun(r_vals, zp_vals, zpp_vals)
+Hp_vals = np.gradient(H_vals, r_vals)
+Hpp_vals = np.gradient(Hp_vals, r_vals)
+K_vals = zp_vals * zpp_vals /( r_vals * (1+zp_vals**2)**2 )
+b_rr_vals = zpp_vals/np.sqrt(1.0+zp_vals**2)
+b_rr_inv_vals = g_rr_inv_vals**2 * b_rr_vals
 def idx_zeta(i): return i
 def idx_u(i):    return npts + i
 def idx_psi(i):  return 2*npts + i
+
+#set the boundary conditions: 
+fields = [
+    ( "zeta",  idx_zeta ),
+    ( "u",     idx_u    ),
+    ( "psi",   idx_psi  )
+]
+
+# 1) One-sided FD coefficients for derivatives 1…4 at the left boundary
+#    (forward stencils)
+coeffs_fd = {
+    1: np.array([-3/2, 2.0,   -1/2]) / dr,              # f' ≈ 0
+    2: np.array([  2,  -5.0,    4.0,   -1.0]) / dr**2,   # f'' ≈ 0
+    3: np.array([-5.0, 18.0,  -24.0,  14.0,   -3.0])/(2*dr**3),  # f''' ≈ 0
+    4: np.array([35.0,-104.0, 114.0, -56.0,  11.0])    / dr**4   # f'''' ≈ 0
+}
+
+# 2) And the reversed (backward) stencils for the right boundary
+coeffs_bd = {}
+for k, c in coeffs_fd.items():
+    coeffs_bd[k] = c[::-1]
+
+# 3) Zero‐out and fill each BC row for i=0 and i=npts-1
+for name, idx_f in fields:
+    for deriv_order in (1,2,3,4):
+        # left boundary i=0
+        row = idx_f(0)
+        M[row, :] = 0.0
+        c = coeffs_fd[deriv_order]
+        for offset, ci in enumerate(c):
+            M[row, idx_f(offset)] = ci
+        
+        # right boundary i=npts-1
+        row = idx_f(npts-1)
+        M[row, :] = 0.0
+        c = coeffs_bd[deriv_order]
+        for offset, ci in enumerate(c):
+            M[row, idx_f(npts-1 - (len(c)-1) + offset)] = ci
+
+
+
 
 kappa = eta = rho = 1.0
 A_vals = 0.5*( -12*kappa/rho * H_vals**2
@@ -326,6 +391,7 @@ for i in range(2, npts-2):
     M[idx_psi(i), idx_zeta(i-1)] += kappa/rho*Hprime_vals[i]*3*zp_vals[i]/(dr**2)
     M[idx_psi(i), idx_zeta(i)] += -2*kappa/rho*Hprime_vals[i]*3*zp_vals[i]/(dr**2)
 #part B
+
 for i in range(4, npts-4):
     f_i = kappa/rho*(1+zp_vals[i]**2)/2/(1+zp_vals[i]**2)**(3/2)/dr**4
     M[idx_psi(i), idx_zeta(i+2)] += f_i
@@ -403,11 +469,28 @@ for i in range(1, npts-1):
  
 
 print("Matrix M constructed")
+import pandas as pd
+df = pd.DataFrame(M)
+print(df)
  #calculate eigenvalues and eigenvectors of this matrix
 import scipy.sparse as sp
 import scipy.sparse.linalg as spla
-
+from matplotlib.animation import FuncAnimation, PillowWriter
+r0 = 1.5
+zeta0 = 1*np.exp(-5)*np.exp(-(r_vals-r0)**2/(2*0.05**2))
+u0 = np.zeros_like(r_vals)
+psi0 = np.zeros_like(r_vals)
+X0 = np.concatenate((zeta0, u0, psi0))
+plt.figure()
+plt.plot(r_vals, z_vals, label='z(r)')
+plt.plot(r_vals, z_vals+ zeta0, label='z(r)+zeta0')
+plt.xlabel('r')
+plt.ylabel('z(r)')
+plt.legend()
+plt.show()
 Ms = sp.csr_matrix(M)
+
+'''
 eigvals_comp = np.linalg.eigvals(Ms.todense())
 eigvals_comp = np.sort(eigvals_comp)
 for λ in eigvals_comp:
@@ -416,5 +499,38 @@ k = 6
 eigvals_partial, eigvecs_partial = spla.eigs(Ms, k=k, which='LR')
 for λ in eigvals_partial:
     print(f"Re(λ) = {λ.real:.3e},  Im(λ) = {λ.imag:.3e}")
+'''
+eigvals, eigvecs = np.linalg.eig(M)
+eigvals_sorted = sorted(eigvals, key =lambda x: x.real, reverse=True)
+print("Eigenvalues:")
+for λ in list(eigvals_sorted[:3]) + list(eigvals_sorted[-3:]):
+    print(f"Re(λ) = {λ.real:.3e},  Im(λ) = {λ.imag:.3e}")
+'''
+V_inv = np.linalg.inv(eigvecs)
+a = V_inv.dot(X0)
+t_max = 1.0
+n_frames = 100
+t_vals = np.linspace(0, t_max, n_frames)
+fig, ax = plt.subplots()
+line, = ax.plot(r_vals, z_vals + zeta0, 'r-', lw=2)
+ax.set_xlim(r_vals.min(), r_vals.max())
+ymin = (z_vals + zeta0).min()*1.2
+ymax = (z_vals + zeta0).max()*1.2
+ax.set_ylim(ymin, ymax)
+ax.set_xlabel('r')
+ax.set_ylabel('z_{total}(r,t)')
 
+def update(frame):
+    t     = t_vals[frame]
+    expLt = np.exp(eigvals * t)
+    X_t   = eigvecs.dot(a * expLt)
+    zeta_t = X_t[:npts]
+    line.set_ydata(z_vals + zeta_t)
+    ax.set_title(f't = {t:.2f}')
+    return (line,)
 
+anim = FuncAnimation(fig, update, frames=n_frames, blit=True)
+writer = PillowWriter(fps=15)
+anim.save('perturbation_total_only.gif', writer=writer)
+print("GIF gespeichert unter perturbation_total_only.gif")
+'''

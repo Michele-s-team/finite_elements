@@ -1,102 +1,99 @@
 import numpy as np
+import scipy.sparse as sp
+import scipy.sparse.linalg as spla
 import matplotlib.pyplot as plt
-from scipy.linalg import expm
 
-# ------------------------------
-# 1) Model‐ und Numerikparameter
-# ------------------------------
-RA     = 0.1
-kBT    = 1.0
-cA0    = 1.0
-cB0    = 1.0
-DA     = 1.0
-DB     = 1.0
-kappa0 = 0.01
 
-# Domain & Auflösung (λ_max ≈ 0.05)
-L     = 5.0
-nPts  = 1001
-h     = L/(nPts-1)
+kBT, cA0, cB0 = 1.0, 1.0, 1.0
+DA, DB        = 1.0, 1.0
+kappaAA = kappaAB = kappaBB = 1.0    
+RA, nPts, L   = 1.0, 60, 100.0
+x             = np.linspace(0, L, nPts)
+h             = L/(nPts-1)
 
-# Szenarien für rB
-rB_list = [0.1, 1.5, 2.5]
 
-# -------------------------------------
-# 2) Diskretisierung: D2 (Neumann‐Ränder)
-# -------------------------------------
-D2 = np.zeros((nPts, nPts))
-for i in range(1, nPts-1):
-    D2[i, i-1] =  1.0/h**2
-    D2[i, i]   = -2.0/h**2
-    D2[i, i+1] =  1.0/h**2
-# Neumann BC
-D2[0,   0], D2[0,   1] = -1.0/h**2,  1.0/h**2
-D2[-1, -2], D2[-1, -1]=  1.0/h**2, -1.0/h**2
+rB = 0.9
+def B2(a,b): return 16*np.pi/3*(a+b)**3
+def B3(a,b,c):
+    return (16*np.pi**2/9)*(
+       b**3*c**3
+     + 3*a*b**2*c**2*(b+c)
+     + a**3*(b+c)**3
+     + 3*a**3*b*c*(b**2+3*b*c+c**2)
+    )
+B2AA, B2AB, B2BB = B2(RA,RA), B2(RA,rB), B2(rB,rB)
+B3AAA = B3(RA,RA,RA)
+B3AAB = B3(RA,RA, rB)
+B3BBA = B3(rB, rB,RA)
+B3BBB = B3(rB, rB,rB)
 
-D4 = D2 @ D2
+def neumann_D2(n,h):
+    main = -2*np.ones(n)
+    off  =  np.ones(n-1)
+    D2   = sp.diags([off,main,off],[-1,0,1],format="lil")
+    D2[0,0],   D2[0,1]   = -1, +1
+    D2[-1,-2],D2[-1,-1] = +1, -1
+    return (D2/h**2).tocsr()
 
-# ------------------------------
-# 3) Virial & CH‐Koeffizienten
-# ------------------------------
-def B2(i, j):     return (16*np.pi/3)*(i+j)**3
-def sigma(i, j):  return np.pi*(i+j)**2
-def kappa(i, j):  return kappa0*(i+j)**2
+def neumann_D1(n,h):
+    D1 = sp.lil_matrix((n,n))
+    for i in range(1,n-1):
+        D1[i,i+1] =  +0.5/h
+        D1[i,i-1] =  -0.5/h
+    D1[0,0] = -1/h; D1[0,1] = +1/h
+    D1[-1,-2] = -1/h; D1[-1,-1] = +1/h
+    return D1.tocsr()
 
-# ------------------------------
-# 4) Simulation via Matrix‐Exponential
-# ------------------------------
-x = np.linspace(0, L, nPts)
-np.random.seed(0)
-for rB in rB_list:
-    # — Jacobi‐Blöcke
-    B2AA, B2BB, B2AB = B2(RA,RA), B2(rB,rB), B2(RA,rB)
-    sAA, sBB, sAB    = sigma(RA,RA), sigma(rB,rB), sigma(RA,rB)
-    kAA, kBB, kAB    = kappa(RA,RA), kappa(rB,rB), kappa(RA,rB)
+D1 = neumann_D1(nPts, h)
+D2 = neumann_D2(nPts, h)
+D3 = D1.dot(D2)
 
-    fAA = kBT*(1/cA0 + B2AA/sAA)
-    fBB = kBT*(1/cB0 + B2BB/sBB)
-    fAB = kBT*(    B2AB/sAB)
+def compute_fluxes(cA, cB):
+    dcA_dx  = D1.dot(cA)
+    dcB_dx  = D1.dot(cB)
+    d3cA_dx = D3.dot(cA)
+    d3cB_dx = D3.dot(cB)
+    termA = (B2AA*dcA_dx + B2AB*dcB_dx
+           - kappaAA*d3cA_dx - kappaAB*d3cB_dx)
+    termB = (B2AB*dcA_dx + B2BB*dcB_dx
+           - kappaAB*d3cA_dx - kappaBB*d3cB_dx)
+    flux3A = (B3AAA*(cA**2)*dcA_dx
+            + B3AAB*((cA**2)*dcB_dx + cA*cB*dcA_dx)
+            + B3BBA*(cA*cB)*dcB_dx)
+    flux3B = (B3BBB*(cB**2)*dcB_dx
+            + B3BBA*((cB**2)*dcA_dx + cB*cA*dcB_dx)
+            + B3AAB*(cB*cA)*dcA_dx)
+    JA = -DA*( dcA_dx + cA*termA + flux3A )
+    JB = -DB*( dcB_dx + cB*termB + flux3B )
 
-    JAA = DA*cA0*( fAA*D2 - (kAA/sAA)*D4 )
-    JBB = DB*cB0*( fBB*D2 - (kBB/sBB)*D4 )
-    JAB = DA*cA0*( fAB*D2 - (kAB/sAB)*D4 )
-    JBA = DB*cB0*( fAB*D2 - (kAB/sAB)*D4 )
-    Jsys = np.block([[JAA, JAB],
-                     [JBA, JBB]])
+    return JA, JB
 
-    # — spektrale Wachstumsrate und t_final wählen
-    eigs = np.linalg.eigvals(Jsys)
-    omega_max = np.max(eigs.real)
-    if omega_max>0:
-        t_final = np.log(10)/omega_max  # ~10-fach Wachstum
-    else:
-        t_final = 1.0
+dt, t_final = 0.0001, 20.0
+n_steps     = int(t_final/dt)
 
-    # — Anfangszustand
-    c_init = np.concatenate([
-        cA0 + 1e-4*np.random.randn(nPts),
-        cB0 + 1e-4*np.random.randn(nPts)
-    ])
+rng = np.random.default_rng(0)
+cA = cA0 + 1e-6*(rng.random(nPts)-0.5)
+cB = cB0 + 1e-6*(rng.random(nPts)-0.5)
 
-    # — exakte lineare Lösung
-    c_end = expm(Jsys * t_final) @ c_init
+ampsA = np.zeros(n_steps+1)
+ampsB = np.zeros(n_steps+1)
+ampsA[0] = np.linalg.norm(cA-cA0)
+ampsB[0] = np.linalg.norm(cB-cB0)
 
-    # — Plot: Anfang
-    plt.figure(figsize=(6,3))
-    plt.plot(x, c_init[:nPts], label='cA init')
-    plt.plot(x, c_init[nPts:], label='cB init', alpha=0.8)
-    plt.title(f'Initial (rB={rB})')
-    plt.xlabel('x'); plt.ylabel('c'); plt.grid(True)
-    plt.legend(); plt.tight_layout()
-    plt.show()
+for step in range(n_steps):
+    JA, JB = compute_fluxes(cA, cB)
+    dcA_dt = -D1.dot(JA)
+    dcB_dt = -D1.dot(JB)
+    cA += dt*dcA_dt
+    cB += dt*dcB_dt
+    ampsA[step+1] = np.linalg.norm(cA-cA0)
+    ampsB[step+1] = np.linalg.norm(cB-cB0)
 
-    # — Plot: nach Wachstum
-    plt.figure(figsize=(6,3))
-    plt.plot(x, c_end[:nPts], label=f'cA @ t={t_final:.2f}')
-    plt.plot(x, c_end[nPts:], label=f'cB @ t={t_final:.2f}', alpha=0.8)
-    plt.title(f'After growth (rB={rB})')
-    plt.xlabel('x'); plt.ylabel('c'); plt.grid(True)
-    plt.legend(); plt.tight_layout()
-    plt.show()
+time = np.linspace(0, t_final, n_steps+1)
+plt.semilogy(time, ampsA, label='A perturbation')
+plt.semilogy(time, ampsB, label='B perturbation')
+plt.xlabel('time'), plt.ylabel('||Δc||₂')
+plt.legend()
+plt.title(f'Nonlinear growth at rB={rB:.3f}')
+plt.savefig("simulation_stability_vs_rB.jpg")
 
-    print(f"rB={rB}: omega_max={omega_max:.1f}, t_final={t_final:.2f}\n")
