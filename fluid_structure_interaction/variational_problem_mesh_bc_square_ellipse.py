@@ -79,5 +79,10 @@ bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
 
 F_u_dot = ( \
                       (ela.F_dot(fsp.u_dot_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.exponent), ela.mu(fsp.u_n, rpam.exponent))[j, i] \
-                       + ela.F(fsp.u_n)[k, j] * ela.S_dot(fsp.u_n, fsp.u_dot_n, ela.K(fsp.u_n, rpam.exponent), ela.mu(fsp.u_n, rpam.exponent))[j, i]) \
+                       + ela.F(fsp.u_n)[k, j] * ela.S_dot(fsp.u_n,
+                                                      fsp.u_dot_n,
+                                                      ela.K(fsp.u_n, rpam.exponent),
+                                                      ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.exponent),
+                                                      ela.mu(fsp.u_n, rpam.exponent),
+                                                      ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.exponent))[j, i]) \
                       * (fsp.nu_u_dot[k].dx(i))) * rmsh.dx

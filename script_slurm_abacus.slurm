@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=fluid_structure_interaction_1
+#SBATCH --job-name=fluid_structure_interaction_3
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=04-00:00:00
@@ -7,10 +7,9 @@
 #SBATCH --partition=dev
 #SBATCH --mail-user=michele.castellana@curie.fr
 
-echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
+echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."05
 
-
-RUN="/mnt/beegfs/home/mcastel1/fluid_structure_interaction_1"
+RUN="/mnt/beegfs/home/mcastel1/fluid_structure_interaction_3"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
 PROBLEM="square_ellipse"
@@ -19,5 +18,5 @@ rm -rf $SOLUTION
 mkdir $SOLUTION
 
 cd $RUN
-#res = 0.1
+#res = 0.05
 time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $PROBLEM $MESH $SOLUTION 
