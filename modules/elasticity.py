@@ -56,9 +56,21 @@ Return values:
 - 1/det(F(u))^exponent
 '''
 
-
 def K(u, exponent):
     return ((ufl.det(F(u))) ** (-exponent))
+
+
+'''
+time derivative of the coefficient K
+Input values:
+- 'u': displacement vector field
+- 'exponent': the exponent in 'K(u, exponent)'
+Return values:
+- dKdt
+'''
+
+def dKdt(u, exponent):
+    return (-exponent * ((ufl.det(F(u))) ** (-exponent)) * ( G(u)[i, j] * dFdt(u)[j, i] ))
 
 
 '''
@@ -153,5 +165,7 @@ Input values:
 Return values:
 - det(F_{ij}(u))
 '''
+
+
 def detF(u):
     return ufl.det(F(u))
