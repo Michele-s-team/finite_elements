@@ -58,8 +58,8 @@ Return values:
 
 
 def K(u, exponent):
-    # return 1 / ((ufl.det(F(u))) ** exponent)
-    return 1
+    return 1 / ((ufl.det(F(u))) ** exponent)
+    # return 1
 
 
 '''
@@ -73,8 +73,8 @@ Return values:
 
 
 def mu(u, exponent):
-    # return 1 / ((ufl.det(F(u))) ** exponent)
-    return 1
+    return 1 / ((ufl.det(F(u))) ** exponent)
+    # return 1
 
 
 '''
