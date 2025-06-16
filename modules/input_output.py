@@ -6,6 +6,7 @@ import numpy as np
 import os
 import shutil
 
+import function as fu
 import mesh as msh
 
 number_of_decimals = 2
@@ -247,6 +248,12 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
+
+
+def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+
+    f_def = fu.deform_function(f, u)
+    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, f_def.function_space().mesh(), type)
 
 '''
 Print a text in red or green according to the value of a boolean variable. This function is used to print out tests
