@@ -141,9 +141,14 @@ Return values:
 '''
 
 
-def S_dot(u, u_dot, K, mu):
+def S_dot(u, u_dot, K, K_dot, mu, mu_dot):
     I = ufl.Identity(len(u))
-    return as_tensor(K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] + 2 * mu * (E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) / len(u) * I[i, j]), (i, j))
+    return as_tensor( \
+        K_dot * E(u)[k, k] * I[i, j] \
+        + K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] \
+        + 2 * mu_dot * (E(u)[i, j] - E(u)[k, k] / len(u) * I[i, j])\
+        + 2 * mu * (E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) / len(u) * I[i, j]), \
+        (i, j))
 
 
 '''
