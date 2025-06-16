@@ -135,7 +135,8 @@ def E_dot(u, u_dot):
 time derivative of S
 Input values:
 - 'u': {u^t}_notes
-- 'u_dot': {du^t/dt}_notesReturn values:
+- 'u_dot': {du^t/dt}_notes
+Return values:
 - dS_{ij}^t/dt_notes
 '''
 
