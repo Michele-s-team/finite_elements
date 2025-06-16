@@ -60,6 +60,7 @@ def K(u, exponent):
     return ((ufl.det(F(u))) ** (-exponent))
 
 
+
 '''
 time derivative of the coefficient K
 Input values:
@@ -69,8 +70,8 @@ Return values:
 - dKdt
 '''
 
-def dKdt(u, exponent):
-    return (-exponent * ((ufl.det(F(u))) ** (-exponent)) * ( G(u)[i, j] * dFdt(u)[j, i] ))
+def K_dot(u, u_dot, exponent):
+    return (-exponent * ((ufl.det(F(u))) ** (-exponent)) * ( G(u)[i, j] * F_dot(u_dot)[j, i] ))
 
 
 '''
