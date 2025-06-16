@@ -65,6 +65,7 @@ def K(u, exponent):
 time derivative of the coefficient K
 Input values:
 - 'u': displacement vector field
+- 'u_dot': displacement vector field
 - 'exponent': the exponent in 'K(u, exponent)'
 Return values:
 - dKdt
@@ -86,6 +87,21 @@ Return values:
 
 def mu(u, exponent):
     return ((ufl.det(F(u))) ** (-exponent))
+
+
+'''
+time derivative of the coefficient mu
+Input values:
+- 'u': displacement vector field
+- 'u_dot': displacement vector field
+- 'exponent': the exponent in 'mu(u, exponent)'
+Return values:
+- dmudt
+'''
+
+def mu_dot(u, u_dot, exponent):
+    return (-exponent * ((ufl.det(F(u))) ** (-exponent)) * ( G(u)[i, j] * F_dot(u_dot)[j, i] ))
+
 
 
 '''
