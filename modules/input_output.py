@@ -2,9 +2,11 @@ import colorama as col
 import csv
 from fenics import *
 import glob
+import numpy as np
 import os
 import shutil
 
+import function as fu
 import mesh as msh
 
 number_of_decimals = 2
@@ -115,8 +117,13 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     csvfile.close()
 
 
-# print to the csv file 'filename' the coordinates of the vertices of 'mesh'
-def print_vertices_to_csv_file(mesh, filename):
+'''
+print the coordinates of the vertices of a mesh to csv file
+Input values: 
+- 'mesh' <dolfin.Mesh>: the mesh
+- 'outfile': path of the csv file
+'''
+def print_mesh_vertices_to_csv(mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q.tabulate_dof_coordinates()
@@ -135,6 +142,49 @@ def print_vertices_to_csv_file(mesh, filename):
         print(f"{padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
 
     csvfile.close()
+
+
+'''
+print the coordinates of the extermal points of the lines of a mesh to csv file
+Input values: 
+- 'mesh' <dolfin.Mesh>: the mesh
+- 'outfile': path of the csv file
+'''
+def print_mesh_lines_to_csv(mesh, outfile):
+    """
+    Export unique edges of a FEniCS mesh to CSV with 3D coordinates (padded using np.pad).
+    Compatible with 1D, 2D, and 3D meshes.
+    """
+
+    mesh.init()  # Ensure all connectivities exist
+
+    # Ensure edge-to-vertex connectivity exists
+    try:
+        mesh.init(1, 0)
+    except RuntimeError:
+        pass  # Already initialized
+
+    coordinates = mesh.coordinates()
+    gdim = mesh.geometry().dim()
+
+    edge_set = set()
+    for edge in edges(mesh):
+        v = edge.entities(0)
+        edge_set.add(tuple(sorted(v)))
+
+    with open(outfile, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["start:0", "start:1", "start:2", "end:0", "end:1", "end:2"])
+
+        for v_start, v_end in sorted(edge_set):
+            p_start = coordinates[v_start]
+            p_end = coordinates[v_end]
+
+            # Pad to 3D
+            p_start_padded = np.pad(p_start, (0, 3 - len(p_start)), mode='constant')
+            p_end_padded = np.pad(p_end, (0, 3 - len(p_end)), mode='constant')
+
+            writer.writerow(np.concatenate([p_start_padded, p_end_padded]))
 
 
 '''
@@ -198,6 +248,12 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
+
+
+def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+
+    f_def = fu.deform_function(f, u)
+    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, f_def.function_space().mesh(), type)
 
 '''
 Print a text in red or green according to the value of a boolean variable. This function is used to print out tests

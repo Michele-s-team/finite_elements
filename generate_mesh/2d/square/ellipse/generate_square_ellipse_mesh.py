@@ -38,16 +38,16 @@ output_directory = io.add_trailing_slash(output_directory)
 mesh_file = output_directory + "mesh.msh"
 
 # CHANGE PARAMETERS HERE
-L = 1
-h = 1
+L = 2.2
+h = 0.41
 # ellipse center
-c = [L / 2, h / 2, 0]
+c = [0.25, 0.2, 0]
 # ellipse semi-major axis
-a = 0.2
+a = 0.1
 # ellipse semi-minor axis
-b = 0.1
+b = 0.05
 # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-phi = np.pi/3
+phi = 0
 # CHANGE PARAMETERS HERE
 
 
@@ -119,7 +119,7 @@ model.add_physical(ellipse_loop.curves, "c")
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.write_mesh_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 gmsh.clear()
 geometry.__exit__()
@@ -134,4 +134,4 @@ meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_vertices_to_csv_file(mesh, output_directory + "vertices.csv")
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")

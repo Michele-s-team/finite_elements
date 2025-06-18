@@ -1,7 +1,7 @@
-from fenics import *
+import colorama as col
 import dolfin
+from fenics import *
 
-import calculus as calc
 import load_mesh as lmsh
 import mesh as msh
 import numpy as np
@@ -17,19 +17,22 @@ mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.ar
 r_mesh = lmsh.mesh.hmin()
 
 # CHANGE PARAMETERS HERE
-L = 1
-h = 1
+L = 2.2
+h = 0.41
 # ellipse center
-c = [L / 2, h / 2, 0]
+c = [0.25, 0.2, 0]
 # ellipse semi-major axis
-a = 0.2
+a = 0.1
 # ellipse semi-minor axis
-b = 0.1
+b = 0.05
 # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
 phi = 0
 # CHANGE PARAMETERS HERE
 
 focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
+
+print(f'L = {L}, h = {h}, c = {c}, a = {a}, b = {b}, phi = {phi}, focus = {focus}')
+print(f"Radius of mesh cell = {col.Fore.BLUE}{r_mesh}{col.Style.RESET_ALL}")
 
 
 
@@ -43,6 +46,7 @@ ds_ellipse = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
+ds_l_tb_ellipse = ds_l + ds_t + ds_b + ds_ellipse
 ds = ds_square + ds_ellipse
 
 import check_mesh_tags_square_ellipse

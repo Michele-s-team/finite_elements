@@ -8,8 +8,16 @@ small_number = 1e-3
 def atan_quad(r):
     if (r[0] > 0):
         angle = np.arctan(r[1] / r[0])
-    else:
+    elif (r[0] < 0):
         angle = np.pi + np.arctan(r[1] / r[0])
+    elif (r[0] == 0):
+        if r[1] > 0:
+            angle = np.pi/2
+        elif r[1] < 0:
+            angle = -np.pi/2
+        elif r[1] == 0:
+            # in this case the angle is not defined -> set it to a nominal value (the function atan_quad should not be called with r[0] = r[1] = 0 anyway
+            angle = 0
 
     return angle - 2 * np.pi * np.floor(angle / (2 * np.pi))
 

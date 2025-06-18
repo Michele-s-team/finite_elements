@@ -56,10 +56,24 @@ Return values:
 - 1/det(F(u))^exponent
 '''
 
-
 def K(u, exponent):
-    # return 1 / ((ufl.det(F(u))) ** exponent)
-    return 1
+    return ((ufl.det(F(u))) ** (-exponent))
+
+
+
+'''
+time derivative of the coefficient K
+Input values:
+- 'u': displacement vector field
+- 'u_dot': displacement vector field
+- 'exponent': the exponent in 'K(u, exponent)'
+Return values:
+- dKdt
+'''
+
+def K_dot(u, u_dot, exponent):
+    return (-exponent * ((ufl.det(F(u))) ** (-exponent)) * ( G(u)[i, j] * F_dot(u_dot)[j, i] ))
+
 
 '''
 fictitious  modulus of hydrostatic compression, which depends on the deformation-gradient tensor
@@ -72,8 +86,23 @@ Return values:
 
 
 def mu(u, exponent):
-    # return 1 / ((ufl.det(F(u))) ** exponent)
-    return 1
+    return ((ufl.det(F(u))) ** (-exponent))
+
+
+'''
+time derivative of the coefficient mu
+Input values:
+- 'u': displacement vector field
+- 'u_dot': displacement vector field
+- 'exponent': the exponent in 'mu(u, exponent)'
+Return values:
+- dmudt
+'''
+
+def mu_dot(u, u_dot, exponent):
+    return (-exponent * ((ufl.det(F(u))) ** (-exponent)) * ( G(u)[i, j] * F_dot(u_dot)[j, i] ))
+
+
 
 '''
 time derivative of F
@@ -82,6 +111,8 @@ Input values:
 Return values:
 - dF_{ij}^t/dt_notes
 '''
+
+
 def F_dot(u_dot):
     return as_tensor(u_dot[i].dx(j), (i, j))
 
@@ -94,16 +125,70 @@ Input values:
 Return values:
 - dE_{ij}^t/dt_notes
 '''
+
+
 def E_dot(u, u_dot):
-    return as_tensor(1.0/2.0 * (F_dot(u_dot)[k, i] * F(u)[k, j] + F_dot(u_dot)[k, j] * F(u)[k, i]), (i, j))
+    return as_tensor(1.0 / 2.0 * (F_dot(u_dot)[k, i] * F(u)[k, j] + F_dot(u_dot)[k, j] * F(u)[k, i]), (i, j))
+
 
 '''
 time derivative of S
 Input values:
 - 'u': {u^t}_notes
-- 'u_dot': {du^t/dt}_notesReturn values:
+- 'u_dot': {du^t/dt}_notes
+Return values:
 - dS_{ij}^t/dt_notes
 '''
-def S_dot(u, u_dot, K, mu):
+
+
+def S_dot(u, u_dot, K, K_dot, mu, mu_dot):
     I = ufl.Identity(len(u))
-    return as_tensor(K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] + 2 * mu * ( E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) /len(u) * I[i, j] ), (i, j))
+    return as_tensor( \
+        K_dot * E(u)[k, k] * I[i, j] \
+        + K * F(u)[l, k] * F_dot(u_dot)[l, k] * I[i, j] \
+        + 2 * mu_dot * (E(u)[i, j] - E(u)[k, k] / len(u) * I[i, j])\
+        + 2 * mu * (E_dot(u, u_dot)[i, j] - (F(u)[l, k] * F_dot(u_dot)[l, k]) / len(u) * I[i, j]), \
+        (i, j))
+
+
+'''
+tensor {G^t_{ij}}_notes
+Input values: 
+- 'u': displacement vector field
+Return values:
+- G[i,j] = {G^t_{ij}}_notes
+'''
+
+
+def G(u):
+    return ufl.inv(F(u))
+
+
+'''
+tensor {\varsigma_{ij}}_notes
+Input values:
+- 'var_sigma': \varsigma_notes (transformed surface tension)
+- 'var_v': {\rm v}_notes (transformed velocity)
+- 'u': displacement vector field
+- 'eta': viscosity
+Return values:
+- var_sigma_tensor[i, j] = {\varsigma_{ij}}_notes
+'''
+
+
+def var_sigma_tensor(var_sigma, var_v, u, eta):
+    I = ufl.Identity(len(u))
+    return as_tensor(var_sigma * I[i, j] + eta * (G(u)[k, j] * (var_v[i]).dx(k) + G(u)[k, i] * (var_v[j]).dx(k)), (i, j))
+
+
+'''
+determinant of F
+Input values:
+- 'u': displacement vector field
+Return values:
+- det(F_{ij}(u))
+'''
+
+
+def detF(u):
+    return ufl.det(F(u))
