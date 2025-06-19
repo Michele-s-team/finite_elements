@@ -1,6 +1,5 @@
 from fenics import *
 import importlib
-import numpy as np
 import ufl as ufl
 
 import boundary_geometry as bgeo
@@ -18,7 +17,7 @@ class u_exact_expression(UserExpression):
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
-        # values[0] = np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.R) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.R)
+        # values[0] = np.sin(2 * np.pi * (x[0] + x[1]) / rpam.parameters["R"]) * np.cos(2 * np.pi * (x[0] - x[1]) / rpam.parameters["R"])
 
     def value_shape(self):
         return (1,)
