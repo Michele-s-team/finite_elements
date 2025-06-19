@@ -2,15 +2,14 @@
 generate a mesh given by a ring
 
 Run it with
-    python3 generate_ring_mesh.py [resolution] [output directory]
+    python3 generate_ring_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import meshio
 import gmsh
 import pygmsh
-import argparse
 import sys
 
 # add the path where to find the shared modules
@@ -19,21 +18,16 @@ sys.path.append( module_path )
 
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument( "resolution" )
-parser.add_argument( "output_directory" )
-args = parser.parse_args()
-
-# mesh resolution
-resolution = (float)( args.resolution )
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
 # add '/' to output_directory if it is missing
-output_directory = args.output_directory
-output_directory = io.add_trailing_slash( output_directory )
+output_directory = io.add_trailing_slash( rarg.args.output_directory )
 
 mesh_file = output_directory + "mesh.msh"
-
+'''
 # parameters
 r = 1.0
 R = 2.0
@@ -81,3 +75,4 @@ meshio.write( output_directory + "triangle_mesh.xdmf", triangle_mesh )
 # print the mesh vertices to file
 mesh = msh.read_mesh( output_directory + "triangle_mesh.xdmf" )
 io.print_mesh_vertices_to_csv( mesh, output_directory + "vertices.csv" )
+'''
