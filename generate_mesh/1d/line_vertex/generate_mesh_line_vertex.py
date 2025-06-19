@@ -18,9 +18,9 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
-import runtime_arguments as rarg
-print(f'input_directory: {rarg.args.input_directory}\noutput_directory: {rarg.args.output_directory}')
-import read_mesh_parameters as rmpam
+import runtime_arguments_generate_mesh as rarg
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
+import read_parameters_generate_mesh as rpam
 
 
 mesh_file_name = rarg.args.output_directory + "/mesh.msh"
@@ -33,9 +33,9 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add a 1d object a set of lines
-points = [model.add_point((0, 0, 0), mesh_size=rmpam.parameters['resolution']),
-          model.add_point((rmpam.parameters["x_p"], 0, 0), mesh_size=rmpam.parameters['resolution']),
-          model.add_point((rmpam.parameters["L"], 0, 0), mesh_size=rmpam.parameters['resolution'])
+points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters['resolution']),
+          model.add_point((rpam.parameters["x_p"], 0, 0), mesh_size=rpam.parameters['resolution']),
+          model.add_point((rpam.parameters["L"], 0, 0), mesh_size=rpam.parameters['resolution'])
           ]
 my_lines = [model.add_line(points[0], points[1]), model.add_line(points[1], points[2])]
 
@@ -43,8 +43,8 @@ model.synchronize()
 
 # print("# of lines added = ", len(my_lines))
 
-model.add_physical([my_lines[0]], "line1")
-model.add_physical([my_lines[1]], "line2")
+model.add_physical([my_lines[0]], "line_1")
+model.add_physical([my_lines[1]], "line_2")
 model.add_physical([points[0]], "point_l")
 model.add_physical([points[2]], "point_r")
 model.add_physical([points[1]], "point_in")
@@ -78,4 +78,4 @@ mesh = msh.read_mesh(rarg.args.output_directory + "/line_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, rarg.args.output_directory + "/vertices.csv")
 
 # print metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, [('L', rmpam.parameters['L']), ('x_p', rmpam.parameters['x_p']), ('resolution', rmpam.parameters['resolution'])])
+io.write_parameters_to_csv_file(mesh_metadata_file_name, [('L', rpam.parameters['L']), ('x_p', rpam.parameters['x_p']), ('resolution', rpam.parameters['resolution'])])
