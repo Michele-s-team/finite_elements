@@ -8,10 +8,8 @@ Example:
 '''
 
 import argparse
-import csv
 import gmsh
 import meshio
-import os
 import pygmsh
 import sys
 
@@ -24,46 +22,15 @@ import mesh as msh
 import read_parameters as rpam
 
 parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
 parser.add_argument("output_directory")
 args = parser.parse_args()
 
-# mesh resolution
-resolution = (float)(args.resolution)
-
 mesh_file_name = args.output_directory + "/mesh.msh"
-
 mesh_metadata_file_name = args.output_directory + '/mesh_metadata.csv'
-os.makedirs(os.path.dirname(mesh_metadata_file_name), exist_ok=True)
 
-if os.path.exists(mesh_metadata_file_name):
-    os.remove(mesh_metadata_file_name)
+io.write_parameters_to_csv_file(mesh_metadata_file_name, [('L', rpam.parameters['L']), ('x_p', rpam.parameters['x_p']), ('resolution', rpam.parameters['resolution'])])
+print(f'out = {io.read_parameters_from_csv_file(mesh_metadata_file_name)}')
 
-mesh_metadata_file = open(mesh_metadata_file_name, 'w', newline='')
-mesh_metadata_fieldnames = [ \
-    "L", \
-    "x_p", \
-    "resolution"
-    ]
-writer = csv.DictWriter(mesh_metadata_file, fieldnames=mesh_metadata_fieldnames)
-writer.writeheader()
-
-writer.writerows([{ \
-    mesh_metadata_fieldnames[0]: \
-        rpam.L, \
-    mesh_metadata_fieldnames[1]: \
-        rpam.x_p,
-    mesh_metadata_fieldnames[2]: \
-        resolution
-}])
-
-mesh_metadata_file.close()
-
-
-
-
-
-print("resolution = ", resolution)
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.occ.Geometry()
@@ -71,18 +38,15 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add a 1d object a set of lines
-points = [model.add_point((0, 0, 0), mesh_size=resolution),
-          model.add_point((rpam.x_p, 0, 0), mesh_size=resolution),
-          model.add_point((rpam.L, 0, 0), mesh_size=resolution)
+points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters['resolution']),
+          model.add_point((rpam.parameters["x_p"], 0, 0), mesh_size=rpam.parameters['resolution']),
+          model.add_point((rpam.parameters["L"], 0, 0), mesh_size=rpam.parameters['resolution'])
           ]
 my_lines = [model.add_line(points[0], points[1]), model.add_line(points[1], points[2])]
 
-# add a 2d object:  a plane surface starting from the 4 lines above
-
-
 model.synchronize()
 
-print("# of lines added = ", len(my_lines))
+# print("# of lines added = ", len(my_lines))
 
 model.add_physical([my_lines[0]], "line1")
 model.add_physical([my_lines[1]], "line2")
@@ -97,15 +61,14 @@ model.__exit__()
 
 mesh_from_file = meshio.read(mesh_file_name)
 
-'''
-#create a tetrahedron mesh
-tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
-meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
+# #create a tetrahedron mesh
+# tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
+# meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
+# 
+# #create a triangle mesh
+# triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
+# meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
-#create a triangle mesh
-triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
-'''
 
 # create a line mesh
 line_mesh = msh.create_mesh(mesh_from_file, "line", True)

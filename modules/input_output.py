@@ -123,6 +123,8 @@ Input values:
 - 'mesh' <dolfin.Mesh>: the mesh
 - 'outfile': path of the csv file
 '''
+
+
 def print_mesh_vertices_to_csv(mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
@@ -150,6 +152,8 @@ Input values:
 - 'mesh' <dolfin.Mesh>: the mesh
 - 'outfile': path of the csv file
 '''
+
+
 def print_mesh_lines_to_csv(mesh, outfile):
     """
     Export unique edges of a FEniCS mesh to CSV with 3D coordinates (padded using np.pad).
@@ -249,11 +253,10 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
         print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 
-
 def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
-
     f_def = fu.deform_function(f, u)
     full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, f_def.function_space().mesh(), type)
+
 
 '''
 Print a text in red or green according to the value of a boolean variable. This function is used to print out tests
@@ -340,6 +343,23 @@ To count all files  /home/fenics/shared/dynamics/channel_with_cylinder_flat_icps
 def count_files(path_before_asterisk, path_after_asterisk):
     return len(glob.glob(path_before_asterisk + '*' + path_after_asterisk))
 
+'''
+Convert a string containing a numerical value to a number
+Input values :
+- 'string': the string containing the value
+
+Example of usage:
+    string_to_value(13)
+    string_to_value(2.43)
+'''
+def string_to_value(string):
+    try:
+        return int(string)
+    except ValueError:
+        try:
+            return float(string)
+        except ValueError:
+            return string  # keep as string if not a number
 
 '''
 read a set of parameters in a csv file
@@ -349,8 +369,80 @@ Input values:
 Return value:
 - the value of the parameter
 '''
+
+
 def read_parameter_from_csv_file(file_path, parameter_name, return_type=float):
     with open(file_path, mode='r', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         row = next(reader)  # jump the first row with parameter names
         return return_type(row[parameter_name])
+
+
+'''
+write a list of parameters to csv file
+Input values:
+- 'file_path': the path of the file, including file name and extension
+- 'parameters': the list of parameter names and values
+
+Example of usage:
+    write_parameters_to_csv_file('/home/my_nice_file.csv', [('L', 0.4334), ('x_p', 2.23), ('resolution', 0.01)])
+'''
+def write_parameters_to_csv_file(file_path, parameters):
+
+    print(f'Writing parameters to {file_path}...', flush=True)
+
+    # create the folder if it does not exist
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # remove the output file if it exists
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    output_file = open(file_path, 'w', newline='')
+
+    # list of the parameter names
+    parameter_names = [parameters[i][ 0] for i in range(len(parameters))]
+    #  list of the respective parameter values
+    parameter_values = [parameters[i][ 1] for i in range(len(parameters))]
+
+    # write to file
+    writer = csv.DictWriter(output_file, fieldnames=parameter_names)
+    writer.writeheader()
+
+    data_to_write = [{name: value for name, value in zip(parameter_names, parameter_values)}]
+    writer.writerows(data_to_write)
+
+    output_file.close()
+
+    print('... done.', flush=True)
+
+
+'''
+Read a set of parameters from a csv file
+Input values:
+- 'file_path': the path of the file, including file name and extension
+Return value:
+- the list of parameter names and values, e.g., [('L', 0.4334), ('x_p', 2.23), ('resolution', 0.01)]
+'''
+def read_parameters_from_csv_file(file_path):
+
+    print(f'Reading parameters from {file_path}...',flush=True)
+
+    file = open(file_path, newline='')
+
+    reader = csv.reader(file)
+
+    parameter_names = next(reader)
+    parameter_values = next(reader)
+
+    # print(f'parameter_names: {parameter_names}')
+    # print(f'parameter_values: {[string_to_value(parameter_value) for parameter_value in parameter_values]}')
+
+    file.close()
+    print('... close.',flush=True)
+
+    result = dict([(parameter_name, string_to_value(parameter_value)) for parameter_name, parameter_value in zip(parameter_names, parameter_values)])
+    print(f'Read parameters : {result}.',flush=True)
+
+    return result
+
