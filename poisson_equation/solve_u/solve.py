@@ -24,7 +24,6 @@ Examples:
 
 from fenics import *
 import importlib
-import dolfin
 import sys
 
 # add the path where to find the shared modules
@@ -37,25 +36,6 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-
-
-'''
-# test print_vector_to_csvfile
-import input_output as io
-import runtime_arguments as rarg
-import load_mesh as lmsh
-class v_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 2
-
-    def value_shape(self):
-        return (1,)
-
-W = VectorFunctionSpace(lmsh.mesh, 'P', 2, dim=1)
-
-v = interpolate(v_Expression(element=W.ufl_element()), W)
-io.print_vector_to_csvfile(v,  rarg.args.output_directory + '/v.csv')
-'''
 
 
 J = derivative(vp.F, fsp.u, fsp.J_u)
