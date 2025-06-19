@@ -1,3 +1,4 @@
+import ast
 import colorama as col
 import csv
 from fenics import *
@@ -346,20 +347,39 @@ def count_files(path_before_asterisk, path_after_asterisk):
 '''
 Convert a string containing a numerical value to a number
 Input values :
-- 'string': the string containing the value
+- 'string': the string containing the value (it may be an int, a float or a list)
 
 Example of usage:
-    string_to_value(13)
-    string_to_value(2.43)
+    string_to_value('13')
+    string_to_value('2.43')
+    string_to_value('[1,2]')
 '''
-def string_to_value(string):
-    try:
-        return int(string)
-    except ValueError:
+def string_to_value(value):
+    value = value.strip()
+
+    # check whether 'value' is a list
+    if value.startswith("[") and value.endswith("]"):
         try:
-            return float(string)
-        except ValueError:
-            return string  # keep as string if not a number
+            parsed = ast.literal_eval(value)
+            if isinstance(parsed, list):
+                return parsed
+        except (ValueError, SyntaxError):
+            pass
+
+    # Try int
+    try:
+        return int(value)
+    except ValueError:
+        pass
+
+    # Try float
+    try:
+        return float(value)
+    except ValueError:
+        pass
+
+    # Fallback: return as string
+    return value
 
 '''
 read a set of parameters in a csv file

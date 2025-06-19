@@ -27,6 +27,8 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 output_directory = io.add_trailing_slash( rarg.args.output_directory )
 
 mesh_file = output_directory + "mesh.msh"
+
+
 '''
 # parameters
 r = 1.0
