@@ -2,7 +2,7 @@
 generate a mesh given by a ring
 
 Run it with
-    python3 generate_ring_mesh.py [resolution] [output directory]
+    python3 generate_ring_mesh.py [path where to read the parameter file] [path where to store the solution]
 Example:
     clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py $SOLUTION_PATH
 '''
