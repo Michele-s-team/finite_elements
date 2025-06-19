@@ -1,5 +1,4 @@
 import colorama as col
-import dolfin
 from fenics import *
 import numpy as np
 
@@ -13,13 +12,10 @@ import read_mesh_ring as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
-
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
-
-
 
 
 # a function space used solely to define function_test_integrals_fenics
@@ -46,15 +42,14 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = cal.surface_integral_ring(function_test_integrals, rmsh.r, rmsh.R, rmsh.c_r)
+integral_exact_dx = cal.surface_integral_ring(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["R"], rmsh.parameters["c_r"])
 
-integral_exact_ds_r = cal.curve_integral_circle(function_test_integrals, rmsh.r, rmsh.c_r)
-integral_exact_ds_R = cal.curve_integral_circle(function_test_integrals, rmsh.R, rmsh.c_R)
+integral_exact_ds_r = cal.curve_integral_circle(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"][:2])
+integral_exact_ds_R = cal.curve_integral_circle(function_test_integrals, rmsh.parameters["R"], rmsh.parameters["c_R"][:2])
 
 integral_exact_ds = integral_exact_ds_r + integral_exact_ds_R
 
 test_mesh_integral_errors = []
-
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
@@ -64,6 +59,3 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_R, fun
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-
-
-
