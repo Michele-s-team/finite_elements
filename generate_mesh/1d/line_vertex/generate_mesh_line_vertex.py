@@ -2,7 +2,7 @@
 Ths code generates a 1d mesh given by a segment with a vertex in the segment
 
 Run with
-    clear; clear; python3 generate_mesh_line_vertex.py [resolution]
+    clear; clear; python3 generate_mesh_line_vertex.py [path where to read the parameter file] [path where to store the solution]
 Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/1d/line_vertex"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/line_vertex/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
