@@ -4,10 +4,9 @@ Ths code generates a 1d mesh given by a segment with a vertex in the segment
 Run with
     clear; clear; python3 generate_mesh_line_vertex.py [resolution]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/1d/line_vertex"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/line_vertex/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import argparse
 import gmsh
 import meshio
 import pygmsh
@@ -19,28 +18,24 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
-import read_parameters as rpam
+import runtime_arguments as rarg
+print(f'input_directory: {rarg.args.input_directory}\noutput_directory: {rarg.args.output_directory}')
+import read_mesh_parameters as rmpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("output_directory")
-args = parser.parse_args()
 
-mesh_file_name = args.output_directory + "/mesh.msh"
-mesh_metadata_file_name = args.output_directory + '/mesh_metadata.csv'
+mesh_file_name = rarg.args.output_directory + "/mesh.msh"
+mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
 
-io.write_parameters_to_csv_file(mesh_metadata_file_name, [('L', rpam.parameters['L']), ('x_p', rpam.parameters['x_p']), ('resolution', rpam.parameters['resolution'])])
-print(f'out = {io.read_parameters_from_csv_file(mesh_metadata_file_name)}')
 
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.occ.Geometry()
-# Fetch model we would like to add data to
 model = geometry.__enter__()
 
 # add a 1d object a set of lines
-points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters['resolution']),
-          model.add_point((rpam.parameters["x_p"], 0, 0), mesh_size=rpam.parameters['resolution']),
-          model.add_point((rpam.parameters["L"], 0, 0), mesh_size=rpam.parameters['resolution'])
+points = [model.add_point((0, 0, 0), mesh_size=rmpam.parameters['resolution']),
+          model.add_point((rmpam.parameters["x_p"], 0, 0), mesh_size=rmpam.parameters['resolution']),
+          model.add_point((rmpam.parameters["L"], 0, 0), mesh_size=rmpam.parameters['resolution'])
           ]
 my_lines = [model.add_line(points[0], points[1]), model.add_line(points[1], points[2])]
 
@@ -72,12 +67,15 @@ mesh_from_file = meshio.read(mesh_file_name)
 
 # create a line mesh
 line_mesh = msh.create_mesh(mesh_from_file, "line", True)
-meshio.write(args.output_directory + "/line_mesh.xdmf", line_mesh)
+meshio.write(rarg.args.output_directory + "/line_mesh.xdmf", line_mesh)
 
 # create a vertex mesh
 vertex_mesh = msh.create_mesh(mesh_from_file, "vertex", True)
-meshio.write(args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
+meshio.write(rarg.args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(args.output_directory + "/line_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")
+mesh = msh.read_mesh(rarg.args.output_directory + "/line_mesh.xdmf")
+io.print_mesh_vertices_to_csv(mesh, rarg.args.output_directory + "/vertices.csv")
+
+# print metadata
+io.write_parameters_to_csv_file(mesh_metadata_file_name, [('L', rmpam.parameters['L']), ('x_p', rmpam.parameters['x_p']), ('resolution', rmpam.parameters['resolution'])])
