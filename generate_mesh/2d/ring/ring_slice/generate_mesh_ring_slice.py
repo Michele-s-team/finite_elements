@@ -2,10 +2,9 @@
 This code generates a  mesh given by a slice of a ring
 
 Run with
-    python3 generate_mesh_ring_slice.py [mesh resolution] [path where to store the mesh]
-
+    clear; clear; python3 generate_mesh_ring_slice.py [path where to read the parameter file] [path where to store the solution]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/ring_slice/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_line_vertex.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import argparse
@@ -14,39 +13,29 @@ import meshio
 import numpy as np
 import sys
 
-# add the path where to find the shared modules
-# gaetano's path
-# module_path = '/home/tanos/Thesis/finite_elements/modules/'
-# michele's path
-module_path = '/home/fenics/shared/modules'
 
+module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import calculus as cal
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_dir")
-args = parser.parse_args()
-# mesh resolution
-resolution = (float)(args.resolution)
-r = 1
-R = 2
-c_r = [0, 0]
-c_R = [0, 0]
-# the angular witdh of the slice is 2 \pi/N = theta
-N = 8
-theta = 2 * np.pi / N
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-output_dir = args.output_dir
-mesh_file = output_dir + "/mesh.msh"
+output_dir = rarg.args.output_dir
+mesh_file_name = output_dir + "/mesh.msh"
+mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
 
-msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_file)
+# the angular width of the slice is 2 \pi/N = theta
+theta = 2 * np.pi / rpam.parameters["N"]
+
+
+msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_file_name)
 
 # Load the half-mesh
-mesh = meshio.read(mesh_file)
+mesh = meshio.read(mesh_file_name)
 
 line_mesh = msh.create_mesh(mesh, "line", prune_z=True)
 meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
