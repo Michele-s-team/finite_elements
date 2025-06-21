@@ -17,6 +17,7 @@ mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_m
 r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+theta = 2 * np.pi / parameters["N"]
 
 theta = 2 * np.pi / parameters["N"]
 
