@@ -1,37 +1,28 @@
-import dolfin
 from fenics import *
 import numpy as np
 
 import calculus as cal
+import input_output as io
 import load_mesh as lmsh
+import mesh as msh
 import runtime_arguments as rarg
 
 # read the triangles
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
-with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
+sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
 
 # read the lines
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1)
-with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
+mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# CHANGE PARAMETERS HERE
-r = 1
-R = 2
-c_r = [0, 0]
-c_R = [0, 0]
-N = 8
-theta = 2 * np.pi / N
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-r_lb = np.array([r, 0])
+theta = 2 * np.pi / parameters["N"]
+
+r_lb = np.array([parameters["r"], 0])
 r_lt = cal.R(theta).dot(r_lb)
-r_rb = np.array([R, 0])
+r_rb = np.array([parameters["R"], 0])
 r_rt = cal.R(theta).dot(r_rb)
 
 c_test = [0.3, 0.76]
@@ -65,7 +56,7 @@ boundary = 'on_boundary'
 boundary_line_t = f'near(atan2(x[1], x[0), {theta})'
 boundary_line_b = f'near(x[0], 0.0)'
 boundary_line_tb = f'near(x[0], 0.0) || near(atan2(x[1], x[0]), {theta})'
-boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}'
-boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}'
-boundary_arc_rR = f'on_boundary && ((sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < {r + epsilon_boundaries} && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) > {r - epsilon_boundaries}) || (sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) < {R + epsilon_boundaries} && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > {R - epsilon_boundaries}))'
+boundary_arc_r = f'on_boundary && && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < {parameters["r"] + epsilon_boundaries} && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) > {parameters["r"] - epsilon_boundaries}'
+boundary_arc_R = f'on_boundary && && sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) < {parameters["R"] + epsilon_boundaries} && sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) > {parameters["R"] - epsilon_boundaries}'
+boundary_arc_rR = f'on_boundary && ((sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < {parameters["r"] + epsilon_boundaries} && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) > {parameters["r"] - epsilon_boundaries}) || (sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) < {parameters["R"] + epsilon_boundaries} && sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) > {parameters["R"] - epsilon_boundaries}))'
 # CHANGE PARAMETERS HERE
