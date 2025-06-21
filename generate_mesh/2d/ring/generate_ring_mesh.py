@@ -56,20 +56,18 @@ geometry.__exit__()
 
 mesh_from_file = meshio.read(mesh_file)
 
+# print line mesh
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
 meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
 
+# print triangle mesh
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
 meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
 
-# print the mesh vertices to file
+# print  mesh vertices
 mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, [('r', rpam.parameters['r']), \
-                                                          ('R', rpam.parameters['R']), \
-                                                          ('c_r', rpam.parameters['c_r']), \
-                                                          ('c_R', rpam.parameters['c_R']), \
-                                                          ('resolution', rpam.parameters['resolution']) \
-                                                          ])
+io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+

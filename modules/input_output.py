@@ -420,17 +420,13 @@ def write_parameters_to_csv_file(file_path, parameters):
 
     output_file = open(file_path, 'w', newline='')
 
-    # list of the parameter names
-    parameter_names = [parameters[i][ 0] for i in range(len(parameters))]
-    #  list of the respective parameter values
-    parameter_values = [parameters[i][ 1] for i in range(len(parameters))]
+    parameter_names = list(parameters.keys())
 
     # write to file
     writer = csv.DictWriter(output_file, fieldnames=parameter_names)
-    writer.writeheader()
 
-    data_to_write = [{name: value for name, value in zip(parameter_names, parameter_values)}]
-    writer.writerows(data_to_write)
+    writer.writeheader()
+    writer.writerow(parameters)
 
     output_file.close()
 

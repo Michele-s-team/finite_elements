@@ -4,7 +4,7 @@ This code generates a  mesh given by a slice of a ring
 Run with
     clear; clear; python3 generate_mesh_ring_slice.py [path where to read the parameter file] [path where to store the solution]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/ring_slice/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -47,9 +47,4 @@ mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "/vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, [('r', rpam.parameters['r']), \
-                                                          ('R', rpam.parameters['R']), \
-                                                          ('c_r', rpam.parameters['c_r']), \
-                                                          ('c_R', rpam.parameters['c_R']), \
-                                                          ('N', rpam.parameters['N']), \
-                                                          ('resolution', rpam.parameters['resolution'])])
+io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)

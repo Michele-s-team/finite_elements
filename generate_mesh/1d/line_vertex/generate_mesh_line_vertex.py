@@ -66,17 +66,17 @@ mesh_from_file = meshio.read(mesh_file_name)
 # meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
 
-# create a line mesh
+# print line mesh
 line_mesh = msh.create_mesh(mesh_from_file, "line", True)
 meshio.write(rarg.args.output_directory + "/line_mesh.xdmf", line_mesh)
 
-# create a vertex mesh
+# print vertex mesh
 vertex_mesh = msh.create_mesh(mesh_from_file, "vertex", True)
 meshio.write(rarg.args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
 
-# print the mesh vertices to file
+# print mesh vertices
 mesh = msh.read_mesh(rarg.args.output_directory + "/line_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, rarg.args.output_directory + "/vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, [('L', rpam.parameters['L']), ('x_p', rpam.parameters['x_p']), ('resolution', rpam.parameters['resolution'])])
+io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
