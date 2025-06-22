@@ -38,6 +38,6 @@ print(f'Module {__file__} called {check_mesh_tags_ring_with_circle.__file__}', f
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_r = f'on_boundary && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < ({parameters.r} + {parameters.R})/2.0'
-boundary_R = f'on_boundary && sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) > ({parameters.r} + {parameters.R})/2.0'
+boundary_r = f'on_boundary && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < ({parameters["r"]} + {parameters["R"]})/2.0'
+boundary_R = f'on_boundary && sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) > ({parameters["r"]} + {parameters["R"]})/2.0'
 # CHANGE PARAMETERS HERE
