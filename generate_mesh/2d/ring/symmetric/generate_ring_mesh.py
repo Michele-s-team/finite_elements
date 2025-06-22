@@ -27,6 +27,8 @@ sys.path.append(module_path)
 import calculus as cal
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
 parser = argparse.ArgumentParser()
 parser.add_argument("resolution")
@@ -34,28 +36,27 @@ parser.add_argument("output_dir")
 args = parser.parse_args()
 
 # mesh resolution
-# r = 1
-# R = 2
-# c_r = [0, 0, 0]
-# c_R = [0, 0, 0]
-# # the angle 2 \pi will be divided into N equal slices. Here N must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
-# N = 8
+# rpam.parameters["r"] = 1
+# rpam.parameters["R"] = 2
+# rpam.parameters["c_r"] = [0, 0, 0]
+# rpam.parameters["c_R"] = [0, 0, 0]
+# # the angle 2 \pi will be divided into rpam.parameters["N"] equal slices. Here rpam.parameters["N"] must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
+# rpam.parameters["N"] = 8
 # circle_r_id = 2
 # circle_R_id = 3
 # radial_lines_id = 4
 
-M = int(np.round(math.log2(N)))
-theta = 2 * np.pi / N
+M = int(np.round(math.log2(rpam.parameters["N"])))
+theta = 2 * np.pi / rpam.parameters["N"]
 
 resolution = (float)(args.resolution)
 output_dir = args.output_dir
 mesh_slice_file = io.add_trailing_slash(output_dir) + "ring_slice/mesh.msh"
 mesh_xdmf_file = io.add_trailing_slash(output_dir) + "mesh.xdmf"
 
-print(f'r = {r}, R = {R}, c_r = {c_r}, c_R = {c_R}, N = {N}, mesh_slice_file: {mesh_slice_file}')
 
 # generate the ring slice and save it to mesh_slice_file
-msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
+msh.generate_mesh_ring_slice(rpam.parameters["r"], rpam.parameters["R"], rpam.parameters["c_r"], rpam.parameters["c_R"], theta, resolution, mesh_slice_file)
 
 # Load the mesh slice
 mesh = meshio.read(mesh_slice_file)
@@ -63,9 +64,9 @@ mesh = meshio.read(mesh_slice_file)
 # msh.print_mesh_info(mesh, 'Mesh before mirroring')
 
 # initialize the loop over 0 <= theta < 2 pi by setting the initial values of the extremal points of the first ring slice
-r_1 = np.array([r, 0])
+r_1 = np.array([rpam.parameters["r"], 0])
 r_2 = cal.R(theta).dot(r_1)
-r_4 = np.array([R, 0])
+r_4 = np.array([rpam.parameters["R"], 0])
 r_3 = cal.R(theta).dot(r_4)
 
 print('Looping through circle ...')
@@ -104,18 +105,18 @@ for i in range(1, M + 1):
 
 # tag circle_r: extract the lines whose starting point is part of  circle_r by considering its distance with respect to the circle center
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), r) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), r)),
+    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], rpam.parameters["c_r"])), rpam.parameters["r"]) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], rpam.parameters["c_r"])), rpam.parameters["r"])),
     circle_r_id, mesh
 )
 
 # tag circle_R: extract the lines whose starting point is part of  circle_R by considering its distance with respect to the circle center
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_R)), R) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_R)), R)),
+    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], rpam.parameters["c_R"])), rpam.parameters["R"]) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], rpam.parameters["c_R"])), rpam.parameters["R"])),
     circle_R_id, mesh
 )
 
 # rag the radial lines
-msh.asssign_tag_to_lines(lambda line: cal.line_is_radial(line, N, mesh), radial_lines_id, mesh)
+msh.asssign_tag_to_lines(lambda line: cal.line_is_radial(line, rpam.parameters["N"], mesh), radial_lines_id, mesh)
 
 
 print('... done.')
