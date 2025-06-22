@@ -1,6 +1,6 @@
-import dolfin
 from fenics import *
 
+import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
@@ -13,10 +13,8 @@ mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_m
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# CHANGE PARAMETERS HERE
-r = 1.0
-c_r = [0, 0]
-# CHANGE PARAMETERS HERE
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+
 
 
 # test for surface elements

@@ -1,27 +1,19 @@
-import dolfin
 from fenics import *
 
 import input_output as io
 import load_mesh as lmsh
+import mesh as msh
 import runtime_arguments as rarg
 
 # read the triangles
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
-with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
-
+sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1)
-with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
+mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
-
 
 # test for surface elements
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
