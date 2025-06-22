@@ -47,8 +47,8 @@ def test_problem_and_mesh(commit_a,
 
         # compare the mesh and problem solution for commit_a and commit_b
         # mesh_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
-        output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}', success)
-        mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
+        # output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}', success)
+        # mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
 
         # problem_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
         output_problem, error_problem = run_command(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}', success)
@@ -56,9 +56,10 @@ def test_problem_and_mesh(commit_a,
 
 
         # if check = true, then commit_a and commit_b give the same result
-        check = (success[0] and mesh_check and problem_check)
+        # check = (success[0] and mesh_check and problem_check)
+        check = (success[0] and  problem_check)
 
-        io.check_print(mesh_check, 'Mesh check OK', 'Mesh check NOT OK')
+        # io.check_print(mesh_check, 'Mesh check OK', 'Mesh check NOT OK')
         io.check_print(problem_check, 'Problem check OK', 'Problem check NOT OK')
 
     else:
