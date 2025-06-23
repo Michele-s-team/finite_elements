@@ -1102,3 +1102,31 @@ def deform_mesh(mesh, u):
         new_mesh_coordinates[i] = new_mesh_coordinate + value_u
 
     return deformed_mesh
+
+
+'''
+full write of mesh data to file
+Input values: 
+- 'mesh_file': the .msh file where the mesh is stored
+- 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']
+- 'parameters': a dictionary of mesh parameters
+- 'output_directory': the path where the mesh info will be written
+- 'prune_z': whether the z component should be pruned (true) or not (false)
+
+'''
+def full_write(mesh_file, components, parameters, output_directory, prune_z):
+
+    output_directory_slash = io.add_trailing_slash(output_directory)
+
+    for component in components:
+        write_mesh_components(mesh_file, output_directory_slash + component + "_mesh.xdmf", component, prune_z)
+
+    # print  mesh vertices to csv file
+    mesh = read_mesh(output_directory_slash + components[0]  + "_mesh.xdmf")
+    io.print_mesh_vertices_to_csv(mesh, output_directory_slash + "vertices.csv")
+
+    # print the mesh lines to csv fie
+    print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
+
+    # print mesh metadata
+    io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
