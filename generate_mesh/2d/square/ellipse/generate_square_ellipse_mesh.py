@@ -59,10 +59,10 @@ geometry = pygmsh.geo.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-my_points = [model.add_point((0, 0, 0), mesh_size=resolution),
-             model.add_point((L, 0, 0), mesh_size=resolution),
-             model.add_point((L, h, 0), mesh_size=resolution),
-             model.add_point((0, h, 0), mesh_size=resolution)]
+my_points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters["resolution"]),
+             model.add_point((rpam.parameters["L"], 0, 0), mesh_size=rpam.parameters["resolution"]),
+             model.add_point((rpam.parameters["L"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
+             model.add_point((0, rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])]
 
 # Add lines between all points creating the rectangle
 channel_lines = [model.add_line(my_points[i], my_points[i + 1])
@@ -72,16 +72,16 @@ channel_loop = model.add_curve_loop(channel_lines)
 
 p_ellipse_c = model.add_point(
     np.add(focus, np.dot(cal.R_z(phi), np.subtract(c, focus)))
-    , mesh_size=resolution)
+    , mesh_size=rpam.parameters["resolution"])
 p_ellipse_r = model.add_point(
     np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.add(c, [a, 0, 0]), focus))),
-    mesh_size=resolution)
+    mesh_size=rpam.parameters["resolution"])
 p_ellipse_t = model.add_point(
     np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.add(c, [0, b, 0]), focus))),
     mesh_size=resolution)
 p_ellipse_l = model.add_point(
     np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
-    mesh_size=resolution)
+    mesh_size=rpam.parameters["resolution"])
 p_ellipse_b = model.add_point(
     np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.subtract(c, [0, b, 0]), focus))),
     mesh_size=resolution)
