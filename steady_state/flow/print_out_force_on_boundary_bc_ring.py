@@ -21,5 +21,5 @@ dFdl_tot_3d_to_assemble = phys.dFdl_tot_3d(prout.v_output,
                                            bgeo.n_circle(prout.omega_output))
 
 print("F_{ds_r} = ",\
-      [assemble(dFdl * bgeo.sqrt_deth_circle(prout.omega_output, rmsh.parameters["c_r"]) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r) for dFdl in dFdl_tot_3d_to_assemble])
+      [assemble(dFdl * bgeo.sqrt_deth_circle(prout.omega_output, rmsh.parameters["c_r"][:2]) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r) for dFdl in dFdl_tot_3d_to_assemble])
 

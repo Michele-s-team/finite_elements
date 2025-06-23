@@ -71,8 +71,8 @@ class z_square_Expression( UserExpression ):
 
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const * (x[0] - rmsh.parameters["c_r"][0]) / geo.my_norm( x - rmsh.parameters["c_r"] )
-        values[1] = omega_circle_const * (x[1] - rmsh.parameters["c_r"][1]) / geo.my_norm( x - rmsh.parameters["c_r"] )
+        values[0] = omega_circle_const * (x[0] - rmsh.parameters["c_r"][0]) / geo.my_norm( x - rmsh.parameters["c_r"][:2] )
+        values[1] = omega_circle_const * (x[1] - rmsh.parameters["c_r"][1]) / geo.my_norm( x - rmsh.parameters["c_r"][:2] )
 
     def value_shape(self):
         return (2,)
