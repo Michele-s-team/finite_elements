@@ -27,7 +27,6 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
-mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
