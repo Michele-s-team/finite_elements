@@ -1,6 +1,5 @@
 from fenics import *
 import importlib
-import numpy as np
 import ufl as ufl
 
 import boundary_geometry as bgeo
@@ -19,14 +18,14 @@ rho = 1  # density
 
 f = Constant((0, 0))
 
-print("L = ", rmsh.L)
-print("h = ", rmsh.h)
+print("L = ", rmsh.parameters["L"])
+print("h = ", rmsh.parameters["h"])
 print("mu = ", mu)
 print("T = ", T)
 print("N = ", num_steps)
 
 # Define inflow profile
-u_bar_l_profile = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2)
+u_bar_l_profile = Expression((f'4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), degree=2)
 
 # Define boundary conditions
 bc_u_bar_l = DirichletBC(fsp.V, u_bar_l_profile, rmsh.boundary_l)
