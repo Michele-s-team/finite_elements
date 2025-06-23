@@ -5,7 +5,6 @@ import gmsh
 import meshio
 import os
 import pygmsh
-from ffc.backends.ufc import dofmap_header
 
 import calculus as cal
 import geometry as geo
