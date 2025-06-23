@@ -57,22 +57,13 @@ model.__exit__()
 
 mesh_from_file = meshio.read(mesh_file_name)
 
-# #create a tetrahedron mesh
-# tetrahedron_mesh = create_mesh(mesh_from_file, "tetra", True)
-# meshio.write("solution/tetrahedron_mesh.xdmf", tetrahedron_mesh)
-# 
-# #create a triangle mesh
-# triangle_mesh = create_mesh(mesh_from_file, "triangle", prune_z=False)
-# meshio.write("solution/triangle_mesh.xdmf", triangle_mesh)
 
 
 # print line mesh
-line_mesh = msh.create_mesh(mesh_from_file, "line", True)
-meshio.write(rarg.args.output_directory + "/line_mesh.xdmf", line_mesh)
+msh.write_mesh_components(mesh_file_name, rarg.args.output_directory + "/line_mesh.xdmf", "line", True)
 
-# print vertex mesh
-vertex_mesh = msh.create_mesh(mesh_from_file, "vertex", True)
-meshio.write(rarg.args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
+#  print vertex mesh
+msh.write_mesh_components(mesh_file_name, rarg.args.output_directory + "/vertex_mesh.xdmf", "vertex", True)
 
 # print mesh vertices
 mesh = msh.read_mesh(rarg.args.output_directory + "/line_mesh.xdmf")
