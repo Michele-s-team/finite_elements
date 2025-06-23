@@ -16,14 +16,6 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-# # CHANGE PARAMETERS HERE
-# L = 1
-# h = 1
-# r = 0.25
-# c_r = [L / 2, h / 2]
-# # CHANGE PARAMETERS HERE
-
-
 # test for surface elements
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
 ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
