@@ -17,6 +17,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as cal
 import input_output as io
 import mesh as msh
 import runtime_arguments_generate_mesh as rarg
@@ -71,21 +72,21 @@ channel_lines = [model.add_line(my_points[i], my_points[i + 1])
 channel_loop = model.add_curve_loop(channel_lines)
 
 p_ellipse_c = model.add_point(
-    np.add(focus, np.dot(cal.R_z(phi), np.subtract(c, focus)))
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(c, focus)))
     , mesh_size=rpam.parameters["resolution"])
 p_ellipse_r = model.add_point(
-    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.add(c, [a, 0, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.add(c, [a, 0, 0]), focus))),
     mesh_size=rpam.parameters["resolution"])
 p_ellipse_t = model.add_point(
-    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.add(c, [0, b, 0]), focus))),
-    mesh_size=resolution)
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.add(c, [0, b, 0]), focus))),
+    mesh_size=rpam.parameters["resolution"])
 p_ellipse_l = model.add_point(
-    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
     mesh_size=rpam.parameters["resolution"])
 p_ellipse_b = model.add_point(
-    np.add(focus, np.dot(cal.R_z(phi), np.subtract(np.subtract(c, [0, b, 0]), focus))),
-    mesh_size=resolution)
-# p_ellipse_focus = model.add_point(focus, mesh_size=resolution)
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.subtract(c, [0, b, 0]), focus))),
+    mesh_size=rpam.parameters["resolution"])
+# p_ellipse_focus = model.add_point(focus, mesh_size=rpam.parameters["resolution"])
 
 model.synchronize()
 
