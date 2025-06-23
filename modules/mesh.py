@@ -1113,6 +1113,8 @@ Input values:
 - 'output_directory': the path where the mesh info will be written
 - 'prune_z': whether the z component should be pruned (true) or not (false)
 
+Example of usage:
+    msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
 '''
 def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
