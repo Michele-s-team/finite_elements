@@ -53,7 +53,7 @@ mesh_file = output_directory + "mesh.msh"
 print(f'output_directory = "{output_directory}"')
 
 # left focal point  of the ellipse
-focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
+focus = np.subtract(rpam.parameters["c"], [np.sqrt(rpam.parameters["a"] ** 2 - rpam.parameters["b"] ** 2), 0, 0])
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
@@ -72,19 +72,19 @@ channel_lines = [model.add_line(my_points[i], my_points[i + 1])
 channel_loop = model.add_curve_loop(channel_lines)
 
 p_ellipse_c = model.add_point(
-    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(c, focus)))
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(rpam.parameters["c"], focus)))
     , mesh_size=rpam.parameters["resolution"])
 p_ellipse_r = model.add_point(
-    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.add(c, [a, 0, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.add(rpam.parameters["c"], [rpam.parameters["a"], 0, 0]), focus))),
     mesh_size=rpam.parameters["resolution"])
 p_ellipse_t = model.add_point(
-    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.add(c, [0, b, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.add(rpam.parameters["c"], [0, rpam.parameters["b"], 0]), focus))),
     mesh_size=rpam.parameters["resolution"])
 p_ellipse_l = model.add_point(
-    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.subtract(c, [a, 0, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.subtract(rpam.parameters["c"], [rpam.parameters["a"], 0, 0]), focus))),
     mesh_size=rpam.parameters["resolution"])
 p_ellipse_b = model.add_point(
-    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.subtract(c, [0, b, 0]), focus))),
+    np.add(focus, np.dot(cal.R_z(rpam.parameters["phi"]), np.subtract(np.subtract(rpam.parameters["c"], [0, rpam.parameters["b"], 0]), focus))),
     mesh_size=rpam.parameters["resolution"])
 # p_ellipse_focus = model.add_point(focus, mesh_size=rpam.parameters["resolution"])
 
