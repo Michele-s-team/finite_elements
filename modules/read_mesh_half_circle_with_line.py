@@ -1,6 +1,6 @@
-import dolfin
 from fenics import *
 
+import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
@@ -16,31 +16,34 @@ sf = msh.read_mesh_components(lmsh.mesh, 0, rarg.args.input_directory + "/vertex
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+
+
 # CHANGE PARAMETERS HERE
-r = 1
+# r = 1
 c_r = [0, 0]
-c_1 = [r, 0]
-c_2 = [-r, 0]
-c_3 = [r / 2, -r / 8]
-c_4 = [-r / 2, -r / 8]
-
-p_1_id = 1
-p_2_id = 2
-p_3_id = 6
-p_4_id = 7
-line_12_id = 3
-arc_21_id = 4
-surface_id = 5
-line_34_id = 8
+c_1 = [parameters["r"], 0]
+c_2 = [-parameters["r"], 0]
+# c_3 = [r / 2, -r / 8]
+# c_4 = [-r / 2, -r / 8]
+#
+# p_1_id = 1
+# p_2_id = 2
+# p_3_id = 6
+# p_4_id = 7
+# line_12_id = 3
+# arc_21_id = 4
+# surface_id = 5
+# line_34_id = 8
 # CHANGE PARAMETERS HERE
 
 
-dx = Measure("dx", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=surface_id)
-ds_line = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=line_12_id)
-ds_line_in = Measure("dS", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=line_34_id)
-ds_arc = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=arc_21_id)
-dp_line_in_start = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=p_1_id)
-dp_line_in_end = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=p_2_id)
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters["surface_id"])
+ds_line = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["line_12_id"])
+ds_line_in = Measure("dS", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["line_34_id"])
+ds_arc = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["arc_21_id"])
+dp_line_in_start = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["p_1_id"])
+dp_line_in_end = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["p_2_id"])
 
 ds = ds_line + ds_arc
 
