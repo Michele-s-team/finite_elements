@@ -1,60 +1,54 @@
 '''
 generate a mesh given by a square with a ellipse-shaped hole in it: the ellipse has the shape of an ellipse
 
-run it with
-    python3 generate_square_ellipse_mesh.py [resolution] [output directory]
-example:
-    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py 0.1 $SOLUTION_PATH
+Run it with
+    python3 generate_square_ellipse_mesh.py [path where to read parameters] [output directory]
+Example:
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import meshio
 import gmsh
 import numpy as np
 import pygmsh
-import argparse
-
 import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import calculus as cal
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-# mesh resolution
-resolution = (float)(args.resolution)
+
 
 # add '/' to output_directory if it is missing
-output_directory = args.output_directory
-output_directory = io.add_trailing_slash(output_directory)
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
 
-# CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
-# ellipse center
-c = [0.25, 0.2, 0]
-# ellipse semi-major axis
-a = 0.1
-# ellipse semi-minor axis
-b = 0.05
-# rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-phi = 0
-# CHANGE PARAMETERS HERE
+# # CHANGE PARAMETERS HERE
+# L = 2.2
+# h = 0.41
+# # ellipse center
+# c = [0.25, 0.2, 0]
+# # ellipse semi-major axis
+# a = 0.1
+# # ellipse semi-minor axis
+# b = 0.05
+# # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
+# phi = 0
+# # CHANGE PARAMETERS HERE
 
 
-print("L = ", L)
-print("h = ", h)
-print(f"c = {c}, a = {a}, b = {b}, phi = {phi}")
-print("resolution = ", resolution)
+# print("L = ", L)
+# print("h = ", h)
+# print(f"c = {c}, a = {a}, b = {b}, phi = {phi}")
+# print("resolution = ", resolution)
 print(f'output_directory = "{output_directory}"')
 
 # left focal point  of the ellipse
