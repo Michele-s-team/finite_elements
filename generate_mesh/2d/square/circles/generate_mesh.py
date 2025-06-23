@@ -10,7 +10,6 @@ Example:
 
 import gmsh
 import pygmsh
-import argparse
 import sys
 
 # add the path where to find the shared modules
@@ -18,22 +17,24 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import input_output as io
-import list as lis
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("n_lines_circle")
-parser.add_argument("n_aux_circles")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+# print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
+# parser = argparse.ArgumentParser()
+# parser.add_argument("resolution")
+# parser.add_argument("n_lines_circle")
+# parser.add_argument("n_aux_circles")
+# parser.add_argument("output_directory")
+# args = parser.parse_args()
 
-output_directory = io.add_trailing_slash(args.output_directory)
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 # mesh resolution
-resolution = (float)(args.resolution)
-n_lines_circle = int(args.n_lines_circle)
-n_aux_circles = int(args.n_aux_circles)
+resolution = (float)(rarg.args.resolution)
+n_lines_circle = int(rarg.args.n_lines_circle)
+n_aux_circles = int(rarg.args.n_aux_circles)
 mesh_file = output_directory + "mesh.msh"
 
 # mesh parameters
