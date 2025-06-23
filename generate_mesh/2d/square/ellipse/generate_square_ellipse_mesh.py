@@ -115,17 +115,21 @@ gmsh.write(mesh_file)
 
 msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
-gmsh.clear()
-geometry.__exit__()
 
 mesh_from_file = meshio.read(mesh_file)
+#
+# line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
+# meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
+#
+# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
+# meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
+#
+# # print the mesh vertices to file
+# mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+# io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
-line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
+msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
 
-# print the mesh vertices to file
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+gmsh.clear()
+geometry.__exit__()
