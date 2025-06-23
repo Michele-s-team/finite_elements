@@ -52,20 +52,22 @@ model.add_physical([points[1]], "point_in")
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file_name)
 
-# print line mesh to xdmf file
-msh.write_mesh_components(mesh_file_name, output_directory + "line_mesh.xdmf", "line", True)
+# # print line mesh to xdmf file
+# msh.write_mesh_components(mesh_file_name, output_directory + "line_mesh.xdmf", "line", True)
+#
+# #  print vertex mesh to xdmf file
+# msh.write_mesh_components(mesh_file_name, output_directory + "vertex_mesh.xdmf", "vertex", True)
+#
+# # print mesh vertices to csv file
+# mesh = msh.read_mesh(output_directory + "line_mesh.xdmf")
+# io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+#
+# # print mesh lines to csv file
+# msh.print_mesh_lines_to_csv(mesh_file_name, output_directory + 'line_vertices.csv')
+#
+# # print mesh metadata to csv file
+# io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
 
-#  print vertex mesh to xdmf file
-msh.write_mesh_components(mesh_file_name, output_directory + "vertex_mesh.xdmf", "vertex", True)
-
-# print mesh vertices to csv file
-mesh = msh.read_mesh(output_directory + "line_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
-# print mesh lines to csv file
-msh.print_mesh_lines_to_csv(mesh_file_name, output_directory + 'line_vertices.csv')
-
-# print mesh metadata to csv file
-io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+msh.full_write(mesh_file_name, ['line', 'vertex'], rpam.parameters, output_directory, True)
 
 model.__exit__()

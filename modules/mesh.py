@@ -1108,7 +1108,8 @@ def deform_mesh(mesh, u):
 full write of mesh data to file
 Input values: 
 - 'mesh_file': the .msh file where the mesh is stored
-- 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']
+- 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']. 
+    They must be inserted in decreasing order of dimension of the component: for example 'triangle' before 'vertex'
 - 'parameters': a dictionary of mesh parameters
 - 'output_directory': the path where the mesh info will be written
 - 'prune_z': whether the z component should be pruned (true) or not (false)
