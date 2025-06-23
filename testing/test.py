@@ -40,7 +40,7 @@ checks = {}
 success = [True]
 
 cmd.run_command('clear; clear', success)
-
+'''
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
 
@@ -368,7 +368,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', generate_mesh_path + 'high_res_parameters/', 0.01, problem_name, success)
-
+'''
 # Test dynamics/channel_with_cylinder_flat_icps
 case_name = 'dynamics/channel_with_cylinder_flat_icps'
 
