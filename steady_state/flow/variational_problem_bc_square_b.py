@@ -111,8 +111,8 @@ class omega0_Expression( UserExpression ):
 # profiles for the normal derivative
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const * (x[0] - rmsh.c_r[0])/geo.my_norm(x-rmsh.c_r)
-        values[1] = omega_circle_const * (x[1] - rmsh.c_r[0])/geo.my_norm(x-rmsh.c_r)
+        values[0] = omega_circle_const * (x[0] - rmsh.parameters["c_r"][0])/geo.my_norm(x-rmsh.parameters["c_r"])
+        values[1] = omega_circle_const * (x[1] - rmsh.parameters["c_r"][0])/geo.my_norm(x-rmsh.parameters["c_r"])
 
     def value_shape(self):
         return (2,)
