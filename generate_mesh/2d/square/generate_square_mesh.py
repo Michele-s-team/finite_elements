@@ -27,7 +27,7 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
-mesh_metadata_file_name = rarg.args.output_directory + 'mesh_metadata.csv'
+mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 print(f'output_directory = "{output_directory}"')
 
@@ -78,7 +78,7 @@ io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 # print mesh lines to csv file
 msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
-# print mesh metadata
+# print mesh metadata to csv file
 io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
 
 gmsh.clear()

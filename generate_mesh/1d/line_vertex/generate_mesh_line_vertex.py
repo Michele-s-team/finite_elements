@@ -8,7 +8,6 @@ Example:
 '''
 
 import gmsh
-import meshio
 import pygmsh
 import sys
 
@@ -23,11 +22,11 @@ import read_parameters_generate_mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
+# add '/' to output_directory if it is missing
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
-mesh_file_name = rarg.args.output_directory + "/mesh.msh"
-mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
-
-
+mesh_file_name = output_directory + "mesh.msh"
+mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.occ.Geometry()
@@ -53,21 +52,20 @@ model.add_physical([points[1]], "point_in")
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file_name)
 
-model.__exit__()
+# print line mesh to xdmf file
+msh.write_mesh_components(mesh_file_name, output_directory + "line_mesh.xdmf", "line", True)
 
-mesh_from_file = meshio.read(mesh_file_name)
+#  print vertex mesh to xdmf file
+msh.write_mesh_components(mesh_file_name, output_directory + "vertex_mesh.xdmf", "vertex", True)
 
+# print mesh vertices to csv file
+mesh = msh.read_mesh(output_directory + "line_mesh.xdmf")
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
+# print mesh lines to csv file
+msh.print_mesh_lines_to_csv(mesh_file_name, output_directory + 'line_vertices.csv')
 
-# print line mesh
-msh.write_mesh_components(mesh_file_name, rarg.args.output_directory + "/line_mesh.xdmf", "line", True)
-
-#  print vertex mesh
-msh.write_mesh_components(mesh_file_name, rarg.args.output_directory + "/vertex_mesh.xdmf", "vertex", True)
-
-# print mesh vertices
-mesh = msh.read_mesh(rarg.args.output_directory + "/line_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, rarg.args.output_directory + "/vertices.csv")
-
-# print mesh metadata
+# print mesh metadata to csv file
 io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+
+model.__exit__()
