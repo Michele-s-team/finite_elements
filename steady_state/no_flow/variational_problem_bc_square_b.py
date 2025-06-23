@@ -25,7 +25,7 @@ n_omega_square_const = 0.0
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         values[0] = 1.0
-        # values[0] = (x[0] - rmsh.L/2)/(rmsh.L/2)
+        # values[0] = (x[0] - rmsh.parameters["L"]/2)/(rmsh.parameters["L"]/2)
 
     def value_shape(self):
         return (1,)
@@ -71,8 +71,8 @@ class z_square_Expression( UserExpression ):
 
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const * (x[0] - rmsh.c_r[0]) / geo.my_norm( x - rmsh.c_r )
-        values[1] = omega_circle_const * (x[1] - rmsh.c_r[1]) / geo.my_norm( x - rmsh.c_r )
+        values[0] = omega_circle_const * (x[0] - rmsh.parameters["c_r"][0]) / geo.my_norm( x - rmsh.parameters["c_r"] )
+        values[1] = omega_circle_const * (x[1] - rmsh.parameters["c_r"][1]) / geo.my_norm( x - rmsh.parameters["c_r"] )
 
     def value_shape(self):
         return (2,)
