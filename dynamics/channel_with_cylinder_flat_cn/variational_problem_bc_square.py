@@ -43,7 +43,7 @@ class SurfaceTensionExpression(UserExpression):
         return (1,)
 
 
-v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
+v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), degree=2, h=rmsh.parameters["h"])
 
 bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
 bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
