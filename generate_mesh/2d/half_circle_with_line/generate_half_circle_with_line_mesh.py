@@ -123,23 +123,6 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-#  print vertex mesh
-msh.write_mesh_components(mesh_file, output_directory + "/vertex_mesh.xdmf", "vertex", True)
-
-# print line mesh
-msh.write_mesh_components(mesh_file, output_directory + "/line_mesh.xdmf", "line", True)
-
-# print triangle mesh
-msh.write_mesh_components(mesh_file, output_directory + "/triangle_mesh.xdmf", "triangle", True)
-
-# print  mesh vertices to csv file
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
-# print the mesh lines to csv fie
-msh.print_mesh_lines_to_csv(mesh_file, output_directory + "/line_vertices.csv")
-
-# print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
 
 model.__exit__()
