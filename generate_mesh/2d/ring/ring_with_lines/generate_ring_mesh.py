@@ -24,7 +24,6 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
-
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
@@ -36,13 +35,7 @@ warnings.filterwarnings("ignore")
 gmsh.initialize()
 
 gmsh.model.add("my model")
-# c_r = [0, 0, 0]
-# c_R = [0, 0, 0]
-# r = 1
-# R = 2
-# N = 64
-# resolution = (float)(args.resolution)
-# print(f"Mesh resolution = {resolution}")
+
 
 delta_theta = 2 * np.pi / rpam.parameters["N"]
 
@@ -132,18 +125,4 @@ msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 mesh_from_file = meshio.read(mesh_file)
 
-# print line mesh
-line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
-
-# print triangle mesh
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
-
-# print  mesh vertices
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
-# print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
-
+msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)

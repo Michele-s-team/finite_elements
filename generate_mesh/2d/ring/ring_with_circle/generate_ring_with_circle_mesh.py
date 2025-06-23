@@ -23,7 +23,6 @@ import read_parameters_generate_mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-
 # add '/' to output_directory if it is missing
 output_directory = rarg.args.output_directory
 output_directory = io.add_trailing_slash(output_directory)
@@ -59,7 +58,7 @@ model.synchronize()
 model.add_physical([plane_surface_r_rho], "Ring Between r and rho")
 model.add_physical([plane_surface_rho_R], "Ring Between rho and R")
 
-#tag lines
+# tag lines
 model.add_physical(circle_r.curve_loop.curves, "Circle r")  # Inner circle (radius r)
 model.add_physical(circle_rho.curve_loop.curves, "Circle rho")  # Intermediate circle (radius rho)
 model.add_physical(circle_R.curve_loop.curves, "Circle R")  # Outer circle (radius R)
@@ -70,24 +69,11 @@ gmsh.write(mesh_file_name)
 # Write the mesh and components to file
 msh.print_mesh_lines_to_csv(mesh_file_name, output_directory + 'line_vertices.csv')
 
-# Clean up
-gmsh.clear()
-geometry.__exit__()
-
 # Save the line and triangle mesh as usual
 mesh_from_file = meshio.read(mesh_file_name)
 
-# print line mesh
-line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
+msh.full_write(mesh_file_name, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-# print triangle mesh
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
-
-# Print mesh vertices
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
-# print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+# Clean up
+gmsh.clear()
+geometry.__exit__()

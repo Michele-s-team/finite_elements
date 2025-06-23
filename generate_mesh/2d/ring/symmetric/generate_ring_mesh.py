@@ -24,17 +24,6 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
-# mesh resolution
-# rpam.parameters["r"] = 1
-# rpam.parameters["R"] = 2
-# rpam.parameters["c_r"] = [0, 0, 0]
-# rpam.parameters["c_R"] = [0, 0, 0]
-# # the angle 2 \pi will be divided into rpam.parameters["N"] equal slices. Here rpam.parameters["N"] must be the same as in generate_mesh_ring_slice.py, and it must be a power of 2
-# rpam.parameters["N"] = 8
-# circle_r_id = 2
-# circle_R_id = 3
-# radial_lines_id = 4
-
 M = int(np.round(math.log2(rpam.parameters["N"])))
 theta = 2 * np.pi / rpam.parameters["N"]
 
