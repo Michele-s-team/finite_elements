@@ -1,6 +1,7 @@
 import command as cmd
 import input_output as io
 from command import run_command
+from read_write.solve import mesh_element
 
 '''
 performs a test for a given variational problem and mesh choice
@@ -35,8 +36,8 @@ def test_problem_and_mesh(commit_a,
         # checkout commit_a, generate the mesh and solve the problem
         cmd.checkout(commit_a, success)
 
-        parameters_path_a = mesh_path_a
-        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {parameters_path_a} {mesh_solution_path_a}', success)
+        mesh_parameters_path_a = mesh_path_a
+        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
         run_command(f'cd {code_path_a}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
         # checkout commit_b, generate the mesh and solve the problem
