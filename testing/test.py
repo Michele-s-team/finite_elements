@@ -41,11 +41,8 @@ success = [True]
 
 cmd.run_command('clear; clear', success)
 
-
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
-
-
 
 # uncomment this after the merge with master - start
 # problem_name = 'disk'
@@ -250,7 +247,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 # case_name = 'fourth_order_pde/biharmonic_equation'
 #
 # problem_name = 'ring'
-# generate_mesh_path =
+# generate_mesh_path = root_path + 'generate_mesh/2d/ring'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/2d/ring', root_path + case_name,
@@ -262,7 +259,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 case_name = 'steady_state/no_flow'
 
 problem_name = 'ring'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/ring'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/ring', root_path + case_name,
@@ -271,7 +268,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_ring_mesh', 0.1, problem_name, success)
 
 problem_name = 'ring'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric'
 checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                                     root_path,
                                                                                     root_path + 'generate_mesh/2d/ring/symmetric', root_path + case_name,
@@ -280,7 +277,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_m
                                                                                     'generate_ring_mesh', 0.1, problem_name, success)
 #
 # problem_name = 'square_no_circle_a'
-# generate_mesh_path =
+# generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/2d/square_no_circle', root_path + case_name,
@@ -289,7 +286,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_m
 #                                                                      'generate_square_no_circle_mesh', 0.1, problem_name, success)
 #
 # problem_name = 'square_no_circle_a'
-# generate_mesh_path =
+# generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/symmetric'
 # checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                                     root_path,
 #                                                                                     root_path + 'generate_mesh/2d/square_no_circle/symmetric', root_path + case_name,
@@ -298,7 +295,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_m
 #                                                                                     'generate_square_no_circle_mesh', 0.1, problem_name, success)
 
 problem_name = 'square_a'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
@@ -307,7 +304,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
 problem_name = 'square_b'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
@@ -319,7 +316,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 case_name = 'steady_state/flow'
 
 problem_name = 'ring_1'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/ring'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/ring', root_path + case_name,
@@ -328,7 +325,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_ring_mesh', 0.1, problem_name, success)
 
 problem_name = 'ring_1'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric'
 checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                                     root_path,
                                                                                     root_path + 'generate_mesh/2d/ring/symmetric', root_path + case_name,
@@ -337,7 +334,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_m
                                                                                     'generate_ring_mesh', 0.1, problem_name, success)
 
 problem_name = 'ring_2'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/ring'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/ring', root_path + case_name,
@@ -346,7 +343,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_ring_mesh', 0.1, problem_name, success)
 
 problem_name = 'ring_2'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric'
 checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                                     root_path,
                                                                                     root_path + 'generate_mesh/2d/ring/symmetric', root_path + case_name,
@@ -355,7 +352,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_m
                                                                                     'generate_ring_mesh', 0.1, problem_name, success)
 
 problem_name = 'square_a'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
@@ -364,7 +361,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
 problem_name = 'square_b'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
@@ -372,13 +369,11 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.01, problem_name, success)
 
-
 # Test dynamics/channel_with_cylinder_flat_icps
 case_name = 'dynamics/channel_with_cylinder_flat_icps'
 
-
 problem_name = 'square'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
@@ -387,7 +382,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 #
 # problem_name = 'box_ball'
-# generate_mesh_path =
+# generate_mesh_path =root_path + 'generate_mesh/3d/box_ball'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/3d/box_ball', root_path + case_name,
@@ -400,7 +395,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 case_name = 'dynamics/channel_with_cylinder_flat_cn'
 #
 # problem_name = 'square_no_circle'
-# generate_mesh_path =
+# generate_mesh_path =root_path + 'generate_mesh/2d/square_no_circle'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/2d/square_no_circle', root_path + case_name,
@@ -409,7 +404,7 @@ case_name = 'dynamics/channel_with_cylinder_flat_cn'
 #                                                                      'generate_square_no_circle_mesh', 0.1, problem_name, success)
 
 problem_name = 'square'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
@@ -417,12 +412,11 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
-
 # Test dynamics/channel_with_cylinder_curved_cn
 case_name = 'dynamics/channel_with_cylinder_curved_cn'
 
 # problem_name = 'square_no_circle'
-# generate_mesh_path =
+# generate_mesh_path =root_path + 'generate_mesh/2d/square_no_circle'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/2d/square_no_circle', root_path + case_name,
@@ -431,46 +425,41 @@ case_name = 'dynamics/channel_with_cylinder_curved_cn'
 #                                                                      'generate_square_no_circle_mesh', 0.1, problem_name, success)
 #
 problem_name = 'square'
-generate_mesh_path =
+generate_mesh_path = root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
                                                                      root_path + 'generate_mesh/2d/square', root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
-
-
-
 
 # Test dynamics
 case_name = 'dynamics'
 
 problem_name = 'square_a'
-generate_mesh_path =
+generate_mesh_path =root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
-                                                                     root_path + 'generate_mesh/2d/square',  root_path + case_name,
-                                                                     root_path + 'generate_mesh/2d/square',  root_path + case_name,
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
 
 problem_name = 'square_b'
-generate_mesh_path =
+generate_mesh_path =root_path + 'generate_mesh/2d/square'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
-                                                                     root_path + 'generate_mesh/2d/square',  root_path + case_name,
-                                                                     root_path + 'generate_mesh/2d/square',  root_path + case_name,
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
+                                                                     root_path + 'generate_mesh/2d/square', root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', 0.1, problem_name, success)
-
-
 
 #
 # # Test fluid_structure_interaction
 # case_name = 'fluid_structure_interaction/mesh_deformation'
 #
 # problem_name = 'square_ellipse'
-# generate_mesh_path =
+# generate_mesh_path =root_path + 'generate_mesh/2d/square/ellipse'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/2d/square/ellipse', root_path + case_name,
@@ -482,7 +471,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 # case_name = 'fluid_structure_interaction'
 #
 # problem_name = 'square_ellipse'
-# generate_mesh_path =
+# generate_mesh_path =root_path + 'generate_mesh/2d/square/ellipse'
 # checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
 #                                                                      root_path,
 #                                                                      root_path + 'generate_mesh/2d/square/ellipse', root_path + case_name,
@@ -491,10 +480,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 #                                                                      'generate_square_ellipse_mesh', 0.1, problem_name, success)
 
 
-
 cmd.checkout(commit_a, success)
-
-
 
 max_key_len = max(len(key) for key in checks.keys())
 
