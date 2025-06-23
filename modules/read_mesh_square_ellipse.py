@@ -1,7 +1,7 @@
 import colorama as col
-import dolfin
 from fenics import *
 
+import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import numpy as np
@@ -16,22 +16,24 @@ mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.ar
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# CHANGE PARAMETERS HERE
-L = 2.2
-h = 0.41
-# ellipse center
-c = [0.25, 0.2, 0]
-# ellipse semi-major axis
-a = 0.1
-# ellipse semi-minor axis
-b = 0.05
-# rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-phi = 0
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+
+
+# # CHANGE PARAMETERS HERE
+# L = 2.2
+# h = 0.41
+# # ellipse center
+# c = [0.25, 0.2, 0]
+# # ellipse semi-major axis
+# a = 0.1
+# # ellipse semi-minor axis
+# b = 0.05
+# # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
+# phi = 0
 # CHANGE PARAMETERS HERE
 
-focus = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0, 0])
+focus = np.subtract(parameters["c"], [np.sqrt(parameters["a"] ** 2 - parameters["b"] ** 2), 0, 0])
 
-print(f'L = {L}, h = {h}, c = {c}, a = {a}, b = {b}, phi = {phi}, focus = {focus}')
 print(f"Radius of mesh cell = {col.Fore.BLUE}{r_mesh}{col.Style.RESET_ALL}")
 
 
