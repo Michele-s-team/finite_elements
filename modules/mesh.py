@@ -35,7 +35,7 @@ def read_mesh(filename):
 
 '''
 read the mesh  from  the .msh file 'infile' and write the mesh components (tetrahedra, triangles, lines, vertices) to 'outfile' (tetrahedron_mesh.xdmf, triangle_mesh.xdmf ...)
-the component type can be "tera", "triangle", "line" or "vertex"
+the component type can be "tetra", "triangle", "line" or "vertex"
 if 'prune_z' = true (false), the z component will be removed from the mesh
 '''
 

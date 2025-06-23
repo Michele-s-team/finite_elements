@@ -1,16 +1,14 @@
 '''
-Ths code generates a 2d mesh given by half a circle surface with a line in the surface embedded in the mesh
+generate a mesh given by a half circle with a line inside
 
-Run with
-    clear; clear; python3 generate_half_circle_with_line_mesh.py [resolution]
+Run it with
+    python3 generate_half_circle_with_line_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_half_circle_with_line_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/half_circle_with_line"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/half_circle_with_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_half_circle_with_line_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
 import pygmsh
-import argparse
-
 import sys
 
 # add the path where to find the shared modules
@@ -19,39 +17,34 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
 # mesh resolution
-resolution = (float)(args.resolution)
-output_directory = args.output_directory
-mesh_file = output_directory + "/mesh.msh"
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
+mesh_file = output_directory + "mesh.msh"
+mesh_metadata_file_name = rarg.args.output_directory + 'mesh_metadata.csv'
 
 # mesh parameters
 # CHANGE PARAMETERS HERE
-r = 1
-c_1 = [r, 0, 0]
-c_2 = [-r, 0, 0]
-c_3 = [r / 2, -r / 8, 0]
-c_4 = [-r / 2, -r / 8, 0]
+# r = 1
+c_1 = [rpam.parameters["r"], 0, 0]
+c_2 = [-rpam.parameters["r"], 0, 0]
+# c_3 = [rpam.parameters["r"] / 2, -rpam.parameters["r"] / 8, 0]
+# c_4 = [-rpam.parameters["r"] / 2, -rpam.parameters["r"] / 8, 0]
 
-p_1_id = 1
-p_2_id = 2
-p_3_id = 6
-p_4_id = 7
-line_12_id = 3
-arc_21_id = 4
-surface_id = 5
-line_34_id = 8
+# p_1_id = 1
+# p_2_id = 2
+# p_3_id = 6
+# p_4_id = 7
+# line_12_id = 3
+# arc_21_id = 4
+# surface_id = 5
+# line_34_id = 8
 # CHANGE PARAMETERS HERE
 
-print("r = ", r)
-print("c_1 = ", c_1)
-print("c_2 = ", c_2)
-print("resolution = ", resolution)
 print("output_directory = ", output_directory)
 
 geometry = pygmsh.occ.Geometry()
@@ -61,8 +54,8 @@ model = geometry.__enter__()
 p_1 = gmsh.model.geo.addPoint(c_1[0], c_1[1], c_1[2])
 p_2 = gmsh.model.geo.addPoint(c_2[0], c_2[1], c_2[2])
 p_c = gmsh.model.geo.addPoint(0, 0, 0)
-p_3 = gmsh.model.geo.addPoint(c_3[0], c_3[1], c_3[2])
-p_4 = gmsh.model.geo.addPoint(c_4[0], c_4[1], c_4[2])
+p_3 = gmsh.model.geo.addPoint(rpam.parameters["c_3"][0], rpam.parameters["c_3"][1], rpam.parameters["c_3"][2])
+p_4 = gmsh.model.geo.addPoint(rpam.parameters["c_4"][0], rpam.parameters["c_4"][1], rpam.parameters["c_4"][2])
 gmsh.model.geo.synchronize()
 
 line_12 = gmsh.model.geo.addLine(p_1, p_2)
@@ -86,29 +79,29 @@ gmsh.model.geo.synchronize()
 # add 0-dimensional objects
 vertices = gmsh.model.getEntities(dim=0)
 
-gmsh.model.addPhysicalGroup(vertices[0][0], [vertices[0][1]], p_1_id)
-gmsh.model.setPhysicalName(vertices[0][0], p_1_id, "p_1")
+gmsh.model.addPhysicalGroup(vertices[0][0], [vertices[0][1]], rpam.parameters["p_1_id"])
+gmsh.model.setPhysicalName(vertices[0][0], rpam.parameters["p_1_id"], "p_1")
 
-gmsh.model.addPhysicalGroup(vertices[1][0], [vertices[1][1]], p_2_id)
-gmsh.model.setPhysicalName(vertices[1][0], p_2_id, "p_2")
+gmsh.model.addPhysicalGroup(vertices[1][0], [vertices[1][1]], rpam.parameters["p_2_id"])
+gmsh.model.setPhysicalName(vertices[1][0], rpam.parameters["p_2_id"], "p_2")
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], line_12_id)
-gmsh.model.setPhysicalName(lines[0][0], line_12_id, "line_12")
+gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_12_id"])
+gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_12_id"], "line_12")
 
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], arc_21_id)
-gmsh.model.setPhysicalName(lines[1][0], arc_21_id, "arc_12")
+gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["arc_21_id"])
+gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["arc_21_id"], "arc_12")
 
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], line_34_id)
+gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_34_id"])
 gmsh.model.setPhysicalName(lines[2][0], line_34, "line_34")
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], surface_id)
-gmsh.model.setPhysicalName(surfaces[0][0], surface_id, "surface")
+gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["surface_id"])
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_id"], "surface")
 
 # set the resolution
 distance = gmsh.model.mesh.field.add("Distance")
@@ -116,10 +109,10 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * r)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", r)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution_min"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution_max"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["r_resolution_min"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["r_resolution_max"])
 
 minimum = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
@@ -130,15 +123,23 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-# write mesh components to file
-msh.write_mesh_components(mesh_file, output_directory + "/triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, output_directory + "/line_mesh.xdmf", "line", True)
+#  print vertex mesh
 msh.write_mesh_components(mesh_file, output_directory + "/vertex_mesh.xdmf", "vertex", True)
 
-# print the mesh lines to file
+# print line mesh
+msh.write_mesh_components(mesh_file, output_directory + "/line_mesh.xdmf", "line", True)
+
+# print triangle mesh
+msh.write_mesh_components(mesh_file, output_directory + "/triangle_mesh.xdmf", "triangle", True)
+
+# print  mesh vertices to csv file
+mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+
+# print the mesh lines to csv fie
 msh.print_mesh_lines_to_csv(mesh_file, output_directory + "/line_vertices.csv")
-# print the mesh vertices to file
-mesh = msh.read_mesh(output_directory + "/triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "/vertices.csv")
+
+# print mesh metadata
+io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
 
 model.__exit__()
