@@ -1,7 +1,6 @@
 import command as cmd
 import input_output as io
 from command import run_command
-from read_write.solve import mesh_element
 
 '''
 performs a test for a given variational problem and mesh choice
