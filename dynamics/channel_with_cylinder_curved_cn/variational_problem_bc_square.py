@@ -34,7 +34,7 @@ class TangentVelocityExpression( UserExpression ):
 
 class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 2 * x[1] * (rmsh.h - x[1]) / rmsh.h**2 * (x[1] - rmsh.h / 24) / rmsh.h
+        values[0] = 2 * x[1] * (rmsh.parameters["h"] - x[1]) / rmsh.parameters["h"]**2 * (x[1] - rmsh.parameters["h"] / 24) / rmsh.parameters["h"]
     def value_shape(self):
         return (1,)
 
@@ -67,7 +67,7 @@ class NormalVelocityExpression( UserExpression ):
         return (1,)
 
 
-v__profile_l = Expression( ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2)', '0'), degree=2, h=rmsh.h )
+v__profile_l = Expression( ('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2)', '0'), degree=2, h=rmsh.parameters["h"] )
 
 bc_v__inflow = DirichletBC( fsp.Q_v, v__profile_l, rmsh.boundary_l )
 bc_v__walls = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.boundary_tb )
