@@ -35,7 +35,7 @@ resolution = (float)(args.resolution)
 
 #CHANGE PARAMETERS HERE
 L = 1.0
-x_p = np.pi / 8.0
+x_p = 0.9
 #CHANGE PARAMETERS HERE
 
 print(f'L = {L}, x_p = {x_p}')
