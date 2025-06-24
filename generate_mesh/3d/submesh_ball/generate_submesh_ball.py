@@ -31,7 +31,7 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 
 # read the mesh of the ball
 ball_mesh = Mesh()
-xdmf = XDMFFile(ball_mesh.mpi_comm(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
+xdmf = XDMFFile(ball_mesh.mpi_comm(), rarg.args.input_directory + "/tetra_mesh.xdmf")
 xdmf.read(ball_mesh)
 
 # extract the boundary of the ball (spere) and write it in a new mesh `sphere`
