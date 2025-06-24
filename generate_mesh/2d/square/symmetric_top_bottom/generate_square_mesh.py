@@ -30,41 +30,31 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
-# mesh resolution
-# resolution = (float)(args.resolution)
-# r = 0.25
-# L = 1
-# h = 1
-# y_coordinate_axis_of_symmetry = h / 2
-# c_r = [L / 2, y_coordinate_axis_of_symmetry, 0]
-
-gamma_axis_of_symmetry = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
+gamma_axis_of_symmetry = lambda t: cal.line([0, rpam.parameters["c_r"][1]], [rpam.parameters["L"], rpam.parameters["c_r"][1]], t)
 
 output_dir = io.add_trailing_slash(rarg.args.output_dir)
 
 half_mesh_msh_file = output_dir + "half_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
-# print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
-
 # Half mesh is generated used pygmsh and it's saved as mesh.msh
 
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-N = int(np.round(r * np.pi / resolution))
+N = int(np.round(rpam.parameters["r"] * np.pi / rpam.parameters["resolution"]))
 
-# construct a rectangle with vertices [L,h/2], [L,h], [0,h], [0,h/2]
+# construct a rectangle with vertices [rpam.parameters["L"],h/2], [rpam.parameters["L"],h], [0,h], [0,h/2]
 
-half_rectangle_points = [model.add_point((L, y_coordinate_axis_of_symmetry, 0), mesh_size=resolution),
-                         model.add_point((L, h, 0), mesh_size=resolution),
-                         model.add_point((0, h, 0), mesh_size=resolution),
-                         model.add_point((0, y_coordinate_axis_of_symmetry, 0), mesh_size=resolution),
+half_rectangle_points = [model.add_point((rpam.parameters["L"], rpam.parameters["c_r"][1], 0), mesh_size=rpam.parameters["resolution"]),
+                         model.add_point((rpam.parameters["L"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
+                         model.add_point((0, rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
+                         model.add_point((0, rpam.parameters["c_r"][1], 0), mesh_size=rpam.parameters["resolution"]),
                          ]
 model.synchronize()
 
 half_circle_points = [
-    model.add_point((c_r[0] + -r * np.cos(np.pi * i / N), c_r[1] + r * np.sin(np.pi * i / N), 0), mesh_size=resolution)
+    model.add_point((rpam.parameters["c_r"][0] + -rpam.parameters["r"] * np.cos(np.pi * i / N), rpam.parameters["c_r"][1] + rpam.parameters["r"] * np.sin(np.pi * i / N), 0), mesh_size=rpam.parameters["resolution"])
     for i in range(N + 1)]
 model.synchronize()
 
@@ -126,13 +116,13 @@ msh.asssign_tag_to_lines(
 
 # tag r edge
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][0], rpam.parameters["L"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], rpam.parameters["L"], rtol=cal.small_number))),
     r_edge_id, mesh
 )
 
 # tag t edge
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][1], rpam.parameters["h"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], rpam.parameters["h"], rtol=cal.small_number))),
     t_edge_id, mesh
 )
 
@@ -143,7 +133,7 @@ msh.asssign_tag_to_lines(
 )
 
 msh.asssign_tag_to_lines(
-    lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
+    lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], rpam.parameters["c_r"])) < (rpam.parameters["r"] + cal.min_dist_c_r_rectangle(rpam.parameters["L"], rpam.parameters["h"], rpam.parameters["c_r"])) / 2,
     circle_id, mesh
 )
 
