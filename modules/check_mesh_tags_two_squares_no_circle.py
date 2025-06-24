@@ -1,6 +1,5 @@
 import colorama as col
 from fenics import *
-import dolfin
 import numpy as np
 
 import calculus as cal
@@ -44,20 +43,20 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx_l = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.L_m, rmsh.h])
-integral_exact_dx_r = cal.surface_integral_rectangle(function_test_integrals, [rmsh.L_m, 0], [rmsh.L, rmsh.h])
+integral_exact_dx_l = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L_m"], rmsh.parameters["h"]])
+integral_exact_dx_r = cal.surface_integral_rectangle(function_test_integrals, [rmsh.parameters["L_m"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
 
-integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.L, rmsh.h])
+integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
 
 
 
-integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.h])
-integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.L, 0], [rmsh.L, rmsh.h])
-integral_exact_ds_lb = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.L_m, 0])
-integral_exact_ds_rb = cal.curve_integral_line(function_test_integrals, [rmsh.L_m, 0], [rmsh.L, 0])
-integral_exact_ds_mid = cal.curve_integral_line(function_test_integrals, [rmsh.L_m, 0], [rmsh.L_m, rmsh.h])
-integral_exact_ds_lt = cal.curve_integral_line(function_test_integrals, [0, rmsh.h], [rmsh.L_m, rmsh.h])
-integral_exact_ds_rt = cal.curve_integral_line(function_test_integrals, [rmsh.L_m, rmsh.h], [rmsh.L, rmsh.h])
+integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
+integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
+integral_exact_ds_lb = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.parameters["L_m"], 0])
+integral_exact_ds_rb = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L_m"], 0], [rmsh.parameters["L"], 0])
+integral_exact_ds_mid = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L_m"], 0], [rmsh.parameters["L_m"], rmsh.parameters["h"]])
+integral_exact_ds_lt = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L_m"], rmsh.parameters["h"]])
+integral_exact_ds_rt = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L_m"], rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]])
 
 integral_exact_ds_b = integral_exact_ds_lb + integral_exact_ds_rb
 integral_exact_ds_t = integral_exact_ds_lt + integral_exact_ds_rt
