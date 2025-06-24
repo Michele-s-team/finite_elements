@@ -10,13 +10,15 @@ Example:
 
 import colorama as col
 from fenics import *
-# import h5py
+import numpy as np
 import sys
 
-#add the path where to find the shared modules
+# add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as cal
+import geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import mesh as msh
@@ -27,55 +29,57 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument("input_directory")
-# args = parser.parse_args()
-
-# #CHANGE PARAMETERS HERE
-# r = 1
-# c_r = [0, 0, 0]
-# #CHANGE PARAMETERS HERE
-
-#read the mesh of the ball
+# read the mesh of the ball
 ball_mesh = Mesh()
 xdmf = XDMFFile(ball_mesh.mpi_comm(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 xdmf.read(ball_mesh)
 
-#extract the boundary of the ball (spere) and write it in a new mesh `sphere`
-dim=3
-bdim = dim-1
-sphere_mesh = BoundaryMesh( ball_mesh, "exterior" )
-print("Dimension of boundary_mesh = ", sphere_mesh.geometry().dim() )
+# extract the boundary of the ball (spere) and write it in a new mesh `sphere`
+dim = 3
+bdim = dim - 1
+sphere_mesh = BoundaryMesh(ball_mesh, "exterior")
+print("Dimension of boundary_mesh = ", sphere_mesh.geometry().dim())
+
+# read the tetrahedra
+mvc = MeshValueCollection("size_t", sphere_mesh, sphere_mesh.topology().dim())
+cf = cpp.mesh.MeshFunctionSizet(sphere_mesh, mvc)
+
+dx = Measure("dx", domain=sphere_mesh, subdomain_data=cf)  # Line measure
+
+# CHANGE PARAMETERS HERE
+c_test = [0.3, 0.76, 1.23]
+r_test = 0.345
+# CHANGE PARAMETERS HERE
+
+Q = FunctionSpace(sphere_mesh, 'P', 1)
 
 
-#test the mesh `sphere` by integrating a function over it
-#analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegral(UserExpression):
+# function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+def function_test_integrals(x):
+    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    # return 1
+
+
+# function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
+function_test_integrals_fenics = Function(Q)
+
+
+# analytical expression for a  scalar function used to test the ds
+class FunctionTestIntegrals(UserExpression):
     def eval(self, values, x):
-        values[0] = (x[2]/sqrt(x[0]**2 + x[1]**2 + x[2]**2))**2
+        values[0] = function_test_integrals(x)
+
     def value_shape(self):
         return (1,)
 
 
-#read the tetrahedra
-mvc = MeshValueCollection("size_t", sphere_mesh, sphere_mesh.topology().dim() )
-cf = cpp.mesh.MeshFunctionSizet( sphere_mesh, mvc )
-# cf = msh.read_mesh_components(sphere_mesh, 3, rarg.args.input_directory + "/tetra_mesh.xdmf")
-
-dx_custom = Measure("dx", domain=sphere_mesh, subdomain_data=cf )    # Line measure
-
-Q = FunctionSpace( sphere_mesh, 'P', 1 )
-f_test = Function( Q )
-
-# f_test_ds is a scalar function defined on the mesh `sphere`
-f_test.interpolate( FunctionTestIntegral( element=Q.ufl_element() ) )
+function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_element()))
 
 test_mesh_integral_errors = []
 
+integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, parameters["r"], parameters["c_r"])
 
-#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-test_mesh_integral_errors.append(msh.test_mesh_integral(4.18879, f_test, dx_custom, 'Volume'))
+# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, dx, '\int_sphere f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
