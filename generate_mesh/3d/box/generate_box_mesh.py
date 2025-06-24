@@ -1,10 +1,10 @@
 '''
 This code generates a 3d mesh given by a box
 
-Run with
-    clear; clear; python3 generate_box_mesh.py [resolution] [output directory]
+Run it with
+    python3 generate_box_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import argparse
