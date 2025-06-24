@@ -1,5 +1,4 @@
 import colorama as col
-import dolfin
 from fenics import *
 import numpy as np
 
@@ -44,14 +43,14 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_e
 
 test_mesh_integral_errors = []
 
-integral_exact_dx = cal.volume_integral_box(function_test_integrals, rmsh.L)
+integral_exact_dx = cal.volume_integral_box(function_test_integrals, rmsh.parameters["L"])
 
-integral_exact_ds_le = cal.surface_integral_rectangle(lambda r: function_test_integrals([0, r[0], r[1]]), [0, 0], [rmsh.L[1], rmsh.L[2]])
-integral_exact_ds_ri = cal.surface_integral_rectangle(lambda r: function_test_integrals([rmsh.L[0], r[0], r[1]]), [0, 0], [rmsh.L[1], rmsh.L[2]])
-integral_exact_ds_to = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], rmsh.L[1], r[1]]), [0, 0], [rmsh.L[0], rmsh.L[2]])
-integral_exact_ds_bo = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], 0, r[1]]), [0, 0], [rmsh.L[0], rmsh.L[2]])
-integral_exact_ds_fr = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], r[1], rmsh.L[2]]), [0, 0], [rmsh.L[0], rmsh.L[1]])
-integral_exact_ds_ba = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], r[1], 0]), [0, 0], [rmsh.L[0], rmsh.L[1]])
+integral_exact_ds_le = cal.surface_integral_rectangle(lambda r: function_test_integrals([0, r[0], r[1]]), [0, 0], [rmsh.parameters["L"][1], rmsh.parameters["L"][2]])
+integral_exact_ds_ri = cal.surface_integral_rectangle(lambda r: function_test_integrals([rmsh.parameters["L"][0], r[0], r[1]]), [0, 0], [rmsh.parameters["L"][1], rmsh.parameters["L"][2]])
+integral_exact_ds_to = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], rmsh.parameters["L"][1], r[1]]), [0, 0], [rmsh.parameters["L"][0], rmsh.parameters["L"][2]])
+integral_exact_ds_bo = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], 0, r[1]]), [0, 0], [rmsh.parameters["L"][0], rmsh.parameters["L"][2]])
+integral_exact_ds_fr = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], r[1], rmsh.parameters["L"][2]]), [0, 0], [rmsh.parameters["L"][0], rmsh.parameters["L"][1]])
+integral_exact_ds_ba = cal.surface_integral_rectangle(lambda r: function_test_integrals([r[0], r[1], 0]), [0, 0], [rmsh.parameters["L"][0], rmsh.parameters["L"][1]])
 
 integral_exact_ds_leri = integral_exact_ds_le + integral_exact_ds_ri
 integral_exact_ds_tobo = integral_exact_ds_to + integral_exact_ds_bo
