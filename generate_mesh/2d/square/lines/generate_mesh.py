@@ -58,7 +58,6 @@ mesh_file = output_directory + "mesh.msh"
 # print("n_lines_circle = ", n_lines_circle)
 # print("n_lines_lr = ", n_lines_lr)
 
-surface_id = 1
 
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
@@ -125,8 +124,8 @@ msh.tag_group(segments_circle, 1, 6, 'segments_circle')
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], surface_id)
-gmsh.model.setPhysicalName(surfaces[0][0], surface_id, "superficie")
+gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], 1)
+gmsh.model.setPhysicalName(surfaces[0][0], 1, "surface")
 
 print('... done.')
 
