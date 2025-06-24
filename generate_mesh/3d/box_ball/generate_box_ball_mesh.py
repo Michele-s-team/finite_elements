@@ -3,13 +3,12 @@ This code generates a 3d mesh given by a box with a spherical hole
 The mesh is given by a box with extremal points [0,0,0] , L to which we subtract a sphere centered at c_r with radius r
 We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, right top bottom, from and back edges accordingly
 
-Run with
-    python3 generate_box_ball_mesh.py [resolution]
+Run it with
+    python3 generate_box_ball_mesh.py [path where to read parameters] [output directory]
 Example:
-    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import argparse
 import gmsh
 import meshio
 import numpy as np
@@ -22,26 +21,29 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("resolution")
+# parser.add_argument("output_directory")
+# args = parser.parse_args()
 
 warnings.filterwarnings("ignore")
 gmsh.initialize()
 
-mesh_file = args.output_directory + "/mesh.msh"
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
+mesh_file =output_directory + "mesh.msh"
 
 gmsh.model.add("my model")
 
-resolution = (float)(args.resolution)
-print(f"Mesh resolution = {resolution}")
 
 # CHANGE PARAMETERS HERE
-L = [2.2, 0.41, 0.41]
-c_r = [0.2, 0.2, 0.2]
-r = 0.05
+# L = [2.2, 0.41, 0.41]
+# c_r = [0.2, 0.2, 0.2]
+# r = 0.05
+# sphere_resolution = resolution/4
+# CHANGE PARAMETERS HERE
 
 volume_id = 1
 boundary_le_id = 2
@@ -51,10 +53,6 @@ boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
 boundary_sphere_id = 8
-
-sphere_resolution = resolution/4
-# CHANGE PARAMETERS HERE
-
 
 
 channel = gmsh.model.occ.addBox(0, 0, 0, L[0], L[1], L[2])
@@ -129,16 +127,16 @@ gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 # create a tetrahedron mesh in which the solid objects (volumes) will be stored
 tetra_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
-meshio.write(args.output_directory + "/tetra_mesh.xdmf", tetra_mesh)
+meshio.write(output_directory + "tetra_mesh.xdmf", tetra_mesh)
 
 # create a triangle mesh in which the surfaces will be stored
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
+meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(args.output_directory + "/tetra_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")
+mesh = msh.read_mesh(output_directory + "tetra_mesh.xdmf")
+io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
