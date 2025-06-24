@@ -48,7 +48,7 @@ model = geometry.__enter__()
 L = 1
 h = 2
 # L_m is the coordinate on the x axis where the inner line separating the two sub-rectangles is located
-L_m = L / 3
+L_m = 0.3
 l_surface_id = 1
 r_surface_id = 2
 l_line_id = 3
