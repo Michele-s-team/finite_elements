@@ -13,7 +13,7 @@ mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_m
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+parameters =esh_ io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 # test for surface elements
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)

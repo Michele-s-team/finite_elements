@@ -24,6 +24,11 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
+
+# add '/' to output_directory if it is missing
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
+
 # parser = argparse.ArgumentParser()
 # parser.add_argument("resolution")
 # parser.add_argument("output_directory")
@@ -32,7 +37,6 @@ import read_parameters_generate_mesh as rpam
 warnings.filterwarnings("ignore")
 gmsh.initialize()
 
-output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file =output_directory + "mesh.msh"
 
 gmsh.model.add("my model")
@@ -55,8 +59,8 @@ boundary_ba_id = 7
 boundary_sphere_id = 8
 
 
-channel = gmsh.model.occ.addBox(0, 0, 0, L[0], L[1], L[2])
-sphere = gmsh.model.occ.addSphere(c_r[0], c_r[1], c_r[2], r)
+channel = gmsh.model.occ.addBox(0, 0, 0, rpam.parameters["L"][0], rpam.parameters["L"][1], rpam.parameters["L"][2])
+sphere = gmsh.model.occ.addSphere(rpam.parameters["c_r"][0], rpam.parameters["c_r"][1], rpam.parameters["c_r"][2], r)
 fluid = gmsh.model.occ.cut([(3, channel)], [(3, sphere)])
 
 gmsh.model.occ.synchronize()
@@ -81,7 +85,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
         gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
 
-    if np.isclose(center_of_mass[0], L[0]):
+    if np.isclose(center_of_mass[0], rpam.parameters["L"][0]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
 
@@ -89,7 +93,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
         gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
 
-    if np.isclose(center_of_mass[1], L[1]):
+    if np.isclose(center_of_mass[1], rpam.parameters["L"][1]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
         gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
 
@@ -97,12 +101,12 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
 
-    if np.isclose(center_of_mass[2], L[2]):
+    if np.isclose(center_of_mass[2], rpam.parameters["L"][2]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
         gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
 
-    if (np.allclose(center_of_mass, c_r)):
-        # the center of mass is c_r -> the surface under consideration is the sphere
+    if (np.allclose(center_of_mass, rpam.parameters["c_r"])):
+        # the center of mass is rpam.parameters["c_r"] -> the surface under consideration is the sphere
         obstacles.append(surface[1])  # Save the tag of the sphere surface
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_sphere_id)
         gmsh.model.setPhysicalName(surface[0], boundary_sphere_id, "sphere")
@@ -113,10 +117,10 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", obstacles)
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", sphere_resolution)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", r)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", 2*r)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["sphere_resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["r"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", 2*rpam.parameters["r"])
 
 gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
