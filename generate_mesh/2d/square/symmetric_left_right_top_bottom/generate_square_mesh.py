@@ -55,7 +55,7 @@ c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
 gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, rpam.parameters["h"]], t)
 gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [rpam.parameters["L"], y_coordinate_axis_of_symmetry], t)
 
-output_dir = io.add_trailing_slash(rarg.args.output_dir)
+output_dir = io.add_trailing_slash(rarg.args.output_directory)
 quarter_mesh_msh_file = output_dir + "quarter_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
@@ -116,7 +116,7 @@ meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
 mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "/vertices.csv")
 '''
-###
+
 
 '''
 duplicate the points and cells with the respective tags and ids
