@@ -1,13 +1,12 @@
 '''
 This code generates a 3d mesh given by a ball
 
-Run with
-    clear; clear; python3 generate_ball_mesh.py [resolution] [output directory]
+Run it with
+    python3 generate_ball_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ball_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import argparse
 import gmsh
 import meshio
 import pygmsh
@@ -19,30 +18,34 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("resolution")
+# parser.add_argument("output_directory")
+# args = parser.parse_args()
 
-mesh_file = args.output_directory + "/mesh.msh"
+# add '/' to output_directory if it is missing
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
+
+
+mesh_file = output_directory + "mesh.msh"
 
 volume_id = 1
 surface_id = 2
 line_id = 3
 
-# mesh resolution
-resolution = (float)(args.resolution)
+# # mesh resolution
+# resolution = (float)(args.resolution)
 
 # mesh parameters
-# CHANGE PARAMETERS HERE
-r = 1.0
-c_r = [0, 0, 0]
-# CHANGE PARAMETERS HERE
+# # CHANGE PARAMETERS HERE
+# r = 1.0
+# c_r = [0, 0, 0]
+# # CHANGE PARAMETERS HERE
 
-print("r = ", r)
-print("c_r = ", c_r)
-print("resolution = ", resolution)
+
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
@@ -74,28 +77,21 @@ geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+# msh.print_mesh_lines_to_csv(mesh_file, rarg.args.output_directory + '/line_vertices.csv')
+#
+# # create a tetrahedron mesh (containing solid objects such as a ball)
+# tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
+# meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
+#
+# # create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
+# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", False)
+# meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
+#
+# # print the mesh vertices to file
+# mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
+# io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")
+
+msh.full_write(mesh_file, ['tetra','triangle'], rpam.parameters, output_directory, True)
+
 
 model.__exit__()
-
-# create a tetrahedron mesh (containing solid objects such as a ball)
-tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
-meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
-
-# create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", False)
-meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
-
-'''
-#create a line mesh
-line_mesh = create_mesh(mesh_from_file, "line", True)
-meshio.write(args.output_directory + "/line_mesh.xdmf", line_mesh)
-
-#create a vertex mesh
-vertex_mesh = create_mesh(mesh_from_file, "vertex", True)
-meshio.write(args.output_directory + "/vertex_mesh.xdmf", vertex_mesh)
-'''
-
-# print the mesh vertices to file
-mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")
