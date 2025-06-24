@@ -14,7 +14,7 @@ i, j = ufl.indices(2)
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = np.cos(2 * np.pi * x[0] / rmsh.L) * np.cos(2 * np.pi * x[1] / rmsh.h)
+        values[0] = np.cos(2 * np.pi * x[0] / rmsh.parameters["L"]) * np.cos(2 * np.pi * x[1] / rmsh.parameters["h"])
 
     def value_shape(self):
         return (1,)
@@ -22,8 +22,8 @@ class u_exact_expression(UserExpression):
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = - (2 * np.pi / rmsh.L) * np.cos(2 * np.pi * x[1] / rmsh.h) * np.sin(2 * np.pi * x[0] / rmsh.L)
-        values[1] = - (2 * np.pi / rmsh.h) * np.cos(2 * np.pi * x[0] / rmsh.L) * np.sin(2 * np.pi * x[1] / rmsh.h)
+        values[0] = - (2 * np.pi / rmsh.parameters["L"]) * np.cos(2 * np.pi * x[1] / rmsh.parameters["h"]) * np.sin(2 * np.pi * x[0] / rmsh.parameters["L"])
+        values[1] = - (2 * np.pi / rmsh.parameters["h"]) * np.cos(2 * np.pi * x[0] / rmsh.parameters["L"]) * np.sin(2 * np.pi * x[1] / rmsh.parameters["h"])
 
     def value_shape(self):
         return (2,)
@@ -31,8 +31,8 @@ class grad_u_expression(UserExpression):
 
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = - (4 * np.pi ** 2 * (rmsh.h ** 2 + rmsh.L ** 2) *
-                       np.cos(2 * np.pi * x[0] / rmsh.L) * np.cos(2 * np.pi * x[1] / rmsh.h)) / (rmsh.h ** 2 * rmsh.L ** 2)
+        values[0] = - (4 * np.pi ** 2 * (rmsh.parameters["h"] ** 2 + rmsh.parameters["L"] ** 2) *
+                       np.cos(2 * np.pi * x[0] / rmsh.parameters["L"]) * np.cos(2 * np.pi * x[1] / rmsh.parameters["h"])) / (rmsh.parameters["h"] ** 2 * rmsh.parameters["L"] ** 2)
 
     def value_shape(self):
         return (1,)
@@ -44,17 +44,17 @@ class hess_u_exact_expression(UserExpression):
 
     def eval(self, values, x):
         # Common precomputed terms
-        cos_x = np.cos(2 * np.pi * x[0] / rmsh.L)
-        cos_y = np.cos(2 * np.pi * x[1] / rmsh.h)
-        sin_x = np.sin(2 * np.pi * x[0] / rmsh.L)
-        sin_y = np.sin(2 * np.pi * x[1] / rmsh.h)
+        cos_x = np.cos(2 * np.pi * x[0] / rmsh.parameters["L"])
+        cos_y = np.cos(2 * np.pi * x[1] / rmsh.parameters["h"])
+        sin_x = np.sin(2 * np.pi * x[0] / rmsh.parameters["L"])
+        sin_y = np.sin(2 * np.pi * x[1] / rmsh.parameters["h"])
         pi2 = 4 * np.pi ** 2
 
         # Matrix components
-        values[0] = - (pi2 * cos_x * cos_y) / rmsh.L ** 2  # [0, 0]
-        values[1] = (pi2 * sin_x * sin_y) / (rmsh.h * rmsh.L)  # [0, 1]
-        values[2] = (pi2 * sin_x * sin_y) / (rmsh.h * rmsh.L)  # [1, 0]
-        values[3] = - (pi2 * cos_x * cos_y) / rmsh.h ** 2  # [1, 1]
+        values[0] = - (pi2 * cos_x * cos_y) / rmsh.parameters["L"] ** 2  # [0, 0]
+        values[1] = (pi2 * sin_x * sin_y) / (rmsh.parameters["h"] * rmsh.parameters["L"])  # [0, 1]
+        values[2] = (pi2 * sin_x * sin_y) / (rmsh.parameters["h"] * rmsh.parameters["L"])  # [1, 0]
+        values[3] = - (pi2 * cos_x * cos_y) / rmsh.parameters["h"] ** 2  # [1, 1]
 
     def value_shape(self):
         return (2, 2)

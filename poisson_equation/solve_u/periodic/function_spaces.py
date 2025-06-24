@@ -22,18 +22,18 @@ class PeriodicBoundary(SubDomain):
 
     # Map the other boundaries to the "target domain"
     def map(self, x, y):
-        if near(x[0], rmsh.L) and near(x[1], rmsh.h):
+        if near(x[0], rmsh.parameters["L"]) and near(x[1], rmsh.parameters["h"]):
             # Top-right corner → bottom-left corner
-            y[0] = x[0] - rmsh.L
-            y[1] = x[1] - rmsh.h
-        elif near(x[0], rmsh.L):
+            y[0] = x[0] - rmsh.parameters["L"]
+            y[1] = x[1] - rmsh.parameters["h"]
+        elif near(x[0], rmsh.parameters["L"]):
             # Right edge → left edge
-            y[0] = x[0] - rmsh.L
+            y[0] = x[0] - rmsh.parameters["L"]
             y[1] = x[1]
-        elif near(x[1], rmsh.h):
+        elif near(x[1], rmsh.parameters["h"]):
             # Top edge → bottom edge
             y[0] = x[0]
-            y[1] = x[1] - rmsh.h
+            y[1] = x[1] - rmsh.parameters["h"]
         else:
             # Required: set unmapped points to identity
             y[0] = x[0]
