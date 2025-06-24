@@ -403,7 +403,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_box_ball_mesh', generate_mesh_path, 0.1, problem_name, success)
+                                                                     'generate_box_ball_mesh', generate_mesh_path, 0.5, problem_name, success)
 
 
 # Test dynamics/channel_with_cylinder_flat_cn
