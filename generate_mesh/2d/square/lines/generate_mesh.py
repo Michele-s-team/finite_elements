@@ -2,10 +2,10 @@
 Ths code generates a 2d mesh given by a square with a circular hole, where the mesh is enforced to  be symmetric
 with respect to top <-> bottom by adding a set of auxiliary lines which run from the left to the right edge of the square
 
-Run with
-    clear; clear; python3 generate_mesh.py [resolution] [number of segments of the circle] [number of lines] [output directory]
+Run it with
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 32 8 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/lines"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/lines/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
 The mesh generated with this code can be read with ~/shared/generate_mesh/2d/square/read_mesh_square.py
 '''
