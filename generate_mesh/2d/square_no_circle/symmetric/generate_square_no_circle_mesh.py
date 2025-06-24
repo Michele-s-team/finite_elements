@@ -5,11 +5,10 @@ Symmetry is enforced by mirroring the mesh unit.
 The surface is tagged with surface_id, the lines on the boundaries with l_edge_id, r_edge_id, t_edge_id and b_edge_id,
 and all lines in the bulk of the mesh with internal_lines_id
 
-Run with
-    python3 generate_square_no_circle_mesh.py [mesh resolution] [path where to store the mesh]
-
+Run it with
+    python3 generate_square_no_circle_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
 The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. The complete mesh will be saved in
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
@@ -25,9 +24,6 @@ import pygmsh  # wrapper for gmsh
 import sys
 
 # add the path where to find the shared modules
-# gaetano's path
-# module_path = '/home/tanos/Thesis/finite_elements/modules/'
-# michele's path
 module_path = '/home/fenics/shared/modules'
 
 sys.path.append(module_path)
