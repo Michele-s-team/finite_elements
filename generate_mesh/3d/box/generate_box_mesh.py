@@ -29,14 +29,8 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
 
-
-
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
-
-# CHANGE PARAMETERS HERE
-# L = [3, 2, 1]
-# CHANGE PARAMETERS HERE
 
 volume_id = 1
 boundary_le_id = 2
@@ -92,6 +86,6 @@ geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
-msh.full_write(mesh_file, ['tetra','triangle'], rpam.parameters, output_directory, False)
+msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
 
 model.__exit__()
