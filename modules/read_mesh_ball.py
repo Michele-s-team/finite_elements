@@ -10,6 +10,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
@@ -26,6 +27,9 @@ surface_id = 2
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
+
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
