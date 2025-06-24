@@ -22,36 +22,17 @@ import runtime_arguments as rarg
 volume_id = 1
 surface_id = 2
 
-
 # read the tetrahedra
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 
-#radius of the smallest cell in the mesh
+# radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
-
-
 
 boundary_mesh = BoundaryMesh(lmsh.mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
     xdmf.write(boundary_mesh)
-
-'''
-#read the lines
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
-with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
-xdmf.close()
-
-#read the vertices
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim()-1)
-with XDMFFile((rarg.args.input_directory) + "/vertex_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
-xdmf.close()
-'''
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=surface_id)  # surface measure
