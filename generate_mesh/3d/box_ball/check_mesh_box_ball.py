@@ -1,7 +1,6 @@
 '''
 This code reads the 3d mesh generated from generate_mesh.py and it creates dvs and dss from labelled components of the mesh
 
-
 Run with
     clear; clear; python3 check_mesh_box_ball.py [path where to find the mesh]
 Example:
