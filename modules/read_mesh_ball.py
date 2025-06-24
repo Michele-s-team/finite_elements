@@ -15,12 +15,13 @@ import mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE
-r = 1
-c_r = [0, 0, 0]
+# r = 1
+# c_r = [0, 0, 0]
+# CHANGE PARAMETERS HERE
 
 volume_id = 1
 surface_id = 2
-# CHANGE PARAMETERS HERE
+
 
 # read the tetrahedra
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
