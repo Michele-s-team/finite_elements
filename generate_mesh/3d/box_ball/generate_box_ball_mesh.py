@@ -117,10 +117,10 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", obstacles)
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["sphere_resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["r"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", 2*rpam.parameters["r"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution_min"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution_max"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["distance_min"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["distance_max"])
 
 gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
