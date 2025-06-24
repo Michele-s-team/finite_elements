@@ -6,7 +6,7 @@ We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, ri
 Run it with
     python3 generate_box_ball_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box_ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
@@ -60,7 +60,7 @@ boundary_sphere_id = 8
 
 
 channel = gmsh.model.occ.addBox(0, 0, 0, rpam.parameters["L"][0], rpam.parameters["L"][1], rpam.parameters["L"][2])
-sphere = gmsh.model.occ.addSphere(rpam.parameters["c_r"][0], rpam.parameters["c_r"][1], rpam.parameters["c_r"][2], r)
+sphere = gmsh.model.occ.addSphere(rpam.parameters["c_r"][0], rpam.parameters["c_r"][1], rpam.parameters["c_r"][2], rpam.parameters["r"])
 fluid = gmsh.model.occ.cut([(3, channel)], [(3, sphere)])
 
 gmsh.model.occ.synchronize()
