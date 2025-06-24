@@ -31,7 +31,7 @@ boundary_sphere_id = 8
 # CHANGE PARAMETERS HERE
 
 # read the tetrahedra
-cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetrahedron_mesh.xdmf")
+cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 

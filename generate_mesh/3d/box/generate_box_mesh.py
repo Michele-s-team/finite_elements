@@ -101,13 +101,13 @@ model.__exit__()
 mesh_from_file = meshio.read(mesh_file)
 
 # create a tetrahedron mesh
-tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
-meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
+tetra_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
+meshio.write(args.output_directory + "/tetra_mesh.xdmf", tetra_mesh)
 
 # create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", False)
 meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
+mesh = msh.read_mesh(args.output_directory + "/tetra_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")

@@ -34,7 +34,7 @@ c_r = [0, 0, 0]
 
 #read the mesh of the ball
 ball_mesh = Mesh()
-xdmf = XDMFFile(ball_mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
+xdmf = XDMFFile(ball_mesh.mpi_comm(), (args.input_directory) + "/tetra_mesh.xdmf")
 xdmf.read(ball_mesh)
 
 #extract the boundary of the ball (spere) and write it in a new mesh `sphere`

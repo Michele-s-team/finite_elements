@@ -32,7 +32,7 @@ args = parser.parse_args()
 
 #read the mesh of the cube
 mesh = Mesh()
-xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/tetrahedron_mesh.xdmf")
+xdmf = XDMFFile(mesh.mpi_comm(), (args.input_directory) + "/tetra_mesh.xdmf")
 xdmf.read(mesh)
 
 #extract the mesh corresponding to the side of the cube with y = 0 and store it in mesh2D
