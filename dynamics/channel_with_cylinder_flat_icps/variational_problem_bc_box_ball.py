@@ -19,13 +19,13 @@ rho = 1  # density
 
 f = Constant((0, 0, 0))
 
-print("L = ", rmsh.L)
+print("L = ", rmsh.parameters["L"])
 print("mu = ", mu)
 print("T = ", T)
 print("N = ", num_steps)
 
 # Define inflow profile
-u_bar_le_profile = Expression((f'4.0*1.5*x[1]*({rmsh.L[1]} - x[1]) / pow({rmsh.L[1]}, 2) * 4.0*1.5*x[2]*({rmsh.L[2]} - x[2]) / pow({rmsh.L[2]}, 2)', '0', '0'), degree=2)
+u_bar_le_profile = Expression((f'4.0*1.5*x[1]*({rmsh.parameters["L"][1]} - x[1]) / pow({rmsh.parameters["L"][1]}, 2) * 4.0*1.5*x[2]*({rmsh.parameters["L"][2]} - x[2]) / pow({rmsh.parameters["L"][2]}, 2)', '0', '0'), degree=2)
 
 # Define boundary conditions
 bc_u_bar_le = DirichletBC(fsp.V, u_bar_le_profile, rmsh.boundary_le)
