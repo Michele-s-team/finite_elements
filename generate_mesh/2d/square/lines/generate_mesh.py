@@ -27,38 +27,9 @@ import read_parameters_generate_mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-
-# parser = argparse.ArgumentParser()
-# parser.add_argument("resolution")
-# parser.add_argument("n_lines_circle")
-# parser.add_argument("n_lines_lr")
-# parser.add_argument("output_directory")
-# args = parser.parse_args()
-
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
-
-# mesh resolution
-# resolution = (float)(rarg.args.resolution)
-# n_lines_circle = int(rarg.args.n_lines_circle)
-# n_lines_lr = int(rarg.args.n_lines_lr)
-
 mesh_file = output_directory + "mesh.msh"
-
-# mesh parameters
-# # CHANGE PARAMETERS HERE
-# L = 1
-# h = 1
-# c_r = [L / 2, h / 2, 0]
-# r = 0.25
-# # CHANGE PARAMETERS HERE
-#
-# print("L = ", L)
-# print("h = ", h)
-# print("r = ", r)
-# print("n_lines_circle = ", n_lines_circle)
-# print("n_lines_lr = ", n_lines_lr)
-
 
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
@@ -86,11 +57,8 @@ points_circle, segments_circle = msh.add_circle_with_lines(rpam.parameters["c_r"
 circle_loop = gmsh.model.geo.add_curve_loop(segments_circle)
 gmsh.model.geo.synchronize()
 
-
 square_surface = gmsh.model.geo.add_plane_surface([loop_square, circle_loop])
 gmsh.model.geo.synchronize()
-
-
 
 # add auxiliary horizontal lines to make the mesh symmetric under top <-> bottom
 lines_lr = []
@@ -110,8 +78,6 @@ for i in range(len(vertices)):
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
-
-
 
 # tag the edges and the segments of the edges
 msh.tag_group([edge_b], 1, 5, 'l_edge')
@@ -153,7 +119,6 @@ gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
-
 
 # write mesh components to file
 # msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "triangle", True)
