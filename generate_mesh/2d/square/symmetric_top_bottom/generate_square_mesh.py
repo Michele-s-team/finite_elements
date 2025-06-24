@@ -15,61 +15,37 @@ The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. 
 
 import meshio
 from fenics import *
-import gmsh  # main tool
-import pygmsh  # wrapper for gmsh
-import argparse
+import gmsh
+import pygmsh
 import sys
 import numpy as np
 
 # add the path where to find the shared modules
-# gaetano's path
-# module_path = '/home/tanos/Thesis/finite_elements/modules/'
-# michele's path
 module_path = '/home/fenics/shared/modules'
-
 sys.path.append(module_path)
 
 import calculus as cal
 import input_output as io
 import mesh as msh
-
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_dir")
-args = parser.parse_args()
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
 # mesh resolution
-resolution = (float)(args.resolution)
-r = 0.25
-L = 1
-h = 1
-y_coordinate_axis_of_symmetry = h / 2
-c_r = [L / 2, y_coordinate_axis_of_symmetry, 0]
+# resolution = (float)(args.resolution)
+# r = 0.25
+# L = 1
+# h = 1
+# y_coordinate_axis_of_symmetry = h / 2
+# c_r = [L / 2, y_coordinate_axis_of_symmetry, 0]
 
 gamma_axis_of_symmetry = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
 
-'''
-this function tells whether a point lies on the axis of symmetry
-Input values:
-- 'coordinate' : the coordinates of the point (list of two values)
-Return value:
-- True/False, if the point lies on the axis of symmetry 
-'''
+output_dir = io.add_trailing_slash(rarg.args.output_dir)
 
-'''
-def point_on_axis_of_symmetry(point):
-    return cal.point_on_line(point, gamma_axis_of_symmetry)
-
-
-def mirror_function(point):
-    return cal.mirror_point_line(point, gamma_axis_of_symmetry)
-'''
-
-output_dir = io.add_trailing_slash(args.output_dir)
 half_mesh_msh_file = output_dir + "half_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
-print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
+# print(f'L = {L}\nh = {h}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
 # Half mesh is generated used pygmsh and it's saved as mesh.msh
 
@@ -110,7 +86,7 @@ model.add_physical(half_rectangle_circle_lines[5:], "c")
 geometry.generate_mesh(dim=2)
 gmsh.write(half_mesh_msh_file)
 
-msh.print_mesh_lines_to_csv( half_mesh_msh_file, output_dir + 'line_vertices.csv' )
+msh.print_mesh_lines_to_csv(half_mesh_msh_file, output_dir + 'line_vertices.csv')
 
 gmsh.clear()
 geometry.__exit__()
@@ -165,7 +141,6 @@ msh.asssign_tag_to_lines(
     lambda line: (np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))),
     b_edge_id, mesh
 )
-
 
 msh.asssign_tag_to_lines(
     lambda line: np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)) < (r + cal.min_dist_c_r_rectangle(L, h, c_r)) / 2,
