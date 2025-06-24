@@ -46,7 +46,7 @@ boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
 
-box = model.add_box([0, 0, 0], L, mesh_size=resolution)
+box = model.add_box([0, 0, 0], rpam.parameters["L"], mesh_size=rpam.parameters["resolution"])
 
 model.synchronize()
 
@@ -68,7 +68,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
         gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
 
-    if np.isclose(center_of_mass[0], L[0]):
+    if np.isclose(center_of_mass[0], rpam.parameters["L"][0]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
 
@@ -76,7 +76,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
         gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
 
-    if np.isclose(center_of_mass[1], L[1]):
+    if np.isclose(center_of_mass[1], rpam.parameters["L"][1]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
         gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
 
@@ -84,7 +84,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
 
-    if np.isclose(center_of_mass[2], L[2]):
+    if np.isclose(center_of_mass[2], rpam.parameters["L"][2]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
         gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
 
@@ -92,6 +92,6 @@ geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
-msh.full_write(mesh_file, ['tetra', 'triangle', 'line'], rpam.parameters, output_directory, False)
+msh.full_write(mesh_file, ['tetra','triangle'], rpam.parameters, output_directory, False)
 
 model.__exit__()
