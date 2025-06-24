@@ -14,52 +14,43 @@ The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. 
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
 '''
 
-import argparse
 from fenics import *
-import gmsh  # main tool
+import gmsh
 import meshio
 import numpy as np
 import os
-import pygmsh  # wrapper for gmsh
+import pygmsh
 import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
-
 sys.path.append(module_path)
 
 import calculus as cal
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_dir")
-args = parser.parse_args()
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-# mesh resolution
-resolution = (float)(args.resolution)
-
-L = 1
-h = 1
 
 # number of tiles in which the mesh will be divided, along each axis
-N = np.ceil(max(L, h) / resolution)
+N = np.ceil(max(rpam.parameters["L"], rpam.parameters["h"]) / rpam.parameters["resolution"])
 # given that  I will be mirroring (doubling) the mesh multiple times, N needs to be a power of two
 log2_N = int(np.ceil(np.log2(N)))
 N = 2 ** log2_N
 
-L_unit = L / N
-h_unit = h / N
+L_unit = rpam.parameters["L"] / N
+h_unit = rpam.parameters["h"] / N
 
-output_dir = io.add_trailing_slash(args.output_dir)
+output_dir = io.add_trailing_slash(rarg.args.output_directory)
 unit_mesh_dir = io.add_trailing_slash(output_dir + 'unit_mesh')
 os.makedirs(unit_mesh_dir, exist_ok=True)
 
 unit_mesh_msh_file = unit_mesh_dir + "unit_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
-print(f'L = {L}\nh = {h}\nresolution = {resolution}\nN = {N}\noutput directory = {output_dir}')
 
 # Unit mesh is generated used pygmsh and it's saved as unit_mesh.msh
 
@@ -67,10 +58,10 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 # construct a rectangle with vertices [0,0], [L_unit_cell, 0], [L_unit_cell, h_unit_cell], [0, h_unit_cell]
-unit_points = [model.add_point((0, 0, 0), mesh_size=resolution),
-               model.add_point((L_unit, 0, 0), mesh_size=resolution),
-               model.add_point((L_unit, h_unit, 0), mesh_size=resolution),
-               model.add_point((0, h_unit, 0), mesh_size=resolution),
+unit_points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters["resolution"]),
+               model.add_point((L_unit, 0, 0), mesh_size=rpam.parameters["resolution"]),
+               model.add_point((L_unit, h_unit, 0), mesh_size=rpam.parameters["resolution"]),
+               model.add_point((0, h_unit, 0), mesh_size=rpam.parameters["resolution"]),
                ]
 model.synchronize()
 
@@ -96,8 +87,6 @@ msh.print_mesh_lines_to_csv(unit_mesh_msh_file, unit_mesh_dir + 'line_vertices.c
 gmsh.clear()
 geometry.__exit__()
 
-
-
 surface_id = 1
 l_edge_id = 2
 r_edge_id = 3
@@ -119,7 +108,7 @@ for i in range(log2_N):
 
 # mirror along x axis
 for i in range(log2_N):
-    gamma_axis_of_symmetry = lambda t: cal.line([(2 ** i) * L_unit, 0], [(2 ** i) * L_unit, h], t)
+    gamma_axis_of_symmetry = lambda t: cal.line([(2 ** i) * L_unit, 0], [(2 ** i) * L_unit, rpam.parameters["h"]], t)
     msh.mirror_mesh(mesh, gamma_axis_of_symmetry)
 
 # tag l edge
@@ -130,13 +119,13 @@ msh.asssign_tag_to_lines(
 
 # tag r edge
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][0], rpam.parameters["L"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], rpam.parameters["L"], rtol=cal.small_number))),
     r_edge_id, mesh
 )
 
 # tag t edge
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][1], rpam.parameters["h"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], rpam.parameters["h"], rtol=cal.small_number))),
     t_edge_id, mesh
 )
 
@@ -149,8 +138,8 @@ msh.asssign_tag_to_lines(
 # tag internal lines
 msh.asssign_tag_to_lines(
     lambda line: (not ((np.isclose(mesh.points[line[0]][0], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], 0, rtol=cal.small_number))))) \
-                 and (not ((np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))))) \
-                 and (not ((np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))))) \
+                 and (not ((np.isclose(mesh.points[line[0]][0], rpam.parameters["L"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], rpam.parameters["L"], rtol=cal.small_number))))) \
+                 and (not ((np.isclose(mesh.points[line[0]][1], rpam.parameters["h"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], rpam.parameters["h"], rtol=cal.small_number))))) \
                  and (not ((np.isclose(mesh.points[line[0]][1], 0, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], 0, rtol=cal.small_number))))),
     internal_lines_id, mesh
 )
@@ -158,7 +147,6 @@ msh.asssign_tag_to_lines(
 meshio.write(mesh_xdmf_file, mesh)  # XDMF for FEniCS
 
 print("Full mesh generated successfully!")
-
 
 # read the mesh.xdmf file and generate line_mesh.xdmf and triangle_mesh.xdmf
 mesh_from_file = meshio.read(mesh_xdmf_file)
@@ -173,3 +161,5 @@ meshio.write(output_dir + "triangle_mesh.xdmf", triangle_mesh)
 mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "vertices.csv")
 
+# print mesh metadata
+io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", rpam.parameters)
