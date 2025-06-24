@@ -53,31 +53,31 @@ y_coordinate_axis_of_symmetry = h / 2
 c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
 
 gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, h], t)
-gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
+gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [rpam.parameters["L"], y_coordinate_axis_of_symmetry], t)
 
 output_dir = io.add_trailing_slash(rarg.args.output_dir)
 quarter_mesh_msh_file = output_dir + "quarter_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
-# print(f'L = {L}\nh = {h}\nr={r}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
+# print(f'rpam.parameters["L"] = {rpam.parameters["L"]}\nh = {h}\nr={r}\nc_r = {c_r}\nrpam.parameters["resolution"] = {rpam.parameters["resolution"]}\noutput directory = {output_dir}')
 
 # The quarter mesh is generated used pygmsh and it is saved as quarter_mesh.msh
 
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-N = int(np.round(r * np.pi / 2 / resolution))
+N = int(np.round(r * np.pi / 2 / rpam.parameters["resolution"]))
 
-# construct a rectangle with vertices [L,h/2], [L,h], [L/2,h], [L/2,h/2]
+# construct a rectangle with vertices [rpam.parameters["L"],h/2], [rpam.parameters["L"],h], [rpam.parameters["L"]/2,h], [rpam.parameters["L"]/2,h/2]
 
-quarter_rectangle_points = [model.add_point((L, y_coordinate_axis_of_symmetry, 0), mesh_size=resolution),
-                            model.add_point((L, h, 0), mesh_size=resolution),
-                            model.add_point((x_coordinate_axis_of_symmetry, h, 0), mesh_size=resolution)
+quarter_rectangle_points = [model.add_point((rpam.parameters["L"], y_coordinate_axis_of_symmetry, 0), mesh_size=rpam.parameters["resolution"]),
+                            model.add_point((rpam.parameters["L"], h, 0), mesh_size=rpam.parameters["resolution"]),
+                            model.add_point((x_coordinate_axis_of_symmetry, h, 0), mesh_size=rpam.parameters["resolution"])
                             ]
 model.synchronize()
 
 quarter_circle_points = [
-    model.add_point((c_r[0] + r * np.cos(np.pi / 2 * (N - i) / N), c_r[1] + r * np.sin(np.pi / 2 * (N - i) / N), 0), mesh_size=resolution)
+    model.add_point((c_r[0] + r * np.cos(np.pi / 2 * (N - i) / N), c_r[1] + r * np.sin(np.pi / 2 * (N - i) / N), 0), mesh_size=rpam.parameters["resolution"])
     for i in range(N + 1)]
 model.synchronize()
 
