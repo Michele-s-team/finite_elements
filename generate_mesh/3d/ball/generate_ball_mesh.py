@@ -22,13 +22,12 @@ import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
 # parser = argparse.ArgumentParser()
-# parser.add_argument("resolution")
+# parser.add_argument("rpam.parameters["resolution"]")
 # parser.add_argument("output_directory")
 # args = parser.parse_args()
 
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
-
 
 mesh_file = output_directory + "mesh.msh"
 
@@ -36,26 +35,25 @@ volume_id = 1
 surface_id = 2
 line_id = 3
 
-# # mesh resolution
-# resolution = (float)(args.resolution)
+# # mesh rpam.parameters["resolution"]
+# rpam.parameters["resolution"] = (float)(args.rpam.parameters["resolution"])
 
 # mesh parameters
 # # CHANGE PARAMETERS HERE
 # r = 1.0
-# c_r = [0, 0, 0]
+# rpam.parameters["c_r"] = [0, 0, 0]
 # # CHANGE PARAMETERS HERE
-
 
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add a volume object (a ball):
-ball = model.add_ball(c_r, r, mesh_size=resolution)
+ball = model.add_ball(rpam.parameters["c_r"], rpam.parameters["r"], mesh_size=rpam.parameters["resolution"])
 
 # add a line object
-points = [model.add_point((0, 0, 0), mesh_size=resolution),
-          model.add_point((0.2, 0.2, 0.2), mesh_size=resolution)
+points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters["resolution"]),
+          model.add_point((0.2, 0.2, 0.2), mesh_size=rpam.parameters["resolution"])
           ]
 line = [model.add_line(points[0], points[1])]
 
@@ -91,7 +89,6 @@ mesh_from_file = meshio.read(mesh_file)
 # mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
 # io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")
 
-msh.full_write(mesh_file, ['tetra','triangle'], rpam.parameters, output_directory, True)
-
+msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
 
 model.__exit__()
