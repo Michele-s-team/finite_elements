@@ -7,6 +7,8 @@ run with
     python3 generate_square_mesh.py [path where to read parameters] [output directory]
 
 ATTENTION: [mesh resolution] must be small enough for the circle to be properly resolved
+ATTENTION: c_r in mesh_parametewrs must be equal to [L/2, h/2], otherwise symmetry of the mesh would not make sense
+
 Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
@@ -37,6 +39,9 @@ import read_parameters_generate_mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
+if rpam.parameters["c_r"][:2] != [rpam.parameters["L"]/2, rpam.parameters["h"]/2]:
+    print("gdcERROR: c_r is not equal to [L/2, h/2]")
+
 
 # parser = argparse.ArgumentParser()
 # parser.add_argument("resolution")
@@ -48,12 +53,12 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 # L = 1
 # h = 1
 # r = 0.25
-x_coordinate_axis_of_symmetry = rpam.parameters["L"] / 2
-y_coordinate_axis_of_symmetry = rpam.parameters["h"] / 2
-c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
+# x_coordinate_axis_of_symmetry = rpam.parameters["L"] / 2
+# y_coordinate_axis_of_symmetry = rpam.parameters["h"] / 2
+# c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
 
-gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, rpam.parameters["h"]], t)
-gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [rpam.parameters["L"], y_coordinate_axis_of_symmetry], t)
+gamma_axis_of_symmetry_left_right = lambda t: cal.line([rpam.parameters["c_r"][0], 0], [rpam.parameters["c_r"][0], rpam.parameters["h"]], t)
+gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, rpam.parameters["c_r"][1]], [rpam.parameters["L"], rpam.parameters["c_r"][1]], t)
 
 output_dir = io.add_trailing_slash(rarg.args.output_directory)
 quarter_mesh_msh_file = output_dir + "quarter_mesh.msh"
@@ -70,14 +75,14 @@ N = int(np.round(rpam.parameters["r"] * np.pi / 2 / rpam.parameters["resolution"
 
 # construct a rectangle with vertices [rpam.parameters["L"],h/2], [rpam.parameters["L"],h], [rpam.parameters["L"]/2,h], [rpam.parameters["L"]/2,h/2]
 
-quarter_rectangle_points = [model.add_point((rpam.parameters["L"], y_coordinate_axis_of_symmetry, 0), mesh_size=rpam.parameters["resolution"]),
+quarter_rectangle_points = [model.add_point((rpam.parameters["L"], rpam.parameters["c_r"][1], 0), mesh_size=rpam.parameters["resolution"]),
                             model.add_point((rpam.parameters["L"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
-                            model.add_point((x_coordinate_axis_of_symmetry, rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])
+                            model.add_point((rpam.parameters["c_r"][0], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])
                             ]
 model.synchronize()
 
 quarter_circle_points = [
-    model.add_point((c_r[0] + rpam.parameters["r"] * np.cos(np.pi / 2 * (N - i) / N), c_r[1] + rpam.parameters["r"] * np.sin(np.pi / 2 * (N - i) / N), 0), mesh_size=rpam.parameters["resolution"])
+    model.add_point((rpam.parameters["c_r"][0] + rpam.parameters["r"] * np.cos(np.pi / 2 * (N - i) / N), rpam.parameters["c_r"][1] + rpam.parameters["r"] * np.sin(np.pi / 2 * (N - i) / N), 0), mesh_size=rpam.parameters["resolution"])
     for i in range(N + 1)]
 model.synchronize()
 
@@ -168,19 +173,19 @@ msh.asssign_tag_to_lines(
 
 # tag circle
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), rpam.parameters["r"]) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), rpam.parameters["r"])),
+    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], rpam.parameters["c_r"])), rpam.parameters["r"]) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], rpam.parameters["c_r"])), rpam.parameters["r"])),
     circle_id, mesh
 )
 
 # tag internal lines which result from mesh mirroring
 # tag internal lines parallel to the y axis
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][0], x_coordinate_axis_of_symmetry, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], x_coordinate_axis_of_symmetry, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][0], rpam.parameters["c_r"][0], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], rpam.parameters["c_r"][0], rtol=cal.small_number))),
     interior_lines_id, mesh
 )
 # tag internal lines parallel to the x axis
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][1], y_coordinate_axis_of_symmetry, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], y_coordinate_axis_of_symmetry, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][1], rpam.parameters["c_r"][1], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], rpam.parameters["c_r"][1], rtol=cal.small_number))),
     interior_lines_id, mesh
 )
 
@@ -203,3 +208,6 @@ meshio.write(output_dir + "triangle_mesh.xdmf", triangle_mesh)
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "vertices.csv")
+
+# print mesh metadata
+io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", rpam.parameters)
