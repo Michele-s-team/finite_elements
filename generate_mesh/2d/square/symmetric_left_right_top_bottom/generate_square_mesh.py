@@ -48,11 +48,11 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 # L = 1
 # h = 1
 # r = 0.25
-x_coordinate_axis_of_symmetry = L / 2
-y_coordinate_axis_of_symmetry = h / 2
+x_coordinate_axis_of_symmetry = rpam.parameters["L"] / 2
+y_coordinate_axis_of_symmetry = rpam.parameters["h"] / 2
 c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
 
-gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, h], t)
+gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, rpam.parameters["h"]], t)
 gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [rpam.parameters["L"], y_coordinate_axis_of_symmetry], t)
 
 output_dir = io.add_trailing_slash(rarg.args.output_dir)
@@ -66,18 +66,18 @@ mesh_xdmf_file = output_dir + "mesh.xdmf"
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-N = int(np.round(r * np.pi / 2 / rpam.parameters["resolution"]))
+N = int(np.round(rpam.parameters["r"] * np.pi / 2 / rpam.parameters["resolution"]))
 
 # construct a rectangle with vertices [rpam.parameters["L"],h/2], [rpam.parameters["L"],h], [rpam.parameters["L"]/2,h], [rpam.parameters["L"]/2,h/2]
 
 quarter_rectangle_points = [model.add_point((rpam.parameters["L"], y_coordinate_axis_of_symmetry, 0), mesh_size=rpam.parameters["resolution"]),
-                            model.add_point((rpam.parameters["L"], h, 0), mesh_size=rpam.parameters["resolution"]),
-                            model.add_point((x_coordinate_axis_of_symmetry, h, 0), mesh_size=rpam.parameters["resolution"])
+                            model.add_point((rpam.parameters["L"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
+                            model.add_point((x_coordinate_axis_of_symmetry, rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])
                             ]
 model.synchronize()
 
 quarter_circle_points = [
-    model.add_point((c_r[0] + r * np.cos(np.pi / 2 * (N - i) / N), c_r[1] + r * np.sin(np.pi / 2 * (N - i) / N), 0), mesh_size=rpam.parameters["resolution"])
+    model.add_point((c_r[0] + rpam.parameters["r"] * np.cos(np.pi / 2 * (N - i) / N), c_r[1] + rpam.parameters["r"] * np.sin(np.pi / 2 * (N - i) / N), 0), mesh_size=rpam.parameters["resolution"])
     for i in range(N + 1)]
 model.synchronize()
 
@@ -150,13 +150,13 @@ msh.asssign_tag_to_lines(
 
 # tag r edge
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][0], L, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], L, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][0], rpam.parameters["L"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][0], rpam.parameters["L"], rtol=cal.small_number))),
     r_edge_id, mesh
 )
 
 # tag t edge
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(mesh.points[line[0]][1], h, rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], h, rtol=cal.small_number))),
+    lambda line: (np.isclose(mesh.points[line[0]][1], rpam.parameters["h"], rtol=cal.small_number) and (np.isclose(mesh.points[line[1]][1], rpam.parameters["h"], rtol=cal.small_number))),
     t_edge_id, mesh
 )
 
@@ -168,7 +168,7 @@ msh.asssign_tag_to_lines(
 
 # tag circle
 msh.asssign_tag_to_lines(
-    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), r) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), r)),
+    lambda line: (np.isclose(np.linalg.norm(np.subtract(mesh.points[line[0]], c_r)), rpam.parameters["r"]) and np.isclose(np.linalg.norm(np.subtract(mesh.points[line[1]], c_r)), rpam.parameters["r"])),
     circle_id, mesh
 )
 
