@@ -19,16 +19,12 @@ The quarter of a mesh will be saved in [path where to store the mesh] as quarter
 
 import meshio
 from fenics import *
-import gmsh  # main tool
-import pygmsh  # wrapper for gmsh
-import argparse
+import gmsh
+import pygmsh
 import sys
 import numpy as np
 
 # add the path where to find the shared modules
-# gaetano's path
-# module_path = '/home/tanos/Thesis/finite_elements/modules/'
-# michele's path
 module_path = '/home/fenics/shared/modules'
 
 sys.path.append(module_path)
@@ -36,17 +32,22 @@ sys.path.append(module_path)
 import calculus as cal
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_dir")
-args = parser.parse_args()
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
+
+
+# parser = argparse.ArgumentParser()
+# parser.add_argument("resolution")
+# parser.add_argument("output_dir")
+# args = parser.parse_args()
 
 # mesh resolution
-resolution = (float)(args.resolution)
-L = 1
-h = 1
-r = 0.25
+# resolution = (float)(args.resolution)
+# L = 1
+# h = 1
+# r = 0.25
 x_coordinate_axis_of_symmetry = L / 2
 y_coordinate_axis_of_symmetry = h / 2
 c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
@@ -54,11 +55,11 @@ c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
 gamma_axis_of_symmetry_left_right = lambda t: cal.line([x_coordinate_axis_of_symmetry, 0], [x_coordinate_axis_of_symmetry, h], t)
 gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, y_coordinate_axis_of_symmetry], [L, y_coordinate_axis_of_symmetry], t)
 
-output_dir = args.output_dir
-quarter_mesh_msh_file = output_dir + "/quarter_mesh.msh"
-mesh_xdmf_file = output_dir + "/mesh.xdmf"
+output_dir = io.add_trailing_slash(rarg.args.output_dir)
+quarter_mesh_msh_file = output_dir + "quarter_mesh.msh"
+mesh_xdmf_file = output_dir + "mesh.xdmf"
 
-print(f'L = {L}\nh = {h}\nr={r}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
+# print(f'L = {L}\nh = {h}\nr={r}\nc_r = {c_r}\nresolution = {resolution}\noutput directory = {output_dir}')
 
 # The quarter mesh is generated used pygmsh and it is saved as quarter_mesh.msh
 
@@ -194,11 +195,11 @@ print("Full mesh generated successfully!")
 mesh_from_file = meshio.read(mesh_xdmf_file)
 
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_dir + "/line_mesh.xdmf", line_mesh)
+meshio.write(output_dir + "line_mesh.xdmf", line_mesh)
 
 triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_dir + "/triangle_mesh.xdmf", triangle_mesh)
+meshio.write(output_dir + "triangle_mesh.xdmf", triangle_mesh)
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_dir + "/vertices.csv")
+mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
+io.print_mesh_vertices_to_csv(mesh, output_dir + "vertices.csv")
