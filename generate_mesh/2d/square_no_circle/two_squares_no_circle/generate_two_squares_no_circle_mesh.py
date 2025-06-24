@@ -4,7 +4,7 @@ generate a  mesh given by two collated squares
 Run it with
     python3 generate_two_squares_no_circle_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
@@ -20,7 +20,6 @@ import input_output as io
 import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
-
 
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
@@ -48,8 +47,6 @@ r_line_id = 6
 tr_line_id = 7
 tl_line_id = 8
 m_line_id = 9
-
-
 
 # Create corner points
 p_lb = gmsh.model.geo.addPoint(0, 0, 0)
@@ -134,16 +131,8 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 gmsh.model.mesh.generate(2)
 gmsh.write(mesh_file)
 
-gmsh.finalize()
-
 mesh_from_file = meshio.read(mesh_file)
 
-line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
+msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
-
-# print the mesh vertices to file
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+gmsh.finalize()
