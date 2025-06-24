@@ -3,11 +3,12 @@ This code generates a  square mesh with a circular hole in it, which is symmetri
 Symmetry is enforced by mirroring the mesh points along a symetry axis.
 
 ATTENTION:  in the parameters file 'resolution' must be small enough for the circle to be properly resolved
+ATTENTION: c_r[1] in mesh_parameters must be equal to h/2, otherwise symmetry of the mesh would not make sense
 
 Run with
     python3 generate_square_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_top_bottom/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
 The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. The complete mesh will be saved in
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.
@@ -30,9 +31,12 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
+if rpam.parameters["c_r"][1] !=  rpam.parameters["h"]/2:
+    print("ERROR: c_r[1] is not equal to  h/2")
+
 gamma_axis_of_symmetry = lambda t: cal.line([0, rpam.parameters["c_r"][1]], [rpam.parameters["L"], rpam.parameters["c_r"][1]], t)
 
-output_dir = io.add_trailing_slash(rarg.args.output_dir)
+output_dir = io.add_trailing_slash(rarg.args.output_directory)
 
 half_mesh_msh_file = output_dir + "half_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
@@ -86,7 +90,6 @@ duplicate the points and cells with the respective tags and ids
 The new mesh inherits the ids (physical id used for measure definiton) of the original one,
 except for the new physical objects that are generated from reflection (e.g. the b line)
 '''
-surface_id = 1
 l_edge_id = 2
 r_edge_id = 3
 t_edge_id = 4
@@ -153,3 +156,6 @@ meshio.write(output_dir + "triangle_mesh.xdmf", triangle_mesh)
 # print the mesh vertices to file
 mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "vertices.csv")
+
+# print mesh metadata
+io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", rpam.parameters)
