@@ -10,9 +10,9 @@ Example:
 The mesh generated with this code can be read with ~/shared/generate_mesh/2d/square/read_mesh_square.py
 '''
 
-import gmsh
+import meshio
 import pygmsh
-# import argparse
+import gmsh
 import sys
 
 # add the path where to find the shared modules
@@ -20,6 +20,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import input_output as io
+import list as lis
 import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
@@ -66,10 +67,10 @@ model = geometry.__enter__()
 
 p_O = msh.add_point([0, 0, 0], gmsh.model.geo)
 
-points_b, edge_b = msh.add_line_p_start_r_end(p_O, [L, 0, 0], gmsh.model.geo)
-points_r, segments_edge_r = msh.add_line_p_start_r_end_n(points_b[-1], [L, h, 0], n_lines_lr, gmsh.model.geo)
-points_t, edge_t = msh.add_line_p_start_r_end(points_r[-1], [0, h, 0], gmsh.model.geo)
-points_l, segments_edge_l = msh.add_line_p_start_p_end_n(points_t[-1], p_O, n_lines_lr, gmsh.model.geo)
+points_b, edge_b = msh.add_line_p_start_r_end(p_O, [rpam.parameters["L"], 0, 0], gmsh.model.geo)
+points_r, segments_edge_r = msh.add_line_p_start_r_end_n(points_b[-1], [rpam.parameters["L"], rpam.parameters["h"], 0], rpam.parameters["n_lines_lr"], gmsh.model.geo)
+points_t, edge_t = msh.add_line_p_start_r_end(points_r[-1], [0, rpam.parameters["h"], 0], gmsh.model.geo)
+points_l, segments_edge_l = msh.add_line_p_start_p_end_n(points_t[-1], p_O, rpam.parameters["n_lines_lr"], gmsh.model.geo)
 
 msh.print_point_list_info(points_l, 'points_l')
 msh.print_point_list_info(points_r, 'points_r')
@@ -80,7 +81,7 @@ print(f'lines = {lines}')
 loop_square = gmsh.model.geo.add_curve_loop(lines)
 gmsh.model.geo.synchronize()
 
-points_circle, segments_circle = msh.add_circle_with_lines(c_r, r, n_lines_circle, gmsh.model.geo)
+points_circle, segments_circle = msh.add_circle_with_lines(rpam.parameters["c_r"], rpam.parameters["r"], rpam.parameters["n_lines_circle"], gmsh.model.geo)
 
 circle_loop = gmsh.model.geo.add_curve_loop(segments_circle)
 gmsh.model.geo.synchronize()
@@ -95,7 +96,7 @@ gmsh.model.geo.synchronize()
 lines_lr = []
 for j in range(1, len(points_l) - 1):
     coord = msh.get_point_coordinates(points_l[j])
-    if ((coord[1] < c_r[1] - r) or (coord[1] > c_r[1] + r)):
+    if ((coord[1] < rpam.parameters["c_r"][1] - rpam.parameters["r"]) or (coord[1] > rpam.parameters["c_r"][1] + rpam.parameters["r"])):
         lines_lr.append((msh.add_line_p_start_p_end(points_l[j], points_r[len(points_l) - 1 - j], gmsh.model.geo))[1])
 
 gmsh.model.mesh.embed(1, lines_lr, 2, square_surface)
@@ -135,10 +136,10 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", [square_surface])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution / 2)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", h)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", L)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"] / 2)
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["h"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["L"])
 
 minimum = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
@@ -149,15 +150,21 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
+mesh_from_file = meshio.read(mesh_file)
+
+msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
+
+
 # write mesh components to file
-msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "triangle", True)
-msh.write_mesh_components(mesh_file, output_directory + "line_mesh.xdmf", "line", True)
-msh.write_mesh_components(mesh_file, output_directory + "vertex_mesh.xdmf", "vertex", True)
+# msh.write_mesh_components(mesh_file, output_directory + "triangle_mesh.xdmf", "triangle", True)
+# msh.write_mesh_components(mesh_file, output_directory + "line_mesh.xdmf", "line", True)
+# msh.write_mesh_components(mesh_file, output_directory + "vertex_mesh.xdmf", "vertex", True)
 
-msh.print_mesh_lines_to_csv(mesh_file, output_directory + "line_vertices.csv")
+# msh.print_mesh_lines_to_csv(mesh_file, output_directory + "line_vertices.csv")
 
-model.__exit__()
 
 # print the mesh vertices to file
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+# mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
+# io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+
+model.__exit__()
