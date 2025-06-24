@@ -8,11 +8,9 @@ Example:
     clear; clear; python3 submesh_ball.py /home/fenics/shared/generate_mesh/3d/ball/solution
 '''
 
-import argparse
 import colorama as col
-import dolfin
 from fenics import *
-import h5py
+# import h5py
 import sys
 
 #add the path where to find the shared modules
@@ -20,21 +18,29 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import input_output as io
+import load_mesh as lmsh
 import mesh as msh
+import runtime_arguments as rarg
+
+# radius of the smallest cell in the mesh
+r_mesh = lmsh.mesh.hmin()
+
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("input_directory")
-args = parser.parse_args()
 
-#CHANGE PARAMETERS HERE
-r = 1
-c_r = [0, 0, 0]
-#CHANGE PARAMETERS HERE
+# parser = argparse.ArgumentParser()
+# parser.add_argument("input_directory")
+# args = parser.parse_args()
+
+# #CHANGE PARAMETERS HERE
+# r = 1
+# c_r = [0, 0, 0]
+# #CHANGE PARAMETERS HERE
 
 #read the mesh of the ball
 ball_mesh = Mesh()
-xdmf = XDMFFile(ball_mesh.mpi_comm(), (args.input_directory) + "/tetra_mesh.xdmf")
+xdmf = XDMFFile(ball_mesh.mpi_comm(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 xdmf.read(ball_mesh)
 
 #extract the boundary of the ball (spere) and write it in a new mesh `sphere`
@@ -56,6 +62,8 @@ class FunctionTestIntegral(UserExpression):
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", sphere_mesh, sphere_mesh.topology().dim() )
 cf = cpp.mesh.MeshFunctionSizet( sphere_mesh, mvc )
+# cf = msh.read_mesh_components(sphere_mesh, 3, rarg.args.input_directory + "/tetra_mesh.xdmf")
+
 dx_custom = Measure("dx", domain=sphere_mesh, subdomain_data=cf )    # Line measure
 
 Q = FunctionSpace( sphere_mesh, 'P', 1 )
