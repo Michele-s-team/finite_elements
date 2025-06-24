@@ -44,8 +44,8 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_e
 
 test_mesh_integral_errors = []
 
-integral_exact_dx = cal.volume_integral_ball(function_test_integrals, rmsh.r, rmsh.c_r)
-integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_dx = cal.volume_integral_ball(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"])
+integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"])
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int_ball f dx'))
