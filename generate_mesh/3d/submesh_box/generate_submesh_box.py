@@ -5,7 +5,7 @@ and creates a submesh of it, i.e., a sphere mesh given by the boundary of the bo
 Run with
     clear; clear; python3 generate_submesh_box.py [path where to find the box mesh] [path where to store the submesh]
 Example:
-    clear; clear; python3 generate_submesh_box.py /home/fenics/shared/generate_mesh/3d/box/solution  /home/fenics/shared/generate_mesh/3d/submesh_box/solution
+    clear; clear; INPUT_MESH_PATH="/home/fenics/shared/generate_mesh/3d/box/solution"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/submesh_box/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_submesh_box.py $INPUT_MESH_PATH $SOLUTION_PATH
 '''
 
 

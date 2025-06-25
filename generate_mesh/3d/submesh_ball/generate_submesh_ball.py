@@ -5,7 +5,7 @@ and creates a submesh of it, i.e., a sphere mesh given by the boundary of the ba
 Run with
     clear; clear; python3 generate_submesh_ball.py [path where to find the mesh]
 Example:
-    clear; clear; python3 generate_submesh_ball.py /home/fenics/shared/generate_mesh/3d/ball/solution
+    clear; clear; INPUT_MESH_PATH="/home/fenics/shared/generate_mesh/3d/ball/solution"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/submesh_ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_submesh_ball.py $INPUT_MESH_PATH $SOLUTION_PATH
 '''
 
 import colorama as col
