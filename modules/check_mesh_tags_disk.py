@@ -1,5 +1,4 @@
 import colorama as col
-import dolfin
 from fenics import *
 import numpy as np
 
@@ -43,9 +42,9 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = cal.surface_integral_disk(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_dx = cal.surface_integral_disk(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"][:2])
 
-integral_exact_ds = cal.curve_integral_circle(function_test_integrals, rmsh.r, rmsh.c_r)
+integral_exact_ds = cal.curve_integral_circle(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"][:2])
 
 test_mesh_integral_errors = []
 

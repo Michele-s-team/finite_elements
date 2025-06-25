@@ -1,5 +1,4 @@
 import colorama as col
-import dolfin
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
@@ -41,9 +40,9 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = spi.quad(function_test_integrals, 0, rmsh.L)[0]
-integral_exact_dx_l = spi.quad(function_test_integrals, 0, rmsh.x_p)[0]
-integral_exact_dx_r = spi.quad(function_test_integrals, rmsh.x_p, rmsh.L)[0]
+integral_exact_dx = spi.quad(function_test_integrals, 0, rmsh.parameters['L'])[0]
+integral_exact_dx_l = spi.quad(function_test_integrals, 0, rmsh.parameters['x_p'])[0]
+integral_exact_dx_r = spi.quad(function_test_integrals, rmsh.parameters['x_p'], rmsh.parameters['L'])[0]
 
 test_mesh_integral_errors = []
 
@@ -53,7 +52,7 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_l, fun
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_r, function_test_integrals_fenics, rmsh.dx(2), '\int_{line r} dx f'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(0), function_test_integrals_fenics, rmsh.dp_boundary(3), '\int_{point_l} dp f'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(rmsh.L), function_test_integrals_fenics, rmsh.dp_boundary(4), '\int_{point_r} dp f'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(rmsh.x_p), function_test_integrals_fenics, rmsh.dp_bulk(5), '\int_{point_in} dp f'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(rmsh.parameters['L']), function_test_integrals_fenics, rmsh.dp_boundary(4), '\int_{point_r} dp f'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(rmsh.parameters['x_p']), function_test_integrals_fenics, rmsh.dp_bulk(5), '\int_{point_in} dp f'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

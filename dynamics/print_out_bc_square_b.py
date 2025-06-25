@@ -169,7 +169,7 @@ def print_solution(psi, step, t):
  
     #print tangential (normal) force per unit length (surface)
 
-    fsp.dFdl.assign(project(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_n_12_output)), fsp.Q_dFdl))
+    fsp.dFdl.assign(project(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_n_12_output)), fsp.Q_dFdl))
     fsp.dFds.assign( project( phys.ma_cn_n(v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, vp.rho, vp.dt), fsp.Q_dFds ) )
 
     files.xdmffile_dFdl.write( fsp.dFdl, t )
@@ -206,9 +206,9 @@ def print_solution(psi, step, t):
     # write the force F extered on ds_circle to file
     writer_F.writerows( [{ \
         fieldnames_F[0]: \
-            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_n_12_output))[0] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle)}", \
+            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.parameters['c_r'][:2], omega_n_12_output))[0] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.parameters['c_r'][:2]) * (1.0 / rmsh.parameters['r']) * rmsh.ds_circle)}", \
         fieldnames_F[1]: \
-            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_n_12_output))[1] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.c_r) * (1.0 / rmsh.r) * rmsh.ds_circle)}", \
+            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.parameters['c_r'][:2], omega_n_12_output))[1] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.parameters['c_r'][:2]) * (1.0 / rmsh.parameters['r']) * rmsh.ds_circle)}", \
         }] )
     csvfile_F.flush()
 

@@ -1,5 +1,4 @@
 import colorama as col
-import dolfin
 from fenics import *
 import numpy as np
 
@@ -39,15 +38,15 @@ class FunctionTestIntegrals(UserExpression):
 function_test_integral_fenics = Function(Q_test)
 function_test_integral_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = cal.surface_integral_disk_slice(function_test_integrals, rmsh.r, np.pi, 2 * np.pi, rmsh.c_r)
+integral_exact_dx = cal.surface_integral_disk_slice(function_test_integrals, rmsh.parameters["r"], np.pi, 2 * np.pi, rmsh.c_r)
 
 integral_exact_dline_12 = cal.curve_integral_line(function_test_integrals, rmsh.c_1, rmsh.c_2)
-integral_exact_darc_21 = cal.curve_integral_circle_arc(function_test_integrals, rmsh.r, np.pi, 2 * np.pi, rmsh.c_r)
+integral_exact_darc_21 = cal.curve_integral_circle_arc(function_test_integrals, rmsh.parameters["r"], np.pi, 2 * np.pi, rmsh.c_r)
 
-integral_exact_dline_34 = cal.curve_integral_line(function_test_integrals, rmsh.c_3, rmsh.c_4)
+integral_exact_dline_34 = cal.curve_integral_line(function_test_integrals, rmsh.parameters["c_3"][:2], rmsh.parameters["c_4"][:2])
 
-integral_exact_dp1 = function_test_integrals([rmsh.r, 0])
-integral_exact_dp2 = function_test_integrals([-rmsh.r, 0])
+integral_exact_dp1 = function_test_integrals([rmsh.parameters["r"], 0])
+integral_exact_dp2 = function_test_integrals([-rmsh.parameters["r"], 0])
 
 test_mesh_integral_errors = []
 

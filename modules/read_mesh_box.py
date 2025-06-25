@@ -2,7 +2,6 @@
 This code reads the 3d mesh generated from generate_box_mesh.py and it creates dvs and dss from labelled components of the mesh
 '''
 
-import dolfin
 from fenics import *
 import sys
 
@@ -10,12 +9,10 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
-
-# CHANGE PARAMETERS HERE
-L = [3, 2, 1]
 
 volume_id = 1
 boundary_le_id = 2
@@ -24,19 +21,16 @@ boundary_to_id = 4
 boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
-# CHANGE PARAMETERS HERE
 
 # read the tetrahedra
-cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetrahedron_mesh.xdmf")
+cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, (rarg.args.input_directory) + "/triangle_mesh.xdmf")
 
-#radius of the smallest cell in the mesh
+# radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-
-
-
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 boundary_mesh = BoundaryMesh(lmsh.mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
@@ -67,13 +61,12 @@ print(f'Module {__file__} called {check_mesh_tags_box.__file__}', flush=True)
 # Define boundaries
 boundary = 'on_boundary'
 boundary_le = f'near(x[0], 0)'
-boundary_ri = f'near(x[0], {L[0]})'
-boundary_to = f'near(x[1], {L[1]})'
+boundary_ri = f'near(x[0], {parameters["L"][0]})'
+boundary_to = f'near(x[1], {parameters["L"][1]})'
 boundary_bo = f'near(x[1], 0)'
-boundary_fr = f'near(x[2], {L[2]})'
+boundary_fr = f'near(x[2], {parameters["L"][2]})'
 boundary_ba = f'near(x[2], 0)'
 
-boundary_leri = f'near(x[0], 0) || near(x[0], {L[0]})'
-boundary_tobo = f'near(x[1], 0) || near(x[1], {L[1]})'
-boundary_frba = f'near(x[2], 0) || near(x[2], {L[2]})'
-
+boundary_leri = f'near(x[0], 0) || near(x[0], {parameters["L"][0]})'
+boundary_tobo = f'near(x[1], 0) || near(x[1], {parameters["L"][1]})'
+boundary_frba = f'near(x[2], 0) || near(x[2], {parameters["L"][2]})'

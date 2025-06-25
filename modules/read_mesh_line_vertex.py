@@ -1,12 +1,11 @@
-import dolfin
 from fenics import *
-import numpy as np
 import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
@@ -20,10 +19,7 @@ sf = msh.read_mesh_components(lmsh.mesh, 0, rarg.args.input_directory + "/vertex
 #radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# CHANGE PARAMETERS HERE
-L = 1
-x_p = np.pi/8.0
-# CHANGE PARAMETERS HERE
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf)  # Line measure

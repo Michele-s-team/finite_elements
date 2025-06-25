@@ -2,12 +2,11 @@
 generate a  mesh given by two collated squares
 
 Run it with
-    python3 generate_two_squares_no_circle_mesh.py [resolution] [output directory]
+    python3 generate_two_squares_no_circle_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_two_squares_no_circle_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import argparse
 import gmsh
 import meshio
 import pygmsh
@@ -19,36 +18,26 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
-
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
-
-# mesh resolution
-resolution = (float)(args.resolution)
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
 # add '/' to output_directory if it is missing
-output_directory = args.output_directory
-output_directory = io.add_trailing_slash(output_directory)
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
 
-
-
-
-
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
-# Fetch model we would like to add data to
 model = geometry.__enter__()
 
-# CHANGE PARAMETERS HERE
-# L and h are length and height of the rectangle
-L = 1
-h = 2
-# L_m is the coordinate on the x axis where the inner line separating the two sub-rectangles is located
-L_m = 0.3
+# # CHANGE PARAMETERS HERE
+# # L and h are length and height of the rectangle
+# L = 1
+# h = 2
+# # L_m is the coordinate on the x axis where the inner line separating the two sub-rectangles is located
+# L_m = L / 3
+# # CHANGE PARAMETERS HERE
+
 l_surface_id = 1
 r_surface_id = 2
 l_line_id = 3
@@ -58,21 +47,15 @@ r_line_id = 6
 tr_line_id = 7
 tl_line_id = 8
 m_line_id = 9
-# CHANGE PARAMETERS HERE
-
-print("L = ", L)
-print("h = ", h)
-print("resolution = ", resolution)
-
 
 # Create corner points
 p_lb = gmsh.model.geo.addPoint(0, 0, 0)
-p_mb = gmsh.model.geo.addPoint(L_m, 0, 0)
-p_mt = gmsh.model.geo.addPoint(L_m, h, 0)
-p_lt = gmsh.model.geo.addPoint(0, h, 0)
+p_mb = gmsh.model.geo.addPoint(rpam.parameters["L_m"], 0, 0)
+p_mt = gmsh.model.geo.addPoint(rpam.parameters["L_m"], rpam.parameters["h"], 0)
+p_lt = gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)
 
-p_rb = gmsh.model.geo.addPoint(L, 0, 0)
-p_rt = gmsh.model.geo.addPoint(L, h, 0)
+p_rb = gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0)
+p_rt = gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0)
 
 # Left square lines and surface
 l_lb_mb = gmsh.model.geo.addLine(p_lb, p_mb)
@@ -126,17 +109,17 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_l])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * L)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", L)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0.5 * rpam.parameters["L"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["L"])
 
 circle_r_dist = gmsh.model.mesh.field.add("Distance")
 circle_r_threshold = gmsh.model.mesh.field.add("Threshold")
 
 gmsh.model.mesh.field.setNumber(circle_r_threshold, "IField", circle_r_dist)
-gmsh.model.mesh.field.setNumber(circle_r_threshold, "LcMin", resolution)
-gmsh.model.mesh.field.setNumber(circle_r_threshold, "LcMax", resolution)
+gmsh.model.mesh.field.setNumber(circle_r_threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(circle_r_threshold, "LcMax", rpam.parameters["resolution"])
 gmsh.model.mesh.field.setNumber(circle_r_threshold, "DistMin", 0.1)
 gmsh.model.mesh.field.setNumber(circle_r_threshold, "DistMax", 0.5)
 
@@ -148,18 +131,8 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 gmsh.model.mesh.generate(2)
 gmsh.write(mesh_file)
 
-gmsh.finalize()
-
 mesh_from_file = meshio.read(mesh_file)
 
-line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
+msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
-
-
-# print the mesh vertices to file
-mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
+gmsh.finalize()

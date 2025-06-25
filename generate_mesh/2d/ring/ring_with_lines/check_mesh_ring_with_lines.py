@@ -18,4 +18,4 @@ import mesh as msh
 import read_mesh_ring as rmsh
 
 import check_mesh_tags_ring
-msh.check_mesh_symmetry(lmsh.mesh, rmsh.c_r)
+msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c_r"])

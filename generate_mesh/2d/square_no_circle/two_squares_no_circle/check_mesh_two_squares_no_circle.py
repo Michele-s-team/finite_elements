@@ -19,5 +19,5 @@ import read_mesh_two_squares_no_circle as rmsh
 
 
 import check_mesh_tags_two_squares_no_circle
-msh.check_mesh_symmetry(lmsh.mesh, [rmsh.L/2, rmsh.h/2])
+msh.check_mesh_symmetry(lmsh.mesh, [rmsh.parameters["L"]/2, rmsh.parameters["h"]/2])
 

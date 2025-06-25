@@ -19,4 +19,4 @@ import read_mesh_disk as rmsh
 
 
 import check_mesh_tags_disk
-msh.check_mesh_symmetry(lmsh.mesh, rmsh.c_r)
+msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c_r"])

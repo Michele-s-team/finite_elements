@@ -118,36 +118,36 @@ xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i,
 
 io.full_print(
     project(phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, vp.eta,
-                                  geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
+                                  geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_dFfl_t),
     'dFdl_eta_sigma_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
     lmsh.mesh, 'vector')
 
 io.full_print(
-    project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_t),
+    project(phys.dFdl_kappa_t(fsp.mu, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_dFfl_t),
     'dFdl_kappa_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
     lmsh.mesh, 'vector')
 
 io.full_print(
-    project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_dFfl_n),
+    project(phys.dFdl_kappa_n(fsp.mu, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_dFfl_n),
     'dFdl_kappa_n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
     lmsh.mesh, 'scalar')
 
 io.full_print(
     project(phys.dFdl_eta_sigma_3d(v_output, w_output, omega_output, sigma_output, vp.eta,
-                                   geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
+                                   geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
     'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
     solpath.nodal_values_path, lmsh.mesh,
     'vector')
 
 io.full_print(
     project(
-        phys.dFdl_kappa_3d(omega_output, mu_output, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
+        phys.dFdl_kappa_3d(omega_output, mu_output, vp.kappa, geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
     'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
     lmsh.mesh, 'vector')
 
 io.full_print(
     project( \
         phys.dFdl_tot_3d(v_output, w_output, omega_output, mu_output, sigma_output, vp.eta, vp.kappa,
-                         geo.n_c_r(lmsh.mesh, rmsh.c_r, omega_output)), fsp.Q_3d),
+                         geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
     'dFdl_tot_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
     lmsh.mesh, 'vector')

@@ -2,12 +2,17 @@ import colorama as col
 
 import runtime_arguments as rarg
 
-if rarg.args.problem == 'ring_slice':
+if rarg.args.problem == 'disk':
+    rmsh = 'read_mesh_disk'
+    vp = 'variational_problem_bc_disk'
+    prout_bc = 'print_out_bc_disk'
+
+elif rarg.args.problem == 'ring_slice':
     rmsh = 'read_mesh_ring_slice'
     vp = 'variational_problem_bc_ring_slice'
     prout_bc = 'print_out_bc_ring_slice'
 
-if rarg.args.problem == 'half_circle_with_line':
+elif rarg.args.problem == 'half_circle_with_line':
 
     rmsh = 'read_mesh_half_circle_with_line'
     vp = 'variational_problem_bc_half_circle_with_line'

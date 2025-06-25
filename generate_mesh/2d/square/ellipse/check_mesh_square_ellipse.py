@@ -19,4 +19,4 @@ import read_mesh_square_ellipse as rmsh
 
 import check_mesh_tags_square_ellipse
 
-msh.check_mesh_symmetry(lmsh.mesh, rmsh.c)
+msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c"][:2])

@@ -1,5 +1,4 @@
 import colorama as col
-import dolfin
 from fenics import *
 import numpy as np
 
@@ -44,12 +43,12 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.L, rmsh.h])
+integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
 
-integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.h])
-integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.L, 0], [rmsh.L, rmsh.h])
-integral_exact_ds_t = cal.curve_integral_line(function_test_integrals, [0, rmsh.h], [rmsh.L, rmsh.h])
-integral_exact_ds_b = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.L, 0])
+integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
+integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
+integral_exact_ds_t = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]])
+integral_exact_ds_b = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.parameters["L"], 0])
 
 integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
@@ -74,4 +73,4 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
 
-msh.check_mesh_symmetry(lmsh.mesh, [rmsh.L/2, rmsh.h/2])
+msh.check_mesh_symmetry(lmsh.mesh, [rmsh.parameters["L"]/2, rmsh.parameters["h"]/2])

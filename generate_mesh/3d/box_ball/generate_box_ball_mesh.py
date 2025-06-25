@@ -3,13 +3,12 @@ This code generates a 3d mesh given by a box with a spherical hole
 The mesh is given by a box with extremal points [0,0,0] , L to which we subtract a sphere centered at c_r with radius r
 We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, right top bottom, from and back edges accordingly
 
-Run with
-    python3 generate_box_ball_mesh.py [resolution]
+Run it with
+    python3 generate_box_ball_mesh.py [path where to read parameters] [output directory]
 Example:
-    SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box_ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import argparse
 import gmsh
 import meshio
 import numpy as np
@@ -22,26 +21,33 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
+
+# add '/' to output_directory if it is missing
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
+
+# parser = argparse.ArgumentParser()
+# parser.add_argument("resolution")
+# parser.add_argument("output_directory")
+# args = parser.parse_args()
 
 warnings.filterwarnings("ignore")
 gmsh.initialize()
 
-mesh_file = args.output_directory + "/mesh.msh"
+mesh_file =output_directory + "mesh.msh"
 
 gmsh.model.add("my model")
 
-resolution = (float)(args.resolution)
-print(f"Mesh resolution = {resolution}")
 
 # CHANGE PARAMETERS HERE
-L = [2.2, 0.41, 0.41]
-c_r = [0.2, 0.2, 0.2]
-r = 0.05
+# L = [2.2, 0.41, 0.41]
+# c_r = [0.2, 0.2, 0.2]
+# r = 0.05
+# sphere_resolution = resolution/4
+# CHANGE PARAMETERS HERE
 
 volume_id = 1
 boundary_le_id = 2
@@ -52,13 +58,9 @@ boundary_fr_id = 6
 boundary_ba_id = 7
 boundary_sphere_id = 8
 
-sphere_resolution = resolution/4
-# CHANGE PARAMETERS HERE
 
-
-
-channel = gmsh.model.occ.addBox(0, 0, 0, L[0], L[1], L[2])
-sphere = gmsh.model.occ.addSphere(c_r[0], c_r[1], c_r[2], r)
+channel = gmsh.model.occ.addBox(0, 0, 0, rpam.parameters["L"][0], rpam.parameters["L"][1], rpam.parameters["L"][2])
+sphere = gmsh.model.occ.addSphere(rpam.parameters["c_r"][0], rpam.parameters["c_r"][1], rpam.parameters["c_r"][2], rpam.parameters["r"])
 fluid = gmsh.model.occ.cut([(3, channel)], [(3, sphere)])
 
 gmsh.model.occ.synchronize()
@@ -83,7 +85,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
         gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
 
-    if np.isclose(center_of_mass[0], L[0]):
+    if np.isclose(center_of_mass[0], rpam.parameters["L"][0]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
 
@@ -91,7 +93,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
         gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
 
-    if np.isclose(center_of_mass[1], L[1]):
+    if np.isclose(center_of_mass[1], rpam.parameters["L"][1]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
         gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
 
@@ -99,12 +101,12 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
 
-    if np.isclose(center_of_mass[2], L[2]):
+    if np.isclose(center_of_mass[2], rpam.parameters["L"][2]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
         gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
 
-    if (np.allclose(center_of_mass, c_r)):
-        # the center of mass is c_r -> the surface under consideration is the sphere
+    if (np.allclose(center_of_mass, rpam.parameters["c_r"])):
+        # the center of mass is rpam.parameters["c_r"] -> the surface under consideration is the sphere
         obstacles.append(surface[1])  # Save the tag of the sphere surface
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_sphere_id)
         gmsh.model.setPhysicalName(surface[0], boundary_sphere_id, "sphere")
@@ -115,10 +117,10 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", obstacles)
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", sphere_resolution)
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", resolution)
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", r)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", 2*r)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution_min"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution_max"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["distance_min"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["distance_max"])
 
 gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
@@ -129,16 +131,20 @@ gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
 
-# create a tetrahedron mesh in which the solid objects (volumes) will be stored
-tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
-meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
 
-# create a triangle mesh in which the surfaces will be stored
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=False)
-meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
+# msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+#
+# # create a tetrahedron mesh in which the solid objects (volumes) will be stored
+# tetra_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
+# meshio.write(output_directory + "tetra_mesh.xdmf", tetra_mesh)
+#
+# # create a triangle mesh in which the surfaces will be stored
+# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=False)
+# meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
+#
+# # print the mesh vertices to file
+# mesh = msh.read_mesh(output_directory + "tetra_mesh.xdmf")
+# io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
-# print the mesh vertices to file
-mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")

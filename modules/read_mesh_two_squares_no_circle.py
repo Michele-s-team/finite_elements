@@ -1,28 +1,19 @@
-import dolfin
 from fenics import *
 
+import input_output as io
 import load_mesh as lmsh
+import mesh as msh
 import runtime_arguments as rarg
 
 # read the triangles
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
-with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
-
+sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1)
-with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
+mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# CHANGE PARAMETERS HERE
-L = 1
-h = 2
-L_m = 0.3
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 l_surface_id = 1
 r_surface_id = 2
@@ -33,8 +24,6 @@ r_line_id = 6
 tr_line_id = 7
 tl_line_id = 8
 m_line_id = 9
-# CHANGE PARAMETERS HERE
-
 
 dx_l = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=l_surface_id)
 dx_r = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=r_surface_id)
@@ -63,7 +52,7 @@ print(f'Module {__file__} called {check_mesh_tags_two_squares_no_circle.__file__
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], 0.0)'
-boundary_r = f'near(x[0], {L})'
-boundary_lr = f'near(x[0], 0) || near(x[0], {L})'
-boundary_tb = f'near(x[1], 0) || near(x[1], {h})'
+boundary_r = f'near(x[0], {parameters["L"]})'
+boundary_lr = f'near(x[0], 0) || near(x[0], {parameters["L"]})'
+boundary_tb = f'near(x[1], 0) || near(x[1], {parameters["h"]})'
 # CHANGE PARAMETERS HERE

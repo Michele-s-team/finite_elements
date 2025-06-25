@@ -1,13 +1,12 @@
 '''
 This code generates a 3d mesh given by a box
 
-Run with
-    clear; clear; python3 generate_box_mesh.py [resolution] [output directory]
+Run it with
+    python3 generate_box_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_mesh.py 0.1 $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import argparse
 import gmsh
 import numpy as np
 import meshio
@@ -20,23 +19,18 @@ sys.path.append(module_path)
 
 import input_output as io
 import mesh as msh
+import runtime_arguments_generate_mesh as rarg
+import read_parameters_generate_mesh as rpam
 
-parser = argparse.ArgumentParser()
-parser.add_argument("resolution")
-parser.add_argument("output_directory")
-args = parser.parse_args()
+print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-mesh_file = args.output_directory + "/mesh.msh"
+# add '/' to output_directory if it is missing
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
-# mesh resolution
-resolution = (float)(args.resolution)
-print("resolution = ", resolution)
+mesh_file = output_directory + "mesh.msh"
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
-
-# CHANGE PARAMETERS HERE
-L = [3, 2, 1]
 
 volume_id = 1
 boundary_le_id = 2
@@ -45,11 +39,8 @@ boundary_to_id = 4
 boundary_bo_id = 5
 boundary_fr_id = 6
 boundary_ba_id = 7
-# CHANGE PARAMETERS HERE
 
-print(f'L = {L}\nresolution = {resolution}')
-
-box = model.add_box([0, 0, 0], [L[0], L[1], L[2]], mesh_size=resolution)
+box = model.add_box([0, 0, 0], rpam.parameters["L"], mesh_size=rpam.parameters["resolution"])
 
 model.synchronize()
 
@@ -71,7 +62,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
         gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
 
-    if np.isclose(center_of_mass[0], L[0]):
+    if np.isclose(center_of_mass[0], rpam.parameters["L"][0]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
 
@@ -79,7 +70,7 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
         gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
 
-    if np.isclose(center_of_mass[1], L[1]):
+    if np.isclose(center_of_mass[1], rpam.parameters["L"][1]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
         gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
 
@@ -87,27 +78,14 @@ for surface in surfaces:
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
         gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
 
-    if np.isclose(center_of_mass[2], L[2]):
+    if np.isclose(center_of_mass[2], rpam.parameters["L"][2]):
         gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
         gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
 
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, args.output_directory + '/line_vertices.csv')
+mesh_from_file = meshio.read(mesh_file)
+msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
 
 model.__exit__()
-
-mesh_from_file = meshio.read(mesh_file)
-
-# create a tetrahedron mesh
-tetrahedron_mesh = msh.create_mesh(mesh_from_file, "tetra", False)
-meshio.write(args.output_directory + "/tetrahedron_mesh.xdmf", tetrahedron_mesh)
-
-# create a triangle mesh (containing surfaces such as the ball surface): note that this will work only if some surfaces are present in the model
-triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", False)
-meshio.write(args.output_directory + "/triangle_mesh.xdmf", triangle_mesh)
-
-# print the mesh vertices to file
-mesh = msh.read_mesh(args.output_directory + "/tetrahedron_mesh.xdmf")
-io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")

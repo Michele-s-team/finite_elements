@@ -1,33 +1,25 @@
-import dolfin
 from fenics import *
+import sys
 
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
+import input_output as io
 import load_mesh as lmsh
+import mesh as msh
 import runtime_arguments as rarg
 
 # read the triangles
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim())
-with XDMFFile((rarg.args.input_directory) + "/triangle_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-sf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
+sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
 
-# read the lines
-mvc = MeshValueCollection("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1)
-with XDMFFile((rarg.args.input_directory) + "/line_mesh.xdmf") as infile:
-    infile.read(mvc, "name_to_read")
-mf = dolfin.cpp.mesh.MeshFunctionSizet(lmsh.mesh, mvc)
+#read the lines
+mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
+
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
-
-# CHANGE PARAMETERS HERE
-r = 1.0
-R = 2.0
-rho = (r + R) / 2
-c_r = [0, 0]
-c_R = [0, 0]
-c_rho = [0, 0]
-# CHANGE PARAMETERS HERE
-
 
 # test for surface elements
 dx_r_rho = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
@@ -46,6 +38,6 @@ print(f'Module {__file__} called {check_mesh_tags_ring_with_circle.__file__}', f
 # Define boundaries and obstacle
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-boundary_r = f'on_boundary && sqrt(pow(x[0] - {c_r[0]}, 2) + pow(x[1] - {c_r[1]}, 2)) < ({r} + {R})/2.0'
-boundary_R = f'on_boundary && sqrt(pow(x[0] - {c_R[0]}, 2) + pow(x[1] - {c_R[1]}, 2)) > ({r} + {R})/2.0'
+boundary_r = f'on_boundary && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < ({parameters["r"]} + {parameters["R"]})/2.0'
+boundary_R = f'on_boundary && sqrt(pow(x[0] - {parameters["c_R"][0]}, 2) + pow(x[1] - {parameters["c_R"][1]}, 2)) > ({parameters["r"]} + {parameters["R"]})/2.0'
 # CHANGE PARAMETERS HERE

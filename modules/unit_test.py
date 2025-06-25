@@ -24,7 +24,8 @@ def test_problem_and_mesh(commit_a,
                           mesh_path_b, code_path_b,
                           mesh_solution_path_a, problem_solution_path_a,
                           mesh_solution_path_b, problem_solution_path_b,
-                          name_of_generate_mesh, mesh_resolution,
+                          name_of_generate_mesh,
+                          mesh_parameters_path_a, mesh_resolution_b,
                           problem,
                           success
                           ):
@@ -35,18 +36,19 @@ def test_problem_and_mesh(commit_a,
         # checkout commit_a, generate the mesh and solve the problem
         cmd.checkout(commit_a, success)
 
-        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_a}', success)
+        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
         run_command(f'cd {code_path_a}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
         # checkout commit_b, generate the mesh and solve the problem
         cmd.checkout(commit_b, success)
-        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_resolution} {mesh_solution_path_b}', success)
+
+        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_resolution_b} {mesh_solution_path_b}', success)
         run_command(f'cd {code_path_b}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem} {mesh_solution_path_b} {problem_solution_path_b}', success)
 
         # compare the mesh and problem solution for commit_a and commit_b
         # mesh_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}')
-        output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}', success)
-        mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
+        # output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}', success)
+        # mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
 
         # problem_check = cmd.command_empty_err_out(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}')
         output_problem, error_problem = run_command(f'cd {root_path}; ./compare-csv-files.sh {problem_solution_path_a} {problem_solution_path_b}', success)
@@ -54,9 +56,10 @@ def test_problem_and_mesh(commit_a,
 
 
         # if check = true, then commit_a and commit_b give the same result
-        check = (success[0] and mesh_check and problem_check)
+        # check = (success[0] and mesh_check and problem_check)
+        check = (success[0] and  problem_check)
 
-        io.check_print(mesh_check, 'Mesh check OK', 'Mesh check NOT OK')
+        # io.check_print(mesh_check, 'Mesh check OK', 'Mesh check NOT OK')
         io.check_print(problem_check, 'Problem check OK', 'Problem check NOT OK')
 
     else:

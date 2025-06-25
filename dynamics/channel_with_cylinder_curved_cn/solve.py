@@ -43,8 +43,8 @@ print("Output directory", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 
-print("L = ", rmsh.L)
-print("h = ", rmsh.h)
+print("L = ", rmsh.parameters["L"])
+print("h = ", rmsh.parameters["h"])
 print("mu = ", vp.mu)
 print("T = ", vp.T)
 print("N = ", vp.num_steps)

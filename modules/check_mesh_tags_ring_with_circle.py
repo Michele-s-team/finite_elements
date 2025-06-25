@@ -39,14 +39,14 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact_dx_r_rho = cal.surface_integral_ring(function_test_integrals, rmsh.r, rmsh.rho, rmsh.c_r)
-integral_exact_dx_rho_R = cal.surface_integral_ring(function_test_integrals, rmsh.rho, rmsh.R, rmsh.c_r)
+integral_exact_dx_r_rho = cal.surface_integral_ring(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["rho"], rmsh.parameters["c_r"][:2])
+integral_exact_dx_rho_R = cal.surface_integral_ring(function_test_integrals, rmsh.parameters["rho"], rmsh.parameters["R"], rmsh.parameters["c_r"][:2])
 
 integral_exact_dx = integral_exact_dx_r_rho +  integral_exact_dx_rho_R
 
-integral_exact_ds_r = cal.curve_integral_circle(function_test_integrals, rmsh.r, rmsh.c_r)
-integral_exact_ds_rho = cal.curve_integral_circle(function_test_integrals, rmsh.rho, rmsh.c_rho)
-integral_exact_ds_R = cal.curve_integral_circle(function_test_integrals, rmsh.R, rmsh.c_R)
+integral_exact_ds_r = cal.curve_integral_circle(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"][:2])
+integral_exact_ds_rho = cal.curve_integral_circle(function_test_integrals, rmsh.parameters["rho"], rmsh.parameters["c_rho"][:2])
+integral_exact_ds_R = cal.curve_integral_circle(function_test_integrals, rmsh.parameters["R"], rmsh.parameters["c_R"][:2])
 
 integral_exact_ds = integral_exact_ds_r + integral_exact_ds_R
 
@@ -68,4 +68,4 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
 
-msh.check_mesh_symmetry(lmsh.mesh, rmsh.c_r)
+msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c_r"][:2])
