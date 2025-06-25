@@ -40,6 +40,7 @@ box_mesh = Mesh()
 xdmf = XDMFFile(box_mesh.mpi_comm(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
 xdmf.read(box_mesh)
 
+
 #extract the mesh corresponding to the side of the cube with y = 0 and store it in mesh2D
 with XDMFFile(output_directory + "cube_mesh.xdmf") as xdmf:
     xdmf.write(box_mesh)
@@ -50,20 +51,20 @@ cube_mesh = BoundaryMesh(box_mesh, "exterior")
 print("Dimension of boundary_mesh = ", box_mesh.geometry().dim())
 
 mapping = cube_mesh.entity_map(boundary_mesh_dimension)
-part_of_bot = MeshFunction("size_t", cube_mesh, boundary_mesh_dimension)
-#run over all cells of boundary_mesh and write `1` in part_of_bot for the cells which have the y component of the facet normal equal to -1 : in this way, one is selecting the cells which belong to the xz side of the box
+part_of_cube_side = MeshFunction("size_t", cube_mesh, boundary_mesh_dimension)
+#run over all cells of boundary_mesh and write `1` in part_of_cube_side for the cells which have the y component of the facet normal equal to -1 : in this way, one is selecting the cells which belong to the xz side of the box
 for cell in cells(cube_mesh):
     curr_facet_normal = Facet(box_mesh, mapping[cell.index()]).normal()
-    if near(curr_facet_normal.y(), -1.0):  # On bot boundary
-        part_of_bot[cell] = 1
+    if near(curr_facet_normal.y(), -1.0):  # On cube_side boundary
+        part_of_cube_side[cell] = 1
 
-bot_boundary = SubMesh(cube_mesh, part_of_bot, 1)
-#File('bot_boundary.pvd') << bot_boundary
-with XDMFFile(output_directory + "bot_mesh.xdmf") as xdmf:
-    xdmf.write(bot_boundary)
+cube_side_boundary = SubMesh(cube_mesh, part_of_cube_side, 1)
+#File('cube_side_boundary.pvd') << cube_side_boundary
+with XDMFFile(output_directory + "cube_side_mesh.xdmf") as xdmf:
+    xdmf.write(cube_side_boundary)
 
 
-in_mesh = meshio.read(output_directory + "bot_mesh.xdmf")
+in_mesh = meshio.read(output_directory + "cube_side_mesh.xdmf")
 
 cells = in_mesh.get_cells_type("triangle")
 #remove the y component of the points in in_mesh to switch from a 3d to a 2d mesh
