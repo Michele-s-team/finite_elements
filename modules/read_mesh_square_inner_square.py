@@ -31,9 +31,8 @@ dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=paramet
 
 import check_mesh_tags_square_inner_square
 
-print(f'Module {__file__} called {check_mesh_tags_square.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_tags_square_inner_square.__file__}', flush=True)
 
-msh.check_mesh_symmetry(lmsh.mesh, parameters["c_r"])
 
 # Define boundaries and obstacle
 # boundary = 'on_boundary'
