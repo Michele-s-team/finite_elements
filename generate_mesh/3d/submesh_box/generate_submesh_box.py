@@ -42,13 +42,13 @@ xdmf.read(box_mesh)
 with XDMFFile("solution/cube_mesh.xdmf") as xdmf:
     xdmf.write(box_mesh)
 
-dim=3
-bdim = dim-1
+mesh_dimension=3
+boundary_mesh_dimension = mesh_dimension - 1
 cube_mesh = BoundaryMesh(box_mesh, "exterior")
 print("Dimension of boundary_mesh = ", box_mesh.geometry().dim())
 
-mapping = cube_mesh.entity_map(bdim)
-part_of_bot = MeshFunction("size_t", cube_mesh, bdim)
+mapping = cube_mesh.entity_map(boundary_mesh_dimension)
+part_of_bot = MeshFunction("size_t", cube_mesh, boundary_mesh_dimension)
 #run over all cells of boundary_mesh and write `1` in part_of_bot for the cells which have the y component of the facet normal equal to -1 : in this way, one is selecting the cells which belong to the xz side of the box
 for cell in cells(cube_mesh):
     curr_facet_normal = Facet(box_mesh, mapping[cell.index()]).normal()
