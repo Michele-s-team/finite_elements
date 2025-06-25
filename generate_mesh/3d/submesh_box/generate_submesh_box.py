@@ -26,6 +26,8 @@ import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
+output_directory = io.add_trailing_slash(rarg.args.output_directory)
+
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
@@ -39,7 +41,7 @@ xdmf = XDMFFile(box_mesh.mpi_comm(), (rarg.args.input_directory) + "/tetra_mesh.
 xdmf.read(box_mesh)
 
 #extract the mesh corresponding to the side of the cube with y = 0 and store it in mesh2D
-with XDMFFile("solution/cube_mesh.xdmf") as xdmf:
+with XDMFFile(output_directory + "cube_mesh.xdmf") as xdmf:
     xdmf.write(box_mesh)
 
 mesh_dimension=3
@@ -57,21 +59,21 @@ for cell in cells(cube_mesh):
 
 bot_boundary = SubMesh(cube_mesh, part_of_bot, 1)
 #File('bot_boundary.pvd') << bot_boundary
-with XDMFFile("solution/bot_mesh.xdmf") as xdmf:
+with XDMFFile(output_directory + "bot_mesh.xdmf") as xdmf:
     xdmf.write(bot_boundary)
 
 
-in_mesh = meshio.read("solution/bot_mesh.xdmf")
+in_mesh = meshio.read(output_directory + "bot_mesh.xdmf")
 
 cells = in_mesh.get_cells_type("triangle")
 #remove the y component of the points in in_mesh to switch from a 3d to a 2d mesh
 points = np.delete(in_mesh.points, 1, axis=1)
 out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
-meshio.write("solution/pruned_mesh.xdmf", out_mesh)
+meshio.write(output_directory + "pruned_mesh.xdmf", out_mesh)
 
 #the resulting 2d mesh is written into mesh2D
 mesh2D = Mesh()
-with XDMFFile("solution/pruned_mesh.xdmf") as xdmf:
+with XDMFFile(output_directory + "pruned_mesh.xdmf") as xdmf:
     xdmf.read(mesh2D)
 print("Dimension of mesh2D = ", mesh2D.geometry().dim())
 
@@ -86,7 +88,7 @@ class FunctionTestIntegral(UserExpression):
 
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", mesh2D, mesh2D.topology().dim())
-# with XDMFFile("solution/pruned_mesh.xdmf") as infile:
+# with XDMFFile(output_directory + "pruned_mesh.xdmf") as infile:
 #     infile.read(mvc, "name_to_read")
 cf = cpp.mesh.MeshFunctionSizet(mesh2D, mvc)
 # xdmf.close()
