@@ -60,21 +60,21 @@ for cell in cells(cube_mesh):
 
 cube_side_boundary = SubMesh(cube_mesh, part_of_cube_side, 1)
 #File('cube_side_boundary.pvd') << cube_side_boundary
-with XDMFFile(output_directory + "cube_side_mesh.xdmf") as xdmf:
+with XDMFFile(output_directory + "cube_side_to_prune_mesh.xdmf") as xdmf:
     xdmf.write(cube_side_boundary)
 
 
-in_mesh = meshio.read(output_directory + "cube_side_mesh.xdmf")
+cube_side_to_prune_mesh = meshio.read(output_directory + "cube_side_to_prune_mesh.xdmf")
 
-cells = in_mesh.get_cells_type("triangle")
+cells = cube_side_to_prune_mesh.get_cells_type("triangle")
 #remove the y component of the points in in_mesh to switch from a 3d to a 2d mesh
-points = np.delete(in_mesh.points, 1, axis=1)
+points = np.delete(cube_side_to_prune_mesh.points, 1, axis=1)
 out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
-meshio.write(output_directory + "pruned_mesh.xdmf", out_mesh)
+meshio.write(output_directory + "cube_size_mesh.xdmf", out_mesh)
 
 #the resulting 2d mesh is written into mesh2D
 mesh2D = Mesh()
-with XDMFFile(output_directory + "pruned_mesh.xdmf") as xdmf:
+with XDMFFile(output_directory + "cube_size_mesh.xdmf") as xdmf:
     xdmf.read(mesh2D)
 print("Dimension of mesh2D = ", mesh2D.geometry().dim())
 
@@ -89,7 +89,7 @@ class FunctionTestIntegral(UserExpression):
 
 #read the tetrahedra
 mvc = MeshValueCollection("size_t", mesh2D, mesh2D.topology().dim())
-# with XDMFFile(output_directory + "pruned_mesh.xdmf") as infile:
+# with XDMFFile(output_directory + "cube_size_mesh.xdmf") as infile:
 #     infile.read(mvc, "name_to_read")
 cf = cpp.mesh.MeshFunctionSizet(mesh2D, mvc)
 # xdmf.close()
