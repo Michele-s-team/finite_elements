@@ -18,16 +18,17 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 
 # test for surface elements
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
-dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_id"])
-# ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
-# ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
-# ds_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=4)
-# ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
-# ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
-# ds_lr = ds_l + ds_r
-# ds_tb = ds_t + ds_b
-# ds_square = ds_lr + ds_tb
-# ds = ds_square + ds_circle
+dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
+
+ds_out_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"])
+ds_out_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"])
+ds_out_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"])
+ds_out_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"])
+
+ds_out_lr = ds_out_l + ds_out_r
+ds_out_tb = ds_out_t + ds_out_b
+
+ds_out = ds_out_lr + ds_out_tb
 
 import check_mesh_tags_square_inner_square
 

@@ -33,19 +33,19 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add outer rectangle
-p_1 = gmsh.model.geo.addPoint(0, 0, 0)
-p_2 = gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0)
-p_3 = gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0)
-p_4 = gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)
+p_out_1 = gmsh.model.geo.addPoint(0, 0, 0)
+p_out_2 = gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0)
+p_out_3 = gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0)
+p_out_4 = gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)
 gmsh.model.geo.synchronize()
 
-line_12 = gmsh.model.geo.addLine(p_1, p_2)
-line_23 = gmsh.model.geo.addLine(p_2, p_3)
-line_34 = gmsh.model.geo.addLine(p_3, p_4)
-line_41 = gmsh.model.geo.addLine(p_4, p_1)
+line_out_12 = gmsh.model.geo.addLine(p_out_1, p_out_2)
+line_out_23 = gmsh.model.geo.addLine(p_out_2, p_out_3)
+line_out_34 = gmsh.model.geo.addLine(p_out_3, p_out_4)
+line_out_41 = gmsh.model.geo.addLine(p_out_4, p_out_1)
 gmsh.model.geo.synchronize()
 
-loop = gmsh.model.geo.addCurveLoop([line_12, line_23, line_34, line_41])
+loop_out = gmsh.model.geo.addCurveLoop([line_out_12, line_out_23, line_out_34, line_out_41])
 gmsh.model.geo.synchronize()
 
 
@@ -68,13 +68,13 @@ gmsh.model.geo.synchronize()
 loop_in = gmsh.model.geo.addCurveLoop([line_in_12, line_in_23, line_in_34, line_in_41])
 gmsh.model.geo.synchronize()
 
+surface_out = gmsh.model.geo.addPlaneSurface([loop_out, loop_in])
+gmsh.model.geo.synchronize()
+
+gmsh.model.mesh.embed(1, [line_in_12, line_in_23, line_in_34, line_in_41], 2, surface_out)
+gmsh.model.geo.synchronize()
+
 surface_in = gmsh.model.geo.addPlaneSurface([loop_in])
-gmsh.model.geo.synchronize()
-
-surface = gmsh.model.geo.addPlaneSurface([loop, loop_in])
-gmsh.model.geo.synchronize()
-
-gmsh.model.mesh.embed(1, [line_in_12, line_in_23, line_in_34, line_in_41], 2, surface)
 gmsh.model.geo.synchronize()
 
 
@@ -89,46 +89,46 @@ gmsh.model.geo.synchronize()
 lines = gmsh.model.getEntities(dim=1)
 
 # inner lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_12_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_12_id"], "line_12")
+gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_out_b_id"])
+gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_out_b_id"], "line_out_12")
 
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_23_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_23_id"], "line_23")
+gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_out_r_id"])
+gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_out_r_id"], "line_out_23")
 
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_34_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_34_id"], "line_34")
+gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_out_t_id"])
+gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_out_t_id"], "line_out_34")
 
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_41_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_41_id"], "line_41")
+gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_out_l_id"])
+gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_out_l_id"], "line_out_41")
 
 
 # outer lines
-gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_in_12_id"])
-gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_in_12_id"], "line_in_12")
+gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_in_b_id"])
+gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_in_b_id"], "line_in_12")
 
-gmsh.model.addPhysicalGroup(lines[5][0], [lines[5][1]], rpam.parameters["line_in_23_id"])
-gmsh.model.setPhysicalName(lines[5][0], rpam.parameters["line_in_23_id"], "line_in_23")
+gmsh.model.addPhysicalGroup(lines[5][0], [lines[5][1]], rpam.parameters["line_in_r_id"])
+gmsh.model.setPhysicalName(lines[5][0], rpam.parameters["line_in_r_id"], "line_in_23")
 
-gmsh.model.addPhysicalGroup(lines[6][0], [lines[6][1]], rpam.parameters["line_in_34_id"])
-gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_in_34_id"], "line_in_34")
+gmsh.model.addPhysicalGroup(lines[6][0], [lines[6][1]], rpam.parameters["line_in_t_id"])
+gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_in_t_id"], "line_in_34")
 
-gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_in_41_id"])
-gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_in_41_id"], "line_in_41")
+gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_in_l_id"])
+gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_in_l_id"], "line_in_41")
 
 
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["surface_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_id"], "surface")
+gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["surface_out_id"])
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_out_id"], "surface")
 
 gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["surface_in_id"])
 gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["surface_in_id"], "surface")
 
 
 # set the resolution
-# se resolution resolution_min at distance r_resolution_min from surface_in, and resolution_amx at distance r_resolution_max from surface_id
+# se resolution resolution_min at distance r_resolution_min from surface_in, and resolution_amx at distance r_resolution_max from surface_out_id
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_in])
 
