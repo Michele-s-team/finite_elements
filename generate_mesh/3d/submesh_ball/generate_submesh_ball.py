@@ -44,7 +44,7 @@ print("Dimension of boundary_mesh = ", sphere_mesh.geometry().dim())
 mvc = MeshValueCollection("size_t", sphere_mesh, sphere_mesh.topology().dim())
 cf = cpp.mesh.MeshFunctionSizet(sphere_mesh, mvc)
 
-dx = Measure("dx", domain=sphere_mesh, subdomain_data=cf)  # Line measure
+dx = Measure("dx", domain=sphere_mesh, subdomain_data=cf)
 
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76, 1.23]

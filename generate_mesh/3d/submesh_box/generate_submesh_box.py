@@ -53,7 +53,7 @@ print("Dimension of boundary_mesh = ", box_mesh.geometry().dim())
 
 mapping = cube_mesh.entity_map(boundary_mesh_dimension)
 part_of_cube_side = MeshFunction("size_t", cube_mesh, boundary_mesh_dimension)
-#run over all cells of boundary_mesh and write `1` in part_of_cube_side for the cells which have the y component of the facet normal equal to -1 : in this way, one is selecting the cells which belong to the xz side of the box
+#run over all cells of boundary_mesh and write `1` in part_of_cube_side for the cells which have the y component of the facet normal equal to -1 : in this way, one is selecting the cells which belong to the xz side of the box with y = 0
 for cell in cells(cube_mesh):
     curr_facet_normal = Facet(box_mesh, mapping[cell.index()]).normal()
     if near(curr_facet_normal.y(), -1.0):  # On cube_side boundary
@@ -75,43 +75,55 @@ out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
 meshio.write(output_directory + "cube_size_mesh.xdmf", out_mesh)
 
 #the resulting 2d mesh is written into mesh2D
-mesh2D = Mesh()
+cube_size_mesh = Mesh()
 with XDMFFile(output_directory + "cube_size_mesh.xdmf") as xdmf:
-    xdmf.read(mesh2D)
-print("Dimension of cube_size_mesh = ", mesh2D.geometry().dim())
+    xdmf.read(cube_size_mesh)
+print("Dimension of cube_size_mesh = ", cube_size_mesh.geometry().dim())
 
 
 
-'''
-#test mesh2D by integrating a function over it 
-#analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegral(UserExpression):
+
+#test mesh2D by integrating a function over it
+# read the triangles
+mvc = MeshValueCollection("size_t", cube_size_mesh, cube_size_mesh.topology().dim())
+cf = cpp.mesh.MeshFunctionSizet(cube_size_mesh, mvc)
+
+dv_custom = Measure("dx", domain=cube_size_mesh, subdomain_data=cf)    # Line measure
+
+# CHANGE PARAMETERS HERE
+c_test = [0.3, 0.76]
+r_test = 0.345
+# CHANGE PARAMETERS HERE
+
+Q = FunctionSpace(cube_size_mesh, 'P', 1)
+
+
+# function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+def function_test_integrals(x):
+    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    # return 1
+
+
+# function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
+function_test_integrals_fenics = Function(Q)
+
+
+# analytical expression for a  scalar function used to test the ds
+class FunctionTestIntegrals(UserExpression):
     def eval(self, values, x):
-        values[0] = (np.cos(x[0]-x[1]))**2 * (np.sin(x[0]-x[1]))**3
+        values[0] = function_test_integrals(x)
+
     def value_shape(self):
         return (1,)
 
-#read the tetrahedra
-mvc = MeshValueCollection("size_t", mesh2D, mesh2D.topology().dim())
-# with XDMFFile(output_directory + "cube_size_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-cf = cpp.mesh.MeshFunctionSizet(mesh2D, mvc)
-# xdmf.close()
-dv_custom = Measure("dx", domain=mesh2D, subdomain_data=cf)    # Line measure
+function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_element()))
 
-Q = FunctionSpace( mesh2D, 'P', 1 )
-f_test_ds = Function( Q )
-
-# f_test_ds is a scalar function defined on the mesh, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-f_test_ds.interpolate( FunctionTestIntegral( element=Q.ufl_element() ))
-
-#print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-print(f"Volume = {assemble(f_test_ds*dv_custom)}, should be 0.0219446")
 
 test_mesh_integral_errors = []
 
-test_mesh_integral_errors.append(msh.test_mesh_integral( 0.0219446, f_test_ds, dv_custom, 'Volume' ))
+integral_exact_ds = cal.surface_integral_rectangle(function_test_integrals, [0,0],[parameters["L"][0],parameters["L"][2]])
+
+# print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, dv_custom, '\int_box_side f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-
-'''
