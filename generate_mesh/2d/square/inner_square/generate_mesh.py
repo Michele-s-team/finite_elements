@@ -79,11 +79,6 @@ gmsh.model.geo.synchronize()
 
 
 
-# add 0-dimensional objects
-# vertices = gmsh.model.getEntities(dim=0)
-
-# gmsh.model.addPhysicalGroup(vertices[0][0], [vertices[0][1]], rpam.parameters["p_1_id"])
-# gmsh.model.setPhysicalName(vertices[0][0], rpam.parameters["p_1_id"], "p_1")
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
