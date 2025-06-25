@@ -41,6 +41,7 @@ xdmf = XDMFFile(box_mesh.mpi_comm(), (rarg.args.input_directory) + "/tetra_mesh.
 xdmf.read(box_mesh)
 
 
+
 #extract the mesh corresponding to the side of the cube with y = 0 and store it in mesh2D
 with XDMFFile(output_directory + "cube_mesh.xdmf") as xdmf:
     xdmf.write(box_mesh)
@@ -64,10 +65,11 @@ with XDMFFile(output_directory + "cube_side_to_prune_mesh.xdmf") as xdmf:
     xdmf.write(cube_side_boundary)
 
 
+
+#remove the y component of the points in the cube size, transforming it from a 3d to a 2d mesh
 cube_side_to_prune_mesh = meshio.read(output_directory + "cube_side_to_prune_mesh.xdmf")
 
 cells = cube_side_to_prune_mesh.get_cells_type("triangle")
-#remove the y component of the points in in_mesh to switch from a 3d to a 2d mesh
 points = np.delete(cube_side_to_prune_mesh.points, 1, axis=1)
 out_mesh = meshio.Mesh(points=points, cells={"triangle": cells})
 meshio.write(output_directory + "cube_size_mesh.xdmf", out_mesh)
@@ -76,7 +78,9 @@ meshio.write(output_directory + "cube_size_mesh.xdmf", out_mesh)
 mesh2D = Mesh()
 with XDMFFile(output_directory + "cube_size_mesh.xdmf") as xdmf:
     xdmf.read(mesh2D)
-print("Dimension of mesh2D = ", mesh2D.geometry().dim())
+print("Dimension of cube_size_mesh = ", mesh2D.geometry().dim())
+
+
 
 '''
 #test mesh2D by integrating a function over it 
