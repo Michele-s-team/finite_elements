@@ -1,3 +1,4 @@
+import command as cmd
 from fenics import *
 import numpy as np
 import colorama as col
@@ -1207,3 +1208,42 @@ def transfer_cell_tags_to_submesh(sub_mesh, sf_parent):
 
 
     return sf_submesh_out
+
+
+'''
+read a 1,2 or 3d mesh stored into an xdmf file
+Input values: 
+- 'input_path': the path where 'tetra_mesh.xdmf', 'triangle_mesh.xdmf', or 'line_mesh.xdmf' are located
+Return values: 
+- 'mesh': the mesh, or [] if the mesh could not be read
+'''
+def read_from_file(mesh_path):
+
+    mesh_path_with_slash = io.add_trailing_slash(mesh_path)
+
+    if cmd.check_if_file_exists(mesh_path_with_slash + "/tetra_mesh.xdmf"):
+        mesh = read_mesh(mesh_path_with_slash + "/tetra_mesh.xdmf")
+        print('3d mesh')
+
+        result = mesh
+
+    else:
+        if cmd.check_if_file_exists(mesh_path_with_slash + "/triangle_mesh.xdmf"):
+            mesh = read_mesh(mesh_path_with_slash + "/triangle_mesh.xdmf")
+            print('2d mesh')
+
+            result = mesh
+
+        else:
+            if cmd.check_if_file_exists(mesh_path_with_slash + "/line_mesh.xdmf"):
+                mesh = read_mesh(mesh_path_with_slash + "/line_mesh.xdmf")
+                print('1d mesh')
+
+                result = mesh
+            else:
+                print('No mesh could be loaded!')
+
+                result = []
+
+    return result
+

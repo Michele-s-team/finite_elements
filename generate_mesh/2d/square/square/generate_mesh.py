@@ -145,4 +145,15 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
+
+#####
+# create the submesh and its functions to read triangles and lines
+submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+
+sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
+mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
+
+
+#####
+
 model.__exit__()
