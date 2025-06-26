@@ -157,17 +157,27 @@ submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
 boundary_mesh = BoundaryMesh(submesh_out, "exterior", order=True)
 
 sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
-mf_submesh_out = msh.transfer_facet_tags_to_submesh(submesh_out, submesh_out, mf)
+mf_submesh_out = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh_out, mf)
 
 with XDMFFile(output_directory + "triangle_sub_mesh.xdmf") as xdmf:
     xdmf.write(submesh_out)
     xdmf.write(sf_submesh_out)
 #####
 
-boundary_facet_markers = MeshFunction("size_t", boundary_mesh, 1, 0)
+
+
+# entity_map(1) maps boundary mesh facets to sub_mesh facets
+boundary_to_submesh_facet_map = boundary_mesh.entity_map(1)
+
+
+mf_boundary = MeshFunction("size_t", boundary_mesh, 1, 0)  # facets in 1D mesh are edges
+
+for i, b_facet in enumerate(facets(boundary_mesh)):
+    submesh_facet_idx = boundary_to_submesh_facet_map[i]
+    mf_boundary[b_facet] = mf_submesh_out[submesh_facet_idx]
 
 with XDMFFile(output_directory + "boundary_lines_submesh.xdmf") as xdmf:
     xdmf.write(boundary_mesh)
-    xdmf.write(boundary_facet_markers)
+    xdmf.write(mf_boundary)
 
 model.__exit__()
