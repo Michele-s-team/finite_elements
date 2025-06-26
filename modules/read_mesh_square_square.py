@@ -1,3 +1,11 @@
+'''
+Notation:
+- dx_submesh_out : surface element of the outer submesh
+- ds_submesh_out_out_l : surface element corresponding to the 'l' line on the outer boundary of submesh_out,
+- ds_submesh_out_in_l : surface element corresponding to the 'l' line on the inner boundary of submesh_out,
+- ...
+'''
+
 from fenics import *
 
 import calculus as calc
@@ -16,24 +24,15 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-######
-# create a submesh with the external part of lmsh.mesh
+# create the submesh and its functions to read triangles and lines
 submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+
 sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
 mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
 
-# create the measure dx_submesh_out correspnding to the triangles of submesh_out
-dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=parameters["surface_out_id"])
-
-ds_submesh_out_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
-ds_submesh_out_r = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_r_id"])
-ds_submesh_out_t = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_t_id"])
-ds_submesh_out_b = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_b_id"])
-
-ds_submesh_in_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_l_id"])
-#######
 
 
+#1. create line and surface elements for mesh
 # test for surface elements
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
 dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
@@ -61,14 +60,29 @@ ds_in = ds_in_lr + ds_in_tb
 
 ds = ds_in + ds_out
 
+#1.  create line and surface elements for submesh
+# create the measure dx_submesh_out correspnding to the triangles of submesh_out
+
+dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=parameters["surface_out_id"])
+
+ds_submesh_out_out_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
+ds_submesh_out_out_r = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_r_id"])
+ds_submesh_out_out_t = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_t_id"])
+ds_submesh_out_out_b = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_b_id"])
+
+ds_submesh_out_in_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_l_id"])
+ds_submesh_out_in_r = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_r_id"])
+ds_submesh_out_in_t = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_t_id"])
+ds_submesh_out_in_b = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_b_id"])
+
 import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
-# Define boundaries
+#1.  Define boundaries
 boundary = 'on_boundary'
 
-# out boundaries
+# outer boundaries
 boundary_out_l = f'near(x[0], {0})'
 boundary_out_r = f'near(x[0], {parameters["L"]})'
 boundary_out_t = f'near(x[1], {parameters["h"]})'
@@ -77,7 +91,7 @@ boundary_out_lr = f'({boundary_out_l}) || ({boundary_out_r})'
 boundary_out_tb = f'({boundary_out_t}) || ({boundary_out_b})'
 boundary_out = f'({boundary_out_lr}) || ({boundary_out_tb})'
 
-# in boundaries
+# inner boundaries
 boundary_in_l = f'near(x[0], {parameters["p"][0]})'
 boundary_in_r = f'near(x[0], {parameters["p"][0] + parameters["L_in"]})'
 boundary_in_t = f'near(x[1], {parameters["p"][1] + parameters["h_in"]})'

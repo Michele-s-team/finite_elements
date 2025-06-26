@@ -102,10 +102,10 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 #
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_out, function_test_integrals_fenics, rmsh.dx_submesh_out, '\int_submesh_out f dx'))
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_l, function_test_integrals_fenics, rmsh.ds_submesh_out_l, '\int f ds_submesh_out_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_l, function_test_integrals_fenics, rmsh.ds_submesh_out_out_l, '\int f ds_submesh_out_l'))
 
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_l, function_test_integrals_fenics, rmsh.ds_submesh_in_l, '\int f ds_submesh_in_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_l, function_test_integrals_fenics, rmsh.ds_submesh_out_in_l, '\int f ds_submesh_in_l'))
 
 
 
