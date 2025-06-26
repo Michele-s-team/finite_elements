@@ -162,6 +162,10 @@ with XDMFFile(output_directory + "triangle_sub_mesh.xdmf") as xdmf:
     xdmf.write(submesh_out)
     xdmf.write(sf_submesh_out)
 
+submesh_out_boundary = BoundaryMesh(submesh_out, "exterior", order=True)
+with XDMFFile(output_directory + "line_sub_mesh.xdmf") as xdmf:
+    xdmf.write(submesh_out_boundary)
+
 #####
 
 model.__exit__()
