@@ -20,19 +20,35 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
 dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
 
+# line elements for out square
 ds_out_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"])
 ds_out_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"])
 ds_out_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"])
 ds_out_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"])
 
+
+print(f"xxx = {parameters['line_in_l_id']}")
+
+# line elements for in square
+ds_in_l = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"])
+ds_in_r = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_r_id"])
+ds_in_t = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_t_id"])
+ds_in_b = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_b_id"])
+
 ds_out_lr = ds_out_l + ds_out_r
 ds_out_tb = ds_out_t + ds_out_b
 
+ds_in_lr = ds_in_l + ds_in_r
+ds_in_tb = ds_in_t + ds_in_b
+
 ds_out = ds_out_lr + ds_out_tb
+ds_in = ds_in_lr + ds_in_tb
 
-import check_mesh_tags_square_inner_square
+ds = ds_in + ds_out
 
-print(f'Module {__file__} called {check_mesh_tags_square_inner_square.__file__}', flush=True)
+import check_mesh_tags_square_square
+
+print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
 
 # Define boundaries and obstacle

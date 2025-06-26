@@ -4,7 +4,7 @@ generate a mesh given by a square circle with a square inside
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/inner_square"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/inner_square/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/square"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
@@ -83,7 +83,7 @@ gmsh.model.geo.synchronize()
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
-# inner lines
+# outer lines
 gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_out_b_id"])
 gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_out_b_id"], "line_out_12")
 
@@ -97,7 +97,7 @@ gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_ou
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_out_l_id"], "line_out_41")
 
 
-# outer lines
+# inner lines
 gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_in_b_id"])
 gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_in_b_id"], "line_in_12")
 
