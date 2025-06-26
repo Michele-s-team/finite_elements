@@ -50,6 +50,5 @@ solver.solve()
 '''
 '# solve pp problem
 solver_pp.solve()
-
-prout_bc = importlib.import_module(swi.prout_bc)
 '''
+prout_bc = importlib.import_module(swi.prout_bc)
