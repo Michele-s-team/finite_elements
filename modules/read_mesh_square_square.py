@@ -50,14 +50,25 @@ import check_mesh_tags_square_square
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
 
-# Define boundaries and obstacle
+# Define boundaries
 boundary = 'on_boundary'
-boundary_out_l = f'near(x[0], 0.0)'
+
+# out boundaries
+boundary_out_l = f'near(x[0], {0})'
 boundary_out_r = f'near(x[0], {parameters["L"]})'
 boundary_out_t = f'near(x[1], {parameters["h"]})'
-boundary_out_b = f'near(x[1], 0.0)'
+boundary_out_b = f'near(x[1], {0})'
 boundary_out_lr = f'({boundary_out_l}) || ({boundary_out_r})'
 boundary_out_tb = f'({boundary_out_t}) || ({boundary_out_b})'
 boundary_out = f'({boundary_out_lr}) || ({boundary_out_tb})'
+
+# in boundaries
+boundary_in_l = f'near(x[0], {parameters["p"][0]})'
+boundary_in_r = f'near(x[0], {parameters["p"][0] + parameters["L_in"]})'
+boundary_in_t = f'near(x[1], {parameters["p"][1] + parameters["h_in"]})'
+boundary_in_b = f'near(x[1], {parameters["p"][1]})'
+boundary_in_lr = f'({boundary_in_l}) || ({boundary_in_r})'
+boundary_in_tb = f'({boundary_in_t}) || ({boundary_in_b})'
+boundary_in = f'({boundary_in_lr}) || ({boundary_in_tb})'
 
 
