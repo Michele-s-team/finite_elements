@@ -24,7 +24,13 @@ mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
 
 # create the measure dx_submesh_out correspnding to the triangles of submesh_out
 dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=parameters["surface_out_id"])
+
 ds_submesh_out_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
+ds_submesh_out_r = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_r_id"])
+ds_submesh_out_t = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_t_id"])
+ds_submesh_out_b = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_b_id"])
+
+ds_submesh_in_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_l_id"])
 #######
 
 
