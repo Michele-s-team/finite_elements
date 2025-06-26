@@ -49,9 +49,6 @@ gmsh.model.geo.synchronize()
 loop_out = gmsh.model.geo.addCurveLoop([line_out_12, line_out_23, line_out_34, line_out_41])
 gmsh.model.geo.synchronize()
 
-
-
-
 # add inner rectangle
 p_in_1 = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1], rpam.parameters["p"][2])
 p_in_2 = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["L_in"], rpam.parameters["p"][1], rpam.parameters["p"][2])
@@ -65,7 +62,6 @@ line_in_34 = gmsh.model.geo.addLine(p_in_3, p_in_4)
 line_in_41 = gmsh.model.geo.addLine(p_in_4, p_in_1)
 gmsh.model.geo.synchronize()
 
-
 loop_in = gmsh.model.geo.addCurveLoop([line_in_12, line_in_23, line_in_34, line_in_41])
 gmsh.model.geo.synchronize()
 
@@ -77,9 +73,6 @@ gmsh.model.geo.synchronize()
 
 surface_in = gmsh.model.geo.addPlaneSurface([loop_in])
 gmsh.model.geo.synchronize()
-
-
-
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
@@ -97,7 +90,6 @@ gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_out_t_id"], "line_
 gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_out_l_id"])
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_out_l_id"], "line_out_41")
 
-
 # inner lines
 gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_in_b_id"])
 gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_in_b_id"], "line_in_12")
@@ -111,8 +103,6 @@ gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_in_t_id"], "line_i
 gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_in_l_id"])
 gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_in_l_id"], "line_in_41")
 
-
-
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
@@ -121,7 +111,6 @@ gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_out_id"], "s
 
 gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["surface_in_id"])
 gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["surface_in_id"], "surface_in")
-
 
 # set the resolution
 # se resolution resolution_min at distance r_resolution_min from surface_in, and resolution_amx at distance r_resolution_max from surface_out_id
@@ -146,38 +135,31 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-
 #####
 # create the submesh and its functions to read triangles and lines
+
+# read the parent mesh from file
 parent_mesh = msh.read_mesh(output_directory + 'triangle_mesh.xdmf')
-sf = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim(), output_directory + "triangle_mesh.xdmf")
-mf = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim()-1, output_directory + "line_mesh.xdmf")
 
-submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
-boundary_mesh = BoundaryMesh(submesh_out, "exterior", order=True)
+# create entity maps fo the parent mesh
+sf_parent_mesh = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim(), output_directory + "triangle_mesh.xdmf")
+mf_parent_mesh = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim() - 1, output_directory + "line_mesh.xdmf")
 
-sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
-mf_submesh_out = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh_out, mf)
+# extract the outer submesh from the parent mesh, by picking only the triangles with rpam.parameters["surface_out_id"]
+submesh = SubMesh(parent_mesh, sf_parent_mesh, rpam.parameters["surface_out_id"])
+# create the boundary mesh of submesh
+boundary_submesh = BoundaryMesh(submesh, "exterior", order=True)
 
-with XDMFFile(output_directory + "triangle_sub_mesh.xdmf") as xdmf:
-    xdmf.write(submesh_out)
-    xdmf.write(sf_submesh_out)
-#####
+# create entity maps of submesh for triangles and lines
+sf_submesh = msh.transfer_cell_tags_to_submesh(submesh, sf_parent_mesh)
+mf_submesh = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh, mf_parent_mesh)
 
+# create entity map for boundary mesh for lines
+mf_boundary_submesh = msh.transfer_facet_tags_to_bounday_mesh(boundary_submesh, mf_submesh)
 
-
-# entity_map(1) maps boundary mesh facets to sub_mesh facets
-boundary_to_submesh_facet_map = boundary_mesh.entity_map(1)
-
-
-mf_boundary = MeshFunction("size_t", boundary_mesh, 1, 0)  # facets in 1D mesh are edges
-
-for i, b_facet in enumerate(facets(boundary_mesh)):
-    submesh_facet_idx = boundary_to_submesh_facet_map[i]
-    mf_boundary[b_facet] = mf_submesh_out[submesh_facet_idx]
-
-with XDMFFile(output_directory + "boundary_lines_submesh.xdmf") as xdmf:
-    xdmf.write(boundary_mesh)
-    xdmf.write(mf_boundary)
+# write the triangles for submesh to file
+msh.write_mesh(submesh, output_directory + "triangle_submesh.xdmf", sf_submesh)
+# write the lines of the boundary mesh to file
+msh.write_mesh(boundary_submesh, output_directory + "line_submesh.xdmf", mf_boundary_submesh)
 
 model.__exit__()

@@ -1178,6 +1178,38 @@ def transfer_facet_tags_to_submesh(parent_mesh, sub_mesh, mf_parent):
 
 
 '''
+map the tags of  boundary lines of a parent mesh to a boudnary mesh derived from the parent mesh
+Input values: 
+- 'boundary_mesh': the boundary mesh obtained from the parent mesh
+- 'mf_parent_mesh' : the map which tags the lines in the parent mesh
+Return values: 
+- 'mf_boundary_mesh': the map which tags the lines in the boundary mesh, with the same ids which they had in the parent mesh
+
+Example of usage: 
+    submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
+    boundary_mesh = BoundaryMesh(submesh_out, "exterior", order=True)
+    mf_submesh_out = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh_out, mf)
+    mf_boundary_mesh = msh.transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_submesh_out)
+'''
+
+def transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_parent_mesh):
+    # entity_map(1) maps boundary mesh facets to sub_mesh facets
+    boundary_to_parent_facet_map = boundary_mesh.entity_map(1)
+
+    # construct a map function which tags all vertices (dimension = 1), with id 0
+    mf_boundary_mesh = MeshFunction("size_t", boundary_mesh, 1, 0)  # facets in 1D mesh are edges
+
+    # run on all facets of boundary_mesh
+    for i, b_facet in enumerate(facets(boundary_mesh)):
+        # obtain the id with whuch the facet under consideration  was tagged in boundary mesh
+        submesh_facet_id = boundary_to_parent_facet_map[i]
+        # impose that the function  mf_boundary_mesh evaluated on the facet under consideration must be equal to the id that the facet had in the submesh
+        mf_boundary_mesh[b_facet] = mf_parent_mesh[submesh_facet_id]
+
+    return mf_boundary_mesh
+
+
+'''
 Given a parent mesh and a submesh of it, and function sf_parent which identifies cells on the parent mesh, 
 this method returns the function which identifies the cells on the sub_mesh, with the same ids as in the parent mesh
 Input values: 
@@ -1247,3 +1279,16 @@ def read_from_file(mesh_path):
 
     return result
 
+'''
+write a mesh to xdmf file
+Input values:
+- 'mesh': the mesh
+- 'map': the map containing the tags of the mesh elements (triangles, lines, etc) 
+- 'output_file': path + name of the xdmf file where the mesh will be written 
+'''
+def write_mesh(mesh, output_file, map=None):
+
+    with XDMFFile(output_file) as xdmf:
+        xdmf.write(mesh)
+        xdmf.write(map)
+        xdmf.close()
