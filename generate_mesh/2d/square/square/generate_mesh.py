@@ -116,10 +116,10 @@ gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_in_l_id"], "line_i
 surfaces = gmsh.model.getEntities(dim=2)
 
 gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["surface_out_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_out_id"], "surface")
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_out_id"], "surface_out")
 
 gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["surface_in_id"])
-gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["surface_in_id"], "surface")
+gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["surface_in_id"], "surface_in")
 
 
 # set the resolution

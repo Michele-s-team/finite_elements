@@ -101,12 +101,12 @@ bcs = [bc_u_out_tb, bc_u_in_lr]
 # here the + and - are used to select the inner or outer par of quantities on interiors ds only
 F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx_out \
     - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_out_lr \
-    - bgeo.facet_normal('+')[i] * fsp.grad_u[i] * fsp.nu_u('+') * rmsh.ds_in_tb \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_out_tb \
-    - bgeo.facet_normal('+')[i] * (fsp.u.dx(i))('+') * fsp.nu_u('+') * rmsh.ds_in_lr
+    - bgeo.facet_normal('+')[i] * (fsp.u.dx(i))('+') * fsp.nu_u('+') * rmsh.ds_in_lr\
+    - bgeo.facet_normal('+')[i] * fsp.grad_u[i] * fsp.nu_u('+') * rmsh.ds_in_tb
 
-# variational functional for post-processing problem (pp) to obtain the hessian (hess)
-F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx_out \
-       - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds_out\
-       - (bgeo.facet_normal('+')[i] * (fsp.u.dx(j))('+') * fsp.nu_hess_u('+')[i, j]) * rmsh.ds_in
+# # variational functional for post-processing problem (pp) to obtain the hessian (hess)
+# F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx_out \
+#        - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds_out\
+#        - (bgeo.facet_normal('+')[i] * (fsp.u.dx(j))('+') * fsp.nu_hess_u('+')[i, j]) * rmsh.ds_in
 
