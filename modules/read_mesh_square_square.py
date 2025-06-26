@@ -16,62 +16,15 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-
-
 ######
 # create a submesh with the external part of lmsh.mesh
 submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
-
-
-
-#1. create dx on submesh_out
-# create a function which identifies all triangles in submesh_out
-sf_submesh_out = MeshFunction('size_t', submesh_out, 2)
-parent_cell_map = submesh_out.data().array('parent_cell_indices', 2)
-
-for sub_cell in range(submesh_out.num_entities(2)):
-    parent_cell = parent_cell_map[sub_cell]
-    sf_submesh_out[sub_cell] = sf[parent_cell]
-
-
-# 2 create ds on submesh_out
-def transfer_facet_markers_to_submesh(parent_mesh, sub_mesh, mf_parent):
-    # Create facet marker on submesh
-    mf_sub = MeshFunction('size_t', sub_mesh, 1, 0)
-
-    # if not parent_mesh.topology().has_connectivity(1, 0):
-    #     print("Warning: parent mesh facet-to-vertex (1→0) connectivity not initialized")
-    #
-    # if not sub_mesh.topology().has_connectivity(1, 0):
-    #     print("Warning: submesh facet-to-vertex (1→0) connectivity not initialized")
-
-    # Create maps from coordinates to facet markers
-    # mesh.init(1)  # ensure facets are initialized
-    # submesh.init(1)  # ensure facets are initialized
-    # mesh.init(1, 0)  # facet-to-vertex connectivity
-    # submesh.init(1, 0)
-
-    vertex_map = sub_mesh.data().array("parent_vertex_indices", 0)
-
-    # Helper to match submesh facet to parent facet
-    for sub_mesh_facet in facets(sub_mesh):
-        sub_mesh_facet_vertices = sub_mesh_facet.entities(0)
-        # map to parent vertices
-        parent_vertices = [vertex_map[v] for v in sub_mesh_facet_vertices]
-        # now search for a facet in the parent mesh that shares these
-        for facet in facets(parent_mesh):
-            if sorted(facet.entities(0)) == sorted(parent_vertices):
-                mf_sub[sub_mesh_facet.index()] = mf_parent[facet.index()]
-                break
-
-    return mf_sub
-
-mf_submesh_out = transfer_facet_markers_to_submesh(lmsh.mesh, submesh_out, mf)
-
+sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
+mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
 
 # create the measure dx_submesh_out correspnding to the triangles of submesh_out
 dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=parameters["surface_out_id"])
-ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
+ds_submesh_out_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
 #######
 
 
@@ -84,8 +37,6 @@ ds_out_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=param
 ds_out_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"])
 ds_out_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"])
 ds_out_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"])
-
-
 
 # line elements for in square
 ds_in_l = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"])
@@ -108,7 +59,6 @@ import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
-
 # Define boundaries
 boundary = 'on_boundary'
 
@@ -129,5 +79,3 @@ boundary_in_b = f'near(x[1], {parameters["p"][1]})'
 boundary_in_lr = f'({boundary_in_l}) || ({boundary_in_r})'
 boundary_in_tb = f'({boundary_in_t}) || ({boundary_in_b})'
 boundary_in = f'({boundary_in_lr}) || ({boundary_in_tb})'
-
-

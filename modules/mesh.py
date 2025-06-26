@@ -1133,3 +1133,77 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print mesh metadata
     io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
+
+'''
+Given a parent mesh and a submesh of it, and function mf_parent which identifies facets on the parent mesh, 
+this method returns the function which identifies the facet markers on the  sub_mesh, with the same ids as in the parent mesh
+Input values: 
+- 'parent': the parent mesh
+- 'submesh': the submesh of the parent mesh
+- 'mf_parent': the function which identifies facets on the parent mesh
+Return values
+- 'mf_submesh': the function which identifies facets on a submesh of the parent mesh
+
+Example of usage: 
+    mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
+    submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+    mf_submesh_out = transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
+    
+Then you can create a ds on the submesh with 
+    ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
+'''
+def transfer_facet_tags_to_submesh(parent_mesh, sub_mesh, mf_parent):
+
+    # Create facet marker on submesh
+    mf_sub = MeshFunction('size_t', sub_mesh, 1, 0)
+
+    vertex_map = sub_mesh.data().array("parent_vertex_indices", 0)
+
+    # run through all the facets of the sub_mesh
+    for sub_mesh_facet in facets(sub_mesh):
+        # extract the vertices of the facet under considerationn
+        sub_mesh_facet_vertices = sub_mesh_facet.entities(0)
+
+        # consider the relative vertices in the parent mesh
+        parent_vertices = [vertex_map[v] for v in sub_mesh_facet_vertices]
+        #  search for a facet in the parent mesh that shares these
+        for facet in facets(parent_mesh):
+            if sorted(facet.entities(0)) == sorted(parent_vertices):
+                # a corresponding facet in the parent mehs has been found
+                mf_sub[sub_mesh_facet.index()] = mf_parent[facet.index()]
+                break
+
+    return mf_sub
+
+
+'''
+Given a parent mesh and a submesh of it, and function sf_parent which identifies cells on the parent mesh, 
+this method returns the function which identifies the cells on the sub_mesh, with the same ids as in the parent mesh
+Input values: 
+- 'sub_mesh': the sub_mesh of the parent mesh
+- 'sf_parent': the function which identifies cells on the parent mesh
+Return values
+- 'sf_submesh': the function which identifies cells on the sub_mesh of the parent mesh
+
+Example of usage: 
+    sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
+    submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+    sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
+
+Then you can create a ds on the submesh with 
+ 
+
+'''
+def transfer_cell_tags_to_submesh(sub_mesh, sf_parent):
+    sf_submesh_out = MeshFunction('size_t', sub_mesh, 2)
+    parent_cell_map = sub_mesh.data().array('parent_cell_indices', 2)
+
+    # run over all cells of the sub_mesh
+    for sub_cell in range(sub_mesh.num_entities(2)):
+        # map the cell of the sub_mesh into the corresponding mesh of the parent cell
+        parent_cell = parent_cell_map[sub_cell]
+        # assign the correct id of the function sf_submesh_out calculated on the mesh of the sub_mesh under consideration, setting it to the same id it has in the parent_mesh
+        sf_submesh_out[sub_cell] = sf_parent[parent_cell]
+
+
+    return sf_submesh_out
