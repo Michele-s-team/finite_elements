@@ -46,13 +46,13 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.
 integral_exact_dx_in = cal.surface_integral_rectangle(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]]))
 integral_exact_dx_out = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]]) - integral_exact_dx_in
 
-# exact line intergrals on out boundaries
+# exact line integrals on out boundaries
 integral_exact_ds_out_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
 integral_exact_ds_out_r = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
 integral_exact_ds_out_t = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]])
 integral_exact_ds_out_b = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.parameters["L"], 0])
 
-# exact line intergrals on in boundaries
+# exact line integrals on in boundaries
 integral_exact_ds_in_l = cal.curve_integral_line(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]]))
 integral_exact_ds_in_r = cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], 0]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]]))
 integral_exact_ds_in_t = cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]]))
@@ -73,6 +73,9 @@ integral_exact_ds = integral_exact_ds_in + integral_exact_ds_out
 
 test_mesh_integral_errors = []
 
+# 1. check integrals in the parent mesh
+
+# 1.1: check in the out portion of the parent mesh
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_out, function_test_integrals_fenics, rmsh.dx_out, '\int_out f dx'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_in, function_test_integrals_fenics, rmsh.dx_in, '\int_in f dx'))
 
@@ -86,7 +89,7 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_tb
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out, function_test_integrals_fenics, rmsh.ds_out, '\int f ds_out'))
 
-
+# 1.2: check in the in portion of the parent mesh
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_l, function_test_integrals_fenics, rmsh.ds_in_l, '\int f ds_in_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_r, function_test_integrals_fenics, rmsh.ds_in_r, '\int f ds_in_r'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_t, function_test_integrals_fenics, rmsh.ds_in_t, '\int f ds_in_t'))
@@ -98,6 +101,37 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_tb,
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in, function_test_integrals_fenics, rmsh.ds_in, '\int f ds_in'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+
+
+#2. check mesh integral in the out sub_mesh
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_out, function_test_integrals_fenics, rmsh.dx_submesh_out, '\int_sub_mesh_out f dx'))
+
+# 2.1: check the  out boundary of the submesh
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_l, function_test_integrals_fenics, rmsh.ds_submesh_out_out_l, '\int f ds_sub_mesh_out_out_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_r, function_test_integrals_fenics, rmsh.ds_submesh_out_out_r, '\int f ds_sub_mesh_out_out_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_t, function_test_integrals_fenics, rmsh.ds_submesh_out_out_t, '\int f ds_sub_mesh_out_out_t'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_b, function_test_integrals_fenics, rmsh.ds_submesh_out_out_b, '\int f ds_sub_mesh_out_out_b'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_lr, function_test_integrals_fenics, rmsh.ds_submesh_out_out_lr, '\int f ds_sub_mesh_out_out_lr'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_tb, function_test_integrals_fenics, rmsh.ds_submesh_out_out_tb, '\int f ds_sub_mesh_out_out_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out, function_test_integrals_fenics, rmsh.ds_submesh_out_out, '\int f ds_sub_mesh_out_out'))
+
+
+# 2.2: check the  in boundary of the submesh
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_l, function_test_integrals_fenics, rmsh.ds_submesh_out_in_l, '\int f ds_sub_mesh_out_in_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_r, function_test_integrals_fenics, rmsh.ds_submesh_out_in_r, '\int f ds_sub_mesh_out_in_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_t, function_test_integrals_fenics, rmsh.ds_submesh_out_in_t, '\int f ds_sub_mesh_out_in_t'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_b, function_test_integrals_fenics, rmsh.ds_submesh_out_in_b, '\int f ds_sub_mesh_out_in_b'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_lr, function_test_integrals_fenics, rmsh.ds_submesh_out_in_lr, '\int f ds_sub_mesh_out_in_lr'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_tb, function_test_integrals_fenics, rmsh.ds_submesh_out_in_tb, '\int f ds_sub_mesh_out_in_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in, function_test_integrals_fenics, rmsh.ds_submesh_out_in, '\int f ds_sub_mesh_out_in'))
+
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds_submesh_out, '\int f ds_sub_mesh_out'))
+
 
 
 
