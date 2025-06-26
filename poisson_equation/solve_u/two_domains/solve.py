@@ -22,7 +22,7 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-'''
+
 J = derivative(vp.F, fsp.u, fsp.J_u)
 problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
@@ -46,7 +46,9 @@ solver.parameters.update(params)
 
 # solve original problem
 solver.solve()
-# solve pp problem
+
+'''
+'# solve pp problem
 solver_pp.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)

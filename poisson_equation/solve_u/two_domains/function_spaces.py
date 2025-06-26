@@ -11,9 +11,10 @@ rmsh = importlib.import_module(swi.rmsh)
 
 function_space_degree = 4
 
-Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree)
-V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree)
-T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(lmsh.mesh.topology().dim(), lmsh.mesh.topology().dim()))
+Q = FunctionSpace(rmsh.submesh_out, 'P', function_space_degree)
+
+V = VectorFunctionSpace(rmsh.submesh_out, 'P', function_space_degree)
+T = TensorFunctionSpace(rmsh.submesh_out, 'P', function_space_degree, shape=(rmsh.submesh_out.topology().dim(), rmsh.submesh_out.topology().dim()))
 
 # Define variational problem
 u = Function(Q)
@@ -29,3 +30,4 @@ hess_u = Function(T)
 nu_hess_u = TestFunction(T)
 hess_u_exact = Function(T)
 J_hess_u = TrialFunction(T)
+
