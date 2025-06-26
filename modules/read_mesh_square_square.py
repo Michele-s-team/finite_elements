@@ -18,12 +18,20 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 
 
 
-#
+######
+# create a submesh with the external part of lmsh.mesh
 submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+# create a function which identifies all triangles in submesh_out
+sf_submesh_out = MeshFunction('size_t', submesh_out, submesh_out.topology().dim())
+submesh_out_surface_id = 1
+# identify all triangles with tag '0'
+sf_submesh_out.set_all(submesh_out_surface_id)
+# create the measure dx_submesh_out correspnding to the triangles of submesh_out
+dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=submesh_out_surface_id)
+print(f'test dx_submesh_out: {assemble( Constant(1) * dx_submesh_out)}')
+#######
 
 
-
-#
 # test for surface elements
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
 dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
