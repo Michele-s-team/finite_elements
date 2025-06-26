@@ -1221,22 +1221,22 @@ def read_from_file(mesh_path):
 
     mesh_path_with_slash = io.add_trailing_slash(mesh_path)
 
-    if cmd.check_if_file_exists(mesh_path_with_slash + "/tetra_mesh.xdmf"):
-        mesh = read_mesh(mesh_path_with_slash + "/tetra_mesh.xdmf")
+    if cmd.check_if_file_exists(mesh_path_with_slash + "tetra_mesh.xdmf"):
+        mesh = read_mesh(mesh_path_with_slash + "tetra_mesh.xdmf")
         print('3d mesh')
 
         result = mesh
 
     else:
-        if cmd.check_if_file_exists(mesh_path_with_slash + "/triangle_mesh.xdmf"):
-            mesh = read_mesh(mesh_path_with_slash + "/triangle_mesh.xdmf")
+        if cmd.check_if_file_exists(mesh_path_with_slash + "triangle_mesh.xdmf"):
+            mesh = read_mesh(mesh_path_with_slash + "triangle_mesh.xdmf")
             print('2d mesh')
 
             result = mesh
 
         else:
-            if cmd.check_if_file_exists(mesh_path_with_slash + "/line_mesh.xdmf"):
-                mesh = read_mesh(mesh_path_with_slash + "/line_mesh.xdmf")
+            if cmd.check_if_file_exists(mesh_path_with_slash + "line_mesh.xdmf"):
+                mesh = read_mesh(mesh_path_with_slash + "line_mesh.xdmf")
                 print('1d mesh')
 
                 result = mesh

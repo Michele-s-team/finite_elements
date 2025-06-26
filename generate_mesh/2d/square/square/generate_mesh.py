@@ -148,7 +148,11 @@ msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_director
 
 #####
 # create the submesh and its functions to read triangles and lines
-submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+parent_mesh = msh.read_mesh(output_directory)
+sf = msh.read_mesh_components(parent_mesh, 2, output_directory + "triangle_mesh.xdmf")
+
+
+submesh_out = SubMesh(msh.read_mesh(output_directory), sf, rpam.parameters["surface_out_id"])
 
 sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
 mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
