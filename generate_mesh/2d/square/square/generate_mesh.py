@@ -154,6 +154,7 @@ sf = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim(), output_
 mf = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim()-1, output_directory + "line_mesh.xdmf")
 
 submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
+boundary_mesh = BoundaryMesh(submesh_out, "exterior", order=True)
 
 sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
 mf_submesh_out = msh.transfer_facet_tags_to_submesh(submesh_out, submesh_out, mf)
@@ -162,5 +163,11 @@ with XDMFFile(output_directory + "triangle_sub_mesh.xdmf") as xdmf:
     xdmf.write(submesh_out)
     xdmf.write(sf_submesh_out)
 #####
+
+boundary_facet_markers = MeshFunction("size_t", boundary_mesh, 1, 0)
+
+with XDMFFile(output_directory + "boundary_lines_submesh.xdmf") as xdmf:
+    xdmf.write(boundary_mesh)
+    xdmf.write(boundary_facet_markers)
 
 model.__exit__()
