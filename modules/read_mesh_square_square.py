@@ -27,7 +27,6 @@ ds_out_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=param
 ds_out_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"])
 
 
-print(f"xxx = {parameters['line_in_l_id']}")
 
 # line elements for in square
 ds_in_l = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"])
@@ -52,10 +51,13 @@ print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flus
 
 
 # Define boundaries and obstacle
-# boundary = 'on_boundary'
-# boundary_l = f'near(x[0], 0.0)'
-# boundary_r = f'near(x[0], {parameters["L"]})'
-# boundary_lr = f'near(x[0], 0) || near(x[0], {parameters["L"]})'
-# boundary_tb = f'near(x[1], 0) || near(x[1], {parameters["h"]})'
-# boundary_square = f'on_boundary && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) > {(parameters["r"] + calc.min_dist_c_r_rectangle(parameters["L"], parameters["h"], parameters["c_r"])) / 2}'
-# boundary_circle = f'on_boundary && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < {(parameters["r"] + calc.min_dist_c_r_rectangle(parameters["L"], parameters["h"], parameters["c_r"])) / 2}'
+boundary = 'on_boundary'
+boundary_out_l = f'near(x[0], 0.0)'
+boundary_out_r = f'near(x[0], {parameters["L"]})'
+boundary_out_t = f'near(x[1], {parameters["h"]})'
+boundary_out_b = f'near(x[1], 0.0)'
+boundary_out_lr = f'({boundary_out_l}) || ({boundary_out_r})'
+boundary_out_tb = f'({boundary_out_t}) || ({boundary_out_b})'
+boundary_out = f'({boundary_out_lr}) || ({boundary_out_tb})'
+
+
