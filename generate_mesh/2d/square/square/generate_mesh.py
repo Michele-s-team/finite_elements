@@ -7,6 +7,7 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/square"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
+from fenics import *
 import gmsh
 import pygmsh
 import sys
@@ -148,15 +149,18 @@ msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_director
 
 #####
 # create the submesh and its functions to read triangles and lines
-parent_mesh = msh.read_mesh(output_directory)
-sf = msh.read_mesh_components(parent_mesh, 2, output_directory + "triangle_mesh.xdmf")
+parent_mesh = msh.read_mesh(output_directory + 'triangle_mesh.xdmf')
+sf = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim(), output_directory + "triangle_mesh.xdmf")
+mf = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim()-1, output_directory + "line_mesh.xdmf")
 
-
-submesh_out = SubMesh(msh.read_mesh(output_directory), sf, rpam.parameters["surface_out_id"])
+submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
 
 sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
-mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
+mf_submesh_out = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh_out, mf)
 
+with XDMFFile(output_directory + "triangle_sub_mesh.xdmf") as xdmf:
+    xdmf.write(submesh_out)
+    xdmf.write(sf_submesh_out)
 
 #####
 
