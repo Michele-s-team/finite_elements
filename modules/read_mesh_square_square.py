@@ -30,9 +30,7 @@ submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
 sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
 mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
 
-
-
-#1. create line and surface elements for mesh
+# 1. create line and surface elements for mesh
 # test for surface elements
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
 dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
@@ -60,7 +58,7 @@ ds_in = ds_in_lr + ds_in_tb
 
 ds = ds_in + ds_out
 
-#1.  create line and surface elements for submesh
+# 1.  create line and surface elements for submesh
 # create the measure dx_submesh_out correspnding to the triangles of submesh_out
 
 dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=parameters["surface_out_id"])
@@ -79,7 +77,7 @@ import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
-#1.  Define boundaries
+# 1.  Define boundaries
 boundary = 'on_boundary'
 
 # outer boundaries
@@ -92,10 +90,10 @@ boundary_out_tb = f'({boundary_out_t}) || ({boundary_out_b})'
 boundary_out = f'({boundary_out_lr}) || ({boundary_out_tb})'
 
 # inner boundaries
-boundary_in_l = f'near(x[0], {parameters["p"][0]})'
-boundary_in_r = f'near(x[0], {parameters["p"][0] + parameters["L_in"]})'
-boundary_in_t = f'near(x[1], {parameters["p"][1] + parameters["h_in"]})'
-boundary_in_b = f'near(x[1], {parameters["p"][1]})'
+boundary_in_l = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_out_t} && !{boundary_out_b}'
+boundary_in_r = f'on_boundary && near(x[0], {parameters["p"][0] + parameters["L_in"]}) && !{boundary_out_t} && !{boundary_out_b}'
+boundary_in_t = f'on_boundary && near(x[1], {parameters["p"][1] + parameters["h_in"]}) && !{boundary_out_l} && !{boundary_out_r}'
+boundary_in_b = f'on_boundary && near(x[1], {parameters["p"][1]}) && !{boundary_out_l} && !{boundary_out_r}'
 boundary_in_lr = f'({boundary_in_l}) || ({boundary_in_r})'
 boundary_in_tb = f'({boundary_in_t}) || ({boundary_in_b})'
 boundary_in = f'({boundary_in_lr}) || ({boundary_in_tb})'
