@@ -41,6 +41,8 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
+
+
 J = derivative(vp.F, fsp.u, fsp.J_u)
 problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
@@ -58,13 +60,19 @@ params = {'nonlinear_solver': 'newton',
           }
 solver.parameters.update(params)
 
-# J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
-# problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
-# solver_pp = NonlinearVariationalSolver(problem_pp)
+J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
+problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
+solver_pp = NonlinearVariationalSolver(problem_pp)
 
 # solve original problem
 solver.solve()
 # solve pp problem
 solver_pp.solve()
+
+# CHANGE VARIATIONAL PROBLEM OR MESH HERE
+# import print_out_bc_ring
+# import print_out_bc_ring_slice
+# import print_out_bc_square_no_circle
+# import print_out_bc_square
 
 prout_bc = importlib.import_module(swi.prout_bc)
