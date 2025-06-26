@@ -16,6 +16,14 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
+
+
+#
+submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+
+
+
+#
 # test for surface elements
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
 dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
