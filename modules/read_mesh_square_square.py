@@ -58,20 +58,37 @@ ds_in = ds_in_lr + ds_in_tb
 
 ds = ds_in + ds_out
 
+
+
 # 1.  create line and surface elements for submesh
 # create the measure dx_submesh_out correspnding to the triangles of submesh_out
 
 dx_submesh_out = Measure("dx", domain=submesh_out, subdomain_data=sf_submesh_out, subdomain_id=parameters["surface_out_id"])
 
+# line elements for out square
 ds_submesh_out_out_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
 ds_submesh_out_out_r = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_r_id"])
 ds_submesh_out_out_t = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_t_id"])
 ds_submesh_out_out_b = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_b_id"])
 
+# line elements for in square
 ds_submesh_out_in_l = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_l_id"])
 ds_submesh_out_in_r = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_r_id"])
 ds_submesh_out_in_t = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_t_id"])
 ds_submesh_out_in_b = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_in_b_id"])
+
+
+ds_submesh_out_out_lr = ds_submesh_out_out_l + ds_submesh_out_out_r
+ds_submesh_out_out_tb = ds_submesh_out_out_t + ds_submesh_out_out_b
+
+ds_submesh_out_in_lr = ds_submesh_out_in_l + ds_submesh_out_in_r
+ds_submesh_out_in_tb = ds_submesh_out_in_t + ds_submesh_out_in_b
+
+ds_submesh_out_out = ds_submesh_out_out_lr + ds_submesh_out_out_tb
+ds_submesh_out_in = ds_submesh_out_in_lr + ds_submesh_out_in_tb
+
+ds_submesh_out = ds_submesh_out_in + ds_submesh_out_out
+
 
 import check_mesh_tags_square_square
 
