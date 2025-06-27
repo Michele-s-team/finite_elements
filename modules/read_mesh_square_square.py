@@ -95,20 +95,24 @@ print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flus
 #Define boundaries
 boundary = 'on_boundary'
 
+empty = [''] * len(lmsh.sub_meshes)
+boundary_l, boundary_r,  boundary_t, boundary_b, boundary_lr, boundary_tb, boundary_lrtb = empty, empty, empty, empty, empty, empty, empty
+
+
 # outer boundaries (sub_mesh_1)
-boundary_out_l = f'near(x[0], {0})'
-boundary_out_r = f'near(x[0], {parameters["L"]})'
-boundary_out_t = f'near(x[1], {parameters["h"]})'
-boundary_out_b = f'near(x[1], {0})'
-boundary_out_lr = f'({boundary_out_l}) || ({boundary_out_r})'
-boundary_out_tb = f'({boundary_out_t}) || ({boundary_out_b})'
-boundary_out = f'({boundary_out_lr}) || ({boundary_out_tb})'
+boundary_l[1] = f'near(x[0], {0})'
+boundary_r[1] = f'near(x[0], {parameters["L"]})'
+boundary_t[1] = f'near(x[1], {parameters["h"]})'
+boundary_b[1] = f'near(x[1], {0})'
+boundary_lr[1] = f'({boundary_l[1]}) || ({boundary_r[1]})'
+boundary_tb[1] = f'({boundary_t[1]}) || ({boundary_b[1]})'
+boundary_lrtb[1] = f'({boundary_lr[1]}) || ({boundary_tb[1]})'
 
 # inner boundaries (sub_mesh_0)
-boundary_in_l = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_out_t} && !{boundary_out_b}'
-boundary_in_r = f'on_boundary && near(x[0], {parameters["p"][0] + parameters["L_in"]}) && !{boundary_out_t} && !{boundary_out_b}'
-boundary_in_t = f'on_boundary && near(x[1], {parameters["p"][1] + parameters["h_in"]}) && !{boundary_out_l} && !{boundary_out_r}'
-boundary_in_b = f'on_boundary && near(x[1], {parameters["p"][1]}) && !{boundary_out_l} && !{boundary_out_r}'
-boundary_in_lr = f'({boundary_in_l}) || ({boundary_in_r})'
-boundary_in_tb = f'({boundary_in_t}) || ({boundary_in_b})'
-boundary_in = f'({boundary_in_lr}) || ({boundary_in_tb})'
+boundary_l[0] = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_t[1]} && !{boundary_b[1]}'
+boundary_r[0] = f'on_boundary && near(x[0], {parameters["p"][0] + parameters["L_in"]}) && !{boundary_t[1]} && !{boundary_b[1]}'
+boundary_t[0] = f'on_boundary && near(x[1], {parameters["p"][1] + parameters["h_in"]}) && !{boundary_l[1]} && !{boundary_r[1]}'
+boundary_b[0] = f'on_boundary && near(x[1], {parameters["p"][1]}) && !{boundary_l[1]} && !{boundary_r[1]}'
+boundary_lr[0] = f'({boundary_l[0]}) || ({boundary_r[0]})'
+boundary_tb[0] = f'({boundary_t[0]}) || ({boundary_b[0]})'
+boundary_lrtb[0] = f'({boundary_lr[0]}) || ({boundary_tb[0]})'
