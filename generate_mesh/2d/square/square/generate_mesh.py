@@ -9,6 +9,7 @@ Example:
 
 from fenics import *
 import gmsh
+import os
 import pygmsh
 import sys
 
@@ -135,7 +136,7 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-msh.generate_sub_mesh(output_directory, output_directory + 'sub_mesh_in', rpam.parameters["surface_in_id"])
-msh.generate_sub_mesh(output_directory, output_directory + 'sub_mesh_out', rpam.parameters["surface_out_id"])
+msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["surface_in_id"])
+msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["surface_out_id"])
 
 model.__exit__()
