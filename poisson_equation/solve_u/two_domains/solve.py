@@ -5,7 +5,7 @@ The Hessian of u is solved in a post-processing (pp) variational problem, becaus
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 Examples:
-     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_square $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_square $MESH_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -59,3 +59,4 @@ for i in range(len(rmsh.lmsh.sub_meshes)):
 solver_pp.solve()
 '''
 prout_bc = importlib.import_module(swi.prout_bc)
+import print_out_solution
