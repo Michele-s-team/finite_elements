@@ -1,5 +1,16 @@
 '''
 Notation:
+- parent_mesh: the total mesh, containing both the outer and the inner part
+- sub_mesh: either of the parts of the total mesh
+
+- sf_sub_mesh: a list of map functions, where sf_sub_mesh[i] is the map function for the triangles of the i-th sub_mesh
+- mf_sub_mesh: a list of map functions, where mf_sub_mesh[i] is the map function for the lines of the i-th sub_mesh
+
+- dx_parent_mesh: a list of suerface elemetns of the parent mesh: dx_parent_mesh[i] is the surface elements of the i-th part of the parent mesh
+- ds_parent_mesh_l: a list of line elements of the parent mesh: ds_parent_mesh_l[i] is the line element corresponding to the left boundary of the i-th part of the parent mesh
+- ... similarly for r, t, b ...
+- ds_parent_mesh_lr: a list of line elements of the parent mesh: ds_parent_mesh_lr[i] is the line element corresponding to the left + right boundary of the i-th part of the parent mesh
+- ... similarly for tb, and for ds_parent_mesh ... 
 '''
 
 from fenics import *
