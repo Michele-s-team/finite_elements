@@ -42,7 +42,9 @@ if 'prune_z' = true (false), the z component will be removed from the mesh
 
 def write_mesh_components(infile, outfile, component_type, prune_z):
     mesh_from_file = meshio.read(infile)
+    # print(f'type of mesh_from_file  = {type(mesh_from_file)}')
     component_mesh = create_mesh(mesh_from_file, component_type, prune_z)
+    # print(f'type of component _mesh  = {type(component_mesh)}')
     meshio.write(outfile, component_mesh)
 
 
@@ -1320,6 +1322,8 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # create the boundary mesh of sub_mesh
     sub_mesh_boundary = BoundaryMesh(sub_mesh, "exterior", order=True)
 
+    # print(f'type of sub_mesh: {type(sub_mesh)}')
+
     # create entity maps of sub_mesh for triangles and lines
     sf_sub_mesh = transfer_cell_tags_to_submesh(sub_mesh, sf_parent_mesh)
     mf_sub_mesh = transfer_facet_tags_to_submesh(parent_mesh, sub_mesh, mf_parent_mesh)
@@ -1331,5 +1335,10 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     write_mesh(sub_mesh, submesh_path_slash + "triangle_mesh.xdmf", sf_sub_mesh)
     # write the lines of the boundary mesh to file
     write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
+    # print  submesh vertices to csv file
+    io.print_mesh_vertices_to_csv(sub_mesh, submesh_path_slash + "vertices.csv")
+    # print sub mesh metadata
+    # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
     return sub_mesh, sub_mesh_boundary
+
