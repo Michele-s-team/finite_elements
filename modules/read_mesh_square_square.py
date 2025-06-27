@@ -26,11 +26,9 @@ for sub_mesh in lmsh.sub_meshes:
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# 1. create line and surface elements for mesh
-# test for surface elements
+# create line and surface elements for the parent mesh
 dx_parent_mesh, ds_parent_mesh_l, ds_parent_mesh_r, ds_parent_mesh_t, ds_parent_mesh_b, ds_parent_mesh_lr, ds_parent_mesh_tb, ds_parent_mesh = [], [], [], [], [], [], [], []
 
-# line elements for in square
 ds_parent_mesh_l.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_sub_mesh_0_l_id"]))
 ds_parent_mesh_l.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_sub_mesh_1_l_id"]))
 
@@ -54,8 +52,6 @@ for i in range(len(lmsh.sub_meshes)):
 ds = ds_parent_mesh[0] + ds_parent_mesh[1]
 
 # create line and surface elements for sub_meshes
-# create the measure dx_sub_mesh_ correspnding to the triangles of sub_mesh
-
 dx_sub_mesh, ds_sub_mesh_l, ds_sub_mesh_r, ds_sub_mesh_t, ds_sub_mesh_b, ds_sub_mesh_lr, ds_sub_mesh_tb, ds_sub_mesh = [], [], [], [], [], [], [], []
 
 for i in range(len(lmsh.sub_meshes)):
@@ -76,10 +72,10 @@ import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
-# 1.  Define boundaries
+#Define boundaries
 boundary = 'on_boundary'
 
-# outer boundaries
+# outer boundaries (sub_mesh_1)
 boundary_out_l = f'near(x[0], {0})'
 boundary_out_r = f'near(x[0], {parameters["L"]})'
 boundary_out_t = f'near(x[1], {parameters["h"]})'
@@ -88,7 +84,7 @@ boundary_out_lr = f'({boundary_out_l}) || ({boundary_out_r})'
 boundary_out_tb = f'({boundary_out_t}) || ({boundary_out_b})'
 boundary_out = f'({boundary_out_lr}) || ({boundary_out_tb})'
 
-# inner boundaries
+# inner boundaries (sub_mesh_0)
 boundary_in_l = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_out_t} && !{boundary_out_b}'
 boundary_in_r = f'on_boundary && near(x[0], {parameters["p"][0] + parameters["L_in"]}) && !{boundary_out_t} && !{boundary_out_b}'
 boundary_in_t = f'on_boundary && near(x[1], {parameters["p"][1] + parameters["h_in"]}) && !{boundary_out_l} && !{boundary_out_r}'
