@@ -33,4 +33,6 @@ for i in range(len(lmsh.sub_meshes)):
     J_hess_u.append(TrialFunction(T[i]))
 
 u[1].set_allow_extrapolation(True)
+
+# a function which allows to bridge between sub_mesh[1] and sub_mesh[0], and thus to impose the BCs for problem on sub_mesh[0] in terms of the solutoin of the problem on sub_mesh[1]
 u_1_on_0 = Function(Q[1])

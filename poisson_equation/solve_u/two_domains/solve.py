@@ -38,7 +38,7 @@ J = [None] * len(rmsh.lmsh.sub_meshes)
 problem = [None] * len(rmsh.lmsh.sub_meshes)
 solver = [None] * len(rmsh.lmsh.sub_meshes)
 
-# solve problem 1
+# solve problem 1: the BCs have been already set in vp
 
 J[1] = derivative(vp.F[1], fsp.u[1], fsp.J_u[1])
 problem[1] = NonlinearVariationalProblem(vp.F[1], fsp.u[1], vp.bcs[1], J[1])
@@ -47,9 +47,14 @@ solver[1].parameters.update(params)
 
 solver[1].solve()
 
+
+
 # solve problem 0
 
+# set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp,u[1] obtained above
+# project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
 fsp.u_1_on_0.assign(project(fsp.u[1], fsp.Q[0]))
+# impose the BCs for problem on sub_mesh[0] in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
 vp.bcs[0] = [ \
     DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
     DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \

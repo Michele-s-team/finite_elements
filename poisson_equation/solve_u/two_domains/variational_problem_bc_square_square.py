@@ -56,14 +56,14 @@ for p in range(len(rmsh.lmsh.sub_meshes)):
     fsp.grad_u[p].interpolate(grad_u_expression(element=fsp.V[p].ufl_element()))
     fsp.f[p].interpolate(laplacian_u_expression(element=fsp.Q[p].ufl_element()))
 
-bcs = []
-# boundary conditions for sub_mesh[0]: constrain u[0] on the whole boundary of sub_mesh[0]
-bcs.append(DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.boundary_lrtb[0]))
+bcs  = [None] * len(rmsh.lmsh.sub_meshes)
+
+
 # boundary conditions for sub_mesh[1]: constrain u[1] on the whole boundary of sub_mesh[1], i.e., on the inner and outer rectangle
-bcs.append([ \
+bcs[1] = [ \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[0]), \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[1]) \
-    ])
+    ]
 
 # sub_mesh_facet_normal = []
 # for p in range(len(rmsh.lmsh.sub_meshes)):
