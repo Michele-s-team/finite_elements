@@ -35,16 +35,17 @@ r_mesh = lmsh.mesh.hmin()
 dx, ds_l, ds_r, ds_t, ds_b, ds_lr, ds_tb, ds_sub_mesh = [], [], [], [], [], [], [], []
 
 # line elements for in square
-ds_l[0].append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"]))
-ds_r[0].append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_r_id"]))
-ds_t[0].append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_t_id"]))
-ds_b[0].append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_b_id"]))
+ds_l.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"]))
+ds_l.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"]))
 
-# line elements for out square
-ds_l[1].append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"]))
-ds_r[1].append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"]))
-ds_t[1].append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"]))
-ds_b[1].append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"]))
+ds_r.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_r_id"]))
+ds_r.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"]))
+
+ds_t.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_t_id"]))
+ds_t.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"]))
+
+ds_b.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_b_id"]))
+ds_b.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"]))
 
 for i in range(len(lmsh.sub_meshes)):
     dx.append(Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters[f"sub_mesh_{i}_id"]))
