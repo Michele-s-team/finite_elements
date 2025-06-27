@@ -95,10 +95,14 @@ print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flus
 #Define boundaries
 boundary = 'on_boundary'
 
-empty = [''] * len(lmsh.sub_meshes)
-boundary_l, boundary_r,  boundary_t, boundary_b, boundary_lr, boundary_tb, boundary_lrtb = empty, empty, empty, empty, empty, empty, empty
+boundary_l  = [''] * len(lmsh.sub_meshes)
+boundary_r  = [''] * len(lmsh.sub_meshes)
+boundary_t  = [''] * len(lmsh.sub_meshes)
+boundary_b  = [''] * len(lmsh.sub_meshes)
+boundary_lr = [''] * len(lmsh.sub_meshes)
+boundary_tb = [''] * len(lmsh.sub_meshes)
+boundary_lrtb = [''] * len(lmsh.sub_meshes)
 
-boundary_test = f'near(x[0], {0})'
 
 # outer boundaries (sub_mesh_1)
 boundary_l[1] = f'near(x[0], {0})'

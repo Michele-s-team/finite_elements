@@ -102,10 +102,6 @@ bcs.append([ \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[1]) \
     ])
 
-
-print(f'boundary_test = {rmsh.boundary_test}')
-print(f'boundary_l[1] = {(rmsh.boundary_l)[1]}')
-
 sub_mesh_facet_normal = []
 for i in range(len(rmsh.lmsh.sub_meshes)):
     sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[i]))
