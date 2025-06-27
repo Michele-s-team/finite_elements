@@ -1300,8 +1300,11 @@ Input values:
 - 'parent_mesh_path': the path where the field triangle_mesh.xdmf and line_mesh.xdmf are stored
 - 'sub_mesh_path': the path where triangle_mesh.xdmf and line_mesh.xdmf of the submesh whill be stored
 - 'sub_mesh_id' : the id with which the triangles of the submesh are tagged in the parent mesh
+
+Return values:
+- 'sub_mesh', 'boundary_sub_mesh': the sub_mesh and the mesh given by the boundary of the sub_mesh
 '''
-def generate_submesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
+def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
     parent_mesh_path_slash = io.add_trailing_slash(parent_mesh_path)
     submesh_path_slash = io.add_trailing_slash(sub_mesh_path)
@@ -1328,3 +1331,5 @@ def generate_submesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     write_mesh(sub_mesh, submesh_path_slash + "triangle_mesh.xdmf", sf_sub_mesh)
     # write the lines of the boundary mesh to file
     write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
+
+    return sub_mesh, sub_mesh_boundary
