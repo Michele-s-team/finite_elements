@@ -98,6 +98,7 @@ boundary = 'on_boundary'
 empty = [''] * len(lmsh.sub_meshes)
 boundary_l, boundary_r,  boundary_t, boundary_b, boundary_lr, boundary_tb, boundary_lrtb = empty, empty, empty, empty, empty, empty, empty
 
+boundary_test = f'near(x[0], {0})'
 
 # outer boundaries (sub_mesh_1)
 boundary_l[1] = f'near(x[0], {0})'

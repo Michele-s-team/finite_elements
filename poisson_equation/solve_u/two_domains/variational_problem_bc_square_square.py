@@ -3,7 +3,6 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import load_mesh as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -104,6 +103,8 @@ bcs.append([ \
     ])
 
 
+print(f'boundary_test = {rmsh.boundary_test}')
+print(f'boundary_l[1] = {(rmsh.boundary_l)[1]}')
 
 sub_mesh_facet_normal = []
 for i in range(len(rmsh.lmsh.sub_meshes)):
