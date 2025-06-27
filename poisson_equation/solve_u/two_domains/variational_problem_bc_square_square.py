@@ -5,7 +5,6 @@ import ufl as ufl
 import function_spaces as fsp
 import load_mesh as lmsh
 import switch_problem as swi
-from load_mesh import sub_meshes
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -88,36 +87,35 @@ class hess_u_exact_expression(UserExpression):
         return (2, 2)
 
 
-for i in range(len(lmsh.sub_meshes)):
+for i in range(len(rmsh.lmsh.sub_meshes)):
     fsp.u_exact[i].interpolate(u_exact_expression(element=fsp.Q[i].ufl_element()))
     fsp.grad_u[i].interpolate(grad_u_expression(element=fsp.V[i].ufl_element()))
     fsp.f[i].interpolate(laplacian_u_expression(element=fsp.Q[i].ufl_element()))
 
     fsp.hess_u_exact[i].interpolate(hess_u_exact_expression(element=fsp.T[i].ufl_element()))
 
-bc_tb, bc_lr = [], []
+bcs = []
+# boundary conditions for sub_mesh[0]: constrain u[0] on the whole boundary of sub_mesh[0]
+bcs.append(DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.boundary_lrtb[0]))
+# boundary conditions for sub_mesh[1]: constrain u[1] on the whole boundary of sub_mesh[1], i.e., on the inner and outer rectangle
+bcs.append([ \
+    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[0]), \
+    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[1]) \
+    ])
 
-for i in range(len(lmsh.sub_meshes)):
-    bc_tb.append(DirichletBC(fsp.Q[i], fsp.u_exact[i], rmsh.boundary_tb[i]))
-    bc_lr = DirichletBC(fsp.Q[i], fsp.u_exact[i], rmsh.boundary_lr[i])
 
-bcs = [[bc_tb, bc_lr] for i in range(len(lmsh.sub_meshes))]
 
 sub_mesh_facet_normal = []
-for i in range(len(lmsh.sub_meshes)):
-    sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[i]))
+for i in range(len(rmsh.lmsh.sub_meshes)):
+    sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[i]))
 
 # variational functional for the original problem (poisson equation)
 # here the + and - are used to select the inner or outer par of quantities on interiors ds only
 F = []
-for p in range(len(lmsh.sub_meshes)):
+for p in range(len(rmsh.lmsh.sub_meshes)):
     F.append( \
-        (dot(grad(fsp.u[p]), grad(fsp.nu_u[p])) + fsp.f[p] * fsp.nu_u[p]) * rmsh.dx_sub_mesh[p] \
-        - sub_mesh_facet_normal[p][i] * fsp.grad_u[p][i] * fsp.nu_u[p] * rmsh.ds_sub_mesh_lr \
-        - sub_mesh_facet_normal[p][i] * (fsp.u[p].dx(i)) * fsp.nu_u[p] * rmsh.ds_sub_mesh_tb \
-        - sub_mesh_facet_normal[p][i] * (fsp.u[p].dx(i)) * fsp.nu_u[p] * rmsh.ds_sub_mesh_lr \
-        - sub_mesh_facet_normal[p][i] * fsp.grad_u[p][i] * fsp.nu_u[p] * rmsh.ds_sub_mesh_tb \
-        )
+        (dot(grad(fsp.u[p]), grad(fsp.nu_u[p])) + fsp.f[p] * fsp.nu_u[p]) * rmsh.dx_sub_mesh[p]
+    )
 
 # # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 # F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx_out \
