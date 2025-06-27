@@ -19,18 +19,7 @@ r_mesh = lmsh.mesh.hmin()
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 
-# # CHANGE PARAMETERS HERE
-# L = 2.2
-# h = 0.41
-# # ellipse center
-# c = [0.25, 0.2, 0]
-# # ellipse semi-major axis
-# a = 0.1
-# # ellipse semi-minor axis
-# b = 0.05
-# # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-# phi = 0
-# CHANGE PARAMETERS HERE
+
 
 focus = np.subtract(parameters["c"], [np.sqrt(parameters["a"] ** 2 - parameters["b"] ** 2), 0, 0])
 
