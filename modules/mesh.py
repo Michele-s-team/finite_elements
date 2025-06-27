@@ -1,3 +1,4 @@
+import colorama as col
 import command as cmd
 from fenics import *
 import numpy as np
@@ -1280,7 +1281,8 @@ def read_from_file(mesh_path):
 
                 result = mesh, sf
             else:
-                print('No mesh could be loaded!')
+
+                print(f"{col.Fore.RED}No mesh could be loaded!{col.Style.RESET_ALL}")
 
                 result = []
 
