@@ -51,47 +51,10 @@ class laplacian_u_expression(UserExpression):
         return (1,)
 
 
-class hess_u_exact_expression(UserExpression):
-    def init(self, **kwargs):
-        super().init(**kwargs)
-
-    def eval(self, values, x):
-        # test case 1
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
-
-        # test case 2
-        # values[0] = 4 * np.pi * (
-        #         -4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2)
-        #         - (np.pi * (1 + 4 * x[0] ** 2 - 8 * x[0] * x[1] + 4 * x[1] ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
-        #            + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # )
-        #
-        # values[1] = 4 * np.pi * (
-        #         (np.pi * (-1 + 4 * x[0] ** 2 - 8 * x[0] * x[1] + 4 * x[1] ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
-        #          + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # )
-        #
-        # values[2] = values[1]
-        #
-        # values[3] = 4 * np.pi * (
-        #         4 * np.pi * (x[0] - x[1]) * np.cos(2 * np.pi * (x[0] + x[1])) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2)
-        #         - (np.pi * (1 + 4 * x[0] ** 2 - 8 * x[0] * x[1] + 4 * x[1] ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
-        #            + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1]))
-        # )
-
-    def value_shape(self):
-        return (2, 2)
-
-
-for i in range(len(rmsh.lmsh.sub_meshes)):
-    fsp.u_exact[i].interpolate(u_exact_expression(element=fsp.Q[i].ufl_element()))
-    fsp.grad_u[i].interpolate(grad_u_expression(element=fsp.V[i].ufl_element()))
-    fsp.f[i].interpolate(laplacian_u_expression(element=fsp.Q[i].ufl_element()))
-
-    fsp.hess_u_exact[i].interpolate(hess_u_exact_expression(element=fsp.T[i].ufl_element()))
+for p in range(len(rmsh.lmsh.sub_meshes)):
+    fsp.u_exact[p].interpolate(u_exact_expression(element=fsp.Q[p].ufl_element()))
+    fsp.grad_u[p].interpolate(grad_u_expression(element=fsp.V[p].ufl_element()))
+    fsp.f[p].interpolate(laplacian_u_expression(element=fsp.Q[p].ufl_element()))
 
 bcs = []
 # boundary conditions for sub_mesh[0]: constrain u[0] on the whole boundary of sub_mesh[0]
@@ -102,19 +65,18 @@ bcs.append([ \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[1]) \
     ])
 
-sub_mesh_facet_normal = []
-for i in range(len(rmsh.lmsh.sub_meshes)):
-    sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[i]))
+# sub_mesh_facet_normal = []
+# for p in range(len(rmsh.lmsh.sub_meshes)):
+#     sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[p]))
 
-# variational functional for the original problem (poisson equation)
-# here the + and - are used to select the inner or outer par of quantities on interiors ds only
+# variational functional
 F = []
-for p in range(len(rmsh.lmsh.sub_meshes)):
-    F.append( \
-        (dot(grad(fsp.u[p]), grad(fsp.nu_u[p])) + fsp.f[p] * fsp.nu_u[p]) * rmsh.dx_sub_mesh[p]
-    )
 
-# # variational functional for post-processing problem (pp) to obtain the hessian (hess)
-# F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx_out \
-#        - (sub_mesh_out_facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds_out\
-#        - (sub_mesh_out_facet_normal('+')[i] * (fsp.u.dx(j))('+') * fsp.nu_hess_u('+')[i, j]) * rmsh.ds_in
+# functional for sub_mesh[0]
+F.append( \
+    (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0]
+)
+# functional for sub_mesh[1]
+F.append( \
+    (fsp.u[1].dx(i) * fsp.nu_u[1].dx(i) + fsp.f[1] * fsp.nu_u[1]) * rmsh.dx_sub_mesh[1]
+)

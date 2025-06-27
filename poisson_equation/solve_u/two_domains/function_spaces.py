@@ -31,3 +31,6 @@ for i in range(len(lmsh.sub_meshes)):
     nu_hess_u.append(TestFunction(T[i]))
     hess_u_exact.append(Function(T[i]))
     J_hess_u.append(TrialFunction(T[i]))
+
+u[1].set_allow_extrapolation(True)
+u_1_on_0 = Function(Q[1])
