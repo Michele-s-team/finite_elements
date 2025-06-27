@@ -135,31 +135,7 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-#####
-# create the submesh and its functions to read triangles and lines
-
-# # read the parent mesh from file
-# parent_mesh = msh.read_mesh(output_directory + 'triangle_mesh.xdmf')
-#
-# # create entity maps fo the parent mesh
-# sf_parent_mesh = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim(), output_directory + "triangle_mesh.xdmf")
-# mf_parent_mesh = msh.read_mesh_components(parent_mesh, parent_mesh.topology().dim() - 1, output_directory + "line_mesh.xdmf")
-#
-# # extract the outer submesh from the parent mesh, by picking only the triangles with rpam.parameters["surface_out_id"]
-# submesh = SubMesh(parent_mesh, sf_parent_mesh, rpam.parameters["surface_out_id"])
-# # create the boundary mesh of submesh
-# boundary_submesh = BoundaryMesh(submesh, "exterior", order=True)
-#
-# # create entity maps of submesh for triangles and lines
-# sf_submesh = msh.transfer_cell_tags_to_submesh(submesh, sf_parent_mesh)
-# mf_submesh = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh, mf_parent_mesh)
-#
-# # create entity map for boundary mesh for lines
-# mf_boundary_submesh = msh.transfer_facet_tags_to_bounday_mesh(boundary_submesh, mf_submesh)
-#
-# # write the triangles for submesh to file
-# msh.write_mesh(submesh, output_directory + "triangle_submesh.xdmf", sf_submesh)
-# # write the lines of the boundary mesh to file
-# msh.write_mesh(boundary_submesh, output_directory + "line_submesh.xdmf", mf_boundary_submesh)
+msh.generate_sub_mesh(output_directory, output_directory + 'sub_mesh_in', rpam.parameters["surface_in_id"])
+msh.generate_sub_mesh(output_directory, output_directory + 'sub_mesh_out', rpam.parameters["surface_out_id"])
 
 model.__exit__()
