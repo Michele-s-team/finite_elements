@@ -43,6 +43,7 @@ if 'prune_z' = true (false), the z component will be removed from the mesh
 def write_mesh_components(infile, outfile, component_type, prune_z):
     mesh_from_file = meshio.read(infile)
     component_mesh = create_mesh(mesh_from_file, component_type, prune_z)
+    print(f'type of component _mesh  = {type(component_mesh)}')
     meshio.write(outfile, component_mesh)
 
 
@@ -1332,4 +1333,60 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # write the lines of the boundary mesh to file
     write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
 
+    print(f'type of sub_mesh: {type(sub_mesh)}')
+
+    entity_map = build_entity_map(parent_mesh, sf_parent_mesh, sub_mesh_id)
+
+    meshio_mesh = submesh_to_meshio(sub_mesh, sf_parent_mesh, mf_sub_mesh, entity_map)
+
     return sub_mesh, sub_mesh_boundary
+
+
+def build_entity_map(parent_mesh, subdomain_marker, subdomain_id):
+    """
+    Build a mapping from submesh cell index → parent mesh cell index.
+
+    Arguments:
+        parent_mesh: dolfin.Mesh
+        subdomain_marker: MeshFunction on parent mesh (codim 0)
+        subdomain_id: int, the ID used to extract the submesh
+
+    Returns:
+        A NumPy array of parent mesh cell indices corresponding to submesh cells
+    """
+    parent_cell_indices = []
+
+    for cell in cells(parent_mesh):
+        if subdomain_marker[cell] == subdomain_id:
+            parent_cell_indices.append(cell.index())
+
+    return np.array(parent_cell_indices, dtype=np.int32)
+
+
+def submesh_to_meshio(submesh, cell_marker, facet_marker, entity_map=None):
+    """
+    Convert a dolfin.cpp.mesh.SubMesh to a meshio.Mesh preserving tags.
+
+    Parameters:
+        submesh: dolfin.cpp.mesh.SubMesh instance.
+        cell_marker: MeshFunction for cell markers on parent mesh (codim 0).
+        facet_marker: MeshFunction for facet markers (codim 1) — currently unused.
+        entity_map: np.ndarray mapping submesh cell index -> parent mesh cell index.
+
+    Returns:
+        meshio.Mesh with points, cells, and cell_data preserving tags.
+    """
+    points = submesh.coordinates()
+    if points.shape[1] == 2:
+        points = np.hstack([points, np.zeros((points.shape[0], 1))])
+
+    cells = [("triangle", submesh.cells())]
+
+    cell_data = {}
+    if cell_marker is not None and entity_map is not None:
+        parent_markers = cell_marker.array()
+        mapped_markers = parent_markers[entity_map]
+        cell_data["gmsh:physical"] = [mapped_markers.astype(np.int32)]
+        cell_data["gmsh:geometrical"] = [mapped_markers.astype(np.int32)]
+
+    return meshio.Mesh(points=points, cells=cells, cell_data=cell_data)
