@@ -6,11 +6,20 @@ Notation:
 - sf_sub_mesh: a list of map functions, where sf_sub_mesh[i] is the map function for the triangles of the i-th sub_mesh
 - mf_sub_mesh: a list of map functions, where mf_sub_mesh[i] is the map function for the lines of the i-th sub_mesh
 
-- dx_parent_mesh: a list of suerface elemetns of the parent mesh: dx_parent_mesh[i] is the surface elements of the i-th part of the parent mesh
-- ds_parent_mesh_l: a list of line elements of the parent mesh: ds_parent_mesh_l[i] is the line element corresponding to the left boundary of the i-th part of the parent mesh
-- ... similarly for r, t, b ...
-- ds_parent_mesh_lr: a list of line elements of the parent mesh: ds_parent_mesh_lr[i] is the line element corresponding to the left + right boundary of the i-th part of the parent mesh
-- ... similarly for tb, and for ds_parent_mesh ... 
+* for the parent_mesh:
+    - dx_parent_mesh: a list of suerface elemetns of the parent mesh: dx_parent_mesh[i] is the surface elements of the i-th part of the parent mesh
+    - ds_parent_mesh_l: a list of line elements of the parent mesh: ds_parent_mesh_l[i] is the line element corresponding to the left boundary of the i-th part of the parent mesh
+    - ... similarly for r, t, b ...
+    - ds_parent_mesh_lr: a list of line elements of the parent mesh: ds_parent_mesh_lr[i] is the line element corresponding to the left + right boundary of the i-th part of the parent mesh
+    - ... similarly for tb, and for ds_parent_mesh ...
+    - ds: the boundary line element of the total parent mesh
+
+* for the sub_mesh:
+    - dx_sub_mesh: a list of surface elements of the sub_mesh: dx_sub_mesh[i] is the surface elements of the i-th sub_mesh
+    - ds_sub_mesh_l: a list of line elements of the sub mesh: ds_sub_mesh_l[i] is the line element corresponding to the left boundary of the i-th  sub_mesh
+    - ... similarly for r, t, b ...
+    - ds_sub_mesh_lr: a list of line elements of the sub_mesh: ds_sub_mesh_lr[i] is the line element corresponding to the left + right boundary of the i-th sub_mesh
+    - ... similarly for tb ...
 '''
 
 from fenics import *
@@ -38,7 +47,7 @@ for sub_mesh in lmsh.sub_meshes:
 r_mesh = lmsh.mesh.hmin()
 
 # create line and surface elements for the parent mesh
-dx_parent_mesh, ds_parent_mesh_l, ds_parent_mesh_r, ds_parent_mesh_t, ds_parent_mesh_b, ds_parent_mesh_lr, ds_parent_mesh_tb, ds_parent_mesh = [], [], [], [], [], [], [], []
+dx_parent_mesh, ds_parent_mesh_l, ds_parent_mesh_r, ds_parent_mesh_t, ds_parent_mesh_b, ds_parent_mesh_lr, ds_parent_mesh_tb, ds_parent_mesh_lrtb = [], [], [], [], [], [], [], []
 
 ds_parent_mesh_l.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_sub_mesh_0_l_id"]))
 ds_parent_mesh_l.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_sub_mesh_1_l_id"]))
@@ -58,12 +67,12 @@ for i in range(len(lmsh.sub_meshes)):
     ds_parent_mesh_lr.append(ds_parent_mesh_l[i] + ds_parent_mesh_r[i])
     ds_parent_mesh_tb.append(ds_parent_mesh_t[i] + ds_parent_mesh_b[i])
 
-    ds_parent_mesh.append(ds_parent_mesh_lr[i] + ds_parent_mesh_tb[i])
+    ds_parent_mesh_lrtb.append(ds_parent_mesh_lr[i] + ds_parent_mesh_tb[i])
 
-ds = ds_parent_mesh[0] + ds_parent_mesh[1]
+ds_parent_mesh = ds_parent_mesh_lrtb[0] + ds_parent_mesh_lrtb[1]
 
 # create line and surface elements for sub_meshes
-dx_sub_mesh, ds_sub_mesh_l, ds_sub_mesh_r, ds_sub_mesh_t, ds_sub_mesh_b, ds_sub_mesh_lr, ds_sub_mesh_tb, ds_sub_mesh = [], [], [], [], [], [], [], []
+dx_sub_mesh, ds_sub_mesh_l, ds_sub_mesh_r, ds_sub_mesh_t, ds_sub_mesh_b, ds_sub_mesh_lr, ds_sub_mesh_tb, ds_sub_mesh_lrtb = [], [], [], [], [], [], [], []
 
 for i in range(len(lmsh.sub_meshes)):
     dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[i], subdomain_data=sf_sub_mesh[i], subdomain_id=parameters[f"sub_mesh_{i}_id"]))
@@ -76,7 +85,7 @@ for i in range(len(lmsh.sub_meshes)):
     ds_sub_mesh_lr.append(ds_sub_mesh_l[i] + ds_sub_mesh_r[i])
     ds_sub_mesh_tb.append(ds_sub_mesh_t[i] + ds_sub_mesh_b[i])
 
-    ds_sub_mesh.append(ds_sub_mesh_lr[i] + ds_sub_mesh_tb[i])
+    ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[i] + ds_sub_mesh_tb[i])
 
 
 import check_mesh_tags_square_square
