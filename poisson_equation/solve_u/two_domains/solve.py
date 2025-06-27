@@ -59,4 +59,3 @@ for i in range(len(rmsh.lmsh.sub_meshes)):
 solver_pp.solve()
 '''
 prout_bc = importlib.import_module(swi.prout_bc)
-import print_out_solution
