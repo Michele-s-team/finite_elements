@@ -2,8 +2,9 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import boundary_geometry as bgeo
+
 import function_spaces as fsp
+import load_mesh as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -87,11 +88,12 @@ class hess_u_exact_expression(UserExpression):
         return (2, 2)
 
 
-fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q.ufl_element()))
-fsp.grad_u.interpolate(grad_u_expression(element=fsp.V.ufl_element()))
-fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
+for i in range(len(lmsh.sub_meshes)):
+    fsp.u_exact[i].interpolate(u_exact_expression(element=fsp.Q[i].ufl_element()))
+    fsp.grad_u[i].interpolate(grad_u_expression(element=fsp.V[i].ufl_element()))
+    fsp.f[i].interpolate(laplacian_u_expression(element=fsp.Q[i].ufl_element()))
 
-fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
+    fsp.hess_u_exact[i].interpolate(hess_u_exact_expression(element=fsp.T[i].ufl_element()))
 
 bc_out_tb = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_out_tb)
 bc_in_lr = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_in_lr)
