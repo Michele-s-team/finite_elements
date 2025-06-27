@@ -14,32 +14,28 @@ import mesh as msh
 import runtime_arguments as rarg
 
 # read the triangles
-sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
+sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
-mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
+mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology.dim()-1, rarg.args.input_directory + "/line_mesh.xdmf")
+
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 
-# # create the submesh and its functions to read triangles and lines
-# submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
-#
-# sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
-# mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
+#create a list of map functions for triangles and lines for each submesh
+sf_submesh = []
+mf_submesh = []
+for sub_mesh in lmsh.sub_meshes:
+    sf_submesh.append(msh.transfer_cell_tags_to_submesh(sub_mesh, sf))
+    mf_submesh.append(msh.transfer_facet_tags_to_submesh(lmsh.mesh, sub_mesh, mf))
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 # 1. create line and surface elements for mesh
 # test for surface elements
 dx_in = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_in_id"])
 dx_out = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["surface_out_id"])
-
-# line elements for out square
-ds_out_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"])
-ds_out_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"])
-ds_out_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"])
-ds_out_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"])
 
 # line elements for in square
 ds_in_l = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"])
@@ -47,16 +43,23 @@ ds_in_r = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parame
 ds_in_t = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_t_id"])
 ds_in_b = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_b_id"])
 
-ds_out_lr = ds_out_l + ds_out_r
-ds_out_tb = ds_out_t + ds_out_b
+# line elements for out square
+ds_out_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"])
+ds_out_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"])
+ds_out_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"])
+ds_out_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"])
 
 ds_in_lr = ds_in_l + ds_in_r
 ds_in_tb = ds_in_t + ds_in_b
 
-ds_out = ds_out_lr + ds_out_tb
+ds_out_lr = ds_out_l + ds_out_r
+ds_out_tb = ds_out_t + ds_out_b
+
 ds_in = ds_in_lr + ds_in_tb
+ds_out = ds_out_lr + ds_out_tb
 
 ds = ds_in + ds_out
+
 '''
 # 1.  create line and surface elements for submesh
 # create the measure dx_submesh_out correspnding to the triangles of submesh_out
