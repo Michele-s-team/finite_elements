@@ -102,7 +102,7 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in, fu
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 
-
+'''
 #2. check mesh integral in the out sub_mesh
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_out, function_test_integrals_fenics, rmsh.dx_submesh_out, '\int_sub_mesh_out f dx'))
 
@@ -132,7 +132,7 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in, fu
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds_submesh_out, '\int f ds_sub_mesh_out'))
 
-
+'''
 
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

@@ -18,6 +18,13 @@ sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triang
 # read the lines
 mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
+
+# # create the submesh and its functions to read triangles and lines
+# submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+#
+# sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
+# mf_submesh_out = msh.transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
+
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
@@ -50,7 +57,7 @@ ds_out = ds_out_lr + ds_out_tb
 ds_in = ds_in_lr + ds_in_tb
 
 ds = ds_in + ds_out
-
+'''
 # 1.  create line and surface elements for submesh
 # create the measure dx_submesh_out correspnding to the triangles of submesh_out
 
@@ -82,7 +89,7 @@ ds_submesh_out = ds_submesh_out_in + ds_submesh_out_out
 import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
-
+'''
 # 1.  Define boundaries
 boundary = 'on_boundary'
 
