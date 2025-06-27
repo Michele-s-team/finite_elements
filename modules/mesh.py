@@ -1150,12 +1150,12 @@ Return values
 Example of usage: 
     mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
     submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
-    mf_submesh_out = transfer_facet_tags_to_submesh(lmsh.mesh, submesh_out, mf)
+    mf_submesh_out = transfer_facet_tags_to_sub_mesh(lmsh.mesh, submesh_out, mf)
     
 Then you can create a ds on the submesh with 
     ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
 '''
-def transfer_facet_tags_to_submesh(parent_mesh, sub_mesh, mf_parent):
+def transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent):
 
     # Create facet marker on submesh
     mf_sub = MeshFunction('size_t', sub_mesh, 1, 0)
@@ -1190,7 +1190,7 @@ Return values:
 Example of usage: 
     submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
     boundary_mesh = BoundaryMesh(submesh_out, "exterior", order=True)
-    mf_submesh_out = msh.transfer_facet_tags_to_submesh(parent_mesh, submesh_out, mf)
+    mf_submesh_out = msh.transfer_facet_tags_to_sub_mesh(parent_mesh, submesh_out, mf)
     mf_boundary_mesh = msh.transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_submesh_out)
 '''
 
@@ -1223,13 +1223,13 @@ Return values
 Example of usage: 
     sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
     submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
-    sf_submesh_out = msh.transfer_cell_tags_to_submesh(submesh_out, sf)
+    sf_submesh_out = msh.transfer_cell_tags_to_sub_mesh(submesh_out, sf)
 
 Then you can create a ds on the submesh with 
  
 
 '''
-def transfer_cell_tags_to_submesh(sub_mesh, sf_parent):
+def transfer_cell_tags_to_sub_mesh(sub_mesh, sf_parent):
     sf_submesh_out = MeshFunction('size_t', sub_mesh, 2)
     parent_cell_map = sub_mesh.data().array('parent_cell_indices', 2)
 
@@ -1330,8 +1330,8 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # print(f'type of sub_mesh: {type(sub_mesh)}')
 
     # create entity maps of sub_mesh for triangles and lines
-    sf_sub_mesh = transfer_cell_tags_to_submesh(sub_mesh, sf_parent_mesh)
-    mf_sub_mesh = transfer_facet_tags_to_submesh(parent_mesh, sub_mesh, mf_parent_mesh)
+    sf_sub_mesh = transfer_cell_tags_to_sub_mesh(sub_mesh, sf_parent_mesh)
+    mf_sub_mesh = transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent_mesh)
 
     # create entity map for boundary mesh for lines
     mf_boundary_sub_mesh = transfer_facet_tags_to_bounday_mesh(sub_mesh_boundary, mf_sub_mesh)

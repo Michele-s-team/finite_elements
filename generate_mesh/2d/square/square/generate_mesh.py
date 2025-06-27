@@ -107,14 +107,14 @@ gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_in_l_id"], "line_i
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["submesh_1_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["submesh_1_id"], "surface_out")
+gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_1_id"])
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_1_id"], "surface_out")
 
-gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["submesh_0_id"])
-gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["submesh_0_id"], "surface_in")
+gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_id"])
+gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "surface_in")
 
 # set the resolution
-# se resolution resolution_min at distance r_resolution_min from surface_in, and resolution_amx at distance r_resolution_max from submesh_1_id
+# se resolution resolution_min at distance r_resolution_min from surface_in, and resolution_amx at distance r_resolution_max from sub_mesh_1_id
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_in])
 
@@ -136,7 +136,7 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
 
-msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["submesh_0_id"])
-msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["submesh_1_id"])
+msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
+msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
 
 model.__exit__()
