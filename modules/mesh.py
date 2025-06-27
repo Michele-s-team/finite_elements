@@ -1153,7 +1153,7 @@ Example of usage:
     mf_submesh_out = transfer_facet_tags_to_sub_mesh(lmsh.mesh, submesh_out, mf)
     
 Then you can create a ds on the submesh with 
-    ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_out_l_id"])
+    ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
 '''
 def transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent):
 

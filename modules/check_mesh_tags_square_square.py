@@ -115,12 +115,13 @@ for i in range(len(lmsh.sub_meshes)):
     print(f'* sub_mesh {i}:')
     test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx[i], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx'))
 
+    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_l[i], f'\int f ds_sub_mesh_{i}_l'))
+    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_r[i], f'\int f ds_sub_mesh_{i}_r'))
+    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_t[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_t[i], f'\int f ds_sub_mesh_{i}_t'))
+    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_b[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_b[i], f'\int f ds_sub_mesh_{i}_b'))
+
 '''
 # 2.1: check the  out boundary of the sub_mesh
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_l, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_out_l, '\int f ds_sub_mesh_out_out_l'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_r, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_out_r, '\int f ds_sub_mesh_out_out_r'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_t, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_out_t, '\int f ds_sub_mesh_out_out_t'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_b, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_out_b, '\int f ds_sub_mesh_out_out_b'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_lr, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_out_lr, '\int f ds_sub_mesh_out_out_lr'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out_tb, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_out_tb, '\int f ds_sub_mesh_out_out_tb'))
@@ -129,7 +130,6 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_out, f
 
 
 # 2.2: check the  in boundary of the sub_mesh
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_l, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_in_l, '\int f ds_sub_mesh_out_in_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_r, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_in_r, '\int f ds_sub_mesh_out_in_r'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_t, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_in_t, '\int f ds_sub_mesh_out_in_t'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_in_b, function_test_integrals_fenics, rmsh.ds_sub_mesh_out_in_b, '\int f ds_sub_mesh_out_in_b'))

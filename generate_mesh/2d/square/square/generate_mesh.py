@@ -79,30 +79,30 @@ gmsh.model.geo.synchronize()
 lines = gmsh.model.getEntities(dim=1)
 
 # outer lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_out_b_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_out_b_id"], "line_out_12")
+gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_1_b_id"])
+gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_1_b_id"], "line_out_12")
 
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_out_r_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_out_r_id"], "line_out_23")
+gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_1_r_id"])
+gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_1_r_id"], "line_out_23")
 
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_out_t_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_out_t_id"], "line_out_34")
+gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_1_t_id"])
+gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_1_t_id"], "line_out_34")
 
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_out_l_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_out_l_id"], "line_out_41")
+gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_1_l_id"])
+gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_out_41")
 
 # inner lines
-gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_in_b_id"])
-gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_in_b_id"], "line_in_12")
+gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_sub_mesh_0_b_id"])
+gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_sub_mesh_0_b_id"], "line_in_12")
 
-gmsh.model.addPhysicalGroup(lines[5][0], [lines[5][1]], rpam.parameters["line_in_r_id"])
-gmsh.model.setPhysicalName(lines[5][0], rpam.parameters["line_in_r_id"], "line_in_23")
+gmsh.model.addPhysicalGroup(lines[5][0], [lines[5][1]], rpam.parameters["line_sub_mesh_0_r_id"])
+gmsh.model.setPhysicalName(lines[5][0], rpam.parameters["line_sub_mesh_0_r_id"], "line_in_23")
 
-gmsh.model.addPhysicalGroup(lines[6][0], [lines[6][1]], rpam.parameters["line_in_t_id"])
-gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_in_t_id"], "line_in_34")
+gmsh.model.addPhysicalGroup(lines[6][0], [lines[6][1]], rpam.parameters["line_sub_mesh_0_t_id"])
+gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_in_34")
 
-gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_in_l_id"])
-gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_in_l_id"], "line_in_41")
+gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_sub_mesh_0_l_id"])
+gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_sub_mesh_0_l_id"], "line_in_41")
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
