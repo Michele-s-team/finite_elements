@@ -1292,3 +1292,39 @@ def write_mesh(mesh, output_file, map=None):
         xdmf.write(mesh)
         xdmf.write(map)
         xdmf.close()
+
+
+'''
+this method generates a submesh from a parent mesh
+Input values:
+- 'parent_mesh_path': the path where the field triangle_mesh.xdmf and line_mesh.xdmf are stored
+- 'sub_mesh_path': the path where triangle_mesh.xdmf and line_mesh.xdmf of the submesh whill be stored
+- 'sub_mesh_id' : the id with which the triangles of the submesh are tagged in the parent mesh
+'''
+def generate_submesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
+
+    parent_mesh_path_slash = io.add_trailing_slash(parent_mesh_path)
+    submesh_path_slash = io.add_trailing_slash(sub_mesh_path)
+
+    parent_mesh = read_mesh(parent_mesh_path_slash + 'triangle_mesh.xdmf')
+
+    # create entity maps fo the parent mesh
+    sf_parent_mesh = read_mesh_components(parent_mesh, parent_mesh.topology().dim(), parent_mesh_path_slash + "triangle_mesh.xdmf")
+    mf_parent_mesh = read_mesh_components(parent_mesh, parent_mesh.topology().dim() - 1, parent_mesh_path_slash + "line_mesh.xdmf")
+
+    # extract the outer sub_mesh from the parent mesh, by picking only the triangles with submesh_id
+    sub_mesh = SubMesh(parent_mesh, sf_parent_mesh, sub_mesh_id)
+    # create the boundary mesh of sub_mesh
+    sub_mesh_boundary = BoundaryMesh(sub_mesh, "exterior", order=True)
+
+    # create entity maps of sub_mesh for triangles and lines
+    sf_sub_mesh = transfer_cell_tags_to_submesh(sub_mesh, sf_parent_mesh)
+    mf_sub_mesh = transfer_facet_tags_to_submesh(parent_mesh, sub_mesh, mf_parent_mesh)
+
+    # create entity map for boundary mesh for lines
+    mf_boundary_sub_mesh = transfer_facet_tags_to_bounday_mesh(sub_mesh_boundary, mf_sub_mesh)
+
+    # write the triangles for sub_mesh to file
+    write_mesh(sub_mesh, submesh_path_slash + "triangle_mesh.xdmf", sf_sub_mesh)
+    # write the lines of the boundary mesh to file
+    write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
