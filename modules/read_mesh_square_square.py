@@ -32,30 +32,30 @@ r_mesh = lmsh.mesh.hmin()
 
 # 1. create line and surface elements for mesh
 # test for surface elements
-dx, ds_l, ds_r, ds_t, ds_b, ds_lr, ds_tb, ds_sub_mesh = [], [], [], [], [], [], [], []
+dx_parent_mesh, ds_parent_mesh_l, ds_parent_mesh_r, ds_parent_mesh_t, ds_parent_mesh_b, ds_parent_mesh_lr, ds_parent_mesh_tb, ds_parent_mesh = [], [], [], [], [], [], [], []
 
 # line elements for in square
-ds_l.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"]))
-ds_l.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"]))
+ds_parent_mesh_l.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_l_id"]))
+ds_parent_mesh_l.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_l_id"]))
 
-ds_r.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_r_id"]))
-ds_r.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"]))
+ds_parent_mesh_r.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_r_id"]))
+ds_parent_mesh_r.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_r_id"]))
 
-ds_t.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_t_id"]))
-ds_t.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"]))
+ds_parent_mesh_t.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_t_id"]))
+ds_parent_mesh_t.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_t_id"]))
 
-ds_b.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_b_id"]))
-ds_b.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"]))
+ds_parent_mesh_b.append(Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_in_b_id"]))
+ds_parent_mesh_b.append(Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters["line_out_b_id"]))
 
 for i in range(len(lmsh.sub_meshes)):
-    dx.append(Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters[f"sub_mesh_{i}_id"]))
+    dx_parent_mesh.append(Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters[f"sub_mesh_{i}_id"]))
 
-    ds_lr.append(ds_l[i] + ds_r[i])
-    ds_tb.append(ds_t[i] + ds_b[i])
+    ds_parent_mesh_lr.append(ds_parent_mesh_l[i] + ds_parent_mesh_r[i])
+    ds_parent_mesh_tb.append(ds_parent_mesh_t[i] + ds_parent_mesh_b[i])
 
-    ds_sub_mesh.append(ds_lr[i] + ds_tb[i])
+    ds_parent_mesh.append(ds_parent_mesh_lr[i] + ds_parent_mesh_tb[i])
 
-ds = ds_sub_mesh[0] + ds_sub_mesh[1]
+ds = ds_parent_mesh[0] + ds_parent_mesh[1]
 
 # create line and surface elements for sub_meshes
 # create the measure dx_sub_mesh_ correspnding to the triangles of sub_mesh
