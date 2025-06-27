@@ -2,10 +2,10 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-
 import function_spaces as fsp
 import load_mesh as lmsh
 import switch_problem as swi
+from load_mesh import sub_meshes
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -95,21 +95,31 @@ for i in range(len(lmsh.sub_meshes)):
 
     fsp.hess_u_exact[i].interpolate(hess_u_exact_expression(element=fsp.T[i].ufl_element()))
 
-bc_out_tb = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_out_tb)
-bc_in_lr = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_in_lr)
-bcs = [bc_out_tb, bc_in_lr]
+bc_tb, bc_lr = [], []
 
-submesh_out_facet_normal = FacetNormal(rmsh.submesh_out)
+for i in range(len(lmsh.sub_meshes)):
+    bc_tb.append(DirichletBC(fsp.Q[i], fsp.u_exact[i], rmsh.boundary_tb[i]))
+    bc_lr = DirichletBC(fsp.Q[i], fsp.u_exact[i], rmsh.boundary_lr[i])
+
+bcs = [[bc_tb, bc_lr] for i in range(len(lmsh.sub_meshes))]
+
+sub_mesh_facet_normal = []
+for i in range(len(lmsh.sub_meshes)):
+    sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[i]))
 
 # variational functional for the original problem (poisson equation)
 # here the + and - are used to select the inner or outer par of quantities on interiors ds only
-F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx_submesh_out \
-    - submesh_out_facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_submesh_out_out_lr \
-    - submesh_out_facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_submesh_out_out_tb \
-    - submesh_out_facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_submesh_out_in_lr \
-    - submesh_out_facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_submesh_out_in_tb
+F = []
+for p in range(len(lmsh.sub_meshes)):
+    F.append( \
+        (dot(grad(fsp.u[p]), grad(fsp.nu_u[p])) + fsp.f[p] * fsp.nu_u[p]) * rmsh.dx_sub_mesh[p] \
+        - sub_mesh_facet_normal[p][i] * fsp.grad_u[p][i] * fsp.nu_u[p] * rmsh.ds_sub_mesh_lr \
+        - sub_mesh_facet_normal[p][i] * (fsp.u[p].dx(i)) * fsp.nu_u[p] * rmsh.ds_sub_mesh_tb \
+        - sub_mesh_facet_normal[p][i] * (fsp.u[p].dx(i)) * fsp.nu_u[p] * rmsh.ds_sub_mesh_lr \
+        - sub_mesh_facet_normal[p][i] * fsp.grad_u[p][i] * fsp.nu_u[p] * rmsh.ds_sub_mesh_tb \
+        )
 
 # # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 # F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx_out \
-#        - (submesh_out_facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds_out\
-#        - (submesh_out_facet_normal('+')[i] * (fsp.u.dx(j))('+') * fsp.nu_hess_u('+')[i, j]) * rmsh.ds_in
+#        - (sub_mesh_out_facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds_out\
+#        - (sub_mesh_out_facet_normal('+')[i] * (fsp.u.dx(j))('+') * fsp.nu_hess_u('+')[i, j]) * rmsh.ds_in
