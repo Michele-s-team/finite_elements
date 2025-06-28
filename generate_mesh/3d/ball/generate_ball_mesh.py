@@ -35,15 +35,6 @@ volume_id = 1
 surface_id = 2
 line_id = 3
 
-# # mesh rpam.parameters["resolution"]
-# rpam.parameters["resolution"] = (float)(args.rpam.parameters["resolution"])
-
-# mesh parameters
-# # CHANGE PARAMETERS HERE
-# r = 1.0
-# rpam.parameters["c_r"] = [0, 0, 0]
-# # CHANGE PARAMETERS HERE
-
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()

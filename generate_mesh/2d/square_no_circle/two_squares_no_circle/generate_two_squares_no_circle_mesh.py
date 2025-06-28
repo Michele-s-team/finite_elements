@@ -30,13 +30,6 @@ mesh_file = output_directory + "mesh.msh"
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
-# # CHANGE PARAMETERS HERE
-# # L and h are length and height of the rectangle
-# L = 1
-# h = 2
-# # L_m is the coordinate on the x axis where the inner line separating the two sub-rectangles is located
-# L_m = L / 3
-# # CHANGE PARAMETERS HERE
 
 l_surface_id = 1
 r_surface_id = 2

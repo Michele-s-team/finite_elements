@@ -1,20 +1,22 @@
-import dolfin
 from fenics import *
 
-import command as cmd
+
+import input_output as io
 import mesh as msh
 import runtime_arguments as rarg
 
-if cmd.check_if_file_exists(rarg.args.input_directory + "/tetra_mesh.xdmf"):
-    mesh = msh.read_mesh(rarg.args.input_directory + "/tetra_mesh.xdmf")
-    print('3d mesh')
-else:
-    if cmd.check_if_file_exists(rarg.args.input_directory + "/triangle_mesh.xdmf"):
-        mesh = msh.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
-        print('2d mesh')
-    else:
-        if cmd.check_if_file_exists(rarg.args.input_directory + "/line_mesh.xdmf"):
-            mesh = msh.read_mesh(rarg.args.input_directory + "/line_mesh.xdmf")
-            print('1d mesh')
-        else:
-            print('No mesh could be loaded!')
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+
+# read the mesh
+mesh, sf = msh.read_from_file(rarg.args.input_directory)
+
+if "n_sub_meshes" in parameters:
+    #mesh parameters contain the field n_sub_meshes -> generate sub_meshes
+    sub_meshes = []
+    if parameters["n_sub_meshes"] > 1:
+        # the mesh contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
+        print('Generating sub_meshes ... ')
+        for p in range(parameters["n_sub_meshes"]):
+            sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))
+
+        print('... done.')

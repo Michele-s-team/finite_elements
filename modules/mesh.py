@@ -1,3 +1,5 @@
+import colorama as col
+import command as cmd
 from fenics import *
 import numpy as np
 import colorama as col
@@ -41,7 +43,9 @@ if 'prune_z' = true (false), the z component will be removed from the mesh
 
 def write_mesh_components(infile, outfile, component_type, prune_z):
     mesh_from_file = meshio.read(infile)
+    # print(f'type of mesh_from_file  = {type(mesh_from_file)}')
     component_mesh = create_mesh(mesh_from_file, component_type, prune_z)
+    # print(f'type of component _mesh  = {type(component_mesh)}')
     meshio.write(outfile, component_mesh)
 
 
@@ -1133,3 +1137,215 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print mesh metadata
     io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
+
+'''
+Given a parent mesh and a submesh of it, and function mf_parent which identifies facets on the parent mesh, 
+this method returns the function which identifies the facet markers on the  sub_mesh, with the same ids as in the parent mesh
+Input values: 
+- 'parent': the parent mesh
+- 'submesh': the submesh of the parent mesh
+- 'mf_parent': the function which identifies facets on the parent mesh
+Return values
+- 'mf_submesh': the function which identifies facets on a submesh of the parent mesh
+
+Example of usage: 
+    mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
+    submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+    mf_submesh_out = transfer_facet_tags_to_sub_mesh(lmsh.mesh, submesh_out, mf)
+    
+Then you can create a ds on the submesh with 
+    ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
+'''
+def transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent):
+
+    # Create facet marker on submesh
+    mf_sub = MeshFunction('size_t', sub_mesh, 1, 0)
+
+    vertex_map = sub_mesh.data().array("parent_vertex_indices", 0)
+
+    # run through all the facets of the sub_mesh
+    for sub_mesh_facet in facets(sub_mesh):
+        # extract the vertices of the facet under considerationn
+        sub_mesh_facet_vertices = sub_mesh_facet.entities(0)
+
+        # consider the relative vertices in the parent mesh
+        parent_vertices = [vertex_map[v] for v in sub_mesh_facet_vertices]
+        #  search for a facet in the parent mesh that shares these
+        for facet in facets(parent_mesh):
+            if sorted(facet.entities(0)) == sorted(parent_vertices):
+                # a corresponding facet in the parent mehs has been found
+                mf_sub[sub_mesh_facet.index()] = mf_parent[facet.index()]
+                break
+
+    return mf_sub
+
+
+'''
+map the tags of  boundary lines of a parent mesh to a boudnary mesh derived from the parent mesh
+Input values: 
+- 'boundary_mesh': the boundary mesh obtained from the parent mesh
+- 'mf_parent_mesh' : the map which tags the lines in the parent mesh
+Return values: 
+- 'mf_boundary_mesh': the map which tags the lines in the boundary mesh, with the same ids which they had in the parent mesh
+
+Example of usage: 
+    submesh_out = SubMesh(parent_mesh, sf, rpam.parameters["surface_out_id"])
+    boundary_mesh = BoundaryMesh(submesh_out, "exterior", order=True)
+    mf_submesh_out = msh.transfer_facet_tags_to_sub_mesh(parent_mesh, submesh_out, mf)
+    mf_boundary_mesh = msh.transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_submesh_out)
+'''
+
+def transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_parent_mesh):
+    # entity_map(1) maps boundary mesh facets to sub_mesh facets
+    boundary_to_parent_facet_map = boundary_mesh.entity_map(1)
+
+    # construct a map function which tags all vertices (dimension = 1), with id 0
+    mf_boundary_mesh = MeshFunction("size_t", boundary_mesh, 1, 0)  # facets in 1D mesh are edges
+
+    # run on all facets of boundary_mesh
+    for i, b_facet in enumerate(facets(boundary_mesh)):
+        # obtain the id with whuch the facet under consideration  was tagged in boundary mesh
+        submesh_facet_id = boundary_to_parent_facet_map[i]
+        # impose that the function  mf_boundary_mesh evaluated on the facet under consideration must be equal to the id that the facet had in the submesh
+        mf_boundary_mesh[b_facet] = mf_parent_mesh[submesh_facet_id]
+
+    return mf_boundary_mesh
+
+
+'''
+Given a parent mesh and a submesh of it, and function sf_parent which identifies cells on the parent mesh, 
+this method returns the function which identifies the cells on the sub_mesh, with the same ids as in the parent mesh
+Input values: 
+- 'sub_mesh': the sub_mesh of the parent mesh
+- 'sf_parent': the function which identifies cells on the parent mesh
+Return values
+- 'sf_submesh': the function which identifies cells on the sub_mesh of the parent mesh
+
+Example of usage: 
+    sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triangle_mesh.xdmf")
+    submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
+    sf_submesh_out = msh.transfer_cell_tags_to_sub_mesh(submesh_out, sf)
+
+Then you can create a ds on the submesh with 
+ 
+
+'''
+def transfer_cell_tags_to_sub_mesh(sub_mesh, sf_parent):
+    sf_submesh_out = MeshFunction('size_t', sub_mesh, 2)
+    parent_cell_map = sub_mesh.data().array('parent_cell_indices', 2)
+
+    # run over all cells of the sub_mesh
+    for sub_cell in range(sub_mesh.num_entities(2)):
+        # map the cell of the sub_mesh into the corresponding mesh of the parent cell
+        parent_cell = parent_cell_map[sub_cell]
+        # assign the correct id of the function sf_submesh_out calculated on the mesh of the sub_mesh under consideration, setting it to the same id it has in the parent_mesh
+        sf_submesh_out[sub_cell] = sf_parent[parent_cell]
+
+
+    return sf_submesh_out
+
+
+'''
+read a 1,2 or 3d mesh stored into an xdmf file
+Input values: 
+- 'input_path': the path where 'tetra_mesh.xdmf', 'triangle_mesh.xdmf', or 'line_mesh.xdmf' are located
+Return values: 
+- 'mesh': the mesh, or [] if the mesh could not be read
+'''
+def read_from_file(mesh_path):
+
+    mesh_path_with_slash = io.add_trailing_slash(mesh_path)
+
+    if cmd.check_if_file_exists(mesh_path_with_slash + "tetra_mesh.xdmf"):
+        mesh = read_mesh(mesh_path_with_slash + "tetra_mesh.xdmf")
+        sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "tetra_mesh.xdmf")
+        print('3d mesh')
+
+        result = mesh, sf
+
+    else:
+        if cmd.check_if_file_exists(mesh_path_with_slash + "triangle_mesh.xdmf"):
+            mesh = read_mesh(mesh_path_with_slash + "triangle_mesh.xdmf")
+            sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "triangle_mesh.xdmf")
+
+            print('2d mesh')
+
+            result = mesh, sf
+
+        else:
+            if cmd.check_if_file_exists(mesh_path_with_slash + "line_mesh.xdmf"):
+                mesh = read_mesh(mesh_path_with_slash + "line_mesh.xdmf")
+                sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.xdmf")
+
+                print('1d mesh')
+
+                result = mesh, sf
+            else:
+
+                print(f"{col.Fore.RED}No mesh could be loaded!{col.Style.RESET_ALL}")
+
+                result = []
+
+    return result
+
+'''
+write a mesh to xdmf file
+Input values:
+- 'mesh': the mesh
+- 'map': the map containing the tags of the mesh elements (triangles, lines, etc) 
+- 'output_file': path + name of the xdmf file where the mesh will be written 
+'''
+def write_mesh(mesh, output_file, map=None):
+
+    with XDMFFile(output_file) as xdmf:
+        xdmf.write(mesh)
+        xdmf.write(map)
+        xdmf.close()
+
+
+'''
+this method generates a submesh from a parent mesh
+Input values:
+- 'parent_mesh_path': the path where the field triangle_mesh.xdmf and line_mesh.xdmf are stored
+- 'sub_mesh_path': the path where triangle_mesh.xdmf and line_mesh.xdmf of the submesh whill be stored
+- 'sub_mesh_id' : the id with which the triangles of the submesh are tagged in the parent mesh
+
+Return values:
+- 'sub_mesh', 'boundary_sub_mesh': the sub_mesh and the mesh given by the boundary of the sub_mesh
+'''
+def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
+
+    parent_mesh_path_slash = io.add_trailing_slash(parent_mesh_path)
+    submesh_path_slash = io.add_trailing_slash(sub_mesh_path)
+
+    parent_mesh = read_mesh(parent_mesh_path_slash + 'triangle_mesh.xdmf')
+
+    # create entity maps fo the parent mesh
+    sf_parent_mesh = read_mesh_components(parent_mesh, parent_mesh.topology().dim(), parent_mesh_path_slash + "triangle_mesh.xdmf")
+    mf_parent_mesh = read_mesh_components(parent_mesh, parent_mesh.topology().dim() - 1, parent_mesh_path_slash + "line_mesh.xdmf")
+
+    # extract the outer sub_mesh from the parent mesh, by picking only the triangles with submesh_id
+    sub_mesh = SubMesh(parent_mesh, sf_parent_mesh, sub_mesh_id)
+    # create the boundary mesh of sub_mesh
+    sub_mesh_boundary = BoundaryMesh(sub_mesh, "exterior", order=True)
+
+    # print(f'type of sub_mesh: {type(sub_mesh)}')
+
+    # create entity maps of sub_mesh for triangles and lines
+    sf_sub_mesh = transfer_cell_tags_to_sub_mesh(sub_mesh, sf_parent_mesh)
+    mf_sub_mesh = transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent_mesh)
+
+    # create entity map for boundary mesh for lines
+    mf_boundary_sub_mesh = transfer_facet_tags_to_bounday_mesh(sub_mesh_boundary, mf_sub_mesh)
+
+    # write the triangles for sub_mesh to file
+    write_mesh(sub_mesh, submesh_path_slash + "triangle_mesh.xdmf", sf_sub_mesh)
+    # write the lines of the boundary mesh to file
+    write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
+    # print  submesh vertices to csv file
+    io.print_mesh_vertices_to_csv(sub_mesh, submesh_path_slash + "vertices.csv")
+    # print sub mesh metadata
+    # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
+
+    return sub_mesh, sub_mesh_boundary
+

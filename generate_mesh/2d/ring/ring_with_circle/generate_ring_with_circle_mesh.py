@@ -30,15 +30,6 @@ output_directory = io.add_trailing_slash(output_directory)
 mesh_file_name = output_directory + "mesh.msh"
 mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
 
-# # parameters
-# r = 1.0
-# R = 2.0
-# # radius of inner circle
-# rho = (r + R) / 2.0
-# parameters["c_r"] = [0, 0, 0]
-# parameters["c_R"] = [0, 0, 0]
-
-# print(f'r = {r}\nR = {R}\nrho = {rho}\nc_r = {parameters["c_r"]}\nc_R = {parameters["c_R"]}')
 
 # Initialize empty geometry using the built-in kernel in GMSH
 geometry = pygmsh.geo.Geometry()

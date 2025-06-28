@@ -43,20 +43,6 @@ if rpam.parameters["c_r"][:2] != [rpam.parameters["L"]/2, rpam.parameters["h"]/2
     print("gdcERROR: c_r is not equal to [L/2, h/2]")
 
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("resolution")
-# parser.add_argument("output_dir")
-# args = parser.parse_args()
-
-# mesh resolution
-# resolution = (float)(args.resolution)
-# L = 1
-# h = 1
-# r = 0.25
-# x_coordinate_axis_of_symmetry = rpam.parameters["L"] / 2
-# y_coordinate_axis_of_symmetry = rpam.parameters["h"] / 2
-# c_r = [x_coordinate_axis_of_symmetry, y_coordinate_axis_of_symmetry, 0]
-
 gamma_axis_of_symmetry_left_right = lambda t: cal.line([rpam.parameters["c_r"][0], 0], [rpam.parameters["c_r"][0], rpam.parameters["h"]], t)
 gamma_axis_of_symmetry_top_bottom = lambda t: cal.line([0, rpam.parameters["c_r"][1]], [rpam.parameters["L"], rpam.parameters["c_r"][1]], t)
 
