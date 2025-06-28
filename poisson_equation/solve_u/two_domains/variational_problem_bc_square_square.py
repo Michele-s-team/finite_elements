@@ -1,5 +1,6 @@
 from fenics import *
 import importlib
+import numpy as np
 import ufl as ufl
 
 import function_spaces as fsp
@@ -13,7 +14,12 @@ i, j = ufl.indices(2)
 
 class u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
+        # test case 1
+        # values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
+
+        # test case 2
+        values[0] = (np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2))**2
+
 
     def value_shape(self):
         return (1,)
@@ -39,7 +45,10 @@ class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
 class u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+        # test case 2
+        values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)
 
     def value_shape(self):
         return (1,)
