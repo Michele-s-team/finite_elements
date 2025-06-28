@@ -75,6 +75,10 @@ class grad_u_exact_sub_mesh_1_expression(UserExpression):
         # values[1] = 4.0 * x[1]
 
         # test case 2
+        values[0] = 2 * (np.pi) * np.cos(2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4 * (np.pi) * (-(x[0]) + (x[1])) * np.sin(
+            2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        values[1] = 2 * (np.pi) * np.cos(2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4 * (np.pi) * ((x[0]) - (x[1])) * np.sin(
+            2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.sin(2 * (np.pi) * ((x[0]) + (x[1])))
 
 
     def value_shape(self):
@@ -87,7 +91,8 @@ class laplacian_u_exact_sub_mesh_1_expression(UserExpression):
         # values[0] = 6.0
 
         # test case 2
-
+        values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * np.cos(2 * (np.pi) * (x[0] - (x[1])) ** 2) - np.sin(2 * (np.pi) * (x[0] - (x[1])) ** 2)) * np.sin(
+            2 * (np.pi) * (x[0] + (x[1])))
 
     def value_shape(self):
         return (1,)
