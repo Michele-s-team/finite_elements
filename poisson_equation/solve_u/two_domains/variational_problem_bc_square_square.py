@@ -9,52 +9,68 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
+# exact expression for sub_mesh 0
 
-class u_exact_expression(UserExpression):
+class u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
-        # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-
-        # test case 2
-        # values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)
+        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
 
     def value_shape(self):
         return (1,)
 
 
-class grad_u_expression(UserExpression):
+class grad_u_exact_sub_mesh_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 4 * x[0] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[1] = 8 * x[1] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+    def value_shape(self):
+        return (2,)
+
+
+class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 8 * x[0] ** 2 + 32 * x[1] ** 2 + 12 * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+    def value_shape(self):
+        return (1,)
+
+
+# exact expression for sub_mesh 1
+
+class u_exact_sub_mesh_1_expression(UserExpression):
+    def eval(self, values, x):
+        # test case 1
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+    def value_shape(self):
+        return (1,)
+
+
+class grad_u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
         values[0] = 2.0 * x[0]
         values[1] = 4.0 * x[1]
 
-        # test case 2
-        # values[0] = 2 * (np.pi) * np.cos(2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4 * (np.pi) * (-(x[0]) + (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
-        # values[1] = 2 * (np.pi) * np.cos(2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4 * (np.pi) * ((x[0]) - (x[1])) * sin(
-        #     2 * (np.pi) * ((x[0]) - (x[1])) ** 2) * sin(2 * (np.pi) * ((x[0]) + (x[1])))
-
     def value_shape(self):
         return (2,)
 
 
-class laplacian_u_expression(UserExpression):
+class laplacian_u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
         values[0] = 6.0
-
-        # test case 2
-        # values[0] = 8 * (np.pi) * (-(np.pi) * (1 + 4 * (x[0] - (x[1])) ** 2) * np.cos(2 * (np.pi) * (x[0] - (x[1])) ** 2) - np.sin(2 * (np.pi) * (x[0] - (x[1])) ** 2)) * np.sin(
-        #     2 * (np.pi) * (x[0] + (x[1])))
 
     def value_shape(self):
         return (1,)
 
 
-for p in range(len(rmsh.lmsh.sub_meshes)):
-    fsp.u_exact[p].interpolate(u_exact_expression(element=fsp.Q[p].ufl_element()))
-    fsp.grad_u[p].interpolate(grad_u_expression(element=fsp.V[p].ufl_element()))
-    fsp.f[p].interpolate(laplacian_u_expression(element=fsp.Q[p].ufl_element()))
+fsp.u_exact[0].interpolate(u_exact_sub_mesh_0_expression(element=fsp.Q[0].ufl_element()))
+fsp.grad_u[0].interpolate(grad_u_exact_sub_mesh_0_expression(element=fsp.V[0].ufl_element()))
+fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_expression(element=fsp.Q[0].ufl_element()))
+
+fsp.u_exact[1].interpolate(u_exact_sub_mesh_1_expression(element=fsp.Q[1].ufl_element()))
+fsp.grad_u[1].interpolate(grad_u_exact_sub_mesh_1_expression(element=fsp.V[1].ufl_element()))
+fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_1_expression(element=fsp.Q[1].ufl_element()))
 
 bcs  = [None] * len(rmsh.lmsh.sub_meshes)
 

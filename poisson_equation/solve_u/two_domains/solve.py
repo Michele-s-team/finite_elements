@@ -53,7 +53,7 @@ solver[1].solve()
 
 # set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp,u[1] obtained above
 # project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
-fsp.u_1_on_0.assign(project(fsp.u[1], fsp.Q[0]))
+fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
 # impose the BCs for problem on sub_mesh[0] in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
 vp.bcs[0] = [ \
     DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
