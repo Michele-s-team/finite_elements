@@ -27,15 +27,29 @@ class u_exact_sub_mesh_0_expression(UserExpression):
 
 class grad_u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
+
+        # test case 1
         values[0] = 4 * x[0] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
         values[1] = 8 * x[1] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+
+        # test case 2
+
+
+
     def value_shape(self):
         return (2,)
 
 
 class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
+
+        # test case 1
         values[0] = 8 * x[0] ** 2 + 32 * x[1] ** 2 + 12 * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+
+        # test case 2
+
+
+
     def value_shape(self):
         return (1,)
 
@@ -57,8 +71,11 @@ class u_exact_sub_mesh_1_expression(UserExpression):
 class grad_u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 2.0 * x[0]
-        values[1] = 4.0 * x[1]
+        # values[0] = 2.0 * x[0]
+        # values[1] = 4.0 * x[1]
+
+        # test case 2
+
 
     def value_shape(self):
         return (2,)
@@ -67,7 +84,10 @@ class grad_u_exact_sub_mesh_1_expression(UserExpression):
 class laplacian_u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 6.0
+        # values[0] = 6.0
+
+        # test case 2
+
 
     def value_shape(self):
         return (1,)
