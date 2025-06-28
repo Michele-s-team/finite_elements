@@ -29,11 +29,6 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("resolution")
-# parser.add_argument("output_directory")
-# args = parser.parse_args()
-
 warnings.filterwarnings("ignore")
 gmsh.initialize()
 
@@ -41,13 +36,6 @@ mesh_file =output_directory + "mesh.msh"
 
 gmsh.model.add("my model")
 
-
-# CHANGE PARAMETERS HERE
-# L = [2.2, 0.41, 0.41]
-# c_r = [0.2, 0.2, 0.2]
-# r = 0.05
-# sphere_resolution = resolution/4
-# CHANGE PARAMETERS HERE
 
 volume_id = 1
 boundary_le_id = 2

@@ -32,24 +32,6 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
 
-# # CHANGE PARAMETERS HERE
-# L = 2.2
-# h = 0.41
-# # ellipse center
-# c = [0.25, 0.2, 0]
-# # ellipse semi-major axis
-# a = 0.1
-# # ellipse semi-minor axis
-# b = 0.05
-# # rotation angle of the ellipse with respect to the x axis: the ellipse will be rotated about its left focal point
-# phi = 0
-# # CHANGE PARAMETERS HERE
-
-
-# print("L = ", L)
-# print("h = ", h)
-# print(f"c = {c}, a = {a}, b = {b}, phi = {phi}")
-# print("resolution = ", resolution)
 print(f'output_directory = "{output_directory}"')
 
 # left focal point  of the ellipse

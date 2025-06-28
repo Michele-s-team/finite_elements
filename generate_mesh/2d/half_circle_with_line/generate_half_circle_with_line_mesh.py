@@ -27,23 +27,8 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file = output_directory + "mesh.msh"
 mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
-# mesh parameters
-# CHANGE PARAMETERS HERE
-# r = 1
 c_1 = [rpam.parameters["r"], 0, 0]
 c_2 = [-rpam.parameters["r"], 0, 0]
-# c_3 = [rpam.parameters["r"] / 2, -rpam.parameters["r"] / 8, 0]
-# c_4 = [-rpam.parameters["r"] / 2, -rpam.parameters["r"] / 8, 0]
-
-# p_1_id = 1
-# p_2_id = 2
-# p_3_id = 6
-# p_4_id = 7
-# line_12_id = 3
-# arc_21_id = 4
-# surface_id = 5
-# line_34_id = 8
-# CHANGE PARAMETERS HERE
 
 print("output_directory = ", output_directory)
 
