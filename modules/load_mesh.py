@@ -10,12 +10,13 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 # read the mesh
 mesh, sf = msh.read_from_file(rarg.args.input_directory)
 
-# generate sub_meshes
-sub_meshes = []
-if parameters["n_sub_meshes"] > 1:
-    # the mesh contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
-    print('Generating sub_meshes ... ')
-    for p in range(parameters["n_sub_meshes"]):
-        sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))
+if "n_sub_meshes" in parameters:
+    #mesh parameters contain the field n_sub_meshes -> generate sub_meshes
+    sub_meshes = []
+    if parameters["n_sub_meshes"] > 1:
+        # the mesh contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
+        print('Generating sub_meshes ... ')
+        for p in range(parameters["n_sub_meshes"]):
+            sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))
 
-    print('... done.')
+        print('... done.')
