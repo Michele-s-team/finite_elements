@@ -24,7 +24,6 @@ import read_parameters_generate_mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-# mesh resolution
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file = output_directory + "mesh.msh"
 mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
@@ -114,16 +113,16 @@ gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["s
 gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "surface_in")
 
 # set the resolution
-# se resolution resolution_min at distance r_resolution_min from surface_in, and resolution_amx at distance r_resolution_max from sub_mesh_1_id
+# se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_in])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution_min"])
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution_max"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", rpam.parameters["r_resolution_min"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["r_resolution_max"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
 
 minimum = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
