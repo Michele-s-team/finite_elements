@@ -1,6 +1,6 @@
 '''
-This code solves the Poisson equation Nabla u = f expressed in terms of the function u
-The Hessian of u is solved in a post-processing (pp) variational problem, because one cannot take directly the second derivative of u (u.dx(i).dx(j)) [this would lead to divergences]
+This code solves the Poisson equation in two sub_meshes, sub_mesh[0] and sub_mesh[1], which share one boundary
+The problem is first solved in sub_mesh[1], and the solution u[1] is then used to specify the BCs of the problem of sub_mesh[0]
 
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
@@ -49,7 +49,7 @@ solver[1].solve()
 
 
 
-# solve problem 0
+# solve problem 0 by using the solution of problem 1 to specify the BCs
 
 # set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp,u[1] obtained above
 # project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
