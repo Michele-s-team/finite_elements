@@ -9,7 +9,6 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import boundary_geometry as bgeo
-import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
 import read_parameters as rpam
@@ -28,6 +27,14 @@ class u_l_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+class g_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = - rpam.g
+
+    def value_shape(self):
+        return (2,)
+
 
 class rho_expression(UserExpression):
     def eval(self, values, x):
@@ -38,6 +45,7 @@ class rho_expression(UserExpression):
 
 
 fsp.u_l.interpolate(u_l_expression(element=fsp.U.ufl_element()))
+fsp.g.interpolate(g_expression(element=fsp.U.ufl_element()))
 fsp.rho.interpolate(rho_expression(element=fsp.R.ufl_element()))
 
 bc_u_l = DirichletBC(fsp.U, fsp.u_l, rmsh.boundary_l)
@@ -46,7 +54,7 @@ bcs = [bc_u_l]
 
 # variational functional for the original problem
 F = ( \
-                -ela.F(fsp.u)[i, j] * ela.S(fsp.u, rpam.K, rpam.mu)[j, k] * (fsp.nu_u[i].dx(k)) \
+                - ela.P(fsp.u, rpam.K, rpam.mu)[i, k] * (fsp.nu_u[i].dx(k)) \
                 + fsp.rho * fsp.g[i] * fsp.nu_u[i] \
         ) * rmsh.dx \
-    + bgeo.facet_normal[k] * ela.F(fsp.u)[i, j] * ela.S(fsp.u, rpam.K, rpam.mu)[j, k] * fsp.nu_u[i] * rmsh.ds_l
+    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.K, rpam.mu)[i, k] * fsp.nu_u[i] * rmsh.ds_l
