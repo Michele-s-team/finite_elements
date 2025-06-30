@@ -1,5 +1,5 @@
 '''
-This code solves for the deformation field of an elastic rod subjected to gravity
+This code solves for the deformation field of an elastic rod subjected to gravity at steady state
 
 Run with
     python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
