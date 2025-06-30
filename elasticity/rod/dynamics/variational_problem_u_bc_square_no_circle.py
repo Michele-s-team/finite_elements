@@ -50,7 +50,7 @@ fsp.u_l.interpolate(u_l_expression(element=fsp.U.ufl_element()))
 fsp.g.interpolate(g_expression(element=fsp.U.ufl_element()))
 fsp.rho.interpolate(rho_expression(element=fsp.R.ufl_element()))
 
-bc_u_l = DirichletBC(fsp.U, fsp.u_l, rmsh.boundary_l)
+bc_u_l = DirichletBC(fsp.U.sub(0), fsp.u_l, rmsh.boundary_l)
 
 bcs = [bc_u_l]
 
