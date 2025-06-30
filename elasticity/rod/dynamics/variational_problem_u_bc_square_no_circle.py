@@ -17,6 +17,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k = ufl.indices(3)
 
+dt = rpam.parameters['T'] / rpam.parameters['num_steps']
+
 
 class u_l_expression(UserExpression):
     def eval(self, values, x):
