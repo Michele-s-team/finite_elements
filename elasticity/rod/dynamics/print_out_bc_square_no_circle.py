@@ -12,7 +12,6 @@ import input_output as io
 import mesh as msh
 import read_parameters as rpam
 
-
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -21,23 +20,23 @@ vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
-#set up printout of the BCs to file
+# set up printout of the BCs to file
 # create the path for the csv file if it does not exist
 os.makedirs(os.path.dirname(rarg.args.output_directory + '/bcs.csv'), exist_ok=True)
 
-csvfile_bcs = open( (rarg.args.output_directory) + '/bcs.csv', 'a', newline='' )
+csvfile_bcs = open((rarg.args.output_directory) + '/bcs.csv', 'a', newline='')
 fieldnames_bcs = [ \
     '<<|u^n|^2>>_{partial Omega^y l}', \
     '<<|n_j P_{ij}|^2>>_{partial Omega^l r t b}' \
     ]
-writer_bcs = csv.DictWriter( csvfile_bcs, fieldnames=fieldnames_bcs )
+writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
 
 
 # this function prints out the residuals of BCs
 def print_bcs(psi):
     # get the solution and write it to file
-    u_n_output, v_n_output = fsp.psi.split( deepcopy=True)
+    u_n_output, v_n_output = psi.split(deepcopy=True)
 
     # write the residual of natural BCs on step 2 to file
     writer_bcs.writerows([{ \
@@ -46,6 +45,3 @@ def print_bcs(psi):
         fieldnames_bcs[1]: \
             f"{msh.abs_wrt_measure((bgeo.facet_normal[j] * ela.P(u_n_output, rpam.parameters['K'], rpam.parameters['mu'])[i, j]) * (bgeo.facet_normal[k] * ela.P(u_n_output, rpam.parameters['K'], rpam.parameters['mu'])[i, k]), rmsh.ds_r + rmsh.ds_t + rmsh.ds_b):.{io.number_of_decimals}e}"}])
     csvfile_bcs.flush()
-
-
-import print_out_solution
