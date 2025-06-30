@@ -42,8 +42,24 @@ params = {'nonlinear_solver': 'newton',
           }
 
 # set the initial profiles
-fsp.u_n_1.interpolate(vp.u_0_expression(element=fsp.Q.ufl_element()))
-fsp.v_n_1.interpolate(vp.u_0_expression(element=fsp.Q.ufl_element()))
+class u_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+class v_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+fsp.u_n_1.interpolate(u_0_expression(element=fsp.U_u_n.ufl_element()))
+fsp.v_n_1.interpolate(v_0_expression(element=fsp.U_v_n.ufl_element()))
 
 print("Starting time iteration ...", flush=True)
 
@@ -58,17 +74,18 @@ for n in range(rpam.parameters['num_steps']):
 
     vp = importlib.import_module(swi.vp)
 
-    J = derivative(vp.F, fsp.u_n_1, fsp.J_u)
-    problem = NonlinearVariationalProblem(vp.F, fsp.u_n_1, vp.bcs, J)
+    J = derivative(vp.F, fsp.psi, fsp.J_psi)
+    problem = NonlinearVariationalProblem(vp.F, fsp.psi, vp.bcs, J)
     solver = NonlinearVariationalSolver(problem)
     solver.parameters.update(params)
     solver.solve()
 
-    fsp.u_n_1.assign(fsp.u_n)
-    fsp.v_n_1.assign(fsp.v_n)
+    u_n_output, v_n_output = fsp.psi.split( deepcopy=True)
+    fsp.u_n_1.assign(u_n_output)
+    fsp.v_n_1.assign(v_n_output)
 
     # pr_sol.print_solution(t, step, vp.dt)
 
-    print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
+    print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)

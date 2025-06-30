@@ -20,12 +20,12 @@ R = FunctionSpace(lmsh.mesh, 'P', function_space_degree)
 J_psi = TrialFunction(U)
 psi = Function(U)
 nu_u_n, nu_v_n = TestFunctions( U )
+u_n, v_n = split( psi )
+
 
 #fields at the preceeding steps
 u_n_1 = Function(U_u_n)
-u_n = Function(U_u_n)
 v_n_1 = Function(U_v_n)
-v_n = Function(U_v_n)
 
 # other fields
 u_l = Function(U_u_n)
