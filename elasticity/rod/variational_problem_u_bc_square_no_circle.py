@@ -30,7 +30,7 @@ class u_l_expression(UserExpression):
 class g_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
-        values[1] = - rpam.g
+        values[1] = - rpam.parameters["g"]
 
     def value_shape(self):
         return (2,)
@@ -38,7 +38,7 @@ class g_expression(UserExpression):
 
 class rho_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.rho
+        values[0] = rpam.parameters["rho"]
 
     def value_shape(self):
         return (2,)
@@ -54,7 +54,7 @@ bcs = [bc_u_l]
 
 # variational functional for the original problem
 F = ( \
-                - ela.P(fsp.u, rpam.K, rpam.mu)[i, k] * (fsp.nu_u[i].dx(k)) \
+                - ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u[i].dx(k)) \
                 + fsp.rho * fsp.g[i] * fsp.nu_u[i] \
         ) * rmsh.dx \
-    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.K, rpam.mu)[i, k] * fsp.nu_u[i] * rmsh.ds_l
+    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_l
