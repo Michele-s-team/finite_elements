@@ -13,3 +13,4 @@ u = Function(U)
 nu_u = TestFunction(U)
 J_u = TrialFunction(U)
 
+u_l = Function(U)
