@@ -46,7 +46,7 @@ params = {'nonlinear_solver': 'newton',
 class u_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
-        values[1] = 0
+        values[1] = - x[0]/rmsh.parameters['L'] * rmsh.parameters['h']
 
     def value_shape(self):
         return (2,)
