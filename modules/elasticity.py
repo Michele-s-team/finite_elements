@@ -192,3 +192,15 @@ Return values:
 
 def detF(u):
     return ufl.det(F(u))
+
+'''
+tensor P in 'Equations of motion for an elastic body
+Input values:
+- 'u': displacement vector field
+- 'K', 'mu': bulk modulus and modulus of hydrostatic compression
+
+Return values:
+- P[i, j] = P_{ij}
+'''
+def P(u, K, mu):
+    return as_tensor(F(u)[i, j] * S(u, K, mu)[j, k], (i, k))
