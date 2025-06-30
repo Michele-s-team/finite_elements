@@ -1,6 +1,5 @@
 from fenics import *
 import importlib
-import numpy as np
 import ufl as ufl
 import sys
 
@@ -27,6 +26,7 @@ class u_l_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+
 # expression for the vector g_i in the notes
 class g_expression(UserExpression):
     def eval(self, values, x):
@@ -35,6 +35,7 @@ class g_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+
 
 # expression for the density \rho_y in the notes
 class rho_expression(UserExpression):
@@ -55,7 +56,7 @@ bcs = [bc_u_l]
 
 # variational functional for the original problem
 F = ( \
-                - ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u[i].dx(k)) \
+                - ela.P(fsp.u_n_1, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u[i].dx(k)) \
                 + fsp.rho * fsp.g[i] * fsp.nu_u[i] \
         ) * rmsh.dx \
-    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_l
+    + bgeo.facet_normal[k] * ela.P(fsp.u_n_1, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_l
