@@ -20,6 +20,7 @@ import read_parameters as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
+prout_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -84,6 +85,7 @@ for n in range(rpam.parameters['num_steps']):
     fsp.u_n_1.assign(u_n_output)
     fsp.v_n_1.assign(v_n_output)
 
+    prout_bc.print_bcs( fsp.psi )
     # pr_sol.print_solution(t, step, vp.dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
