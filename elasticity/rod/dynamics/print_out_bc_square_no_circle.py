@@ -7,10 +7,11 @@ import ufl as ufl
 
 import boundary_geometry as bgeo
 import elasticity as ela
-import function_spaces as fsp
+import files as fi
 import input_output as io
 import mesh as msh
 import read_parameters as rpam
+import solution_paths as solpath
 
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -35,7 +36,7 @@ writer_bcs.writeheader()
 
 # this function prints out the residuals of BCs
 def print_bcs(psi):
-    # get the solution and write it to file
+    # get the fields from psi
     u_n_output, v_n_output = psi.split(deepcopy=True)
 
     # write the residual of natural BCs on step 2 to file
@@ -45,3 +46,19 @@ def print_bcs(psi):
         fieldnames_bcs[1]: \
             f"{msh.abs_wrt_measure((bgeo.facet_normal[j] * ela.P(u_n_output, rpam.parameters['K'], rpam.parameters['mu'])[i, j]) * (bgeo.facet_normal[k] * ela.P(u_n_output, rpam.parameters['K'], rpam.parameters['mu'])[i, k]), rmsh.ds_r + rmsh.ds_t + rmsh.ds_b):.{io.number_of_decimals}e}"}])
     csvfile_bcs.flush()
+
+
+def print_solution(psi, step, t):
+    # get the fields from psi
+    u_n_output, v_n_output = psi.split(deepcopy=True)
+
+    fi.xdmffile_u.write( u_n_output, t )
+    fi.xdmffile_v.write( v_n_output, t )
+
+    io.full_print(u_n_output, 'u_n_' + str(step+1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  rmsh.lmsh.mesh, 'vector')
+    io.full_print(v_n_output, 'v_n_' + str(step+1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  rmsh.lmsh.mesh, 'vector')
+
