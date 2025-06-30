@@ -27,7 +27,7 @@ u_n = Function(U_u_n)
 v_n_1 = Function(U_v_n)
 v_n = Function(U_v_n)
 
-# other fields 
+# other fields
 u_l = Function(U_u_n)
 rho = Function(R)
 g = Function(G)
