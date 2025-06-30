@@ -27,6 +27,7 @@ class u_l_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+# expression for the vector g_i in the notes
 class g_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -35,7 +36,7 @@ class g_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-
+# expression for the density \rho_y in the notes
 class rho_expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters["rho"]
