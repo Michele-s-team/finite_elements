@@ -55,8 +55,9 @@ bc_u_l = DirichletBC(fsp.U.sub(0), fsp.u_l, rmsh.boundary_l)
 bcs = [bc_u_l]
 
 # variational functional for the original problem
-F = ( \
-                - ela.P(fsp.u_n_1, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u[i].dx(k)) \
-                + fsp.rho * fsp.g[i] * fsp.nu_u[i] \
-        ) * rmsh.dx \
-    + bgeo.facet_normal[k] * ela.P(fsp.u_n_1, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_l
+F_u = (
+              fsp.rho / dt * (fsp.v_n[i] - fsp.v_n_1[i]) * fsp.nu_u_n[i]\
+              + ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u_n[i].dx(k)) \
+              - fsp.rho * fsp.g[i] * fsp.nu_u_n[i] \
+          ) * rmsh.dx \
+      - bgeo.facet_normal[k] * ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u_n[i] * rmsh.ds_l
