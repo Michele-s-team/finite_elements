@@ -65,3 +65,5 @@ F_u = (
       - bgeo.facet_normal[k] * ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u_n[i] * rmsh.ds_l
 
 F_v = (fsp.u_n[i] - fsp.u_n_1[i] - fsp.v_n[i] * dt) * fsp.nu_v_n[i] * rmsh.dx
+
+F = F_u + F_v
