@@ -5,8 +5,8 @@ import load_mesh as lmsh
 function_space_degree = 1
 
 # function space for u
-P_u = VectorElement( 'P', triangle, degree_function_space )
-P_v = VectorElement( 'P', triangle, degree_function_space )
+P_u = VectorElement( 'P', triangle, function_space_degree )
+P_v = VectorElement( 'P', triangle, function_space_degree )
 element = MixedElement( [P_u, P_v] )
 U = FunctionSpace(lmsh.mesh, element)
 G = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree)

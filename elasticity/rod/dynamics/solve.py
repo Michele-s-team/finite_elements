@@ -67,7 +67,7 @@ for n in range(rpam.parameters['num_steps']):
     fsp.u_n_1.assign(fsp.u_n)
     fsp.v_n_1.assign(fsp.v_n)
 
-    pr_sol.print_solution(t, step, vp.dt)
+    # pr_sol.print_solution(t, step, vp.dt)
 
     print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
 

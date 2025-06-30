@@ -48,8 +48,8 @@ class rho_expression(UserExpression):
         return (2,)
 
 
-fsp.u_l.interpolate(u_l_expression(element=fsp.U.ufl_element()))
-fsp.g.interpolate(g_expression(element=fsp.U.ufl_element()))
+fsp.u_l.interpolate(u_l_expression(element=fsp.U_u_n.ufl_element()))
+fsp.g.interpolate(g_expression(element=fsp.G.ufl_element()))
 fsp.rho.interpolate(rho_expression(element=fsp.R.ufl_element()))
 
 bc_u_l = DirichletBC(fsp.U.sub(0), fsp.u_l, rmsh.boundary_l)
