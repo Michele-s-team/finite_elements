@@ -21,6 +21,9 @@ vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
+# print mesh metadata
+io.write_parameters_to_csv_file(rarg.args.output_directory + "/metadata.csv", rpam.parameters)
+
 # set up printout of the BCs to file
 # create the path for the csv file if it does not exist
 os.makedirs(os.path.dirname(rarg.args.output_directory + '/bcs.csv'), exist_ok=True)
