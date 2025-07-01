@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=rod_dynamics_1
+#SBATCH --job-name=rod_dynamics_2
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=04-00:00:00
@@ -9,7 +9,7 @@
 
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
-RUN="/mnt/beegfs/home/mcastel1/rod_dynamics_1"
+RUN="/mnt/beegfs/home/mcastel1/rod_dynamics_2"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
 PROBLEM="square_no_circle"
