@@ -55,8 +55,6 @@ def print_solution(psi, step, t):
     # get the fields from psi
     u_n_output, v_n_output = psi.split(deepcopy=True)
 
-    fi.xdmffile_u.write( u_n_output, t )
-    fi.xdmffile_v.write( v_n_output, t )
 
     io.full_print(u_n_output, 'u_n_' + str(step+1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
@@ -64,4 +62,15 @@ def print_solution(psi, step, t):
     io.full_print(v_n_output, 'v_n_' + str(step+1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'vector')
+
+    fi.xdmffile_u.write( u_n_output, t )
+    fi.xdmffile_v.write( v_n_output, t )
+
+    # Write the deformed mesh to file
+    deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh, u_n_output)
+    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
+        xdmf.write(deformed_mesh)
+    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
+
 
