@@ -505,7 +505,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 
-# Test elasticity
+# Test elasticity/rod/steady_state
 case_name = 'elasticity/rod/steady_state'
 
 problem_name = 'square_no_circle'
@@ -517,6 +517,18 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_no_circle_mesh', generate_mesh_path, generate_mesh_path, problem_name, success)
 
+
+# Test elasticity/rod/dynamics
+case_name = 'elasticity/rod/dynamics'
+
+problem_name = 'square_no_circle'
+generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_square_no_circle_mesh', generate_mesh_path, generate_mesh_path, problem_name, success)
 
 
 cmd.checkout(commit_a, success)
