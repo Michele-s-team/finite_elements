@@ -13,7 +13,12 @@ ssh $OUT "mkdir -p "$2"/mesh"
 rsync -av modules/*.py $OUT:$2
 rsync -av $1/*.py $OUT:$2
 rsync -av /Users/michelecastellana/Documents/finite_elements/script_slurm_abacus.slurm $OUT:$2
-rsync -av --exclude 'mesh.msh' --exclude '*.csv' --exclude '.DS_Store' $3 $OUT:$2/mesh
+rsync -av \
+  --exclude 'mesh.msh' \
+  --exclude '.DS_Store' \
+  --include 'mesh_metadata.csv' \
+  --exclude '*.csv' \
+  "$3" "$OUT:$2/mesh"
 rsync -av  $1/parameters.csv $OUT:$2
 
 
