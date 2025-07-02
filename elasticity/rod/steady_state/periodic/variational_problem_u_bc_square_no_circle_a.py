@@ -31,6 +31,7 @@ class u_l_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+
 # expression for the vector g_i in the notes
 class g_expression(UserExpression):
     def eval(self, values, x):
@@ -39,6 +40,7 @@ class g_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+
 
 # expression for the density \rho_y in the notes
 class rho_expression(UserExpression):
@@ -49,17 +51,20 @@ class rho_expression(UserExpression):
         return (2,)
 
 
-fsp.u_l.interpolate(u_l_expression(element=fsp.U.ufl_element()))
+fsp.u_t.interpolate(u_l_expression(element=fsp.U.ufl_element()))
 fsp.g.interpolate(g_expression(element=fsp.U.ufl_element()))
 fsp.rho.interpolate(rho_expression(element=fsp.R.ufl_element()))
 
-bc_u_l = DirichletBC(fsp.U, fsp.u_l, rmsh.boundary_l)
+bc_u_t = DirichletBC(fsp.U, fsp.u_t, rmsh.boundary_t)
 
-bcs = [bc_u_l]
+bcs = [bc_u_t]
 
 # variational functional for the original problem
 F = ( \
                 - ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u[i].dx(k)) \
                 + fsp.rho * fsp.g[i] * fsp.nu_u[i] \
         ) * rmsh.dx \
-    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_l
+    # natural boundary conditions are enforced here
+    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[0, k] * fsp.nu_u[0] * rmsh.ds_l \
+    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[0, k] * fsp.nu_u[0] * rmsh.ds_r \
+    + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_t
