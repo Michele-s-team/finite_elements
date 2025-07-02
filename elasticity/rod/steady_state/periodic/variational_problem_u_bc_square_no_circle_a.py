@@ -59,12 +59,11 @@ bc_u_t = DirichletBC(fsp.U, fsp.u_t, rmsh.boundary_t)
 
 bcs = [bc_u_t]
 
-# variational functional for the original problem
+# natural boundary conditions are enforced here in the boundary terms
 F = ( \
                 - ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u[i].dx(k)) \
                 + fsp.rho * fsp.g[i] * fsp.nu_u[i] \
         ) * rmsh.dx \
-    # natural boundary conditions are enforced here
     + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[0, k] * fsp.nu_u[0] * rmsh.ds_l \
     + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[0, k] * fsp.nu_u[0] * rmsh.ds_r \
     + bgeo.facet_normal[k] * ela.P(fsp.u, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u[i] * rmsh.ds_t
