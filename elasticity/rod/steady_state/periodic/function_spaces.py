@@ -1,7 +1,11 @@
-import dolfin
 from fenics import *
+import importlib
 
 import load_mesh as lmsh
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+
 
 function_space_degree = 1
 
