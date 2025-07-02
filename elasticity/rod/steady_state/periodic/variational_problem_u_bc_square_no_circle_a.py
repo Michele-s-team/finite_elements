@@ -23,7 +23,7 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k = ufl.indices(3)
 
 
-class u_l_expression(UserExpression):
+class u_t_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
@@ -51,7 +51,7 @@ class rho_expression(UserExpression):
         return (2,)
 
 
-fsp.u_t.interpolate(u_l_expression(element=fsp.U.ufl_element()))
+fsp.u_t.interpolate(u_t_expression(element=fsp.U.ufl_element()))
 fsp.g.interpolate(g_expression(element=fsp.U.ufl_element()))
 fsp.rho.interpolate(rho_expression(element=fsp.R.ufl_element()))
 
