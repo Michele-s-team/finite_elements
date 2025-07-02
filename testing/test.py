@@ -508,7 +508,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 # Test elasticity/rod/steady_state
 case_name = 'elasticity/rod/steady_state'
 
-problem_name = 'square_no_circle'
+problem_name = 'square_no_circle_a'
 generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
