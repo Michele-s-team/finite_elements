@@ -30,8 +30,8 @@ class u_l_expression(UserExpression):
 # expression for the vector g_i in the notes
 class g_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
-        values[1] = - rpam.parameters["g"]
+        values[0] = rpam.parameters["g"]
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
