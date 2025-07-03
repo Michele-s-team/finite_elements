@@ -4,13 +4,12 @@ import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
-
-eta = 10.0
 
 
 class u_expression(UserExpression):
@@ -45,5 +44,5 @@ fsp.g.interpolate(u_expression(element=fsp.V.ufl_element()))
 fsp.grad_u_0.interpolate(grad_u0_expression(element=fsp.V.ufl_element()))
 
 F_0 = (((fsp.u[i]).dx(j)) * ((fsp.v[i]).dx(j)) + fsp.f[i] * fsp.v[i]) * rmsh.dx - ((bgeo.facet_normal[i] * fsp.grad_u_0[i]) * fsp.v[0] + bgeo.facet_normal[i] * ((fsp.u[1]).dx(i)) * fsp.v[1]) * rmsh.ds
-F_N = (eta * (bgeo.facet_normal[j] * fsp.u[j] - bgeo.facet_normal[j] * fsp.g[j]) * (fsp.v[i] * bgeo.facet_normal[i])) * rmsh.ds
+F_N = (rpam.parameters['eta'] * (bgeo.facet_normal[j] * fsp.u[j] - bgeo.facet_normal[j] * fsp.g[j]) * (fsp.v[i] * bgeo.facet_normal[i])) * rmsh.ds
 F = F_0 + F_N

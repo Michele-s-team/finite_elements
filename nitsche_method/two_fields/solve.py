@@ -21,28 +21,6 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("input_directory")
-# args = parser.parse_args()
-
-
-# i, j, k, l = ufl.indices(4)
-
-
-# create mesh
-# mesh=Mesh()
-# with XDMFFile((args.input_directory) + "/triangle_mesh.xdmf") as infile:
-#     infile.read(mesh)
-# mvc = MeshValueCollection("size_t", mesh, 2)
-# with XDMFFile((args.input_directory) + "/line_mesh.xdmf") as infile:
-#     infile.read(mvc, "name_to_read")
-#
-# boundary = 'on_boundary'
-#
-
-# n = FacetNormal(mesh)
-
-
 solve(vp.F == 0, fsp.u)
 
 prout_bc = importlib.import_module(swi.prout_bc)
