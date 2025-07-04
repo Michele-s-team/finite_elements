@@ -8,6 +8,7 @@ import geometry as geo
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -17,7 +18,7 @@ i, j, k, l = ufl.indices(4)
 
 print("Check of BCs:")
 print(
-    f"\t\t<<(z - phi)^2>>_square = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters["z_square_const"], rmsh.ds_square):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(z - phi)^2>>_square = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_square_const'], rmsh.ds_square):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
     f"\t\t<<|omega_i - psi_i|^2>>_circle = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.omega_output[i] - vp.omega_circle[i]) * (prout.omega_output[i] - vp.omega_circle[i])), rmsh.ds_circle):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
