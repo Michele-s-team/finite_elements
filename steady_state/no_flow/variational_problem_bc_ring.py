@@ -7,36 +7,30 @@ import function as fu
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 
-# CHANGE PARAMETERS HERE
-# bending rigidity
-kappa = 1.0
-C = 0.1
+
 # values of z at the boundaries
 '''
 if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - z_r(R)_const_{here} <-> zRmin(max)_{check-with-analytical-solution-bc-ring.nb}
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
-z_r_const = 0
-z_R_const = C
-zp_r_const = C
-zp_R_const = 2*C
-omega_r_const = - (rmsh.parameters["r"]) * zp_r_const / np.sqrt( (rmsh.parameters["r"]) ** 2 * (1.0 + zp_r_const ** 2) )
-omega_R_const = (rmsh.parameters["R"]) * zp_R_const / np.sqrt( (rmsh.parameters["R"]) ** 2 * (1.0 + zp_R_const ** 2) )
-# Nitche's parameter
-alpha = 1e2
+
+omega_r_const = - (rmsh.parameters["r"]) * rpam.parameters["zp_r_const"] / np.sqrt( (rmsh.parameters["r"]) ** 2 * (1.0 + rpam.parameters["zp_r_const"] ** 2) )
+omega_R_const = (rmsh.parameters["R"]) * rpam.parameters["zp_R_const"] / np.sqrt( (rmsh.parameters["R"]) ** 2 * (1.0 + rpam.parameters["zp_R_const"] ** 2) )
+
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] =  1.0
-        # values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
+        values[0] =  rpam.parameters["sigma_const"]
+        # values[0] = ((2 + rpam.parameters["C"]**2) * rpam.parameters["kappa"]) / (2 * (1 + rpam.parameters["C"]**2) * geo.my_norm(x)**2)
 
     def value_shape(self):
         return (1,)
@@ -44,7 +38,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C * geo.my_norm( x )
+        values[0] = rpam.parameters["C"] * geo.my_norm( x )
 
     def value_shape(self):
         return (1,)
@@ -52,8 +46,8 @@ class z_exact_Expression( UserExpression ):
 
 class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C * x[0] / (geo.my_norm( x ))
-        values[1] = C * x[1] / (geo.my_norm( x ))
+        values[0] = rpam.parameters["C"] * x[0] / (geo.my_norm( x ))
+        values[1] = rpam.parameters["C"] * x[1] / (geo.my_norm( x ))
 
     def value_shape(self):
         return (2,)
@@ -61,7 +55,7 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * np.sqrt( 1.0 + C ** 2 ) * geo.my_norm( x ))
+        values[0] = rpam.parameters["C"] / (2.0 * np.sqrt( 1.0 + rpam.parameters["C"] ** 2 ) * geo.my_norm( x ))
 
     def value_shape(self):
         return (1,)
@@ -69,7 +63,7 @@ class mu_exact_Expression( UserExpression ):
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = C / (2.0 * ((1.0 + C ** 2) * (geo.my_norm( x )) ** 2) ** (3.0 / 2.0))
+        values[0] = rpam.parameters["C"] / (2.0 * ((1.0 + rpam.parameters["C"] ** 2) * (geo.my_norm( x )) ** 2) ** (3.0 / 2.0))
 
     def value_shape(self):
         return (1,)
@@ -77,7 +71,7 @@ class tau_exact_Expression( UserExpression ):
 
 class z_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = z_r_const
+        values[0] = rpam.parameters["z_r_const"]
 
     def value_shape(self):
         return (1,)
@@ -85,7 +79,7 @@ class z_r_Expression( UserExpression ):
 
 class z_R_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = z_R_const
+        values[0] = rpam.parameters["z_R_const"]
 
     def value_shape(self):
         return (1,)
@@ -177,8 +171,8 @@ fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 # CHANGE PARAMETERS HERE
 # bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
-bc_z_r = DirichletBC( fsp.Q.sub( 0 ), z_r_const, rmsh.boundary_r )
-bc_z_R = DirichletBC( fsp.Q.sub( 0 ), z_R_const, rmsh.boundary_R )
+bc_z_r = DirichletBC( fsp.Q.sub( 0 ), rpam.parameters["z_r_const"], rmsh.boundary_r )
+bc_z_R = DirichletBC( fsp.Q.sub( 0 ), rpam.parameters["z_R_const"], rmsh.boundary_R )
 # CHANGE PARAMETERS HERE
 
 # all BCs
@@ -187,11 +181,11 @@ bcs = [bc_z_r, bc_z_R]
 
 # Define variational problem
 
-F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg(
+F_z = (rpam.parameters["kappa"] * (geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg(
     fsp.omega ) * rmsh.dx \
       - ( \
-                  + (kappa * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
-                  + (kappa * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
+                  + (rpam.parameters["kappa"] * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
+                  + (rpam.parameters["kappa"] * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
       )
 
 F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i] * fsp.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
@@ -200,7 +194,7 @@ F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i]
 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
-F_N = alpha / rmsh.r_mesh * ( \
+F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
             + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega,
                                                                                                                                                                                      rmsh.parameters["c_r"][:2] ) * (
                     1.0 / rmsh.parameters["r"]) * rmsh.ds_r \

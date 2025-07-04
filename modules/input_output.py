@@ -462,3 +462,14 @@ def read_parameters_from_csv_file(file_path):
 
     return result
 
+
+'''
+merge two dictionaries 
+Input values: 
+- 'dictionary_a', 'dictionary_b': the two dictionaries to be merged
+Return values: 
+- the merged dictionary
+'''
+def merge_dictionaries(dictionary_a, dictionary_b):
+    return {**dictionary_a, **dictionary_b}
+

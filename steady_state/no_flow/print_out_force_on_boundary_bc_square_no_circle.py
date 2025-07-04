@@ -11,7 +11,7 @@ dFdl_lr_sigma_kappa_3d_to_assemble = phys.dFdl_sigma_kappa_3d(
     prout.omega_output,
     prout.mu_output,
     fsp.sigma,
-    prout.vp.kappa,
+    prout.rpam.parameters["kappa"],
     bgeo.n_lr(prout.omega_output))
 
 

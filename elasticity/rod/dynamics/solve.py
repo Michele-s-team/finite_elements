@@ -4,7 +4,7 @@ This code solves for the dynamics of the deformation field of an elastic rod sub
 Run with
     python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/elasticity/rod/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/elasticity/rod/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_a $MESH_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -16,7 +16,8 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import read_parameters as rpam
+import input_output as io
+import read_parameters_solve as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -29,6 +30,10 @@ vp = importlib.import_module(swi.vp)
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
+
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
+                                io.merge_dictionaries(rmsh.parameters, rpam.parameters))
+
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',

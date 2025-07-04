@@ -25,27 +25,6 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-
-# import ufl as ufl
-
-# i, j, k, l = ufl.indices(4)
-
-# parser = argparse.ArgumentParser()
-# args = parser.parse_args()
-
-
-
-# Create mesh
-# channel = Rectangle(Point(0, 0), Point(1.0, 1.0))
-# cylinder = Circle(Point(0.2, 0.2), 0.05)
-# domain = channel - cylinder
-# domain = channel
-# mesh = generate_mesh(domain, 16)
-
-
 solve(vp.F == 0, fsp.u)
 
 prout_bc = importlib.import_module(swi.prout_bc)
-
-
-

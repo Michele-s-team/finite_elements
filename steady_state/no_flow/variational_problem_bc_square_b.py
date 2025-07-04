@@ -5,6 +5,7 @@ import ufl as ufl
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -12,11 +13,8 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
-# bending rigidity
 kappa = 1.0
-# Nitche's parameter
 alpha = 1e2
-
 z_square_const = 0.0
 omega_circle_const = 0.5
 n_omega_square_const = 0.0
@@ -24,7 +22,7 @@ n_omega_square_const = 0.0
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1.0
+        values[0] = rpam.parameters["sigma_const"]
         # values[0] = (x[0] - rmsh.parameters["L"]/2)/(rmsh.parameters["L"]/2)
 
     def value_shape(self):
@@ -64,15 +62,15 @@ class TauExpression( UserExpression ):
 
 class z_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = z_square_const
+        values[0] = rpam.parameters["z_square_const"]
 
     def value_shape(self):
         return (1,)
 
 class omega_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_circle_const * (x[0] - rmsh.parameters["c_r"][0]) / geo.my_norm( x - rmsh.parameters["c_r"][:2] )
-        values[1] = omega_circle_const * (x[1] - rmsh.parameters["c_r"][1]) / geo.my_norm( x - rmsh.parameters["c_r"][:2] )
+        values[0] = rpam.parameters["omega_circle_const"] * (x[0] - rmsh.parameters["c_r"][0]) / geo.my_norm( x - rmsh.parameters["c_r"][:2] )
+        values[1] = rpam.parameters["omega_circle_const"] * (x[1] - rmsh.parameters["c_r"][1]) / geo.my_norm( x - rmsh.parameters["c_r"][:2] )
 
     def value_shape(self):
         return (2,)
@@ -80,7 +78,7 @@ class omega_circle_Expression( UserExpression ):
 
 class n_omega_square_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = n_omega_square_const
+        values[0] = rpam.parameters["n_omega_square_const"]
 
     def value_shape(self):
         return (1,)
@@ -116,12 +114,12 @@ bcs = [bc_z_square, bc_omega_circle]
 
 # Define variational problem
 
-F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * (
+F_z = (rpam.parameters["kappa"] * (geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * (
         (fsp.mu) ** 2 - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
       - ( \
-                  (kappa * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
-                  + (kappa * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
-                  + (kappa * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
+                  (rpam.parameters["kappa"] * (bgeo.n_lr( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
+                  + (rpam.parameters["kappa"] * (bgeo.n_tb( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
+                  + (rpam.parameters["kappa"] * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
       )
 
 F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i] * fsp.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
@@ -131,7 +129,7 @@ F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i]
 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
-F_N = alpha / rmsh.r_mesh * ( \
+F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
             + (((bgeo.n_lr( fsp.omega ))[i] * fsp.omega[i] - n_omega_square) * ((bgeo.n_lr( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_lr( fsp.omega ) * rmsh.ds_lr \
             + (((bgeo.n_tb( fsp.omega ))[i] * fsp.omega[i] - n_omega_square) * ((bgeo.n_tb( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_tb( fsp.omega ) * rmsh.ds_tb \
             # these terms constrain mu = H(omega) on the boundary

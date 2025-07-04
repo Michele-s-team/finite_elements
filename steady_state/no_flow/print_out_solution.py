@@ -7,6 +7,7 @@ import geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import physics as phys
+import read_parameters_solve as rpam
 import solution_paths as solpath
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -39,14 +40,14 @@ io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solp
 xdmffile_f = XDMFFile((rarg.args.output_directory) + '/f.xdmf')
 xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
-xdmffile_f.write(project(phys.fel_n(omega_output, mu_output, fsp.tau, vp.kappa), fsp.Q_sigma), 0)
+xdmffile_f.write(project(phys.fel_n(omega_output, mu_output, fsp.tau, rpam.parameters["kappa"]), fsp.Q_sigma), 0)
 xdmffile_f.write(project(-phys.flaplace(fsp.sigma, omega_output), fsp.Q_sigma), 0)
 
 xdmffile_check = XDMFFile((rarg.args.output_directory) + "/check.xdmf")
 xdmffile_check.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
 xdmffile_check.write(project(
-    project(phys.fel_n(omega_output, mu_output, fsp.tau, vp.kappa) + phys.flaplace(fsp.sigma, omega_output), fsp.Q_z),
+    project(phys.fel_n(omega_output, mu_output, fsp.tau, rpam.parameters["kappa"]) + phys.flaplace(fsp.sigma, omega_output), fsp.Q_z),
     fsp.Q_z), 0)
 xdmffile_check.write(
     project(project(sqrt((omega_output[i] - (z_output.dx(i))) * (omega_output[i] - (z_output.dx(i)))), fsp.Q_z),
@@ -54,5 +55,8 @@ xdmffile_check.write(
 xdmffile_check.write(project(project(mu_output - geo.H(omega_output), fsp.Q_z), fsp.Q_z), 0)
 
 xdmffile_check.write(
-    project(project( phys.lhs_force_balance_equation(vp.kappa, omega_output, mu_output, fsp.sigma, fsp.tau)  , fsp.Q_z),
+    project(project( phys.lhs_force_balance_equation(rpam.parameters["kappa"], omega_output, mu_output, fsp.sigma, fsp.tau)  , fsp.Q_z),
             fsp.Q_tau), 0)
+
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
+                                io.merge_dictionaries(rmsh.parameters, rpam.parameters))
