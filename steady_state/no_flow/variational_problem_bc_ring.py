@@ -14,10 +14,7 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 
-# CHANGE PARAMETERS HERE
-# bending rigidity
-# kappa = 1.0
-# C = 0.1
+
 # values of z at the boundaries
 '''
 if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
@@ -25,16 +22,9 @@ if you compare with the solution from check-with-analytical-solution-bc-ring.nb:
     - zp_r(R)_const_{here} <-> zpRmin(max)_{check-with-analytical-solution-bc-ring.nb}
 '''
 
-# z_r_const = 0
-# z_R_const = C
-# zp_r_const = C
-# zp_R_const = 2*C
-
-
 omega_r_const = - (rmsh.parameters["r"]) * rpam.parameters["zp_r_const"] / np.sqrt( (rmsh.parameters["r"]) ** 2 * (1.0 + rpam.parameters["zp_r_const"] ** 2) )
 omega_R_const = (rmsh.parameters["R"]) * rpam.parameters["zp_R_const"] / np.sqrt( (rmsh.parameters["R"]) ** 2 * (1.0 + rpam.parameters["zp_R_const"] ** 2) )
-# Nitche's parameter
-# alpha = 1e2
+
 
 
 class SurfaceTensionExpression( UserExpression ):
