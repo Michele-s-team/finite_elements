@@ -36,7 +36,7 @@ alpha = 1e2
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         values[0] =  1.0
-        # values[0] = ((2 + C**2) * kappa) / (2 * (1 + C**2) * geo.my_norm(x)**2)
+        # values[0] = ((2 + C**2) * rpam.parameters["kappa"]) / (2 * (1 + C**2) * geo.my_norm(x)**2)
 
     def value_shape(self):
         return (1,)
@@ -187,11 +187,11 @@ bcs = [bc_z_r, bc_z_R]
 
 # Define variational problem
 
-F_z = (kappa * (geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg(
+F_z = (rpam.parameters["kappa"] * (geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx(j)) * (fsp.nu_z.dx( i )) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K( fsp.omega )) * fsp.nu_z) + fsp.sigma * fsp.mu * fsp.nu_z) * geo.sqrt_detg(
     fsp.omega ) * rmsh.dx \
       - ( \
-                  + (kappa * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
-                  + (kappa * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
+                  + (rpam.parameters["kappa"] * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
+                  + (rpam.parameters["kappa"] * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_z * (fsp.mu.dx(i))) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
       )
 
 F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i] * fsp.nu_omega[i]) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
@@ -200,7 +200,7 @@ F_omega = (- fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] - fsp.omega[i]
 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
-F_N = alpha / rmsh.r_mesh * ( \
+F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
             + (((bgeo.n_circle( fsp.omega ))[i] * fsp.omega[i] - omega_r) * ((bgeo.n_circle( fsp.omega ))[k] * geo.g( fsp.omega )[k, l] * fsp.nu_omega[l])) * bgeo.sqrt_deth_circle( fsp.omega,
                                                                                                                                                                                      rmsh.parameters["c_r"][:2] ) * (
                     1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
