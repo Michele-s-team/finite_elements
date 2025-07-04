@@ -15,7 +15,7 @@ sys.path.append(module_path)
 import boundary_geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
-import read_parameters as rpam
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)

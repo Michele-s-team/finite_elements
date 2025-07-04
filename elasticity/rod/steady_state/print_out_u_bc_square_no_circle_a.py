@@ -8,7 +8,7 @@ import elasticity as ela
 import function_spaces as fsp
 import input_output as io
 import mesh as msh
-import read_parameters as rpam
+import read_parameters_solve as rpam
 
 
 import switch_problem as swi
