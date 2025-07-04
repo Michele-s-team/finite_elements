@@ -20,9 +20,9 @@ i, j, k, l = ufl.indices(4)
 print("Check of BCs:")
 print("1)")
 print(
-    f"\t\t<<(z - phi)^2>>_square = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, vp.z_square_const, rmsh.ds_square):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(z - phi)^2>>_square = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters["z_square_const"], rmsh.ds_square):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<(z - phi)^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, vp.z_circle_const, rmsh.ds_circle):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(z - phi)^2>>_circle = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters["z_circle_const"], rmsh.ds_circle):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print("2)")
 print(
     f"\t\t<<(n^i \omega_i - psi )^2>>_lr = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_lr(prout.omega_output))[i] * prout.omega_output[i], vp.omega_square, rmsh.ds_lr):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
