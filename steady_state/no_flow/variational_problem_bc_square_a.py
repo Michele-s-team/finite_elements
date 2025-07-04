@@ -12,22 +12,11 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 
-# # CHANGE PARAMETERS HERE
-# # bending rigidity
-# kappa = 1.0
-# # Nitche's parameter
-# alpha = 1e2
-#
-# z_circle_const = 0.0
-# z_square_const = 0.1
-# omega_circle_const = 0.5
-# omega_square_const = 0.0
-# sigma_const = 1.0
 
 
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = sigma_const
+        values[0] = rpam.parameters["sigma_const"]
         # values[0] = (x[0] - rmsh.parameters["L"]/2)/(rmsh.parameters["L"]/2)
 
     def value_shape(self):

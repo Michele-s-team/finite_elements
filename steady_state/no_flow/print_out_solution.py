@@ -7,6 +7,7 @@ import geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import physics as phys
+import read_parameters_solve as rpam
 import solution_paths as solpath
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -56,3 +57,6 @@ xdmffile_check.write(project(project(mu_output - geo.H(omega_output), fsp.Q_z), 
 xdmffile_check.write(
     project(project( phys.lhs_force_balance_equation(rpam.parameters["kappa"], omega_output, mu_output, fsp.sigma, fsp.tau)  , fsp.Q_z),
             fsp.Q_tau), 0)
+
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
+                                io.merge_dictionaries(rmsh.parameters, rpam.parameters))
