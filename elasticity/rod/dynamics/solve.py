@@ -16,6 +16,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import input_output as io
 import read_parameters_solve as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -29,6 +30,10 @@ vp = importlib.import_module(swi.vp)
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
+
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
+                                io.merge_dictionaries(rmsh.parameters, rpam.parameters))
+
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
