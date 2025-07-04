@@ -16,7 +16,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import read_parameters as rpam
+import read_parameters_solve as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
