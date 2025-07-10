@@ -1,8 +1,12 @@
 from fenics import *
+<<<<<<< Updated upstream:steady-state-no-flow/print_out_forces.py
 try:
     import ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/no_flow/print_out_forces.py
 
 import function_spaces as fsp
 import geometry as geo

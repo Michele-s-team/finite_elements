@@ -1,0 +1,7 @@
+/tmp/tmpq2lbp5qh/dolfin_subdomain_9328cbe0dd0f22ac9d70ad8cd3f415d6.cpp: In member function ‘virtual bool dolfin::dolfin_subdomain_9328cbe0dd0f22ac9d70ad8cd3f415d6::inside(Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, bool) const’:
+/tmp/tmpq2lbp5qh/dolfin_subdomain_9328cbe0dd0f22ac9d70ad8cd3f415d6.cpp:63:32: error: expected ‘;’ before ‘near’
+   63 |          return near(x[0], 0.0)near(x[1], 0) || near(x[1], 1)on_boundary && sqrt(pow(x[0] - 0.5, 2) + pow(x[1] - 0.5, 2)) < 0.375near(x[0], 1);
+      |                                ^~~~
+/tmp/tmpq2lbp5qh/dolfin_subdomain_9328cbe0dd0f22ac9d70ad8cd3f415d6.cpp:63:62: error: expected ‘;’ before ‘on_boundary’
+   63 |          return near(x[0], 0.0)near(x[1], 0) || near(x[1], 1)on_boundary && sqrt(pow(x[0] - 0.5, 2) + pow(x[1] - 0.5, 2)) < 0.375near(x[0], 1);
+      |                                                              ^~~~~~~~~~~

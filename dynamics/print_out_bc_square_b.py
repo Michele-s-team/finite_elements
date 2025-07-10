@@ -2,7 +2,7 @@ import csv
 import dolfin
 from fenics import *
 import importlib
-import ufl as ufl
+import ufl_legacy as ufl
 import os
 
 import boundary_geometry as bgeo

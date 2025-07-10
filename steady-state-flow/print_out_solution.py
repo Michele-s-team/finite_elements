@@ -1,9 +1,13 @@
 from fenics import *
 import importlib
+<<<<<<< Updated upstream:steady-state-flow/print_out_solution.py
 try: 
     import ufl as ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/flow/print_out_solution.py
 
 import function_spaces as fsp
 import geometry as geo

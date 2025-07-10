@@ -1,10 +1,15 @@
 import colorama as col
 from fenics import *
+<<<<<<< Updated upstream:steady-state-no-flow/print_out_bc_square_no_circle_a.py
 try:
     import ufl
 except ImportError:
     import ufl_legacy as ufl
 import colorama as col
+=======
+import importlib
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/no_flow/print_out_bc_square_no_circle_a.py
 
 import boundary_geometry as bgeo
 import geometry as geo

@@ -1,8 +1,12 @@
 from fenics import *
+<<<<<<< Updated upstream:steady-state-no-flow/print_out_bc_ring.py
 try:
     import ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/no_flow/print_out_bc_ring.py
 import colorama as col
 
 import boundary_geometry as bgeo

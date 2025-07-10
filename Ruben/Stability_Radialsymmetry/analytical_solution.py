@@ -1,3 +1,10 @@
+"""
+This code is the beginning of the assembly of the radialsymmetric stability analysis with finite elements. The projection method has still to be explored.
+
+
+
+"""
+
 import sympy as sp
 from sympy import symbols, Function, sqrt, simplify, diff, Matrix, det
 import mpmath as mp

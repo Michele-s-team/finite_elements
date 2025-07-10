@@ -2,7 +2,7 @@ import csv
 import importlib
 from fenics import *
 import os
-import ufl as ufl
+import ufl_legacy as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp

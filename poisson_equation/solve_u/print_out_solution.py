@@ -1,5 +1,10 @@
 from fenics import *
+<<<<<<< Updated upstream
 import ufl as ufl
+=======
+import importlib
+import ufl_legacy as ufl
+>>>>>>> Stashed changes
 
 import function_spaces as fsp
 import input_output as io

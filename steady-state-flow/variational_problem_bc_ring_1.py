@@ -2,10 +2,14 @@ from fenics import *
 import importlib
 import numpy as np
 import function as fu
+<<<<<<< Updated upstream:steady-state-flow/variational_problem_bc_ring_1.py
 try: 
     import ufl as ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/flow/variational_problem_bc_ring_1.py
 
 import function_spaces as fsp
 import boundary_geometry as bgeo

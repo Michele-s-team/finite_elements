@@ -1,5 +1,5 @@
 from fenics import *
-import ufl as ufl
+import ufl_legacy as ufl
 import colorama as col
 
 import boundary_geometry as bgeo

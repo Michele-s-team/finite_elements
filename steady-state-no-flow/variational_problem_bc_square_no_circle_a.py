@@ -1,8 +1,13 @@
 from fenics import *
+<<<<<<< Updated upstream:steady-state-no-flow/variational_problem_bc_square_no_circle_a.py
 try:
     import ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import importlib
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/no_flow/variational_problem_bc_square_no_circle_a.py
 
 import boundary_geometry as bgeo
 import function_spaces as fsp

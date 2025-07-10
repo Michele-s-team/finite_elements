@@ -12,7 +12,7 @@ import argparse
 import colorama as col
 from mshr import *
 import numpy as np
-import ufl as ufl
+import ufl_legacy as ufl
 from dolfin import *
 import sys
 

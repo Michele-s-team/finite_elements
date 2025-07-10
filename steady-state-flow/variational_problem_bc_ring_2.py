@@ -38,7 +38,7 @@ omega_R_const = 0
 
 from fenics import *
 import importlib
-import ufl as ufl
+import ufl_legacy as ufl
 
 import boundary_geometry as bgeo
 import function as fu

@@ -1,5 +1,5 @@
 import importlib
-import ufl as ufl
+import ufl_legacy as ufl
 
 import function_spaces as fsp
 import geometry as geo

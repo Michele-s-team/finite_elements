@@ -1,4 +1,8 @@
 from fenics import *
+<<<<<<< Updated upstream
+=======
+from ufl_legacy import FunctionSpace
+>>>>>>> Stashed changes
 
 import input_output as io
 

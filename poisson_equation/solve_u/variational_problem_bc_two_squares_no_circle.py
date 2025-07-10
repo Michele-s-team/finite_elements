@@ -1,7 +1,7 @@
 from fenics import *
 import importlib
 import numpy as np
-import ufl as ufl
+import ufl_legacy as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp

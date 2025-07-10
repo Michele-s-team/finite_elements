@@ -11,7 +11,11 @@ from fenics import *
 import argparse
 import numpy as np
 import ufl_legacy as ufl
+<<<<<<< Updated upstream
 import dolfin as dolfin
+=======
+
+>>>>>>> Stashed changes
 import sys
 
 

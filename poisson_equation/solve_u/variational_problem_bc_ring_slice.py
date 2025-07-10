@@ -90,8 +90,12 @@ F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u
 =======
 from fenics import *
 import importlib
+<<<<<<< Updated upstream
 import numpy as np
 import ufl as ufl
+=======
+import ufl_legacy as ufl
+>>>>>>> Stashed changes
 
 import boundary_geometry as bgeo
 import function_spaces as fsp

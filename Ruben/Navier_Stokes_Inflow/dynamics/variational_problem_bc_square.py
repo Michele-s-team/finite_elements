@@ -1,0 +1,79 @@
+from fenics import *
+import importlib
+import ufl_legacy as ufl
+import runtime_arguments as rarg
+import function_spaces as fsp
+import geometry as geo
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+
+i, j, k, l = ufl.indices(4)
+
+# CHANGE PARAMETERS HERE
+T = 0.1
+num_steps = int(20)
+
+dt = T / num_steps  # time step size
+Re       = Constant(float(getattr(rarg.args, "Re", 1.0)))
+
+
+# CHANGE PARAMETERS HERE
+
+
+# trial analytical expression for a vector
+class TangentVelocityExpression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0.0
+        values[1] = 0.0
+
+    def value_shape(self):
+        return (2,)
+
+
+# trial analytical expression for the  surface tension sigma(x,y)
+class SurfaceTensionExpression(UserExpression):
+    def eval(self, values, x):
+        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
+        # values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
+        values[0] = 0.0
+
+    def value_shape(self):
+        return (1,)
+
+
+v__profile_l = Expression((f'4.0*1.5*x[1]*({rmsh.h} - x[1]) / pow({rmsh.h}, 2)', '0'), degree=2, h=rmsh.h)
+
+bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
+bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
+bc_v__cylinder = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_circle)
+
+bc_phi_outflow = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
+
+# boundary conditions for the surface_tension p
+bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
+bc_phi = [bc_phi_outflow]
+
+# Define variational problem for step 1
+# step 1 for v
+F1 = (
+    Re*((fsp.v_[i] - fsp.v_n_1[i])/dt
+         + (3.0/2.0*fsp.v_n_1[j] - 1.0/2.0*fsp.v_n_2[j]) * fsp.V[i].dx(j)
+        ) * fsp.nu[i]
+  + fsp.sigma_n_32.dx(i)*fsp.nu[i]
+  + ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
+         ) * rmsh.dx
+
+
+# ——— step 2: pressure Poisson ———
+F2 = (
+    (fsp.phi.dx(i))*fsp.q.dx(i)
+  + (Re/dt) * (fsp.v_)[i].dx(i) * fsp.q
+) * rmsh.dx
+
+# ——— step 3: velocity correction ———
+F3 = (
+   ((fsp.v_n[i] - fsp.v_[i])
+    + (dt/Re)* (fsp.phi.dx(i))
+   ) * fsp.nu[i]
+) * rmsh.dx

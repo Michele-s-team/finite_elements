@@ -1,10 +1,15 @@
 from fenics import *
+<<<<<<< Updated upstream
 from dolfin import *
 #
 try:
     import ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import dolfin
+import ufl_legacy as ufl
+>>>>>>> Stashed changes
 
 
 import geometry as geo

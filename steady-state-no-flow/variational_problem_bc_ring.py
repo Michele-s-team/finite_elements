@@ -1,10 +1,14 @@
 from fenics import *
 import importlib
 import numpy as np
+<<<<<<< Updated upstream:steady-state-no-flow/variational_problem_bc_ring.py
 try:
     import ufl
 except ImportError:
     import ufl_legacy as ufl
+=======
+import ufl_legacy as ufl
+>>>>>>> Stashed changes:steady_state/no_flow/variational_problem_bc_ring.py
 
 import function as fu
 import function_spaces as fsp
