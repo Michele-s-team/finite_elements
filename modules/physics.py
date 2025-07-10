@@ -39,6 +39,8 @@ Input values:
 Return values: 
 - the surface-tension contribution to  {dF^i_\kappa/dl}_notes
 '''
+
+
 def dFdl_sigma_t(sigma, nu):
     return as_tensor(- sigma * nu[i], (i))
 
@@ -53,8 +55,11 @@ Input values:
 Return values: 
 - the surface-tension contribution to {dF^i/dl}_notes projected in the 3d space (tuple of three values)
 '''
+
+
 def dFdl_sigma_3d(omega, sigma, nu):
     return geo.from_tangent_to_3D_space(omega, dFdl_sigma_t(sigma, nu))
+
 
 '''
 Tangential force per unit length exerted on a line element on \partial \Omega by viscosity and surface tension, projected in the three-dimensional space where 
@@ -69,8 +74,11 @@ Input values:
 Return values: 
 - the 3d vector (tuple of three values) of {dF^i_\kappa/dl}_notes projected in the 3d space
 '''
+
+
 def dFdl_eta_sigma_3d(v, w, omega, sigma, eta, nu):
     return geo.from_tangent_to_3D_space(omega, dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu))
+
 
 '''
 Tangential force per unit length exerted on a line element on \partial \Omega by  bending-rigidity 
@@ -113,6 +121,8 @@ Input values:
 Return values: 
 - the 3d vector (tuple of three values) of {dF^i_\kappa/dl}_notes projected in the 3d space
 '''
+
+
 def dFdl_kappa_3d(omega, mu, kappa, nu):
     return geo.from_tangent_normal_to_3D_space(omega, dFdl_kappa_t(mu, kappa, nu), dFdl_kappa_n(mu, kappa, nu))
 
@@ -131,8 +141,11 @@ Input values:
 Return values:
 - the three-dimensional vector (a vector with three entries) of the total force per unit length
 '''
+
+
 def dFdl_tot_3d(v, w, omega, mu, sigma, eta, kappa, nu):
-    return (dFdl_eta_sigma_3d(v,w,omega,sigma,eta,nu) + dFdl_kappa_3d(omega, mu, kappa, nu))
+    return (dFdl_eta_sigma_3d(v, w, omega, sigma, eta, nu) + dFdl_kappa_3d(omega, mu, kappa, nu))
+
 
 '''
 force, in the three-dimensional space in which \Omega is embedded, exerted on a line element on \partial \Omega  by
@@ -146,6 +159,8 @@ Input values:
 Return values:
 - the three-dimensional vector (a vector with three entries) of the total force per unit length
 '''
+
+
 def dFdl_sigma_kappa_3d(omega, mu, sigma, kappa, nu):
     return (dFdl_sigma_3d(omega, sigma, nu) + dFdl_kappa_3d(omega, mu, kappa, nu))
 
@@ -158,7 +173,7 @@ def fel_n(omega, mu, tau, kappa):
 # fvisc_n(v, w, omega, mu, eta) = f^{VISC}_n_notes, i.e., viscous contribution to the normal force
 def fvisc_n(v, w, omega, mu, eta):
     return (2.0 * eta * (geo.g_c(omega)[i, k] * geo.Nabla_v(v, omega)[j, k] * geo.b(omega)[i, j] - 2.0 * w * (
-                2.0 * (mu ** 2) - geo.K(omega))))
+            2.0 * (mu ** 2) - geo.K(omega))))
 
 
 # tforce coming from the Laplace preccure. flaplace ={ 2 * \sigma * H }_notes
@@ -216,6 +231,7 @@ def fsigma_t(sigma, omega):
 def fvisc_t(d, omega, eta):
     return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
 
+
 '''
 returns the left-hand side of the force-balance equation
 Input values: 
@@ -227,5 +243,7 @@ Input values:
 Return values: 
 - (kappa * (- 2 * tau - 4 * mu * ( (mu) ** 2 - geo.K(omega) ) ) + 2 * sigma * mu  )
 '''
+
+
 def lhs_force_balance_equation(kappa, omega, mu, sigma, tau):
-    return (kappa * (- 2 * tau - 4 * mu * ( (mu) ** 2 - geo.K(omega) ) ) + 2 * sigma * mu  )
+    return (fel_n(omega, mu, tau, kappa) + 2 * sigma * mu)
