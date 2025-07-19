@@ -75,8 +75,9 @@ for p in range(len(lmsh.sub_meshes)):
     #
     # ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[p] + ds_sub_mesh_tb[p])
 
+import check_mesh_tags_square_ellipse_circle
+
 '''
-import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
