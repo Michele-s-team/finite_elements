@@ -101,7 +101,7 @@ gmsh.model.geo.synchronize()
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
-# outer lines
+# square lines
 gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_1_b_id"])
 gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_1_b_id"], "line_out_12")
 
@@ -115,9 +115,13 @@ gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_su
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_out_41")
 
 
-# inner ellipse loop
+#ellipse loop
 gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 8)], rpam.parameters["ellipse_loop_id"])
 gmsh.model.setPhysicalName(1, rpam.parameters["ellipse_loop_id"], "ellipse_loop")
+
+#circle loop
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(8, 12)], rpam.parameters["circle_loop_id"])
+gmsh.model.setPhysicalName(1, rpam.parameters["circle_loop_id"], "circle_loop")
 
 
 # add 2-dimensional objects
