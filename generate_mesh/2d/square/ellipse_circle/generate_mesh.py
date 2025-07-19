@@ -50,14 +50,13 @@ loop_out = gmsh.model.geo.addCurveLoop([line_out_12, line_out_23, line_out_34, l
 gmsh.model.geo.synchronize()
 
 
-# add inner rectangle
+# add inner ellipse
 p_ellipse_c = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1], rpam.parameters["c"][2])
 p_ellipse_r = gmsh.model.geo.addPoint(rpam.parameters["c"][0] + rpam.parameters["a"], rpam.parameters["c"][1], rpam.parameters["c"][2])
 p_ellipse_t = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] + rpam.parameters["b"], rpam.parameters["c"][2])
 p_ellipse_l = gmsh.model.geo.addPoint(rpam.parameters["c"][0] - rpam.parameters["a"], rpam.parameters["c"][1], rpam.parameters["c"][2])
 p_ellipse_b = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] - rpam.parameters["b"], rpam.parameters["c"][2])
 gmsh.model.geo.synchronize()
-
 
 ellipse_arc_rt = gmsh.model.geo.addEllipseArc(p_ellipse_r, p_ellipse_c, p_ellipse_r, p_ellipse_t)
 ellipse_arc_tl = gmsh.model.geo.addEllipseArc(p_ellipse_t, p_ellipse_c, p_ellipse_r, p_ellipse_l)
@@ -68,14 +67,13 @@ gmsh.model.geo.synchronize()
 loop_ellipse = gmsh.model.geo.addCurveLoop([ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br])
 gmsh.model.geo.synchronize()
 
-surface_out = gmsh.model.geo.addPlaneSurface([loop_out, loop_ellipse])
+surface_square_minus_ellipse = gmsh.model.geo.addPlaneSurface([loop_out, loop_ellipse])
 gmsh.model.geo.synchronize()
 
-gmsh.model.mesh.embed(1, [ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br], 2, surface_out)
+gmsh.model.mesh.embed(1, [ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br], 2, surface_square_minus_ellipse)
 gmsh.model.geo.synchronize()
 
-
-surface_in = gmsh.model.geo.addPlaneSurface([loop_ellipse])
+surface_ellipse = gmsh.model.geo.addPlaneSurface([loop_ellipse])
 gmsh.model.geo.synchronize()
 
 
@@ -100,20 +98,11 @@ gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_su
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_out_41")
 
 
-'''
-# inner lines
-gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_sub_mesh_0_b_id"])
-gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_sub_mesh_0_b_id"], "line_in_12")
+# inner ellipse loop
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 8)], rpam.parameters["ellipse_loop_id"])
+gmsh.model.setPhysicalName(1, rpam.parameters["ellipse_loop_id"], "ellipse_loop")
 
-gmsh.model.addPhysicalGroup(lines[5][0], [lines[5][1]], rpam.parameters["line_sub_mesh_0_r_id"])
-gmsh.model.setPhysicalName(lines[5][0], rpam.parameters["line_sub_mesh_0_r_id"], "line_in_23")
 
-gmsh.model.addPhysicalGroup(lines[6][0], [lines[6][1]], rpam.parameters["line_sub_mesh_0_t_id"])
-gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_in_34")
-
-gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_sub_mesh_0_l_id"])
-gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_sub_mesh_0_l_id"], "line_in_41")
-'''
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
@@ -126,7 +115,7 @@ gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "su
 # set the resolution
 # se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
 distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_in])
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_ellipse])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
