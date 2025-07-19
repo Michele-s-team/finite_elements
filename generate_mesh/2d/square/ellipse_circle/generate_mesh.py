@@ -52,16 +52,18 @@ gmsh.model.geo.synchronize()
 # sign
 
 # add inner rectangle
-p_in_1 = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_in_2 = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["L_in"], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_in_3 = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["L_in"], rpam.parameters["p"][1] + rpam.parameters["h_in"], rpam.parameters["p"][2])
-p_in_4 = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1] + rpam.parameters["h_in"], rpam.parameters["p"][2])
+p_ellipse_c = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1], rpam.parameters["p"][2])
+p_ellipse_r = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["a"], rpam.parameters["p"][1], rpam.parameters["p"][2])
+p_ellipse_t = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1] + rpam.parameters["b"], rpam.parameters["p"][2])
+p_ellipse_l = gmsh.model.geo.addPoint(rpam.parameters["p"][0] - rpam.parameters["a"], rpam.parameters["p"][1], rpam.parameters["p"][2])
+p_ellipse_b = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1] - rpam.parameters["b"], rpam.parameters["p"][2])
 gmsh.model.geo.synchronize()
 
-line_in_12 = gmsh.model.geo.addLine(p_in_1, p_in_2)
-line_in_23 = gmsh.model.geo.addLine(p_in_2, p_in_3)
-line_in_34 = gmsh.model.geo.addLine(p_in_3, p_in_4)
-line_in_41 = gmsh.model.geo.addLine(p_in_4, p_in_1)
+'''
+line_in_12 = gmsh.model.geo.addLine(p_ellipse_r, p_ellipse_t)
+line_in_23 = gmsh.model.geo.addLine(p_ellipse_t, p_ellipse_l)
+line_in_34 = gmsh.model.geo.addLine(p_ellipse_l, p_ellipse_b)
+line_in_41 = gmsh.model.geo.addLine(p_ellipse_b, p_ellipse_r)
 gmsh.model.geo.synchronize()
 
 loop_in = gmsh.model.geo.addCurveLoop([line_in_12, line_in_23, line_in_34, line_in_41])
@@ -141,3 +143,4 @@ msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_mesh
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
 
 model.__exit__()
+'''
