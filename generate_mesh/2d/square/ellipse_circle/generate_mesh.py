@@ -80,6 +80,9 @@ circle_arc_lb = gmsh.model.geo.addCircleArc(p_circle_l, p_ellipse_c, p_circle_b)
 circle_arc_br = gmsh.model.geo.addCircleArc(p_circle_b, p_ellipse_c,  p_circle_r)
 gmsh.model.geo.synchronize()
 
+loop_circle = gmsh.model.geo.addCurveLoop([circle_arc_rt, circle_arc_tl, circle_arc_lb, circle_arc_br])
+gmsh.model.geo.synchronize()
+
 
 surface_square_minus_ellipse = gmsh.model.geo.addPlaneSurface([loop_out, loop_ellipse])
 gmsh.model.geo.synchronize()
@@ -87,7 +90,7 @@ gmsh.model.geo.synchronize()
 gmsh.model.mesh.embed(1, [ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br], 2, surface_square_minus_ellipse)
 gmsh.model.geo.synchronize()
 
-surface_ellipse = gmsh.model.geo.addPlaneSurface([loop_ellipse])
+surface_ellipse = gmsh.model.geo.addPlaneSurface([loop_ellipse, loop_circle])
 gmsh.model.geo.synchronize()
 
 
