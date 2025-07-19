@@ -49,7 +49,6 @@ gmsh.model.geo.synchronize()
 loop_out = gmsh.model.geo.addCurveLoop([line_out_12, line_out_23, line_out_34, line_out_41])
 gmsh.model.geo.synchronize()
 
-# sign
 
 # add inner rectangle
 p_ellipse_c = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1], rpam.parameters["c"][2])
@@ -59,24 +58,30 @@ p_ellipse_l = gmsh.model.geo.addPoint(rpam.parameters["c"][0] - rpam.parameters[
 p_ellipse_b = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] - rpam.parameters["b"], rpam.parameters["c"][2])
 gmsh.model.geo.synchronize()
 
-'''
-line_in_12 = gmsh.model.geo.addLine(p_ellipse_r, p_ellipse_t)
-line_in_23 = gmsh.model.geo.addLine(p_ellipse_t, p_ellipse_l)
-line_in_34 = gmsh.model.geo.addLine(p_ellipse_l, p_ellipse_b)
-line_in_41 = gmsh.model.geo.addLine(p_ellipse_b, p_ellipse_r)
+
+ellipse_arc_rt = gmsh.model.geo.addEllipseArc(p_ellipse_r, p_ellipse_c, p_ellipse_r, p_ellipse_t)
+ellipse_arc_tl = gmsh.model.geo.addEllipseArc(p_ellipse_t, p_ellipse_c, p_ellipse_r, p_ellipse_l)
+ellipse_arc_lb = gmsh.model.geo.addEllipseArc(p_ellipse_l, p_ellipse_c, p_ellipse_r, p_ellipse_b)
+ellipse_arc_br = gmsh.model.geo.addEllipseArc(p_ellipse_b, p_ellipse_c, p_ellipse_r, p_ellipse_r)
 gmsh.model.geo.synchronize()
 
-loop_in = gmsh.model.geo.addCurveLoop([line_in_12, line_in_23, line_in_34, line_in_41])
+loop_ellipse = gmsh.model.geo.addCurveLoop([ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br])
 gmsh.model.geo.synchronize()
 
-surface_out = gmsh.model.geo.addPlaneSurface([loop_out, loop_in])
+surface_out = gmsh.model.geo.addPlaneSurface([loop_out, loop_ellipse])
 gmsh.model.geo.synchronize()
 
-gmsh.model.mesh.embed(1, [line_in_12, line_in_23, line_in_34, line_in_41], 2, surface_out)
+gmsh.model.mesh.embed(1, [ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br], 2, surface_out)
 gmsh.model.geo.synchronize()
 
-surface_in = gmsh.model.geo.addPlaneSurface([loop_in])
+
+surface_in = gmsh.model.geo.addPlaneSurface([loop_ellipse])
 gmsh.model.geo.synchronize()
+
+
+
+
+
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
@@ -94,6 +99,8 @@ gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_1_t_id"],
 gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_1_l_id"])
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_out_41")
 
+
+'''
 # inner lines
 gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_sub_mesh_0_b_id"])
 gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_sub_mesh_0_b_id"], "line_in_12")
@@ -106,7 +113,7 @@ gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_sub_mesh_0_t_id"],
 
 gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_sub_mesh_0_l_id"])
 gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_sub_mesh_0_l_id"], "line_in_41")
-
+'''
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
@@ -143,4 +150,3 @@ msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_mesh
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
 
 model.__exit__()
-'''
