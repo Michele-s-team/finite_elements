@@ -57,24 +57,25 @@ for p in range(len(lmsh.sub_meshes)):
     ds_parent_mesh_lrtb.append(ds_parent_mesh_lr[p] + ds_parent_mesh_tb[p])
 
 ds_parent_mesh = ds_parent_mesh_lrtb[0] + ds_parent_mesh_lrtb[1]
+'''
 
 # create line and surface elements for sub_meshes
-dx_sub_mesh, ds_sub_mesh_l, ds_sub_mesh_r, ds_sub_mesh_t, ds_sub_mesh_b, ds_sub_mesh_lr, ds_sub_mesh_tb, ds_sub_mesh_lrtb = [], [], [], [], [], [], [], []
+dx_sub_mesh = []
 
 for p in range(len(lmsh.sub_meshes)):
     dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=sf_sub_mesh[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
 
-    ds_sub_mesh_l.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_l_id"]))
-    ds_sub_mesh_r.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_r_id"]))
-    ds_sub_mesh_t.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_t_id"]))
-    ds_sub_mesh_b.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_b_id"]))
+    # ds_sub_mesh_l.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_l_id"]))
+    # ds_sub_mesh_r.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_r_id"]))
+    # ds_sub_mesh_t.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_t_id"]))
+    # ds_sub_mesh_b.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_b_id"]))
+    #
+    # ds_sub_mesh_lr.append(ds_sub_mesh_l[p] + ds_sub_mesh_r[p])
+    # ds_sub_mesh_tb.append(ds_sub_mesh_t[p] + ds_sub_mesh_b[p])
+    #
+    # ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[p] + ds_sub_mesh_tb[p])
 
-    ds_sub_mesh_lr.append(ds_sub_mesh_l[p] + ds_sub_mesh_r[p])
-    ds_sub_mesh_tb.append(ds_sub_mesh_t[p] + ds_sub_mesh_b[p])
-
-    ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[p] + ds_sub_mesh_tb[p])
-
-
+'''
 import check_mesh_tags_square_square
 
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
