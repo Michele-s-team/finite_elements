@@ -50,7 +50,7 @@ loop_out = gmsh.model.geo.addCurveLoop([line_out_12, line_out_23, line_out_34, l
 gmsh.model.geo.synchronize()
 
 
-# add inner ellipse
+# add ellipse
 p_ellipse_c = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1], rpam.parameters["c"][2])
 p_ellipse_r = gmsh.model.geo.addPoint(rpam.parameters["c"][0] + rpam.parameters["a"], rpam.parameters["c"][1], rpam.parameters["c"][2])
 p_ellipse_t = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] + rpam.parameters["b"], rpam.parameters["c"][2])
@@ -66,6 +66,20 @@ gmsh.model.geo.synchronize()
 
 loop_ellipse = gmsh.model.geo.addCurveLoop([ellipse_arc_rt, ellipse_arc_tl, ellipse_arc_lb, ellipse_arc_br])
 gmsh.model.geo.synchronize()
+
+# add circle
+p_circle_r = gmsh.model.geo.addPoint(rpam.parameters["c"][0] + rpam.parameters["r"], rpam.parameters["c"][1], rpam.parameters["c"][2])
+p_circle_t = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] + rpam.parameters["r"], rpam.parameters["c"][2])
+p_circle_l = gmsh.model.geo.addPoint(rpam.parameters["c"][0] - rpam.parameters["r"], rpam.parameters["c"][1], rpam.parameters["c"][2])
+p_circle_b = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] - rpam.parameters["r"], rpam.parameters["c"][2])
+gmsh.model.geo.synchronize()
+
+circle_arc_rt = gmsh.model.geo.addCircleArc(p_circle_r, p_ellipse_c,  p_circle_t)
+circle_arc_tl = gmsh.model.geo.addCircleArc(p_circle_t, p_ellipse_c, p_circle_l)
+circle_arc_lb = gmsh.model.geo.addCircleArc(p_circle_l, p_ellipse_c, p_circle_b)
+circle_arc_br = gmsh.model.geo.addCircleArc(p_circle_b, p_ellipse_c,  p_circle_r)
+gmsh.model.geo.synchronize()
+
 
 surface_square_minus_ellipse = gmsh.model.geo.addPlaneSurface([loop_out, loop_ellipse])
 gmsh.model.geo.synchronize()
