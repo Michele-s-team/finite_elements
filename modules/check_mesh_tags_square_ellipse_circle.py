@@ -24,8 +24,8 @@ Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 def function_test_integrals(x):
-    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
-    # return 1
+    # return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    return 1
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
@@ -45,8 +45,14 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.
 
 # exact sutface integrals
 integral_exact_dx = []
-integral_exact_dx.append(cal.surface_integral_rectangle(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]])))
-integral_exact_dx.append(cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]]) - integral_exact_dx[0])
+integral_exact_dx.append( \
+    cal.surface_integral_ellipse(function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0) \
+    - cal.surface_integral_disk(function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'])
+)
+integral_exact_dx.append( \
+    cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters['L'], rmsh.parameters['h']]) \
+    - cal.surface_integral_ellipse(function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0) \
+    )
 
 '''
 integral_exact_ds_l, integral_exact_ds_r, integral_exact_ds_t, integral_exact_ds_b = [], [], [], []
@@ -100,7 +106,6 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 print(f'Check integrals on the sub_meshes: ')
 
 for i in range(len(lmsh.sub_meshes)):
-
     print(f'* sub_mesh {i}:')
     test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx[i], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx'))
 

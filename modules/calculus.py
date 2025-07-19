@@ -340,9 +340,9 @@ def surface_integral_rectangle_minus_disk(f, p_bl, p_tr, r, c):
 compute the surface integral of a function over an ellipse
 Input values 
 - 'f': the function f([x, y])
-- 'a', 'b': the major and minor axes of the ellipse, respectively
+- 'a', 'b': the semi-major and semi-minor axes of the ellipse, respectively
 - 'c': the center of the ellipse
-- 'phi' : the rotation angle of the major axis with respct to the x axis
+- 'phi' : the rotation angle of the major axis with respect to the x axis
 
 Return value: 
 - \int_{ellipse} dx dy f
