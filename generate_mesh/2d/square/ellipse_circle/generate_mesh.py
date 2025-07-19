@@ -4,7 +4,7 @@ generate a mesh given by a square with a an ellipse embedded in the mesh inside,
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/square"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -52,11 +52,11 @@ gmsh.model.geo.synchronize()
 # sign
 
 # add inner rectangle
-p_ellipse_c = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_ellipse_r = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["a"], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_ellipse_t = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1] + rpam.parameters["b"], rpam.parameters["p"][2])
-p_ellipse_l = gmsh.model.geo.addPoint(rpam.parameters["p"][0] - rpam.parameters["a"], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_ellipse_b = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1] - rpam.parameters["b"], rpam.parameters["p"][2])
+p_ellipse_c = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1], rpam.parameters["c"][2])
+p_ellipse_r = gmsh.model.geo.addPoint(rpam.parameters["c"][0] + rpam.parameters["a"], rpam.parameters["c"][1], rpam.parameters["c"][2])
+p_ellipse_t = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] + rpam.parameters["b"], rpam.parameters["c"][2])
+p_ellipse_l = gmsh.model.geo.addPoint(rpam.parameters["c"][0] - rpam.parameters["a"], rpam.parameters["c"][1], rpam.parameters["c"][2])
+p_ellipse_b = gmsh.model.geo.addPoint(rpam.parameters["c"][0], rpam.parameters["c"][1] - rpam.parameters["b"], rpam.parameters["c"][2])
 gmsh.model.geo.synchronize()
 
 '''
