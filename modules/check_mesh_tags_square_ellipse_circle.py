@@ -47,6 +47,7 @@ integral_exact = [''] * len(lmsh.sub_meshes)
 
 integral_exact[0] = dict([ \
     ('dx', 0), \
+    ('ds_circle', 0), \
     ('ds_ellipse', 0), \
     ])
 
@@ -70,6 +71,7 @@ integral_exact[1]['dx'] = cal.surface_integral_rectangle(function_test_integrals
                           - cal.surface_integral_ellipse(function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0)
 # exact line integrals
 # form mesh #0
+integral_exact[0]['ds_circle'] = cal.curve_integral_circle(function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'][:2])
 integral_exact[0]['ds_ellipse'] = cal.curve_integral_ellipse(function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2], 0)
 
 # for mesh #1
@@ -97,6 +99,7 @@ for i in range(len(lmsh.sub_meshes)):
 
 # line intergrals
 # for mesh #0
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['ds_circle'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_circle'], f'\int f ds_sub_mesh_{0}_circle'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['ds_ellipse'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_ellipse'], f'\int f ds_sub_mesh_{0}_ellipse'))
 
 # for mesh #1
