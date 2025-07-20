@@ -29,9 +29,12 @@ mf_sub_mesh = []
 for sub_mesh in lmsh.sub_meshes:
     sf_sub_mesh.append(msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf))
     mf_sub_mesh.append(msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf))
-'''
+
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
+
+'''
+
 
 # create line and surface elements for the parent mesh
 dx_parent_mesh, ds_parent_mesh_l, ds_parent_mesh_r, ds_parent_mesh_t, ds_parent_mesh_b, ds_parent_mesh_lr, ds_parent_mesh_tb, ds_parent_mesh_lrtb = [], [], [], [], [], [], [], []
@@ -62,6 +65,7 @@ ds_parent_mesh = ds_parent_mesh_lrtb[0] + ds_parent_mesh_lrtb[1]
 # create line and surface elements for sub_meshes
 dx_sub_mesh = []
 
+
 for p in range(len(lmsh.sub_meshes)):
     dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=sf_sub_mesh[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
 
@@ -74,6 +78,8 @@ for p in range(len(lmsh.sub_meshes)):
     # ds_sub_mesh_tb.append(ds_sub_mesh_t[p] + ds_sub_mesh_b[p])
     #
     # ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[p] + ds_sub_mesh_tb[p])
+
+ds_sub_mesh_1_l = Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])
 
 import check_mesh_tags_square_ellipse_circle
 

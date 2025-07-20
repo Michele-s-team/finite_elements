@@ -24,8 +24,8 @@ Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 def function_test_integrals(x):
-    # return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
-    return 1
+    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    # return 1
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
@@ -54,10 +54,11 @@ integral_exact_dx.append( \
     - cal.surface_integral_ellipse(function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0) \
     )
 
+integral_exact_ds_1_l  = cal.curve_integral_line(function_test_integrals, [0, 0],  [0, rmsh.parameters["h"]])
+
 '''
 integral_exact_ds_l, integral_exact_ds_r, integral_exact_ds_t, integral_exact_ds_b = [], [], [], []
 
-integral_exact_ds_l.append(cal.curve_integral_line(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]])))
 integral_exact_ds_l.append(cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]]))
 
 integral_exact_ds_r.append(cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], 0]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]])))
@@ -109,7 +110,6 @@ for i in range(len(lmsh.sub_meshes)):
     print(f'* sub_mesh {i}:')
     test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx[i], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx'))
 
-    # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_l[i], f'\int f ds_sub_mesh_{i}_l'))
     # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_r[i], f'\int f ds_sub_mesh_{i}_r'))
     # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_t[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_t[i], f'\int f ds_sub_mesh_{i}_t'))
     # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_b[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_b[i], f'\int f ds_sub_mesh_{i}_b'))
@@ -118,5 +118,8 @@ for i in range(len(lmsh.sub_meshes)):
     # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_tb[i], f'\int f ds_sub_mesh_tb_{i}'))
     #
     # test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lrtb[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_lrtb[i], f'\int f ds_sub_mesh_lrtb_{i}'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_1_l, function_test_integrals_fenics, rmsh.ds_sub_mesh_1_l, f'\int f ds_sub_mesh_{i}_l'))
+
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
