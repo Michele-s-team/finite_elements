@@ -72,6 +72,11 @@ ds_sub_mesh[0] = dict([ \
     ('b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"line_sub_mesh_{0}_b_id"])) \
     ])
 
+ds_sub_mesh[0]['lr'] = ds_sub_mesh[0]['l'] + ds_sub_mesh[0]['r']
+ds_sub_mesh[0]['tb'] = ds_sub_mesh[0]['t'] + ds_sub_mesh[0]['b']
+
+ds_sub_mesh[0]['lrtb'] = ds_sub_mesh[0]['lr'] + ds_sub_mesh[0]['tb']
+
 ds_sub_mesh[1] = dict([ \
     ('in_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{0}_l_id"])), \
     ('in_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{0}_r_id"])), \
@@ -84,17 +89,17 @@ ds_sub_mesh[1] = dict([ \
     ('out_b', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])), \
     ])
 
-# for p in range(len(lmsh.sub_meshes)):
-#
-#     ds_sub_mesh_l.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_l_id"]))
-#     ds_sub_mesh_r.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_r_id"]))
-#     ds_sub_mesh_t.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_t_id"]))
-#     ds_sub_mesh_b.append(Measure("ds", domain=lmsh.sub_meshes[p], subdomain_data=mf_sub_mesh[p], subdomain_id=parameters[f"line_sub_mesh_{p}_b_id"]))
-#
-#     ds_sub_mesh_lr.append(ds_sub_mesh_l[p] + ds_sub_mesh_r[p])
-#     ds_sub_mesh_tb.append(ds_sub_mesh_t[p] + ds_sub_mesh_b[p])
-#
-#     ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[p] + ds_sub_mesh_tb[p])
+ds_sub_mesh[1]['in_lr'] = ds_sub_mesh[1]['in_l'] + ds_sub_mesh[1]['in_r']
+ds_sub_mesh[1]['in_tb'] = ds_sub_mesh[1]['in_t'] + ds_sub_mesh[1]['in_b']
+
+ds_sub_mesh[1]['in_lrtb'] = ds_sub_mesh[1]['in_lr'] + ds_sub_mesh[1]['in_tb']
+
+
+ds_sub_mesh[1]['out_lr'] = ds_sub_mesh[1]['out_l'] + ds_sub_mesh[1]['out_r']
+ds_sub_mesh[1]['out_tb'] = ds_sub_mesh[1]['out_t'] + ds_sub_mesh[1]['out_b']
+
+ds_sub_mesh[1]['out_lrtb'] = ds_sub_mesh[1]['out_lr'] + ds_sub_mesh[1]['out_tb']
+
 
 
 import check_mesh_tags_square_square
@@ -104,7 +109,7 @@ print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flus
 #Define boundaries
 boundary = 'on_boundary'
 
-boundary_l  = [''] * len(lmsh.sub_meshes)
+boundary_l  = ['in_'] * len(lmsh.sub_meshes)
 boundary_r  = [''] * len(lmsh.sub_meshes)
 boundary_t  = [''] * len(lmsh.sub_meshes)
 boundary_b  = [''] * len(lmsh.sub_meshes)
