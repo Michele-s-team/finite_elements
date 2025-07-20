@@ -57,8 +57,8 @@ solver[1].solve()
 fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
 # impose the BCs for problem on sub_mesh[0], on the ellipse boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
 vp.bcs[0] = [ \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["ellipse_loop_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["circle_loop_id"]), \
+    # DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["circle_loop_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["ellipse_loop_id"]) \
 ]
 
 J[0] = derivative(vp.F[0], fsp.u[0], fsp.J_u[0])
