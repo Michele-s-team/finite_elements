@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh elasticity/rod/dynamics rod_dynamics_1 ~/Documents/finite_elements/generate_mesh/2d/square_no_circle/solution
+# ./run-on-abacus.sh poisson_equation/solve_u/two_domains/ two_domains_1 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse_circle/solution
 
 clear
 clear

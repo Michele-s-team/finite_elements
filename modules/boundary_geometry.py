@@ -1,22 +1,21 @@
 from fenics import *
-import dolfin
 import ufl as ufl
 
 
 import geometry as geo
 import load_mesh as lmsh
 import mesh as mesh_module
-# import runtime_arguments as rarg
 
-
-
-#read the mesh
-# lmsh.mesh = mesh_module.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
 
 
 #the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( lmsh.mesh )
 
+if ("n_sub_meshes" in lmsh.parameters) and (lmsh.parameters["n_sub_meshes"] > 1):
+    # lmsh loads multiple sub-meshes -> define the facet normal for each sub mesh
+    sub_mesh_facet_normal = []
+    for p in range(lmsh.parameters["n_sub_meshes"]):
+        sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[p]))
 
 i, j, k, l = ufl.indices(4)
 

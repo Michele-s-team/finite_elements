@@ -6,6 +6,7 @@ Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 Examples:
      MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_square $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle $MESH_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -54,13 +55,10 @@ solver[1].solve()
 # set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp,u[1] obtained above
 # project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
 fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
-# impose the BCs for problem on sub_mesh[0] in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
-vp.bcs[0] = [ \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_t_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
-]
+# impose the BCs for problem on sub_mesh[0], on the ellipse boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
+# force reload vp to update bc[0], because u_1_on_0 has changed
+importlib.reload(vp)
+
 
 J[0] = derivative(vp.F[0], fsp.u[0], fsp.J_u[0])
 problem[0] = NonlinearVariationalProblem(vp.F[0], fsp.u[0], vp.bcs[0], J[0])
