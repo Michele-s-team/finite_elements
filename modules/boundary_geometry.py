@@ -1,17 +1,11 @@
 from fenics import *
-import dolfin
 import ufl as ufl
 
 
 import geometry as geo
 import load_mesh as lmsh
 import mesh as mesh_module
-# import runtime_arguments as rarg
 
-
-
-#read the mesh
-# lmsh.mesh = mesh_module.read_mesh(rarg.args.input_directory + "/triangle_mesh.xdmf")
 
 
 #the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
