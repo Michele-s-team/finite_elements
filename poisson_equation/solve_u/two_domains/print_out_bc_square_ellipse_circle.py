@@ -15,7 +15,6 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices(4)
 
 # check if the boundary conditions (BCs) are satisfied
-print(f"* Problem {0}:")
 print(f"\t- Check of BCs:")
 print(f"\t\tBCs for sub_mesh {0}:")
 # print(f"\t\t<<(u - phi)^2>>_[partial Omega{0} circle] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0], fsp.u_exact[0], rmsh.ds_sub_mesh[0]['ds_circle']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")

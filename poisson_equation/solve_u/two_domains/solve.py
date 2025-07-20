@@ -56,8 +56,8 @@ solver[1].solve()
 # project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
 fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
 # impose the BCs for problem on sub_mesh[0], on the ellipse boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
-
-
+# force reload vp to update bc[0], because u_1_on_0 has changed
+importlib.reload(vp)
 
 
 J[0] = derivative(vp.F[0], fsp.u[0], fsp.J_u[0])
