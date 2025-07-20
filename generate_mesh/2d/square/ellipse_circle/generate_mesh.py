@@ -22,6 +22,9 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
+# ds = dict([('ds_l', 1.0), ('ds_r', 2.0)])
+# print(f"ds = {ds['ds_r']}")
+
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
