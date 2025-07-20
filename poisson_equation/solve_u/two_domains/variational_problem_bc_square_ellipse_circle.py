@@ -124,9 +124,12 @@ bcs = [None] * len(rmsh.lmsh.sub_meshes)
 
 # boundary conditions for sub_mesh[1]: constrain u[1] on the whole boundary of sub_mesh[1], i.e., on the ellipse and outer rectangle (lrtb)
 bcs[1] = [ \
-    # DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['ellipse']), \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['lrtb']) \
     ]
+
+bcs[0] = [ \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["ellipse_loop_id"]) \
+]
 
 # variational functional
 F = []

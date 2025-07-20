@@ -3,6 +3,7 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import boundary_geometry as bgeo
 import function_spaces as fsp
 import switch_problem as swi
 
@@ -124,11 +125,17 @@ fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_1_expression(element=fsp.Q[1].uf
 bcs  = [None] * len(rmsh.lmsh.sub_meshes)
 
 
-# boundary conditions for sub_mesh[1]: constrain u[1] on the whole boundary of sub_mesh[1], i.e., on the inner and outer rectangle
+# boundary conditions for sub_mesh[1]: constrain u[1] on the outer boundary of sub_mesh[1], i.e.,  outer rectangle
 bcs[1] = [ \
-    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[0]), \
-    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[1]) \
+    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['out_lrtb']) \
     ]
+
+bcs[0] = [ \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_t_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"]) \
+]
 
 
 # variational functional
@@ -136,9 +143,14 @@ F = []
 
 # functional for sub_mesh[0]
 F.append( \
-    (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0]
-)
+    (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0] \
+    - bgeo.sub_mesh_facet_normal[0][i] * fsp.u[0].dx(i) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['lrtb'] \
+ \
+    )
 # functional for sub_mesh[1]
 F.append( \
-    (fsp.u[1].dx(i) * fsp.nu_u[1].dx(i) + fsp.f[1] * fsp.nu_u[1]) * rmsh.dx_sub_mesh[1]
-)
+    (fsp.u[1].dx(i) * fsp.nu_u[1].dx(i) + fsp.f[1] * fsp.nu_u[1]) * rmsh.dx_sub_mesh[1] \
+    # natural BC is imposed here
+    - bgeo.sub_mesh_facet_normal[1][i] * fsp.grad_u[1][i] * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['in_lrtb'] \
+    - bgeo.sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)) * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['out_lrtb'] \
+    )
