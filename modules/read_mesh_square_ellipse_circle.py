@@ -79,7 +79,20 @@ for p in range(len(lmsh.sub_meshes)):
     #
     # ds_sub_mesh_lrtb.append(ds_sub_mesh_lr[p] + ds_sub_mesh_tb[p])
 
-ds_sub_mesh_1_l = Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])
+ds_sub_mesh  = [''] * len(lmsh.sub_meshes)
+ds_sub_mesh[0] = dict([ \
+    ('ds_ellipse', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"ellipse_loop_id"])) \
+    ])
+ds_sub_mesh[1] = dict([\
+    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])),\
+    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])),\
+    ('ds_t', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_t_id"])),\
+    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])),\
+    ])
+ds_sub_mesh[1]['ds_lr'] = ds_sub_mesh[1]['ds_l'] + ds_sub_mesh[1]['ds_r']
+ds_sub_mesh[1]['ds_tb'] = ds_sub_mesh[1]['ds_t'] + ds_sub_mesh[1]['ds_b']
+ds_sub_mesh[1]['ds_lrtb'] = ds_sub_mesh[1]['ds_lr'] + ds_sub_mesh[1]['ds_tb']
+
 
 import check_mesh_tags_square_ellipse_circle
 
