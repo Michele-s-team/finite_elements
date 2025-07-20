@@ -14,19 +14,17 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-# check if the boundary conditions (BCs) are satisfied
-for i in range(len(rmsh.lmsh.sub_meshes)):
-    print(f"* Problem {i}:")
-    print(f"\t- Check of BCs:")
-    print(f"\t\t<<(u - phi)^2>>_[partial Omega{i}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[i], fsp.u_exact[i], rmsh.ds_sub_mesh_lrtb[i]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t- Check of BCs:")
+print(f"\t\tBCs for sub_mesh {0}:")
+print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {0} lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0], fsp.u_1_on_0, rmsh.ds_sub_mesh[0]['lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-    # print(
-    #     f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega out_lr + in_tb] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * (fsp.u.dx(i)), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds_submesh_out_out_lr + rmsh.ds_submesh_out_in_tb):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-    #
-    print(f"\t- Comparison with exact solution: ")
+print(f"\t\tBCs for sub_mesh {1}:")
+print(f"\t\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega {1} in_lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)), bgeo.sub_mesh_facet_normal[1][i] * fsp.grad_u[1][i], rmsh.ds_sub_mesh[1]['in_lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {1} out_lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[1], fsp.u_exact[1], rmsh.ds_sub_mesh[1]['out_lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+print(f"\t- Comparison with exact solution: ")
+for i in range(len(rmsh.lmsh.sub_meshes)):
     print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[i], fsp.u_exact[i], rmsh.dx_sub_mesh[i]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-# print(
-#     f"\t\t<<(hess_u - hess_u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure((fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]) * (fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]), Constant(0), rmsh.dx_out):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 import print_out_solution

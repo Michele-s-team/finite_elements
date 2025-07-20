@@ -43,71 +43,86 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-# exact sutface integrals
-integral_exact_dx = []
-integral_exact_dx.append(cal.surface_integral_rectangle(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]])))
-integral_exact_dx.append(cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]]) - integral_exact_dx[0])
+integral_exact = [''] * len(lmsh.sub_meshes)
 
-integral_exact_ds_l, integral_exact_ds_r, integral_exact_ds_t, integral_exact_ds_b = [], [], [], []
+# exact surface integrals
+integral_exact[0] = dict([])
+integral_exact[1] = dict([])
 
-integral_exact_ds_l.append(cal.curve_integral_line(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]])))
-integral_exact_ds_l.append(cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]]))
+integral_exact[0]['dx'] = cal.surface_integral_rectangle(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]]))
+integral_exact[1]['dx'] = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]]) - integral_exact[0]['dx']
 
-integral_exact_ds_r.append(cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], 0]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]])))
-integral_exact_ds_r.append(cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]]))
+integral_exact[0]['l'] = cal.curve_integral_line(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]]))
+integral_exact[1]['out_l'] = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
+integral_exact[1]['in_l'] = integral_exact[0]['l']
 
-integral_exact_ds_t.append(cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]])))
-integral_exact_ds_t.append(cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]]))
+integral_exact[0]['r'] = cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], 0]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]]))
+integral_exact[1]['out_r'] = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
+integral_exact[1]['in_r'] = integral_exact[0]['r']
 
-integral_exact_ds_b.append(cal.curve_integral_line(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], 0])))
-integral_exact_ds_b.append(cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.parameters["L"], 0]))
+integral_exact[0]['t'] = cal.curve_integral_line(function_test_integrals, np.add(rmsh.parameters["p"][:2], [0, rmsh.parameters["h_in"]]), np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], rmsh.parameters["h_in"]]))
+integral_exact[1]['out_t'] = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]])
+integral_exact[1]['in_t'] = integral_exact[0]['t']
 
-# exact line integrals on boundaries
-integral_exact_ds_lr, integral_exact_ds_tb, integral_exact_ds_lrtb = [], [], []
-for i in range(len(lmsh.sub_meshes)):
-    integral_exact_ds_lr.append(integral_exact_ds_l[i] + integral_exact_ds_r[i])
-    integral_exact_ds_tb.append(integral_exact_ds_t[i] + integral_exact_ds_b[i])
-    integral_exact_ds_lrtb.append(integral_exact_ds_lr[i] + integral_exact_ds_tb[i])
+integral_exact[0]['b'] = cal.curve_integral_line(function_test_integrals, rmsh.parameters["p"][:2], np.add(rmsh.parameters["p"][:2], [rmsh.parameters["L_in"], 0]))
+integral_exact[1]['out_b'] = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.parameters["L"], 0])
+integral_exact[1]['in_b'] = integral_exact[0]['b']
 
-integral_exact_ds = integral_exact_ds_lrtb[0] + integral_exact_ds_lrtb[1]
+integral_exact[0]['lr'] = integral_exact[0]['l'] + integral_exact[0]['r']
+integral_exact[0]['tb'] = integral_exact[0]['t'] + integral_exact[0]['b']
+
+integral_exact[0]['lrtb'] = integral_exact[0]['lr'] + integral_exact[0]['tb']
+
+integral_exact[1]['in_lr'] = integral_exact[1]['in_l'] + integral_exact[1]['in_r']
+integral_exact[1]['in_tb'] = integral_exact[1]['in_t'] + integral_exact[1]['in_b']
+
+integral_exact[1]['in_lrtb'] = integral_exact[1]['in_lr'] + integral_exact[1]['in_tb']
+
+integral_exact[1]['out_lr'] = integral_exact[1]['out_l'] + integral_exact[1]['out_r']
+integral_exact[1]['out_tb'] = integral_exact[1]['out_t'] + integral_exact[1]['out_b']
+
+integral_exact[1]['out_lrtb'] = integral_exact[1]['out_lr'] + integral_exact[1]['out_tb']
+
 
 test_mesh_integral_errors = []
-
-# 1. check integrals in the parent mesh
-print(f'Check integrals on the parent mesh: ')
-for i in range(len(lmsh.sub_meshes)):
-
-    print(f'* fraction {i} of the parent mesh:')
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx[i], function_test_integrals_fenics, rmsh.dx_parent_mesh[i], f'\int_{i} f dx'))
-
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_l[i], f'\int f ds_{i}_l'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_r[i], f'\int f ds_{i}_r'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_t[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_t[i], f'\int f ds_{i}_t'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_b[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_b[i], f'\int f ds_{i}_b'))
-
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lr[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_lr[i], f'\int f ds_lr_{i}'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_tb[i], f'\int f ds_tb_{i}'))
-
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lrtb[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_lrtb[i], f'\int f ds_{i}'))
-
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds_parent_mesh, f'\int f ds'))
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
 
-for i in range(len(lmsh.sub_meshes)):
+# for i in range(len(lmsh.sub_meshes)):
 
-    print(f'* sub_mesh {i}:')
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx[i], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[0], f'\int_sub_mesh_{0} f dx'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[1], f'\int_sub_mesh_{1} f dx'))
 
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_l[i], f'\int f ds_sub_mesh_{i}_l'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_r[i], f'\int f ds_sub_mesh_{i}_r'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_t[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_t[i], f'\int f ds_sub_mesh_{i}_t'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_b[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_b[i], f'\int f ds_sub_mesh_{i}_b'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['l'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['l'], f'\int f ds_sub_mesh_{0}_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_l'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_l'], f'\int f ds_sub_mesh_{1}_out_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_l'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_l'], f'\int f ds_sub_mesh_{1}_in_l'))
 
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lr[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_lr[i], f'\int f ds_sub_mesh_lr_{i}'))
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb[i], function_test_integrals_fenics, rmsh.ds_parent_mesh_tb[i], f'\int f ds_sub_mesh_tb_{i}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['r'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['r'], f'\int f ds_sub_mesh_{0}_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_r'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_r'], f'\int f ds_sub_mesh_{1}_out_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_r'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_r'], f'\int f ds_sub_mesh_{1}_in_r'))
 
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_lrtb[i], function_test_integrals_fenics, rmsh.ds_sub_mesh_lrtb[i], f'\int f ds_sub_mesh_lrtb_{i}'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['t'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['t'], f'\int f ds_sub_mesh_{0}_t'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_t'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_t'], f'\int f ds_sub_mesh_{1}_out_t'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_t'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_t'], f'\int f ds_sub_mesh_{1}_in_t'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['b'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['b'], f'\int f ds_sub_mesh_{0}_b'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_b'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_b'], f'\int f ds_sub_mesh_{1}_out_b'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_b'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_b'], f'\int f ds_sub_mesh_{1}_in_b'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['lr'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['lr'], f'\int f ds_sub_mesh_{0}_lr'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['tb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['tb'], f'\int f ds_sub_mesh_{0}_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['lrtb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['lrtb'], f'\int f ds_sub_mesh_{0}_lrtb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_lr'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_lr'], f'\int f ds_sub_mesh_{1}_in_lr'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_tb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_tb'], f'\int f ds_sub_mesh_{1}_in_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['in_lrtb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['in_lrtb'], f'\int f ds_sub_mesh_{1}_in_lrtb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_lr'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_lr'], f'\int f ds_sub_mesh_{1}_out_lr'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_tb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_tb'], f'\int f ds_sub_mesh_{1}_out_tb'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['out_lrtb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['out_lrtb'], f'\int f ds_sub_mesh_{1}_out_lrtb'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

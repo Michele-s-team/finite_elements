@@ -64,7 +64,6 @@ integral_exact[1] = dict([ \
     ])
 
 # exact surface integrals
-integral_exact_dx = []
 integral_exact[0]['dx'] = cal.surface_integral_ellipse(function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0) \
                           - cal.surface_integral_disk(function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'])
 integral_exact[1]['dx'] = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters['L'], rmsh.parameters['h']]) \
