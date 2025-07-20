@@ -45,7 +45,7 @@ ds_sub_mesh[1] = dict([ \
     ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_t_id"])), \
     ('ds_b', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])), \
-    ('ds_ellipse', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"ellipse_loop_id"]))\
+    ('ds_ellipse', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"ellipse_loop_id"])) \
     ])
 ds_sub_mesh[1]['ds_lr'] = ds_sub_mesh[1]['ds_l'] + ds_sub_mesh[1]['ds_r']
 ds_sub_mesh[1]['ds_tb'] = ds_sub_mesh[1]['ds_t'] + ds_sub_mesh[1]['ds_b']
@@ -54,37 +54,26 @@ ds_sub_mesh[1]['ds'] = ds_sub_mesh[1]['ds_lrtb'] + ds_sub_mesh[1]['ds_ellipse']
 
 import check_mesh_tags_square_ellipse_circle
 
-'''
+print(f'Module {__file__} called {check_mesh_tags_square_ellipse_circle.__file__}', flush=True)
 
-print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
+# Define boundaries
 
-#Define boundaries
-boundary = 'on_boundary'
+boundary = [''] * len(lmsh.sub_meshes)
 
-boundary_l  = [''] * len(lmsh.sub_meshes)
-boundary_r  = [''] * len(lmsh.sub_meshes)
-boundary_t  = [''] * len(lmsh.sub_meshes)
-boundary_b  = [''] * len(lmsh.sub_meshes)
-boundary_lr = [''] * len(lmsh.sub_meshes)
-boundary_tb = [''] * len(lmsh.sub_meshes)
-boundary_lrtb = [''] * len(lmsh.sub_meshes)
+# boundaries for sub_mesh #0
+boundary[0] = dict([('ellipse', f'on_boundary')])
 
+# boundaries for sub_mesh #1
+boundary[1] = dict([ \
+    ('l', f'near(x[0], {0})'), \
+    ('r', f'near(x[0], {parameters["L"]})'), \
+    ('t', f'near(x[1], {parameters["h"]})'), \
+    ('b', f'near(x[1], {0})'), \
+    ('ellipse', f'on_boundary && (!near(x[0], 0))  && (!near(x[0], {parameters["L"]})) && (!near(x[1], 0)) && (!near(x[1], {parameters["h"]}))') \
+    ])
 
-# outer boundaries (sub_mesh_1)
-boundary_l[1] = f'near(x[0], {0})'
-boundary_r[1] = f'near(x[0], {parameters["L"]})'
-boundary_t[1] = f'near(x[1], {parameters["h"]})'
-boundary_b[1] = f'near(x[1], {0})'
-boundary_lr[1] = f'({boundary_l[1]}) || ({boundary_r[1]})'
-boundary_tb[1] = f'({boundary_t[1]}) || ({boundary_b[1]})'
-boundary_lrtb[1] = f'({boundary_lr[1]}) || ({boundary_tb[1]})'
+boundary[1]['lr'] = f"({boundary[1]['l']}) || ({boundary[1]['r']})"
+boundary[1]['tb'] = f"({boundary[1]['t']}) || ({boundary[1]['b']})"
 
-# inner boundaries (sub_mesh_0)
-boundary_l[0] = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_t[1]} && !{boundary_b[1]}'
-boundary_r[0] = f'on_boundary && near(x[0], {parameters["p"][0] + parameters["L_in"]}) && !{boundary_t[1]} && !{boundary_b[1]}'
-boundary_t[0] = f'on_boundary && near(x[1], {parameters["p"][1] + parameters["h_in"]}) && !{boundary_l[1]} && !{boundary_r[1]}'
-boundary_b[0] = f'on_boundary && near(x[1], {parameters["p"][1]}) && !{boundary_l[1]} && !{boundary_r[1]}'
-boundary_lr[0] = f'({boundary_l[0]}) || ({boundary_r[0]})'
-boundary_tb[0] = f'({boundary_t[0]}) || ({boundary_b[0]})'
-boundary_lrtb[0] = f'({boundary_lr[0]}) || ({boundary_tb[0]})'
-'''
+boundary[1]['lrtb'] = f"({boundary[1]['lr']}) || ({boundary[1]['tb']})"
+boundary[1]['lrtb_ellipse'] = f"({boundary[1]['lrtb']}) || ({boundary[1]['ellipse']})"
