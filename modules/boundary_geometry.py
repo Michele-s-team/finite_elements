@@ -11,6 +11,11 @@ import mesh as mesh_module
 #the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal( lmsh.mesh )
 
+if ("n_sub_meshes" in lmsh.parameters) and (lmsh.parameters["n_sub_meshes"] > 1):
+    # lmsh loads multiple sub-meshes -> define the facet normal for each sub mesh
+    sub_mesh_facet_normal = []
+    for p in range(lmsh.parameters["n_sub_meshes"]):
+        sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[p]))
 
 i, j, k, l = ufl.indices(4)
 

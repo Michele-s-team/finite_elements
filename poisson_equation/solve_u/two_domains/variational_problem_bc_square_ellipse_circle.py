@@ -3,6 +3,7 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import boundary_geometry as bgeo
 import function_spaces as fsp
 import switch_problem as swi
 
@@ -10,9 +11,9 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-sub_mesh_facet_normal = []
-for p in range(len(rmsh.lmsh.sub_meshes)):
-    sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[p]))
+# sub_mesh_facet_normal = []
+# for p in range(len(rmsh.lmsh.sub_meshes)):
+#     sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[p]))
 
 
 
@@ -137,14 +138,14 @@ F = []
 F.append( \
     (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0] \
     # natural BC is imposed here
-    - sub_mesh_facet_normal[0][i] * fsp.grad_u[0][i] * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_circle'] \
-    - sub_mesh_facet_normal[0][i] * (fsp.u[0].dx(i)) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
+    - bgeo.sub_mesh_facet_normal[0][i] * fsp.grad_u[0][i] * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_circle'] \
+    - bgeo.sub_mesh_facet_normal[0][i] * (fsp.u[0].dx(i)) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
  \
     )
 # functional for sub_mesh[1]
 F.append( \
     (fsp.u[1].dx(i) * fsp.nu_u[1].dx(i) + fsp.f[1] * fsp.nu_u[1]) * rmsh.dx_sub_mesh[1] \
     # natural BC is imposed here
-    - sub_mesh_facet_normal[1][i] * fsp.grad_u[1][i] * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['ds_ellipse'] \
-    - sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)) * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['ds_lrtb'] \
+    - bgeo.sub_mesh_facet_normal[1][i] * fsp.grad_u[1][i] * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['ds_ellipse'] \
+    - bgeo.sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)) * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['ds_lrtb'] \
     )
