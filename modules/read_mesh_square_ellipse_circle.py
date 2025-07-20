@@ -79,5 +79,6 @@ boundary[1]['tb'] = f"({boundary[1]['t']}) || ({boundary[1]['b']})"
 boundary[1]['lrtb'] = f"({boundary[1]['lr']}) || ({boundary[1]['tb']})"
 
 boundary[0]['ellipse'] = f'on_boundary && sqrt(pow(x[0] - {parameters["c"][0]}, 2) + pow(x[1] - {parameters["c"][1]}, 2)) > {(parameters["r"] + parameters["b"]) / 2} && !{boundary[1]["lrtb"]}'
+boundary[1]['ellipse'] = boundary[0]['ellipse']
 
 boundary[1]['lrtb_ellipse'] = f"({boundary[1]['lrtb']}) || ({boundary[0]['ellipse']})"
