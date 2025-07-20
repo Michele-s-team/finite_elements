@@ -11,9 +11,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-# sub_mesh_facet_normal = []
-# for p in range(len(rmsh.lmsh.sub_meshes)):
-#     sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[p]))
 
 
 
