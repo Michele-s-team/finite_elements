@@ -130,9 +130,6 @@ bcs[1] = [ \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary_lrtb[1]) \
     ]
 
-# sub_mesh_facet_normal = []
-# for p in range(len(rmsh.lmsh.sub_meshes)):
-#     sub_mesh_facet_normal.append(FacetNormal(rmsh.lmsh.sub_meshes[p]))
 
 # variational functional
 F = []
