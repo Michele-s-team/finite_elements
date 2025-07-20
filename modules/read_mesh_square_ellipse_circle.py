@@ -61,7 +61,10 @@ print(f'Module {__file__} called {check_mesh_tags_square_ellipse_circle.__file__
 boundary = [''] * len(lmsh.sub_meshes)
 
 # boundaries for sub_mesh #0
-boundary[0] = dict([('ellipse', f'on_boundary')])
+boundary[0] = dict([ \
+    ('circle', f'on_boundary && sqrt(pow(x[0] - {parameters["c"][0]}, 2) + pow(x[1] - {parameters["c"][1]}, 2)) < {(parameters["r"] + parameters["a"]) / 2}'), \
+    ('ellipse', f'on_boundary && sqrt(pow(x[0] - {parameters["c"][0]}, 2) + pow(x[1] - {parameters["c"][1]}, 2)) < {(parameters["r"] + parameters["a"]) / 2}') \
+    ])
 
 # boundaries for sub_mesh #1
 boundary[1] = dict([ \
