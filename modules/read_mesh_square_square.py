@@ -107,25 +107,21 @@ import check_mesh_tags_square_square
 print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
 
 #Define boundaries
-boundary = 'on_boundary'
+boundary = [''] * len(lmsh.sub_meshes)
 
-boundary_l  = ['in_'] * len(lmsh.sub_meshes)
-boundary_r  = [''] * len(lmsh.sub_meshes)
-boundary_t  = [''] * len(lmsh.sub_meshes)
-boundary_b  = [''] * len(lmsh.sub_meshes)
-boundary_lr = [''] * len(lmsh.sub_meshes)
-boundary_tb = [''] * len(lmsh.sub_meshes)
-boundary_lrtb = [''] * len(lmsh.sub_meshes)
+boundary[0] = dict([])
+boundary[1] = dict([])
+
 
 
 # outer boundaries (sub_mesh_1)
-boundary_l[1] = f'near(x[0], {0})'
-boundary_r[1] = f'near(x[0], {parameters["L"]})'
-boundary_t[1] = f'near(x[1], {parameters["h"]})'
-boundary_b[1] = f'near(x[1], {0})'
-boundary_lr[1] = f'({boundary_l[1]}) || ({boundary_r[1]})'
-boundary_tb[1] = f'({boundary_t[1]}) || ({boundary_b[1]})'
-boundary_lrtb[1] = f'({boundary_lr[1]}) || ({boundary_tb[1]})'
+boundary[1]['out_l'] = f'near(x[0], {0})'
+boundary[1]['out_r'] = f'near(x[0], {parameters["L"]})'
+boundary[1]['out_t'] = f'near(x[1], {parameters["h"]})'
+boundary[1]['out_b'] = f'near(x[1], {0})'
+boundary[1]['out_lr'] = f"({boundary[1]['out_l']}) || ({boundary[1]['out_r']})"
+boundary[1]['out_tb'] = f"({boundary[1]['out_t']}) || ({boundary[1]['out_b']})"
+boundary[1]['out_lrtb'] = f"({boundary[1]['out_lr']}) || ({boundary[1]['out_tb']})"
 
 # inner boundaries (sub_mesh_0)
 boundary_l[0] = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_t[1]} && !{boundary_b[1]}'
