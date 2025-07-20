@@ -124,10 +124,10 @@ boundary[1]['out_tb'] = f"({boundary[1]['out_t']}) || ({boundary[1]['out_b']})"
 boundary[1]['out_lrtb'] = f"({boundary[1]['out_lr']}) || ({boundary[1]['out_tb']})"
 
 # inner boundaries (sub_mesh_0)
-boundary_l[0] = f'on_boundary && near(x[0], {parameters["p"][0]}) && !{boundary_t[1]} && !{boundary_b[1]}'
-boundary_r[0] = f'on_boundary && near(x[0], {parameters["p"][0] + parameters["L_in"]}) && !{boundary_t[1]} && !{boundary_b[1]}'
-boundary_t[0] = f'on_boundary && near(x[1], {parameters["p"][1] + parameters["h_in"]}) && !{boundary_l[1]} && !{boundary_r[1]}'
-boundary_b[0] = f'on_boundary && near(x[1], {parameters["p"][1]}) && !{boundary_l[1]} && !{boundary_r[1]}'
-boundary_lr[0] = f'({boundary_l[0]}) || ({boundary_r[0]})'
-boundary_tb[0] = f'({boundary_t[0]}) || ({boundary_b[0]})'
-boundary_lrtb[0] = f'({boundary_lr[0]}) || ({boundary_tb[0]})'
+boundary[0]['l'] = f"on_boundary && near(x[0], {parameters['p'][0]}) && !{boundary[1]['t']} && !{boundary[1]['b']}"
+boundary[0]['r'] = f"on_boundary && near(x[0], {parameters['p'][0] + parameters["L_in"]}) && !{boundary_t[1]} && !{boundary_b[1]}"
+boundary[0]['t'] = f"on_boundary && near(x[1], {parameters['p'][1] + parameters["h_in"]}) && !{boundary_l[1]} && !{boundary_r[1]}"
+boundary[0]['b'] = f"on_boundary && near(x[1], {parameters['p'][1]}) && !{boundary_l[1]} && !{boundary_r[1]}"
+boundary[0]['lr'] = f"({boundary[0]['l']}) || ({boundary[0]['r']})"
+boundary[0]['tb'] = f"({boundary[0]['t']}) || ({boundary[0]['b']})"
+boundary[0]['lrtb'] = f"({boundary[0]['lr']}) || ({boundary[0]['tb']})"
