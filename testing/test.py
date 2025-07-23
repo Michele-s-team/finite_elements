@@ -554,6 +554,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_no_circle_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
+
 cmd.checkout(commit_a, success)
 
 max_key_len = max(len(key) for key in checks.keys())
