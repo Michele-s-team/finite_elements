@@ -503,7 +503,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_ellipse_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
-case_name = 'fluid_structure_interaction'
+case_name = 'fluid_structure_interaction/rigid_obstacle'
 
 problem_name = 'square_ellipse'
 generate_mesh_path =root_path + 'generate_mesh/2d/square/ellipse'
