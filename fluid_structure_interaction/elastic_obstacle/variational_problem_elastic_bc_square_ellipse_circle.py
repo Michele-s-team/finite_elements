@@ -112,8 +112,8 @@ F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u_e
 F_N = rpam.alpha / rmsh.r_mesh * ( \
     # in F I PUT U_N RATHER THAN U_N_1 AS IN THE NOTES -> REVISE THIS
         ( \
-                    (geo.epsilon[j, k] * fsp.dyds_ellipse[k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, j] - ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n)[k, l] * fsp.dyds_ellipse[l]) \
-                    * (ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, m] * geo.epsilon[m, n] * fsp.nu_u_el_n[n].dx(o) * fsp.dyds_ellipse[o]) \
+                    (geo.epsilon[j, k] * fsp.dyds_ellipse[k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, j] - ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n)[k, l] * fsp.dyds_ellipse[l]) \
+                    * (ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.mu_fluid)[i, m] * geo.epsilon[m, n] * fsp.nu_u_el_n[n].dx(o) * fsp.dyds_ellipse[o]) \
             ) * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
     )
 

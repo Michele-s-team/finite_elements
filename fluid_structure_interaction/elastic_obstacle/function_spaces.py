@@ -31,6 +31,8 @@ Q_el = FunctionSpace(lmsh.sub_meshes[0], element_el)
 Q_u_el = Q_el.sub(0).collapse()
 Q_u_el_dot = Q_el.sub(1).collapse()
 
+Q_v_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_sigma_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 Q_rho_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
 
@@ -45,12 +47,14 @@ Q_dyds = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
 # Define functions for solutions at previous and current time steps
 v_n = Function(Q_v)
 v_n_1 = Function(Q_v)
+v_n_1.set_allow_extrapolation(True)
 v_n_2 = Function(Q_v)
 v_ = Function(Q_v_)
 # sigma^{n-1/2}
 sigma_n_12 = Function(Q_phi)
 # sigma^{n-3/2}
 sigma_n_32 = Function(Q_phi)
+sigma_n_32.set_allow_extrapolation(True)
 phi = Function(Q_phi)
 
 # fields for the elastic problem
@@ -63,6 +67,9 @@ u_el_n, u_el_dot_n = split( psi_el )
 u_el_n_1 = Function(Q_u_el)
 u_el_n_2 = Function(Q_u_el)
 u_el_ellipse = Function(Q_u_el)
+v_n_1_on_sub_mesh_0 = Function(Q_v_el)
+sigma_n_32_on_sub_mesh_0 = Function(Q_sigma_el)
+
 
 u_el_dot_n_1 = Function(Q_u_el_dot)
 u_el_dot_n_2 = Function(Q_u_el_dot)

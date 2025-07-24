@@ -1,6 +1,5 @@
 from fenics import *
 
-
 import csv
 import files as fi
 import function_spaces as fsp
@@ -27,16 +26,19 @@ writer.writeheader()
 
 
 def print_solution(t, step, dt):
-    # 1) print theta and omega
-    writer.writerows([{ \
-        fieldnames[0]: \
-            fsp.theta_n, \
-        fieldnames[1]: \
-            fsp.omega_n
-    }])
-    csvfile.flush()
+
+    u_el_n_output, u_el_dot_n_output = fsp.psi_el.split(deepcopy=True)
 
 
+    # 1) print the solution for the elastic problem
+    io.full_print(u_el_n_output, 'u_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+                  solpath.snapshots_csv_nodal_values_path,
+                  lmsh.sub_meshes[0], 'vector')
+    io.full_print(u_el_dot_n_output, 'u_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+                  solpath.snapshots_csv_nodal_values_path,
+                  lmsh.sub_meshes[0], 'vector')
+
+    '''
     # 2) print the solution for the mesh problem
     io.full_print(fsp.u_el_n, 'u_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
@@ -87,5 +89,4 @@ def print_solution(t, step, dt):
     io.full_print_deformed(fsp.phi, fsp.u_el_n, 'phi_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.mesh, 'scalar')
 
-
-
+    '''

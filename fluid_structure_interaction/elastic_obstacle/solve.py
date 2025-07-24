@@ -70,6 +70,10 @@ for n in range(rpam.num_steps):
     t += dt
     step += 1
 
+    # project v_n_1 and sigma_n_32 on the mesh of the elastic problem to define the BC for the elastic problem
+    fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
+    fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
+
     # step 1): update u_el and u_el_dot
     print('Solving elastic problem ...', flush=True)
     vp_el = importlib.import_module(swi.vp_el)
@@ -153,8 +157,8 @@ for n in range(rpam.num_steps):
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    pr_sol.print_solution(t, step, dt)
     '''
+    pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
 
