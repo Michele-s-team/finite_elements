@@ -97,7 +97,7 @@ M_ellipse = assemble( \
 
 # variational functional for the original problem
 F_el_u_dot = (
-              fsp.rho / dt * (fsp.v_n[i] - fsp.v_n_1[i]) * fsp.nu_u_n[i] \
+              fsp.rho_el / dt * (fsp.v_n[i] - fsp.v_n_1[i]) * fsp.nu_u_n[i] \
               + ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u_n[i].dx(k)) \
               - fsp.rho * fsp.g[i] * fsp.nu_u_n[i] \
           ) * rmsh.dx \
