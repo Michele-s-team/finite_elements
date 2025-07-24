@@ -24,7 +24,7 @@ Q_phi = FunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 
 # function spaces for the elastic problem
 Q_u_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
-Q_u_dot_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_u_el_dot = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 Q_rho_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
 
@@ -52,9 +52,9 @@ u_el_n = Function(Q_u_el)
 u_el_n_1 = Function(Q_u_el)
 u_el_n_2 = Function(Q_u_el)
 
-u_el_dot_n = Function(Q_u_dot_el)
-u_el_dot_n_1 = Function(Q_u_dot_el)
-u_el_dot_n_2 = Function(Q_u_dot_el)
+u_el_dot_n = Function(Q_u_el_dot)
+u_el_dot_n_1 = Function(Q_u_el_dot)
+u_el_dot_n_2 = Function(Q_u_el_dot)
 
 # density field of the elastic body in the reference configuration
 rho_el = Function(Q_rho_el)
@@ -73,8 +73,8 @@ u_msh_dot_n_2 = Function(Q_u_msh_dot)
 
 u_ellipse = Function(Q_u_el)
 u_square = Function(Q_u_el)
-u_dot_ellipse = Function(Q_u_dot_el)
-u_dot_square = Function(Q_u_dot_el)
+u_dot_ellipse = Function(Q_u_el_dot)
+u_dot_square = Function(Q_u_el_dot)
 
 # y_ellipse = {y^s}_notes
 ys_ellipse = Function(Q_ys)
@@ -85,14 +85,15 @@ dyds_ellipse = Function(Q_dyds)
 nu_v_n = TestFunction(Q_v)
 nu_v_ = TestFunction(Q_v_)
 nu_phi = TestFunction(Q_phi)
-nu_u = TestFunction(Q_u_el)
-nu_u_dot = TestFunction(Q_u_dot_el)
+
+nu_u_el = TestFunction(Q_u_el)
+nu_u_el_dot = TestFunction(Q_u_el_dot)
 
 # Jacobians
 J_v_ = TrialFunction(Q_v_)
 J_v_n = TrialFunction(Q_v)
 J_phi = TrialFunction(Q_phi)
 J_u = TrialFunction(Q_u_el)
-J_u_dot = TrialFunction(Q_u_dot_el)
+J_u_dot = TrialFunction(Q_u_el_dot)
 
 V = 0.5 * (v_n_1 + v_)
