@@ -60,29 +60,29 @@ class u_dot_square_expression(UserExpression):
         return (2,)
 
 
-fsp.u_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u.ufl_element()))
-fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u.ufl_element()))
+fsp.u_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u_el.ufl_element()))
+fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u_el.ufl_element()))
 
-bc_u_ellipse = DirichletBC(fsp.Q_u, fsp.u_ellipse, rmsh.boundary_ellipse)
-bc_u_square = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.boundary_square)
+bc_u_ellipse = DirichletBC(fsp.Q_u_el, fsp.u_ellipse, rmsh.boundary_ellipse)
+bc_u_square = DirichletBC(fsp.Q_u_el, fsp.u_square, rmsh.boundary_square)
 bcs = [bc_u_ellipse, bc_u_square]
 
 # variational functional for the original problem
-F_u = (ela.F(fsp.u_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.exponent), ela.mu(fsp.u_n, rpam.exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
+F_u = (ela.F(fsp.u_el_n)[k, j] * ela.S(fsp.u_el_n, ela.K(fsp.u_el_n, rpam.exponent), ela.mu(fsp.u_el_n, rpam.exponent))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
-fsp.u_dot_ellipse.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_dot.ufl_element()))
-fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
+fsp.u_dot_ellipse.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_dot_el.ufl_element()))
+fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot_el.ufl_element()))
 
-bc_u_dot_ellipse = DirichletBC(fsp.Q_u_dot, fsp.u_dot_ellipse, rmsh.boundary_ellipse)
-bc_u_dot_square = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.boundary_square)
+bc_u_dot_ellipse = DirichletBC(fsp.Q_u_dot_el, fsp.u_dot_ellipse, rmsh.boundary_ellipse)
+bc_u_dot_square = DirichletBC(fsp.Q_u_dot_el, fsp.u_dot_square, rmsh.boundary_square)
 bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
 
 F_u_dot = ( \
-                      (ela.F_dot(fsp.u_dot_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.exponent), ela.mu(fsp.u_n, rpam.exponent))[j, i] \
-                       + ela.F(fsp.u_n)[k, j] * ela.S_dot(fsp.u_n,
-                                                      fsp.u_dot_n,
-                                                      ela.K(fsp.u_n, rpam.exponent),
-                                                      ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.exponent),
-                                                      ela.mu(fsp.u_n, rpam.exponent),
-                                                      ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.exponent))[j, i]) \
+                      (ela.F_dot(fsp.u_el_dot_n)[k, j] * ela.S(fsp.u_el_n, ela.K(fsp.u_el_n, rpam.exponent), ela.mu(fsp.u_el_n, rpam.exponent))[j, i] \
+                       + ela.F(fsp.u_el_n)[k, j] * ela.S_dot(fsp.u_el_n,
+                                                             fsp.u_el_dot_n,
+                                                             ela.K(fsp.u_el_n, rpam.exponent),
+                                                             ela.K_dot(fsp.u_el_n, fsp.u_el_dot_n, rpam.exponent),
+                                                             ela.mu(fsp.u_el_n, rpam.exponent),
+                                                             ela.mu_dot(fsp.u_el_n, fsp.u_el_dot_n, rpam.exponent))[j, i]) \
                       * (fsp.nu_u_dot[k].dx(i))) * rmsh.dx

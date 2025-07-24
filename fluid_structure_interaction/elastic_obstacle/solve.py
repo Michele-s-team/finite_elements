@@ -87,12 +87,12 @@ for n in range(rpam.num_steps):
 
     vp_mesh = importlib.reload(vp_mesh)
 
-    J_u = derivative(vp_mesh.F_u, fsp.u_n, fsp.J_u)
-    problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs, J_u)
+    J_u = derivative(vp_mesh.F_u, fsp.u_el_n, fsp.J_u)
+    problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_el_n, vp_mesh.bcs, J_u)
     solver_u = NonlinearVariationalSolver(problem_u)
 
-    J_u_dot = derivative(vp_mesh.F_u_dot, fsp.u_dot_n, fsp.J_u_dot)
-    problem_u_dot = NonlinearVariationalProblem(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_dot, J_u_dot)
+    J_u_dot = derivative(vp_mesh.F_u_dot, fsp.u_el_dot_n, fsp.J_u_dot)
+    problem_u_dot = NonlinearVariationalProblem(vp_mesh.F_u_dot, fsp.u_el_dot_n, vp_mesh.bcs_dot, J_u_dot)
     solver_u_dot = NonlinearVariationalSolver(problem_u_dot)
 
     solver_u.parameters.update(params)
@@ -137,11 +137,11 @@ for n in range(rpam.num_steps):
     fsp.omega_n_1 = fsp.omega_n
 
     # 2)
-    fsp.u_n_2.assign(fsp.u_n_1)
-    fsp.u_n_1.assign(fsp.u_n)
+    fsp.u_el_n_2.assign(fsp.u_el_n_1)
+    fsp.u_el_n_1.assign(fsp.u_el_n)
 
-    fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
-    fsp.u_dot_n_1.assign(fsp.u_dot_n)
+    fsp.u_el_dot_n_2.assign(fsp.u_el_dot_n_1)
+    fsp.u_el_dot_n_1.assign(fsp.u_el_dot_n)
 
     # 3)
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
