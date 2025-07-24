@@ -44,10 +44,11 @@ params = {'nonlinear_solver': 'newton',
 
 rmsh = importlib.import_module(swi.rmsh)
 vp_elastic = importlib.import_module(swi.vp_elastic)
-'''
 vp_fluid = importlib.import_module(swi.vp_fluid)
+'''
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
+'''
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -70,13 +71,14 @@ for n in range(rpam.num_steps):
     step += 1
 
     # step 1): update theta and omega
-    print('Solving theta problem ...', flush=True)
-    ap_ellipse = importlib.reload(ap_ellipse)
+    print('Solving elastic problem ...', flush=True)
+    # ap_ellipse = importlib.reload(ap_ellipse)
 
-    fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
-    fsp.omega_n = fsp.omega_n_1 + dt / rpam.I_ellipse * ap_ellipse.M_ellipse
+    # fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
+    # fsp.omega_n = fsp.omega_n_1 + dt / rpam.I_ellipse * ap_ellipse.M_ellipse
     print('... done.', flush=True)
 
+'''
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
 
@@ -123,7 +125,8 @@ for n in range(rpam.num_steps):
     solver_fluid_3.solve()
 
     print('... done.', flush=True)
-
+    '''
+    '''
     pr_bc.print_bcs()
 
     # update the fields
@@ -147,6 +150,7 @@ for n in range(rpam.num_steps):
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     pr_sol.print_solution(t, step, dt)
+    '''
 
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
 
