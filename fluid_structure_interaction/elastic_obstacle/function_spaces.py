@@ -62,12 +62,13 @@ nu_u_el_n, nu_u_el_dot_n = TestFunctions( Q_el )
 u_el_n, u_el_dot_n = split( psi_el )
 
 
-
 u_el_n_1 = Function(Q_u_el)
 u_el_n_2 = Function(Q_u_el)
+u_el_ellipse = Function(Q_u_el)
 
 u_el_dot_n_1 = Function(Q_u_el_dot)
 u_el_dot_n_2 = Function(Q_u_el_dot)
+u_el_dot_ellipse = Function(Q_u_el_dot)
 
 # density field of the elastic body in the reference configuration
 rho_el = Function(Q_rho_el)
@@ -84,9 +85,7 @@ u_msh_dot_n = Function(Q_u_msh_dot)
 u_msh_dot_n_1 = Function(Q_u_msh_dot)
 u_msh_dot_n_2 = Function(Q_u_msh_dot)
 
-u_el_ellipse = Function(Q_u_el)
 u_msh_square = Function(Q_u_msh)
-u_el_dot_ellipse = Function(Q_u_el_dot)
 u_msh_dot_square = Function(Q_u_msh_dot)
 
 # y_ellipse = {y^s}_notes
