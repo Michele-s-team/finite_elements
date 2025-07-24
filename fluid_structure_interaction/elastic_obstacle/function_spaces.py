@@ -1,11 +1,8 @@
 from fenics import *
 import importlib
 
-from ffc.uflacs.backends.ufc.integrals import ufc_cell_integral
-
 import load_mesh as lmsh
 import switch_problem as swi
-from fluid_structure_interaction.elastic_obstacle.variational_problem_mesh_bc_square_ellipse import u_ellipse_expression, u_dot_ellipse_expression
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -19,13 +16,11 @@ the variables for the problem are
 - 'sigma' = \varsigma_notes
 '''
 
-
 # Define function spaces
 # function spaces for the fluid problem
 Q_v = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 Q_v_ = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 Q_phi = FunctionSpace(lmsh.sub_meshes[1], 'P', 1)
-
 
 # function spaces for the elastic problem
 Q_u_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
@@ -50,7 +45,6 @@ sigma_n_12 = Function(Q_phi)
 sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
 
-
 # fields for the elastic problem
 u_el_n = Function(Q_u_el)
 u_el_n_1 = Function(Q_u_el)
@@ -60,17 +54,14 @@ u_el_dot_n = Function(Q_u_dot_el)
 u_el_dot_n_1 = Function(Q_u_dot_el)
 u_el_dot_n_2 = Function(Q_u_dot_el)
 
-
 # fields for the mesh-motion problem
 u_msh_n = Function(Q_u_msh)
 u_msh_n_1 = Function(Q_u_msh)
 u_msh_n_2 = Function(Q_u_msh)
 
-u_msh_dot_n = Function(Q_u_dot_msh)
-u_msh_dot_n_1 = Function(Q_u_dot_msh)
-u_msh_dot_n_2 = Function(Q_u_dot_msh)
-
-
+u_msh_dot_n = Function(Q_u_msh_dot)
+u_msh_dot_n_1 = Function(Q_u_msh_dot)
+u_msh_dot_n_2 = Function(Q_u_msh_dot)
 
 u_ellipse = Function(Q_u_el)
 u_square = Function(Q_u_el)
