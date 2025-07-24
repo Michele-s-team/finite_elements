@@ -31,7 +31,7 @@ Q_u_msh = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 Q_u_msh_dot = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 
 # function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
-Q_y = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_ys = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
 Q_dyds = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
 
 # Define functions for solutions at previous and current time steps
@@ -69,7 +69,7 @@ u_dot_ellipse = Function(Q_u_dot_el)
 u_dot_square = Function(Q_u_dot_el)
 
 # y_ellipse = {y^s}_notes
-ys_ellipse = Function(Q_y)
+ys_ellipse = Function(Q_ys)
 # dyds_ellipse = {dy^s/ds}_notes
 dyds_ellipse = Function(Q_dyds)
 

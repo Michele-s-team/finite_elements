@@ -26,6 +26,24 @@ dt = rpam.T / rpam.num_steps  # time step size
 i, j, k, l, m, n = ufl.indices(6)
 
 
+class u_el_l_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+
+# expression for the density \rho_y in the notes
+class rho_elastic_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.rho_elastic
+
+    def value_shape(self):
+        return (2,)
+
+
 # {y_s}_notes (parameteric curve of the ellipse)
 class ys_ellipse_expression(UserExpression):
     def eval(self, values, x):
@@ -54,7 +72,7 @@ class dyds_ellipse_expression(UserExpression):
         return (2,)
 
 
-fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_y.ufl_element()))
+fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_ys.ufl_element()))
 fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
 
 io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
@@ -66,11 +84,11 @@ io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
               lmsh.mesh, 'vector')
 
 '''
-by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellipse gives \int ds f(s)
+by replacing '1' in the integrand with a function of 0 =< s < 1, integral_ellipse gives \int ds f(s)
 '''
-
+'''
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
     (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_el_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n_1, rpam.mu_fluid)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_el_n_1)[m, l] * fsp.dyds_ellipse[l]) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
-
+'''
