@@ -11,6 +11,7 @@ import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
 import boundary_geometry as bgeo
+import geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import read_parameters as rpam
@@ -109,7 +110,7 @@ F_el_u_dot = (
 F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u[i] * rmsh.dx_sub_mesh[0]
 
 F_N = rpam.alpha / rmsh.r_mesh * ( \
-            (() * ()) * rmsh.ds_lr \
+            ((geo.epsilon[j, k] * fsp.dyds_ellipse[k] * ela.P(fsp.u_el_n)[i, j] - ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l]) * ()) * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
     )
 
 F = (F_el_u_dot + F_el_u) + F_N
