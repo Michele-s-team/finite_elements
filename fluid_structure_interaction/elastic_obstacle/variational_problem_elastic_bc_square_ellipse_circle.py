@@ -79,7 +79,6 @@ fsp.rho_el.interpolate(rho_el_expression(element=fsp.Q_rho_el.ufl_element()))
 
 fsp.u_el_circle.interpolate(u_el_circle_expression(element=fsp.Q_u_el.ufl_element()))
 
-
 io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
               lmsh.sub_meshes[0], 'vector')
@@ -99,15 +98,18 @@ bc_u_el_circle = DirichletBC(fsp.Q_u_el, fsp.u_el_circle, rmsh.boundary[0]['circ
 
 bcs_el = [bc_u_el_circle]
 
-
 # variational functional for the original problem
 F_el_u_dot = (
-              fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_dot[i] \
-              + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_dot[i].dx(k)) \
-          ) * rmsh.dx_sub_mesh[0] \
-      - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_circle']\
-      - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']\
-
+                     fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_dot[i] \
+                     + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_dot[i].dx(k)) \
+                 ) * rmsh.dx_sub_mesh[0] \
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
+ \
 F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u[i] * rmsh.dx_sub_mesh[0]
 
-F = F_el_u_dot + F_el_u
+F_N = rpam.alpha / rmsh.r_mesh * ( \
+            + (() * () *  rmsh.ds_lr \
+    )
+
+F = (F_el_u_dot + F_el_u) + F_N
