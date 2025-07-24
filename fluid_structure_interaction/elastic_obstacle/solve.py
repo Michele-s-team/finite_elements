@@ -43,7 +43,7 @@ params = {'nonlinear_solver': 'newton',
           }
 
 rmsh = importlib.import_module(swi.rmsh)
-vp_elastic = importlib.import_module(swi.vp_el)
+vp_el = importlib.import_module(swi.vp_el)
 vp_fluid = importlib.import_module(swi.vp_fl)
 '''
 vp_mesh = importlib.import_module(swi.vp_mesh)
@@ -72,10 +72,10 @@ for n in range(rpam.num_steps):
 
     # step 1): update u_el and u_el_dot
     print('Solving elastic problem ...', flush=True)
-    vp_elastic = importlib.import_module(swi.vp_el)
+    vp_el = importlib.import_module(swi.vp_el)
 
-    J_el = derivative(vp_elastic.F_el, fsp.psi_el, fsp.J_psi_el)
-    problem_el = NonlinearVariationalProblem(vp_elastic.F_el, fsp.psi_el, vp_elastic.bcs_el, J_el)
+    J_el = derivative(vp_el.F_el, fsp.psi_el, fsp.J_psi_el)
+    problem_el = NonlinearVariationalProblem(vp_el.F_el, fsp.psi_el, vp_el.bcs_el, J_el)
     solver_el = NonlinearVariationalSolver(problem_el)
     solver_el.parameters.update(params)
     solver_el.solve()
