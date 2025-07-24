@@ -1,7 +1,10 @@
-import dolfin
 from fenics import *
+import importlib
 
 import load_mesh as lmsh
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
 
 '''
 the variables for the problem are
