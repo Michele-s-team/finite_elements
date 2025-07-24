@@ -95,6 +95,11 @@ M_ellipse = assemble( \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 '''
 
+bc_u_el_circle = DirichletBC(fsp.Q_u_el, fsp.u_el_circle, rmsh.boundary[0]['circle'])
+
+bcs_el = [bc_u_el_circle]
+
+
 # variational functional for the original problem
 F_el_u_dot = (
               fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_dot[i] \
