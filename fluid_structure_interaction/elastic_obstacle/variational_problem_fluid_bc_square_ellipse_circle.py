@@ -37,7 +37,7 @@ class sigma_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
-
+'''
 v__profile_l = Expression((f'{rpam.v_l}* 4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.parameters["h"])
 bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary_l)
 bc_v__tb = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.boundary_tb)
@@ -75,3 +75,4 @@ F_phi = ( \
 
 # step 3 for v_n
 F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho_fluid) * ela.G(fsp.u_el_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_el_n_1) * rmsh.dx
+'''
