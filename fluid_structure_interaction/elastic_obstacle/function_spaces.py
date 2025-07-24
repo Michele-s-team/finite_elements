@@ -21,13 +21,17 @@ the variables for the problem are
 
 
 # Define function spaces
+# function spaces for the fluid problem
 Q_v = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 Q_v_ = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 Q_phi = FunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 
+
+# function spaces for the elastic problem
 Q_u_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 Q_u_dot_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
+# function spaces for the mesh-motion problem
 Q_u_msh = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 Q_u_msh_dot = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 
@@ -46,6 +50,8 @@ sigma_n_12 = Function(Q_phi)
 sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
 
+
+# fields for the elastic problem
 u_el_n = Function(Q_u_el)
 u_el_n_1 = Function(Q_u_el)
 u_el_n_2 = Function(Q_u_el)
@@ -54,6 +60,8 @@ u_el_dot_n = Function(Q_u_dot_el)
 u_el_dot_n_1 = Function(Q_u_dot_el)
 u_el_dot_n_2 = Function(Q_u_dot_el)
 
+
+# fields for the mesh-motion problem
 u_msh_n = Function(Q_u_msh)
 u_msh_n_1 = Function(Q_u_msh)
 u_msh_n_2 = Function(Q_u_msh)
@@ -61,6 +69,7 @@ u_msh_n_2 = Function(Q_u_msh)
 u_msh_dot_n = Function(Q_u_dot_msh)
 u_msh_dot_n_1 = Function(Q_u_dot_msh)
 u_msh_dot_n_2 = Function(Q_u_dot_msh)
+
 
 
 u_ellipse = Function(Q_u_el)
