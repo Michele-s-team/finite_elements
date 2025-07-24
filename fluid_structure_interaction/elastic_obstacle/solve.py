@@ -42,14 +42,9 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-# initialize values
-fsp.theta_n = rpam.theta_0
-fsp.omega_n = rpam.omega_0
-fsp.theta_n_1 = rpam.theta_0
-fsp.omega_n_1 = rpam.omega_0
-
+'''
 rmsh = importlib.import_module(swi.rmsh)
-ap_ellipse = importlib.import_module(swi.ap_ellipse)
+vp_elastic = importlib.import_module(swi.vp_elastic)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -156,3 +151,4 @@ for n in range(rpam.num_steps):
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
 
 print("... done.", flush=True)
+'''
