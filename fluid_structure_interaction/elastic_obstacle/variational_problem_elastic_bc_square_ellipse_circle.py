@@ -101,19 +101,19 @@ bcs_el = [bc_u_el_circle]
 
 # variational functional for the original problem
 F_el_u_dot = (
-                     fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_el_dot[i] \
-                     + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_el_dot[i].dx(k)) \
+                     fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_el_dot_n[i] \
+                     + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_el_dot_n[i].dx(k)) \
                  ) * rmsh.dx_sub_mesh[0] \
-             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_dot[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
-             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_dot[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_dot_n[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_dot_n[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']
 
-F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u_el[i] * rmsh.dx_sub_mesh[0]
+F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u_el_n[i] * rmsh.dx_sub_mesh[0]
 
 F_N = rpam.alpha / rmsh.r_mesh * ( \
     # in F I PUT U_N RATHER THAN U_N_1 AS IN THE NOTES -> REVISE THIS
         ( \
-                    (geo.epsilon[j, k] * fsp.dyds_ellipse[k] * ela.P(fsp.u_el_n)[i, j] - ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n)[k, l] * fsp.dyds_ellipse[l]) \
-                    * (ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * fsp.nu_u_el[k].dx(l) * fsp.dyds_ellipse[l]) \
+                    (geo.epsilon[j, k] * fsp.dyds_ellipse[k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, j] - ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n)[k, l] * fsp.dyds_ellipse[l]) \
+                    * (ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * fsp.nu_u_el_n[k].dx(l) * fsp.dyds_ellipse[l]) \
             ) * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
     )
 

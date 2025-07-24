@@ -3,8 +3,6 @@ import importlib
 
 import load_mesh as lmsh
 import switch_problem as swi
-from fluid_structure_interaction.elastic_obstacle.variational_problem_elastic_bc_square_ellipse_circle import u_el_circle_expression
-from poisson_equation.solve_u.two_domains.variational_problem_bc_square_square import u_exact_sub_mesh_0_expression
 
 rmsh = importlib.import_module(swi.rmsh)
 
