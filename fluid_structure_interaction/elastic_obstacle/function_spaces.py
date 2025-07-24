@@ -3,6 +3,8 @@ import importlib
 
 import load_mesh as lmsh
 import switch_problem as swi
+from fluid_structure_interaction.elastic_obstacle.variational_problem_elastic_bc_square_ellipse_circle import u_el_circle_expression
+from poisson_equation.solve_u.two_domains.variational_problem_bc_square_square import u_exact_sub_mesh_0_expression
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -23,8 +25,14 @@ Q_v_ = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 Q_phi = FunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 
 # function spaces for the elastic problem
-Q_u_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
-Q_u_el_dot = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+P_u_el = VectorElement( 'P', triangle, 1 )
+P_u_dot_el = VectorElement( 'P', triangle, 1 )
+element_el = MixedElement( [P_u_el, P_u_dot_el] )
+Q_el = FunctionSpace(lmsh.sub_meshes[0], element_el)
+
+Q_u_el = Q_el.sub(0).collapse()
+Q_u_el_dot = Q_el.sub(1).collapse()
+
 Q_rho_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
 
@@ -48,11 +56,16 @@ sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
 
 # fields for the elastic problem
-u_el_n = Function(Q_u_el)
+J_psi_el = TrialFunction(Q_el)
+psi_el = Function(Q_el)
+nu_u_el_n, nu_u_el_dot_n = TestFunctions( Q_el )
+u_el_n, u_el_dot_n = split( psi_el )
+
+
+
 u_el_n_1 = Function(Q_u_el)
 u_el_n_2 = Function(Q_u_el)
 
-u_el_dot_n = Function(Q_u_el_dot)
 u_el_dot_n_1 = Function(Q_u_el_dot)
 u_el_dot_n_2 = Function(Q_u_el_dot)
 
@@ -71,10 +84,10 @@ u_msh_dot_n = Function(Q_u_msh_dot)
 u_msh_dot_n_1 = Function(Q_u_msh_dot)
 u_msh_dot_n_2 = Function(Q_u_msh_dot)
 
-u_ellipse = Function(Q_u_el)
-u_square = Function(Q_u_el)
-u_dot_ellipse = Function(Q_u_el_dot)
-u_dot_square = Function(Q_u_el_dot)
+u_el_ellipse = Function(Q_u_el)
+u_msh_square = Function(Q_u_msh)
+u_el_dot_ellipse = Function(Q_u_el_dot)
+u_msh_dot_square = Function(Q_u_msh_dot)
 
 # y_ellipse = {y^s}_notes
 ys_ellipse = Function(Q_ys)
@@ -86,8 +99,6 @@ nu_v_n = TestFunction(Q_v)
 nu_v_ = TestFunction(Q_v_)
 nu_phi = TestFunction(Q_phi)
 
-nu_u_el = TestFunction(Q_u_el)
-nu_u_el_dot = TestFunction(Q_u_el_dot)
 
 # Jacobians
 J_v_ = TrialFunction(Q_v_)

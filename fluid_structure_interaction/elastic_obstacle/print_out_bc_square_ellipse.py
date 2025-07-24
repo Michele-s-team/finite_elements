@@ -46,13 +46,13 @@ def print_bcs():
     # write the residual of natural BCs  to file
     writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_ellipse - fsp.u_el_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_el_ellipse - fsp.u_el_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_square - fsp.u_el_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_square - fsp.u_el_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_ellipse - fsp.u_el_dot_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_el_dot_ellipse - fsp.u_el_dot_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_square - fsp.u_el_dot_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_dot_square - fsp.u_el_dot_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
         fieldnames[4]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
         fieldnames[5]: \

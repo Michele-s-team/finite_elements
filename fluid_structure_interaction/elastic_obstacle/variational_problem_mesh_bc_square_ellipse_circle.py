@@ -60,21 +60,21 @@ class u_dot_square_expression(UserExpression):
         return (2,)
 
 
-fsp.u_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u_el.ufl_element()))
-fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u_el.ufl_element()))
+fsp.u_el_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u_el.ufl_element()))
+fsp.u_msh_square.interpolate(u_square_expression(element=fsp.Q_u_el.ufl_element()))
 
-bc_u_ellipse = DirichletBC(fsp.Q_u_el, fsp.u_ellipse, rmsh.boundary_ellipse)
-bc_u_square = DirichletBC(fsp.Q_u_el, fsp.u_square, rmsh.boundary_square)
+bc_u_ellipse = DirichletBC(fsp.Q_u_el, fsp.u_el_ellipse, rmsh.boundary_ellipse)
+bc_u_square = DirichletBC(fsp.Q_u_el, fsp.u_msh_square, rmsh.boundary_square)
 bcs = [bc_u_ellipse, bc_u_square]
 
 # variational functional for the original problem
 F_u = (ela.F(fsp.u_el_n)[k, j] * ela.S(fsp.u_el_n, ela.K(fsp.u_el_n, rpam.exponent), ela.mu(fsp.u_el_n, rpam.exponent))[j, i] * (fsp.nu_u_el[k].dx(i))) * rmsh.dx
 
-fsp.u_dot_ellipse.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_el_dot.ufl_element()))
-fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_el_dot.ufl_element()))
+fsp.u_el_dot_ellipse.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_el_dot.ufl_element()))
+fsp.u_msh_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_el_dot.ufl_element()))
 
-bc_u_dot_ellipse = DirichletBC(fsp.Q_u_el_dot, fsp.u_dot_ellipse, rmsh.boundary_ellipse)
-bc_u_dot_square = DirichletBC(fsp.Q_u_el_dot, fsp.u_dot_square, rmsh.boundary_square)
+bc_u_dot_ellipse = DirichletBC(fsp.Q_u_el_dot, fsp.u_el_dot_ellipse, rmsh.boundary_ellipse)
+bc_u_dot_square = DirichletBC(fsp.Q_u_el_dot, fsp.u_msh_dot_square, rmsh.boundary_square)
 bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
 
 F_u_dot = ( \
