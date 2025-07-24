@@ -26,7 +26,7 @@ dt = rpam.T / rpam.num_steps  # time step size
 i, j, k, l, m, n = ufl.indices(6)
 
 
-
+# {y_s}_notes (parameteric curve of the ellipse)
 class ys_ellipse_expression(UserExpression):
     def eval(self, values, x):
         s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
@@ -40,6 +40,7 @@ class ys_ellipse_expression(UserExpression):
         return (2,)
 
 
+# {d y_s / ds}_notes
 class dyds_ellipse_expression(UserExpression):
     def eval(self, values, x):
         s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
