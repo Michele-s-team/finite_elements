@@ -104,12 +104,12 @@ F_el_u_dot = (
                      + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_dot[i].dx(k)) \
                  ) * rmsh.dx_sub_mesh[0] \
              - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
-             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
- \
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_ellipse'] 
+
 F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u[i] * rmsh.dx_sub_mesh[0]
 
 F_N = rpam.alpha / rmsh.r_mesh * ( \
-            + (() * () *  rmsh.ds_lr \
-    )
+    + (() * () * rmsh.ds_lr \
+       )
 
-F = (F_el_u_dot + F_el_u) + F_N
+    F = (F_el_u_dot + F_el_u) + F_N
