@@ -19,14 +19,15 @@ import switch_problem as swi
 from calculus import atan_quad
 
 rmsh = importlib.import_module(swi.rmsh)
-vp_fluid = importlib.import_module(swi.vp_fluid)
+# vp_fluid = importlib.import_module(swi.vp_fluid)
 
 dt = rpam.T / rpam.num_steps  # time step size
 
 i, j, k, l, m, n = ufl.indices(6)
 
 
-class u_el_l_expression(UserExpression):
+# expression for the deformation field of the elastic body ad the inner circular boundary of the elastic body
+class u_el_circle_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
@@ -35,10 +36,10 @@ class u_el_l_expression(UserExpression):
         return (2,)
 
 
-# expression for the density \rho_y in the notes
-class rho_elastic_expression(UserExpression):
+# expression for the density \rho_y of the elastic body in the notes
+class rho_el_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.rho_elastic
+        values[0] = rpam.rho_el
 
     def value_shape(self):
         return (2,)
@@ -74,21 +75,34 @@ class dyds_ellipse_expression(UserExpression):
 
 fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_ys.ufl_element()))
 fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
+fsp.rho_el.interpolate(rho_el_expression(element=fsp.Q_rho_el.ufl_element()))
+
+fsp.u_el_circle.interpolate(u_el_circle_expression(element=fsp.Q_u_el.ufl_element()))
+
 
 io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.mesh, 'vector')
+              lmsh.sub_meshes[0], 'vector')
 
 io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.mesh, 'vector')
+              lmsh.sub_meshes[0], 'vector')
 
-'''
-by replacing '1' in the integrand with a function of 0 =< s < 1, integral_ellipse gives \int ds f(s)
-'''
 '''
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
     (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_el_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n_1, rpam.mu_fluid)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_el_n_1)[m, l] * fsp.dyds_ellipse[l]) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 '''
+
+# variational functional for the original problem
+F_el_u_dot = (
+              fsp.rho / dt * (fsp.v_n[i] - fsp.v_n_1[i]) * fsp.nu_u_n[i] \
+              + ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u_n[i].dx(k)) \
+              - fsp.rho * fsp.g[i] * fsp.nu_u_n[i] \
+          ) * rmsh.dx \
+      - bgeo.facet_normal[k] * ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u_n[i] * rmsh.ds_l
+
+F_el_u = (fsp.u_n[i] - fsp.u_n_1[i] - fsp.v_n[i] * dt) * fsp.nu_v_n[i] * rmsh.dx
+
+F = F_el_u_dot + F_el_u

@@ -25,6 +25,8 @@ Q_phi = FunctionSpace(lmsh.sub_meshes[1], 'P', 1)
 # function spaces for the elastic problem
 Q_u_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 Q_u_dot_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_rho_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+
 
 # function spaces for the mesh-motion problem
 Q_u_msh = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 1)
@@ -53,6 +55,12 @@ u_el_n_2 = Function(Q_u_el)
 u_el_dot_n = Function(Q_u_dot_el)
 u_el_dot_n_1 = Function(Q_u_dot_el)
 u_el_dot_n_2 = Function(Q_u_dot_el)
+
+# density field of the elastic body in the reference configuration
+rho_el = Function(Q_rho_el)
+#deformation field of the elastic body at the inner circular boundary
+u_el_circle = Function(Q_u_el)
+
 
 # fields for the mesh-motion problem
 u_msh_n = Function(Q_u_msh)
