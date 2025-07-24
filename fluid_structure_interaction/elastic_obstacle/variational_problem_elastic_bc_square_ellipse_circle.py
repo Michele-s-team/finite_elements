@@ -10,7 +10,7 @@ import ufl as ufl
 import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
-import geometry as geo
+import boundary_geometry as bgeo
 import input_output as io
 import load_mesh as lmsh
 import read_parameters as rpam
@@ -97,12 +97,12 @@ M_ellipse = assemble( \
 
 # variational functional for the original problem
 F_el_u_dot = (
-              fsp.rho_el / dt * (fsp.v_n[i] - fsp.v_n_1[i]) * fsp.nu_u_n[i] \
-              + ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * (fsp.nu_u_n[i].dx(k)) \
-              - fsp.rho * fsp.g[i] * fsp.nu_u_n[i] \
-          ) * rmsh.dx \
-      - bgeo.facet_normal[k] * ela.P(fsp.u_n, rpam.parameters["K"], rpam.parameters["mu"])[i, k] * fsp.nu_u_n[i] * rmsh.ds_l
+              fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_dot[i] \
+              + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_dot[i].dx(k)) \
+          ) * rmsh.dx_sub_mesh[0] \
+      - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_circle']\
+      - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_dot[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']\
 
-F_el_u = (fsp.u_n[i] - fsp.u_n_1[i] - fsp.v_n[i] * dt) * fsp.nu_v_n[i] * rmsh.dx
+F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u[i] * rmsh.dx_sub_mesh[0]
 
 F = F_el_u_dot + F_el_u
