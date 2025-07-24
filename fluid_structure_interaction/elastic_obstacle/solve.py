@@ -42,8 +42,8 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-'''
 rmsh = importlib.import_module(swi.rmsh)
+'''
 vp_elastic = importlib.import_module(swi.vp_elastic)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
