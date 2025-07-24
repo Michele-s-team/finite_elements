@@ -58,14 +58,14 @@ bc_phi = [bc_phi_r]
 F_v_ = ( \
                    rpam.rho_fluid * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
                                + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_el_dot_n_1[k]) * ela.G(fsp.u_el_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_el_dot_n_2[k]) * ela.G(fsp.u_el_n_2)[j, k]) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
-                   + fsp.sigma_n_32 * ela.G(fsp.u_el_n_1)[l, i] * (fsp.nu_v_[i]).dx(l) + rpam.mu * ela.G(fsp.u_el_n_1)[k, j] * ((fsp.V[i]).dx(k)) * ela.G(fsp.u_el_n_1)[l, j] * (fsp.nu_v_[i]).dx(l) \
+                   + fsp.sigma_n_32 * ela.G(fsp.u_el_n_1)[l, i] * (fsp.nu_v_[i]).dx(l) + rpam.mu_fluid * ela.G(fsp.u_el_n_1)[k, j] * ((fsp.V[i]).dx(k)) * ela.G(fsp.u_el_n_1)[l, j] * (fsp.nu_v_[i]).dx(l) \
            ) * ela.detF(fsp.u_el_n_1) * rmsh.dx \
        - (ela.G(fsp.u_el_n_1)[l, i] * bgeo.facet_normal[l] * fsp.sigma_n_32 * fsp.nu_v_[i]) * ela.detF(fsp.u_el_n_1) * rmsh.ds \
        - ( \
-                   rpam.mu * ela.G(fsp.u_el_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_l \
-                   + rpam.mu * ela.G(fsp.u_el_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_tb \
-                   + rpam.mu * ela.G(fsp.u_el_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_ellipse \
-                   + rpam.mu * ela.G(fsp.u_el_n_1)[l, 1] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, 1] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_r \
+                   rpam.mu_fluid * ela.G(fsp.u_el_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_l \
+                   + rpam.mu_fluid * ela.G(fsp.u_el_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_tb \
+                   + rpam.mu_fluid * ela.G(fsp.u_el_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_ellipse \
+                   + rpam.mu_fluid * ela.G(fsp.u_el_n_1)[l, 1] * bgeo.facet_normal[l] * ela.G(fsp.u_el_n_1)[k, 1] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_el_n_1) * rmsh.ds_r \
            )
 
 # step 2 for phi
