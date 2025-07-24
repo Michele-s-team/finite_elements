@@ -95,19 +95,19 @@ M_ellipse = assemble( \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 '''
 
-bc_u_el_circle = DirichletBC(fsp.Q_u_el, fsp.u_el_circle, rmsh.boundary[0]['circle'])
+bc_u_el_circle = DirichletBC(fsp.Q_el.sub(0), fsp.u_el_circle, rmsh.boundary[0]['circle'])
 
 bcs_el = [bc_u_el_circle]
 
 # variational functional for the original problem
 F_el_u_dot = (
-                     fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_el_dot_n[i] \
-                     + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_el_dot_n[i].dx(k)) \
+                     fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_el_n[i] \
+                     + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_el_n[i].dx(k)) \
                  ) * rmsh.dx_sub_mesh[0] \
-             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_dot_n[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
-             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_dot_n[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_n[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_n[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']
 
-F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u_el_n[i] * rmsh.dx_sub_mesh[0]
+F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u_el_dot_n[i] * rmsh.dx_sub_mesh[0]
 
 F_N = rpam.alpha / rmsh.r_mesh * ( \
     # in F I PUT U_N RATHER THAN U_N_1 AS IN THE NOTES -> REVISE THIS
@@ -117,4 +117,4 @@ F_N = rpam.alpha / rmsh.r_mesh * ( \
             ) * rmsh.ds_sub_mesh[0]['ds_ellipse'] \
     )
 
-F = (F_el_u_dot + F_el_u) + F_N
+F_el = (F_el_u_dot + F_el_u) + F_N
