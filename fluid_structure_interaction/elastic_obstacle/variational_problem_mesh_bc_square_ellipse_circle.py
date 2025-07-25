@@ -6,13 +6,10 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
-import numpy as np
 import read_parameters as rpam
 import switch_problem as swi
-from fluid_structure_interaction.elastic_obstacle.function_spaces import u_msh_n
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -28,7 +25,7 @@ class u_msh_square_expression(UserExpression):
         return (2,)
 
 
-class u_dot_square_expression(UserExpression):
+class u_msh_dot_square_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
@@ -39,26 +36,25 @@ class u_dot_square_expression(UserExpression):
 
 fsp.u_msh_square.interpolate(u_msh_square_expression(element=fsp.Q_u_msh.ufl_element()))
 
-bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_msh_ellipse, rmsh.boundary_ellipse)
+bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_el_n_on_sub_mesh_1, rmsh.boundary_ellipse)
 bc_u_msh_square = DirichletBC(fsp.Q_u_msh, fsp.u_msh_square, rmsh.boundary_square)
 bcs_msh = [bc_u_msh_ellipse, bc_u_msh_square]
 
 # variational functional for the original problem
-F_u = (ela.F(fsp.u_el_n)[k, j] * ela.S(fsp.u_el_n, ela.K(fsp.u_el_n, rpam.exponent), ela.mu(fsp.u_el_n, rpam.exponent))[j, i] * (fsp.nu_u_el[k].dx(i))) * rmsh.dx
+F_u = (ela.P(fsp.u_msh_n, ela.K(fsp.u_msh_n, rpam.exponent), ela.mu(fsp.u_msh_n, rpam.exponent))[k, i] * (fsp.nu_u_msh[k].dx(i))) * rmsh.dx_sub_mesh[1]
 
-fsp.u_el_dot_n_on_sub_mesh_1.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_el_dot.ufl_element()))
-fsp.u_msh_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_el_dot.ufl_element()))
+fsp.u_msh_dot_square.interpolate(u_msh_dot_square_expression(element=fsp.Q_u_msh_dot.ufl_element()))
 
-bc_u_dot_ellipse = DirichletBC(fsp.Q_u_el_dot, fsp.u_el_dot_n_on_sub_mesh_1, rmsh.boundary_ellipse)
-bc_u_dot_square = DirichletBC(fsp.Q_u_el_dot, fsp.u_msh_dot_square, rmsh.boundary_square)
-bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
+bc_u_msh_dot_ellipse = DirichletBC(fsp.Q_u_msh_dot, fsp.u_el_dot_n_on_sub_mesh_1, rmsh.boundary_ellipse)
+bc_u_msh_dot_square = DirichletBC(fsp.Q_u_msh_dot, fsp.u_msh_dot_square, rmsh.boundary_square)
+bcs_msh_dot = [bc_u_msh_dot_ellipse, bc_u_msh_dot_square]
 
 F_u_dot = ( \
-                      (ela.F_dot(fsp.u_el_dot_n)[k, j] * ela.S(fsp.u_el_n, ela.K(fsp.u_el_n, rpam.exponent), ela.mu(fsp.u_el_n, rpam.exponent))[j, i] \
-                       + ela.F(fsp.u_el_n)[k, j] * ela.S_dot(fsp.u_el_n,
-                                                             fsp.u_el_dot_n,
-                                                             ela.K(fsp.u_el_n, rpam.exponent),
-                                                             ela.K_dot(fsp.u_el_n, fsp.u_el_dot_n, rpam.exponent),
-                                                             ela.mu(fsp.u_el_n, rpam.exponent),
-                                                             ela.mu_dot(fsp.u_el_n, fsp.u_el_dot_n, rpam.exponent))[j, i]) \
-                      * (fsp.nu_u_el_dot[k].dx(i))) * rmsh.dx
+                      (ela.F_dot(fsp.u_msh_dot_n)[k, j] * ela.S(fsp.u_msh_n, ela.K(fsp.u_msh_n, rpam.exponent), ela.mu(fsp.u_msh_n, rpam.exponent))[j, i] \
+                       + ela.F(fsp.u_msh_n)[k, j] * ela.S_dot(fsp.u_msh_n,
+                                                              fsp.u_msh_dot_n,
+                                                              ela.K(fsp.u_msh_n, rpam.exponent),
+                                                              ela.K_dot(fsp.u_msh_n, fsp.u_msh_dot_n, rpam.exponent),
+                                                              ela.mu(fsp.u_msh_n, rpam.exponent),
+                                                              ela.mu_dot(fsp.u_msh_n, fsp.u_msh_dot_n, rpam.exponent))[j, i]) \
+                      * (fsp.nu_u_msh_dot[k].dx(i))) * rmsh.dx_sub_mesh[1]

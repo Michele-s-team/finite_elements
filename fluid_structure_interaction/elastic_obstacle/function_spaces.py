@@ -97,6 +97,9 @@ u_msh_dot_n_2 = Function(Q_u_msh_dot)
 u_msh_square = Function(Q_u_msh)
 u_msh_dot_square = Function(Q_u_msh_dot)
 
+nu_u_msh = TestFunction(Q_u_msh)
+nu_u_msh_dot = TestFunction(Q_u_msh_dot)
+
 # y_ellipse = {y^s}_notes
 ys_ellipse = Function(Q_ys)
 # dyds_ellipse = {dy^s/ds}_notes
