@@ -32,7 +32,7 @@ class v_expression(UserExpression):
 # trial analytical expression for the  surface tension sigma(x,y)
 class sigma_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = rpam.sigma_r
 
     def value_shape(self):
         return (1,)

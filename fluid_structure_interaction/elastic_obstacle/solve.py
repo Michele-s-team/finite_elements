@@ -136,12 +136,19 @@ for n in range(rpam.num_steps):
     '''
     '''
     pr_bc.print_bcs()
-
+    '''
     # update the fields
-    # 1)
-    fsp.theta_n_1 = fsp.theta_n
-    fsp.omega_n_1 = fsp.omega_n
+    # 1) update the elastic problem
+    u_el_n_output, u_el_dot_n_output = fsp.psi_el.split( deepcopy=True)
 
+    fsp.u_el_n_2.assign(fsp.u_el_n_1)
+    fsp.u_el_n_1.assign(u_el_n_output)
+
+    fsp.u_el_dot_n_2.assign(fsp.u_el_dot_n_1)
+    fsp.u_el_dot_n_1.assign(u_el_dot_n_output)
+
+
+    '''
     # 2)
     fsp.u_el_n_2.assign(fsp.u_el_n_1)
     fsp.u_el_n_1.assign(fsp.u_el_n)

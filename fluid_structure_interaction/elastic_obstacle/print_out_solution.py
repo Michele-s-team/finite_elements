@@ -38,6 +38,11 @@ def print_solution(t, step, dt):
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
 
+    # include the snapshot in xdmf files
+    fi.xdmffile_u_n.write(u_el_n_output, t)
+    fi.xdmffile_u_dot_n.write(u_el_dot_n_output, t)
+
+
     '''
     # 2) print the solution for the mesh problem
     io.full_print(fsp.u_el_n, 'u_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
