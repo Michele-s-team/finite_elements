@@ -171,15 +171,15 @@ for n in range(rpam.num_steps):
 
 
 
-    # 2)
+    # 2) update the mesh problem
     fsp.u_msh_n_2.assign(fsp.u_msh_n_1)
     fsp.u_msh_n_1.assign(fsp.u_msh_n)
 
     fsp.u_msh_dot_n_2.assign(fsp.u_msh_dot_n_1)
     fsp.u_msh_dot_n_1.assign(fsp.u_msh_dot_n)
 
-    '''
-    # 3)
+
+    # 3) update the fluid problem
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
     fsp.v_n_2.assign(fsp.v_n_1)
@@ -187,7 +187,7 @@ for n in range(rpam.num_steps):
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    '''
+
     pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
