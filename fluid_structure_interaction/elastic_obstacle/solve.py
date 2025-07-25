@@ -74,6 +74,21 @@ for n in range(rpam.num_steps):
     fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
     fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
 
+    '''
+    import elasticity as ela
+    import ufl
+    import geometry as geo
+    import input_output as io
+    import solution_paths as solpath
+    import load_mesh as lmsh
+    i, j, k, l, m = ufl.indices(5)
+    f = Function(fsp.Q_u_el)
+    f.assign(project(as_tensor(ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), (i)), fsp.Q_u_el))
+    io.full_print(f, 'f', solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+                  solpath.snapshots_csv_nodal_values_path,
+                  lmsh.sub_meshes[0], 'vector')
+    '''
+
     # step 1): update u_el and u_el_dot
     print('Solving elastic problem ...', flush=True)
     vp_el = importlib.import_module(swi.vp_el)
