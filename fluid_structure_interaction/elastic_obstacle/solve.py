@@ -101,12 +101,19 @@ for n in range(rpam.num_steps):
 
     print('... done.', flush=True)
 
-    '''
+
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
 
-    vp_mesh = importlib.reload(vp_mesh)
+    # define fields from mesh 0 on mesh 1 form the elastic problem to define BCs for the mesh problem
+    u_el_n_output, u_el_dot_n_output = fsp.psi_el.split(deepcopy=True)
+    u_el_n_output.set_allow_extrapolation(True)
+    u_el_dot_n_output.set_allow_extrapolation(True)
+    fsp.u_el_n_on_sub_mesh_1.assign(project(u_el_n_output, fsp.Q_u_msh))
+    fsp.u_el_dot_n_on_sub_mesh_1.assign(project(u_el_dot_n_output, fsp.Q_u_msh_dot))
 
+    '''
+    vp_mesh = importlib.reload(vp_mesh)
     J_u = derivative(vp_mesh.F_u, fsp.u_el_n, fsp.J_u)
     problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_el_n, vp_mesh.bcs, J_u)
     solver_u = NonlinearVariationalSolver(problem_u)
@@ -121,9 +128,9 @@ for n in range(rpam.num_steps):
     # solve for u and u_dot
     solver_u.solve()
     solver_u_dot.solve()
-
+    '''
     print('... done.', flush=True)
-
+    '''
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
 

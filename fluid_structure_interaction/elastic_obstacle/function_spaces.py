@@ -66,14 +66,18 @@ u_el_n, u_el_dot_n = split( psi_el )
 
 u_el_n_1 = Function(Q_u_el)
 u_el_n_2 = Function(Q_u_el)
-u_el_ellipse = Function(Q_u_el)
+
+
 v_n_1_on_sub_mesh_0 = Function(Q_v_el)
 sigma_n_32_on_sub_mesh_0 = Function(Q_sigma_el)
 
 
 u_el_dot_n_1 = Function(Q_u_el_dot)
 u_el_dot_n_2 = Function(Q_u_el_dot)
-u_el_dot_ellipse = Function(Q_u_el_dot)
+
+u_el_n_on_sub_mesh_1 = Function(Q_u_msh)
+u_el_dot_n_on_sub_mesh_1 = Function(Q_u_msh_dot)
+
 
 # density field of the elastic body in the reference configuration
 rho_el = Function(Q_rho_el)
