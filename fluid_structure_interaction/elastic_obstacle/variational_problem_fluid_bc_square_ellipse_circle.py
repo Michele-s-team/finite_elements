@@ -69,8 +69,7 @@ F_phi = ( \
                     - (rpam.rho_fluid / dt) * ela.G(fsp.u_msh_n_1)[j, i] * ((fsp.v_[i]).dx(j)) * fsp.nu_phi \
             ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1] \
         + (ela.G(fsp.u_msh_n_1)[l, i] * bgeo.sub_mesh_facet_normal[1][l] * ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi) * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_r']
-'''
+
 
 # step 3 for v_n
-F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho_fluid) * ela.G(fsp.u_msh_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_msh_n_1) * rmsh.dx
-'''
+F_v_n = ( ( (fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho_fluid) * ela.G(fsp.u_msh_n_1)[l, i] * (fsp.phi.dx(l)) ) * fsp.nu_v_n[i] ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1]
