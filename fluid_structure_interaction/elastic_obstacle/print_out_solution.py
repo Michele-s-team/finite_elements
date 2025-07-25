@@ -31,31 +31,31 @@ def print_solution(t, step, dt):
 
 
     # 1) print the solution for the elastic problem
-    io.full_print(u_el_n_output, 'u_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+    io.full_print(u_el_n_output, 'u_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
-    io.full_print(u_el_dot_n_output, 'u_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+    io.full_print(u_el_dot_n_output, 'u_el_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
 
     # include the snapshot in xdmf files
-    fi.xdmffile_u_n.write(u_el_n_output, t)
-    fi.xdmffile_u_dot_n.write(u_el_dot_n_output, t)
+    fi.xdmffile_u_el_n.write(u_el_n_output, t)
+    fi.xdmffile_u_el_dot_n.write(u_el_dot_n_output, t)
 
 
-    '''
+
     # 2) print the solution for the mesh problem
-    io.full_print(fsp.u_el_n, 'u_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+    io.full_print(fsp.u_msh_n, 'u_msh_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
-                  lmsh.mesh, 'vector')
-    io.full_print(fsp.u_el_dot_n, 'u_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+                  lmsh.sub_meshes[1], 'vector')
+    io.full_print(fsp.u_msh_dot_n, 'u_msh_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
-                  lmsh.mesh, 'vector')
+                  lmsh.sub_meshes[1], 'vector')
 
     # include the snapshot in xdmf files
-    fi.xdmffile_u_n.write(fsp.u_el_n, t)
-    fi.xdmffile_u_dot_n.write(fsp.u_el_dot_n, t)
-
+    fi.xdmffile_u_msh_n.write(fsp.u_msh_n, t)
+    fi.xdmffile_u_msh_dot_n.write(fsp.u_msh_dot_n, t)
+    '''
     # Write the deformed mesh to file
     deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u_el_n)
     with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:

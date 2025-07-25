@@ -113,22 +113,22 @@ for n in range(rpam.num_steps):
     fsp.u_el_dot_n_on_sub_mesh_1.assign(project(u_el_dot_n_output, fsp.Q_u_msh_dot))
 
     vp_msh = importlib.reload(vp_msh)
-    '''
-    J_u = derivative(vp_mesh.F_u, fsp.u_el_n, fsp.J_u)
-    problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_el_n, vp_mesh.bcs, J_u)
-    solver_u = NonlinearVariationalSolver(problem_u)
 
-    J_u_dot = derivative(vp_mesh.F_u_dot, fsp.u_el_dot_n, fsp.J_u_dot)
-    problem_u_dot = NonlinearVariationalProblem(vp_mesh.F_u_dot, fsp.u_el_dot_n, vp_mesh.bcs_dot, J_u_dot)
-    solver_u_dot = NonlinearVariationalSolver(problem_u_dot)
+    J_msh_u = derivative(vp_msh.F_msh_u, fsp.u_msh_n, fsp.J_msh_u)
+    problem_msh_u = NonlinearVariationalProblem(vp_msh.F_msh_u, fsp.u_msh_n, vp_msh.bcs_msh, J_msh_u)
+    solver_msh_u = NonlinearVariationalSolver(problem_msh_u)
 
-    solver_u.parameters.update(params)
-    solver_u_dot.parameters.update(params)
+    J_msh_u_dot = derivative(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, fsp.J_msh_u_dot)
+    problem_msh_u_dot = NonlinearVariationalProblem(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, vp_msh.bcs_msh_dot, J_msh_u_dot)
+    solver_msh_u_dot = NonlinearVariationalSolver(problem_msh_u_dot)
+
+    solver_msh_u.parameters.update(params)
+    solver_msh_u_dot.parameters.update(params)
 
     # solve for u and u_dot
-    solver_u.solve()
-    solver_u_dot.solve()
-    '''
+    solver_msh_u.solve()
+    solver_msh_u_dot.solve()
+
     print('... done.', flush=True)
     '''
     # step 3) update v_n and sigma_n_12 (fluid problem)
@@ -170,14 +170,15 @@ for n in range(rpam.num_steps):
     fsp.u_el_dot_n_1.assign(u_el_dot_n_output)
 
 
-    '''
+
     # 2)
-    fsp.u_el_n_2.assign(fsp.u_el_n_1)
-    fsp.u_el_n_1.assign(fsp.u_el_n)
+    fsp.u_msh_n_2.assign(fsp.u_msh_n_1)
+    fsp.u_msh_n_1.assign(fsp.u_msh_n)
 
-    fsp.u_el_dot_n_2.assign(fsp.u_el_dot_n_1)
-    fsp.u_el_dot_n_1.assign(fsp.u_el_dot_n)
+    fsp.u_msh_dot_n_2.assign(fsp.u_msh_dot_n_1)
+    fsp.u_msh_dot_n_1.assign(fsp.u_msh_dot_n)
 
+    '''
     # 3)
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
