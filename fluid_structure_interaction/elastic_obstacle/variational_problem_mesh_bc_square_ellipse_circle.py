@@ -36,8 +36,8 @@ class u_msh_dot_square_expression(UserExpression):
 
 fsp.u_msh_square.interpolate(u_msh_square_expression(element=fsp.Q_u_msh.ufl_element()))
 
-bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_el_n_on_sub_mesh_1, rmsh.boundary_ellipse)
-bc_u_msh_square = DirichletBC(fsp.Q_u_msh, fsp.u_msh_square, rmsh.boundary_square)
+bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_el_n_on_sub_mesh_1, rmsh.boundary[1]['ellipse'])
+bc_u_msh_square = DirichletBC(fsp.Q_u_msh, fsp.u_msh_square, rmsh.boundary[1]['lrtb'])
 bcs_msh = [bc_u_msh_ellipse, bc_u_msh_square]
 
 # variational functional for the original problem
@@ -45,8 +45,8 @@ F_u = (ela.P(fsp.u_msh_n, ela.K(fsp.u_msh_n, rpam.exponent), ela.mu(fsp.u_msh_n,
 
 fsp.u_msh_dot_square.interpolate(u_msh_dot_square_expression(element=fsp.Q_u_msh_dot.ufl_element()))
 
-bc_u_msh_dot_ellipse = DirichletBC(fsp.Q_u_msh_dot, fsp.u_el_dot_n_on_sub_mesh_1, rmsh.boundary_ellipse)
-bc_u_msh_dot_square = DirichletBC(fsp.Q_u_msh_dot, fsp.u_msh_dot_square, rmsh.boundary_square)
+bc_u_msh_dot_ellipse = DirichletBC(fsp.Q_u_msh_dot, fsp.u_el_dot_n_on_sub_mesh_1,  rmsh.boundary[1]['ellipse'])
+bc_u_msh_dot_square = DirichletBC(fsp.Q_u_msh_dot, fsp.u_msh_dot_square, rmsh.boundary[1]['lrtb'])
 bcs_msh_dot = [bc_u_msh_dot_ellipse, bc_u_msh_dot_square]
 
 F_u_dot = ( \
