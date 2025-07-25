@@ -12,40 +12,17 @@ import function_spaces as fsp
 import numpy as np
 import read_parameters as rpam
 import switch_problem as swi
+from fluid_structure_interaction.elastic_obstacle.function_spaces import u_msh_n
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
 
-class u_ellipse_expression(UserExpression):
-    def eval(self, values, x):
-        x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement = np.subtract(np.dot(cal.R(fsp.theta_n), x_minus_focus), x_minus_focus)
-
-        values[0] = displacement[0]
-        values[1] = displacement[1]
-
-    def value_shape(self):
-        return (2,)
-
-
-class u_square_expression(UserExpression):
+class u_msh_square_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-
-class u_dot_ellipse_expression(UserExpression):
-    def eval(self, values, x):
-        x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement_dot = fsp.omega_n * np.dot(cal.dRddtheta(fsp.theta_n), x_minus_focus)
-
-        values[0] = displacement_dot[0]
-        values[1] = displacement_dot[1]
 
     def value_shape(self):
         return (2,)
@@ -60,12 +37,11 @@ class u_dot_square_expression(UserExpression):
         return (2,)
 
 
-fsp.u_el_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u_el.ufl_element()))
-fsp.u_msh_square.interpolate(u_square_expression(element=fsp.Q_u_el.ufl_element()))
+fsp.u_msh_square.interpolate(u_msh_square_expression(element=fsp.Q_u_msh.ufl_element()))
 
-bc_u_ellipse = DirichletBC(fsp.Q_u_el, fsp.u_el_ellipse, rmsh.boundary_ellipse)
-bc_u_square = DirichletBC(fsp.Q_u_el, fsp.u_msh_square, rmsh.boundary_square)
-bcs = [bc_u_ellipse, bc_u_square]
+bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_msh_ellipse, rmsh.boundary_ellipse)
+bc_u_msh_square = DirichletBC(fsp.Q_u_msh, fsp.u_msh_square, rmsh.boundary_square)
+bcs_msh = [bc_u_msh_ellipse, bc_u_msh_square]
 
 # variational functional for the original problem
 F_u = (ela.F(fsp.u_el_n)[k, j] * ela.S(fsp.u_el_n, ela.K(fsp.u_el_n, rpam.exponent), ela.mu(fsp.u_el_n, rpam.exponent))[j, i] * (fsp.nu_u_el[k].dx(i))) * rmsh.dx
