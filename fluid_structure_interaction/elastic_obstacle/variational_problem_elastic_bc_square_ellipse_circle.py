@@ -96,8 +96,10 @@ M_ellipse = assemble( \
 '''
 
 bc_u_el_circle = DirichletBC(fsp.Q_el.sub(0), fsp.u_el_circle, rmsh.boundary[0]['circle'])
+# bc_u_el_ellipse = DirichletBC(fsp.Q_el.sub(0), Constant((0,0)), rmsh.boundary[0]['ellipse'])
 
 bcs_el = [bc_u_el_circle]
+# bcs_el = [bc_u_el_circle, bc_u_el_ellipse]
 
 # variational functional for the original problem
 # natural BC imposed here

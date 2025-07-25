@@ -55,6 +55,14 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
+'''
+HDF5File(MPI.comm_world, '/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/v_n_100.h5', "r").read(fsp.v_n, "/f")
+fsp.v_n_1.assign(fsp.v_n)
+fsp.v_n_2.assign(fsp.v_n_1)
+HDF5File(MPI.comm_world, '/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/sigma_n_12_100.h5', "r").read(fsp.sigma_n_12, "/f")
+fsp.sigma_n_32.assign(fsp.sigma_n_12)
+'''
+
 # set the initial profiles
 fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
