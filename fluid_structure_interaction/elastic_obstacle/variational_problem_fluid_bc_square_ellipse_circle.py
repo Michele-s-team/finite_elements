@@ -63,13 +63,13 @@ F_v_ = ( \
                    + rpam.mu_fluid * ela.G(fsp.u_msh_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_msh_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_ellipse'] \
                    + rpam.mu_fluid * ela.G(fsp.u_msh_n_1)[l, 1] * bgeo.facet_normal[l] * ela.G(fsp.u_msh_n_1)[k, 1] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_r'] \
            )
-'''
 # step 2 for phi
 F_phi = ( \
                     - ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) * ela.G(fsp.u_msh_n_1)[l, i] * (fsp.nu_phi.dx(l)) \
                     - (rpam.rho_fluid / dt) * ela.G(fsp.u_msh_n_1)[j, i] * ((fsp.v_[i]).dx(j)) * fsp.nu_phi \
-            ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx \
-        + (ela.G(fsp.u_msh_n_1)[l, i] * bgeo.facet_normal[l] * ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi) * ela.detF(fsp.u_msh_n_1) * rmsh.ds_r
+            ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1] \
+        + (ela.G(fsp.u_msh_n_1)[l, i] * bgeo.facet_normal[l] * ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi) * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_r']
+'''
 
 # step 3 for v_n
 F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho_fluid) * ela.G(fsp.u_msh_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_msh_n_1) * rmsh.dx
