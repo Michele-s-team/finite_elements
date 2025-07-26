@@ -14,7 +14,7 @@ import boundary_geometry as bgeo
 import geometry as geo
 import input_output as io
 import load_mesh as lmsh
-import read_parameters as rpam
+import read_parameters_solve as rpam
 import solution_paths as solpath
 import switch_problem as swi
 from calculus import atan_quad
@@ -22,7 +22,7 @@ from calculus import atan_quad
 rmsh = importlib.import_module(swi.rmsh)
 # vp_fluid = importlib.import_module(swi.vp_fluid)
 
-dt = rpam.T / rpam.num_steps  # time step size
+dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 i, j, k, l, m, n, o = ufl.indices(7)
 
@@ -40,7 +40,7 @@ class u_el_circle_expression(UserExpression):
 # expression for the density \rho_y of the elastic body in the notes
 class rho_el_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.rho_el
+        values[0] = rpam.parameters['rho_el']
 
     def value_shape(self):
         return (2,)
@@ -91,7 +91,7 @@ io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
 '''
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_el_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n_1, rpam.mu_fluid)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_el_n_1)[m, l] * fsp.dyds_ellipse[l]) \
+    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_el_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_el_n_1, rpam.parameters['mu_fluid'])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_el_n_1)[m, l] * fsp.dyds_ellipse[l]) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 '''
 
@@ -105,10 +105,10 @@ bcs_el = [bc_u_el_circle]
 # natural BC imposed here
 F_el_u_dot = (
                      fsp.rho_el / dt * (fsp.u_el_dot_n[i] - fsp.u_el_dot_n_1[i]) * fsp.nu_u_el_n[i] \
-                     + ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * (fsp.nu_u_el_n[i].dx(k)) \
+                     + ela.P(fsp.u_el_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_el_n[i].dx(k)) \
                  ) * rmsh.dx_sub_mesh[0] \
-             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.K_elastic, rpam.mu_elastic)[i, k] * fsp.nu_u_el_n[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
-             - (ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])) * fsp.nu_u_el_n[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']
+             - bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * fsp.nu_u_el_n[i] * rmsh.ds_sub_mesh[0]['ds_circle'] \
+             - (ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])) * fsp.nu_u_el_n[i] * rmsh.ds_sub_mesh[0]['ds_ellipse']
 
 F_el_u = (fsp.u_el_n[i] - fsp.u_el_n_1[i] - fsp.u_el_dot_n[i] * dt) * fsp.nu_u_el_dot_n[i] * rmsh.dx_sub_mesh[0]
 
