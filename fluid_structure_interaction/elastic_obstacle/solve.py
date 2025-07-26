@@ -178,7 +178,6 @@ for n in range(rpam.parameters['num_steps']):
     fsp.u_el_dot_n_1.assign(u_el_dot_n_output)
 
 
-
     # 2) update the mesh problem
     fsp.u_msh_n_2.assign(fsp.u_msh_n_1)
     fsp.u_msh_n_1.assign(fsp.u_msh_n)
