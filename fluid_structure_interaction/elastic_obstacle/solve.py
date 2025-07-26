@@ -22,13 +22,13 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import read_parameters as rpam
+import read_parameters_solve as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
 import print_out_solution as pr_sol
 
-dt = rpam.T / rpam.num_steps  # time step size
+dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -73,7 +73,7 @@ print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
-for n in range(rpam.num_steps):
+for n in range(rpam.parameters['num_steps']):
     # Update current time
     t += dt
     step += 1
@@ -91,7 +91,7 @@ for n in range(rpam.num_steps):
     import load_mesh as lmsh
     i, j, k, l, m = ufl.indices(5)
     f = Function(fsp.Q_u_el)
-    f.assign(project(as_tensor(ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.mu_fluid)[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), (i)), fsp.Q_u_el))
+    f.assign(project(as_tensor(ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), (i)), fsp.Q_u_el))
     io.full_print(f, 'f', solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
@@ -198,7 +198,7 @@ for n in range(rpam.num_steps):
 
     pr_sol.print_solution(t, step, dt)
 
-    print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
+    print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
 
