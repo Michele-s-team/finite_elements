@@ -81,8 +81,6 @@ u_el_dot_n_on_sub_mesh_1 = Function(Q_u_msh_dot)
 
 # density field of the elastic body in the reference configuration
 rho_el = Function(Q_rho_el)
-#deformation field of the elastic body at the inner circular boundary
-u_el_circle = Function(Q_u_el)
 
 
 # fields for the mesh-motion problem

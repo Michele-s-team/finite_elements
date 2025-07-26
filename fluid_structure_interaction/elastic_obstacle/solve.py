@@ -22,8 +22,11 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import input_output as io
+import load_mesh as lmsh
 import read_parameters_solve as rpam
 import runtime_arguments as rarg
+import solution_paths as solpath
 import switch_problem as swi
 
 import print_out_solution as pr_sol
@@ -54,6 +57,14 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
+
+io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
+              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
+              lmsh.sub_meshes[0], 'vector')
+
+io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
+              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
+              lmsh.sub_meshes[0], 'vector')
 
 '''
 step_ic = 1000

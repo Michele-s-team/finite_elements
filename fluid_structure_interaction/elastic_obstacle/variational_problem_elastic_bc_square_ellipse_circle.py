@@ -27,23 +27,13 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 i, j, k, l, m, n, o = ufl.indices(7)
 
 
-# expression for the deformation field of the elastic body ad the inner circular boundary of the elastic body
-class u_el_circle_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-
 # expression for the density \rho_y of the elastic body in the notes
 class rho_el_expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters['rho_el']
 
     def value_shape(self):
-        return (2,)
+        return (1,)
 
 
 # {y_s}_notes (parameteric curve of the ellipse)
@@ -78,18 +68,10 @@ fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_ys.ufl_element())
 fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
 fsp.rho_el.interpolate(rho_el_expression(element=fsp.Q_rho_el.ufl_element()))
 
-fsp.u_el_circle.interpolate(u_el_circle_expression(element=fsp.Q_u_el.ufl_element()))
-
-io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.sub_meshes[0], 'vector')
-
-io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.sub_meshes[0], 'vector')
 
 
-bc_u_el_circle = DirichletBC(fsp.Q_el.sub(0), fsp.u_el_circle, rmsh.boundary[0]['circle'])
+
+bc_u_el_circle = DirichletBC(fsp.Q_el.sub(0), Constant((0,0)), rmsh.boundary[0]['circle'])
 # bc_u_el_ellipse = DirichletBC(fsp.Q_el.sub(0), Constant((0,0)), rmsh.boundary[0]['ellipse'])
 
 bcs_el = [bc_u_el_circle]
