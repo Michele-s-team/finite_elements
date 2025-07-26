@@ -101,9 +101,6 @@ for n in range(rpam.parameters['num_steps']):
     t += dt
     step += 1
 
-    # project v_n_1 and sigma_n_32 on the mesh of the elastic problem to define the BC for the elastic problem
-    fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
-    fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
 
     '''
     import elasticity as ela
@@ -120,7 +117,12 @@ for n in range(rpam.parameters['num_steps']):
                   lmsh.sub_meshes[0], 'vector')
     '''
 
-    # step 1): update u_el and u_el_dot
+    # step 1): solve elastic problem
+
+    # project v_n_1 and sigma_n_32 on the mesh of the elastic problem to define the BC for the elastic problem
+    fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
+    fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
+
     print('Solving elastic problem ...', flush=True)
     vp_el = importlib.reload(vp_el)
 
