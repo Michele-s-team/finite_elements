@@ -145,7 +145,6 @@ for n in range(rpam.parameters['num_steps']):
     solver_msh_u.parameters.update(params)
     solver_msh_u_dot.parameters.update(params)
 
-    # solve for u and u_dot
     solver_msh_u.solve()
     solver_msh_u_dot.solve()
 
