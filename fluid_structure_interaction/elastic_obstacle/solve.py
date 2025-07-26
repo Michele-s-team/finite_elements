@@ -56,10 +56,22 @@ print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
 '''
-HDF5File(MPI.comm_world, '/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/v_n_100.h5', "r").read(fsp.v_n, "/f")
+step_ic = 1000
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_n_{step_ic}.h5', "r").read(fsp.u_el_n_1, "/f")
+fsp.u_el_n_2.assign(fsp.u_el_n_1)
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_dot_n_{step_ic}.h5', "r").read(fsp.u_el_dot_n_1, "/f")
+fsp.u_el_dot_n_2.assign(fsp.u_el_dot_n_1)
+
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_n_{step_ic}.h5', "r").read(fsp.u_msh_n_1, "/f")
+fsp.u_msh_n_2.assign(fsp.u_msh_n_1)
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_dot_n_{step_ic}.h5', "r").read(fsp.u_msh_dot_n_1, "/f")
+fsp.u_msh_dot_n_2.assign(fsp.u_msh_dot_n_1)
+
+
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/v_n_{step_ic}.h5', "r").read(fsp.v_n, "/f")
 fsp.v_n_1.assign(fsp.v_n)
 fsp.v_n_2.assign(fsp.v_n_1)
-HDF5File(MPI.comm_world, '/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/sigma_n_12_100.h5', "r").read(fsp.sigma_n_12, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/sigma_n_12_{step_ic}.h5', "r").read(fsp.sigma_n_12, "/f")
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 '''
 
