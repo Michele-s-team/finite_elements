@@ -27,11 +27,10 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
     '<<|u_el^n|^2>>_circle', \
-    '<<(nu_j P_{ij} - varsigma_{ij} epsilon_{jk} F_{kl} dy[l]/ds / |dy/ds}) * (nu_m P_{im} - varsigma_{im} epsilon_{mn} F_{no} dy[o]/ds / |dy/ds})>>_square'
+    '<<(nu_j P_{ij} - varsigma_{ij} epsilon_{jk} F_{kl} dy[l]/ds / |dy/ds}) * (nu_m P_{im} - varsigma_{im} epsilon_{mn} F_{no} dy[o]/ds / |dy/ds})>>_square',\
+    '<<|l_profile_v_bar - v_bar|^2>>_l' , \
+    '<<|v_bar|^2>>_{tb}'
     # , \
-    # '<<(u_dot^n_i - u_dot_ellipse_i)(u_dot^n_i - u_dot_ellipse_i)>>_ellipse', \
-    # '<<(u_dot^n_i - u_dot_square_i)(u_dot^n_i - u_dot_square_i)>>_square', \
-    # '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
     # '<<v_bar^i v_bar_i>>_{tb}', \
     # '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
     # '<<\mu_fluid G^{n-1}_{j1} \partial_j V_i>>_r', \
@@ -58,10 +57,11 @@ def print_bcs():
         , \
         fieldnames[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_el()), rmsh.ds_sub_mesh[0]['ds_ellipse']):.{io.number_of_decimals}e}", \
-        # fieldnames[2]: \
-        #     f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_el_dot_n_on_sub_mesh_1 - fsp.u_el_dot_n), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
-        # fieldnames[3]: \
-        #     f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_dot_square - fsp.u_el_dot_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
+        fieldnames[2]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
+        fieldnames[3]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_sub_mesh[1]['ds_tb']):.{io.number_of_decimals}e}"
+        # , \
         # fieldnames[4]: \
         #     f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
         # fieldnames[5]: \
@@ -70,10 +70,6 @@ def print_bcs():
         #     f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         # fieldnames[7]: \
         #     f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.parameters['mu_fluid'] * ela.G(fsp.u_el_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
-        # fieldnames[8]: \
-        #     f"{msh.abs_wrt_measure(ela.G(fsp.u_el_n_1)[j, i] * bgeo.facet_normal[j] * ela.G(fsp.u_el_n_1)[l, i] * (fsp.phi.dx(l)), rmsh.ds_l_tb_ellipse):.{io.number_of_decimals}e}", \
-        # fieldnames[9]: \
-        #     f"{msh.abs_wrt_measure(fsp.phi, rmsh.ds_r):.{io.number_of_decimals}e}", \
     }])
 
     csvfile.flush()

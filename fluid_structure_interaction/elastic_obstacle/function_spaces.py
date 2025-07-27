@@ -113,8 +113,6 @@ nu_phi = TestFunction(Q_phi)
 J_v_ = TrialFunction(Q_v_)
 J_v_n = TrialFunction(Q_v)
 J_phi = TrialFunction(Q_phi)
-J_el_u = TrialFunction(Q_u_el)
-J_el_u_dot = TrialFunction(Q_u_el_dot)
 J_msh_u = TrialFunction(Q_u_msh)
 J_msh_u_dot = TrialFunction(Q_u_msh_dot)
 

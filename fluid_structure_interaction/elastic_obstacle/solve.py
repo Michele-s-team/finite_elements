@@ -189,7 +189,7 @@ for n in range(rpam.parameters['num_steps']):
 
     print('... done.', flush=True)
 
-
+    # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     pr_bc.print_bcs()
 
 
