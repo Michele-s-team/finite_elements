@@ -24,12 +24,12 @@ sys.path.append(module_path)
 import function_spaces as fsp
 import input_output as io
 import load_mesh as lmsh
+import print_out_solution as pr_sol
 import read_parameters_solve as rpam
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 
-import print_out_solution as pr_sol
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
@@ -45,6 +45,7 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+pr_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
 vp_el = importlib.import_module(swi.vp_el)
 vp_fl = importlib.import_module(swi.vp_fl)
@@ -188,9 +189,10 @@ for n in range(rpam.parameters['num_steps']):
 
     print('... done.', flush=True)
 
-    '''
+    # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     pr_bc.print_bcs()
-    '''
+
+
     # update the fields
     # 1) update the elastic problem
     u_el_n_output, u_el_dot_n_output = fsp.psi_el.split( deepcopy=True)
@@ -217,7 +219,6 @@ for n in range(rpam.parameters['num_steps']):
     fsp.v_n_1.assign(fsp.v_n)
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
-
 
     pr_sol.print_solution(t, step, dt)
 
