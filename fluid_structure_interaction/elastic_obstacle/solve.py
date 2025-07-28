@@ -67,31 +67,40 @@ io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
               lmsh.sub_meshes[0], 'vector')
 
+# fork:
+# a) read initial profiles from file
 '''
-step_ic = 1000
-HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_n_{step_ic}.h5', "r").read(fsp.u_el_n_1, "/f")
-fsp.u_el_n_2.assign(fsp.u_el_n_1)
-HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_dot_n_{step_ic}.h5', "r").read(fsp.u_el_dot_n_1, "/f")
-fsp.u_el_dot_n_2.assign(fsp.u_el_dot_n_1)
+step_ic = 100
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_n_{step_ic-1}.h5', "r").read(fsp.u_el_n_1, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_n_{step_ic-2}.h5', "r").read(fsp.u_el_n_2, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_dot_n_{step_ic-1}.h5', "r").read(fsp.u_el_dot_n_1, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_el_dot_n_{step_ic-2}.h5', "r").read(fsp.u_el_dot_n_2, "/f")
 
-HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_n_{step_ic}.h5', "r").read(fsp.u_msh_n_1, "/f")
-fsp.u_msh_n_2.assign(fsp.u_msh_n_1)
-HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_dot_n_{step_ic}.h5', "r").read(fsp.u_msh_dot_n_1, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_n_{step_ic}.h5', "r").read(fsp.u_msh_n, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_n_{step_ic-1}.h5', "r").read(fsp.u_msh_n_1, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_n_{step_ic-2}.h5', "r").read(fsp.u_msh_n_2, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_dot_n_{step_ic}.h5', "r").read(fsp.u_msh_dot_n, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_dot_n_{step_ic-1}.h5', "r").read(fsp.u_msh_dot_n_1, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/u_msh_dot_n_{step_ic-2}.h5', "r").read(fsp.u_msh_dot_n_2, "/f")
 fsp.u_msh_dot_n_2.assign(fsp.u_msh_dot_n_1)
 
 
 HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/v_n_{step_ic}.h5', "r").read(fsp.v_n, "/f")
-fsp.v_n_1.assign(fsp.v_n)
-fsp.v_n_2.assign(fsp.v_n_1)
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/v_n_{step_ic-1}.h5', "r").read(fsp.v_n_1, "/f")
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/v_n_{step_ic-2}.h5', "r").read(fsp.v_n_2, "/f")
+
 HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/sigma_n_12_{step_ic}.h5', "r").read(fsp.sigma_n_12, "/f")
-fsp.sigma_n_32.assign(fsp.sigma_n_12)
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution_ic/snapshots/h5/sigma_n_12_{step_ic-1}.h5', "r").read(fsp.sigma_n_32, "/f")
 '''
 
-# set the initial profiles
+
+# b) set the initial profiles from analytical expressions
+#
 fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(vp_fl.sigma_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
+# 
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping
@@ -103,28 +112,31 @@ for n in range(rpam.parameters['num_steps']):
     step += 1
 
 
-    '''
+    # step 1): solve elastic problem
+    print('Solving elastic problem ...', flush=True)
+
+
+    # project v_n_1 and sigma_n_32 on the mesh of the elastic problem to define the BC for the elastic problem
+    fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
+    fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
+
+    # print out force exerted by  fl on el
+    #
     import elasticity as ela
     import ufl
     import geometry as geo
     import input_output as io
     import solution_paths as solpath
     import load_mesh as lmsh
+
     i, j, k, l, m = ufl.indices(5)
     f = Function(fsp.Q_u_el)
-    f.assign(project(as_tensor(ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), (i)), fsp.Q_u_el))
-    io.full_print(f, 'f', solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+    f.assign(project(as_tensor((ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])), (i)), fsp.Q_u_el))
+    io.full_print(f, 'F_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
-    '''
+    #
 
-    # step 1): solve elastic problem
-
-    # project v_n_1 and sigma_n_32 on the mesh of the elastic problem to define the BC for the elastic problem
-    fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
-    fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
-
-    print('Solving elastic problem ...', flush=True)
     vp_el = importlib.reload(vp_el)
 
     J_el = derivative(vp_el.F_el, fsp.psi_el, fsp.J_psi_el)
@@ -132,6 +144,8 @@ for n in range(rpam.parameters['num_steps']):
     solver_el = NonlinearVariationalSolver(problem_el)
     solver_el.parameters.update(params)
     solver_el.solve()
+
+    pr_sol.print_solution_el(t, step)
 
     print('... done.', flush=True)
 
@@ -220,7 +234,7 @@ for n in range(rpam.parameters['num_steps']):
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    pr_sol.print_solution(t, step, dt)
+    # pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
