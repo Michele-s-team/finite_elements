@@ -1,5 +1,5 @@
 '''
-this variational problem describes a rod in a graviataional field \vec{g}, where \vec{g} is oriented on the negative y axis and
+this variational problem describes a rod in a gravitational field \vec{g}, where \vec{g} is oriented on the negative y axis and
 the rod is clamped on the line x = 0
 '''
 
