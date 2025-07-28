@@ -12,10 +12,7 @@ import elasticity as ela
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo
-import input_output as io
-import load_mesh as lmsh
 import read_parameters_solve as rpam
-import solution_paths as solpath
 import switch_problem as swi
 from calculus import atan_quad
 
