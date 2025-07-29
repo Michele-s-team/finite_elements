@@ -16,13 +16,7 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices(4)
 
 
-class u_msh_square_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
 
-    def value_shape(self):
-        return (2,)
 
 
 class u_msh_dot_square_expression(UserExpression):
@@ -34,10 +28,9 @@ class u_msh_dot_square_expression(UserExpression):
         return (2,)
 
 
-fsp.u_msh_square.interpolate(u_msh_square_expression(element=fsp.Q_u_msh.ufl_element()))
 
 bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_el_n_on_sub_mesh_1, rmsh.boundary[1]['ellipse'])
-bc_u_msh_square = DirichletBC(fsp.Q_u_msh, fsp.u_msh_square, rmsh.boundary[1]['lrtb'])
+bc_u_msh_square = DirichletBC(fsp.Q_u_msh, Constant((0, 0)), rmsh.boundary[1]['lrtb'])
 bcs_msh = [bc_u_msh_ellipse, bc_u_msh_square]
 
 # variational functional for the original problem
