@@ -42,7 +42,7 @@ v__profile_l = Expression((f'{rpam.parameters["v_l"]}* 4.0*1.5*x[1]*({rmsh.param
 
 bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary[1]['l'])
 bc_v__tb = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.boundary[1]['tb'])
-bc_v__ellipse = DirichletBC(fsp.Q_v_, fsp.u_el_dot_n_on_sub_mesh_1, rmsh.boundary[1]['ellipse'])
+bc_v__ellipse = DirichletBC(fsp.Q_v_, fsp.u_msh_dot_n, rmsh.boundary[1]['ellipse'])
 bc_v_ = [bc_v__l, bc_v__tb, bc_v__ellipse]
 
 bc_phi_r = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary[1]['r'])
