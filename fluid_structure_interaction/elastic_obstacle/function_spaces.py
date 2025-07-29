@@ -92,8 +92,6 @@ u_msh_dot_n = Function(Q_u_msh_dot)
 u_msh_dot_n_1 = Function(Q_u_msh_dot)
 u_msh_dot_n_2 = Function(Q_u_msh_dot)
 
-u_msh_square = Function(Q_u_msh)
-u_msh_dot_square = Function(Q_u_msh_dot)
 
 nu_u_msh = TestFunction(Q_u_msh)
 nu_u_msh_dot = TestFunction(Q_u_msh_dot)

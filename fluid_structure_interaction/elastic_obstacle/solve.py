@@ -145,7 +145,7 @@ for n in range(rpam.parameters['num_steps']):
     solver_el.parameters.update(params)
     solver_el.solve()
 
-    pr_sol.print_solution_el(t, step)
+    # pr_sol.print_solution_el(t, step)
 
     print('... done.', flush=True)
 
@@ -234,7 +234,7 @@ for n in range(rpam.parameters['num_steps']):
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    # pr_sol.print_solution(t, step, dt)
+    pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
