@@ -26,8 +26,12 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
+    # bcs for elastic problem
     '<<|u_el^n|^2>>_circle', \
     '<<(nu_j P_{ij} - varsigma_{ij} epsilon_{jk} F_{kl} dy[l]/ds / |dy/ds}) * (nu_m P_{im} - varsigma_{im} epsilon_{mn} F_{no} dy[o]/ds / |dy/ds})>>_square',\
+    # bcs for mesh problem
+    '<<|u_msh_n - u_el_n|^2>>_circle', \
+    # bcs for fluid problem
     '<<|l_profile_v_bar - v_bar|^2>>_l' , \
     '<<|v_bar|^2>>_{tb}'
     # , \
@@ -52,14 +56,20 @@ def natural_bc_el():
 def print_bcs():
     # write the residual of natural BCs  to file
     writer.writerows([{
+        # bcs for elastic problem
         fieldnames[0]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_el_n), rmsh.ds_sub_mesh[0]['ds_circle']):.{io.number_of_decimals}e}"
         , \
         fieldnames[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_el()), rmsh.ds_sub_mesh[0]['ds_ellipse']):.{io.number_of_decimals}e}", \
+        # bcs for elastic problem
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_n - fsp.u_el_n_on_sub_mesh_1), rmsh.ds_sub_mesh[1]['ds_ellipse']):.{io.number_of_decimals}e}"
+        , \
+        # bcs for fluid problem
         fieldnames[3]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
+        fieldnames[4]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_sub_mesh[1]['ds_tb']):.{io.number_of_decimals}e}"
         # , \
         # fieldnames[4]: \
