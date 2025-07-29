@@ -30,7 +30,10 @@ fieldnames = [ \
     '<<|u_el^n|^2>>_circle', \
     '<<(nu_j P_{ij} - varsigma_{ij} epsilon_{jk} F_{kl} dy[l]/ds / |dy/ds}) * (nu_m P_{im} - varsigma_{im} epsilon_{mn} F_{no} dy[o]/ds / |dy/ds})>>_square',\
     # bcs for mesh problem
-    '<<|u_msh_n - u_el_n|^2>>_circle', \
+    '<<|u_msh_n - u_el_n|^2>>_ellipse', \
+    '<<|u_msh_n|^2>>_square', \
+    '<<|u_msh_dot_n - u_el_dot_n|^2>>_ellipse', \
+    '<<|u_msh_dot_n|^2>>_square', \
     # bcs for fluid problem
     '<<|l_profile_v_bar - v_bar|^2>>_l' , \
     '<<|v_bar|^2>>_{tb}'
@@ -52,6 +55,8 @@ def natural_bc_el():
         (i))
 
 
+
+
 # this function prints out the residuals of BCs
 def print_bcs():
     # write the residual of natural BCs  to file
@@ -62,14 +67,19 @@ def print_bcs():
         , \
         fieldnames[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_el()), rmsh.ds_sub_mesh[0]['ds_ellipse']):.{io.number_of_decimals}e}", \
-        # bcs for elastic problem
+        # bcs for mesh problem
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_n - fsp.u_el_n_on_sub_mesh_1), rmsh.ds_sub_mesh[1]['ds_ellipse']):.{io.number_of_decimals}e}"
-        , \
-        # bcs for fluid problem
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_n - fsp.u_el_n_on_sub_mesh_1), rmsh.ds_sub_mesh[1]['ds_ellipse']):.{io.number_of_decimals}e}", \
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_n), rmsh.ds_sub_mesh[1]['ds_lrtb']):.{io.number_of_decimals}e}", \
         fieldnames[4]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_dot_n - fsp.u_el_dot_n_on_sub_mesh_1), rmsh.ds_sub_mesh[1]['ds_ellipse']):.{io.number_of_decimals}e}", \
+        fieldnames[5]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_msh_dot_n), rmsh.ds_sub_mesh[1]['ds_lrtb']):.{io.number_of_decimals}e}", \
+        # bcs for fluid problem
+        fieldnames[6]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
+        fieldnames[7]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_sub_mesh[1]['ds_tb']):.{io.number_of_decimals}e}"
         # , \
         # fieldnames[4]: \
