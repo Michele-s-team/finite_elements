@@ -38,19 +38,24 @@ fieldnames = [ \
     '<<|l_profile_v_bar - v_bar|^2>>_l' , \
     '<<|v_bar|^2>>_{tb}', \
     '<<|v_bar - u_msh_dot_n|^2>>_ellipse', \
+    '<<( mu_fluid * G_{l1} * nu_l * G_{k0} * partial_k V_i ) * ( mu_fluid * G_{m1} * nu_m * G_{n0} * partial_n V_i )>>_r', \
     '<<phi^2>>_r'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
-
+# natural BC for the elastic problem (force exterted by the fluid on the elastic body)
 def natural_bc_el():
     return ufl.as_tensor( \
         bgeo.sub_mesh_facet_normal[0][k] * ela.P(fsp.u_el_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] \
         - ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), \
         (i))
 
-
+# natural BC for the fluid problem (zero traction at ds_r of sub_mesh[1])
+def natural_bc_fl():
+    return ufl.as_tensor(
+        rpam.parameters['mu_fluid'] * ela.G(fsp.u_msh_n_1)[l, 0] * bgeo.sub_mesh_facet_normal[1][l] * ela.G(fsp.u_msh_n_1)[k, 0] * (fsp.V[i].dx(k))
+    , (i))
 
 
 # this function prints out the residuals of BCs
@@ -80,8 +85,9 @@ def print_bcs():
         fieldnames[8]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_ - fsp.u_msh_dot_n), rmsh.ds_sub_mesh[1]['ds_ellipse']):.{io.number_of_decimals}e}", \
         fieldnames[9]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl()), rmsh.ds_sub_mesh[1]['ds_r']):.{io.number_of_decimals}e}", \
+        fieldnames[10]: \
             f"{msh.abs_wrt_measure(fsp.phi, rmsh.ds_sub_mesh[1]['ds_r']):.{io.number_of_decimals}e}"
- \
         }])
 
     csvfile.flush()
