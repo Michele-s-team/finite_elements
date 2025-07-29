@@ -36,14 +36,10 @@ fieldnames = [ \
     '<<|u_msh_dot_n|^2>>_square', \
     # bcs for fluid problem
     '<<|l_profile_v_bar - v_bar|^2>>_l' , \
-    '<<|v_bar|^2>>_{tb}'
-    # , \
-    # '<<v_bar^i v_bar_i>>_{tb}', \
-    # '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
-    # '<<\mu_fluid G^{n-1}_{j1} \partial_j V_i>>_r', \
-    # '<<(G^{n-1}_{ji} nu_j G^{n-1}_{li} \partial_l phi)^2>>_{l + tb + ellipse}' ,\
-    # '<<phi^2>>_r'
-]
+    '<<|v_bar|^2>>_{tb}', \
+    '<<|v_bar - u_msh_dot_n|^2>>_ellipse', \
+    '<<phi^2>>_r'
+    ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
@@ -80,7 +76,12 @@ def print_bcs():
         fieldnames[6]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
         fieldnames[7]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_sub_mesh[1]['ds_tb']):.{io.number_of_decimals}e}"
-           }])
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_sub_mesh[1]['ds_tb']):.{io.number_of_decimals}e}", \
+        fieldnames[8]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_ - fsp.u_msh_dot_n), rmsh.ds_sub_mesh[1]['ds_ellipse']):.{io.number_of_decimals}e}", \
+        fieldnames[9]: \
+            f"{msh.abs_wrt_measure(fsp.phi, rmsh.ds_sub_mesh[1]['ds_r']):.{io.number_of_decimals}e}"
+ \
+        }])
 
     csvfile.flush()

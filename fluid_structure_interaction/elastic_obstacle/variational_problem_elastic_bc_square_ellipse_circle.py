@@ -65,10 +65,7 @@ fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_ys.ufl_element())
 fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
 fsp.rho_el.interpolate(rho_el_expression(element=fsp.Q_rho_el.ufl_element()))
 
-
-
-
-bc_u_el_circle = DirichletBC(fsp.Q_el.sub(0), Constant((0,0)), rmsh.boundary[0]['circle'])
+bc_u_el_circle = DirichletBC(fsp.Q_el.sub(0), Constant((0, 0)), rmsh.boundary[0]['circle'])
 # bc_u_el_ellipse = DirichletBC(fsp.Q_el.sub(0), Constant((0,0)), rmsh.boundary[0]['ellipse'])
 
 bcs_el = [bc_u_el_circle]
