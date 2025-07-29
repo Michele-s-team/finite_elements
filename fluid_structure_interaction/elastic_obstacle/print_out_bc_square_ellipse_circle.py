@@ -81,15 +81,6 @@ def print_bcs():
             f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_sub_mesh[1]['ds_l']):.{io.number_of_decimals}e}", \
         fieldnames[7]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_sub_mesh[1]['ds_tb']):.{io.number_of_decimals}e}"
-        # , \
-        # fieldnames[4]: \
-        #     f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
-        # fieldnames[5]: \
-        #     f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_tb):.{io.number_of_decimals}e}", \
-        # fieldnames[6]: \
-        #     f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
-        # fieldnames[7]: \
-        #     f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.parameters['mu_fluid'] * ela.G(fsp.u_el_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
-    }])
+           }])
 
     csvfile.flush()
