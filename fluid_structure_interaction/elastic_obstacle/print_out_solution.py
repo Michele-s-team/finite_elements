@@ -45,7 +45,7 @@ def print_solution_el(t, step):
     with XDMFFile(solpath.snapshots_path + 'mesh_el_n_' + str(step) + '.xdmf') as xdmf:
         xdmf.write(deformed_mesh)
     io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_el_n_' + str(step) + '.csv')
-    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_msh_n_' + str(step) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_el_n_' + str(step) + '.csv')
 
 
 
