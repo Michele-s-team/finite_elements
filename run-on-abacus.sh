@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh fluid_structure_interaction/elastic_obstacle elastic_obstacle_2 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse_circle/solution
+# ./run-on-abacus.sh fluid_structure_interaction/elastic_obstacle elastic_obstacle_1 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse_circle/solution
 
 clear
 clear
