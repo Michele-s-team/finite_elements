@@ -3,11 +3,11 @@ from fenics import *
 import csv
 import files as fi
 import function_spaces as fsp
-import function as fu
 import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 import os
+import read_parameters_solve as rpam
 import solution_paths as solpath
 
 import runtime_arguments as rarg
@@ -105,3 +105,7 @@ def print_solution(t, step, dt):
     print_solution_el(t, step)
     print_solution_msh(t, step)
     print_solution_fl(t, step, dt)
+
+    # print solution metadata
+    io.write_parameters_to_csv_file(solpath.csv_files_path + "solution_metadata.csv", rpam.parameters)
+
