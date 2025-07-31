@@ -8,6 +8,9 @@ if rarg.args.problem == 'square':
 elif rarg.args.problem == 'square_ellipse':
     rmsh = 'read_mesh_square_ellipse'
 
+elif rarg.args.problem == 'square_ellipse_circle':
+    rmsh = 'read_mesh_square_ellipse_circle'
+
 elif rarg.args.problem == 'box_ball':
     rmsh = 'read_mesh_box_ball'
 

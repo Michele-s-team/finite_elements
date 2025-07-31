@@ -143,10 +143,20 @@ gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop_circle])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"]/2)
 gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["r"], rpam.parameters["a"]))
+
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop_ellipse])
+
+threshold_out = gmsh.model.mesh.field.add("Threshold")
+gmsh.model.mesh.field.setNumber(threshold_out, "IField", distance)
+gmsh.model.mesh.field.setNumber(threshold_out, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold_out, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold_out, "DistMin", 0)
+gmsh.model.mesh.field.setNumber(threshold_out, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+
 
 minimum = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
