@@ -513,9 +513,21 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_ellipse_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+'''
+
+case_name = 'fluid_structure_interaction/elastic_obstacle'
+
+problem_name = 'square_ellipse_circle'
+generate_mesh_path =root_path + 'generate_mesh/2d/square/ellipse_circle'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
-
+'''
 # Test elasticity/rod/steady_state
 case_name = 'elasticity/rod/steady_state'
 
