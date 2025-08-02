@@ -1,5 +1,5 @@
 """
-This code solves for the dynamics of the Navier Stokes equations with a moving obstacle which can rotate about a fixed point,
+This code solves for the dynamics of the Navier Stokes equations with a rigid obstacle which can rotate about a fixed point,
  on a flat manifold Crank Nicholson discretization scheme
 
 run with:

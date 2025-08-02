@@ -204,3 +204,31 @@ Return values:
 '''
 def P(u, K, mu):
     return as_tensor(F(u)[i, j] * S(u, K, mu)[j, k], (i, k))
+
+'''
+tensor C in 'Notes "Kanensky legcture notes"' 
+
+Input values:
+- 'u': displacement vector field
+
+Return values:
+- C[i, j] = C_{ij}
+'''
+def C(u):
+    return as_tensor(2 * E(u)[i, k] + ufl.Identity(len(u))[i, k], (i, k))
+
+
+'''
+tensor N in 'Notes "Kanensky legcture notes"' 
+corresponding to the stress tensor of a neo-Hookean elastic model stable under compresssion
+
+Input values:
+- 'u': displacement vector field
+- 'K', 'mu': bulk modulus and modulus of hydrostatic compression
+
+Return values:
+- N[i, j] = N_{ij}
+'''
+def N(u, K, mu):
+    return as_tensor(mu * (detF(u)**(-2.0 / len(u))) * (-1.0/len(u) * C(u)[k, k] * G(u)[i, j] + F(u)[j, i]) + K/2.0 * (detF(u)**2-1.0) * G(u)[i, j], (j, i))
+

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh poisson_equation/solve_u/two_domains/ two_domains_1 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse_circle/solution
+# ./run-on-abacus.sh fluid_structure_interaction/elastic_obstacle elastic_obstacle_1 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse_circle/solution
 
 clear
 clear
@@ -20,7 +20,7 @@ rsync -av \
   --include 'mesh_metadata.csv' \
   --exclude '*.csv' \
   "$3" "$OUT:$2/mesh"
-rsync -av  $1/parameters.csv $OUT:$2
+rsync -av  $1/parameters*.csv $OUT:$2
 
 
 ssh $OUT "cd "$2"; sbatch script_slurm_abacus.slurm"
