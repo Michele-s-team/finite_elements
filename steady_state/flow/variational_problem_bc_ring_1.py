@@ -20,7 +20,7 @@ set r = 0.01, R = 0.5 everywhere
 refactor sigma_r_const -> sigma_R_const
 set 
 bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_R_const ), rmsh.boundary_R )
-print( f"\t\t<<(sigma - sigma_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, vp.sigma_R_const, rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t\t<<(sigma - sigma_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, rpam.parameters['sigma_R_const'], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
 

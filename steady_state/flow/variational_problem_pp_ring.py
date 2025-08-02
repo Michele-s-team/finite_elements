@@ -13,9 +13,9 @@ i, j, k, l = ufl.indices(4)
 
 # tau is determined by solving Eq. (3c) in 'Notes'
 F_pp_tau = ( \
-                       - phys.conv_cn_n(fsp.v, fsp.v, fsp.v, fsp.w, fsp.w, fsp.omega, vp.rho) \
-                       + phys.lhs_force_balance_equation(vp.kappa, fsp.omega, fsp.mu, fsp.sigma, fsp.tau) \
-                       + phys.fvisc_n(fsp.v, fsp.w, fsp.omega, fsp.mu, vp.eta) \
+                       - phys.conv_cn_n(fsp.v, fsp.v, fsp.v, fsp.w, fsp.w, fsp.omega, rpam.parameters['rho']) \
+                       + phys.lhs_force_balance_equation(rpam.parameters['kappa'], fsp.omega, fsp.mu, fsp.sigma, fsp.tau) \
+                       + phys.fvisc_n(fsp.v, fsp.w, fsp.omega, fsp.mu, rpam.parameters['eta']) \
                ) * fsp.nu_tau * geo.sqrt_detg(fsp.omega) * rmsh.dx
 
 F_pp_d = ((geo.d(fsp.v, fsp.w, fsp.omega)[i, j] - fsp.d[i, j]) * fsp.nu_d[i, j]) * geo.sqrt_detg(fsp.omega) * rmsh.dx
