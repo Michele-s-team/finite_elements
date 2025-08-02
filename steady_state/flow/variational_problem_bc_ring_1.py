@@ -1,12 +1,11 @@
 from fenics import *
 import importlib
-import numpy as np
-import function as fu
 import ufl as ufl
 
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -17,9 +16,9 @@ i, j, k, l = ufl.indices( 4 )
 To produce figure - 6 :
 select bc_ring_1
 set r = 0.01, R = 0.5 everywhere
-refactor sigma_r_const -> sigma_R_const
+refactor rpam.parameters['sigma_r_const'] -> rpam.parameters['sigma_R_const']
 set 
-bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_R_const ), rmsh.boundary_R )
+bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), Constant( rpam.parameters['sigma_R_const'] ), rmsh.boundary_R )
 print( f"\t\t<<(sigma - sigma_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, rpam.parameters['sigma_R_const'], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
@@ -65,15 +64,15 @@ alpha = 1e2
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = v_r_const * x[0] / geo.my_norm(x)
-        values[1] = v_r_const * x[1] / geo.my_norm(x)
+        values[0] = rpam.parameters['v_r_const'] * x[0] / geo.my_norm(x)
+        values[1] = rpam.parameters['v_r_const'] * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
 
 class z_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = z_r_const
+        values[0] = rpam.parameters['z_r_const']
 
     def value_shape(self):
         return (1,)
@@ -81,14 +80,14 @@ class z_r_Expression( UserExpression ):
 
 class z_R_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = z_R_const
+        values[0] = rpam.parameters['z_R_const']
 
     def value_shape(self):
         return (1,)
 
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_r_const
+        values[0] = rpam.parameters['omega_r_const']
 
     def value_shape(self):
         return (1,)
@@ -96,7 +95,7 @@ class omega_r_Expression( UserExpression ):
 
 class omega_R_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = omega_R_const
+        values[0] = rpam.parameters['omega_R_const']
 
     def value_shape(self):
         return (1,)
@@ -200,11 +199,11 @@ print("... done")
 bc_v_r = DirichletBC( fsp.Q.sub( 0 ), v_r, rmsh.boundary_r )
 
 # BCs for w_bar
-bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( w_r_const ), rmsh.boundary_r )
-bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( w_R_const ), rmsh.boundary_R )
+bc_w_r = DirichletBC( fsp.Q.sub( 1 ), Constant( rpam.parameters['w_r_const'] ), rmsh.boundary_r )
+bc_w_R = DirichletBC( fsp.Q.sub( 1 ), Constant( rpam.parameters['w_R_const'] ), rmsh.boundary_R )
 
 #BC for sigma
-bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( sigma_r_const ), rmsh.boundary_r )
+bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), Constant( rpam.parameters['sigma_r_const'] ), rmsh.boundary_r )
 
 # BCs for z
 bc_z_r = DirichletBC( fsp.Q.sub( 3 ), z_r, rmsh.boundary_r )
@@ -221,7 +220,7 @@ bcs = [bc_v_r, bc_w_r, bc_w_R, bc_sigma_r, bc_z_r, bc_z_R]
 F_sigma = (geo.Nabla_v( fsp.v, fsp.omega )[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_v = ( \
-                    rho * ( \
+                    rpam.parameters['rho'] * ( \
                           (fsp.v[j] * geo.Nabla_v( fsp.v,  fsp.omega )[i, j] - 2.0 * fsp.v[j] * fsp.w * geo.g_c( fsp.omega )[i, k] * geo.b( fsp.omega )[k, j]) * fsp.nu_v[i] \
                           + 1.0 / 2.0 * (fsp.w ** 2) * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
                   ) \

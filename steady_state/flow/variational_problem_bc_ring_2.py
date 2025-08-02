@@ -41,9 +41,9 @@ import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
-import function as fu
 import function_spaces as fsp
 import geometry as geo
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -66,10 +66,10 @@ v_r_const = 1
 '''
 CAREFUL: THIS VALUE IS NOT ARBITRARY, BUT IT MUST SATISFY THE RELATION v = C1 / ( sqrt(r * (1 + omega ** 2)))!!
 If
-- you fix omega_r_const and v_r_const ->
+- you fix rpam.parameters['omega_r_const'] and rpam.parameters['v_r_const'] ->
 - you fix C1 ->
-- if you fix omega_R_const -> 
-- v_R_const is no longer arbitrary and it is given by v_R_const = C1 / ( sqrt(R * (1 + omega_R_const ** 2)))
+- if you fix rpam.parameters['omega_R_const'] -> 
+- rpam.parameters['v_R_const'] is no longer arbitrary and it is given by rpam.parameters['v_R_const'] = C1 / ( sqrt(R * (1 + rpam.parameters['omega_R_const'] ** 2)))
 '''
 v_R_const = 0.70710678118654752440084436210484903928483593768847403658834
 w_R_const = 0.0
@@ -83,8 +83,8 @@ omega_R_const = 0
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = v_r_const * x[0] / geo.my_norm( x )
-        values[1] = v_r_const * x[1] / geo.my_norm( x )
+        values[0] = rpam.parameters['v_r_const'] * x[0] / geo.my_norm( x )
+        values[1] = rpam.parameters['v_r_const'] * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
@@ -92,8 +92,8 @@ class v_r_Expression( UserExpression ):
 class v_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = v_R_const * x[0] / geo.my_norm( x )
-        values[1] = v_R_const * x[1] / geo.my_norm( x )
+        values[0] = rpam.parameters['v_R_const'] * x[0] / geo.my_norm( x )
+        values[1] = rpam.parameters['v_R_const'] * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
@@ -104,7 +104,7 @@ class v_R_Expression( UserExpression ):
 class w_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = w_R_const
+        values[0] = rpam.parameters['w_R_const']
 
     def value_shape(self):
         return (1,)
@@ -116,7 +116,7 @@ class w_R_Expression( UserExpression ):
 class sigma_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = sigma_R_const
+        values[0] = rpam.parameters['sigma_R_const']
 
     def value_shape(self):
         return (1,)
@@ -125,7 +125,7 @@ class sigma_R_Expression( UserExpression ):
 class z_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = z_R_const
+        values[0] = rpam.parameters['z_R_const']
 
     def value_shape(self):
         return (1,)
@@ -134,8 +134,8 @@ class z_R_Expression( UserExpression ):
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = omega_r_const * x[0] / geo.my_norm(x)
-        values[1] = omega_r_const * x[1] / geo.my_norm(x)
+        values[0] = rpam.parameters['omega_r_const'] * x[0] / geo.my_norm(x)
+        values[1] = rpam.parameters['omega_r_const'] * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
@@ -143,8 +143,8 @@ class omega_r_Expression( UserExpression ):
 class omega_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = omega_R_const * x[0] / geo.my_norm(x)
-        values[1] = omega_R_const * x[1] / geo.my_norm(x)
+        values[0] = rpam.parameters['omega_R_const'] * x[0] / geo.my_norm(x)
+        values[1] = rpam.parameters['omega_R_const'] * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)

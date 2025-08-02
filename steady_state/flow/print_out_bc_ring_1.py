@@ -7,7 +7,7 @@ import boundary_geometry as bgeo
 import geometry as geo
 import input_output as io
 import mesh as msh
-import physics as phys
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
