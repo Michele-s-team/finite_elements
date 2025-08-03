@@ -57,7 +57,7 @@ F_v = (fsp.v[i] * fsp.nu_v[i] + fsp.u * (fsp.nu_v[i].dx( i ))) * rmsh.dx \
       - bgeo.facet_normal[i] * fsp.u * fsp.nu_v[i] * rmsh.ds
 F_u = (fsp.v[i] * (fsp.nu_u.dx( i )) + fsp.f * fsp.nu_u) * rmsh.dx \
       - bgeo.facet_normal[i] * fsp.v[i] * fsp.nu_u * rmsh.ds
-F_N = rpam.parameters['alpha'] / rpam.parameters['r_mesh'] * (bgeo.facet_normal[i] * fsp.v[i] - bgeo.facet_normal[i] * fsp.v_exact[i]) * bgeo.facet_normal[j] * fsp.nu_v[j] * rmsh.ds
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (bgeo.facet_normal[i] * fsp.v[i] - bgeo.facet_normal[i] * fsp.v_exact[i]) * bgeo.facet_normal[j] * fsp.nu_v[j] * rmsh.ds
 
 F = F_u + F_v + F_N
 bcs = [bc_u]

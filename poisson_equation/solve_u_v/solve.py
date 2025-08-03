@@ -13,6 +13,7 @@ from fenics import *
 import importlib
 import runtime_arguments as rarg
 import sys
+import ufl
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
