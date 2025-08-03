@@ -3,7 +3,6 @@ import importlib
 import numpy as np
 import ufl as ufl
 
-import function as fu
 import function_spaces as fsp
 import boundary_geometry as bgeo
 import geometry as geo

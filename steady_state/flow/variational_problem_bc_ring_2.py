@@ -41,9 +41,9 @@ import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
-import function as fu
 import function_spaces as fsp
 import geometry as geo
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -51,40 +51,23 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l, m, n, o, p = ufl.indices( 8 )
 
 
-
-# CHANGE PARAMETERS HERE
-#bending rigidity
-kappa = 1.0
-#density
-rho = 1.0
-#viscosity
-eta = 1.0
-#Nitche's parameter
-alpha = 1e2
-
-v_r_const = 1
 '''
 CAREFUL: THIS VALUE IS NOT ARBITRARY, BUT IT MUST SATISFY THE RELATION v = C1 / ( sqrt(r * (1 + omega ** 2)))!!
 If
-- you fix omega_r_const and v_r_const ->
+- you fix rpam.parameters['omega_r_const'] and rpam.parameters['v_r_const'] ->
 - you fix C1 ->
-- if you fix omega_R_const -> 
-- v_R_const is no longer arbitrary and it is given by v_R_const = C1 / ( sqrt(R * (1 + omega_R_const ** 2)))
+- if you fix rpam.parameters['omega_R_const'] -> 
+- rpam.parameters['v_R_const'] is no longer arbitrary and it is given by rpam.parameters['v_R_const'] = C1 / ( sqrt(R * (1 + rpam.parameters['omega_R_const'] ** 2)))
 '''
-v_R_const = 0.70710678118654752440084436210484903928483593768847403658834
-w_R_const = 0.0
-sigma_R_const = 0.0
-z_R_const = 0
-omega_r_const = 1
-omega_R_const = 0
+
 
 
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = v_r_const * x[0] / geo.my_norm( x )
-        values[1] = v_r_const * x[1] / geo.my_norm( x )
+        values[0] = rpam.parameters['v_r_const'] * x[0] / geo.my_norm( x )
+        values[1] = rpam.parameters['v_r_const'] * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
@@ -92,8 +75,8 @@ class v_r_Expression( UserExpression ):
 class v_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = v_R_const * x[0] / geo.my_norm( x )
-        values[1] = v_R_const * x[1] / geo.my_norm( x )
+        values[0] = rpam.parameters['v_R_const'] * x[0] / geo.my_norm( x )
+        values[1] = rpam.parameters['v_R_const'] * x[1] / geo.my_norm( x )
 
     def value_shape(self):
         return (2,)
@@ -104,7 +87,7 @@ class v_R_Expression( UserExpression ):
 class w_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = w_R_const
+        values[0] = rpam.parameters['w_R_const']
 
     def value_shape(self):
         return (1,)
@@ -116,7 +99,7 @@ class w_R_Expression( UserExpression ):
 class sigma_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = sigma_R_const
+        values[0] = rpam.parameters['sigma_R_const']
 
     def value_shape(self):
         return (1,)
@@ -125,7 +108,7 @@ class sigma_R_Expression( UserExpression ):
 class z_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = z_R_const
+        values[0] = rpam.parameters['z_R_const']
 
     def value_shape(self):
         return (1,)
@@ -134,8 +117,8 @@ class z_R_Expression( UserExpression ):
 class omega_r_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = omega_r_const * x[0] / geo.my_norm(x)
-        values[1] = omega_r_const * x[1] / geo.my_norm(x)
+        values[0] = rpam.parameters['omega_r_const'] * x[0] / geo.my_norm(x)
+        values[1] = rpam.parameters['omega_r_const'] * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
@@ -143,8 +126,8 @@ class omega_r_Expression( UserExpression ):
 class omega_R_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = omega_R_const * x[0] / geo.my_norm(x)
-        values[1] = omega_R_const * x[1] / geo.my_norm(x)
+        values[0] = rpam.parameters['omega_R_const'] * x[0] / geo.my_norm(x)
+        values[1] = rpam.parameters['omega_R_const'] * x[1] / geo.my_norm(x)
 
     def value_shape(self):
         return (2,)
@@ -202,7 +185,6 @@ class mu_0_Expression( UserExpression ):
         return (1,)
 
 
-# CHANGE PARAMETERS HERE
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 v_R = interpolate( v_R_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
@@ -260,14 +242,14 @@ bcs = [bc_v_r, bc_w_R, bc_sigma_R, bc_z_R, bc_omega_r, bc_omega_R]
 F_sigma = (geo.Nabla_v( fsp.v, fsp.omega )[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 F_v = ( \
-                    rho * ( \
+                    rpam.parameters['rho'] * ( \
                           (fsp.v[j] * geo.Nabla_v( fsp.v,  fsp.omega )[i, j] - 2.0 * fsp.v[j] * fsp.w * geo.g_c( fsp.omega )[i, k] * geo.b( fsp.omega )[k, j]) * fsp.nu_v[i] \
                           + 1.0 / 2.0 * (fsp.w ** 2) * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
                   ) \
                     + (fsp.sigma * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu_v, fsp.omega )[i, j] \
-                       + 2.0 * eta * geo.d_c( fsp.v,  fsp.w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu_v, fsp.omega )[j, i])
+                       + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.v,  fsp.w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu_v, fsp.omega )[j, i])
       ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-      - rho / 2.0 * ( \
+      - rpam.parameters['rho'] / 2.0 * ( \
                     + ((fsp.w ** 2) * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
                     + ((fsp.w ** 2) * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
       ) \
@@ -275,29 +257,29 @@ F_v = ( \
                     + (fsp.sigma * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
                     + (fsp.sigma * (bgeo.n_circle( fsp.omega ))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
       ) \
-      - 2.0 * eta * ( \
+      - 2.0 * rpam.parameters['eta'] * ( \
               + (geo.d_c( fsp.v,  fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
               + (geo.d_c( fsp.v,  fsp.w, fsp.omega )[i, j] * geo.g( fsp.omega )[i, k] * (bgeo.n_circle( fsp.omega ))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
       )
 
 F_w = ( \
-                    rho * (fsp.v[i] * fsp.v[k] * geo.b( fsp.omega )[k, i]) * fsp.nu_w \
-                    - rho * fsp.w * geo.Nabla_v( geo.vector_times_scalar( fsp.v,  fsp.nu_w ), fsp.omega )[i, i] \
-                    + 2.0 * kappa * ( \
+                    rpam.parameters['rho'] * (fsp.v[i] * fsp.v[k] * geo.b( fsp.omega )[k, i]) * fsp.nu_w \
+                    - rpam.parameters['rho'] * fsp.w * geo.Nabla_v( geo.vector_times_scalar( fsp.v,  fsp.nu_w ), fsp.omega )[i, i] \
+                    + 2.0 * rpam.parameters['kappa'] * ( \
                                   - geo.g_c( fsp.omega )[i, j] * (fsp.mu.dx( i )) * (fsp.nu_w.dx( j )) \
                                   + 2.0 * fsp.mu * (fsp.mu ** 2 - geo.K( fsp.omega )) * fsp.nu_w \
                           ) \
                     - ( \
                                   2.0 * fsp.sigma * fsp.mu \
-                                  + 2.0 * eta * (geo.g_c( fsp.omega )[i, k] * geo.Nabla_v( fsp.v,  fsp.omega )[j, k] *
+                                  + 2.0 * rpam.parameters['eta'] * (geo.g_c( fsp.omega )[i, k] * geo.Nabla_v( fsp.v,  fsp.omega )[j, k] *
                                                  (geo.b( fsp.omega ))[i, j] - 2.0 * fsp.w * (2.0 * fsp.mu ** 2 - geo.K( fsp.omega )))
                     ) * fsp.nu_w
       ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx \
-+ rho * ( \
++ rpam.parameters['rho'] * ( \
               + (fsp.w * fsp.nu_w * (bgeo.n_circle( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
               + (fsp.w * fsp.nu_w * (bgeo.n_circle( fsp.omega ))[j] * geo.g( fsp.omega )[j, i] * fsp.v[i]) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R
 ) \
-+ 2.0 * kappa * ( \
++ 2.0 * rpam.parameters['kappa'] * ( \
               + ( (bgeo.n_circle( fsp.omega ))[i] * (fsp.mu.dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_r"][:2] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \
               + ( (bgeo.n_circle( fsp.omega ))[i] * (fsp.mu.dx( i )) * fsp.nu_w ) * bgeo.sqrt_deth_circle( fsp.omega, rmsh.parameters["c_R"][:2] ) * (1.0 / rmsh.parameters["R"]) * rmsh.ds_R \
 )
@@ -314,7 +296,7 @@ F_omega = (fsp.z * geo.Nabla_v( fsp.nu_omega, fsp.omega )[i, i] + fsp.omega[i] *
 
 F_mu = ((geo.H( fsp.omega ) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
-F_N = alpha / rmsh.r_mesh * ( \
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
             + ((bgeo.n_circle(fsp.omega)[i] * geo.g(fsp.omega)[i, j] * fsp.v[j] - bgeo.n_circle(fsp.omega)[i] * geo.g(fsp.omega)[i, j] * v_R[j]) * (bgeo.n_circle(fsp.omega)[k] * fsp.nu_v[k])) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.parameters["c_R"][:2]) * rmsh.ds_R \
             # these terms constrain mu = H(omega) on the boundary
             + ((geo.H(fsp.omega) - fsp.mu) * fsp.nu_mu) * bgeo.sqrt_deth_circle(fsp.omega, rmsh.parameters["c_r"][:2]) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_r \

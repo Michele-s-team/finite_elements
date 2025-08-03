@@ -21,7 +21,7 @@ print(
     f"\t\t<<|v^i - v_r^i|^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.v_output[i] - vp.v_r[i]) * (prout.v_output[i] - vp.v_r[i])), rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
     f"\t\t<<(n^i v_i - n^i v_R_i)|^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.n_circle(prout.omega_output)[i] * geo.g(prout.omega_output)[i, j] * prout.v_output[j], bgeo.n_circle(prout.omega_output)[i] * geo.g(prout.omega_output)[i, j] * vp.v_R[j], rmsh.ds_R):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-# print( f"\t\t<<(n_i n_j Pi^[ij])^2>>_[partial Omega R] = {col.Fore.RED}{msh.abs_wrt_measure((bgeo.n_circle( prout.omega_output )[i] * geo.g( prout.omega_output )[i, j] * bgeo.n_circle( prout.omega_output )[k] * geo.g( prout.omega_output )[k, l] * phys.Pi( prout.v_output, w_output, prout.omega_output, prout.sigma_output, vp.eta )[j, l]), rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+# print( f"\t\t<<(n_i n_j Pi^[ij])^2>>_[partial Omega R] = {col.Fore.RED}{msh.abs_wrt_measure((bgeo.n_circle( prout.omega_output )[i] * geo.g( prout.omega_output )[i, j] * bgeo.n_circle( prout.omega_output )[k] * geo.g( prout.omega_output )[k, l] * phys.Pi( prout.v_output, w_output, prout.omega_output, prout.sigma_output, rpam.parameters['eta'] )[j, l]), rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 print(
     f"\t\t<<(w - w_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure(prout.w_output, vp.w_R, rmsh.ds_R):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
