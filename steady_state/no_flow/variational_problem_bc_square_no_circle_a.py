@@ -12,8 +12,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 
-# CHANGE PARAMETERS HERE
-C=0.1
 
 '''
 if you compare with the solution from check-with-analytical-solution-bc-square-no-circle-a.nb:
@@ -21,10 +19,6 @@ if you compare with the solution from check-with-analytical-solution-bc-square-n
     - omega_t(b)_const_{here} <-> \[Psi]TOP(BOTTOM)_{check-with-analytical-solution-bc-square-no-circle.nb}
 
 '''
-z_t_const = C
-z_b_const = 0.0
-n_omega_t_const = - C
-n_omega_b_const = 0.0
 
 
 class SurfaceTensionExpression( UserExpression ):
@@ -86,18 +80,17 @@ class n_omega_r_Expression(UserExpression):
 
 class n_omega_t_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = n_omega_t_const
+        values[0] = rpam.parameters['n_omega_t_const']
 
     def value_shape(self):
         return (1,)
 
 class n_omega_b_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = n_omega_b_const
+        values[0] = rpam.parameters['n_omega_b_const']
 
     def value_shape(self):
         return (1,)
-# CHANGE PARAMETERS HERE
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
@@ -127,8 +120,8 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 # BCs for z
 #note that here I imposte BCs for z only on l and r because the solution is independent of x, if you consider cases where the solutoion depdends on x, add bc_l, bc_r
-bc_z_t = DirichletBC( fsp.Q.sub( 0 ), z_t_const, rmsh.boundary_t )
-bc_z_b = DirichletBC( fsp.Q.sub( 0 ), z_b_const, rmsh.boundary_b )
+bc_z_t = DirichletBC( fsp.Q.sub( 0 ), rpam.parameters['z_t_const'], rmsh.boundary_t )
+bc_z_b = DirichletBC( fsp.Q.sub( 0 ), rpam.parameters['z_b_const'], rmsh.boundary_b )
 
 # all BCs
 bcs = [bc_z_t, bc_z_b]

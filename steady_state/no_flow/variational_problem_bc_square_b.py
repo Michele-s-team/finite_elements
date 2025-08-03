@@ -97,7 +97,6 @@ fsp.assigner.assign( fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0] )
 
 # boundary conditions (BCs)
 
-# CHANGE PARAMETERS HERE
 # BCs for z
 bc_z_square = DirichletBC( fsp.Q.sub( 0 ), z_square, rmsh.boundary_square )
 bc_omega_circle = DirichletBC( fsp.Q.sub( 1 ), omega_circle, rmsh.boundary_circle )
