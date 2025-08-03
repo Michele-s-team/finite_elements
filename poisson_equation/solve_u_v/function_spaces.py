@@ -16,8 +16,6 @@ Q_v = Q.sub(1).collapse()
 psi = Function(Q)
 nu_u, nu_v = TestFunctions(Q)
 
-u_output = Function(Q_u)
-v_output = Function(Q_v)
 u_exact = Function(Q_u)
 v_exact = Function(Q_v)
 laplacian_u_exact = Function(Q_u)
