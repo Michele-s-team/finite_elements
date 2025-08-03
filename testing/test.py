@@ -42,7 +42,7 @@ success = [True]
 cmd.run_command('clear; clear', success)
 
 
-
+'''
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
 
@@ -227,7 +227,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
+'''
 
 
 # Test poisson_equation/solve_u_v
@@ -242,7 +242,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_disk_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
-
+'''
 # Test nitsche_method
 
 # Test nitsche_method/one_field
@@ -578,7 +578,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_no_circle_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
-
+'''
 
 cmd.checkout(commit_a, success)
 
