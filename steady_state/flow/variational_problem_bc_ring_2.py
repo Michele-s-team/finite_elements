@@ -51,18 +51,6 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l, m, n, o, p = ufl.indices( 8 )
 
 
-
-# CHANGE PARAMETERS HERE
-#bending rigidity
-kappa = 1.0
-#density
-rho = 1.0
-#viscosity
-eta = 1.0
-#Nitche's parameter
-alpha = 1e2
-
-v_r_const = 1
 '''
 CAREFUL: THIS VALUE IS NOT ARBITRARY, BUT IT MUST SATISFY THE RELATION v = C1 / ( sqrt(r * (1 + omega ** 2)))!!
 If
@@ -71,12 +59,7 @@ If
 - if you fix rpam.parameters['omega_R_const'] -> 
 - rpam.parameters['v_R_const'] is no longer arbitrary and it is given by rpam.parameters['v_R_const'] = C1 / ( sqrt(R * (1 + rpam.parameters['omega_R_const'] ** 2)))
 '''
-v_R_const = 0.70710678118654752440084436210484903928483593768847403658834
-w_R_const = 0.0
-sigma_R_const = 0.0
-z_R_const = 0
-omega_r_const = 1
-omega_R_const = 0
+
 
 
 
@@ -202,7 +185,6 @@ class mu_0_Expression( UserExpression ):
         return (1,)
 
 
-# CHANGE PARAMETERS HERE
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
 v_R = interpolate( v_R_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )

@@ -20,49 +20,8 @@ refactor rpam.parameters['sigma_r_const'] -> rpam.parameters['sigma_R_const']
 set 
 bc_sigma_R = DirichletBC( fsp.Q.sub( 2 ), Constant( rpam.parameters['sigma_R_const'] ), rmsh.boundary_R )
 print( f"\t\t<<(sigma - sigma_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.difference_wrt_measure( sigma_output, rpam.parameters['sigma_R_const'], rmsh.ds_R ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-
-
-
-# CHANGE PARAMETERS HERE
-v_r_const = 99.50371902099891351183860315
-v_R_const = 2
-w_r_const = 0.0
-w_R_const = 0.0
-sigma_R_const = 1
-z_r_const = -0.1
-z_R_const = 0
-omega_r_const = -0.099503719020998919035404598
-omega_R_const = 0
-
-kappa = 3e-2
-#density
-rho = 1e-12
-#viscosity
-eta = 1e-2
 '''
 
-'''
-# CHANGE PARAMETERS HERE
-v_r_const = 0.9950371902099891356653
-v_R_const = 0.5000000000000000000000000000000
-w_r_const = 0.0
-w_R_const = 0.0
-sigma_r_const = -0.99502487546948322183
-z_r_const = 1.0
-z_R_const = 1.09900076963490661833037160663
-omega_r_const = -0.099503719020998913567
-omega_R_const = 0.095353866240961546555843199533
-
-
-#bending rigidity
-kappa = 1.0
-#density
-rho = 1.0
-#viscosity
-eta = 1.0
-#Nitche's parameter
-alpha = 1e2
-'''
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
@@ -157,7 +116,6 @@ class TauExpression( UserExpression ):
         values[0] = 0.0
     def value_shape(self):
         return (1,)
-# CHANGE PARAMETERS HERE
 
 
 v_r = interpolate( v_r_Expression( element=fsp.Q_v.ufl_element() ), fsp.Q_v )
