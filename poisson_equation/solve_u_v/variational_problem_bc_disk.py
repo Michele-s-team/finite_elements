@@ -1,5 +1,6 @@
 from fenics import *
 import importlib
+import numpy as np
 import ufl
 
 import boundary_geometry as bgeo
@@ -12,27 +13,31 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices(4)
 
 
-# define exact solution to set the boundary conditions (BCs) and compare the finite-element (FE) solution with the exact one
-class u_exact_expression(UserExpression):
+class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + cos( x[0] - x[1] ) - sin( x[1] )
+        # values[0] = 1 + (x[0]**2) + 2 * (x[1]**2)
+        values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) *  np.cos(2 * (np.pi) * (x[0] - x[1])**2)
 
     def value_shape(self):
         return (1,)
 
 
-class v_exact_expression(UserExpression):
+class v_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 2 * x[0]
-        values[1] = 4 * x[1]
+        # values[0] = - np.sin( x[0] - x[1] )
+        # values[1] = np.sin( x[0] - x[1] ) - np.cos( x[1] )
+        values[0] =  2 *(np.pi) *np.cos(2 *(np.pi) *((x[0]) - (x[1]))**2) * np.cos(2 *(np.pi) *((x[0]) + (x[1]))) + 4 *(np.pi) *(-(x[0]) + (x[1]))* np.sin(2 *(np.pi) * ((x[0]) - (x[1]))**2) * np.sin(2 * (np.pi) * ((x[0]) + (x[1])))
+        values[1] = 2 * (np.pi) * np.cos(2* (np.pi) * ((x[0]) - (x[1]))**2) * np.cos(2 * (np.pi) * ((x[0]) + (x[1]))) + 4* (np.pi) * ((x[0]) - (x[1])) * np.sin(2 *(np.pi) *((x[0]) - (x[1]))**2) * np.sin(2 * (np.pi)*  ((x[0]) + (x[1])))
 
     def value_shape(self):
         return (2,)
 
 
-class laplacian_u_exact_expression(UserExpression):
+class laplacian_u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 6
+        # values[0] = -2 * np.cos( x[0] - x[1] ) + np.sin( x[1] )
+        values[0] = 8 *(np.pi)* (-(np.pi)* (1+4* (x[0]-(x[1]))**2) * np.cos(2* (np.pi)* (x[0]-(x[1]))**2)-np.sin(2* (np.pi) *(x[0]-(x[1]))**2))* np.sin(2* (np.pi)* (x[0]+(x[1])))
 
     def value_shape(self):
         return (1,)
