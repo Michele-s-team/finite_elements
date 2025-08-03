@@ -126,7 +126,6 @@ class mu_0_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-# CHANGE PARAMETERS HERE
 
 
 # values of z on ds_r and ds_R, to be used to check if the boundary conditions (BCs) are satisfied
@@ -168,11 +167,9 @@ fsp.tau_0.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 
 # boundary conditions (BCs)
 
-# CHANGE PARAMETERS HERE
 # bc_z = DirichletBC( fsp.Q.sub( 0 ), fsp.z_exact, rmsh.boundary )
 bc_z_r = DirichletBC( fsp.Q.sub( 0 ), rpam.parameters["z_r_const"], rmsh.boundary_r )
 bc_z_R = DirichletBC( fsp.Q.sub( 0 ), rpam.parameters["z_R_const"], rmsh.boundary_R )
-# CHANGE PARAMETERS HERE
 
 # all BCs
 bcs = [bc_z_r, bc_z_R]

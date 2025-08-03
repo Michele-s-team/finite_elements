@@ -13,10 +13,6 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices( 4 )
 
 # CHANGE PARAMETERS HERE
-#bending rigidity
-kappa = 1.0
-#Nitche's parameter
-alpha = 1e1
 C=0.1
 
 '''
@@ -129,12 +125,10 @@ fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 # boundary conditions (BCs)
 
-# CHANGE PARAMETERS HERE
 # BCs for z
 #note that here I imposte BCs for z only on l and r because the solution is independent of x, if you consider cases where the solutoion depdends on x, add bc_l, bc_r
 bc_z_t = DirichletBC( fsp.Q.sub( 0 ), z_t_const, rmsh.boundary_t )
 bc_z_b = DirichletBC( fsp.Q.sub( 0 ), z_b_const, rmsh.boundary_b )
-# CHANGE PARAMETERS HERE
 
 # all BCs
 bcs = [bc_z_t, bc_z_b]

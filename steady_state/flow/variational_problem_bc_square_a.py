@@ -142,11 +142,9 @@ bc_w_boundary = DirichletBC( fsp.Q.sub( 1 ), w_boundary, rmsh.boundary )
 #BC for sigma
 bc_sigma_r = DirichletBC( fsp.Q.sub( 2 ), sigma_r, rmsh.boundary_r )
 
-# CHANGE PARAMETERS HERE
 # BCs for z
 bc_z_circle = DirichletBC( fsp.Q.sub( 3 ), z_circle, rmsh.boundary_circle )
 bc_z_square = DirichletBC( fsp.Q.sub( 3 ), z_square, rmsh.boundary_square )
-# CHANGE PARAMETERS HERE
 
 # all BCs
 bcs = [bc_v_l, bc_w_boundary, bc_sigma_r, bc_z_circle, bc_z_square]

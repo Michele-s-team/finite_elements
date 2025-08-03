@@ -73,7 +73,6 @@ class omega_square_Expression( UserExpression ):
         return (1,)
 
 
-# CHANGE PARAMETERS HERE
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
@@ -92,11 +91,9 @@ fsp.assigner.assign( fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0] )
 
 # boundary conditions (BCs)
 
-# CHANGE PARAMETERS HERE
 # BCs for z
 bc_z_circle = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_circle_const', element=fsp.Q.sub( 0 ).ufl_element(), z_circle_const=rpam.parameters["z_circle_const"] ), rmsh.boundary_circle )
 bc_z_square = DirichletBC( fsp.Q.sub( 0 ), Expression( 'z_square_const', element=fsp.Q.sub( 0 ).ufl_element(), z_square_const=rpam.parameters["z_square_const"] ), rmsh.boundary_square )
-# CHANGE PARAMETERS HERE
 
 # all BCs
 bcs = [bc_z_circle, bc_z_square]

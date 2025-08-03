@@ -12,12 +12,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices( 4 )
 
-# CHANGE PARAMETERS HERE
-kappa = 1.0
-alpha = 1e2
-z_square_const = 0.0
-omega_circle_const = 0.5
-n_omega_square_const = 0.0
 
 
 class SurfaceTensionExpression( UserExpression ):
@@ -84,7 +78,6 @@ class n_omega_square_Expression( UserExpression ):
         return (1,)
 
 
-# CHANGE PARAMETERS HERE
 
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
