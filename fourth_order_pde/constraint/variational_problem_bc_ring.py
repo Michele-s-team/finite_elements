@@ -41,8 +41,8 @@ class u_exact_expression(UserExpression):
 
 class omega_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = (x[0] ** 3) / 12.0
-        values[1] = (x[1] ** 3) / 12.0
+        values[0] = (x[0] ** 3) / 6.0
+        values[1] = 0.0
 
     def value_shape(self):
         return (2,)
