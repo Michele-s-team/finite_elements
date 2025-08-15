@@ -214,6 +214,19 @@ def add_trailing_slash(string):
     else:
         return string
 
+'''
+print a field to xdmf file
+Input values: 
+- 'f': the field (scalar, vector, or tensor)
+- 'path': the full path, including file name and extension, of the file
+'''
+
+def xdmf_print(f, path):
+    # write to xdmf file
+    xdmffile = XDMFFile(path)
+    xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+    xdmffile.write(f, 0)
+    xdmffile.close()
 
 '''
 print a field as xdmf, h5, csv file and its nodal values on a csv file
@@ -236,10 +249,7 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     path_csv_nodal_value_file_with_slash = add_trailing_slash(path_csv_nodal_value_file)
 
     # write to xdmf file
-    xdmffile = XDMFFile(path_xdmf_file_with_slash + field_name + '.xdmf')
-    xdmffile.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
-    xdmffile.write(f, 0)
-    xdmffile.close()
+    xdmf_print(f, path_xdmf_file_with_slash + field_name + '.xdmf')
 
     # write to h5 file
     HDF5File(MPI.comm_world, path_h5_file_with_slash + field_name + '.h5', "w").write(f, "/f")
