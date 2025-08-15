@@ -1,7 +1,5 @@
-import dolfin
 from fenics import *
 import importlib
-import numpy as np
 import ufl as ufl
 
 import boundary_geometry as bgeo
