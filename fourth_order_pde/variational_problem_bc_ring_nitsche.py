@@ -4,11 +4,11 @@ import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
+import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-alpha = 1e2
 
 i, j, k, l = ufl.indices(4)
 
@@ -89,7 +89,7 @@ F_rho = (fsp.mu * ((fsp.nu_rho[i]).dx(i)) + fsp.rho[i] * fsp.nu_rho[i]) * rmsh.d
 F_tau = (fsp.tau * fsp.nu_tau + fsp.rho[i] * (fsp.nu_tau.dx(i))) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.rho[i] * fsp.nu_tau * rmsh.ds
 
-F_N = alpha / rmsh.r_mesh * ( \
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
             (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds \
  \
             + (fsp.mu - ((fsp.z * fsp.omega[i]).dx(i))) * fsp.nu_mu * rmsh.ds \
