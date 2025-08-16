@@ -30,6 +30,13 @@ u_exact = Function(Q_u)
 omega_exact = Function(Q_omega)
 mu_exact = Function(Q_mu)
 
+# functions to store the initial condition for the solver
+z_0 = Function(Q_z)
+u_0 = Function(Q_u)
+omega_0 = Function(Q_omega)
+mu_0 = Function(Q_mu)
+
+
 f = Function(Q_z)
 g = Function(Q_u)
 J_Q = TrialFunction(Q)
