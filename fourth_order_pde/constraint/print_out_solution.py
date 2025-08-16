@@ -9,7 +9,7 @@ import solution_paths as solpath
 
 i, j, k, l = ufl.indices(4)
 
-fsp.z_output, fsp.u_output, fsp.omega_output, fsp.mu_output, fsp.rho_output, fsp.tau_output = fsp.psi.split(deepcopy=True)
+fsp.z_output, fsp.u_output, fsp.omega_output, fsp.mu_output = fsp.psi.split(deepcopy=True)
 
 io.full_print(fsp.z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
