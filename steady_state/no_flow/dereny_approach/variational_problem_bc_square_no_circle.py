@@ -148,7 +148,7 @@ F_psi = ( \
                                 rpam.parameters['kappa'] * ( \
                                     1.0 / (8.0 * (fsp.rho) ** 3) * (5.0 * sin(fsp.psi) + sin(3 * fsp.psi)) - \
                                     1.0 / (4.0 * (fsp.rho) ** 2) * fsp.omega * (1.0 + 3.0 * cos(2.0 * fsp.psi)) - \
-                                    3.0 / (2.0 * fsp.rho) * sin(fsp.psi) * (fsp.omega) ** 2 + \
+                                    3.0 / (2.0 * fsp.rho) * sin(fsp.psi) * ((fsp.omega) ** 2) + \
                                     1.0 / 2.0 * (fsp.omega) ** 2 + \
                                     2.0 / (fsp.rho) * cos(fsp.psi) * fsp.omega.dx(0) \
                             ) - \
