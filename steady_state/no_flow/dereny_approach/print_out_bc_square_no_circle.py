@@ -17,9 +17,8 @@ vp = importlib.import_module(swi.vp)
 i, j, k, l = ufl.indices(4)
 
 print("Check of BCs:")
-print("1)")
 print(
-    f"\t\t<<(z - phi)^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_t_const'], rmsh.ds_t):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(psi - phi_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_t_const'], rmsh.ds_t):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
     f"\t\t<<(z - phi)^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_b_const'], rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print("2)")

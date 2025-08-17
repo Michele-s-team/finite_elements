@@ -35,11 +35,6 @@ nu_psi, nu_omega, nu_rho, nu_zeta = TestFunctions(Q)
 # these functions are used to print the solution to file
 sigma = Function(Q_sigma)
 
-psi_output = Function(Q_psi)
-omega_output = Function(Q_omega)
-rho_output = Function(Q_rho)
-zeta_output = Function(Q_zeta)
-
 psi_exact = Function(Q_psi)
 omega_exact = Function(Q_omega)
 rho_exact = Function(Q_rho)
