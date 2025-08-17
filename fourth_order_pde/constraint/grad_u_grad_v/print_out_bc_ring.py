@@ -17,9 +17,6 @@ i, j, k, l = ufl.indices(4)
 
 z_output, u_output, omega_z_output, omega_u_output, mu_output = fsp.psi.split(deepcopy=True)
 
-# print(
-#     f"\t\t<<(z - phi)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_r_const'], rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-
 print("Check of BCs: ")
 print(f"\t<<(z - z_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(z_output, fsp.z_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(f"\t<<(mu - mu_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(mu_output, fsp.mu_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
