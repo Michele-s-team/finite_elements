@@ -20,12 +20,10 @@ Q_zeta = Q.sub(2).collapse()
 
 Q_sigma = FunctionSpace(lmsh.mesh, 'P', 1)
 
-
 # Define functions
 J_psi = TrialFunction(Q)
 phi = Function(Q)
 nu_psi, nu_rho, nu_zeta = TestFunctions(Q)
-
 
 # these functions are used to print the solution to file
 sigma = Function(Q_sigma)
@@ -38,13 +36,10 @@ psi_exact = Function(Q_psi)
 rho_exact = Function(Q_rho)
 zeta_exact = Function(Q_zeta)
 
-
-
 # omega_0, z_0 are used to store the initial conditions
 psi_0 = Function(Q_psi)
 rho_0 = Function(Q_rho)
 zeta_0 = Function(Q_zeta)
-
 
 psi, rho, zeta = split(phi)
 assigner = FunctionAssigner(Q, [Q_psi, Q_rho, Q_zeta])
