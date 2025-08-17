@@ -80,26 +80,53 @@ bc_zeta_l = DirichletBC(fsp.Q.sub(3), rpam.parameters['zeta_l'], rmsh.boundary_l
 bcs = [bc_psi_l, bc_psi_r, bc_omega_l, bc_rho_l, bc_zeta_l]
 
 # Define variational problem
-'''
-F_psi = () * geo.sqrt_detg(fsp.rho) * rmsh.dx - \
-        () * bgeo.sqrt_deth_tb(fsp.rho) * (rmsh.ds_t + rmsh.ds_b) \
-'''
+
+F_psi = ( \
+                    ( \
+                                rpam.parameters['kappa'] * ( \
+                                    1.0 / (8.0 * (fsp.rho) ** 3) * (5.0 * sin(fsp.psi) + sin(3 * fsp.psi)) - \
+                                    1.0 / (4.0 * (fsp.rho) ** 2) * fsp.omega * (1.0 + 3.0 * cos(2.0 * fsp.psi)) - \
+                                    3.0 / (2.0 * fsp.rho) * sin(fsp.psi) * (fsp.omega) ** 2 + \
+                                    1.0 / 2.0 * (fsp.omega) ** 2 + \
+                                    2.0 / (fsp.rho) * cos(fsp.psi) * fsp.omega.dx(0) \
+                            ) - \
+                                fsp.sigma * (1.0 / (fsp.rho) * sin(fsp.psi) + fsp.omega) \
+                        ) * fsp.nu_psi - \
+                    rpam.parameters['kappa'] * fsp.omega.dx(0) * fsp.nu_psi.dx(0)
+        ) * rmsh.dx + \
+        (rpam.parameters['kappa'] * bgeo.facet_normal[0] * fsp.omega.dx(0) * fsp.nu_psi) * rmsh.ds
 '''
 omega = \partial_1 psi
 <omega nu_omega>_Omega = <(\partial_1 psi) nu_omega>_Omega
                        = <(\partial_i psi) \delta_{i1} nu_omega>_Omega
                        = - <psi \partial_1 nu_omega>_Omega + <n_1 psi nu_omega>_{\partial Omega}
+                       
+<omega nu_omega + psi \partial_1 nu_omega>_Omega - <n_1 psi nu_omega>_{\partial Omega} = 0                
 '''
-F_omega = () * geo.sqrt_detg(fsp.rho) * rmsh.dx + \
-          () * bgeo.sqrt_deth_lr(fsp.rho) * (rmsh.ds_l + rmsh.ds_r)
-'''
-F_rho = () * geo.sqrt_detg(fsp.rho) * rmsh.dx
+F_omega = (fsp.omega * fsp.nu_omega + fsp.psi * fsp.nu_omega.dx(0)) * rmsh.dx - \
+          (bgeo.facet_normal[0] * fsp.psi * fsp.nu_omega) * rmsh.ds
 
+'''
+\partial_1 rho = cos(psi)
+<(\partial_1 rho) nu_rho >_Omega = <cos(psi) nu_rho>_Omega
+<(\partial_i rho)  \delta_{i1} nu_rho >_Omega = <cos(psi) nu_rho>_Omega
+-< rho  \partial_1 nu_rho >_Omega + <n_1  rho nu_rho >_{\partial Omega} = <cos(psi) nu_rho>_Omega 
+
+<cos(psi) nu_rho + rho  \partial_1 nu_rho >_Omega  - <n_1  rho nu_rho>_{\partial Omega} = 0
+'''
+
+F_rho = (cos(fsp.psi) * fsp.nu_rho + fsp.rho * fsp.nu_rho.dx(0)) * rmsh.dx - \
+        - (bgeo.facet_normal[0] * fsp.rho * fsp.nu_rho) * rmsh.ds
+
+F_zeta = (-sin(fsp.psi) * fsp.nu_zeta + fsp.zeta * fsp.nu_zeta.dx(0)) * rmsh.dx - \
+         - (bgeo.facet_normal[0] * fsp.zeta * fsp.nu_zeta) * rmsh.ds
+
+'''
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
         + () * bgeo.sqrt_deth_lr(fsp.rho) * rmsh.ds_lr \
     )
     
 
-# total functional for the mixed problem
-F = (F_psi + F_omega + F_rho) + F_N
 '''
+# total functional for the mixed problem
+F = (F_psi + F_omega + F_rho + F_zeta)
