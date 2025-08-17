@@ -63,6 +63,28 @@ class psi_0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+
+class omega_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.omega_0_read(x[0], x[1])
+
+    def value_shape(self):
+        return (1,)
+
+class rho_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.rho_0_read(x[0], x[1])
+
+    def value_shape(self):
+        return (1,)
+
+class zeta_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.zeta_0_read(x[0], x[1])
+
+    def value_shape(self):
+        return (1,)
+
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 
 fsp.psi_0.interpolate(psi_exact_Expression(element=fsp.Q_psi.ufl_element()))
@@ -81,22 +103,33 @@ print("Reading the initial profiles from file ...")
 fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi_ode.csv')
 fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
 
-# fu.set_from_file(fsp.omega_0_read, 'solution_ode/omega_ode.csv')
-# fsp.omega_0.interpolate(omega_0_Expression(element=fsp.Q_omega.ufl_element()))
-#
-# fu.set_from_file(fsp.mu_0_read, 'solution_ode/mu_ode.csv')
-# fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
+fu.set_from_file(fsp.omega_0_read, 'solution_ode/omega_ode.csv')
+fsp.omega_0.interpolate(omega_0_Expression(element=fsp.Q_omega.ufl_element()))
 
-# fsp.assigner.assign(fsp.psi, [fsp.X_0_read, fsp.omega_0_read, fsp.mu_0_read])
+fu.set_from_file(fsp.rho_0_read, 'solution_ode/rho_ode.csv')
+fsp.rho_0.interpolate(rho_0_Expression(element=fsp.Q_rho.ufl_element()))
+
+fu.set_from_file(fsp.zeta_0_read, 'solution_ode/zeta_ode.csv')
+fsp.zeta_0.interpolate(zeta_0_Expression(element=fsp.Q_zeta.ufl_element()))
+
 
 # print out the read fields to file
 io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
-              'vector')
-# io.xdmf_print(fsp.omega_0, solpath.xdmf_file_path + 'omega_0.xdmf')
-# io.full_print(fsp.mu_0, 'mu_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-#               solpath.nodal_values_path, lmsh.mesh,
-#               'scalar')
+              'scalar')
+io.full_print(fsp.omega_0, 'omega_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, lmsh.mesh,
+              'scalar')
+io.full_print(fsp.rho_0, 'rho_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, lmsh.mesh,
+              'scalar')
+io.full_print(fsp.zeta_0, 'zeta_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, lmsh.mesh,
+              'scalar')
+
+fsp.assigner.assign(fsp.phi, [fsp.psi_0_read, fsp.omega_0_read, fsp.rho_0_read, fsp.zeta_0_read])
+######
+
 
 bc_psi_l = DirichletBC(fsp.Q.sub(0), rpam.parameters['psi_l'], rmsh.boundary_l)
 bc_psi_r = DirichletBC(fsp.Q.sub(0), rpam.parameters['psi_r'], rmsh.boundary_r)
@@ -152,10 +185,12 @@ F_zeta = (-sin(fsp.psi) * fsp.nu_zeta + fsp.zeta * fsp.nu_zeta.dx(0)) * rmsh.dx 
 
 '''
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
-        + () * bgeo.sqrt_deth_lr(fsp.rho) * rmsh.ds_lr \
+        + ( (fsp.omega - fsp.psi.dx(0)) * fsp.nu_omega) * rmsh.ds + \
+        + (( fsp.rho.dx(0) - cos(fsp.psi)) * fsp.nu_rho) * rmsh.ds + \
+        + (( fsp.zeta.dx(0) + sin(fsp.psi)) * fsp.nu_zeta) * rmsh.ds  \
     )
-    
-
 '''
+
+
 # total functional for the mixed problem
 F = (F_psi + F_omega + F_rho + F_zeta)
