@@ -12,6 +12,7 @@ Examples:
 
 import colorama as col
 from fenics import *
+import dolfin
 import importlib
 import sys
 
@@ -33,6 +34,7 @@ print("Input diredtory = ", rarg.args.input_directory)
 print("Output diredtory = ", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
+'''
 # solve the variational problem
 J = derivative(vp.F, fsp.phi, fsp.J_psi)
 problem = NonlinearVariationalProblem(vp.F, fsp.phi, vp.bcs, J)
@@ -56,3 +58,4 @@ solver.parameters.update(params)
 solver.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
+'''
