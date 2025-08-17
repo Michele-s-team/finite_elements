@@ -3,9 +3,12 @@ import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
+import function as fu
 import function_spaces as fsp
-import geometry as geo
+import input_output as io
+import load_mesh as lmsh
 import read_parameters_solve as rpam
+import solution_paths as solpath
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -53,6 +56,13 @@ class zeta_exact_Expression(UserExpression):
         return (1,)
 
 
+class psi_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.psi_0_read(x[0], x[1])
+
+    def value_shape(self):
+        return (1,)
+
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 
 fsp.psi_0.interpolate(psi_exact_Expression(element=fsp.Q_psi.ufl_element()))
@@ -65,9 +75,28 @@ fsp.omega_exact.interpolate(omega_exact_Expression(element=fsp.Q_omega.ufl_eleme
 fsp.rho_exact.interpolate(rho_exact_Expression(element=fsp.Q_rho.ufl_element()))
 fsp.zeta_exact.interpolate(zeta_exact_Expression(element=fsp.Q_zeta.ufl_element()))
 
-# uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
-# fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.omega_0, fsp.rho_0, fsp.zeta_0])
+# uncomment this to set the initial profiles from the ODE soltion
+######
+print("Reading the initial profiles from file ...")
+fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi_ode.csv')
+fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
 
+# fu.set_from_file(fsp.omega_0_read, 'solution_ode/omega_ode.csv')
+# fsp.omega_0.interpolate(omega_0_Expression(element=fsp.Q_omega.ufl_element()))
+#
+# fu.set_from_file(fsp.mu_0_read, 'solution_ode/mu_ode.csv')
+# fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
+
+# fsp.assigner.assign(fsp.psi, [fsp.X_0_read, fsp.omega_0_read, fsp.mu_0_read])
+
+# print out the read fields to file
+io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, lmsh.mesh,
+              'vector')
+# io.xdmf_print(fsp.omega_0, solpath.xdmf_file_path + 'omega_0.xdmf')
+# io.full_print(fsp.mu_0, 'mu_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+#               solpath.nodal_values_path, lmsh.mesh,
+#               'scalar')
 
 bc_psi_l = DirichletBC(fsp.Q.sub(0), rpam.parameters['psi_l'], rmsh.boundary_l)
 bc_psi_r = DirichletBC(fsp.Q.sub(0), rpam.parameters['psi_r'], rmsh.boundary_r)

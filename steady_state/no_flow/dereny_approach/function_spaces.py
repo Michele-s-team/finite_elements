@@ -51,5 +51,10 @@ omega_0 = Function(Q_omega)
 rho_0 = Function(Q_rho)
 zeta_0 = Function(Q_zeta)
 
+psi_0_read = Function(Q_psi)
+omega_0_read = Function(Q_omega)
+rho_0_read = Function(Q_rho)
+zeta_0_read = Function(Q_zeta)
+
 psi, omega, rho, zeta = split(phi)
 assigner = FunctionAssigner(Q, [Q_psi, Q_omega, Q_rho, Q_zeta])
