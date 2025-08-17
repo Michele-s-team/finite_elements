@@ -3,8 +3,6 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import boundary_geometry as bgeo
-import geometry as geo
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
@@ -18,14 +16,12 @@ i, j, k, l = ufl.indices(4)
 
 print("Check of BCs:")
 print(
-    f"\t\t<<(psi - phi_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_t_const'], rmsh.ds_t):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(psi - psi_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.psi_output, rpam.parameters['psi_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<(z - phi)^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure(prout.z_output, rpam.parameters['z_b_const'], rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-print("2)")
+    f"\t\t<<(psi - psi_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(prout.psi_output, rpam.parameters['psi_r'], rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega t = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.n_omega_t, rmsh.ds_t):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(omega - omega_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.omega_output, rpam.parameters['omega_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<(n^i \omega_i - psi )^2>>_partial Omega b = {col.Fore.RED}{msh.difference_wrt_measure((bgeo.n_tb(prout.omega_output))[i] * prout.omega_output[i], vp.n_omega_b, rmsh.ds_b):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-print("3)")
+    f"\t\t<<(rho - rho_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.rho_output, rpam.parameters['rho_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<[mu - H(omega)]^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, geo.H(prout.omega_output), rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(zeta - zeta_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.zeta_output, rpam.parameters['zeta_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
