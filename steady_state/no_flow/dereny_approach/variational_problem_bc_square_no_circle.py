@@ -71,6 +71,7 @@ class omega_0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+
 class rho_0_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = fsp.rho_0_read(x[0], x[1])
@@ -78,12 +79,14 @@ class rho_0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+
 class zeta_0_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = fsp.zeta_0_read(x[0], x[1])
 
     def value_shape(self):
         return (1,)
+
 
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 
@@ -111,7 +114,6 @@ fsp.rho_0.interpolate(rho_0_Expression(element=fsp.Q_rho.ufl_element()))
 
 fu.set_from_file(fsp.zeta_0_read, 'solution_ode/zeta_ode.csv')
 fsp.zeta_0.interpolate(zeta_0_Expression(element=fsp.Q_zeta.ufl_element()))
-
 
 # print out the read fields to file
 io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
@@ -149,7 +151,7 @@ F_psi = ( \
                                     1.0 / (8.0 * (fsp.rho) ** 3) * (5.0 * sin(fsp.psi) + sin(3 * fsp.psi)) - \
                                     1.0 / (4.0 * (fsp.rho) ** 2) * fsp.omega * (1.0 + 3.0 * cos(2.0 * fsp.psi)) - \
                                     3.0 / (2.0 * fsp.rho) * sin(fsp.psi) * ((fsp.omega) ** 2) + \
-                                    1.0 / 2.0 * (fsp.omega) ** 2 + \
+                                    1.0 / 2.0 * (fsp.omega) ** 3 + \
                                     2.0 / (fsp.rho) * cos(fsp.psi) * fsp.omega.dx(0) \
                             ) - \
                                 fsp.sigma * (1.0 / (fsp.rho) * sin(fsp.psi) + fsp.omega) \
@@ -178,10 +180,10 @@ F_omega = (fsp.omega * fsp.nu_omega + fsp.psi * fsp.nu_omega.dx(0)) * rmsh.dx - 
 '''
 
 F_rho = (cos(fsp.psi) * fsp.nu_rho + fsp.rho * fsp.nu_rho.dx(0)) * rmsh.dx - \
-        - (bgeo.facet_normal[0] * fsp.rho * fsp.nu_rho) * rmsh.ds
+        (bgeo.facet_normal[0] * fsp.rho * fsp.nu_rho) * rmsh.ds
 
 F_zeta = (-sin(fsp.psi) * fsp.nu_zeta + fsp.zeta * fsp.nu_zeta.dx(0)) * rmsh.dx - \
-         - (bgeo.facet_normal[0] * fsp.zeta * fsp.nu_zeta) * rmsh.ds
+         (bgeo.facet_normal[0] * fsp.zeta * fsp.nu_zeta) * rmsh.ds
 
 '''
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
@@ -190,7 +192,6 @@ F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
         + (( fsp.zeta.dx(0) + sin(fsp.psi)) * fsp.nu_zeta) * rmsh.ds  \
     )
 '''
-
 
 # total functional for the mixed problem
 F = (F_psi + F_omega + F_rho + F_zeta)
