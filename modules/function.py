@@ -35,9 +35,64 @@ def set_from_list(f, list):
 
 
 
-#set nodal values of function 'f', defined on a 2d mesh, according to the nodal values written in the csv file 'filename'. . This works only if the function space of f is order-1 polynomials
-def set_from_file(f, filename):
-    set_from_list( f, io.read_scalar_from_csvfile( filename ) )
+def set_from_file(f, filename, constraint=None, tol=1e-12):
+    import numpy as np
+    import pandas as pd
+    from scipy.spatial import cKDTree
+
+    mesh = f.function_space().mesh()
+    gdim = mesh.geometry().dim()
+    element = f.function_space().ufl_element()
+    value_size = element.value_size()  # number of components per node
+
+    # Read CSV file
+    df = pd.read_csv(filename, comment="#")
+    ncols = df.shape[1]
+    if ncols < value_size + gdim:
+        raise ValueError(f"CSV has {ncols} columns but expected at least {value_size + gdim}")
+
+    # Extract values and coords from CSV
+    values_csv = df.iloc[:, :value_size].to_numpy(dtype=float)  # (n_nodes_csv, value_size)
+    coords_csv = df.iloc[:, value_size:value_size+gdim].to_numpy(dtype=float)  # (n_nodes_csv, gdim)
+
+    # Get DOF coordinates (one per DOF)
+    dof_coords = f.function_space().tabulate_dof_coordinates()
+    # Reshape to (n_dofs, gdim)
+    dof_coords = dof_coords.reshape((-1, gdim))
+
+    # Extract unique node coords by taking every value_size-th DOF coordinate
+    n_nodes = dof_coords.shape[0] // value_size
+    node_coords = dof_coords[0 : n_nodes * value_size : value_size]
+
+    # Build KD-tree on CSV node coords
+    tree = cKDTree(coords_csv)
+
+    # Find nearest CSV node for each mesh node coordinate
+    dist, idx = tree.query(node_coords, k=1)
+    if np.max(dist) > tol:
+        print(f"Warning: max coordinate mismatch = {np.max(dist):.3e} (tol={tol:.1e})")
+
+    # Prepare vector of values matching DOF ordering (component interleaved)
+    reordered = np.zeros(dof_coords.shape[0])
+
+    for i_node in range(n_nodes):
+        csv_i = idx[i_node]
+        for comp in range(value_size):
+            dof_i = i_node * value_size + comp
+            reordered[dof_i] = values_csv[csv_i, comp]
+
+    if reordered.size != f.vector().size():
+        raise ValueError(
+            f"Mismatch: CSV provides {reordered.size} DOF-values, "
+            f"but function requires {f.vector().size()}"
+        )
+
+    # Assign to function vector
+    f.vector()[:] = reordered
+
+    if constraint is not None:
+        constraint.apply(f.vector())
+
 
 
 '''
