@@ -3,7 +3,8 @@ This code solves the fourth-order PDE
  Nabla Nabla \partial_i ((z+u) \partial_i (z+u)) = f with an additional constraint which relates z and u,
  expressed in terms of the function
 - z, u
-- omega[i] = \partial_i (z+u)
+- omega_z[i] = \partial_i z
+- omega_u[i] = \partial_i u
 - mu = \partial_i ((z+u) omega_i)
 
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
@@ -11,7 +12,7 @@ where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to t
 run with
     python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
 example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/constraint/u_v/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/constraint/grad_u_grad_v/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
 '''
 from fenics import *
 import importlib
@@ -34,8 +35,8 @@ solver = NonlinearVariationalSolver(problem)
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
-                  'linear_solver': 'superlu',
-                  # 'linear_solver': 'mumps',
+                  # 'linear_solver': 'superlu',
+                  'linear_solver': 'mumps',
                   'absolute_tolerance': 1e-12,
                   'relative_tolerance': 1e-12,
                   'maximum_iterations': 1000000,
