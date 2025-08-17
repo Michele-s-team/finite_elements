@@ -417,6 +417,22 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
+
+# Test steady_state/no_flow/lagrangian_approach/spherically_symmetric
+case_name = 'steady_state/no_flow/lagrangian_approach/spherically_symmetric'
+
+problem_name = 'square_no_circle'
+generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/symmetric/'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_square_no_circle_mesh', generate_mesh_path + 's_theta_parameters/', generate_mesh_path + 's_theta_parameters/', problem_name, problem_name, success)
+
+
+
+
 # Test steady_state/flow
 case_name = 'steady_state/flow'
 

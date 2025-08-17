@@ -39,7 +39,7 @@ Q_3d = VectorFunctionSpace( lmsh.mesh, 'P', degree_function_space, dim=3 )
 
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
-as in function.set_from_list and function.set_from_file
+as in function.set_from_list 
 '''
 Q_read = FunctionSpace( lmsh.mesh, 'P', 1 )
 
