@@ -6,7 +6,7 @@ by allowing for overhangs, following the approach in 'Lagrangian approach' from 
 Run with
     python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/dereny_approach/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/dereny_approach/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle $MESH_PATH $SOLUTION_PATH;
 
 '''
 
@@ -49,7 +49,7 @@ params = {'nonlinear_solver': 'newton',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
                   'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.05,
+                  'relaxation_parameter': 0.95,
               }
           }
 solver.parameters.update(params)
