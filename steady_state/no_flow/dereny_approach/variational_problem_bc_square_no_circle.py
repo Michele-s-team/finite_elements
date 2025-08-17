@@ -81,29 +81,19 @@ bcs = [bc_psi_l, bc_psi_r, bc_omega_l, bc_rho_l, bc_zeta_l]
 
 # Define variational problem
 
-F_z = (rpam.parameters["kappa"] * (geo.g_c(fsp.rho)[i, j] * (fsp.zeta.dx(j)) * (fsp.nu_psi.dx(i)) - 2.0 * fsp.zeta * ((fsp.zeta) ** 2 - geo.K(fsp.rho)) * fsp.nu_psi) + fsp.sigma * fsp.zeta * fsp.nu_psi) * geo.sqrt_detg(fsp.rho) * rmsh.dx \
-      - ( \
-          # natural BC (bgeo.n_tb(fsp.omega))[i] * (fsp.mu.dx(i)) = 0 on ds_l and ds_r is imposed here
-              (rpam.parameters["kappa"] * (bgeo.n_tb(fsp.rho))[i] * fsp.nu_psi * (fsp.zeta.dx(i))) * bgeo.sqrt_deth_tb(fsp.rho) * (rmsh.ds_t + rmsh.ds_b) \
-          )
+F_psi = () * geo.sqrt_detg(fsp.rho) * rmsh.dx \
+        - () * bgeo.sqrt_deth_tb(fsp.rho) * (rmsh.ds_t + rmsh.ds_b) \
 
-F_omega = (- fsp.psi * geo.Nabla_v(fsp.nu_rho, fsp.rho)[i, i] - fsp.rho[i] * fsp.nu_rho[i]) * geo.sqrt_detg(fsp.rho) * rmsh.dx \
-          + ((bgeo.n_lr(fsp.rho))[i] * geo.g(fsp.rho)[i, j] * fsp.psi * fsp.nu_rho[j]) * bgeo.sqrt_deth_lr(fsp.rho) * (rmsh.ds_l + rmsh.ds_r) \
-          + ((bgeo.n_tb(fsp.rho))[i] * geo.g(fsp.rho)[i, j] * fsp.psi * fsp.nu_rho[j]) * bgeo.sqrt_deth_tb(fsp.rho) * (rmsh.ds_t + rmsh.ds_b) \
- \
-    F_mu = ((geo.H(fsp.rho) - fsp.zeta) * fsp.nu_zeta) * geo.sqrt_detg(fsp.rho) * rmsh.dx
+F_omega = () * geo.sqrt_detg(fsp.rho) * rmsh.dx \
+          + () * bgeo.sqrt_deth_lr(fsp.rho) * (rmsh.ds_l + rmsh.ds_r) \
+
+F_mu = ((geo.H(fsp.rho) - fsp.zeta) * fsp.nu_zeta) * geo.sqrt_detg(fsp.rho) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
-            + (((bgeo.n_lr(fsp.rho))[i] * fsp.rho[i] - n_omega_l) * ((bgeo.n_lr(fsp.rho))[k] * geo.g(fsp.rho)[k, l] * fsp.nu_rho[l])) * bgeo.sqrt_deth_lr(fsp.rho) * rmsh.ds_l \
-            + (((bgeo.n_lr(fsp.rho))[i] * fsp.rho[i] - n_omega_r) * ((bgeo.n_lr(fsp.rho))[k] * geo.g(fsp.rho)[k, l] * fsp.nu_rho[l])) * bgeo.sqrt_deth_lr(fsp.rho) * rmsh.ds_r \
-            + (((bgeo.n_tb(fsp.rho))[i] * fsp.rho[i] - n_omega_t) * ((bgeo.n_tb(fsp.rho))[k] * geo.g(fsp.rho)[k, l] * fsp.nu_rho[l])) * bgeo.sqrt_deth_tb(fsp.rho) * rmsh.ds_t \
-            + (((bgeo.n_tb(fsp.rho))[i] * fsp.rho[i] - n_omega_b) * ((bgeo.n_tb(fsp.rho))[k] * geo.g(fsp.rho)[k, l] * fsp.nu_rho[l])) * bgeo.sqrt_deth_tb(fsp.rho) * rmsh.ds_b \
-            # these terms constrain mu = H(omega) on the boundary
-            + ((geo.H(fsp.rho) - fsp.zeta) * fsp.nu_zeta) * bgeo.sqrt_deth_lr(fsp.rho) * rmsh.ds_lr \
-            + ((geo.H(fsp.rho) - fsp.zeta) * fsp.nu_zeta) * bgeo.sqrt_deth_tb(fsp.rho) * rmsh.ds_tb \
+    # these terms constrain mu = H(omega) on the boundary
+        + ((geo.H(fsp.rho) - fsp.zeta) * fsp.nu_zeta) * bgeo.sqrt_deth_lr(fsp.rho) * rmsh.ds_lr \
+        + ((geo.H(fsp.rho) - fsp.zeta) * fsp.nu_zeta) * bgeo.sqrt_deth_tb(fsp.rho) * rmsh.ds_tb \
     )
 
 # total functional for the mixed problem
-F = (F_z + F_omega + F_mu) + F_N
-
-import variational_problem_pp_square_no_circle as vp_pp
+F = (F_psi + F_omega + F_mu) + F_N
