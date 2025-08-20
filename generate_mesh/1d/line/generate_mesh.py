@@ -33,8 +33,8 @@ geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
 # add a 0d object:
-point_l = gmsh.model.geo.addPoint(rpam.parameters['x_min'], 0, 0)
-point_r = gmsh.model.geo.addPoint(rpam.parameters['x_max'], 0, 0)
+point_l = gmsh.model.geo.addPoint(rpam.parameters['x_l'], 0, 0)
+point_r = gmsh.model.geo.addPoint(rpam.parameters['x_r'], 0, 0)
 gmsh.model.geo.synchronize()
 
 line = gmsh.model.geo.addLine(point_l, point_r)
@@ -64,7 +64,7 @@ gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
 gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
 gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["x_max"]-rpam.parameters["x_min"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["x_r"]-rpam.parameters["x_l"])
 
 minimum = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
