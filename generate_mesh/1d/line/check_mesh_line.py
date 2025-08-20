@@ -1,5 +1,5 @@
 '''
-This code checks the 1d mesh generated from generate_mesh_line.py
+This code checks the 1d mesh generated from generate_mesh.py
 Run with
     clear; clear; python3 check_mesh_line.py [path where to find the mesh]
 Example:
@@ -13,4 +13,4 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 
-import check_mesh_tags_line_vertex
+import check_mesh_tags_line
