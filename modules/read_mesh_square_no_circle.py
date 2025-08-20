@@ -29,7 +29,6 @@ import check_mesh_tags_square_no_circle
 print(f'Module {__file__} called {check_mesh_tags_square_no_circle.__file__}', flush=True)
 
 # Define boundaries and obstacle
-# CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_l = 'near(x[0], 0.0)'
 boundary_r = f'near(x[0], {parameters["L"]})'
@@ -37,4 +36,3 @@ boundary_t = f'near(x[1], {parameters["h"]})'
 boundary_b = 'near(x[1], 0.0)'
 boundary_lr = f'near(x[0], 0) || near(x[0], {parameters["L"]})'
 boundary_tb = f'near(x[1], 0) || near(x[1], {parameters["h"]})'
-# CHANGE PARAMETERS HERE

@@ -24,6 +24,12 @@ dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters[
 dp_l = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['point_l_id'])  # Point measure for points at the edges of the mesh
 dp_r = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['point_r_id'])  # Point measure for points at the edges of the mesh
 
+dp_lr = dp_l + dp_r
+
 import check_mesh_tags_line
 
 print(f'Module {__file__} called {check_mesh_tags_line.__file__}', flush=True)
+
+boundary = 'on_boundary'
+boundary_l = f'near(x[0], {parameters["x_l"]})'
+boundary_r = f'near(x[1], {parameters["x_r"]})'

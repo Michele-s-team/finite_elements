@@ -72,7 +72,7 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 
 gmsh.model.geo.synchronize()
 
-geometry.generate_mesh(dim=2)
+geometry.generate_mesh(dim=1)
 gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['line', 'vertex'], rpam.parameters, output_directory, True)
