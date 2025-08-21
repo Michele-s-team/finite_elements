@@ -37,6 +37,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import load_interval_mesh as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
