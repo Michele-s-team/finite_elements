@@ -43,7 +43,7 @@ with HDF5File(mesh_t.mpi_comm(), io.add_trailing_slash(rarg.args.output_director
     outfile.write(vf_t, "vf")
 
 
-def read_mesh_from_file_new(filename, mesh_name):
+def read_mesh_from_file_new(filename, mesh_name='mesh'):
     mesh = Mesh()
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
         infile.read(mesh, mesh_name, False)
@@ -53,7 +53,7 @@ def read_mesh_from_file_new(filename, mesh_name):
 
 
 # Read meshes from files
-mesh = read_mesh_from_file_new(io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "mesh")
+mesh = read_mesh_from_file_new(io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5")
 
 print(f"Original mesh dimension: {mesh.topology().dim()}")
 print(f"Original mesh num vertices: {mesh.num_vertices()}")

@@ -89,7 +89,8 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
             infile.read(mf, mf_name)
         return mf
         '''
-        read_mesh_components_h5(mesh, dim, filename, name_to_read)
+        print('Reading mesh components from .h5 file.')
+        return read_mesh_components_h5(mesh, dim, filename, name_to_read)
 
 
     elif file_format.lower() == "xdmf":
@@ -98,6 +99,8 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
         #     infile.read(mesh_value_collection, mf_name)
         #     infile.close()
         # return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
+        print('Reading mesh components from .xdmf file.')
+
         return read_mesh_components_xdmf(mesh, dim, filename)
 
     else:
