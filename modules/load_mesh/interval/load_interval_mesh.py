@@ -34,9 +34,11 @@ for vertex in vertices(mesh):
 
 # Save the mesh components to files
 with XDMFFile("line_mesh.xdmf") as outfile:
+    outfile.write(mesh)  # Save mesh geometry first
     outfile.write(cf)
 
 with XDMFFile("vertex_mesh.xdmf") as outfile:
+    outfile.write(mesh)  # Save mesh geometry first
     outfile.write(vf)
 
 def read_mesh_components_new(mesh, dim, filename):
