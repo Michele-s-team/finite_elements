@@ -1,11 +1,10 @@
 from fenics import *
-import importlib
+import numpy as np
 import ufl as ufl
 
 # import boundary_geometry as bgeo
 import function_spaces as fsp
 from load_mesh.interval import load_interval_mesh as lmsh
-import switch_problem as swi
 
 
 # rmsh = importlib.import_module(swi.rmsh)
@@ -18,7 +17,10 @@ facet_normal = FacetNormal( lmsh.mesh )
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0] ** 2
+        # values[0] = 1 + x[0] ** 2
+
+        # test case 2
+        values[0] = 1 + np.cos(2 * np.pi * x[0]) / (1 + x[0] ** 2)
 
     def value_shape(self):
         return (1,)
@@ -27,7 +29,10 @@ class u_exact_expression(UserExpression):
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 2.0 * x[0]
+        # values[0] = 2.0 * x[0]
+
+        # test case 2
+        values[0] = -((2 * (x[0] * np.cos(2 * np.pi * x[0]) + np.pi * (1 + x[0] ** 2) * np.sin(2 * np.pi * x[0]))) / (1 + x[0] ** 2) ** 2)
 
     def value_shape(self):
         return (1,)
@@ -36,7 +41,10 @@ class grad_u_expression(UserExpression):
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 2.0
+        # values[0] = 2.0
+
+        # test case 2
+        values[0] = (-2 * (1 - 3 * x[0] ** 2 + 2 * np.pi ** 2 * (1 + x[0] ** 2) ** 2) * np.cos(2 * np.pi * x[0]) + 8 * np.pi * x[0] * (1 + x[0] ** 2) * np.sin(2 * np.pi * x[0])) / (1 + x[0] ** 2) ** 3
 
     def value_shape(self):
         return (1,)
@@ -48,7 +56,10 @@ class hess_u_exact_expression(UserExpression):
 
     def eval(self, values, x):
         # test case 1
-        values[0] = 2
+        # values[0] = 2
+
+        # test case 2
+        values[0] = (-2 * (1 - 3 * x[0] ** 2 + 2 * np.pi ** 2 * (1 + x[0] ** 2) ** 2) * np.cos(2 * np.pi * x[0]) + 8 * np.pi * x[0] * (1 + x[0] ** 2) * np.sin(2 * np.pi * x[0])) / (1 + x[0] ** 2) ** 3
 
     def value_shape(self):
         return (1, 1)
@@ -83,7 +94,7 @@ bc_u = DirichletBC(fsp.Q, fsp.u_exact, lmsh.boundary)
 bcs = [bc_u]
 
 # variational functional for the original problem (poisson equation)
-F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * lmsh.dx \
+F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * lmsh.dx \
     - facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * lmsh.ds
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
