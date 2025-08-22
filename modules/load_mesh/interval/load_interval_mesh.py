@@ -56,6 +56,7 @@ ds_r = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['ve
 ds = ds_l + ds_r
 
 dx_read = Measure("dx", domain=mesh, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
+ds_l_read = Measure("ds", domain=mesh, subdomain_data=vf_read, subdomain_id=parameters['vertex_l_id'])
 
 
 # a function space used solely to define function_test_integrals_fenics
@@ -97,6 +98,9 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, funct
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, ds_l, '\int f ds_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, ds_r, '\int f ds_r'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, ds_l_read, '\int f ds_l_read'))
+
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, ds, '\int f ds'))
 
