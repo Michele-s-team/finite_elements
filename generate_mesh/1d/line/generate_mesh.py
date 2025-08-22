@@ -7,8 +7,8 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/1d/line"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import gmsh
-import pygmsh
+from fenics import *
+import math
 import sys
 
 # add the path where to find the shared modules
@@ -22,60 +22,32 @@ import read_parameters_generate_mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-# mesh resolution
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
-mesh_file = output_directory + "mesh.msh"
 mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 print("output_directory = ", output_directory)
 
-geometry = pygmsh.occ.Geometry()
-model = geometry.__enter__()
+mesh_temp = IntervalMesh(rpam.parameters['N'], rpam.parameters['x_l'], rpam.parameters['x_r'])
 
-# add a 0d object:
-point_l = gmsh.model.geo.addPoint(rpam.parameters['x_l'], 0, 0)
-point_r = gmsh.model.geo.addPoint(rpam.parameters['x_r'], 0, 0)
-gmsh.model.geo.synchronize()
+# create a function for the lines
+cell_function_temp = MeshFunction("size_t", mesh_temp, mesh_temp.topology().dim())
+cell_function_temp.set_all(rpam.parameters['line_id'])  # Tag entire line as region parameters['line_id']
 
-line = gmsh.model.geo.addLine(point_l, point_r)
-gmsh.model.geo.synchronize()
+# creat a function for the vertices
+vertex_function_temp = MeshFunction("size_t", mesh_temp, mesh_temp.topology().dim() - 1)
+for vertex in vertices(mesh_temp):
+    x = vertex.point().x()  # Get x-coordinate
 
-# add 0-dimensional objects
-vertices = gmsh.model.getEntities(dim=0)
+    if math.isclose(x, rpam.parameters['x_l']):
+        vertex_function_temp[vertex] = rpam.parameters['vertex_l_id']
 
-gmsh.model.addPhysicalGroup(vertices[0][0], [vertices[0][1]], rpam.parameters["point_l_id"])
-gmsh.model.setPhysicalName(vertices[0][0], rpam.parameters["point_l_id"], "point_l")
+    if math.isclose(x, rpam.parameters['x_r']):
+        vertex_function_temp[vertex] = rpam.parameters['vertex_r_id']
 
-gmsh.model.addPhysicalGroup(vertices[1][0], [vertices[1][1]], rpam.parameters["point_r_id"])
-gmsh.model.setPhysicalName(vertices[1][0], rpam.parameters["point_r_id"], "point_r")
 
-# add 1-dimensional objects
-lines = gmsh.model.getEntities(dim=1)
-
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_id"], "line")
-
-# set the resolution
-distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [line])
-
-threshold = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["x_r"]-rpam.parameters["x_l"])
-
-minimum = gmsh.model.mesh.field.add("Min")
-gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
-gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
-
-gmsh.model.geo.synchronize()
-
-geometry.generate_mesh(dim=1)
-gmsh.write(mesh_file)
-
-msh.full_write(mesh_file, ['line', 'vertex'], rpam.parameters, output_directory, True)
-
-model.__exit__()
-
+'''
+write the mesh lines and vertices to .h5 files: 
+one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
+'''
+msh.write_mesh_components_h5(mesh_temp, output_directory + "line_mesh.h5", cell_function_temp, "cf")
+msh.write_mesh_components_h5(mesh_temp, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")

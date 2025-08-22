@@ -32,16 +32,9 @@ for vertex in vertices(mesh_t):
     if math.isclose(x, parameters['x_r']):
         vf_t[vertex] = parameters['vertex_r_id']
 
-# Save the mesh_t components to files
-# Save using HDF5
-with HDF5File(mesh_t.mpi_comm(), io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "w") as outfile:
-    outfile.write(mesh_t, "mesh")
-    outfile.write(cf_t, "cf")
 
-with HDF5File(mesh_t.mpi_comm(), io.add_trailing_slash(rarg.args.output_directory) + "vertex_mesh.h5", "w") as outfile:
-    outfile.write(mesh_t, "mesh")
-    outfile.write(vf_t, "vf")
-
+msh.write_mesh_components_h5(mesh_t, io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", cf_t, "cf")
+msh.write_mesh_components_h5(mesh_t, io.add_trailing_slash(rarg.args.output_directory) + "vertex_mesh.h5", vf_t, "vf")
 
 
 
@@ -50,18 +43,18 @@ with HDF5File(mesh_t.mpi_comm(), io.add_trailing_slash(rarg.args.output_director
 # Read meshes from files
 mesh = msh.read_mesh(io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5")
 
-print(f"Original mesh dimension: {mesh.topology().dim()}")
-print(f"Original mesh num vertices: {mesh.num_vertices()}")
-print(f"Original mesh num cells: {mesh.num_cells()}")
-print(f"Original mesh coordinates shape: {mesh.coordinates().shape}")
-
-print(f"Read mesh dimension: {mesh.topology().dim()}")
-print(f"Read mesh num vertices: {mesh.num_vertices()}")
-print(f"Read mesh num cells: {mesh.num_cells()}")
-print(f"Read mesh coordinates shape: {mesh.coordinates().shape}")
-
-# Check if coordinates are identical
-print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh.coordinates())}")
+# print(f"Original mesh dimension: {mesh.topology().dim()}")
+# print(f"Original mesh num vertices: {mesh.num_vertices()}")
+# print(f"Original mesh num cells: {mesh.num_cells()}")
+# print(f"Original mesh coordinates shape: {mesh.coordinates().shape}")
+#
+# print(f"Read mesh dimension: {mesh.topology().dim()}")
+# print(f"Read mesh num vertices: {mesh.num_vertices()}")
+# print(f"Read mesh num cells: {mesh.num_cells()}")
+# print(f"Read mesh coordinates shape: {mesh.coordinates().shape}")
+#
+# # Check if coordinates are identical
+# print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh.coordinates())}")
 
 # Build mesh functions from meshes loaded from files
 cf = msh.read_mesh_components(mesh, mesh.topology().dim(), io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "cf")

@@ -56,7 +56,13 @@ def read_mesh_h5(filename, mesh_name='mesh'):
     return mesh
 
 
-
+'''
+Read a mesh from file
+Input values: 
+- 'file name': path and name of the file, which can be either an xdmf file or h5 file
+Return values:
+- 'mesh': the mesh
+'''
 def read_mesh(filename):
     # detect format from file extension
     if filename.endswith('.h5'):
@@ -88,9 +94,24 @@ def write_mesh_components(infile, outfile, component_type, prune_z):
     # print(f'type of component _mesh  = {type(component_mesh)}')
     meshio.write(outfile, component_mesh)
 
+'''
+write to .h5 file the components of a mesh determined by a MeshFunction
+Input values: 
+- 'mesh': the mesh
+- 'file_name': the .h5 file where the component will be written
+- 'componand_function': the MeshFunction that specifies the component
+- 'component_name': the name with which the component will be named in the output file
+Example of usage:
+    msh.write_mesh_components_h5(mesh_t, io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", cf_t, "cf")
+'''
+
+def write_mesh_components_h5(mesh, filename, component_function, component_name):
+    with HDF5File(mesh.mpi_comm(), filename, "w") as outfile:
+        outfile.write(mesh, "mesh")
+        outfile.write(component_function, component_name)
 
 '''
-given a mesh 'mesh' written in an xdmf file, read its components of dimension 'dim' stored into 'filename' and returns the collection of components
+Given a mesh written in an xdmf file, read its components stored into the xdmf file and return the collection of components
 Input values: 
 - 'mesh': the mesh to read the components from
 - 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
@@ -106,11 +127,28 @@ def read_mesh_components_xdmf(mesh, dim, filename):
         infile.close()
     return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
 
+
+'''
+Given a mesh written in an h5 file, read its components  stored in an h5 file and returns the collection of components
+Input values: 
+- 'mesh': the mesh to read the components from
+- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+- 'filename': the name of the h5 file where the components of the mesh are stored
+'''
+
 def read_mesh_components_h5(mesh, dim, filename, name_to_read):
     mesh_function = MeshFunction("size_t", mesh, dim)
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
         infile.read(mesh_function, name_to_read)
     return mesh_function
+
+'''
+Given a mesh written in a file, read its components stored into the file and return the collection of components
+Input values: 
+- 'mesh': the mesh to read the components from
+- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+- 'filename': the name of the file (either .h5 or .xdmf) where the components of the mesh are stored
+'''
 
 def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
 
