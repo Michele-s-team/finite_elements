@@ -1,4 +1,5 @@
-import colorama as col
+from ufl import Mesh
+
 import command as cmd
 from fenics import *
 import numpy as np
@@ -24,7 +25,8 @@ def create_mesh(mesh, cell_type, prune_z=False):
 
 
 # read the mesh form 'filename' and return it
-def read_mesh(filename):
+def read_mesh_xdmf(filename):
+
     mesh = Mesh()
 
     xdmf = XDMFFile(mesh.mpi_comm(), filename)
@@ -32,6 +34,30 @@ def read_mesh(filename):
     xdmf.close()
 
     return mesh
+
+def read_mesh_h5(filename, mesh_name='mesh'):
+    mesh = Mesh()
+    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+        infile.read(mesh, mesh_name, False)
+    return mesh
+
+
+
+def read_mesh(filename):
+    # detect format from file extension
+    if filename.endswith('.h5'):
+        file_format = "h5"
+    elif filename.endswith('.xdmf'):
+        file_format = "xdmf"
+    else:
+        raise ValueError(f"File extension is invalid: {filename}")
+
+    if file_format == "h5":
+        return read_mesh_h5(filename)
+    elif file_format == "xdmf":
+        return read_mesh_xdmf(filename)
+    else:
+        print(f"File extension is invalid: {filename}")
 
 
 '''
