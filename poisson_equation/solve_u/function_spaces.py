@@ -1,7 +1,6 @@
-import dolfin
 from fenics import *
 
-import load_mesh as lmsh
+from load_mesh.interval import load_interval_mesh as lmsh
 
 function_space_degree = 4
 

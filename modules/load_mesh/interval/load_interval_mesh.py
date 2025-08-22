@@ -80,3 +80,6 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.BLUE}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
+boundary = 'on_boundary'
+boundary_l = f'near(x[0], {parameters["x_l"]})'
+boundary_r = f'near(x[1], {parameters["x_r"]})'
