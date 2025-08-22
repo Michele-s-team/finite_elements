@@ -5,6 +5,7 @@ import numpy as np
 
 import calculus
 import input_output as io
+import runtime_arguments as rarg
 import mesh as msh
 
 # CHANGE PARAMETERS HERE
@@ -17,29 +18,29 @@ parameters = io.read_parameters_from_csv_file("parameters_bc_line.csv")
 mesh_t = IntervalMesh(parameters['N'], parameters['x_l'], parameters['x_r'])
 
 # create a function for the lines
-cf = MeshFunction("size_t", mesh_t, mesh_t.topology().dim())
-cf.set_all(parameters['line_id'])  # Tag entire line as region parameters['line_id']
+cf_t = MeshFunction("size_t", mesh_t, mesh_t.topology().dim())
+cf_t.set_all(parameters['line_id'])  # Tag entire line as region parameters['line_id']
 
 # creat a function for the vertices
-vf = MeshFunction("size_t", mesh_t, mesh_t.topology().dim() - 1)
+vf_t = MeshFunction("size_t", mesh_t, mesh_t.topology().dim() - 1)
 for vertex in vertices(mesh_t):
     x = vertex.point().x()  # Get x-coordinate
 
     if math.isclose(x, parameters['x_l']):
-        vf[vertex] = parameters['vertex_l_id']
+        vf_t[vertex] = parameters['vertex_l_id']
 
     if math.isclose(x, parameters['x_r']):
-        vf[vertex] = parameters['vertex_r_id']
+        vf_t[vertex] = parameters['vertex_r_id']
 
 # Save the mesh_t components to files
 # Save using HDF5
-with HDF5File(mesh_t.mpi_comm(), "line_mesh.h5", "w") as outfile:
+with HDF5File(mesh_t.mpi_comm(), io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "w") as outfile:
     outfile.write(mesh_t, "mesh")
-    outfile.write(cf, "cf")
+    outfile.write(cf_t, "cf")
 
-with HDF5File(mesh_t.mpi_comm(), "vertex_mesh.h5", "w") as outfile:
+with HDF5File(mesh_t.mpi_comm(), io.add_trailing_slash(rarg.args.output_directory) + "vertex_mesh.h5", "w") as outfile:
     outfile.write(mesh_t, "mesh")
-    outfile.write(vf, "vf")
+    outfile.write(vf_t, "vf")
 
 
 def read_mesh_from_file_new(filename, mesh_name):
@@ -49,16 +50,56 @@ def read_mesh_from_file_new(filename, mesh_name):
     return mesh
 
 
-def read_mesh_function_from_file_new(mesh, filename, mf_name, dim):
-    mf = MeshFunction("size_t", mesh, dim)
-    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
-        infile.read(mf, mf_name)
-    return mf
+def read_mesh_function_from_file(mesh, dim, filename, mf_name="name_to_read", file_format=None):
+    """
+    Read mesh function from file with unified interface.
+
+    Parameters:
+    -----------
+    mesh : dolfin.Mesh
+        The mesh object
+    dim : int
+        Dimension of the mesh function
+    filename : str
+        Path to the file
+    mf_name : str, optional
+        Name of the mesh function to read (default: "name_to_read")
+    file_format : str, optional
+        File format: "hdf5" or "xdmf" (auto-detected if None)
+
+    Returns:
+    --------
+    MeshFunction or MeshFunctionSizet
+        The mesh function read from file
+    """
+    if file_format is None:
+        # Auto-detect format from file extension
+        if filename.endswith('.h5') or filename.endswith('.hdf5'):
+            file_format = "hdf5"
+        elif filename.endswith('.xdmf'):
+            file_format = "xdmf"
+        else:
+            raise ValueError(f"Cannot determine file format from extension: {filename}")
+
+    if file_format.lower() == "hdf5":
+        mf = MeshFunction("size_t", mesh, dim)
+        with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+            infile.read(mf, mf_name)
+        return mf
+
+    elif file_format.lower() == "xdmf":
+        mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
+        with XDMFFile(filename) as infile:
+            infile.read(mesh_value_collection, mf_name)
+            infile.close()
+        return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
+
+    else:
+        raise ValueError(f"Unsupported file format: {file_format}")
 
 
 # Read meshes from files
-mesh = read_mesh_from_file_new("line_mesh.h5", "mesh")
-mesh_read_from_vertex = read_mesh_from_file_new("vertex_mesh.h5", "mesh")
+mesh = read_mesh_from_file_new(io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "mesh")
 
 print(f"Original mesh dimension: {mesh.topology().dim()}")
 print(f"Original mesh num vertices: {mesh.num_vertices()}")
@@ -74,12 +115,12 @@ print(f"Read mesh coordinates shape: {mesh.coordinates().shape}")
 print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh.coordinates())}")
 
 # Build mesh functions from meshes loaded from files
-cf_read = read_mesh_function_from_file_new(mesh, "line_mesh.h5", "cf", mesh.topology().dim())
-vf_read = read_mesh_function_from_file_new(mesh_read_from_vertex, "vertex_mesh.h5", "vf", mesh_read_from_vertex.topology().dim() - 1)
+cf = read_mesh_function_from_file(mesh, mesh.topology().dim(), io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "cf")
+vf = read_mesh_function_from_file(mesh, mesh.topology().dim() - 1, io.add_trailing_slash(rarg.args.output_directory) + "vertex_mesh.h5", "vf")
 
-dx = Measure("dx", domain=mesh, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
-ds_l = Measure("ds", domain=mesh_read_from_vertex, subdomain_data=vf_read, subdomain_id=parameters['vertex_l_id'])
-ds_r = Measure("ds", domain=mesh_read_from_vertex, subdomain_data=vf_read, subdomain_id=parameters['vertex_r_id'])
+dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=parameters['line_id'])
+ds_l = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['vertex_l_id'])
+ds_r = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['vertex_r_id'])
 ds = Measure("ds", domain=mesh)
 
 # a function space used solely to define function_test_integrals_fenics
@@ -118,7 +159,6 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, fun
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics_read, ds_r, '\int f ds_r_read'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics_read, ds, '\int f ds'))
-
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
