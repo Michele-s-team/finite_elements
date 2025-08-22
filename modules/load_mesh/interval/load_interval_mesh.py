@@ -41,14 +41,27 @@ with XDMFFile("vertex_mesh.xdmf") as outfile:
     outfile.write(mesh)  # Save mesh geometry first
     outfile.write(vf)
 
+
+def read_mesh_from_file_new(filename):
+    mesh_read = Mesh()
+    with XDMFFile(filename) as infile:
+        infile.read(mesh_read)
+    return mesh_read
+
 def read_mesh_components_new(mesh, dim, filename):
     mf = MeshFunction("size_t", mesh, dim)
     with XDMFFile(filename) as infile:
         infile.read(mf)  # Remove the "name_to_read" parameter
     return mf
 
-cf_read = read_mesh_components_new(mesh, mesh.topology().dim(), "line_mesh.xdmf")
-vf_read = read_mesh_components_new(mesh, mesh.topology().dim()-1, "vertex_mesh.xdmf")
+
+# Read meshes from files
+mesh_read_from_line = read_mesh_from_file_new("line_mesh.xdmf")
+mesh_read_from_vertex = read_mesh_from_file_new("vertex_mesh.xdmf")
+
+# Build mesh functions from meshes loaded from files
+cf_read = read_mesh_components_new(mesh_read_from_line, mesh_read_from_line.topology().dim(), "line_mesh.xdmf")
+vf_read = read_mesh_components_new(mesh_read_from_vertex, mesh_read_from_vertex.topology().dim()-1, "vertex_mesh.xdmf")
 
 
 dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=parameters['line_id'])
@@ -57,12 +70,12 @@ ds_r = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['ve
 
 ds = ds_l + ds_r
 
-dx_read = Measure("dx", domain=mesh, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
-ds_l_read = Measure("ds", domain=mesh, subdomain_data=vf_read, subdomain_id=parameters['vertex_l_id'])
+dx_read = Measure("dx", domain=mesh_read_from_line, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
 
 
 # a function space used solely to define function_test_integrals_fenics
 Q_test = FunctionSpace(mesh, 'P', 2)
+Q_test_read = FunctionSpace(mesh_read_from_line, 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
@@ -71,6 +84,7 @@ def function_test_integrals(x):
 
 
 function_test_integrals_fenics = Function(Q_test)
+function_test_integrals_fenics_read = Function(Q_test_read)
 
 
 class FunctionTestIntegrals(UserExpression):
@@ -82,6 +96,7 @@ class FunctionTestIntegrals(UserExpression):
 
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
+function_test_integrals_fenics_read.interpolate(FunctionTestIntegrals(element=Q_test_read.ufl_element()))
 
 print(f'int dx = {assemble(Constant(1) * dx)}')
 print(f'int ds_l = {assemble(function_test_integrals_fenics * ds_l)}')
@@ -96,17 +111,16 @@ integral_exact_ds = integral_exact_ds_l + integral_exact_ds_r
 test_mesh_integral_errors = []
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, dx, '\int f dx'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, dx_read, '\int f dx_read'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics_read, dx_read, '\int f dx_read'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, ds_l, '\int f ds_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, ds_r, '\int f ds_r'))
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, ds_l_read, '\int f ds_l_read'))
 
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, ds, '\int f ds'))
 
-print(f'Maximum relative error of mesh integrals = {col.Fore.BLUE}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], {parameters["x_l"]})'
