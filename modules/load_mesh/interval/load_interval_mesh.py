@@ -50,52 +50,6 @@ def read_mesh_from_file_new(filename, mesh_name):
     return mesh
 
 
-def read_mesh_function_from_file(mesh, dim, filename, mf_name="name_to_read", file_format=None):
-    """
-    Read mesh function from file with unified interface.
-
-    Parameters:
-    -----------
-    mesh : dolfin.Mesh
-        The mesh object
-    dim : int
-        Dimension of the mesh function
-    filename : str
-        Path to the file
-    mf_name : str, optional
-        Name of the mesh function to read (default: "name_to_read")
-    file_format : str, optional
-        File format: "hdf5" or "xdmf" (auto-detected if None)
-
-    Returns:
-    --------
-    MeshFunction or MeshFunctionSizet
-        The mesh function read from file
-    """
-    if file_format is None:
-        # Auto-detect format from file extension
-        if filename.endswith('.h5') or filename.endswith('.hdf5'):
-            file_format = "hdf5"
-        elif filename.endswith('.xdmf'):
-            file_format = "xdmf"
-        else:
-            raise ValueError(f"Cannot determine file format from extension: {filename}")
-
-    if file_format.lower() == "hdf5":
-        mf = MeshFunction("size_t", mesh, dim)
-        with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
-            infile.read(mf, mf_name)
-        return mf
-
-    elif file_format.lower() == "xdmf":
-        mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
-        with XDMFFile(filename) as infile:
-            infile.read(mesh_value_collection, mf_name)
-            infile.close()
-        return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
-
-    else:
-        raise ValueError(f"Unsupported file format: {file_format}")
 
 
 # Read meshes from files
@@ -115,8 +69,8 @@ print(f"Read mesh coordinates shape: {mesh.coordinates().shape}")
 print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh.coordinates())}")
 
 # Build mesh functions from meshes loaded from files
-cf = read_mesh_function_from_file(mesh, mesh.topology().dim(), io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "cf")
-vf = read_mesh_function_from_file(mesh, mesh.topology().dim() - 1, io.add_trailing_slash(rarg.args.output_directory) + "vertex_mesh.h5", "vf")
+cf = msh.read_mesh_components(mesh, mesh.topology().dim(), io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", "cf")
+vf = msh.read_mesh_components(mesh, mesh.topology().dim() - 1, io.add_trailing_slash(rarg.args.output_directory) + "vertex_mesh.h5", "vf")
 
 dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=parameters['line_id'])
 ds_l = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['vertex_l_id'])

@@ -50,18 +50,58 @@ def write_mesh_components(infile, outfile, component_type, prune_z):
 
 
 '''
-given a mesh 'mesh', read its components of dimension 'dim' stored into 'filename' and returns the collection of components
+given a mesh 'mesh' written in an xdmf file, read its components of dimension 'dim' stored into 'filename' and returns the collection of components
+Input values: 
+- 'mesh': the mesh to read the components from
+- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+- 'filename': the name of the xdmf file where the components of the mesh are stored
 Example: to read the lines of the mesh, call this method with 
-cf = msh.read_mesh_components(mesh, 1, (args.input_directory) + "/line_mesh.xdmf")
+    cf = msh.read_mesh_components_xdmf(mesh, 1, args.input_directory + "/line_mesh.xdmf")
 '''
 
-
-def read_mesh_components(mesh, dim, filename):
+def read_mesh_components_xdmf(mesh, dim, filename):
     mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
     with XDMFFile(filename) as infile:
         infile.read(mesh_value_collection, "name_to_read")
         infile.close()
     return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
+
+def read_mesh_components_h5(mesh, dim, filename, name_to_read):
+    mesh_function = MeshFunction("size_t", mesh, dim)
+    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+        infile.read(mesh_function, name_to_read)
+    return mesh_function
+
+def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
+
+    # detect format from file extension
+    if filename.endswith('.h5'):
+        file_format = "h5"
+    elif filename.endswith('.xdmf'):
+        file_format = "xdmf"
+    else:
+        raise ValueError(f"File extension is invalid: {filename}")
+
+    if file_format.lower() == "h5":
+        '''
+        mf = MeshFunction("size_t", mesh, dim)
+        with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+            infile.read(mf, mf_name)
+        return mf
+        '''
+        read_mesh_components_h5(mesh, dim, filename, name_to_read)
+
+
+    elif file_format.lower() == "xdmf":
+        # mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
+        # with XDMFFile(filename) as infile:
+        #     infile.read(mesh_value_collection, mf_name)
+        #     infile.close()
+        # return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
+        return read_mesh_components_xdmf(mesh, dim, filename)
+
+    else:
+        raise ValueError(f"Unsupported file format: {file_format}")
 
 
 '''
