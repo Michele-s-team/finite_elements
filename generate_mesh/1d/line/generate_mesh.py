@@ -1,5 +1,5 @@
 '''
-generate a mesh given by a half circle with a line inside
+generate a mesh given by a line
 
 Run it with
     python3 generate_half_circle_with_line_mesh.py [path where to read parameters] [output directory]
@@ -27,7 +27,7 @@ mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 print("output_directory = ", output_directory)
 
-mesh_temp = IntervalMesh(rpam.parameters['N'], rpam.parameters['x_l'], rpam.parameters['x_r'])
+mesh_temp = IntervalMesh(int((rpam.parameters['x_r'] - rpam.parameters['x_l']) / rpam.parameters['resolution']), rpam.parameters['x_l'], rpam.parameters['x_r'])
 
 # create a function for the lines
 cell_function_temp = MeshFunction("size_t", mesh_temp, mesh_temp.topology().dim())
@@ -43,7 +43,6 @@ for vertex in vertices(mesh_temp):
 
     if math.isclose(x, rpam.parameters['x_r']):
         vertex_function_temp[vertex] = rpam.parameters['vertex_r_id']
-
 
 '''
 write the mesh lines and vertices to .h5 files: 
