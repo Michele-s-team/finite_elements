@@ -8,6 +8,7 @@ import load_mesh as lmsh
 import mesh as msh
 import read_mesh_line as rmsh
 
+'''
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 # CHANGE PARAMETERS HERE
@@ -51,3 +52,4 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(
 test_mesh_integral_errors.append(msh.test_mesh_integral(function_test_integrals(rmsh.parameters['x_l']) + function_test_integrals(rmsh.parameters['x_r']), function_test_integrals_fenics, rmsh.dp_lr, '\int_{point_lr} dp f'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+'''

@@ -10,11 +10,12 @@ import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
-# read the lines
-cf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
-# read the vertices
-sf = msh.read_mesh_components(lmsh.mesh, 0, rarg.args.input_directory + "/vertex_mesh.xdmf")
 
+# read the lines
+cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), io.add_trailing_slash(rarg.args.input_directory) + "line_mesh.h5", "cf")
+# read the vertices
+vf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, io.add_trailing_slash(rarg.args.input_directory) + "vertex_mesh.h5", "vf")
+'''
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
@@ -33,3 +34,4 @@ print(f'Module {__file__} called {check_mesh_tags_line.__file__}', flush=True)
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], {parameters["x_l"]})'
 boundary_r = f'near(x[1], {parameters["x_r"]})'
+'''

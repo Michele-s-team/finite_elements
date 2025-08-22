@@ -27,6 +27,10 @@ mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 print("output_directory = ", output_directory)
 
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'h5'
+
+
 mesh_temp = IntervalMesh(int((rpam.parameters['x_r'] - rpam.parameters['x_l']) / rpam.parameters['resolution']), rpam.parameters['x_l'], rpam.parameters['x_r'])
 
 # create a function for the lines
@@ -50,3 +54,6 @@ one needs to write them to .h5 file rather than to .xdmf file because only .h5 f
 '''
 msh.write_mesh_components_h5(mesh_temp, output_directory + "line_mesh.h5", cell_function_temp, "cf")
 msh.write_mesh_components_h5(mesh_temp, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
+
+# print mesh metadata
+io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
