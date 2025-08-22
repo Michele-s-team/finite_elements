@@ -1,9 +1,7 @@
 from fenics import *
 import math
-import runtime_arguments as rarg
 
 import input_output as io
-import read_parameters_generate_mesh
 
 parameters = io.read_parameters_from_csv_file("parameters_bc_line.csv")
 
