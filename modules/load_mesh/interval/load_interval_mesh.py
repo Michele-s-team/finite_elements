@@ -14,15 +14,15 @@ r_test = 0.345
 
 
 parameters = io.read_parameters_from_csv_file("parameters_bc_line.csv")
-mesh = IntervalMesh(parameters['N'], parameters['x_l'], parameters['x_r'])
+mesh_t = IntervalMesh(parameters['N'], parameters['x_l'], parameters['x_r'])
 
 # create a function for the lines
-cf = MeshFunction("size_t", mesh, mesh.topology().dim())
+cf = MeshFunction("size_t", mesh_t, mesh_t.topology().dim())
 cf.set_all(parameters['line_id'])  # Tag entire line as region parameters['line_id']
 
 # creat a function for the vertices
-vf = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
-for vertex in vertices(mesh):
+vf = MeshFunction("size_t", mesh_t, mesh_t.topology().dim() - 1)
+for vertex in vertices(mesh_t):
     x = vertex.point().x()  # Get x-coordinate
 
     if math.isclose(x, parameters['x_l']):
@@ -31,22 +31,22 @@ for vertex in vertices(mesh):
     if math.isclose(x, parameters['x_r']):
         vf[vertex] = parameters['vertex_r_id']
 
-# Save the mesh components to files
+# Save the mesh_t components to files
 # Save using HDF5
-with HDF5File(mesh.mpi_comm(), "line_mesh.h5", "w") as outfile:
-    outfile.write(mesh, "mesh")
+with HDF5File(mesh_t.mpi_comm(), "line_mesh.h5", "w") as outfile:
+    outfile.write(mesh_t, "mesh")
     outfile.write(cf, "cf")
 
-with HDF5File(mesh.mpi_comm(), "vertex_mesh.h5", "w") as outfile:
-    outfile.write(mesh, "mesh")
+with HDF5File(mesh_t.mpi_comm(), "vertex_mesh.h5", "w") as outfile:
+    outfile.write(mesh_t, "mesh")
     outfile.write(vf, "vf")
 
 
 def read_mesh_from_file_new(filename, mesh_name):
-    mesh_read = Mesh()
+    mesh = Mesh()
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
-        infile.read(mesh_read, mesh_name, False)
-    return mesh_read
+        infile.read(mesh, mesh_name, False)
+    return mesh
 
 
 def read_mesh_function_from_file_new(mesh, filename, mf_name, dim):
@@ -57,7 +57,7 @@ def read_mesh_function_from_file_new(mesh, filename, mf_name, dim):
 
 
 # Read meshes from files
-mesh_read_from_line = read_mesh_from_file_new("line_mesh.h5", "mesh")
+mesh = read_mesh_from_file_new("line_mesh.h5", "mesh")
 mesh_read_from_vertex = read_mesh_from_file_new("vertex_mesh.h5", "mesh")
 
 print(f"Original mesh dimension: {mesh.topology().dim()}")
@@ -65,25 +65,25 @@ print(f"Original mesh num vertices: {mesh.num_vertices()}")
 print(f"Original mesh num cells: {mesh.num_cells()}")
 print(f"Original mesh coordinates shape: {mesh.coordinates().shape}")
 
-print(f"Read mesh dimension: {mesh_read_from_line.topology().dim()}")
-print(f"Read mesh num vertices: {mesh_read_from_line.num_vertices()}")
-print(f"Read mesh num cells: {mesh_read_from_line.num_cells()}")
-print(f"Read mesh coordinates shape: {mesh_read_from_line.coordinates().shape}")
+print(f"Read mesh dimension: {mesh.topology().dim()}")
+print(f"Read mesh num vertices: {mesh.num_vertices()}")
+print(f"Read mesh num cells: {mesh.num_cells()}")
+print(f"Read mesh coordinates shape: {mesh.coordinates().shape}")
 
 # Check if coordinates are identical
-print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh_read_from_line.coordinates())}")
+print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh.coordinates())}")
 
 # Build mesh functions from meshes loaded from files
-cf_read = read_mesh_function_from_file_new(mesh_read_from_line, "line_mesh.h5", "cf", mesh_read_from_line.topology().dim())
+cf_read = read_mesh_function_from_file_new(mesh, "line_mesh.h5", "cf", mesh.topology().dim())
 vf_read = read_mesh_function_from_file_new(mesh_read_from_vertex, "vertex_mesh.h5", "vf", mesh_read_from_vertex.topology().dim() - 1)
 
-dx = Measure("dx", domain=mesh_read_from_line, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
+dx = Measure("dx", domain=mesh, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
 ds_l = Measure("ds", domain=mesh_read_from_vertex, subdomain_data=vf_read, subdomain_id=parameters['vertex_l_id'])
 ds_r = Measure("ds", domain=mesh_read_from_vertex, subdomain_data=vf_read, subdomain_id=parameters['vertex_r_id'])
-ds = ds_l+ds_r
+ds = Measure("ds", domain=mesh)
 
 # a function space used solely to define function_test_integrals_fenics
-Q_test_read = FunctionSpace(mesh_read_from_line, 'P', 2)
+Q_test_read = FunctionSpace(mesh, 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
@@ -115,6 +115,10 @@ test_mesh_integral_errors = []
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics_read, dx, '\int f dx_read'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics_read, ds_l, '\int f ds_l_read'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics_read, ds_r, '\int f ds_r_read'))
+
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics_read, ds, '\int f ds'))
+
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
