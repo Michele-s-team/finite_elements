@@ -24,7 +24,13 @@ def create_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-# read the mesh form 'filename' and return it
+'''
+read the mesh from xdmf file
+Input values: 
+- 'file name': path and name of the xdmf file
+Return values: 
+- 'mesh': the mesh
+'''
 def read_mesh_xdmf(filename):
 
     mesh = Mesh()
@@ -35,6 +41,14 @@ def read_mesh_xdmf(filename):
 
     return mesh
 
+'''
+read the mesh from h5 file
+Input values: 
+- 'file name': path and name of the h5 file
+- 'mesh_name' [optional]: the name of the mesh in the file
+Return values: 
+- 'mesh': the mesh
+'''
 def read_mesh_h5(filename, mesh_name='mesh'):
     mesh = Mesh()
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
