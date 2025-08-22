@@ -33,36 +33,48 @@ for vertex in vertices(mesh):
 
 
 # Save the mesh components to files
-with XDMFFile("line_mesh.xdmf") as outfile:
-    outfile.write(mesh)  # Save mesh geometry first
-    outfile.write(cf)
+# Save using HDF5
+with HDF5File(mesh.mpi_comm(), "line_mesh.h5", "w") as outfile:
+    outfile.write(mesh, "mesh")
+    outfile.write(cf, "cf")
 
-with XDMFFile("vertex_mesh.xdmf") as outfile:
-    outfile.write(mesh)  # Save mesh geometry first
-    outfile.write(vf)
+with HDF5File(mesh.mpi_comm(), "vertex_mesh.h5", "w") as outfile:
+    outfile.write(mesh, "mesh")
+    outfile.write(vf, "vf")
 
 
-def read_mesh_from_file_new(filename):
+def read_mesh_from_file_new(filename, mesh_name):
     mesh_read = Mesh()
-    with XDMFFile(filename) as infile:
-        infile.read(mesh_read)
+    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+        infile.read(mesh_read, mesh_name, False)
     return mesh_read
 
-def read_mesh_components_new(mesh, dim, filename):
+def read_mesh_function_from_file_new(mesh, filename, mf_name, dim):
     mf = MeshFunction("size_t", mesh, dim)
-    with XDMFFile(filename) as infile:
-        infile.read(mf)  # Remove the "name_to_read" parameter
+    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+        infile.read(mf, mf_name)
     return mf
 
-
 # Read meshes from files
-mesh_read_from_line = read_mesh_from_file_new("line_mesh.xdmf")
-mesh_read_from_vertex = read_mesh_from_file_new("vertex_mesh.xdmf")
+mesh_read_from_line = read_mesh_from_file_new("line_mesh.h5", "mesh")
+mesh_read_from_vertex = read_mesh_from_file_new("vertex_mesh.h5", "mesh")
+
+print(f"Original mesh dimension: {mesh.topology().dim()}")
+print(f"Original mesh num vertices: {mesh.num_vertices()}")
+print(f"Original mesh num cells: {mesh.num_cells()}")
+print(f"Original mesh coordinates shape: {mesh.coordinates().shape}")
+
+print(f"Read mesh dimension: {mesh_read_from_line.topology().dim()}")
+print(f"Read mesh num vertices: {mesh_read_from_line.num_vertices()}")
+print(f"Read mesh num cells: {mesh_read_from_line.num_cells()}")
+print(f"Read mesh coordinates shape: {mesh_read_from_line.coordinates().shape}")
+
+# Check if coordinates are identical
+print(f"Coordinates match: {np.allclose(mesh.coordinates(), mesh_read_from_line.coordinates())}")
 
 # Build mesh functions from meshes loaded from files
-cf_read = read_mesh_components_new(mesh_read_from_line, mesh_read_from_line.topology().dim(), "line_mesh.xdmf")
-vf_read = read_mesh_components_new(mesh_read_from_vertex, mesh_read_from_vertex.topology().dim()-1, "vertex_mesh.xdmf")
-
+cf_read = read_mesh_function_from_file_new(mesh_read_from_line, "line_mesh.h5", "cf", mesh_read_from_line.topology().dim())
+vf_read = read_mesh_function_from_file_new(mesh_read_from_vertex, "vertex_mesh.h5", "vf", mesh_read_from_vertex.topology().dim()-1)
 
 dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=parameters['line_id'])
 ds_l = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['vertex_l_id'])
@@ -71,6 +83,7 @@ ds_r = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=parameters['ve
 ds = ds_l + ds_r
 
 dx_read = Measure("dx", domain=mesh_read_from_line, subdomain_data=cf_read, subdomain_id=parameters['line_id'])
+ds_l_read = Measure("ds", domain=mesh_read_from_vertex, subdomain_data=vf_read, subdomain_id=parameters['vertex_l_id'])
 
 
 # a function space used solely to define function_test_integrals_fenics
@@ -115,6 +128,7 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, funct
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, ds_l, '\int f ds_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, ds_r, '\int f ds_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics_read, ds_l_read, '\int f ds_l_read'))
 
 
 
