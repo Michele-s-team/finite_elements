@@ -27,6 +27,11 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file = output_directory + "mesh.msh"
 mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 c_1 = [rpam.parameters["r"], 0, 0]
 c_2 = [-rpam.parameters["r"], 0, 0]
 
@@ -108,6 +113,6 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], metadata, output_directory, True)
 
 model.__exit__()

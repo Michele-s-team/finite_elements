@@ -26,6 +26,11 @@ output_dir = rarg.args.output_directory
 mesh_file_name = output_dir + "/mesh.msh"
 mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 # the angular width of the slice is 2 \pi/N = theta
 theta = 2 * np.pi / rpam.parameters["N"]
 
@@ -47,4 +52,4 @@ mesh = msh.read_mesh(output_dir + "/triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "/vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+io.write_parameters_to_csv_file(mesh_metadata_file_name, metadata)
