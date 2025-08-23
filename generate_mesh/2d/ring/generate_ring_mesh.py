@@ -28,6 +28,11 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
@@ -51,7 +56,7 @@ gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 
 
-msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 gmsh.clear()
 geometry.__exit__()

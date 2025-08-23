@@ -1,4 +1,5 @@
-import colorama as col
+# from ufl import Mesh
+
 import command as cmd
 from fenics import *
 import numpy as np
@@ -23,8 +24,16 @@ def create_mesh(mesh, cell_type, prune_z=False):
     return out_mesh
 
 
-# read the mesh form 'filename' and return it
-def read_mesh(filename):
+'''
+read the mesh from xdmf file
+Input values: 
+- 'file name': path and name of the xdmf file
+Return values: 
+- 'mesh': the mesh
+'''
+
+
+def read_mesh_xdmf(filename):
     mesh = Mesh()
 
     xdmf = XDMFFile(mesh.mpi_comm(), filename)
@@ -32,6 +41,49 @@ def read_mesh(filename):
     xdmf.close()
 
     return mesh
+
+
+'''
+read the mesh from h5 file
+Input values: 
+- 'file name': path and name of the h5 file
+- 'mesh_name' [optional]: the name of the mesh in the file
+Return values: 
+- 'mesh': the mesh
+'''
+
+
+def read_mesh_h5(filename, mesh_name='mesh'):
+    mesh = Mesh()
+    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+        infile.read(mesh, mesh_name, False)
+    return mesh
+
+
+'''
+Read a mesh from file
+Input values: 
+- 'file name': path and name of the file, which can be either an xdmf file or h5 file
+Return values:
+- 'mesh': the mesh
+'''
+
+
+def read_mesh(filename):
+    # detect format from file extension
+    if filename.endswith('.h5'):
+        file_format = "h5"
+    elif filename.endswith('.xdmf'):
+        file_format = "xdmf"
+    else:
+        raise ValueError(f"File extension is invalid: {filename}")
+
+    if file_format == "h5":
+        return read_mesh_h5(filename)
+    elif file_format == "xdmf":
+        return read_mesh_xdmf(filename)
+    else:
+        print(f"File extension is invalid: {filename}")
 
 
 '''
@@ -50,18 +102,99 @@ def write_mesh_components(infile, outfile, component_type, prune_z):
 
 
 '''
-given a mesh 'mesh', read its components of dimension 'dim' stored into 'filename' and returns the collection of components
-Example: to read the lines of the mesh, call this method with 
-cf = msh.read_mesh_components(mesh, 1, (args.input_directory) + "/line_mesh.xdmf")
+write to .h5 file the components of a mesh determined by a MeshFunction
+Input values: 
+- 'mesh': the mesh
+- 'file_name': the .h5 file where the component will be written
+- 'componand_function': the MeshFunction that specifies the component
+- 'component_name': the name with which the component will be named in the output file
+Example of usage:
+    msh.write_mesh_components_h5(mesh_t, io.add_trailing_slash(rarg.args.output_directory) + "line_mesh.h5", cf_t, "cf")
 '''
 
 
-def read_mesh_components(mesh, dim, filename):
+def write_mesh_components_h5(mesh, filename, component_function, component_name):
+    with HDF5File(mesh.mpi_comm(), filename, "w") as outfile:
+        outfile.write(mesh, "mesh")
+        outfile.write(component_function, component_name)
+
+
+'''
+Given a mesh written in an xdmf file, read its components stored into the xdmf file and return the collection of components
+Input values: 
+- 'mesh': the mesh to read the components from
+- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+- 'filename': the name of the xdmf file where the components of the mesh are stored
+Example: to read the lines of the mesh, call this method with 
+    cf = msh.read_mesh_components_xdmf(mesh, 1, args.input_directory + "/line_mesh.xdmf")
+'''
+
+
+def read_mesh_components_xdmf(mesh, dim, filename):
     mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
     with XDMFFile(filename) as infile:
         infile.read(mesh_value_collection, "name_to_read")
         infile.close()
     return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
+
+
+'''
+Given a mesh written in an h5 file, read its components  stored in an h5 file and returns the collection of components
+Input values: 
+- 'mesh': the mesh to read the components from
+- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+- 'filename': the name of the h5 file where the components of the mesh are stored
+'''
+
+
+def read_mesh_components_h5(mesh, dim, filename, name_to_read):
+    mesh_function = MeshFunction("size_t", mesh, dim)
+    with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+        infile.read(mesh_function, name_to_read)
+    return mesh_function
+
+
+'''
+Given a mesh written in a file, read its components stored into the file and return the collection of components
+Input values: 
+- 'mesh': the mesh to read the components from
+- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+- 'filename': the name of the file (either .h5 or .xdmf) where the components of the mesh are stored
+'''
+
+
+def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
+    # detect format from file extension
+    if filename.endswith('.h5'):
+        file_format = "h5"
+    elif filename.endswith('.xdmf'):
+        file_format = "xdmf"
+    else:
+        raise ValueError(f"File extension is invalid: {filename}")
+
+    if file_format.lower() == "h5":
+        '''
+        mf = MeshFunction("size_t", mesh, dim)
+        with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
+            infile.read(mf, mf_name)
+        return mf
+        '''
+        print('Reading mesh components from .h5 file.')
+        return read_mesh_components_h5(mesh, dim, filename, name_to_read)
+
+
+    elif file_format.lower() == "xdmf":
+        # mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
+        # with XDMFFile(filename) as infile:
+        #     infile.read(mesh_value_collection, mf_name)
+        #     infile.close()
+        # return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
+        print('Reading mesh components from .xdmf file.')
+
+        return read_mesh_components_xdmf(mesh, dim, filename)
+
+    else:
+        raise ValueError(f"Unsupported file format: {file_format}")
 
 
 '''
@@ -1121,15 +1254,16 @@ Input values:
 Example of usage:
     msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
 '''
-def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
+
+def full_write(mesh_file, components, parameters, output_directory, prune_z):
     output_directory_slash = io.add_trailing_slash(output_directory)
 
     for component in components:
         write_mesh_components(mesh_file, output_directory_slash + component + "_mesh.xdmf", component, prune_z)
 
     # print  mesh vertices to csv file
-    mesh = read_mesh(output_directory_slash + components[0]  + "_mesh.xdmf")
+    mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
     io.print_mesh_vertices_to_csv(mesh, output_directory_slash + "vertices.csv")
 
     # print the mesh lines to csv fie
@@ -1137,6 +1271,7 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print mesh metadata
     io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
+
 
 '''
 Given a parent mesh and a submesh of it, and function mf_parent which identifies facets on the parent mesh, 
@@ -1156,8 +1291,9 @@ Example of usage:
 Then you can create a ds on the submesh with 
     ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
 '''
-def transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent):
 
+
+def transfer_facet_tags_to_sub_mesh(parent_mesh, sub_mesh, mf_parent):
     # Create facet marker on submesh
     mf_sub = MeshFunction('size_t', sub_mesh, 1, 0)
 
@@ -1195,6 +1331,7 @@ Example of usage:
     mf_boundary_mesh = msh.transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_submesh_out)
 '''
 
+
 def transfer_facet_tags_to_bounday_mesh(boundary_mesh, mf_parent_mesh):
     # entity_map(1) maps boundary mesh facets to sub_mesh facets
     boundary_to_parent_facet_map = boundary_mesh.entity_map(1)
@@ -1230,6 +1367,8 @@ Then you can create a ds on the submesh with
  
 
 '''
+
+
 def transfer_cell_tags_to_sub_mesh(sub_mesh, sf_parent):
     sf_submesh_out = MeshFunction('size_t', sub_mesh, 2)
     parent_cell_map = sub_mesh.data().array('parent_cell_indices', 2)
@@ -1241,7 +1380,6 @@ def transfer_cell_tags_to_sub_mesh(sub_mesh, sf_parent):
         # assign the correct id of the function sf_submesh_out calculated on the mesh of the sub_mesh under consideration, setting it to the same id it has in the parent_mesh
         sf_submesh_out[sub_cell] = sf_parent[parent_cell]
 
-
     return sf_submesh_out
 
 
@@ -1251,9 +1389,11 @@ Input values:
 - 'input_path': the path where 'tetra_mesh.xdmf', 'triangle_mesh.xdmf', or 'line_mesh.xdmf' are located
 Return values: 
 - 'mesh': the mesh, or [] if the mesh could not be read
+- 'sf': the mesh function for the components of the mesh with the largest dimension 
 '''
-def read_from_file(mesh_path):
 
+
+def read_from_xdmf_file(mesh_path):
     mesh_path_with_slash = io.add_trailing_slash(mesh_path)
 
     if cmd.check_if_file_exists(mesh_path_with_slash + "tetra_mesh.xdmf"):
@@ -1288,6 +1428,31 @@ def read_from_file(mesh_path):
 
     return result
 
+
+def read_from_h5_file(mesh_path):
+    mesh_path_with_slash = io.add_trailing_slash(mesh_path)
+
+    if cmd.check_if_file_exists(mesh_path_with_slash + "line_mesh.h5"):
+        mesh = read_mesh(mesh_path_with_slash + "line_mesh.h5")
+        cf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.h5", "cf")
+
+        result = mesh, cf
+
+    else:
+        print(f"{col.Fore.RED}No mesh could be loaded!{col.Style.RESET_ALL}")
+        result = []
+
+    return result
+
+def read_from_file(mesh_path, file_format='xdmf'):
+    if file_format == 'xdmf':
+        return read_from_xdmf_file(mesh_path)
+    elif file_format == 'h5':
+        return read_from_h5_file(mesh_path)
+    else:
+        print(f"{col.Fore.RED}No mesh could be loaded!{col.Style.RESET_ALL}")
+
+
 '''
 write a mesh to xdmf file
 Input values:
@@ -1295,8 +1460,9 @@ Input values:
 - 'map': the map containing the tags of the mesh elements (triangles, lines, etc) 
 - 'output_file': path + name of the xdmf file where the mesh will be written 
 '''
-def write_mesh(mesh, output_file, map=None):
 
+
+def write_mesh(mesh, output_file, map=None):
     with XDMFFile(output_file) as xdmf:
         xdmf.write(mesh)
         xdmf.write(map)
@@ -1313,8 +1479,9 @@ Input values:
 Return values:
 - 'sub_mesh', 'boundary_sub_mesh': the sub_mesh and the mesh given by the boundary of the sub_mesh
 '''
-def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
+
+def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     parent_mesh_path_slash = io.add_trailing_slash(parent_mesh_path)
     submesh_path_slash = io.add_trailing_slash(sub_mesh_path)
 
@@ -1348,4 +1515,3 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
     return sub_mesh, sub_mesh_boundary
-

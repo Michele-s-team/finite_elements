@@ -5,10 +5,10 @@ import input_output as io
 import mesh as msh
 import runtime_arguments as rarg
 
-parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+parameters = io.read_parameters_from_csv_file(io.add_trailing_slash(rarg.args.input_directory) + "mesh_metadata.csv")
 
 # read the mesh
-mesh, sf = msh.read_from_file(rarg.args.input_directory)
+mesh, sf = msh.read_from_file(rarg.args.input_directory, parameters['file_format'])
 
 if "n_sub_meshes" in parameters:
     #mesh parameters contain the field n_sub_meshes -> generate sub_meshes

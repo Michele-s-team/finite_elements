@@ -24,6 +24,10 @@ import read_parameters_generate_mesh as rpam
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
 mesh_file = output_directory + "mesh.msh"
 
 # Initialize empty geometry using the build in kernel in GMSH
@@ -59,7 +63,7 @@ msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 mesh_from_file = meshio.read(mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 gmsh.clear()
 geometry.__exit__()

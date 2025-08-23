@@ -41,6 +41,12 @@ output_dir = io.add_trailing_slash(rarg.args.output_directory)
 half_mesh_msh_file = output_dir + "half_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
+
 # Half mesh is generated used pygmsh and it's saved as mesh.msh
 
 geometry = pygmsh.geo.Geometry()
@@ -158,4 +164,4 @@ mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", rpam.parameters)
+io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", metadata)

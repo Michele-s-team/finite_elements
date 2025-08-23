@@ -34,6 +34,11 @@ mesh_file = output_directory + "mesh.msh"
 
 print(f'output_directory = "{output_directory}"')
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 # left focal point  of the ellipse
 focus = np.subtract(rpam.parameters["c"], [np.sqrt(rpam.parameters["a"] ** 2 - rpam.parameters["b"] ** 2), 0, 0])
 
@@ -111,7 +116,7 @@ mesh_from_file = meshio.read(mesh_file)
 # mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
 # io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
-msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 
 gmsh.clear()

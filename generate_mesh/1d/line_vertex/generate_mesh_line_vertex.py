@@ -26,7 +26,10 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file_name = output_directory + "mesh.msh"
-mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
+
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
 
 # Initialize empty geometry using the build in kernel in GMSH
 geometry = pygmsh.occ.Geometry()
@@ -52,6 +55,6 @@ model.add_physical([points[1]], "point_in")
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file_name)
 
-msh.full_write(mesh_file_name, ['line', 'vertex'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file_name, ['line', 'vertex'], metadata, output_directory, True)
 
 model.__exit__()
