@@ -1,6 +1,6 @@
 from fenics import *
 
-from load_mesh.interval import load_interval_mesh as lmsh
+import load_mesh as lmsh
 
 function_space_degree = 4
 

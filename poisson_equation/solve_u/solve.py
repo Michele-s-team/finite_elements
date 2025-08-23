@@ -37,10 +37,10 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-from load_mesh.interval import load_interval_mesh as lmsh
+import load_mesh as lmsh
 import switch_problem as swi
 
-# rmsh = importlib.import_module(swi.rmsh)
+rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 
@@ -73,11 +73,5 @@ solver.solve()
 
 # solve pp problem
 solver_pp.solve()
-
-# CHANGE VARIATIONAL PROBLEM OR MESH HERE
-# import print_out_bc_ring
-# import print_out_bc_ring_slice
-# import print_out_bc_square_no_circle
-# import print_out_bc_square
 
 prout_bc = importlib.import_module(swi.prout_bc)

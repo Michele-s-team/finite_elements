@@ -1,17 +1,16 @@
 from fenics import *
+import importlib
 import numpy as np
 import ufl as ufl
 
-# import boundary_geometry as bgeo
+import boundary_geometry as bgeo
 import function_spaces as fsp
-from load_mesh.interval import load_interval_mesh as lmsh
+import load_mesh as lmsh
+import switch_problem as swi
 
-
-# rmsh = importlib.import_module(swi.rmsh)
+rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
-
-facet_normal = FacetNormal( lmsh.mesh )
 
 
 class u_exact_expression(UserExpression):
@@ -90,13 +89,13 @@ print("hess_u_exact:", fsp.hess_u_exact.ufl_shape)
 print("=====================================")
 '''
 
-bc_u = DirichletBC(fsp.Q, fsp.u_exact, lmsh.boundary)
+bc_u = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary)
 bcs = [bc_u]
 
 # variational functional for the original problem (poisson equation)
-F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * lmsh.dx \
-    - facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * lmsh.ds
+F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
+    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
-F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * lmsh.dx \
-       - (facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * lmsh.ds
+F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
+       - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
