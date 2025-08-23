@@ -27,6 +27,11 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 mesh_file = output_directory + "mesh.msh"
 
 geometry = pygmsh.occ.Geometry()
@@ -86,6 +91,6 @@ geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
-msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
+msh.full_write(mesh_file, ['tetra', 'triangle'], metadata, output_directory, False)
 
 model.__exit__()

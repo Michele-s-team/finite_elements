@@ -32,6 +32,10 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 warnings.filterwarnings("ignore")
 gmsh.initialize()
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
 mesh_file =output_directory + "mesh.msh"
 
 gmsh.model.add("my model")
@@ -119,7 +123,7 @@ gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
 
-msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
+msh.full_write(mesh_file, ['tetra', 'triangle'], metadata, output_directory, False)
 
 
 # msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')

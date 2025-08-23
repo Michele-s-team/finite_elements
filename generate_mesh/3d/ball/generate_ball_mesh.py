@@ -21,15 +21,15 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
-# parser = argparse.ArgumentParser()
-# parser.add_argument("rpam.parameters["resolution"]")
-# parser.add_argument("output_directory")
-# args = parser.parse_args()
 
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 mesh_file = output_directory + "mesh.msh"
+
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
 
 volume_id = 1
 surface_id = 2
@@ -80,6 +80,6 @@ mesh_from_file = meshio.read(mesh_file)
 # mesh = msh.read_mesh(args.output_directory + "/tetra_mesh.xdmf")
 # io.print_mesh_vertices_to_csv(mesh, args.output_directory + "/vertices.csv")
 
-msh.full_write(mesh_file, ['tetra', 'triangle'], rpam.parameters, output_directory, False)
+msh.full_write(mesh_file, ['tetra', 'triangle'], metadata, output_directory, False)
 
 model.__exit__()

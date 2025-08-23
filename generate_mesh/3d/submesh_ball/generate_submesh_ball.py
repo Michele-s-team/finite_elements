@@ -22,12 +22,14 @@ import geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import mesh as msh
+import read_parameters_generate_mesh as rpam
 import runtime_arguments as rarg
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+
 
 # read the mesh of the ball
 ball_mesh = Mesh()
