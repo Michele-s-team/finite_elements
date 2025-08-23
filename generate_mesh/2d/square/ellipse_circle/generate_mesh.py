@@ -22,14 +22,16 @@ import mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 
-# ds = dict([('ds_l', 1.0), ('ds_r', 2.0)])
-# print(f"ds = {ds['ds_r']}")
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file = output_directory + "mesh.msh"
-mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
+
+# write into metadata the file format wich which the mesh will be written
+mesh_metadata = rpam.parameters.copy()
+mesh_metadata['file_format'] = 'xdmf'
+
 
 print("output_directory = ", output_directory)
 
@@ -167,7 +169,7 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line'], mesh_metadata, output_directory, True)
 
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])

@@ -50,7 +50,11 @@ output_dir = io.add_trailing_slash(rarg.args.output_directory)
 quarter_mesh_msh_file = output_dir + "quarter_mesh.msh"
 mesh_xdmf_file = output_dir + "mesh.xdmf"
 
-# print(f'rpam.parameters["L"] = {rpam.parameters["L"]}\nh = {h}\nr={r}\nc_r = {c_r}\nrpam.parameters["resolution"] = {rpam.parameters["resolution"]}\noutput directory = {output_dir}')
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 
 # The quarter mesh is generated used pygmsh and it is saved as quarter_mesh.msh
 
@@ -196,4 +200,4 @@ mesh = msh.read_mesh(output_dir + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_dir + "vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", rpam.parameters)
+io.write_parameters_to_csv_file(output_dir + "mesh_metadata.csv", metadata)
