@@ -24,8 +24,6 @@ import read_parameters_generate_mesh as rpam
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
-mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
-
 print("output_directory = ", output_directory)
 
 metadata = rpam.parameters.copy()

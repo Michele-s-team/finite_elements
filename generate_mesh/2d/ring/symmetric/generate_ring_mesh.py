@@ -32,6 +32,11 @@ mesh_slice_file = output_directory + "ring_slice/mesh.msh"
 mesh_xdmf_file = output_directory + "mesh.xdmf"
 mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
+# write into metadata the file format wich which the mesh will be written
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 # generate the ring slice and save it to mesh_slice_file
 msh.generate_mesh_ring_slice(rpam.parameters["r"], rpam.parameters["R"], rpam.parameters["c_r"], rpam.parameters["c_R"], theta, rpam.parameters["resolution"], mesh_slice_file)
 
@@ -116,4 +121,4 @@ mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
 io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
 # print mesh metadata
-io.write_parameters_to_csv_file(mesh_metadata_file_name, rpam.parameters)
+io.write_parameters_to_csv_file(mesh_metadata_file_name, metadata)

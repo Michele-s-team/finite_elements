@@ -25,7 +25,6 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 # mesh resolution
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file = output_directory + "mesh.msh"
-mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 # write into metadata the file format wich which the mesh will be written
 metadata = rpam.parameters.copy()

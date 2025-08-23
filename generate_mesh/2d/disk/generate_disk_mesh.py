@@ -28,7 +28,6 @@ output_directory = rarg.args.output_directory
 output_directory = io.add_trailing_slash(output_directory)
 
 mesh_file = output_directory + "mesh.msh"
-mesh_metadata_file_name = rarg.args.output_directory + '/mesh_metadata.csv'
 
 # write into metadata the file format wich which the mesh will be written
 metadata = rpam.parameters.copy()
