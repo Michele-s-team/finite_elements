@@ -8,7 +8,7 @@ And replacing into the PDE, we obtain a PDE for u:
 f = Nabla (u + v) = Nabla(u +- sqrt(u**2-g))
 
 
-Test case 2:
+Test case 1:
     We take
     u = 1 + x[0]**2 + 2 * x[1]**2
     v = 1 + x[0]**2 - 2 * x[1]**2
@@ -17,6 +17,10 @@ Test case 2:
     u + v = 2 + 2*x[0]**2
     f = 4
     g = 8 * ( 1+ x[0]**2)* x[1]**2
+
+Test case 2:
+    u[x_, y_] := Sin[2 \[Pi] (x + y)] Cos[2 \[Pi] (x - y)^2]
+    v[x_, y_] := Cos[2 \[Pi] (x - y)] Sin[2 \[Pi] (x + y)^2]
 '''
 
 from fenics import *
@@ -67,7 +71,7 @@ class g_expression(UserExpression):
 
 class u_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 1 + x[0] ** 2 + 2.001 * x[1] ** 2
 
     def value_shape(self):
         return (1,)
@@ -75,7 +79,7 @@ class u_0_expression(UserExpression):
 
 class v_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 - 2 * x[1] ** 2
+        values[0] = 1 + 1.01 * x[0] ** 2 - 2 * x[1] ** 2
 
     def value_shape(self):
         return (1,)
