@@ -21,6 +21,10 @@ u_exact = Function(Q_u)
 v_exact = Function(Q_v)
 laplacian_u_exact = Function(Q_u)
 
+u_0 = Function(Q_u)
+v_0 = Function(Q_v)
+
+
 f = Function(Q_u)
 g = Function(Q_u)
 J_uv = TrialFunction(Q)

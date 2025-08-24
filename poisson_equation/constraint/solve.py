@@ -3,6 +3,7 @@ This code solves the Poisson equation Nabla (u + v) = f with a constraint
 clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/constraint/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_constraint_u_v $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/constraint/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_constraint_u2_v2 $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/constraint/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_constraint_grad_u_grad_v $MESH_PATH $SOLUTION_PATH
 
 '''
