@@ -121,7 +121,7 @@ fsp.g.interpolate(g_expression(element=fsp.Q_v.ufl_element()))
 
 # uncomment this if you want to start from the initial configuration u_0, v_0
 #
-print('Stetting initial profiles ... ')
+print('Setting initial profiles ... ')
 fsp.u_0.interpolate(u_0_expression(element=fsp.Q_u.ufl_element()))
 fsp.v_0.interpolate(v_0_expression(element=fsp.Q_v.ufl_element()))
 fsp.assigner.assign(fsp.psi, [fsp.u_0, fsp.v_0])
@@ -137,6 +137,14 @@ bcs = [bc_u_r, bc_u_R]
 F_u = (((fsp.u + fsp.v).dx(i)) * ((fsp.nu_u + fsp.nu_v).dx(i)) + fsp.f * (fsp.nu_u + fsp.nu_v)) * rmsh.dx \
       - bgeo.facet_normal[i] * ((fsp.u + fsp.v).dx(i)) * (fsp.nu_u + fsp.nu_v) * rmsh.ds_r \
       - bgeo.facet_normal[i] * ((fsp.u + fsp.v).dx(i)) * (fsp.nu_u + fsp.nu_v) * rmsh.ds_R
+
+'''
+F_v and F_N implement the constraint u^2-v^2=g. They are obtained by considering a functional 
+G[u,v] = alpha/rmsh \int_Omega dx (u^2-v^2-g)^2
+which is minimized and forces the minimization to enforce the constraint, which is satisfied at the minimum only. 
+
+by varying G[u, v] with respect to u and v and setting \delta u = nu_u, \delta_v = nu_v, we obtain F_v and F_N
+'''
 
 F_v = rpam.parameters['alpha'] / rmsh.r_mesh * (((fsp.u) ** 2 - (fsp.v) ** 2 - fsp.g) * (2 * fsp.u * fsp.nu_u - 2 * fsp.v * fsp.nu_v)) * rmsh.dx
 
