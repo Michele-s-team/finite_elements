@@ -4,10 +4,10 @@ import numpy as np
 import ufl
 
 import boundary_geometry as bgeo
-import function_spaces as fsp
 import read_parameters_solve as rpam
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)

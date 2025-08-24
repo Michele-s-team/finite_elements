@@ -8,7 +8,6 @@ Examples:
 
 '''
 
-import colorama as col
 from fenics import *
 import importlib
 
@@ -19,11 +18,11 @@ import ufl
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import function_spaces as fsp
 import switch_problem as swi
 
 i, j, k, l = ufl.indices(4)
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
