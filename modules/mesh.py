@@ -1,6 +1,3 @@
-# from ufl import Mesh
-from ufl import tetrahedron
-
 import command as cmd
 from fenics import *
 import numpy as np
