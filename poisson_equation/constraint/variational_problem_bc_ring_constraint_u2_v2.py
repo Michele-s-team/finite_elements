@@ -41,7 +41,7 @@ i, j = ufl.indices(2)
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
         values[0] = np.sin(2 * np.pi * (x[0] + x[1])) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
@@ -53,7 +53,7 @@ class u_exact_expression(UserExpression):
 class v_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0] ** 2 - 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 - 2 * x[1] ** 2
 
         # test case 2
         values[0] = np.cos(2 * np.pi * (x[0] - x[1])) * np.sin(2 * np.pi * (x[0] + x[1]) ** 2)
@@ -65,11 +65,13 @@ class v_exact_expression(UserExpression):
 class f_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 4
+        # values[0] = 4
 
         # test case 2
-        values[0] = (-8 * np.pi * (np.pi * (1 + 4 * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) + np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1])) +
-                 8 * np.pi * np.cos(2 * np.pi * (x[0] - x[1])) * (np.cos(2 * np.pi * (x[0] + x[1]) ** 2) - np.pi * (1 + 4 * (x[0] + x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1]) ** 2)))
+        values[0] = (-8 * np.pi * (np.pi * (1 + 4 * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) +
+                                   np.sin(2 * np.pi * (x[0] - x[1]) ** 2)) * np.sin(2 * np.pi * (x[0] + x[1])) +
+                     8 * np.pi * np.cos(2 * np.pi * (x[0] - x[1])) * (np.cos(2 * np.pi * (x[0] + x[1]) ** 2) -
+                                                                      np.pi * (1 + 4 * (x[0] + x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1]) ** 2)))
 
     def value_shape(self):
         return (1,)
@@ -78,19 +80,23 @@ class f_expression(UserExpression):
 class g_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 8 * (1 + x[0] ** 2) * x[1] ** 2
+        # values[0] = 8 * (1 + x[0] ** 2) * x[1] ** 2
 
         # test case 2
         values[0] = (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2 -
-                 np.cos(2 * np.pi * (x[0] - x[1])) ** 2 * np.sin(2 * np.pi * (x[0] + x[1]) ** 2) ** 2)
-        
+                     np.cos(2 * np.pi * (x[0] - x[1])) ** 2 * np.sin(2 * np.pi * (x[0] + x[1]) ** 2) ** 2)
+
     def value_shape(self):
         return (1,)
 
 
 class u_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2 + 2.001 * x[1] ** 2
+        # test case 1
+        # values[0] = 1 + x[0] ** 2 + 2.001 * x[1] ** 2
+
+        # test case 2
+        values[0] = np.sin(2.001 * np.pi * (x[0] + x[1])) * np.cos(2 * np.pi * (x[0] - x[1]) ** 2)
 
     def value_shape(self):
         return (1,)
@@ -98,7 +104,11 @@ class u_0_expression(UserExpression):
 
 class v_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1 + 1.01 * x[0] ** 2 - 2 * x[1] ** 2
+        # test case 1
+        # values[0] = 1 + 1.01 * x[0] ** 2 - 2 * x[1] ** 2
+
+        # test case 2
+        values[0] = np.cos(2.001 * np.pi * (x[0] - x[1])) * np.sin(2.001 * np.pi * (x[0] + x[1]) ** 2)
 
     def value_shape(self):
         return (1,)
