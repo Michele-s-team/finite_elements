@@ -93,7 +93,8 @@ def print_vector_to_csvfile(f, filename):
                   f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
 
 
-# print the nodal values of a vector field 'f' on the mesh 'mesh' to csv file 'filename'
+
+# Fixed version of your print_nodal_values_vector_to_csvfile method
 def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
@@ -110,8 +111,19 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
         # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
         padded_coordinate = pad(coordinate, 3)
 
+        # evaluate the function at the coordinate
+        f_value = f(*coordinate)
+
+        # Handle the case where f_value might be a scalar numpy.float64 or an array
+        if hasattr(f_value, '__iter__'):
+            # f_value is already iterable (list, tuple, or numpy array)
+            f_as_list = f_value
+        else:
+            # f_value is a scalar (numpy.float64), convert to list
+            f_as_list = [f_value]
+
         # convert the value of the vector field in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
-        padded_f = pad(f(*coordinate), 3)
+        padded_f = pad(f_as_list, 3)
 
         print(f"{padded_f[0]}, {padded_f[1]}, {padded_f[2]}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
 
@@ -334,9 +346,14 @@ Return value:
 '''
 
 
+# Also need to update the pad function to be more robust:
 def pad(x, dim):
-    return (list(x) + [0] * (dim - len(x)))
-
+    # Handle the case where x might be a scalar
+    if hasattr(x, '__iter__'):
+        return (list(x) + [0] * (dim - len(x)))
+    else:
+        # x is a scalar, treat as single-element list
+        return ([x] + [0] * (dim - 1))
 
 '''
 count the number of files which match a given path pattern
