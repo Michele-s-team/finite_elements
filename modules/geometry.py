@@ -30,6 +30,16 @@ def X(z):
     x = ufl.SpatialCoordinate(mesh)
     return as_tensor([x[0], x[1], z])
 
+'''
+the vector of the differential manifold in the one-dimensional case
+Input values:
+- 'psi': the angle as defined in Lagrangian_approach
+Return values: 
+- 'X': the vector [cos(psi), -sin(psi)]
+'''
+def X_psi(psi):
+    return as_tensor([cos(psi), -sin(psi)])
+
 #the vectors tangent to the curvilinear coordinates on the manifold : e(z)[i] = e_i_{al-izzi2020shear}
 def e(omega):
     return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
