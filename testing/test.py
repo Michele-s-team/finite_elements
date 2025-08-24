@@ -269,6 +269,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 
+
 # Test poisson_equation/constraint
 case_name = 'poisson_equation/constraint'
 
@@ -282,6 +283,17 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_ring_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_constraint_grad_u_grad_v'
+generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
+checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_ring_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+
+
+problem_name = 'ring_constraint_u2_v2'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
 checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, commit_b,
                                                                      root_path,
