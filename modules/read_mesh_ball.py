@@ -15,11 +15,6 @@ import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
-# CHANGE PARAMETERS HERE
-# r = 1
-# c_r = [0, 0, 0]
-# CHANGE PARAMETERS HERE
-
 volume_id = 1
 surface_id = 2
 

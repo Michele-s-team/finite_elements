@@ -1,4 +1,5 @@
 # from ufl import Mesh
+from ufl import tetrahedron
 
 import command as cmd
 from fenics import *
@@ -1515,3 +1516,23 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
     return sub_mesh, sub_mesh_boundary
+
+'''
+return the geometrical shape of an element for a mesh with different dimensions
+Input values: 
+- 'mesh': the mesh
+Return values: 
+- the geometry: 'tetrahedron' for a 3d mesh, 'triangle' for a 2d mesh, 'interval' for a 1d mesh
+
+Example of usage:
+    P_u = FiniteElement('P', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])
+'''
+def element_geometry(mesh):
+    d = mesh.topology().dim()
+
+    if d==3:
+        return tetrahedron
+    elif d==2:
+        return triangle
+    elif d==1:
+        return interval
