@@ -15,7 +15,11 @@ i, j, k, l = ufl.indices(4)
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 1 + x[0] ** 2
+        # test case 1
+        # values[0] = 1 + x[0] ** 2
+
+        # test case 2
+        values[0] = 1 + np.cos(2 * np.pi * x[0]) / (1 + x[0] ** 2)
 
     def value_shape(self):
         return (1,)
@@ -23,7 +27,11 @@ class u_exact_expression(UserExpression):
 
 class v_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 2 * x[0]
+        # test case 1
+        # values[0] = 2 * x[0]
+
+        # test case 2
+        values[0] = -((2 * (x[0] * np.cos(2 * np.pi * x[0]) + np.pi * (1 + x[0] ** 2) * np.sin(2 * np.pi * x[0]))) / (1 + x[0] ** 2) ** 2)
 
     def value_shape(self):
         return (1,)
@@ -31,7 +39,11 @@ class v_exact_expression(UserExpression):
 
 class laplacian_u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 2
+        # test case 1
+        # values[0] = 2
+
+        # test case 2
+        values[0] = (-2 * (1 - 3 * x[0] ** 2 + 2 * np.pi ** 2 * (1 + x[0] ** 2) ** 2) * np.cos(2 * np.pi * x[0]) + 8 * np.pi * x[0] * (1 + x[0] ** 2) * np.sin(2 * np.pi * x[0])) / (1 + x[0] ** 2) ** 3
 
     def value_shape(self):
         return (1,)
@@ -45,8 +57,6 @@ fsp.f.interpolate(laplacian_u_exact_expression(element=fsp.Q_u.ufl_element()))
 # define Difichlet boundary conditions
 bc_u = DirichletBC(fsp.Q.sub(0), fsp.u_exact, rmsh.boundary)
 bcs = [bc_u]
-
-
 
 # define variational problem
 F_v = (fsp.v[i] * fsp.nu_v[i] + fsp.u * (fsp.nu_v[i].dx(i))) * rmsh.dx \
