@@ -35,4 +35,4 @@ print(f'Module {__file__} called {check_mesh_tags_line.__file__}', flush=True)
 
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], {parameters["x_l"]})'
-boundary_r = f'near(x[1], {parameters["x_r"]})'
+boundary_r = f'near(x[0], {parameters["x_r"]})'
