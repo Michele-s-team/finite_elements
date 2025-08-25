@@ -144,34 +144,9 @@ print(f"X-coordinates: {top_edge_vertices}")
 if len(top_edge_vertices) >= 2:
     num_intervals = len(top_edge_vertices) - 1
 
-    # Create 1D mesh with the same number of intervals as found in the 2D mesh
-    top_edge_mesh = IntervalMesh(num_intervals, 0, rpam.parameters['L'])
-
-    # Create cell function for the lines
-    cell_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim())
-    cell_function_temp.set_all(rpam.parameters['sub_mesh_1_id'])  # Tag entire line as submesh ID
-
-    # Create vertex function for the vertices at the endpoints (l and r)
-    vertex_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim() - 1)
-    for vertex in vertices(top_edge_mesh):
-        x = vertex.point().x()  # Get x-coordinate
-
-        if math.isclose(x, 0.0):
-            # Left vertex of top edge
-            vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_l_id']
-
-        if math.isclose(x, rpam.parameters['L']):
-            # Right vertex of top edge
-            vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_r_id']
-
     # Create output directory for submesh
     sub_mesh_1_output_directory = output_directory + "sub_meshes/1/"
     os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
-
-    # Write the mesh components to H5 files
-    print("Writing top edge submesh to H5 files...")
-    msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "line_mesh.h5", cell_function_temp, "cf")
-    msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
 
     sub_mesh_1_metadata = dict([])
     sub_mesh_1_metadata['x_l'] = 0.0
@@ -182,11 +157,12 @@ if len(top_edge_vertices) >= 2:
     sub_mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_sub_mesh_1_r_id']
     sub_mesh_1_metadata['file_format'] = 'h5'
 
-    io.write_parameters_to_csv_file(sub_mesh_1_output_directory + "mesh_metadata.csv", sub_mesh_1_metadata)
 
-    print(f"H5 submesh files created:")
-    print(f"  - {sub_mesh_1_output_directory}line_mesh.h5")
-    print(f"  - {sub_mesh_1_output_directory}vertex_mesh.h5")
-    print("Mesh generation complete!")
+    msh.genereate_line_sub_mesh(0.0, rpam.parameters['L'], num_intervals,
+                                rpam.parameters['sub_mesh_1_id'], rpam.parameters['vertex_sub_mesh_1_l_id'], rpam.parameters['vertex_sub_mesh_1_r_id'],
+                                sub_mesh_1_output_directory, sub_mesh_1_metadata)
+
+
+    print("...done!")
 else:
     print("Error: Not enough vertices found on top edge")
