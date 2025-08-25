@@ -33,9 +33,6 @@ mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 metadata = rpam.parameters.copy()
 metadata['file_format'] = 'xdmf'
 
-
-
-
 print("output_directory = ", output_directory)
 
 geometry = pygmsh.occ.Geometry()
@@ -60,9 +57,6 @@ gmsh.model.geo.synchronize()
 surface_square = gmsh.model.geo.addPlaneSurface([loop])
 gmsh.model.geo.synchronize()
 
-
-
-
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
@@ -83,11 +77,8 @@ gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_1_t_id"],
 gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["sub_mesh_1_id"])
 gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["sub_mesh_1_id"], "sub_mesh_1")
 
-
 gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_1_l_id"])
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_41")
-
-
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
@@ -103,6 +94,7 @@ print(f"DEBUG: Physical group IDs:")
 print(f"  sub_mesh_0_id (surface): {rpam.parameters['sub_mesh_0_id']}")
 print(f"  sub_mesh_1_id (line_34): {rpam.parameters['sub_mesh_1_id']}")
 
+'''
 # set the resolution
 # se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
 distance = gmsh.model.mesh.field.add("Distance")
@@ -131,20 +123,27 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 gmsh.model.geo.synchronize()
 
 geometry.generate_mesh(dim=2)
+'''
+
+# set the resolution close to the obstacle
+distance = gmsh.model.mesh.field.add("Distance")
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop])
+
+threshold = gmsh.model.mesh.field.add("Threshold")
+gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+
+gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
+
+gmsh.model.occ.synchronize()
+gmsh.model.mesh.generate(2)
+
 gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
-
-# Add this debug output
-print(f"DEBUG: Physical groups created:")
-for dim in [1, 2]:
-    try:
-        physical_groups = gmsh.model.getPhysicalGroups(dim)
-        for tag in [pg[1] for pg in physical_groups]:
-            name = gmsh.model.getPhysicalName(dim, tag)
-            print(f"  Dim {dim}, Tag {tag}, Name: {name}")
-    except:
-        pass
 
 model.__exit__()
 # ========================================================================
@@ -154,18 +153,16 @@ model.__exit__()
 print("Generating H5 submesh for top edge from 2D mesh...")
 
 # Read the generated 2D mesh from the triangle component file
-mesh_2d = Mesh()
+mesh_temp = Mesh()
 with XDMFFile(output_directory + "triangle_mesh.xdmf") as infile:
-    infile.read(mesh_2d)
+    infile.read(mesh_temp)
 
-# Find vertices on the top edge (y = h)
-h = rpam.parameters["h"]
 
 # create a list of the vertices in mesh_2d which lie on the top edge
 top_edge_vertices = []
-for vertex in vertices(mesh_2d):
+for vertex in vertices(mesh_temp):
     point = vertex.point()
-    if math.isclose(point.y(), h):
+    if math.isclose(point.y(), rpam.parameters["h"]):
         top_edge_vertices.append(point.x())
 
 # Sort vertices by x-coordinate and remove duplicates
