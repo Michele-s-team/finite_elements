@@ -28,6 +28,10 @@ output_directory = io.add_trailing_slash(rarg.args.output_directory)
 mesh_file = output_directory + "mesh.msh"
 mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
+metadata = rpam.parameters.copy()
+metadata['file_format'] = 'xdmf'
+
+
 print("output_directory = ", output_directory)
 
 geometry = pygmsh.occ.Geometry()
@@ -125,7 +129,7 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line'], rpam.parameters, output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 # Add this debug output
 print(f"DEBUG: Physical groups created:")

@@ -14,6 +14,7 @@ import load_mesh as lmsh
 import mesh as msh
 import runtime_arguments as rarg
 
+parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 
 # read the triangles
@@ -22,6 +23,8 @@ sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.i
 mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
 
+
+'''
 # Add this debug code right after the parameters line
 print(f"DEBUG: Manually creating submesh for line ID 2...")
 try:
@@ -37,7 +40,6 @@ try:
 except Exception as e:
     print(f"DEBUG: Error creating manual surface submesh: {e}")
 
-parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
 # DEBUG: Check what marker IDs are actually in the mesh functions
 # Add this right after reading the mesh functions
@@ -74,3 +76,4 @@ dx_sub_mesh = []
 
 dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[0], subdomain_data=sf_sub_mesh[0], subdomain_id=parameters[f"sub_mesh_{0}_id"]))
 dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[1]))
+'''
