@@ -10,6 +10,7 @@ Example:
 from fenics import *
 import gmsh
 import math
+import os
 import pygmsh
 import sys
 
@@ -146,7 +147,6 @@ for dim in [1, 2]:
         pass
 
 model.__exit__()
-
 # ========================================================================
 # NEW SECTION: Generate H5 submesh for the top edge from the 2D mesh
 # ========================================================================
@@ -158,55 +158,70 @@ mesh_2d = Mesh()
 with XDMFFile(output_directory + "triangle_mesh.xdmf") as infile:
     infile.read(mesh_2d)
 
-# Create a mesh function which will mark elements of the top edge
-submesh_markers = MeshFunction("size_t", mesh_2d, mesh_2d.topology().dim() - 1, 0)
-
-# Mark edges on the top boundary (y = h)
+# Find vertices on the top edge (y = h)
 h = rpam.parameters["h"]
 
-for facet in facets(mesh_2d):
-    # Check if this facet is on the top edge
-    midpoint = facet.midpoint()
-    if math.isclose(midpoint.y(), h):
-        submesh_markers[facet] = rpam.parameters['sub_mesh_1_id']  # Mark with value sub_mesh_1_id
+# create a list of the vertices in mesh_2d which lie on the top edge
+top_edge_vertices = []
+for vertex in vertices(mesh_2d):
+    point = vertex.point()
+    if math.isclose(point.y(), h):
+        top_edge_vertices.append(point.x())
 
-# Create the 1D submesh from marked facets (extract facets marked with sub_mesh_1_id)
-top_edge_mesh = SubMesh(mesh_2d, submesh_markers, rpam.parameters['sub_mesh_1_id'])
+# Sort vertices by x-coordinate and remove duplicates
+top_edge_vertices = sorted(list(set(top_edge_vertices)))
 
-# Create cell function for the lines
-cell_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim())
-cell_function_temp.set_all(rpam.parameters['sub_mesh_1_id'])  # Tag entire line as submesh ID
+print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
+print(f"X-coordinates: {top_edge_vertices}")
 
-# Create vertex function for the endpoints
-vertex_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim() - 1)
-for vertex in vertices(top_edge_mesh):
-    x = vertex.point().x()  # Get x-coordinate
+# Create a proper 1D IntervalMesh using the actual vertex positions
+if len(top_edge_vertices) >= 2:
+    x_min = top_edge_vertices[0]
+    x_max = top_edge_vertices[-1]
+    num_intervals = len(top_edge_vertices) - 1
 
-    if math.isclose(x, 0.0):
-        # Left vertex of top edge
-        vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_l_id']
+    # Create 1D mesh with the same number of intervals as found in the 2D mesh
+    top_edge_mesh = IntervalMesh(num_intervals, x_min, x_max)
 
-    if math.isclose(x, rpam.parameters['L']):
-        # Right vertex of top edge
-        vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_r_id']
+    # Create cell function for the lines
+    cell_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim())
+    cell_function_temp.set_all(rpam.parameters['sub_mesh_1_id'])  # Tag entire line as submesh ID
 
-# Write the mesh components to H5 files
-print("Writing top edge submesh to H5 files...")
-msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "line_mesh.h5", cell_function_temp, "cf")
-msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
+    # Create vertex function for the vertices at the endpoints (l and r)
+    vertex_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim() - 1)
+    for vertex in vertices(top_edge_mesh):
+        x = vertex.point().x()  # Get x-coordinate
 
-sub_mesh_1_metadata = dict([])
-sub_mesh_1_metadata['x_l'] = 0
-sub_mesh_1_metadata['x_r'] = rpam.parameters['L']
-sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
-sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']
-sub_mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_sub_mesh_1_r_id']
-sub_mesh_1_metadata['file_format'] = 'h5'
+        if math.isclose(x, x_min):
+            # Left vertex of top edge
+            vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_l_id']
 
-io.write_parameters_to_csv_file(sub_mesh_1_output_directory + "mesh_metadata.csv", sub_mesh_1_metadata)
+        if math.isclose(x, x_max):
+            # Right vertex of top edge
+            vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_r_id']
 
+    # Create output directory for submesh
+    sub_mesh_1_output_directory = output_directory + "sub_meshes/1/"
+    os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
 
-print(f"H5 submesh files created:")
-print(f"  - {output_directory}line_mesh.h5")
-print(f"  - {output_directory}vertex_mesh.h5")
-print("Mesh generation complete!")
+    # Write the mesh components to H5 files
+    print("Writing top edge submesh to H5 files...")
+    msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "line_mesh.h5", cell_function_temp, "cf")
+    msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
+
+    sub_mesh_1_metadata = dict([])
+    sub_mesh_1_metadata['x_l'] = x_min
+    sub_mesh_1_metadata['x_r'] = x_max
+    sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
+    sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']
+    sub_mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_sub_mesh_1_r_id']
+    sub_mesh_1_metadata['file_format'] = 'h5'
+
+    io.write_parameters_to_csv_file(sub_mesh_1_output_directory + "mesh_metadata.csv", sub_mesh_1_metadata)
+
+    print(f"H5 submesh files created:")
+    print(f"  - {sub_mesh_1_output_directory}line_mesh.h5")
+    print(f"  - {sub_mesh_1_output_directory}vertex_mesh.h5")
+    print("Mesh generation complete!")
+else:
+    print("Error: Not enough vertices found on top edge")
