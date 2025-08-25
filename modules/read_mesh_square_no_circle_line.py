@@ -16,6 +16,8 @@ import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
+print(f'**** DIMENSION *** = {lmsh.mesh.topology().dim()}')
+
 # read the lines
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), io.add_trailing_slash(rarg.args.input_directory) + "line_mesh.h5", "cf")
 # read the vertices
@@ -25,6 +27,9 @@ vf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, io.add_
 r_mesh = lmsh.mesh.hmin()
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters['line_id'])
+ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_l_id'])
+ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_r_id'])
+ds = Measure("ds", domain=lmsh.mesh)
 
 import check_mesh_tags_square_no_circle_line
 

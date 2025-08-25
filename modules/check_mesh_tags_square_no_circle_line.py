@@ -45,19 +45,19 @@ function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.
 
 # exact  integrals
 integral_exact_dx = cal.curve_integral_line(function_test_integrals, rmsh.parameters['x_l'], rmsh.parameters['x_r'])
-# integral_exact_ds_l = function_test_integrals_fenics(rmsh.parameters['x_l'])
-# integral_exact_ds_r = function_test_integrals_fenics(rmsh.parameters['x_r'])
+integral_exact_ds_l = function_test_integrals_fenics(rmsh.parameters['x_l'])
+integral_exact_ds_r = function_test_integrals_fenics(rmsh.parameters['x_r'])
 
-# integral_exact_ds = integral_exact_ds_l + integral_exact_ds_r
+integral_exact_ds = integral_exact_ds_l + integral_exact_ds_r
 
 
 test_mesh_integral_errors = []
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
-# test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
-# test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
 
-# test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
