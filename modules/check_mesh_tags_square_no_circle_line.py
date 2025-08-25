@@ -43,19 +43,18 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-integral_exact = [''] * len(lmsh.sub_meshes)
+# integral_exact = [''] * len(lmsh.sub_meshes)
+#
+# integral_exact[0] = dict([ \
+#     ('dx', 0)
+#     ])
+#
+# integral_exact[1] = dict([ \
+#     ('dx', 0)
+#     ])
 
-integral_exact[0] = dict([ \
-    ('dx', 0)
-    ])
-
-integral_exact[1] = dict([ \
-    ('dx', 0)
-    ])
-
-# exact surface integrals
-integral_exact[0]['dx'] = cal.surface_integral_rectangle(function_test_integrals, [0,0], [rmsh.parameters['L'], rmsh.parameters['h']])
-# integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters['h']], [rmsh.parameters['L'], rmsh.parameters['h']])
+# exact line integrals
+integral_exact = cal.curve_integral_line(function_test_integrals, rmsh.parameters['x_l'], rmsh.parameters['x_r'])
 
 '''
 test_mesh_integral_errors = []

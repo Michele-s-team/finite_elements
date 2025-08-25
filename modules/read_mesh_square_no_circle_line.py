@@ -16,13 +16,10 @@ import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-
-# read the triangles
-sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
-mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
-
-
+cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), io.add_trailing_slash(rarg.args.input_directory) + "line_mesh.h5", "cf")
+# read the vertices
+vf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, io.add_trailing_slash(rarg.args.input_directory) + "vertex_mesh.h5", "vf")
 
 '''
 # Add this debug code right after the parameters line
