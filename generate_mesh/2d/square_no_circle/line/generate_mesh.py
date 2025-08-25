@@ -142,12 +142,10 @@ print(f"X-coordinates: {top_edge_vertices}")
 
 # Create a proper 1D IntervalMesh using the actual vertex positions
 if len(top_edge_vertices) >= 2:
-    x_min = top_edge_vertices[0]
-    x_max = top_edge_vertices[-1]
     num_intervals = len(top_edge_vertices) - 1
 
     # Create 1D mesh with the same number of intervals as found in the 2D mesh
-    top_edge_mesh = IntervalMesh(num_intervals, x_min, x_max)
+    top_edge_mesh = IntervalMesh(num_intervals, 0, rpam.parameters['L'])
 
     # Create cell function for the lines
     cell_function_temp = MeshFunction("size_t", top_edge_mesh, top_edge_mesh.topology().dim())
@@ -158,11 +156,11 @@ if len(top_edge_vertices) >= 2:
     for vertex in vertices(top_edge_mesh):
         x = vertex.point().x()  # Get x-coordinate
 
-        if math.isclose(x, x_min):
+        if math.isclose(x, 0.0):
             # Left vertex of top edge
             vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_l_id']
 
-        if math.isclose(x, x_max):
+        if math.isclose(x, rpam.parameters['L']):
             # Right vertex of top edge
             vertex_function_temp[vertex] = rpam.parameters['vertex_sub_mesh_1_r_id']
 
@@ -176,8 +174,8 @@ if len(top_edge_vertices) >= 2:
     msh.write_mesh_components_h5(top_edge_mesh, sub_mesh_1_output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
 
     sub_mesh_1_metadata = dict([])
-    sub_mesh_1_metadata['x_l'] = x_min
-    sub_mesh_1_metadata['x_r'] = x_max
+    sub_mesh_1_metadata['x_l'] = 0.0
+    sub_mesh_1_metadata['x_r'] = rpam.parameters['L']
     sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
     sub_mesh_1_metadata['line_id'] = rpam.parameters['sub_mesh_1_id']
     sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']
