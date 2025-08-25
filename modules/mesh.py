@@ -3,6 +3,7 @@ from fenics import *
 import numpy as np
 import colorama as col
 import gmsh
+import math
 import meshio
 import os
 import pygmsh
@@ -1513,6 +1514,37 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
     return sub_mesh, sub_mesh_boundary
+
+def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory, metadata=None):
+
+    sub_mesh = IntervalMesh(n_intervals, x_l, x_r)
+
+    # create a function for the lines
+    cell_function_temp = MeshFunction("size_t", sub_mesh, sub_mesh.topology().dim())
+    cell_function_temp.set_all(line_id)  # Tag entire line as region parameters['line_id']
+
+    # creat a function for the vertices
+    vertex_function_temp = MeshFunction("size_t", sub_mesh, sub_mesh.topology().dim() - 1)
+    for vertex in vertices(sub_mesh):
+        x = vertex.point().x()  # Get x-coordinate
+
+        if math.isclose(x, x_l):
+            vertex_function_temp[vertex] = vertex_l_id
+
+        if math.isclose(x, x_r):
+            vertex_function_temp[vertex] = vertex_r_id
+
+    '''
+    write the mesh lines and vertices to .h5 files: 
+    one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
+    '''
+    write_mesh_components_h5(sub_mesh, output_directory + "line_mesh.h5", cell_function_temp, "cf")
+    write_mesh_components_h5(sub_mesh, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
+
+    # print mesh metadata
+    if metadata is not None:
+        io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+
 
 '''
 return the geometrical shape of an element for a mesh with different dimensions
