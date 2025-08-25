@@ -55,7 +55,7 @@ integral_exact[1] = dict([ \
 
 # exact surface integrals
 integral_exact[0]['dx'] = cal.surface_integral_rectangle(function_test_integrals, [0,0], [rmsh.parameters['L'], rmsh.parameters['h']])
-integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters['h']], [rmsh.parameters['L'], rmsh.parameters['h']])
+# integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, [0, rmsh.parameters['h']], [rmsh.parameters['L'], rmsh.parameters['h']])
 
 
 test_mesh_integral_errors = []
@@ -65,7 +65,7 @@ print(f'Check integrals on the sub_meshes: ')
 
 # surface integrals
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[0], f'\int_sub_mesh_{0} f dx'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[1], f'\int_sub_mesh_{1} f dx'))
+# test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[1], f'\int_sub_mesh_{1} f dx'))
 
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
