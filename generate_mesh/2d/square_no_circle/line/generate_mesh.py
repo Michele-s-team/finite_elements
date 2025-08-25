@@ -94,37 +94,6 @@ print(f"DEBUG: Physical group IDs:")
 print(f"  sub_mesh_0_id (surface): {rpam.parameters['sub_mesh_0_id']}")
 print(f"  sub_mesh_1_id (line_34): {rpam.parameters['sub_mesh_1_id']}")
 
-'''
-# set the resolution
-# se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
-distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop])
-
-threshold = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
-
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop])
-
-threshold_out = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(threshold_out, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold_out, "LcMin", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold_out, "LcMax", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold_out, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold_out, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
-
-minimum = gmsh.model.mesh.field.add("Min")
-gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
-gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
-
-gmsh.model.geo.synchronize()
-
-geometry.generate_mesh(dim=2)
-'''
-
 # set the resolution close to the obstacle
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop])
