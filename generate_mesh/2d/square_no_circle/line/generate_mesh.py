@@ -115,11 +115,12 @@ gmsh.write(mesh_file)
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 model.__exit__()
+
 # ========================================================================
-# NEW SECTION: Generate H5 submesh for the top edge from the 2D mesh
+# Generate submesh for the top edge from the 2D mesh and save it in .h5 format
 # ========================================================================
 
-print("Generating H5 submesh for top edge from 2D mesh...")
+print("Generating H5 sub_mesh for top edge from 2D mesh...")
 
 # Read the generated 2D mesh from the triangle component file
 mesh_temp = Mesh()
@@ -138,7 +139,7 @@ for vertex in vertices(mesh_temp):
 top_edge_vertices = sorted(list(set(top_edge_vertices)))
 
 print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
-print(f"X-coordinates: {top_edge_vertices}")
+# print(f"X-coordinates: {top_edge_vertices}")
 
 # Create a proper 1D IntervalMesh using the actual vertex positions
 if len(top_edge_vertices) >= 2:

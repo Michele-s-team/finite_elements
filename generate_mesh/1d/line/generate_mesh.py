@@ -29,30 +29,6 @@ print("output_directory = ", output_directory)
 metadata = rpam.parameters.copy()
 metadata['file_format'] = 'h5'
 
-
-mesh_temp = IntervalMesh(int((rpam.parameters['x_r'] - rpam.parameters['x_l']) / rpam.parameters['resolution']), rpam.parameters['x_l'], rpam.parameters['x_r'])
-
-# create a function for the lines
-cell_function_temp = MeshFunction("size_t", mesh_temp, mesh_temp.topology().dim())
-cell_function_temp.set_all(rpam.parameters['line_id'])  # Tag entire line as region parameters['line_id']
-
-# creat a function for the vertices
-vertex_function_temp = MeshFunction("size_t", mesh_temp, mesh_temp.topology().dim() - 1)
-for vertex in vertices(mesh_temp):
-    x = vertex.point().x()  # Get x-coordinate
-
-    if math.isclose(x, rpam.parameters['x_l']):
-        vertex_function_temp[vertex] = rpam.parameters['vertex_l_id']
-
-    if math.isclose(x, rpam.parameters['x_r']):
-        vertex_function_temp[vertex] = rpam.parameters['vertex_r_id']
-
-'''
-write the mesh lines and vertices to .h5 files: 
-one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
-'''
-msh.write_mesh_components_h5(mesh_temp, output_directory + "line_mesh.h5", cell_function_temp, "cf")
-msh.write_mesh_components_h5(mesh_temp, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
-
-# print mesh metadata
-io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+msh.genereate_line_sub_mesh(rpam.parameters['x_l'], rpam.parameters['x_r'], int((rpam.parameters['x_r'] - rpam.parameters['x_l']) / rpam.parameters['resolution']),
+                            rpam.parameters['line_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
+                            output_directory, metadata)
