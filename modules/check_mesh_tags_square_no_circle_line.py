@@ -20,6 +20,7 @@ r_test = 0.345
 
 # a function space used solely to define function_test_integrals_fenics
 Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
+Q_test_1d = FunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
@@ -30,6 +31,7 @@ def function_test_integrals(x):
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
 function_test_integrals_fenics = Function(Q_test)
+function_test_integrals_fenics_1d = Function(Q_test_1d)
 
 
 # analytical expression for a  scalar function used to test the ds
@@ -42,6 +44,7 @@ class FunctionTestIntegrals(UserExpression):
 
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
+function_test_integrals_fenics_1d.interpolate(FunctionTestIntegrals(element=Q_test_1d.ufl_element()))
 
 integral_exact = [''] * len(lmsh.sub_meshes)
 
@@ -88,6 +91,7 @@ print(f'Check integrals on the sub_meshes: ')
 #     test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[i]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[0], f'\int_sub_mesh_{0} f dx'))
+test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['dx'], function_test_integrals_fenics_1d, rmsh.dx_sub_mesh[1], f'\int_sub_mesh_{1} f dx'))
 
 '''
 # line intergrals
