@@ -1515,6 +1515,25 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
     return sub_mesh, sub_mesh_boundary
 
+'''
+generate a one-dimensional submesh as an IntervalMesh given its geometric parameters and tags
+Input values: 
+- 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
+- 'n_intervals': the number of intervals into which the line mesh is divided
+- 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
+- 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively 
+- 'output_directory' [optional]: the path where the sub-mesh will be written 
+- 'metadata' [optional]: the sub-mesh metadata to write in the output directory
+
+Return values: 
+- 'sub_mesh': the one-dimensional sub-mesh
+- 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the sub-mesh
+- 'vertex_function_temp': the mesh function tagging vertices in the sub-mesh
+
+Example of usage: 
+          sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_sub_mesh(0, parameters['L'], len(x_coordinates) - 1,
+                                                                                          parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
+'''
 def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
 
     sub_mesh = IntervalMesh(n_intervals, x_l, x_r)

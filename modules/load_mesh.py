@@ -45,7 +45,7 @@ if "n_sub_meshes" in parameters:
 
                 x_coordinates = sorted(list(set(x_coordinates)))  # Remove duplicates and sort
 
-                # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function 
+                # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
                 sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_sub_mesh(0, parameters['L'], len(x_coordinates) - 1,
                                                                                           parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
                 sub_meshes.append(sub_mesh_1d)
