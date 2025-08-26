@@ -36,11 +36,6 @@ sub_mesh = lmsh.sub_meshes[1]
 sf_sub_mesh.append(lmsh.cf_sub_mesh_1d)
 mf_sub_mesh.append(lmsh.vf_sub_mesh_1d)
 
-
-'''
-
-
-
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
@@ -49,6 +44,13 @@ dx_sub_mesh = []
 
 for p in range(len(lmsh.sub_meshes)):
     dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=sf_sub_mesh[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
+
+print(f'test: {assemble(Constant(1)*dx_sub_mesh[1])}')
+
+'''
+
+
+
 
 ds_sub_mesh = [''] * len(lmsh.sub_meshes)
 
