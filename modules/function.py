@@ -162,7 +162,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
 
 
         if math.isclose(mesh_coord[1], h):
-            print(f'point on edge is TRUE for mesh_coord = {mesh_coord}')
+            # print(f'point on edge is TRUE for mesh_coord = {mesh_coord}')
             dof_values[mesh_id] = u_sub_mesh(mesh_coord[0])
 
 

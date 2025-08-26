@@ -12,6 +12,7 @@ Examples:
 
 from fenics import *
 import importlib
+import numpy as np
 import sys
 
 # add the path where to find the shared modules
@@ -51,25 +52,28 @@ solver[1].parameters.update(params)
 
 solver[1].solve()
 
+
 # solve problem 0 by using the solution of problem 1 to specify the BCs
 
-# set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp,u[1] obtained above
-# project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
-# fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
-fsp.u_1_on_0.assign(fu.transfer_sub_mesh_to_mesh(fsp.u[1], fsp.Q[0], fsp.Q[1], rmsh.parameters['h']))
+# set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp.u[1] obtained above
 
-'''
-import solution_paths as solpath
+# the function v is v = u[1]**2 + cos(2 pi (x[0] - h))**2
+class v_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = (fsp.u[1])(x[0]) ** 2 + (np.cos(2 * np.pi * (x[0] - rmsh.parameters['h']))) ** 2
 
-io.full_print(fsp.u_1_on_0, f'u_1_on_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              rmsh.lmsh.sub_meshes[0], 'scalar')
-'''
-# impose the BCs for problem on sub_mesh[0], on the ellipse boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
+    def value_shape(self):
+        return (1,)
+
+
+v = Function(fsp.Q[1])
+v.interpolate(v_Expression(element=fsp.Q[1].ufl_element()))
+# set u_1_on_0 to be equal to v = u[1]**2 + cos(2 pi (x[0] - h))**2 on the top edge of sub_mesh[1]
+fsp.u_1_on_0.assign(fu.transfer_sub_mesh_to_mesh(v, fsp.Q[0], fsp.Q[1], rmsh.parameters['h']))
+
+# impose the BCs for problem on sub_mesh[0], on the t boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
 # force reload vp to update bc[0], because u_1_on_0 has changed
-
 importlib.reload(vp)
-
 
 J[0] = derivative(vp.F[0], fsp.u[0], fsp.J_u[0])
 problem[0] = NonlinearVariationalProblem(vp.F[0], fsp.u[0], vp.bcs[0], J[0])
