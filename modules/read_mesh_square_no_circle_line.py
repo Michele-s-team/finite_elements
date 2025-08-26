@@ -23,6 +23,14 @@ sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.i
 # read the lines
 mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
+# create a list of map functions for triangles and lines for each sub_mesh
+sf_sub_mesh = []
+mf_sub_mesh = []
+
+sub_mesh = lmsh.sub_meshes[0]
+sf_sub_mesh.append(msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf))
+mf_sub_mesh.append(msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf))
+
 
 '''
 
