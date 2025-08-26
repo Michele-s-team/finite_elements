@@ -71,8 +71,8 @@ gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_0_b_id"],
 gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_0_r_id"])
 gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_0_r_id"], "line_23")
 
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_0_t_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_34")
+# gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_0_t_id"])
+# gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_34")
 
 gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["sub_mesh_1_id"])
 gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["sub_mesh_1_id"], "sub_mesh_1")
