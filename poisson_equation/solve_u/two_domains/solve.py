@@ -20,12 +20,10 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import function as fu
-import input_output as io
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-vp = importlib.import_module(swi.vp)
+vp = ['','']
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -43,23 +41,26 @@ J = [None] * len(rmsh.lmsh.sub_meshes)
 problem = [None] * len(rmsh.lmsh.sub_meshes)
 solver = [None] * len(rmsh.lmsh.sub_meshes)
 
-# solve problem 1: the BCs have been already set in vp
+# solve problem on sub_mesh[1]
+vp[1] = importlib.import_module(swi.vp_sub_mesh_1)
 
-J[1] = derivative(vp.F[1], fsp.u[1], fsp.J_u[1])
-problem[1] = NonlinearVariationalProblem(vp.F[1], fsp.u[1], vp.bcs[1], J[1])
+J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
+problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
 solver[1] = NonlinearVariationalSolver(problem[1])
 solver[1].parameters.update(params)
 
 solver[1].solve()
 
 
-importlib.reload(vp)
+# solve problem on sub_mesh[0] by using the solution above on sub_mesh[1] as a BC
+vp[0] = importlib.import_module(swi.vp_sub_mesh_0)
 
-J[0] = derivative(vp.F[0], fsp.u[0], fsp.J_u[0])
-problem[0] = NonlinearVariationalProblem(vp.F[0], fsp.u[0], vp.bcs[0], J[0])
+J[0] = derivative(vp[0].F, fsp.u[0], fsp.J_u[0])
+problem[0] = NonlinearVariationalProblem(vp[0].F, fsp.u[0], vp[0].bcs, J[0])
 solver[0] = NonlinearVariationalSolver(problem[0])
 solver[0].parameters.update(params)
 
 solver[0].solve()
+
 
 prout_bc = importlib.import_module(swi.prout_bc)

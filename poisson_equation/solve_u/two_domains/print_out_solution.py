@@ -8,7 +8,6 @@ import solution_paths as solpath
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
