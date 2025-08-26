@@ -1,8 +1,8 @@
 import dolfin
 from fenics import *
+import numpy as np
 from ufl import FunctionSpace
 
-import input_output as io
 import mesh as msh
 
 '''
@@ -144,4 +144,48 @@ def deform_function(f, u):
     copy_function_values(f, g)
 
     return g
+
+
+def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, sub_mesh, tolerance=1e-12):
+
+
+    u_sub_mesh_on_mesh = Function(Q_mesh)
+
+    # Get DOF coordinates for the 2D function space
+    mesh_coords = Q_mesh.tabulate_dof_coordinates()
+
+    # Get coordinates of the 1D submesh vertices
+    sub_mesh_coords = sub_mesh.coordinates()
+
+    # For each DOF in the 2D mesh, check if it lies on the 1D submesh
+    dof_values = np.zeros(Q_mesh.dim())
+
+    for mesh_id, mesh_coord in enumerate(mesh_coords):
+        # Check if this 2D DOF coordinate lies on the 1D submesh
+        point_on_edge = False
+
+        # Method 1: Check if the 2D point is close to any vertex of the 1D submesh
+        for sub_mesh_coord in sub_mesh_coords:
+            distance = np.linalg.norm(mesh_coord - sub_mesh_coord)
+            if distance < tolerance:
+                point_on_edge = True
+                break
+
+        if point_on_edge:
+            try:
+
+                # Create a 1D point for evaluation - this depends on your edge orientation
+                # For a horizontal top edge, this might just be the x-coordinate
+                # For a vertical edge, this might be the y-coordinate
+
+                value = u_sub_mesh(mesh_coord[0])
+                dof_values[mesh_id] = value
+            except:
+                # Evaluation failed, leave as zero
+                pass
+
+    # Set the DOF values
+    u_sub_mesh_on_mesh.vector()[:] = dof_values
+
+    return u_sub_mesh_on_mesh
 

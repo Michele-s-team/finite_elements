@@ -19,6 +19,8 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import function as fu
+import load_mesh as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -50,15 +52,16 @@ solver[1].parameters.update(params)
 
 solver[1].solve()
 
-'''
 
 # solve problem 0 by using the solution of problem 1 to specify the BCs
 
 # set the BC at the interface between sub_mesh[0] and sub_mesh[1] according to the solution fsp,u[1] obtained above
 # project fsp.u[1] on fsp.Q[0] and write the result in fsp.u_1_on_0
-fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
+# fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
+fu.transfer_sub_mesh_to_mesh(fsp.u[1], fsp.Q[0], lmsh.sub_meshes[1])
 # impose the BCs for problem on sub_mesh[0], on the ellipse boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
 # force reload vp to update bc[0], because u_1_on_0 has changed
+'''
 importlib.reload(vp)
 
 
