@@ -45,24 +45,8 @@ if "n_sub_meshes" in parameters:
 
                 x_coords = sorted(list(set(x_coords)))  # Remove duplicates and sort
 
-                # Create new 1D mesh
-                sub_mesh_1d = IntervalMesh(len(x_coords) - 1, 0.0, parameters['L'])
-
-                # After creating sub_mesh_1d: tag its compoennts
-                # tag the lines
-                cf_sub_mesh_1d = MeshFunction("size_t", sub_mesh_1d, sub_mesh_1d.topology().dim())
-                cf_sub_mesh_1d.set_all(parameters[f'sub_mesh_{p}_id'])  # Tag all cells with submesh ID
-
-                # tag the vertices
-                vf_sub_mesh_1d = MeshFunction("size_t", sub_mesh_1d, sub_mesh_1d.topology().dim() - 1)
-                # Tag vertices based on position
-                for vertex in vertices(sub_mesh_1d):
-                    x = vertex.point().x()
-                    if math.isclose(x, 0.0):
-                        vf_sub_mesh_1d[vertex] = parameters['vertex_sub_mesh_1_l_id']
-                    elif math.isclose(x, parameters['L']):
-                        vf_sub_mesh_1d[vertex] = parameters['vertex_sub_mesh_1_r_id']
-
+                sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_sub_mesh(0, parameters['L'], len(x_coords) - 1,
+                                                                                          parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
                 sub_meshes.append(sub_mesh_1d)
 
         print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')

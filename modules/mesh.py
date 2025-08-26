@@ -1515,7 +1515,7 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
     return sub_mesh, sub_mesh_boundary
 
-def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory, metadata=None):
+def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
 
     sub_mesh = IntervalMesh(n_intervals, x_l, x_r)
 
@@ -1534,17 +1534,20 @@ def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_
         if math.isclose(x, x_r):
             vertex_function_temp[vertex] = vertex_r_id
 
-    '''
-    write the mesh lines and vertices to .h5 files: 
-    one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
-    '''
-    write_mesh_components_h5(sub_mesh, output_directory + "line_mesh.h5", cell_function_temp, "cf")
-    write_mesh_components_h5(sub_mesh, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
 
-    # print mesh metadata
-    if metadata is not None:
-        io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+    if output_directory is not None:
+        '''
+        write the mesh lines and vertices to .h5 files: 
+        one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
+        '''
+        write_mesh_components_h5(sub_mesh, output_directory + "line_mesh.h5", cell_function_temp, "cf")
+        write_mesh_components_h5(sub_mesh, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
 
+        # print mesh metadata
+        if metadata is not None:
+            io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+
+    return sub_mesh, cell_function_temp, vertex_function_temp
 
 '''
 return the geometrical shape of an element for a mesh with different dimensions
