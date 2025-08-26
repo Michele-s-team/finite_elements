@@ -159,9 +159,9 @@ if len(top_edge_vertices) >= 2:
     sub_mesh_1_metadata['file_format'] = 'h5'
 
 
-    msh.genereate_line_sub_mesh(0.0, rpam.parameters['L'], num_intervals,
-                                rpam.parameters['sub_mesh_1_id'], rpam.parameters['vertex_sub_mesh_1_l_id'], rpam.parameters['vertex_sub_mesh_1_r_id'],
-                                sub_mesh_1_output_directory, sub_mesh_1_metadata)
+    msh.genereate_line_mesh(0.0, rpam.parameters['L'], num_intervals,
+                            rpam.parameters['sub_mesh_1_id'], rpam.parameters['vertex_sub_mesh_1_l_id'], rpam.parameters['vertex_sub_mesh_1_r_id'],
+                            sub_mesh_1_output_directory, sub_mesh_1_metadata)
 
 
     print("...done!")

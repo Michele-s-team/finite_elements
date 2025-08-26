@@ -1516,42 +1516,42 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     return sub_mesh, sub_mesh_boundary
 
 '''
-generate a one-dimensional submesh as an IntervalMesh given its geometric parameters and tags
+generate a one-dimensional mesh as an IntervalMesh given its geometric parameters and tags
 Input values: 
 - 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
 - 'n_intervals': the number of intervals into which the line mesh is divided
 - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
 - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively 
-- 'output_directory' [optional]: the path where the sub-mesh will be written 
-- 'metadata' [optional]: the sub-mesh metadata to write in the output directory
+- 'output_directory' [optional]: the path where the mesh will be written 
+- 'metadata' [optional]: the mesh metadata to write in the output directory
 
 Return values: 
-- 'sub_mesh': the one-dimensional sub-mesh
-- 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the sub-mesh
-- 'vertex_function_temp': the mesh function tagging vertices in the sub-mesh
+- 'mesh': the one-dimensional mesh
+- 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
+- 'vertex_function_temp': the mesh function tagging vertices in the mesh
 
 Example of usage: 
-          sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_sub_mesh(0, parameters['L'], len(x_coordinates) - 1,
+          mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
                                                                                           parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
 '''
-def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
+def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
 
-    sub_mesh = IntervalMesh(n_intervals, x_l, x_r)
+    mesh = IntervalMesh(n_intervals, x_l, x_r)
 
     # create a function for the lines
-    cell_function_temp = MeshFunction("size_t", sub_mesh, sub_mesh.topology().dim())
-    cell_function_temp.set_all(line_id)  # Tag entire line as region parameters['line_id']
+    cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
+    cell_function.set_all(line_id)  # Tag entire line as region parameters['line_id']
 
     # creat a function for the vertices
-    vertex_function_temp = MeshFunction("size_t", sub_mesh, sub_mesh.topology().dim() - 1)
-    for vertex in vertices(sub_mesh):
+    vertex_function = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
+    for vertex in vertices(mesh):
         x = vertex.point().x()  # Get x-coordinate
 
         if math.isclose(x, x_l):
-            vertex_function_temp[vertex] = vertex_l_id
+            vertex_function[vertex] = vertex_l_id
 
         if math.isclose(x, x_r):
-            vertex_function_temp[vertex] = vertex_r_id
+            vertex_function[vertex] = vertex_r_id
 
 
     if output_directory is not None:
@@ -1559,14 +1559,14 @@ def genereate_line_sub_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_
         write the mesh lines and vertices to .h5 files: 
         one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
         '''
-        write_mesh_components_h5(sub_mesh, output_directory + "line_mesh.h5", cell_function_temp, "cf")
-        write_mesh_components_h5(sub_mesh, output_directory + "vertex_mesh.h5", vertex_function_temp, "vf")
+        write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
+        write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
 
         # print mesh metadata
         if metadata is not None:
             io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
 
-    return sub_mesh, cell_function_temp, vertex_function_temp
+    return mesh, cell_function, vertex_function
 
 '''
 return the geometrical shape of an element for a mesh with different dimensions
