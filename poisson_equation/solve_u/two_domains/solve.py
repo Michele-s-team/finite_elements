@@ -7,6 +7,7 @@ Run with
 Examples:
      MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/square/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_square $MESH_PATH $SOLUTION_PATH
      MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_line $MESH_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -46,6 +47,7 @@ problem[1] = NonlinearVariationalProblem(vp.F[1], fsp.u[1], vp.bcs[1], J[1])
 solver[1] = NonlinearVariationalSolver(problem[1])
 solver[1].parameters.update(params)
 
+'''
 solver[1].solve()
 
 
@@ -68,3 +70,4 @@ solver[0].parameters.update(params)
 solver[0].solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
+'''
