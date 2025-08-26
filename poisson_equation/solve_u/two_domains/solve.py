@@ -47,10 +47,10 @@ problem[1] = NonlinearVariationalProblem(vp.F[1], fsp.u[1], vp.bcs[1], J[1])
 solver[1] = NonlinearVariationalSolver(problem[1])
 solver[1].parameters.update(params)
 
-'''
+
 solver[1].solve()
 
-
+'''
 
 # solve problem 0 by using the solution of problem 1 to specify the BCs
 
@@ -68,6 +68,5 @@ solver[0] = NonlinearVariationalSolver(problem[0])
 solver[0].parameters.update(params)
 
 solver[0].solve()
-
-prout_bc = importlib.import_module(swi.prout_bc)
 '''
+prout_bc = importlib.import_module(swi.prout_bc)
