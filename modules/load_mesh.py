@@ -25,8 +25,8 @@ if "n_sub_meshes" in parameters:
 
             elif parameters[f'sub_mesh_{p}_dim'] == 1:
                 '''
-                the sub_mesh has dimension 1, and here it is supposed that it is a line: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
-                I would obtain a one-dimensional mesh embedded in two-dimensional space, which is not what I want 
+                the sub_mesh has dimension 1 -> it is a line: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
+                I would obtain a one-dimensional mesh embedded in two-dimensional space, thus in fact a two-dimensional mesh, which is not what I want : I want a one-dimensional mesh. 
                 -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
                 '''
 
