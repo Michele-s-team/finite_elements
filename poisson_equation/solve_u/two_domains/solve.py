@@ -67,7 +67,7 @@ io.full_print(fsp.u_1_on_0, f'u_1_on_0', solpath.xdmf_file_path, solpath.h5_file
 '''
 # impose the BCs for problem on sub_mesh[0], on the ellipse boundary of sub_mesh[0], in terms of fsp.u_1_on_0, and solve problem on sub_mesh[0]
 # force reload vp to update bc[0], because u_1_on_0 has changed
-'''
+
 importlib.reload(vp)
 
 
@@ -77,5 +77,5 @@ solver[0] = NonlinearVariationalSolver(problem[0])
 solver[0].parameters.update(params)
 
 solver[0].solve()
-'''
+
 prout_bc = importlib.import_module(swi.prout_bc)

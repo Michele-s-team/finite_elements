@@ -17,7 +17,7 @@ i, j = ufl.indices(2)
 class u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
+        values[0] = x[0] ** 2 + x[1] ** 2
 
         # test case 2
         # values[0] = (np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)) ** 2
@@ -29,8 +29,8 @@ class u_exact_sub_mesh_0_expression(UserExpression):
 class grad_u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 4 * x[0] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
-        values[1] = 8 * x[1] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[0] = 2 * x[0]
+        values[1] = 2 * x[1]
 
         # test case 2
         # values[0] = (
@@ -52,7 +52,7 @@ class grad_u_exact_sub_mesh_0_expression(UserExpression):
 class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 8 * x[0] ** 2 + 32 * x[1] ** 2 + 12 * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[0] = 4
 
         # test case 2
         # values[0] = (
@@ -72,7 +72,7 @@ class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
 class u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0] ** 2
+        values[0] = x[0] ** 2 + (rmsh.parameters['h'])**2
 
         # test case 2
         # values[0] = np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)
@@ -119,14 +119,16 @@ fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_1_expression(element=fsp.Q[1].uf
 
 bcs = [None] * len(rmsh.lmsh.sub_meshes)
 
-
 # boundary conditions for sub_mesh[1]: constrain u[1] on the whole boundary of sub_mesh[1], i.e., on the ellipse and outer rectangle (lrtb)
 bcs[1] = [ \
     DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['lr']) \
     ]
 
 bcs[0] = [ \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"]) \
+    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
     ]
 
 # variational functional
