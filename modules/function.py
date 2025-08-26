@@ -148,7 +148,7 @@ def deform_function(f, u):
     return g
 
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh):
+def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
     u_sub_mesh_on_mesh = Function(Q_mesh)
 
     # Get DOF coordinates for both function spaces
@@ -159,16 +159,10 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh):
     dof_values = np.zeros(Q_mesh.dim())
 
     for mesh_id, mesh_coord in enumerate(mesh_coordinagtes):
-        point_on_edge = False
 
-        # Check against ALL submesh DOF coordinates
-        for sub_mesh_coord in sub_mesh_coordinates:
-            distance = np.linalg.norm(mesh_coord - sub_mesh_coord)
-            if math.isclose(distance, 0):
-                point_on_edge = True
-                break
 
-        if point_on_edge:
+        if math.isclose(mesh_coord[1], h):
+            print(f'point on edge is TRUE for mesh_coord = {mesh_coord}')
             dof_values[mesh_id] = u_sub_mesh(mesh_coord[0])
 
 
