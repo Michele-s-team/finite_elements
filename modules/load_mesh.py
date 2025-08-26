@@ -39,13 +39,14 @@ if "n_sub_meshes" in parameters:
 
                 # transform submesh_2d into a truly 1d mesh
                 # Extract x-coordinates from the 2D submesh
-                x_coords = []
+                x_coordinates = []
                 for vertex in vertices(submesh_2d):
-                    x_coords.append(vertex.point().x())
+                    x_coordinates.append(vertex.point().x())
 
-                x_coords = sorted(list(set(x_coords)))  # Remove duplicates and sort
+                x_coordinates = sorted(list(set(x_coordinates)))  # Remove duplicates and sort
 
-                sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_sub_mesh(0, parameters['L'], len(x_coords) - 1,
+                # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function 
+                sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_sub_mesh(0, parameters['L'], len(x_coordinates) - 1,
                                                                                           parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
                 sub_meshes.append(sub_mesh_1d)
 
