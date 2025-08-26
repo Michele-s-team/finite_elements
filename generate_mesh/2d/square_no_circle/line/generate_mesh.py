@@ -65,20 +65,20 @@ print(f"DEBUG: Line entities: {lines}")
 print(f"DEBUG: Expected line IDs - line_12: {line_12}, line_23: {line_23}, line_34: {line_34}, line_41: {line_41}")
 
 # square lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_1_b_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_1_b_id"], "line_12")
+gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_0_b_id"])
+gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_0_b_id"], "line_12")
 
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_1_r_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_1_r_id"], "line_23")
+gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_0_r_id"])
+gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_0_r_id"], "line_23")
 
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_1_t_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_1_t_id"], "line_34")
+gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_0_t_id"])
+gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_34")
 
 gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["sub_mesh_1_id"])
 gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["sub_mesh_1_id"], "sub_mesh_1")
 
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_1_l_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_41")
+gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_0_l_id"])
+gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_0_l_id"], "line_41")
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
