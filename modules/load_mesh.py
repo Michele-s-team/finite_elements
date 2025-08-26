@@ -46,7 +46,7 @@ if "n_sub_meshes" in parameters:
                 x_coords = sorted(list(set(x_coords)))  # Remove duplicates and sort
 
                 # Create new 1D mesh
-                sub_mesh_1d = IntervalMesh(len(x_coords) - 1, x_coords[0], x_coords[-1])
+                sub_mesh_1d = IntervalMesh(len(x_coords) - 1, 0.0, parameters['L'])
 
                 # After creating sub_mesh_1d: tag its compoennts
                 # tag the lines
