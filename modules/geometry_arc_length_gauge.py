@@ -1,5 +1,9 @@
+'''
+this module contains the differential-geometry definitions
+for a one-dimensional manifold parameterized with a coordinate x^1 which is the arc-length, see "Lagrangian approach"
+'''
+
 from fenics import *
-import dolfin
 import ufl as ufl
 import numpy as np
 
@@ -9,8 +13,13 @@ epsilon = ufl.PermutationSymbol(2)
 # latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 
+
+def ufl_norm(x):
+    return (sqrt(ufl.dot(x, x)))
+
+
 '''
-vectos tangent to the curvilinear coordinate x on the manifold
+vector tangent to the curvilinear coordinate x on the manifold
 e(psi) = {e_1}_{Lagrangian approach}
 
 Input values: 
@@ -18,51 +27,59 @@ Input values:
 Return values:
 - the vector e(psi)[i]
 '''
+
+
 def e(psi):
-    return as_tensor([cos(psi), -sin(psi)])
-
-# sign
-# MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
-# normal(z) = \hat{n}_{al-izzi2020shear}
-def normal(omega):
-    return as_tensor(cross(e(omega)[0], e(omega)[1]) / ufl_norm(cross(e(omega)[0], e(omega)[1])))
+    return as_tensor([[cos(psi), -sin(psi)]])
 
 
-# MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
+'''
+normal vector to the manifold
+Inout values: 
+- 'psi': the angle psi_here = psi_{Lagrangian approach}
+Return values: 
+- the normal vector n[i], a vector with two components
+'''
 
-# first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
-def b(omega):
-    return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i, j))
+
+def normal(psi):
+    v = as_tensor(-epsilon[i, j] * e(psi)[0, j], (i))
+    return as_tensor(v[i] / ufl_norm(v), (i))
 
 
 # two-covariant metric tensor: g_{ij}
-def g(omega):
-    return as_tensor([[1 + (omega[0]) ** 2, (omega[0]) * (omega[1])], [(omega[0]) * (omega[1]), 1 + (omega[1]) ** 2]])
+def g(psi):
+    return as_tensor(e(psi)[i, k] * e(psi)[j, k], (i, j))
 
 
 # two-contravariant metric tensor: g^{ij}
-def g_c(omega):
-    return ufl.inv(g(omega))
+def g_c(psi):
+    return ufl.inv(g(psi))
 
 
 # determinant of the two-covariant metric tensor
-def detg(omega):
-    return ufl.det(g(omega))
+def detg(psi):
+    return ufl.det(g(psi))
 
 
 # absolute value of the two-covariant metric tensor
-def abs_detg(omega):
-    return np.abs(ufl.det(g(omega)))
+def abs_detg(psi):
+    return np.abs(ufl.det(g(psi)))
 
 
 # square root of the determinant of the two-covariant metric tensor
-def sqrt_detg(omega):
-    return sqrt(detg(omega))
+def sqrt_detg(psi):
+    return sqrt(detg(psi))
 
 
 # square root of the absolute value of the two-covariant metric tensor
-def sqrt_abs_detg(omega):
-    return sqrt(abs_detg(omega))
+def sqrt_abs_detg(psi):
+    return sqrt(abs_detg(psi))
+
+
+# first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
+def b(psi):
+    return as_tensor((normal(psi))[k] * (e(psi)[i, k]).dx(j), (i, j))
 
 
 # mean curvature, H = H_{al-izzi2020shear}
@@ -70,14 +87,11 @@ def H(omega):
     return (0.5 * g_c(omega)[i, j] * b(omega)[j, i])
 
 
-# same as H(omega), but expressed in terms of the covariant derivative of omega
-def H_Nabla_omega(omega):
-    return (1.0 / 2.0 * sqrt_detg(omega) * g_c(omega)[i, j] * Nabla_f(omega, omega)[j, i])
-
+# sign
 
 # gaussian curvature: K = K_{al-izzi2020shear}
 def K(omega):
-    return (ufl.det(as_tensor(b(omega)[i, k] * g_c(omega)[k, j], (i, j))))
+    return 0
 
 
 # Christoffel symbols of the second kind related to g: Gamma(omega)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
@@ -118,87 +132,3 @@ def d_c(v, w, omega):
 # given a vector and a scalar, return the vector vector^i * scalar
 def vector_times_scalar(vector, scalar):
     return as_tensor(scalar * vector[i], (i))
-
-
-# vector living in the three-dimensional Euclidean space, which is orthogonal to the circle of radius r centered at c_r. N3d_c_r[k] = \vec{N}_{\gamma k}_notes
-def N3d_c_r(mesh, c_r):
-    x = ufl.SpatialCoordinate(mesh)
-    norm = sqrt((x[0] - c_r[0]) ** 2 + (x[1] - c_r[1]) ** 2)
-    return as_tensor([(x[0] - c_r[0]) / norm, (x[1] - c_r[1]) / norm, 0.0])
-
-
-# Nt_c_r[i] = N_{t \gamma}^i_notes
-def Nt_c_r(mesh, c_r, omega):
-    return as_tensor(g_c(omega)[i, j] * N3d_c_r(mesh, c_r)[k] * e(omega)[j, k], (i))
-
-
-# n_c_r[i] = n_\gamma^i_notes
-def n_c_r(mesh, c_r, omega):
-    return as_tensor((Nt_c_r(mesh, c_r, omega))[k] / sqrt(g(omega)[i, j] * (Nt_c_r(mesh, c_r, omega))[i] * (Nt_c_r(mesh, c_r, omega))[j]), (k))
-
-
-def f_to_v(f, omega):
-    return as_tensor(g_c(omega)[i, j] * f[j], (i))
-
-
-def v_to_f(v, omega):
-    return as_tensor(g(omega)[i, j] * v[j], (i))
-
-
-'''
-this method transforms a vector in the tangent bundle of \Omega to the correspoding vector in the 3d Euclidean space in which \Omega is embedded
-Input values:
-- 'omega': a one-form omega_i, the gradient of z
-- 'v' : the  vector v^i to be transformed
-Output values:
-- the vector in 3d space (a tuple of 3 coordinates)
-'''
-
-
-def from_tangent_to_3D_space(omega, v):
-    return as_tensor(v[i] * e(omega)[i, j], (j))
-
-
-'''
-this method takes as input a vector in the in the 3d Euclidean space and
-returns its decomposition in compoennts in the tangent bundle of \Omega and in the component normal ot \Omega
-Input values:
-- 'omega': a one-form omega_i, the gradient of z
-- 'v' : the vector in 3d space (a tuple of 3 coordinates)
-Return values:
-- the tangential part V_t^i and the normal part V_n
-'''
-
-
-def from_3D_to_tangent_space(omega, V):
-    return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
-
-
-'''
-this method transforms the  components tangential to \Omega and normal to \Omega of a vector, 
-to the corresponding vector in the 3d Euclidean space in which \Omega is embedded
-Input values:
-- 'omega': a one-form omega_i, the gradient of z
-- 'v_t' : the tangential component  vector v_t^i 
-- 'v_n': the normal component  
-Return values:
-- the vector in 3d space (a tuple of 3 coordinates)
-'''
-
-
-def from_tangent_normal_to_3D_space(omega, v_t, v_n):
-    return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
-
-
-'''
-return the shape of a scalar, vector or tensor t
-Input values: 
-- 't': the scalar, vector or tensor
-Return values:
-- the shape: [1] for a scalar, [number_of_components] for a vector with 'number_of_components' components', [3,3] for a 3x3 tensor, etc... 
-'''
-
-
-def shape(t):
-    shape = t.function_space().ufl_element().value_shape()
-    return [1] if shape == () else list(shape)
