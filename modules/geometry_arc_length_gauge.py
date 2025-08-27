@@ -87,10 +87,8 @@ def H(omega):
     return (0.5 * g_c(omega)[i, j] * b(omega)[j, i])
 
 
-# sign
-
 # gaussian curvature: K = K_{al-izzi2020shear}
-def K(omega):
+def K(psi):
     return 0
 
 
