@@ -71,6 +71,8 @@ fsp.u_exact[0].interpolate(u_exact_sub_mesh_0_expression(element=fsp.Q[0].ufl_el
 fsp.grad_u[0].interpolate(grad_u_exact_sub_mesh_0_expression(element=fsp.V[0].ufl_element()))
 fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_expression(element=fsp.Q[0].ufl_element()))
 
+fsp.u_1_on_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
+
 bcs = [ \
     DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
     DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \

@@ -4,7 +4,8 @@ import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_square':
     rmsh = 'read_mesh_square_square'
-    vp = 'variational_problem_square_square'
+    vp_sub_mesh_0 = 'variational_problem_square_square_sub_mesh_0'
+    vp_sub_mesh_1 = 'variational_problem_square_square_sub_mesh_1'
     prout_bc = 'print_out_square_square'
 
 elif rarg.args.problem == 'square_ellipse_circle':
