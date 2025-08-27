@@ -9,7 +9,8 @@ if rarg.args.problem == 'square_square':
 
 elif rarg.args.problem == 'square_ellipse_circle':
     rmsh = 'read_mesh_square_ellipse_circle'
-    vp = 'variational_problem_square_ellipse_circle'
+    vp_sub_mesh_0 = 'variational_problem_square_no_circle_line_sub_mesh_0'
+    vp_sub_mesh_1 = 'variational_problem_square_no_circle_line_sub_mesh_1'
     prout_bc = 'print_out_square_ellipse_circle'
 
 elif rarg.args.problem == 'square_no_circle_line':

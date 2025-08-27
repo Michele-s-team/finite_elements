@@ -12,7 +12,6 @@ Examples:
 
 from fenics import *
 import importlib
-import numpy as np
 import sys
 
 # add the path where to find the shared modules
