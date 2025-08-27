@@ -16,10 +16,10 @@ i, j = ufl.indices(2)
 class u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        # values[0] = x[0] ** 2 + (rmsh.parameters['h'])**2
+        values[0] = np.sin(2 * np.pi * x[0]) / (1 + x[0] ** 2)
 
         # test case 2
-        values[0] = np.cos(2 * np.pi * x[0] ** 2) * np.sin(2 * np.pi * x[0])
+        # values[0] = np.cos(2 * np.pi * x[0] ** 2) * np.sin(2 * np.pi * x[0])
 
     def value_shape(self):
         return (1,)
@@ -28,11 +28,11 @@ class u_exact_sub_mesh_1_expression(UserExpression):
 class grad_u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        # values[0] = 2.0 * x[0]
+        values[0] = (2 * np.pi * (1 + x[0] ** 2) * np.cos(2 * np.pi * x[0]) - 2 * x[0] * np.sin(2 * np.pi * x[0])) / (1 + x[0] ** 2) ** 2
 
         # test case 2
-        values[0] = 2 * np.pi * (np.cos(2 * np.pi * x[0]) * np.cos(2 * np.pi * x[0] ** 2) -
-                                 2 * x[0] * np.sin(2 * np.pi * x[0]) * np.sin(2 * np.pi * x[0] ** 2))
+        # values[0] = 2 * np.pi * (np.cos(2 * np.pi * x[0]) * np.cos(2 * np.pi * x[0] ** 2) -
+        #                          2 * x[0] * np.sin(2 * np.pi * x[0]) * np.sin(2 * np.pi * x[0] ** 2))
 
     def value_shape(self):
         return (1,)
@@ -41,10 +41,10 @@ class grad_u_exact_sub_mesh_1_expression(UserExpression):
 class laplacian_u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        # values[0] = 2.0
+        values[0] = -((2 * (4 * np.pi * x[0] * (1 + x[0] ** 2) * np.cos(2 * np.pi * x[0]) + (1 - 3 * x[0] ** 2 + 2 * np.pi ** 2 * (1 + x[0] ** 2) ** 2) * np.sin(2 * np.pi * x[0]))) / (1 + x[0] ** 2) ** 3)
 
         # test case 2
-        values[0] = -4 * np.pi * (np.pi * (1 + 4 * x[0] ** 2) * np.cos(2 * np.pi * x[0] ** 2) * np.sin(2 * np.pi * x[0]) + (4 * np.pi * x[0] * np.cos(2 * np.pi * x[0]) + np.sin(2 * np.pi * x[0])) * np.sin(2 * np.pi * x[0] ** 2))
+        # values[0] = -4 * np.pi * (np.pi * (1 + 4 * x[0] ** 2) * np.cos(2 * np.pi * x[0] ** 2) * np.sin(2 * np.pi * x[0]) + (4 * np.pi * x[0] * np.cos(2 * np.pi * x[0]) + np.sin(2 * np.pi * x[0])) * np.sin(2 * np.pi * x[0] ** 2))
 
     def value_shape(self):
         return (1,)
