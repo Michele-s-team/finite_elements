@@ -1428,6 +1428,15 @@ def read_from_xdmf_file(mesh_path):
     return result
 
 
+'''
+read a 1d mesh stored into an h5 file
+Input values: 
+- 'mesh_path': the path where 'line_mesh.h5' is located
+Return values: 
+- 'mesh': the mesh, or [] if the mesh could not be read
+- 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
+'''
+
 def read_from_h5_file(mesh_path):
     mesh_path_with_slash = io.add_trailing_slash(mesh_path)
 
