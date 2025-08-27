@@ -74,9 +74,9 @@ F_psi = ( \
                     (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
         )
 
-F_mu = (-1.0 / 2.0 * fsp.psi.dx(0) - fsp.mu) * fsp.nu_mu * rmsh.dx
+F_mu = ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
-F_X = (fsp.X[i].dx(0) - geo.X_psi(fsp.psi)[i]) * fsp.nu_X[i] * rmsh.dx
+F_X = (fsp.X[i].dx(0) - geo.e(fsp.psi)[0, i]) * fsp.nu_X[i] * rmsh.dx
 
 # total functional for the mixed problem
 F = F_psi + F_mu + F_X

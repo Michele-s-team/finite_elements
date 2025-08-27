@@ -25,7 +25,7 @@ e(psi) = {e_1}_{Lagrangian approach}
 Input values: 
 - 'psi': the angle psi_here = psi_{Lagrangian approach}
 Return values:
-- the vector e(psi)[i]
+- the vector e(psi)[i, j]
 '''
 
 
@@ -83,8 +83,8 @@ def b(psi):
 
 
 # mean curvature, H = H_{al-izzi2020shear}
-def H(omega):
-    return (0.5 * g_c(omega)[i, j] * b(omega)[j, i])
+def H(psi):
+    return (0.5 * g_c(psi)[i, j] * b(psi)[j, i])
 
 
 # gaussian curvature: K = K_{al-izzi2020shear}
