@@ -3,8 +3,8 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import boundary_geometry as bgeo
-import geometry as geo
+import boundary_geometry_arc_length_gauge as bgeo
+import geometry_arc_length_gauge as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
 
@@ -66,10 +66,13 @@ F_psi = - 4 * rpam.parameters['kappa'] *  fsp.mu.dx(0).dx(0)  * fsp.nu_psi * rms
 '''
 
 F_psi = ( \
-                    (rpam.parameters['kappa'] * ((-2 * fsp.mu) ** 3) - 2 * fsp.sigma * (-2 * fsp.mu)) * fsp.nu_psi + \
-                    4 * rpam.parameters['kappa'] * fsp.mu.dx(0) * fsp.nu_psi.dx(0)
-        ) * rmsh.dx \
-        - (4 * rpam.parameters['kappa'] * fsp.mu.dx(0) * fsp.nu_psi * bgeo.facet_normal[0]) * rmsh.ds
+                    rpam.parameters["kappa"] * ( \
+                        geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K(fsp.psi)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
+            ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
+        - ( \
+                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l + \
+                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+        )
 
 F_mu = (-1.0 / 2.0 * fsp.psi.dx(0) - fsp.mu) * fsp.nu_mu * rmsh.dx
 
