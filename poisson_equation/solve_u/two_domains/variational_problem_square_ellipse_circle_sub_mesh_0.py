@@ -83,6 +83,5 @@ bcs = [ \
 
 # functional for sub_mesh[0]
 F = (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0] \
-    # natural BC is imposed here
-- bgeo.sub_mesh_facet_normal[0][i] * fsp.grad_u[0][i] * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_circle'] \
-- bgeo.sub_mesh_facet_normal[0][i] * (fsp.u[0].dx(i)) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_ellipse']
+    - bgeo.sub_mesh_facet_normal[0][i] * fsp.grad_u[0][i] * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_circle'] \
+    - bgeo.sub_mesh_facet_normal[0][i] * (fsp.u[0].dx(i)) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['ds_ellipse']
