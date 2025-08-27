@@ -3,6 +3,7 @@ from fenics import *
 import numpy as np
 import colorama as col
 import gmsh
+import math
 import meshio
 import os
 import pygmsh
@@ -1427,6 +1428,15 @@ def read_from_xdmf_file(mesh_path):
     return result
 
 
+'''
+read a 1d mesh stored into an h5 file
+Input values: 
+- 'mesh_path': the path where 'line_mesh.h5' is located
+Return values: 
+- 'mesh': the mesh, or [] if the mesh could not be read
+- 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
+'''
+
 def read_from_h5_file(mesh_path):
     mesh_path_with_slash = io.add_trailing_slash(mesh_path)
 
@@ -1513,6 +1523,59 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
     return sub_mesh, sub_mesh_boundary
+
+'''
+generate a one-dimensional mesh as an IntervalMesh given its geometric parameters and tags
+Input values: 
+- 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
+- 'n_intervals': the number of intervals into which the line mesh is divided
+- 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
+- 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively 
+- 'output_directory' [optional]: the path where the mesh will be written 
+- 'metadata' [optional]: the mesh metadata to write in the output directory
+
+Return values: 
+- 'mesh': the one-dimensional mesh
+- 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
+- 'vertex_function_temp': the mesh function tagging vertices in the mesh
+
+Example of usage: 
+          mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
+                                                                                          parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
+'''
+def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
+
+    mesh = IntervalMesh(n_intervals, x_l, x_r)
+
+    # create a function for the lines
+    cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
+    cell_function.set_all(line_id)  # Tag entire line as region parameters['line_id']
+
+    # creat a function for the vertices
+    vertex_function = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
+    for vertex in vertices(mesh):
+        x = vertex.point().x()  # Get x-coordinate
+
+        if math.isclose(x, x_l):
+            vertex_function[vertex] = vertex_l_id
+
+        if math.isclose(x, x_r):
+            vertex_function[vertex] = vertex_r_id
+
+
+    if output_directory is not None:
+        '''
+        write the mesh lines and vertices to .h5 files: 
+        one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
+        '''
+        write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
+        write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
+
+        # print mesh metadata
+        if metadata is not None:
+            io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+
+    return mesh, cell_function, vertex_function
 
 '''
 return the geometrical shape of an element for a mesh with different dimensions

@@ -1,8 +1,9 @@
 import dolfin
 from fenics import *
+import numpy as np
+import math
 from ufl import FunctionSpace
 
-import input_output as io
 import mesh as msh
 
 '''
@@ -11,28 +12,27 @@ set the nodal values of f equal to the values taken by the analytical expression
 def expression(x):
     return np.cos(x[0]) * x[1]
 '''
-def set_nodal_values_expression(f, expression):
 
+
+def set_nodal_values_expression(f, expression):
     mesh = f.function_space().mesh()
 
-    Q_dummy = FunctionSpace( mesh, 'CG', 1 )
+    Q_dummy = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q_dummy.tabulate_dof_coordinates()
 
     for i in range(Q_dummy.dim()):
         f.vector()[i] = expression(coordinates[i])
 
 
-#set the nodal values of function 'f' according to the list 'list'. This works only if the function space of f is order-1 polynomials
+# set the nodal values of function 'f' according to the list 'list'. This works only if the function space of f is order-1 polynomials
 def set_from_list(f, list):
-
     mesh = f.function_space().mesh()
 
-    Q_dummy = FunctionSpace( mesh, 'CG', 1 )
+    Q_dummy = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q_dummy.tabulate_dof_coordinates()
 
     for i in range(Q_dummy.dim()):
         f.vector()[i] = list[i][0]
-
 
 
 def set_from_file(f, filename, constraint=None, tol=1e-12):
@@ -53,7 +53,7 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
 
     # Extract values and coords from CSV
     values_csv = df.iloc[:, :value_size].to_numpy(dtype=float)  # (n_nodes_csv, value_size)
-    coords_csv = df.iloc[:, value_size:value_size+gdim].to_numpy(dtype=float)  # (n_nodes_csv, gdim)
+    coords_csv = df.iloc[:, value_size:value_size + gdim].to_numpy(dtype=float)  # (n_nodes_csv, gdim)
 
     # Get DOF coordinates (one per DOF)
     dof_coords = f.function_space().tabulate_dof_coordinates()
@@ -62,7 +62,7 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
 
     # Extract unique node coords by taking every value_size-th DOF coordinate
     n_nodes = dof_coords.shape[0] // value_size
-    node_coords = dof_coords[0 : n_nodes * value_size : value_size]
+    node_coords = dof_coords[0: n_nodes * value_size: value_size]
 
     # Build KD-tree on CSV node coords
     tree = cKDTree(coords_csv)
@@ -94,7 +94,6 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
         constraint.apply(f.vector())
 
 
-
 '''
 given a function space and its mesh, return a function space on the deformed mesh, deformed according to a displacement field
 Input values:
@@ -103,8 +102,9 @@ Input values:
 Return values:
 - the new function space on the deformed mesh
 '''
-def deform_function_space(Q, u):
 
+
+def deform_function_space(Q, u):
     deformed_mesh = msh.deform_mesh(Mesh(Q.mesh()), u)
 
     # Extract the features of the vector space Q
@@ -113,7 +113,6 @@ def deform_function_space(Q, u):
     cell = element.cell()
     shape = element.value_shape()
     degree = Q.ufl_element().degree()
-
 
     # Construct the new element with the same shape
     if shape == ():  # scalar
@@ -127,16 +126,19 @@ def deform_function_space(Q, u):
 
     return dolfin.FunctionSpace(deformed_mesh, element)
 
+
 '''
 copy the values of a function (nodal values, values within the triangles, etc.) to another function. This works for scalars, vectors, tensors. 
 Input values:
 - 'f_in', 'f_out': source and destination function
 '''
+
+
 def copy_function_values(f_in, f_out):
     f_out.vector()[:] = f_in.vector()[:]
 
-def deform_function(f, u):
 
+def deform_function(f, u):
     Q = deform_function_space(f.function_space(), u)
     # print(f'type of Q = {type(Q)}')  # should be <class 'dolfin.cpp.function.FunctionSpace'>
 
@@ -145,3 +147,24 @@ def deform_function(f, u):
 
     return g
 
+
+def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
+    u_sub_mesh_on_mesh = Function(Q_mesh)
+
+    # Get DOF coordinates for both function spaces
+    mesh_coordinagtes = Q_mesh.tabulate_dof_coordinates()
+    sub_mesh_coordinates = Q_sub_mesh.tabulate_dof_coordinates()  # DOFs, not just vertices!
+
+    # initialize all the values to 0
+    dof_values = np.zeros(Q_mesh.dim())
+
+    for mesh_id, mesh_coord in enumerate(mesh_coordinagtes):
+
+
+        if math.isclose(mesh_coord[1], h):
+            # print(f'point on edge is TRUE for mesh_coord = {mesh_coord}')
+            dof_values[mesh_id] = u_sub_mesh(mesh_coord[0])
+
+
+    u_sub_mesh_on_mesh.vector()[:] = dof_values
+    return u_sub_mesh_on_mesh
