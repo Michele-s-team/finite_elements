@@ -54,9 +54,9 @@ def normal(omega):
 def b(omega):
     return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i,j))
 
-#two-covariant metric tensor: g_{ij}
+# two-covariant metric tensor: g_{ij}
 def g(omega):
-    return as_tensor([[1+ (omega[0])**2, (omega[0])*(omega[1])],[(omega[0])*(omega[1]), 1+ (omega[1])**2]])
+    return as_tensor(e(omega)[i, k] * e(omega)[j, k], (i, j))
 
 #two-contravariant metric tensor: g^{ij}
 def g_c(omega):
