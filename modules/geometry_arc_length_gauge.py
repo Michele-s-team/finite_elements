@@ -7,7 +7,6 @@ all methods specific to one dimension and to the arc-length gauge are defined he
 
 from fenics import *
 import ufl as ufl
-import numpy as np
 
 import geometry as geo
 
@@ -45,7 +44,12 @@ def normal(psi):
     v = as_tensor(-epsilon[i, j] * e(psi)[0, j], (i))
     return as_tensor(v[i] / ufl_norm(v), (i))
 
-
-# gaussian curvature: K = K_{al-izzi2020shear}
+'''
+gaussian curvature: K = K_{al-izzi2020shear}
+Input values: 
+- 'psi': the angle psi_here = psi_{Lagrangian approach}
+Return values: 
+- the Gaussian curvature (in this case it is identially zero because the manifold is one dimensional) 
+'''
 def K(psi):
     return 0
