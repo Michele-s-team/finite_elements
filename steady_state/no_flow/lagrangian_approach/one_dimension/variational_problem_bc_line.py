@@ -12,7 +12,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-# in geo, set the gauge-specific methods equal to the methods for the arc-length gauge 
+# in geo, set the gauge-specific methods equal to the methods for the arc-length gauge
 cmd.set_global_variables(geo, {'e': geo_g.e, 'normal': geo_g.normal, 'K': geo_g.K})
 
 i, j, k, l = ufl.indices(4)
