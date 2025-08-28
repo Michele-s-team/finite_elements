@@ -3,7 +3,7 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import boundary_geometry_arc_length_gauge as bgeo
+import boundary_geometry_arc_length_gauge as bgeo_al
 import geometry_arc_length_gauge as geo_al
 import geometry as geo
 import read_parameters_solve as rpam

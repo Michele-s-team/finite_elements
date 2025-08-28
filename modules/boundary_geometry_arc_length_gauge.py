@@ -1,12 +1,9 @@
 from fenics import *
 import ufl as ufl
 
-import geometry_arc_length_gauge as geo
+import geometry as geo
 import load_mesh as lmsh
 import mesh as mesh_module
-
-# the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
-facet_normal = FacetNormal(lmsh.mesh)
 
 i, j, k, l = ufl.indices(4)
 
@@ -15,8 +12,6 @@ i, j, k, l = ufl.indices(4)
 # DOUBLE CHCK THIS - START
 def sqrt_deth_lr(psi):
     return sqrt(1)
-
-
 # DOUBLE CHCK THIS - END
 
 
