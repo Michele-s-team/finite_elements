@@ -34,17 +34,6 @@ epsilon = ufl.PermutationSymbol(2)
 # latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
 
-'''
-the vector of the differential manifold in the one-dimensional case
-Input values:
-- 'psi': the angle as defined in Lagrangian_approach
-Return values: 
-- 'X': the vector [cos(psi), -sin(psi)]
-'''
-
-
-def X_psi(psi):
-    return as_tensor([cos(psi), -sin(psi)])
 
 
 '''
