@@ -86,9 +86,11 @@ def H(omega):
 def H_Nabla_omega(omega):
     return (1.0/2.0 * sqrt_detg(omega) * g_c(omega)[i, j]* Nabla_f(omega, omega)[j, i])
 
+'''
 #gaussian curvature: K = K_{al-izzi2020shear}
 def K(omega):
     return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
+'''
 
 #Christoffel symbols of the second kind related to g: Gamma(omega)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
 def Gamma(omega):
