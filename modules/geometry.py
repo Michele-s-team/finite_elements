@@ -3,7 +3,7 @@ import ufl as ufl
 import numpy as np
 
 
-# Global variable to hold the e method
+# Global variables which will be set according to the gauge choice
 e = None
 normal = None
 K = None
