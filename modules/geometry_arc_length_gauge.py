@@ -35,7 +35,7 @@ def e(psi):
 
 '''
 normal vector to the manifold
-Inout values: 
+Input values: 
 - 'psi': the angle psi_here = psi_{Lagrangian approach}
 Return values: 
 - the normal vector n[i], a vector with two components
@@ -45,6 +45,11 @@ Return values:
 def normal(psi):
     v = as_tensor(-epsilon[i, j] * e(psi)[0, j], (i))
     return as_tensor(v[i] / ufl_norm(v), (i))
+
+
+# gaussian curvature: K = K_{al-izzi2020shear}
+def K(psi):
+    return 0
 
 
 # two-covariant metric tensor: g_{ij}
@@ -85,11 +90,6 @@ def b(psi):
 # mean curvature, H = H_{al-izzi2020shear}
 def H(psi):
     return (0.5 * g_c(psi)[i, j] * b(psi)[j, i])
-
-
-# gaussian curvature: K = K_{al-izzi2020shear}
-def K(psi):
-    return 0
 
 
 # Christoffel symbols of the second kind related to g: Gamma(omega)[i,j,k] = {\Gamma^i_{jk}}_{al-izzi2020shear}
