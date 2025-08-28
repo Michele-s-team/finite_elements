@@ -88,3 +88,14 @@ Return values:
 def check_if_file_exists(path):
     file_path = Path(path)
     return file_path.exists()
+
+
+'''
+Set multiple global variables in a module from a dictionary
+Input values: 
+    - 'target_module': the moduel where the global variables will be set
+    - 'variable_dictionary': a dictionary with variable names as keys
+'''
+def set_global_variables(target_module, variables_dictionary):
+    for variable_name, variable_value in variables_dictionary.items():
+        setattr(target_module, variable_name, variable_value)

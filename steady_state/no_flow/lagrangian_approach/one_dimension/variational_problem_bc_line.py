@@ -2,14 +2,18 @@ from fenics import *
 import importlib
 import ufl as ufl
 
+import boundary_geometry_arc_length_gauge as bgeo_g
+import command as cmd
 import function_spaces as fsp
-import boundary_geometry_arc_length_gauge as bgeo_al
-import geometry_arc_length_gauge as geo_al
+import geometry_arc_length_gauge as geo_g
 import geometry as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
+
+# in geo, set the gauge-specific methods equal to the methods for the arc-length gauge 
+cmd.set_global_variables(geo, {'e': geo_g.e, 'normal': geo_g.normal, 'K': geo_g.K})
 
 i, j, k, l = ufl.indices(4)
 
@@ -68,21 +72,21 @@ F_psi = - 4 * rpam.parameters['kappa'] *  fsp.mu.dx(0).dx(0)  * fsp.nu_psi * rms
 
 F_psi = ( \
                     rpam.parameters["kappa"] * ( \
-                        geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo_al.K(fsp.psi)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
+                        geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo_g.K(fsp.psi)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
             ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
         - ( \
-                    (rpam.parameters["kappa"] * (bgeo_al.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo_al.sqrt_deth_lr(fsp.psi) * rmsh.ds_l + \
-                    (rpam.parameters["kappa"] * (bgeo_al.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo_al.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+                    (rpam.parameters["kappa"] * (bgeo_g.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo_g.sqrt_deth_lr(fsp.psi) * rmsh.ds_l + \
+                    (rpam.parameters["kappa"] * (bgeo_g.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo_g.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
         )
 
 F_mu = ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
-F_X = (fsp.X[i].dx(0) - geo_al.e(fsp.psi)[0, i]) * fsp.nu_X[i] * rmsh.dx
+F_X = (fsp.X[i].dx(0) - geo_g.e(fsp.psi)[0, i]) * fsp.nu_X[i] * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
-        ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * bgeo_al.sqrt_deth_lr(fsp.psi) * rmsh.ds_l + \
-        ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * bgeo_al.sqrt_deth_lr(fsp.psi) * rmsh.ds_r \
+        ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * bgeo_g.sqrt_deth_lr(fsp.psi) * rmsh.ds_l + \
+        ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * bgeo_g.sqrt_deth_lr(fsp.psi) * rmsh.ds_r \
     )
 
 # total functional for the mixed problem

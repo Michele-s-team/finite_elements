@@ -1,7 +1,13 @@
 from fenics import *
-import dolfin
 import ufl as ufl
 import numpy as np
+
+
+# Global variable to hold the e method
+e = None
+normal = None
+K = None
+
 
 
 # euclidean  norm of vector x

@@ -42,7 +42,7 @@ Return values:
 
 def normal(psi):
     v = as_tensor(-epsilon[i, j] * e(psi)[0, j], (i))
-    return as_tensor(v[i] / ufl_norm(v), (i))
+    return as_tensor(v[i] / geo.ufl_norm(v), (i))
 
 '''
 gaussian curvature: K = K_{al-izzi2020shear}
