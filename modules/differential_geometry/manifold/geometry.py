@@ -36,31 +36,6 @@ i, j, k, l = ufl.indices(4)
 
 
 
-'''
-#the vector of the differential manifold, which is equal to \vec{X}_{\Gamma}(x_1, x_2) on page 8 if al-izzi2020shear
-def X(z):
-    x = ufl.SpatialCoordinate(mesh)
-    return as_tensor([x[0], x[1], z])
-    
-#the vectors tangent to the curvilinear coordinates on the manifold : e(z)[i] = e_i_{al-izzi2020shear}
-def e(omega):
-    return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
-
-
-#MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
-#normal(z) = \hat{n}_{al-izzi2020shear}
-def normal(omega):
-    return as_tensor(cross(e(omega)[0], e(omega)[1]) /  ufl_norm(cross(e(omega)[0], e(omega)[1])) )
-#MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
-
-
-#gaussian curvature: K = K_{al-izzi2020shear}
-def K(omega):
-    return(ufl.det(as_tensor(b(omega)[i,k]*g_c(omega)[k,j], (i, j))))
-
-'''
-
-
 # first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega):
     return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i, j))

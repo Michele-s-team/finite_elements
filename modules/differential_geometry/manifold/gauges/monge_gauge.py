@@ -5,3 +5,34 @@ for a two-dimensional manifold parameterized with a coordinate x^1 = x, x^2 = y 
 all methods specific to one dimension and to the Monge gauge are defined here, while methods independent of the dimension and
 of the gauge are defined in geometry.py
 '''
+
+from fenics import *
+import ufl as ufl
+
+import geometry as geo
+
+i, j, k, l = ufl.indices(4)
+
+# three-dimensional vector of the differential manifold, which is equal to \vec{X}_{\Gamma}(x_1, x_2) on page 8 if al-izzi2020shear
+def X(z):
+    x = ufl.SpatialCoordinate(mesh)
+    return as_tensor([x[0], x[1], z])
+
+
+# the vectors tangent to the curvilinear coordinates on the manifold : e(z)[i] = e_i_{al-izzi2020shear}
+def e(omega):
+    return as_tensor([[1, 0, omega[0]], [0, 1, omega[1]]])
+
+
+# MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
+# normal(z) = \hat{n}_{al-izzi2020shear}
+def normal(omega):
+    return as_tensor(cross(e(omega)[0], e(omega)[1]) / geo.ufl_norm(cross(e(omega)[0], e(omega)[1])))
+
+
+# MAKE SURE THAT THIS NORMAL IS DIRECTED OUTWARDS
+
+
+# gaussian curvature: K = K_{al-izzi2020shear}
+def K(omega):
+    return (ufl.det(as_tensor(geo.b(omega)[i, k] * geo.g_c(omega)[k, j], (i, j))))
