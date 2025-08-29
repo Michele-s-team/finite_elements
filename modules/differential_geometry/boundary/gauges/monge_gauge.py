@@ -2,6 +2,7 @@ from fenics import *
 import ufl as ufl
 
 import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
 import load_mesh as lmsh
 import mesh as mesh_module
 
@@ -10,13 +11,13 @@ i, j, k, l = ufl.indices(4)
 
 # Nt^i_notes on \partisal \Omega_O
 def Nt_circle(omega):
-    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
+    N3d = as_tensor([bgeo.facet_normal[0], bgeo.facet_normal[1], 0.0])
     return as_tensor(geo.g_c(omega)[i, j] * N3d[k] * geo.e(omega)[j, k], (i))
 
 
 # N_n_notes on \partial \Omega_O
 def Nn_circle(omega):
-    N3d = as_tensor([facet_normal[0], facet_normal[1], 0.0])
+    N3d = as_tensor([bgeo.facet_normal[0], bgeo.facet_normal[1], 0.0])
     return (N3d[i] * (normal(omega))[i])
 
 

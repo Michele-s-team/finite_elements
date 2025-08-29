@@ -3,13 +3,44 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import command as cmd
 import function_spaces as fsp
 import differential_geometry.boundary.geometry as bgeo
+import differential_geometry.boundary.gauges.monge_gauge as bgeo_g
 import differential_geometry.manifold.geometry as geo
+import differential_geometry.manifold.gauges.monge_gauge as geo_g
 import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
+
+# in geo, set the gauge-specific methods equal to the methods for the arc-length gauge
+cmd.set_global_variables(geo, \
+                         { \
+                             'e': geo_g.e, \
+                             'K': geo_g.K, \
+                             'normal': geo_g.normal,\
+                             'X': geo_g.X} \
+                         )
+
+# in bgeo, set the gauge-specific methods equal to the methods for the arc-length gauge
+cmd.set_global_variables(bgeo, \
+                         { \
+                             'Nt_circle': bgeo_g.Nt_circle, \
+                             'Nn_circle': bgeo_g.Nn_circle, \
+                             'dydtheta': bgeo_g.dydtheta, \
+                             'sqrt_deth_circle': bgeo_g.sqrt_deth_circle, \
+                             'sqrt_deth_lr': bgeo_g.sqrt_deth_lr, \
+                             'sqrt_deth_tb': bgeo_g.sqrt_deth_tb, \
+                             'Nt_lr': bgeo_g.Nt_lr, \
+                             'Nn_lr': bgeo_g.Nn_lr, \
+                             'Nt_tb': bgeo_g.Nt_tb, \
+                             'Nn_tb': bgeo_g.Nn_tb, \
+                             'n_lr': bgeo_g.n_lr, \
+                             'n_tb': bgeo_g.n_tb, \
+                             'n_circle': bgeo_g.n_circle\
+                             } \
+                         )
 
 i, j, k, l = ufl.indices( 4 )
 

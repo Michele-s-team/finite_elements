@@ -5,8 +5,9 @@ import numpy as np
 
 # Global variables which will be set according to the gauge choice
 e = None
-normal = None
 K = None
+normal = None
+X = None
 
 
 
