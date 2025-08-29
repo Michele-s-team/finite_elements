@@ -9,7 +9,7 @@ of the gauge are defined in geometry.py
 from fenics import *
 import ufl as ufl
 
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 
 i, j, k, l = ufl.indices(4)
 

@@ -2,7 +2,7 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import physics as phys
 import read_mesh_square_no_circle as rmsh
 import read_parameters_solve as rpam

@@ -7,7 +7,7 @@ import ufl as ufl
 import boundary_geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh as msh
 import read_parameters as rpam

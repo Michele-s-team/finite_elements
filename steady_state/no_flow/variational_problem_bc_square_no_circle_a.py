@@ -4,7 +4,7 @@ import ufl as ufl
 
 import boundary_geometry as bgeo
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
 

@@ -3,7 +3,7 @@ import dolfin
 import ufl as ufl
 
 import elasticity as ela
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 
 i, j, k, l = ufl.indices(4)
 

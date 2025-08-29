@@ -4,7 +4,7 @@ import importlib
 import ufl as ufl
 
 import boundary_geometry as bgeo
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh as msh
 import switch_problem as swi

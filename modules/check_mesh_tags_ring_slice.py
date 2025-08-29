@@ -3,7 +3,7 @@ from fenics import *
 import numpy as np
 
 import calculus as cal
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import mesh as msh

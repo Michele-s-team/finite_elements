@@ -1,7 +1,7 @@
 from fenics import *
 import ufl as ufl
 
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import load_mesh as lmsh
 import mesh as mesh_module
 

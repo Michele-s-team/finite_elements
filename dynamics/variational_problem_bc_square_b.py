@@ -6,7 +6,7 @@ import ufl as ufl
 
 import function_spaces as fsp
 import boundary_geometry as bgeo
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)

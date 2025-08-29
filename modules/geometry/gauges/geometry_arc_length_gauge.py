@@ -8,7 +8,7 @@ all methods specific to one dimension and to the arc-length gauge are defined he
 from fenics import *
 import ufl as ufl
 
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 
 epsilon = ufl.PermutationSymbol(2)
 

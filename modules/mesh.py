@@ -9,7 +9,7 @@ import os
 import pygmsh
 
 import calculus as cal
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 
 

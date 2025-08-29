@@ -4,7 +4,7 @@ import numpy as np
 
 import calculus as cal
 import load_mesh as lmsh
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import mesh as msh
 
 import input_output as io

@@ -7,7 +7,7 @@ import boundary_geometry_arc_length_gauge as bgeo_g
 import command as cmd
 import function_spaces as fsp
 import geometry_arc_length_gauge as geo_g
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
 
