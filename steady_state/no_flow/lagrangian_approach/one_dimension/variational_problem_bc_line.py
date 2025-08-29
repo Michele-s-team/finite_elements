@@ -2,7 +2,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import boundary_geometry_arc_length_gauge as bgeo_g
 import command as cmd
 import function_spaces as fsp

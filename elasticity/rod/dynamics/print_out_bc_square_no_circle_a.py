@@ -5,7 +5,7 @@ import importlib
 import os
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import files as fi
 import input_output as io

@@ -40,7 +40,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import read_parameters_solve as rpam

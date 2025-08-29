@@ -4,7 +4,7 @@ from fenics import *
 import os
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo

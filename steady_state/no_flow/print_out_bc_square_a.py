@@ -3,7 +3,7 @@ import importlib
 import ufl as ufl
 import colorama as col
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh as msh

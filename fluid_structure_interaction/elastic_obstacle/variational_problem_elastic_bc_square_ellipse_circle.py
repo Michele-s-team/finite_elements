@@ -10,7 +10,7 @@ import ufl as ufl
 import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
