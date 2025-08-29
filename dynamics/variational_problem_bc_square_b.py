@@ -1,15 +1,18 @@
-import dolfin
 from fenics import *
 import importlib
 import ufl as ufl
 
 
+import command as cmd
 import function_spaces as fsp
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
+
+cmd.set_gauge('monge')
+
 
 i, j, k, l = ufl.indices( 4 )
 
