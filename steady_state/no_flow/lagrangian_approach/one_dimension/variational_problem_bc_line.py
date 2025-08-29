@@ -3,31 +3,15 @@ import importlib
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import boundary_geometry_arc_length_gauge as bgeo_g
 import command as cmd
 import function_spaces as fsp
-import geometry_arc_length_gauge as geo_g
 import differential_geometry.manifold.geometry as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-# in geo, set the gauge-specific methods equal to the methods for the arc-length gauge
-cmd.set_global_variables(geo, \
-                         { \
-                             'e': geo_g.e, \
-                             'normal': geo_g.normal, \
-                             'K': geo_g.K} \
-                         )
-
-# in bgeo, set the gauge-specific methods equal to the methods for the arc-length gauge
-cmd.set_global_variables(bgeo, \
-                         { \
-                             'sqrt_deth_lr': bgeo_g.sqrt_deth_lr, \
-                             'Nt_lr': bgeo_g.Nt_lr, \
-                             'n_lr': bgeo_g.n_lr} \
-                         )
+cmd.set_gauge('arc_length')
 
 i, j, k, l = ufl.indices(4)
 

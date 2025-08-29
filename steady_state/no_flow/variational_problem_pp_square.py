@@ -1,6 +1,7 @@
 import importlib
 import ufl as ufl
 
+import command as cmd
 import function_spaces as fsp
 import physics as phys
 import differential_geometry.manifold.geometry as geo
@@ -10,6 +11,7 @@ import switch_problem as swi
 
 vp = importlib.import_module(swi.vp)
 
+cmd.set_gauge('monge')
 
 i, j, k, l = ufl.indices( 4 )
 

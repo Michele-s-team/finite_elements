@@ -425,7 +425,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 
-'''
+
 problem_name = 'ring'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric/'
 checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_problem_and_mesh(commit_a, commit_b,
@@ -472,6 +472,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
                                                                      'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
+'''
 # Test steady_state/no_flow/lagrangian_approach/spherically_symmetric
 case_name = 'steady_state/no_flow/lagrangian_approach/spherically_symmetric'
 
