@@ -17,7 +17,6 @@ import switch_problem as swi
 from calculus import atan_quad
 
 rmsh = importlib.import_module(swi.rmsh)
-# vp_fluid = importlib.import_module(swi.vp_fluid)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
