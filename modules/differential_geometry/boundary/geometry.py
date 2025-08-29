@@ -4,9 +4,19 @@ import ufl as ufl
 import load_mesh as lmsh
 
 # Global variables which will be set according to the gauge choice
+dydtheta = None
+sqrt_deth_circle = None
 sqrt_deth_lr = None
+sqrt_deth_tb = None
+Nt_circle = None
+Nn_circle = None
+Nn_lr = None
+Nn_tb = None
 Nt_lr = None
+Nt_tb = None
+n_circle = None
 n_lr = None
+n_tb = None
 
 # the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 facet_normal = FacetNormal(lmsh.mesh)
