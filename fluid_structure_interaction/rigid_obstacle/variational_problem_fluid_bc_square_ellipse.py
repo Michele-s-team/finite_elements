@@ -7,10 +7,8 @@ import importlib
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
-import numpy as np
 import read_parameters as rpam
 import switch_problem as swi
 
