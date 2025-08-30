@@ -19,6 +19,7 @@ c_test = [0.3, 0.76, 1.23]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
 
+# a function space used solely to define function_test_integrals_fenics
 Q_test = FunctionSpace(lmsh.mesh, 'P', 1)
 
 
