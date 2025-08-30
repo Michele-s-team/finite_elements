@@ -1,3 +1,7 @@
+'''
+read parameters generated from a mesh generation
+'''
+
 import input_output as io
 import runtime_arguments_generate_mesh as rarg
 

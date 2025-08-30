@@ -1,3 +1,7 @@
+'''
+read the parameters generated from the solution, for example, of a variational problem
+'''
+
 import input_output as io
 import runtime_arguments as rarg
 
