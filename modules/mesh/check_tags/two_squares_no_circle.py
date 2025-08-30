@@ -9,6 +9,7 @@ import input_output as io
 import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
+
 rmsh = importlib.import_module('mesh.read.two_squares_no_circle')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -49,8 +50,6 @@ integral_exact_dx_r = cal.surface_integral_rectangle(function_test_integrals, [r
 
 integral_exact_dx = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
 
-
-
 integral_exact_ds_l = cal.curve_integral_line(function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
 integral_exact_ds_r = cal.curve_integral_line(function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
 integral_exact_ds_lb = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.parameters["L_m"], 0])
@@ -62,17 +61,14 @@ integral_exact_ds_rt = cal.curve_integral_line(function_test_integrals, [rmsh.pa
 integral_exact_ds_b = integral_exact_ds_lb + integral_exact_ds_rb
 integral_exact_ds_t = integral_exact_ds_lt + integral_exact_ds_rt
 
-
 integral_exact_ds = integral_exact_ds_l + integral_exact_ds_r + integral_exact_ds_t + integral_exact_ds_b
 
 test_mesh_integral_errors = []
-
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_l, function_test_integrals_fenics, rmsh.dx_l, '\int f dx_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_r, function_test_integrals_fenics, rmsh.dx_r, '\int f dx_r'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
-
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
@@ -91,4 +87,3 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-

@@ -3,13 +3,13 @@ from fenics import *
 import importlib
 import numpy as np
 
-
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
+
 rmsh = importlib.import_module('mesh.read.box_ball')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -56,11 +56,9 @@ integral_exact_ds_ba = cal.surface_integral_rectangle(lambda r: function_test_in
 
 integral_exact_ds_sphere = cal.surface_integral_sphere(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"])
 
-
 integral_exact_ds_leri = integral_exact_ds_le + integral_exact_ds_ri
 integral_exact_ds_tobo = integral_exact_ds_to + integral_exact_ds_bo
 integral_exact_ds_frba = integral_exact_ds_fr + integral_exact_ds_ba
-
 
 integral_exact_ds = integral_exact_ds_leri + integral_exact_ds_tobo + integral_exact_ds_frba + integral_exact_ds_sphere
 

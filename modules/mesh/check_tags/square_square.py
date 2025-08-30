@@ -9,6 +9,7 @@ import input_output as io
 import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
+
 rmsh = importlib.import_module('mesh.read.square_square')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -83,7 +84,6 @@ integral_exact[1]['out_lr'] = integral_exact[1]['out_l'] + integral_exact[1]['ou
 integral_exact[1]['out_tb'] = integral_exact[1]['out_t'] + integral_exact[1]['out_b']
 
 integral_exact[1]['out_lrtb'] = integral_exact[1]['out_lr'] + integral_exact[1]['out_tb']
-
 
 test_mesh_integral_errors = []
 

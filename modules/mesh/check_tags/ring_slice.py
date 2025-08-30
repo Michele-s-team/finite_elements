@@ -8,6 +8,7 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
+
 rmsh = importlib.import_module('mesh.read.ring_slice')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -56,7 +57,6 @@ integral_exact_ds = integral_exact_ds_arc_rR + integral_exact_ds_line_tb
 
 test_mesh_integral_errors = []
 
-
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_arc_r, function_test_integrals_fenics, rmsh.ds_arc_r, '\int f ds_arc_r'))
@@ -71,5 +71,3 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-
-

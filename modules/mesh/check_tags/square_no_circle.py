@@ -9,10 +9,10 @@ import input_output as io
 import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
+
 rmsh = importlib.import_module('mesh.read.square_no_circle')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
-
 
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
@@ -58,7 +58,6 @@ integral_exact_ds = integral_exact_ds_lr + integral_exact_ds_tb
 
 test_mesh_integral_errors = []
 
-
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
@@ -76,5 +75,4 @@ li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
-
-msh.check_mesh_symmetry(lmsh.mesh, [rmsh.parameters["L"]/2, rmsh.parameters["h"]/2])
+msh.check_mesh_symmetry(lmsh.mesh, [rmsh.parameters["L"] / 2, rmsh.parameters["h"] / 2])

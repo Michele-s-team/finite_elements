@@ -9,6 +9,7 @@ import input_output as io
 import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
+
 rmsh = importlib.import_module('mesh.read.square')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -62,7 +63,6 @@ integral_exact_ds = integral_exact_ds_square + integral_exact_ds_circle
 
 test_mesh_integral_errors = []
 
-
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_l, function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l'))
@@ -82,5 +82,3 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, funct
 li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-
-
