@@ -6,7 +6,7 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import mesh as msh
+import mesh.mesh as msh
 import physics as phys
 import switch_problem as swi
 

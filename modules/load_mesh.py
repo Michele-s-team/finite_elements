@@ -1,7 +1,7 @@
 from fenics import *
 
 import input_output as io
-import mesh as msh
+import mesh.mesh as msh
 import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(io.add_trailing_slash(rarg.args.input_directory) + "mesh_metadata.csv")

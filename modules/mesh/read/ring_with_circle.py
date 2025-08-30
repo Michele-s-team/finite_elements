@@ -7,7 +7,7 @@ sys.path.append(module_path)
 
 import input_output as io
 import load_mesh as lmsh
-import mesh as msh
+import mesh.mesh as msh
 import runtime_arguments as rarg
 
 # read the triangles

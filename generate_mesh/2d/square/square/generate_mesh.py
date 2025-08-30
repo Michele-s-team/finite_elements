@@ -18,7 +18,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import input_output as io
-import mesh as msh
+import mesh.mesh as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 

@@ -5,7 +5,7 @@ import files as fi
 import function_spaces as fsp
 import input_output as io
 import load_mesh as lmsh
-import mesh as msh
+import mesh.mesh as msh
 import os
 import read_parameters_solve as rpam
 import solution_paths as solpath
