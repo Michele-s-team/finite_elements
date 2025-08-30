@@ -71,6 +71,9 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_tb, fu
 
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
 
+# print to file the residuals of the tests of the mesh integrals
+li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
+
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
 
