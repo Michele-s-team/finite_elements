@@ -5,7 +5,7 @@ import scipy.integrate as spi
 
 import input_output as io
 import load_mesh as lmsh
-import mesh.mesh as msh
+import mesh.utils as msh
 import mesh.read.line_vertex as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)

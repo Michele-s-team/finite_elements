@@ -19,7 +19,7 @@ sys.path.append(module_path)
 
 import calculus as cal
 import input_output as io
-import mesh.mesh as msh
+import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
 import read_parameters_generate_mesh as rpam
 

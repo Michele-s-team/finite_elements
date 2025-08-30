@@ -7,7 +7,7 @@ import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
 import input_output as io
-import mesh.mesh as msh
+import mesh.utils as msh
 import read_parameters_solve as rpam
 
 

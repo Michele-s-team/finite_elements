@@ -9,7 +9,7 @@ import elasticity as ela
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import mesh.mesh as msh
+import mesh.utils as msh
 import read_parameters_solve as rpam
 import runtime_arguments as rarg
 import switch_problem as swi

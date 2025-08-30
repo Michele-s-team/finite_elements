@@ -4,7 +4,7 @@ import numpy as np
 import math
 from ufl import FunctionSpace
 
-import mesh.mesh as msh
+import mesh.utils as msh
 
 '''
 set the nodal values of f equal to the values taken by the analytical expression 'expression' on the  points of the mesh of f, where expression should be like this

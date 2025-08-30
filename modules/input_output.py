@@ -8,7 +8,7 @@ import os
 import shutil
 
 import function as fu
-import mesh.mesh as msh
+import mesh.utils as msh
 
 number_of_decimals = 2
 

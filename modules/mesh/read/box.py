@@ -11,7 +11,7 @@ sys.path.append(module_path)
 
 import input_output as io
 import load_mesh as lmsh
-import mesh.mesh as msh
+import mesh.utils as msh
 import runtime_arguments as rarg
 
 volume_id = 1

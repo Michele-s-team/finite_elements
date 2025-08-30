@@ -14,7 +14,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import load_mesh as lmsh
-import mesh.mesh as msh
+import mesh.utils as msh
 import mesh.read.ring as rmsh
 
 import check_mesh_tags_ring

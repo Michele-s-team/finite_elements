@@ -20,7 +20,7 @@ sys.path.append( module_path )
 
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import mesh.mesh as msh
+import mesh.utils as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "input_directory" )

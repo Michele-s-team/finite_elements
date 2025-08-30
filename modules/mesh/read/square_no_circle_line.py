@@ -10,7 +10,7 @@ from fenics import *
 
 import input_output as io
 import load_mesh as lmsh
-import mesh.mesh as msh
+import mesh.utils as msh
 import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
