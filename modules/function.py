@@ -1,3 +1,4 @@
+import dolfin
 from fenics import *
 import importlib
 import numpy as np
