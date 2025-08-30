@@ -70,13 +70,13 @@ F_psi = - 4 * rpam.parameters['kappa'] *  fsp.mu.dx(0).dx(0)  * fsp.nu_psi * rms
 
 F_psi = ( \
                     rpam.parameters["kappa"] * ( \
-                        geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K(fsp.psi)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
+                        geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i))  \
+                        - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K(fsp.psi)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
             ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
         - ( \
-                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l + \
-                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
         )
-
+# sign
 F_mu = ((geo.H(fsp.psi) - fsp.mu) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_X = (fsp.X[i].dx(0) - geo.e(fsp.psi)[0, i]) * fsp.nu_X[i] * rmsh.dx
