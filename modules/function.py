@@ -1,8 +1,9 @@
 from fenics import *
+import importlib
 import numpy as np
 import math
 
-import mesh.utils as msh
+msh = importlib.import_module('mesh.utils')
 
 '''
 set the nodal values of f equal to the values taken by the analytical expression 'expression' on the  points of the mesh of f, where expression should be like this

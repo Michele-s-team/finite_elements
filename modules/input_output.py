@@ -3,12 +3,13 @@ import colorama as col
 import csv
 from fenics import *
 import glob
+import importlib
 import numpy as np
 import os
 import shutil
 
 import function as fu
-import mesh.utils as msh
+msh = importlib.import_module('mesh.utils')
 
 number_of_decimals = 2
 
