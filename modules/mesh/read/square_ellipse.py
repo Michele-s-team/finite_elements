@@ -43,7 +43,7 @@ ds = ds_square + ds_ellipse
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_ellipse')
 
-print(f'Module {__file__} called {mesh.check_tags.square_ellipse.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 msh.check_mesh_symmetry(lmsh.mesh, parameters["c"])
 

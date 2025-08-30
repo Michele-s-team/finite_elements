@@ -50,7 +50,7 @@ ds = ds_line + ds_arc
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.half_circle_with_line')
 
-print(f'Module {__file__} called {mesh.check_tags.half_circle_with_line.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'

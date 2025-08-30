@@ -68,7 +68,7 @@ ds_sub_mesh[1] = dict([ \
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_no_circle_line')
 
-print(f'Module {__file__} called {mesh.check_tags.square_no_circle_line.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # Define boundaries: it is important that these boundaries are defined in the right order, because a definition may call a preceeding one
 

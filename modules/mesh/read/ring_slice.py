@@ -50,7 +50,7 @@ ds = ds_arc_rR + ds_line_tb
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.ring_slice')
 
-print(f'Module {__file__} called {mesh.check_tags.ring_slice.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # Define boundaries and obstacle
 boundary = 'on_boundary'

@@ -29,5 +29,5 @@ dp_bulk = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)  # Point measure fo
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.line_vertex')
 
-print(f'Module {__file__} called {mesh.check_tags.line_vertex.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 

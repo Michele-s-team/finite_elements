@@ -32,7 +32,7 @@ ds = Measure("ds", domain=lmsh.mesh)
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.line')
 
-print(f'Module {__file__} called {mesh.check_tags.line.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], {parameters["x_l"]})'

@@ -24,7 +24,7 @@ ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.disk')
 
-print(f'Module {__file__} called {mesh.check_tags.disk.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'

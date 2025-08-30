@@ -41,7 +41,7 @@ ds = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=surface_id)
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.ball')
 
-print(f'Module {__file__} called {mesh.check_tags.ball.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # Define boundaries
 boundary = 'on_boundary'

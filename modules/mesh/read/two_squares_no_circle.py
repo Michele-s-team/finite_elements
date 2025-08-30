@@ -47,7 +47,7 @@ ds = ds_lr + ds_tb
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.two_squares_no_circle')
 
-print(f'Module {__file__} called {mesh.check_tags.two_squares_no_circle.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # Define boundaries and obstacle
 boundary = 'on_boundary'

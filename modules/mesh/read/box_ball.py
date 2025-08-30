@@ -66,7 +66,7 @@ ds = ds_leri + ds_tobo + ds_frba + ds_sphere
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.box_ball')
 
-print(f'Module {__file__} called {mesh.check_tags.box_ball.__file__}', flush=True)
+print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
 # Define boundaries
 boundary = 'on_boundary'
