@@ -8,7 +8,7 @@ if rarg.args.problem == 'ring_dirichlet':
     prout_bc = 'print_out_bc_ring_dirichlet'
 
 elif rarg.args.problem == 'ring_nitsche':
-    rmsh = 'read_mesh_ring'
+    rmsh = 'mesh.read.ring'
     vp = 'variational_problem_bc_ring_nitsche'
     prout_bc = 'print_out_bc_ring_nitsche'
 
