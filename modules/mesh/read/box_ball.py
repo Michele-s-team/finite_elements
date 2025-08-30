@@ -12,7 +12,7 @@ sys.path.append(module_path)
 import input_output as io
 import calculus as calc
 import load_mesh as lmsh
-import mesh as msh
+import mesh.mesh as msh
 import runtime_arguments as rarg
 
 # CHANGE PARAMETERS HERE

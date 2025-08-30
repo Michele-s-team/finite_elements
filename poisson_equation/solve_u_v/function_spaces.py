@@ -1,6 +1,6 @@
 from fenics import *
 
-import mesh as msh
+import mesh.mesh as msh
 import read_parameters_solve as rpam
 import load_mesh as lmsh
 

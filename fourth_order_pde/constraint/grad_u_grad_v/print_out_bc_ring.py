@@ -7,7 +7,7 @@ import ufl as ufl
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import mesh as msh
+import mesh.mesh as msh
 
 import switch_problem as swi
 
