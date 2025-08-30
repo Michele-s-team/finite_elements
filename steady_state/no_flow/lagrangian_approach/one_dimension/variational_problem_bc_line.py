@@ -76,7 +76,7 @@ F_psi = ( \
         - ( \
                     (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
         )
-# sign
+
 F_mu = ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
