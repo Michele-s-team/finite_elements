@@ -8,7 +8,6 @@ import differential_geometry.manifold.geometry as geo
 import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
-
 import input_output as io
 rmsh = importlib.import_module('mesh.read.disk')
 

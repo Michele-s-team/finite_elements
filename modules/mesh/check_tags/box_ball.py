@@ -4,7 +4,6 @@ import importlib
 import numpy as np
 
 
-
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io

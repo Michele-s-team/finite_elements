@@ -5,11 +5,10 @@ import numpy as np
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
+import input_output as io
 import list as li
 import mesh.load as lmsh
-import input_output as io
 import mesh.utils as msh
-
 rmsh = importlib.import_module('mesh.read.two_squares_no_circle')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)

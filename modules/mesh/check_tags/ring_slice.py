@@ -8,7 +8,6 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
-
 rmsh = importlib.import_module('mesh.read.ring_slice')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
