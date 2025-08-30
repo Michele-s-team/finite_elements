@@ -3,7 +3,7 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_ellipse':
-    rmsh = 'read_mesh_square_ellipse'
+    rmsh = 'mesh.read.square_ellipse'
     ap_ellipse = 'algebraic_problem_ellipse_bc_square_ellipse'
     vp_fluid = 'variational_problem_fluid_bc_square_ellipse'
     vp_mesh = 'variational_problem_mesh_bc_square_ellipse'

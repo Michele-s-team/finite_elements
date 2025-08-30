@@ -15,7 +15,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh as msh
-import read_mesh_square_no_circle_line
+import mesh.read.square_no_circle_line
 
 '''
 
