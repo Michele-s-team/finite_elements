@@ -47,9 +47,9 @@ dp_line_in_end = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id
 
 ds = ds_line + ds_arc
 
-import check_mesh_tags_half_circle_with_line
+import mesh.check_tags.half_circle_with_line
 
-print(f'Module {__file__} called {check_mesh_tags_half_circle_with_line.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.half_circle_with_line.__file__}', flush=True)
 
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'

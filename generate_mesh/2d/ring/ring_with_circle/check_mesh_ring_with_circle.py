@@ -15,4 +15,4 @@ sys.path.append(module_path)
 
 
 
-import check_mesh_tags_ring_with_circle
+import mesh.check_tags.ring_with_circle

@@ -29,9 +29,9 @@ ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameter
 ds = Measure("ds", domain=lmsh.mesh)
 
 
-import check_mesh_tags_line
+import mesh.check_tags.line
 
-print(f'Module {__file__} called {check_mesh_tags_line.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.line.__file__}', flush=True)
 
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], {parameters["x_l"]})'

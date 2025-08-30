@@ -17,5 +17,5 @@ import load_mesh as lmsh
 import mesh.utils as msh
 rmsh = importlib.import_module('mesh.read.square_ellipse_circle')
 
-import check_mesh_tags_square_ellipse_circle
+import mesh.check_tags.square_ellipse_circle
 

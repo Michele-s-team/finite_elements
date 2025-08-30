@@ -21,9 +21,9 @@ ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
 ds_R = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
 ds = ds_r + ds_R
 
-import check_mesh_tags_ring
+import mesh.check_tags.ring
 
-print(f'Module {__file__} called {check_mesh_tags_ring.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.ring.__file__}', flush=True)
 
 # Define boundaries and obstacle
 boundary = 'on_boundary'

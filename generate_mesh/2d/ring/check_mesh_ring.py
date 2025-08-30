@@ -18,5 +18,5 @@ import mesh.utils as msh
 rmsh = importlib.import_module('mesh.read.ring')
 
 
-import check_mesh_tags_ring
+import mesh.check_tags.ring
 msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c_r"])

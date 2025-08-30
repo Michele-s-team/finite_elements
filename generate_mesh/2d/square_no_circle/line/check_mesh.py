@@ -19,6 +19,6 @@ import mesh.read.square_no_circle_line
 
 '''
 
-import check_mesh_tags_square_no_circle_line
+import mesh.check_tags.square_no_circle_line
 
 '''

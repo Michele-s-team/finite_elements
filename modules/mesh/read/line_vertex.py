@@ -26,7 +26,7 @@ dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf)  # Line measure
 dp_boundary = Measure("ds", domain=lmsh.mesh, subdomain_data=sf)  # Point measure for points at the edges of the mesh
 dp_bulk = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)  # Point measure for points in the mesh
 
-import check_mesh_tags_line_vertex
+import mesh.check_tags.line_vertex
 
-print(f'Module {__file__} called {check_mesh_tags_line_vertex.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.line_vertex.__file__}', flush=True)
 

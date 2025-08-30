@@ -18,6 +18,6 @@ import load_mesh as lmsh
 import mesh.utils as msh
 rmsh = importlib.import_module('mesh.read.square_ellipse')
 
-import check_mesh_tags_square_ellipse
+import mesh.check_tags.square_ellipse
 
 msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c"][:2])

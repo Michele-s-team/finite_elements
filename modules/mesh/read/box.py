@@ -54,9 +54,9 @@ ds = ds_leri + ds_tobo + ds_frba
 # dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 
-import check_mesh_tags_box
+import mesh.check_tags.box
 
-print(f'Module {__file__} called {check_mesh_tags_box.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.box.__file__}', flush=True)
 
 # Define boundaries
 boundary = 'on_boundary'

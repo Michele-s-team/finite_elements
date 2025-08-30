@@ -21,9 +21,9 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
 
-import check_mesh_tags_disk
+import mesh.check_tags.disk
 
-print(f'Module {__file__} called {check_mesh_tags_disk.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.disk.__file__}', flush=True)
 
 # CHANGE PARAMETERS HERE
 boundary = 'on_boundary'

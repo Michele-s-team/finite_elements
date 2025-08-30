@@ -13,4 +13,4 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 
-import check_mesh_tags_line
+import mesh.check_tags.line

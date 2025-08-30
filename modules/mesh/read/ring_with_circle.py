@@ -31,9 +31,9 @@ ds_R = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
 dx = dx_r_rho + dx_rho_R
 ds = ds_r + ds_R
 
-import check_mesh_tags_ring_with_circle
+import mesh.check_tags.ring_with_circle
 
-print(f'Module {__file__} called {check_mesh_tags_ring_with_circle.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.ring_with_circle.__file__}', flush=True)
 
 # Define boundaries and obstacle
 boundary = 'on_boundary'

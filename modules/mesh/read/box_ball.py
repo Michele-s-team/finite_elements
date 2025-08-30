@@ -63,9 +63,9 @@ ds_frba = ds_fr + ds_ba
 
 ds = ds_leri + ds_tobo + ds_frba + ds_sphere
 
-import check_mesh_tags_box_ball
+import mesh.check_tags.box_ball
 
-print(f'Module {__file__} called {check_mesh_tags_box_ball.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.box_ball.__file__}', flush=True)
 
 # Define boundaries
 boundary = 'on_boundary'

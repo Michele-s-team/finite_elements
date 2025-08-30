@@ -102,9 +102,9 @@ ds_sub_mesh[1]['out_lrtb'] = ds_sub_mesh[1]['out_lr'] + ds_sub_mesh[1]['out_tb']
 
 
 
-import check_mesh_tags_square_square
+import mesh.check_tags.square_square
 
-print(f'Module {__file__} called {check_mesh_tags_square_square.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.square_square.__file__}', flush=True)
 
 #Define boundaries
 boundary = [''] * len(lmsh.sub_meshes)

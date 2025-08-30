@@ -18,5 +18,5 @@ import mesh.utils as msh
 rmsh = importlib.import_module('mesh.read.disk')
 
 
-import check_mesh_tags_disk
+import mesh.check_tags.disk
 msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c_r"])

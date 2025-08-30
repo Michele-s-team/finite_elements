@@ -40,9 +40,9 @@ ds_square = ds_lr + ds_tb
 ds_l_tb_ellipse = ds_l + ds_t + ds_b + ds_ellipse
 ds = ds_square + ds_ellipse
 
-import check_mesh_tags_square_ellipse
+import mesh.check_tags.square_ellipse
 
-print(f'Module {__file__} called {check_mesh_tags_square_ellipse.__file__}', flush=True)
+print(f'Module {__file__} called {mesh.check_tags.square_ellipse.__file__}', flush=True)
 
 msh.check_mesh_symmetry(lmsh.mesh, parameters["c"])
 

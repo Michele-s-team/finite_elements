@@ -13,4 +13,4 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 
-import check_mesh_tags_line_vertex
+import mesh.check_tags.line_vertex

@@ -13,4 +13,4 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import check_mesh_tags_ring_slice
+import mesh.check_tags.ring_slice
