@@ -10,7 +10,7 @@ import input_output as io
 import mesh.utils as msh
 import print_out_solution as prout
 rmsh = importlib.import_module('mesh.read.ring')
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import variational_problem_bc_ring as vp
 
 i, j, k, l = ufl.indices(4)

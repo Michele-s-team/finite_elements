@@ -6,7 +6,7 @@ import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import physics as phys
 rmsh = importlib.import_module('mesh.read.square_no_circle')
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 vp = importlib.import_module(swi.vp)

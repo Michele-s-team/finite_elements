@@ -7,7 +7,7 @@ import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import os
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import solution_paths as solpath
 
 import runtime_arguments as rarg

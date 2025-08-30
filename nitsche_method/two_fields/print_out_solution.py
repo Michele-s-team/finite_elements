@@ -5,7 +5,7 @@ import ufl as ufl
 import function_spaces as fsp
 import input_output as io
 import mesh.load as lmsh
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi

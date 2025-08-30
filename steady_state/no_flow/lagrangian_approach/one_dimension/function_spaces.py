@@ -1,7 +1,7 @@
 from fenics import *
 
 import mesh.load as lmsh
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 
 '''
 the fields in this problem are
