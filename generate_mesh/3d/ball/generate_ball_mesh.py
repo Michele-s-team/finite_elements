@@ -19,7 +19,7 @@ sys.path.append(module_path)
 import input_output as io
 import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
-import read_parameters_generate_mesh as rpam
+import parameters.read.mesh as rpam
 
 
 # add '/' to output_directory if it is missing
