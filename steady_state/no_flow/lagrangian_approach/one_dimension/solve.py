@@ -59,7 +59,7 @@ solver.solve()
 import command as cmd
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import load_mesh as lmsh
+import mesh.load as lmsh
 import solution_paths as solpath
 
 cmd.set_gauge('arc_length')

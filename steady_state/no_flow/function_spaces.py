@@ -1,7 +1,7 @@
 from fenics import *
 import dolfin
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 # Define function spaces
 #finite elements for sigma .... omega

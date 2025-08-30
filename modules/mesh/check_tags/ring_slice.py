@@ -6,7 +6,7 @@ import numpy as np
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import load_mesh as lmsh
+import mesh.load as lmsh
 import mesh.utils as msh
 
 rmsh = importlib.import_module('mesh.read.ring_slice')
