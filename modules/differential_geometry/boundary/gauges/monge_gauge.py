@@ -3,7 +3,7 @@ import ufl as ufl
 
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
-import load_mesh as lmsh
+import mesh.load as lmsh
 import mesh.utils as mesh_module
 
 i, j, k, l = ufl.indices(4)

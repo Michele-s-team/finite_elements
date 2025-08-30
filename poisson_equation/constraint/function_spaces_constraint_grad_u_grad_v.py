@@ -1,7 +1,7 @@
 from fenics import *
 
 import read_parameters_solve as rpam
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 # define elements and function spaces
 P_u = FiniteElement('P', triangle, rpam.parameters['function_space_degree'])

@@ -2,7 +2,7 @@ from fenics import *
 
 import calculus as calc
 import input_output as io
-import load_mesh as lmsh
+import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg
 

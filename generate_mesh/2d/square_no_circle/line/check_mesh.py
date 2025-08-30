@@ -13,7 +13,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 import mesh.utils as msh
 import mesh.read.square_no_circle_line
 

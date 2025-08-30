@@ -2,7 +2,7 @@ import dolfin
 from fenics import *
 
 import differential_geometry.boundary.geometry as bgeo
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 V = FunctionSpace(lmsh.mesh, 'P', 8)
 

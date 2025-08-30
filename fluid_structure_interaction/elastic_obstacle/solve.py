@@ -23,7 +23,7 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
-import load_mesh as lmsh
+import mesh.load as lmsh
 import print_out_solution as pr_sol
 import read_parameters_solve as rpam
 import runtime_arguments as rarg
@@ -127,7 +127,7 @@ for n in range(rpam.parameters['num_steps']):
     import differential_geometry.manifold.geometry as geo
     import input_output as io
     import solution_paths as solpath
-    import load_mesh as lmsh
+    import mesh.load as lmsh
 
     i, j, k, l, m = ufl.indices(5)
     f = Function(fsp.Q_u_el)

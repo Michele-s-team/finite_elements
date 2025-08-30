@@ -3,7 +3,7 @@ from fenics import *
 import importlib
 import numpy as np
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 import mesh.utils as msh
 
 import calculus as cal
