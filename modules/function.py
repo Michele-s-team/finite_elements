@@ -1,8 +1,6 @@
-import dolfin
 from fenics import *
 import numpy as np
 import math
-from ufl import FunctionSpace
 
 import mesh.utils as msh
 
