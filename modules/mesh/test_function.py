@@ -9,7 +9,6 @@ import numpy as np
 import mesh.load as lmsh
 import differential_geometry.manifold.geometry as geo
 
-
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
 r_test = 0.345

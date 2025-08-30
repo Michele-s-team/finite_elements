@@ -19,7 +19,7 @@ c_test = [0.3, 0.76, 1.23]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
 
-Q = FunctionSpace(lmsh.mesh, 'P', 1)
+Q_test = FunctionSpace(lmsh.mesh, 'P', 1)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
@@ -29,7 +29,7 @@ def function_test_integrals(x):
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
-function_test_integrals_fenics = Function(Q)
+function_test_integrals_fenics = Function(Q_test)
 
 
 # analytical expression for a  scalar function used to test the ds
@@ -41,7 +41,7 @@ class FunctionTestIntegrals(UserExpression):
         return (1,)
 
 
-function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_element()))
+function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
 test_mesh_integral_errors = []
 
