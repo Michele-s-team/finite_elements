@@ -6,6 +6,7 @@ the mesh tags are tested by integrating over the tagged elements of the mesh thi
 from fenics import *
 import numpy as np
 
+import mesh.load as lmsh
 import differential_geometry.manifold.geometry as geo
 
 

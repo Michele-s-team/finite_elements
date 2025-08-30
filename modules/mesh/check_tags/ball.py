@@ -9,6 +9,7 @@ import mesh.utils as msh
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
+import list as li
 rmsh = importlib.import_module('mesh.read.ball')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
@@ -50,5 +51,7 @@ integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, rmsh.pa
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int_ball f dx'))
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int_sphere f ds'))
+
+li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
