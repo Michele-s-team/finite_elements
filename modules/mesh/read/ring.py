@@ -21,7 +21,8 @@ ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
 ds_R = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
 ds = ds_r + ds_R
 
-import mesh.check_tags.ring
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.ring')
 
 print(f'Module {__file__} called {mesh.check_tags.ring.__file__}', flush=True)
 

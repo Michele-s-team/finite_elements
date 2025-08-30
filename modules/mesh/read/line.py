@@ -29,7 +29,8 @@ ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameter
 ds = Measure("ds", domain=lmsh.mesh)
 
 
-import mesh.check_tags.line
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.line')
 
 print(f'Module {__file__} called {mesh.check_tags.line.__file__}', flush=True)
 

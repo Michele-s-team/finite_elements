@@ -47,7 +47,8 @@ ds_arc_rR = ds_arc_r + ds_arc_R
 ds_line_tb = ds_line_t + ds_line_b
 ds = ds_arc_rR + ds_line_tb
 
-import mesh.check_tags.ring_slice
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.ring_slice')
 
 print(f'Module {__file__} called {mesh.check_tags.ring_slice.__file__}', flush=True)
 

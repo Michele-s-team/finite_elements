@@ -54,7 +54,8 @@ ds = ds_leri + ds_tobo + ds_frba
 # dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 
-import mesh.check_tags.box
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.box')
 
 print(f'Module {__file__} called {mesh.check_tags.box.__file__}', flush=True)
 

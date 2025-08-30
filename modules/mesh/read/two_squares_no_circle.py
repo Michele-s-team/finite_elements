@@ -44,7 +44,8 @@ ds_tb = ds_t + ds_b
 
 ds = ds_lr + ds_tb
 
-import mesh.check_tags.two_squares_no_circle
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.two_squares_no_circle')
 
 print(f'Module {__file__} called {mesh.check_tags.two_squares_no_circle.__file__}', flush=True)
 

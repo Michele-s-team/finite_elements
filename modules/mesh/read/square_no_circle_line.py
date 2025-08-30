@@ -65,7 +65,8 @@ ds_sub_mesh[1] = dict([ \
     ('ds', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1]))
 ])
 
-import mesh.check_tags.square_no_circle_line
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.square_no_circle_line')
 
 print(f'Module {__file__} called {mesh.check_tags.square_no_circle_line.__file__}', flush=True)
 

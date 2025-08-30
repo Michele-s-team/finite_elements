@@ -40,7 +40,8 @@ ds_square = ds_lr + ds_tb
 ds_l_tb_ellipse = ds_l + ds_t + ds_b + ds_ellipse
 ds = ds_square + ds_ellipse
 
-import mesh.check_tags.square_ellipse
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.square_ellipse')
 
 print(f'Module {__file__} called {mesh.check_tags.square_ellipse.__file__}', flush=True)
 

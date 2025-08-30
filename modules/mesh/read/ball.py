@@ -38,7 +38,8 @@ ds = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=surface_id)
 # dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 
-import mesh.check_tags.ball
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.ball')
 
 print(f'Module {__file__} called {mesh.check_tags.ball.__file__}', flush=True)
 

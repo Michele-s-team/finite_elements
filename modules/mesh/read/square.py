@@ -28,7 +28,8 @@ ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 ds = ds_square + ds_circle
 
-import mesh.check_tags.square
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.square')
 
 print(f'Module {__file__} called {mesh.check_tags.square.__file__}', flush=True)
 

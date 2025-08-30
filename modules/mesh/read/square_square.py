@@ -102,7 +102,8 @@ ds_sub_mesh[1]['out_lrtb'] = ds_sub_mesh[1]['out_lr'] + ds_sub_mesh[1]['out_tb']
 
 
 
-import mesh.check_tags.square_square
+import importlib
+check_mesh_module = importlib.import_module('mesh.check_tags.square_square')
 
 print(f'Module {__file__} called {mesh.check_tags.square_square.__file__}', flush=True)
 
