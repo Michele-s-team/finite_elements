@@ -9,10 +9,8 @@ i, j, k, l = ufl.indices(4)
 
 
 # square root of the determinant of the pull-back of the metric on \partial \Omega_in(out), parametrized with l , given by  x^1 = 0 (L) and x^2 = l, as coordinate for \partial \Omega_in (out)
-# DOUBLE CHCK THIS - START
 def sqrt_deth_lr(psi):
     return sqrt(1)
-# DOUBLE CHCK THIS - END
 
 
 # Nt^i_notes on \partial \Omega_in and out
