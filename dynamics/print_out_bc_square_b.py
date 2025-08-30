@@ -5,10 +5,10 @@ import importlib
 import ufl as ufl
 import os
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import files as files
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import mesh as msh

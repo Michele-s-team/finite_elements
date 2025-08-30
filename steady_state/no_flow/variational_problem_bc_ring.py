@@ -3,13 +3,16 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import command as cmd
 import function_spaces as fsp
-import boundary_geometry as bgeo
-import geometry as geo
+import differential_geometry.boundary.geometry as bgeo
+import differential_geometry.manifold.geometry as geo
 import read_parameters_solve as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
+
+cmd.set_gauge('monge')
 
 i, j, k, l = ufl.indices( 4 )
 

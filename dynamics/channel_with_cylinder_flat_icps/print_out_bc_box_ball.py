@@ -4,9 +4,9 @@ from fenics import *
 import os
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import mesh as msh
 import runtime_arguments as rarg
 import switch_problem as swi

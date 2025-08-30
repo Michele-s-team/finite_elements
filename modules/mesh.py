@@ -9,7 +9,7 @@ import os
 import pygmsh
 
 import calculus as cal
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 
 
@@ -313,29 +313,47 @@ def boundary_points_circle(mesh, r, R, c):
 # compute the lowest and largest x and y values of points in the mesh and return them as a vector in the format [[x_min, x_max], [y_min, y_max]]
 def extremal_coordinates(mesh):
     points = boundary_points(mesh)
-    x_min = points[0][0]
-    x_max = x_min
-    y_min = points[0][1]
-    y_max = y_min
 
-    for point in points:
-        if point[0] < x_min:
-            x_min = point[0]
+    if mesh.topology().dim() == 2:
 
-        if point[0] > x_max:
-            x_max = point[0]
+        x_min = points[0][0]
+        x_max = x_min
+        y_min = points[0][1]
+        y_max = y_min
 
-        if point[1] < y_min:
-            y_min = point[1]
+        for point in points:
+            if point[0] < x_min:
+                x_min = point[0]
 
-        if point[1] > y_max:
-            y_max = point[1]
+            if point[0] > x_max:
+                x_max = point[0]
 
-    # print(f"\textremal coordinates: {x_min}, {x_max}, {y_min}, {y_max}")
+            if point[1] < y_min:
+                y_min = point[1]
 
-    return [[x_min, x_max], [y_min, y_max]]
+            if point[1] > y_max:
+                y_max = point[1]
+
+        # print(f"\textremal coordinates: {x_min}, {x_max}, {y_min}, {y_max}")
+
+        return [[x_min, x_max], [y_min, y_max]]
+
+    elif mesh.topology().dim() == 1:
+
+        x_min = points[0][0]
+        x_max = x_min
+
+        for point in points:
+            if point[0] < x_min:
+                x_min = point[0]
+
+            if point[0] > x_max:
+                x_max = point[0]
 
 
+        print(f"\textremal coordinates: {x_min}, {x_max}")
+
+        return [x_min, x_max]
 '''
 compute the difference between functions f and g on the boundary of the mesh on which f and g are defined, returning 
 sqrt(\sum_{i \in {vertices in the boundary of the mesh} [f(x_i) - g(x_i)]^2/ (number of vertices in the boundary of the mesh})
@@ -1437,6 +1455,7 @@ Return values:
 - 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
 '''
 
+
 def read_from_h5_file(mesh_path):
     mesh_path_with_slash = io.add_trailing_slash(mesh_path)
 
@@ -1451,6 +1470,7 @@ def read_from_h5_file(mesh_path):
         result = []
 
     return result
+
 
 def read_from_file(mesh_path, file_format='xdmf'):
     if file_format == 'xdmf':
@@ -1524,6 +1544,7 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
     return sub_mesh, sub_mesh_boundary
 
+
 '''
 generate a one-dimensional mesh as an IntervalMesh given its geometric parameters and tags
 Input values: 
@@ -1543,8 +1564,9 @@ Example of usage:
           mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
                                                                                           parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
 '''
-def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
 
+
+def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
     mesh = IntervalMesh(n_intervals, x_l, x_r)
 
     # create a function for the lines
@@ -1562,7 +1584,6 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
         if math.isclose(x, x_r):
             vertex_function[vertex] = vertex_r_id
 
-
     if output_directory is not None:
         '''
         write the mesh lines and vertices to .h5 files: 
@@ -1577,6 +1598,7 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
     return mesh, cell_function, vertex_function
 
+
 '''
 return the geometrical shape of an element for a mesh with different dimensions
 Input values: 
@@ -1587,12 +1609,14 @@ Return values:
 Example of usage:
     P_u = FiniteElement('P', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])
 '''
+
+
 def element_geometry(mesh):
     d = mesh.topology().dim()
 
-    if d==3:
+    if d == 3:
         return tetrahedron
-    elif d==2:
+    elif d == 2:
         return triangle
-    elif d==1:
+    elif d == 1:
         return interval

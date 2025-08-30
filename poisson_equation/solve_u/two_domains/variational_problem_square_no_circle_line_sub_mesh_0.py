@@ -3,7 +3,7 @@ import importlib
 import numpy as np
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import function as fu
 import function_spaces as fsp
 import switch_problem as swi

@@ -60,3 +60,4 @@ X_0 = Function(Q_X)
 
 psi, mu, X = split(phi)
 assigner = FunctionAssigner(Q, [Q_psi, Q_mu, Q_X])
+

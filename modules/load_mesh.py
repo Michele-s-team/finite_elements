@@ -1,5 +1,4 @@
 from fenics import *
-import math
 
 import input_output as io
 import mesh as msh

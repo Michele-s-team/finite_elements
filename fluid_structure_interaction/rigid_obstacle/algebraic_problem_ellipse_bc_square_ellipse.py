@@ -10,7 +10,7 @@ import ufl as ufl
 import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import read_parameters as rpam

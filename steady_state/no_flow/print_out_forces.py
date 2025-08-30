@@ -2,7 +2,7 @@ from fenics import *
 import ufl as ufl
 
 import function_spaces as fsp
-import geometry as geo
+import differential_geometry.manifold.geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import physics as phys

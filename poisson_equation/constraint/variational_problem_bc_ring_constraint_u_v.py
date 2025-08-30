@@ -44,7 +44,7 @@ import importlib
 import numpy as np
 import ufl as ufl
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import read_parameters_solve as rpam
 import switch_problem as swi
 

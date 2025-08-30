@@ -124,7 +124,7 @@ for n in range(rpam.parameters['num_steps']):
     #
     import elasticity as ela
     import ufl
-    import geometry as geo
+    import differential_geometry.manifold.geometry as geo
     import input_output as io
     import solution_paths as solpath
     import load_mesh as lmsh

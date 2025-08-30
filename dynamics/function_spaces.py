@@ -1,7 +1,7 @@
 import dolfin
 from fenics import *
 
-import boundary_geometry as bgeo
+import differential_geometry.boundary.geometry as bgeo
 import load_mesh as lmsh
 
 
