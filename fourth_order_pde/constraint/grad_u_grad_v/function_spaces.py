@@ -1,6 +1,6 @@
 from fenics import *
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 import read_parameters_solve as rpam
 
 P_z = FiniteElement('P', triangle, rpam.parameters['function_space_degree'])
