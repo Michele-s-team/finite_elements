@@ -4,7 +4,7 @@ import ufl as ufl
 import differential_geometry.manifold.geometry as geo
 import load_mesh as lmsh
 
-i, j, k, l, alpha = ufl.indices(4)
+i, j, k, l, alpha = ufl.indices(5)
 
 
 # square root of the determinant of the pull-back of the metric on \partial \Omega_in(out), parametrized with l , given by  x^1 = 0 (L) and x^2 = l, as coordinate for \partial \Omega_in (out)
@@ -36,6 +36,12 @@ def Nt_lr(psi):
     return as_tensor(geo.g_c(psi)[i, j] * N2d[alpha] * geo.e(psi)[j, alpha], (i))
 
 
-# n^i_notes on \partial \Omega_in and out
-def n_lr(omega):
-    return as_tensor((Nt_lr(omega))[k] / sqrt(geo.g(omega)[i, j] * (Nt_lr(omega))[i] * (Nt_lr(omega))[j]), (k))
+'''
+normalized vector in the tangent bundle of Omega which normal to \partial Omega and points outside \Omega
+Input values:
+    - 'psi': the angle psi_here = psi_{Lagrangian approach}
+Return values: 
+    - n^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
+'''
+def n_lr(psi):
+    return as_tensor((Nt_lr(psi))[k] / sqrt(geo.g(psi)[i, j] * (Nt_lr(psi))[i] * (Nt_lr(psi))[j]), (k))
