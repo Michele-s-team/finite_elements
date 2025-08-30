@@ -2,3 +2,40 @@
 this code defined a function used to test the mesh tags:
 the mesh tags are tested by integrating over the tagged elements of the mesh this function
 '''
+
+from fenics import *
+import numpy as np
+
+import differential_geometry.manifold.geometry as geo
+
+
+# CHANGE PARAMETERS HERE
+c_test = [0.3, 0.76]
+r_test = 0.345
+# CHANGE PARAMETERS HERE
+
+
+# a function space used solely to define function_test_integrals_fenics
+Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
+
+
+# function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
+def function_test_integrals(x):
+    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    # return 1
+
+
+# function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
+function_test_integrals_fenics = Function(Q_test)
+
+
+# analytical expression for a  scalar function used to test the ds
+class FunctionTestIntegrals(UserExpression):
+    def eval(self, values, x):
+        values[0] = function_test_integrals(x)
+
+    def value_shape(self):
+        return (1,)
+
+
+function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
