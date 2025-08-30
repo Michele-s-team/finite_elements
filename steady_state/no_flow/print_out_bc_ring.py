@@ -7,7 +7,7 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh as msh
 import print_out_solution as prout
-import read_mesh_ring as rmsh
+import mesh.read.ring as rmsh
 import read_parameters_solve as rpam
 import variational_problem_bc_ring as vp
 

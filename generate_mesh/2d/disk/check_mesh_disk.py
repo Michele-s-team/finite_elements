@@ -15,7 +15,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh as msh
-import read_mesh_disk as rmsh
+import mesh.read.disk as rmsh
 
 
 import check_mesh_tags_disk

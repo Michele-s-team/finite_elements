@@ -15,7 +15,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh as msh
-import read_mesh_ring as rmsh
+import mesh.read.ring as rmsh
 
 
 import check_mesh_tags_ring

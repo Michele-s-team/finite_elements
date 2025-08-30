@@ -6,7 +6,7 @@ import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import input_output as io
 import mesh as msh
-import read_mesh_square_no_circle as rmsh
+import mesh.read.square_no_circle as rmsh
 
 i, j, k, l = ufl.indices(4)
 

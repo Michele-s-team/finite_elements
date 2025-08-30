@@ -8,7 +8,7 @@ import load_mesh as lmsh
 import mesh as msh
 
 import input_output as io
-import read_mesh_square_no_circle as rmsh
+import mesh.read.square_no_circle as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

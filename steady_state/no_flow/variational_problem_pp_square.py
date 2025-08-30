@@ -5,7 +5,7 @@ import command as cmd
 import function_spaces as fsp
 import physics as phys
 import differential_geometry.manifold.geometry as geo
-import read_mesh_square as rmsh
+import mesh.read.square as rmsh
 import read_parameters_solve as rpam
 import switch_problem as swi
 

@@ -3,7 +3,7 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_no_circle':
-    rmsh = 'read_mesh_square_no_circle'
+    rmsh = 'mesh.read.square_no_circle'
     vp = 'variational_problem_bc_square_no_circle'
     vp_pp = 'variational_problem_pp_square_no_circle'
     prout_bc = 'print_out_bc_square_no_circle'
@@ -12,7 +12,7 @@ if rarg.args.problem == 'square_no_circle':
 
 
 elif rarg.args.problem == 'square':
-    rmsh = 'read_mesh_square'
+    rmsh = 'mesh.read.square'
     vp = 'variational_problem_bc_square'
     vp_pp = 'variational_problem_pp_square'
     prout_bc = 'print_out_bc_square'

@@ -8,7 +8,7 @@ import differential_geometry.manifold.geometry as geo
 import mesh as msh
 
 import input_output as io
-import read_mesh_square_ellipse as rmsh
+import mesh.read.square_ellipse as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

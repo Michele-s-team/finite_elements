@@ -9,7 +9,7 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import load_mesh as lmsh
 import mesh as msh
-import read_mesh_box_ball as rmsh
+import mesh.read.box_ball as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

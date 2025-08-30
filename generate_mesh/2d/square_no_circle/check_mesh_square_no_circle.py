@@ -17,7 +17,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh as msh
-import read_mesh_square_no_circle as rmsh
+import mesh.read.square_no_circle as rmsh
 
 import check_mesh_tags_square_no_circle
 msh.check_mesh_symmetry(lmsh.mesh, [rmsh.parameters["L"]/2, rmsh.parameters["h"]/2])

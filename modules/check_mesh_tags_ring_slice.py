@@ -8,7 +8,7 @@ import input_output as io
 import load_mesh as lmsh
 import mesh as msh
 
-import read_mesh_ring_slice as rmsh
+import mesh.read.ring_slice as rmsh
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
