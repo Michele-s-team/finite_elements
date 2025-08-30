@@ -1,12 +1,13 @@
 import colorama as col
 from fenics import *
+import importlib
 import numpy as np
 
 import calculus as cal
 import input_output as io
 import load_mesh as lmsh
 import mesh.utils as msh
-import mesh.read.line as rmsh
+rmsh = importlib.import_module('mesh.read.line')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

@@ -7,8 +7,8 @@ Rxample:
     clear; clear; python3 check_mesh_square_no_circle.py solution
 '''
 
-import dolfin
 from fenics import *
+import importlib
 import sys
 
 # add the path where to find the shared modules
@@ -17,7 +17,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh.utils as msh
-import mesh.read.square_no_circle as rmsh
+rmsh = importlib.import_module('mesh.read.square_no_circle')
 
 import check_mesh_tags_square_no_circle
 msh.check_mesh_symmetry(lmsh.mesh, [rmsh.parameters["L"]/2, rmsh.parameters["h"]/2])

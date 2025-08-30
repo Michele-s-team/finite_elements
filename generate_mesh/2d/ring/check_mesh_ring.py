@@ -6,7 +6,7 @@ Run with
 Example:
     clear; clear; python3 check_mesh_ring.py solution
 '''
-
+import importlib
 import sys
 
 # add the path where to find the shared modules
@@ -15,7 +15,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh.utils as msh
-import mesh.read.ring as rmsh
+rmsh = importlib.import_module('mesh.read.ring')
 
 
 import check_mesh_tags_ring

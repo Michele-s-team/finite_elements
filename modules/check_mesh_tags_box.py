@@ -1,5 +1,6 @@
 import colorama as col
 from fenics import *
+import importlib
 import numpy as np
 
 import load_mesh as lmsh
@@ -8,7 +9,7 @@ import mesh.utils as msh
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import mesh.read.box as rmsh
+rmsh = importlib.import_module('mesh.read.box')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

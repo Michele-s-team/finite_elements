@@ -7,6 +7,7 @@ Example:
     clear; clear; python3 check_mesh_two_squares_no_circle.py solution
 '''
 
+import importlib
 import sys
 
 # add the path where to find the shared modules
@@ -15,7 +16,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh.utils as msh
-import mesh.read.two_squares_no_circle as rmsh
+rmsh = importlib.import_module('mesh.read.two_squares_no_circle')
 
 
 import check_mesh_tags_two_squares_no_circle

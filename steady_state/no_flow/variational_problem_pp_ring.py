@@ -5,7 +5,8 @@ import command as cmd
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import physics as phys
-import mesh.read.ring as rmsh
+import importlib
+rmsh = importlib.import_module('mesh.read.ring')
 import read_parameters_solve as rpam
 import switch_problem as swi
 

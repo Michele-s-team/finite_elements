@@ -1,12 +1,13 @@
 import colorama as col
 from fenics import *
+import importlib
 import numpy as np
 import scipy.integrate as spi
 
 import input_output as io
 import load_mesh as lmsh
 import mesh.utils as msh
-import mesh.read.line_vertex as rmsh
+rmsh = importlib.import_module('mesh.read.line_vertex')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

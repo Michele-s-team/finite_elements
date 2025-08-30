@@ -1,5 +1,6 @@
 import colorama as col
 from fenics import *
+import importlib
 import numpy as np
 
 import calculus as cal
@@ -8,7 +9,7 @@ import differential_geometry.manifold.geometry as geo
 import mesh.utils as msh
 
 import input_output as io
-import mesh.read.square_ellipse as rmsh
+rmsh = importlib.import_module('mesh.read.square_ellipse')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 

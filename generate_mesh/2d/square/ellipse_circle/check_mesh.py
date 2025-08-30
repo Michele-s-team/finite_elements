@@ -6,7 +6,7 @@ run with
 example:
     clear; clear; python3 check_mesh.py solution
 '''
-
+import importlib
 import sys
 
 # add the path where to find the shared modules
@@ -15,7 +15,7 @@ sys.path.append(module_path)
 
 import load_mesh as lmsh
 import mesh.utils as msh
-import mesh.read.square_ellipse_circle as rmsh
+rmsh = importlib.import_module('mesh.read.square_ellipse_circle')
 
 import check_mesh_tags_square_ellipse_circle
 
