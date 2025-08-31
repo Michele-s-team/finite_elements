@@ -137,7 +137,6 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
 
-'''
 #ring_with_circle mesh
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/ring_with_circle/'
 
@@ -151,7 +150,9 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
 
+
 '''
+
 #ring_with_lines mesh
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/ring_with_lines/'
 
@@ -165,6 +166,7 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
 
+'''
 #ring/symmetric mesh
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric/'
 
