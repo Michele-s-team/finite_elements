@@ -7,13 +7,12 @@ import calculus as cal
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
+import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.line')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
-# Global variables which will be set according to the gauge choice
-solution_path = None
 
 # CHANGE PARAMETERS HERE
 c_test = 0.76
@@ -61,7 +60,6 @@ test_mesh_integral_errors['\int f ds_r'] = msh.test_mesh_integral(integral_exact
 test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
 # print to file the residuals of the tests of the mesh integrals
-if solution_path is not None:
-    io.write_parameters_to_csv_file(io.add_trailing_slash(solution_path) + 'integral_errors.csv', test_mesh_integral_errors)
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
