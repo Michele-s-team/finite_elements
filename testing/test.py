@@ -238,7 +238,7 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      'generate_square_no_circle_mesh', 'check_mesh',
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
-'''
+
 
 #square_no_circle/two_squares_no_circle mesh
 generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/two_squares_no_circle/'
@@ -253,6 +253,22 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
 
+
+'''
+
+# 3d
+#ball mesh
+generate_mesh_path = root_path + 'generate_mesh/3d/ball/'
+
+checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
+                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
+                                                                     'generate_ball_mesh', 'check_mesh',
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     success)
 
 '''
 ################################################################

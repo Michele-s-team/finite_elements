@@ -6,7 +6,6 @@ import numpy as np
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import list as li
 import mesh.load as lmsh
 import mesh.test_function as tf
 import mesh.utils as msh
