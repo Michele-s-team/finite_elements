@@ -6,7 +6,6 @@ import numpy as np
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import list as li
 import mesh.load as lmsh
 import mesh.test_function as tf
 import mesh.utils as msh
@@ -98,26 +97,26 @@ print(f'Check integrals on the sub_meshes: ')
 
 # surface integrals
 for i in range(len(lmsh.sub_meshes)):
-    test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[i]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx'))
+    test_mesh_integral_errors[f'\int_sub_mesh_{i} f dx'] = msh.test_mesh_integral(integral_exact[i]['dx'], function_test_integrals_fenics, rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx')
 
 # line intergrals
 # for mesh #0
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['ds_circle'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_circle'], f'\int f ds_sub_mesh_{0}_circle'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[0]['ds_ellipse'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_ellipse'], f'\int f ds_sub_mesh_{0}_ellipse'))
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{0}_circle'] = msh.test_mesh_integral(integral_exact[0]['ds_circle'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_circle'], f'\int f ds_sub_mesh_{0}_circle')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{0}_ellipse'] = msh.test_mesh_integral(integral_exact[0]['ds_ellipse'], function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_ellipse'], f'\int f ds_sub_mesh_{0}_ellipse')
 
 # for mesh #1
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_l'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_l'], f'\int f ds_sub_mesh_{1}_l'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_r'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_r'], f'\int f ds_sub_mesh_{1}_r'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_t'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_t'], f'\int f ds_sub_mesh_{1}_t'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_b'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_b'], f'\int f ds_sub_mesh_{1}_b'))
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_l'], f'\int f ds_sub_mesh_{1}_l')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_r'] = msh.test_mesh_integral(integral_exact[1]['ds_r'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_r'], f'\int f ds_sub_mesh_{1}_r')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_t'] = msh.test_mesh_integral(integral_exact[1]['ds_t'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_t'], f'\int f ds_sub_mesh_{1}_t')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_b'] = msh.test_mesh_integral(integral_exact[1]['ds_b'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_b'], f'\int f ds_sub_mesh_{1}_b')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_lr'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_lr'], f'\int f ds_sub_mesh_{1}_lr'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_tb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_tb'], f'\int f ds_sub_mesh_{1}_tb'))
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_lr'] = msh.test_mesh_integral(integral_exact[1]['ds_lr'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_lr'], f'\int f ds_sub_mesh_{1}_lr')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_tb'] = msh.test_mesh_integral(integral_exact[1]['ds_tb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_tb'], f'\int f ds_sub_mesh_{1}_tb')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_lrtb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_lrtb'], f'\int f ds_sub_mesh_{1}_lrtb'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_ellipse'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_ellipse'], f'\int f ds_sub_mesh_{1}_ellipse'))
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_lrtb'] = msh.test_mesh_integral(integral_exact[1]['ds_lrtb'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_lrtb'], f'\int f ds_sub_mesh_{1}_lrtb')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_ellipse'] = msh.test_mesh_integral(integral_exact[1]['ds_ellipse'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_ellipse'], f'\int f ds_sub_mesh_{1}_ellipse')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds'], f'\int f ds_sub_mesh_{1}'))
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}'] = msh.test_mesh_integral(integral_exact[1]['ds'], function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds'], f'\int f ds_sub_mesh_{1}')
 
 # print to file the residuals of the tests of the mesh integrals
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)

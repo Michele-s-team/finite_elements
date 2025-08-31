@@ -13,9 +13,4 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import mesh.load as lmsh
-import mesh.utils as msh
-rmsh = importlib.import_module('mesh.read.square_ellipse_circle')
-
 import mesh.check_tags.square_ellipse_circle
-
