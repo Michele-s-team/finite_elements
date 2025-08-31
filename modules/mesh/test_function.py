@@ -10,6 +10,7 @@ import mesh.load as lmsh
 import differential_geometry.manifold.geometry as geo
 
 # CHANGE PARAMETERS HERE
+# extract the first d components of c_test, where d is the mesh dimension, in order to make a test for the d-dimensional mesh under consideration 
 c_test = [0.3, 0.76, 1.23][:lmsh.mesh.topology().dim()]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
