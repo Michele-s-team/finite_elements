@@ -2,9 +2,9 @@
 This code checks the mesh generated from generate_mesh_ring_slice.py
 
 Run with
-    clear; clear; python3 check_mesh.py [path where to find the mesh]
+    clear; clear; python3 check_mesh.py [path where to find the mesh] [path where to write the result of the check]
 Example:
-    clear; clear; python3 check_mesh.py solution
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice/solution"; CHECK_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice/check"; rm -rf $CHECK_PATH; mkdir $CHECK_PATH; python3 check_mesh.py $MESH_PATH $CHECK_PATH
 '''
 from fenics import *
 import sys
