@@ -102,6 +102,6 @@ test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_l'
 test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact[1]['ds_r'], function_test_integrals_fenics[1], rmsh.ds_sub_mesh[1]['ds_r'], f'\int f ds_sub_mesh_{1}_r'))
 
 # print to file the residuals of the tests of the mesh integrals
-li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
-print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
