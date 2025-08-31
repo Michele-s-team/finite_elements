@@ -5,10 +5,10 @@ import numpy as np
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
-import list as li
+import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
-import input_output as io
+import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.half_circle_with_line')
 
@@ -50,16 +50,16 @@ integral_exact_dline_34 = cal.curve_integral_line(function_test_integrals, rmsh.
 integral_exact_dp1 = function_test_integrals([rmsh.parameters["r"], 0])
 integral_exact_dp2 = function_test_integrals([-rmsh.parameters["r"], 0])
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integral_fenics, rmsh.dx, '\int dx f'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp1, function_test_integral_fenics, rmsh.dp_line_in_start, '\int dp f_{p_1}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dp2, function_test_integral_fenics, rmsh.dp_line_in_end, '\int dp f_{p_2}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_12, function_test_integral_fenics, rmsh.ds_line, '\int dl f_{line_12}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_darc_21, function_test_integral_fenics, rmsh.ds_arc, '\int dl f_{arc_21}'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dline_34, function_test_integral_fenics, rmsh.ds_line_in, '\int dl f_{line_34}'))
+test_mesh_integral_errors['\int dx f'] = msh.test_mesh_integral(integral_exact_dx, function_test_integral_fenics, rmsh.dx, '\int dx f')
+test_mesh_integral_errors['\int dp f_{p_1}'] = msh.test_mesh_integral(integral_exact_dp1, function_test_integral_fenics, rmsh.dp_line_in_start, '\int dp f_{p_1}')
+test_mesh_integral_errors['\int dp f_{p_2}'] = msh.test_mesh_integral(integral_exact_dp2, function_test_integral_fenics, rmsh.dp_line_in_end, '\int dp f_{p_2}')
+test_mesh_integral_errors['\int dl f_{line_12}'] = msh.test_mesh_integral(integral_exact_dline_12, function_test_integral_fenics, rmsh.ds_line, '\int dl f_{line_12}')
+test_mesh_integral_errors['\int dl f_{arc_21}'] = msh.test_mesh_integral(integral_exact_darc_21, function_test_integral_fenics, rmsh.ds_arc, '\int dl f_{arc_21}')
+test_mesh_integral_errors['\int dl f_{line_34}'] = msh.test_mesh_integral(integral_exact_dline_34, function_test_integral_fenics, rmsh.ds_line_in, '\int dl f_{line_34}')
 
 # print to file the residuals of the tests of the mesh integrals
-li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
-print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
