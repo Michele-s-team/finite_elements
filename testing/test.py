@@ -180,7 +180,7 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
 
-'''
+
 
 
 #square/ellipse mesh
@@ -195,7 +195,19 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      'generate_square_ellipse_mesh', 'check_mesh',
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
+'''
+#square/ellipse_circle mesh
+generate_mesh_path = root_path + 'generate_mesh/2d/square/ellipse_circle/'
 
+checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
+                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
+                                                                     'generate_mesh', 'check_mesh',
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     success)
 
 '''
 ################################################################
