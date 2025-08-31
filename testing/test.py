@@ -30,8 +30,10 @@ print(f'commit_b = {commit_b}')
 
 # the paths where the mesh and problem solution will be stored, for both commits
 mesh_solution_path_a = root_path + 'testing/commit_a/mesh/solution'
+mesh_check_solution_path_a = root_path + 'testing/commit_a/mesh/check'
 problem_solution_path_a = root_path + 'testing/commit_a/solution'
 mesh_solution_path_b = root_path + 'testing/commit_b/mesh/solution'
+mesh_check_solution_path_b = root_path + 'testing/commit_b/mesh/check'
 problem_solution_path_b = root_path + 'testing/commit_b/solution'
 
 # Compare commit_a and commit_b on a specific problem
@@ -51,15 +53,15 @@ generate_mesh_path = root_path + 'generate_mesh/1d/line/'
 mesh_check_path = generate_mesh_path
 mesh_check_solution_path = io.add_trailing_slash(generate_mesh_path) + 'check'
 
-utest.test_mesh_check(commit_a, commit_b,
-                      root_path,
-                      generate_mesh_path, mesh_check_path,
-                      generate_mesh_path, mesh_check_path,
-                      mesh_solution_path_a, mesh_check_solution_path,
-                      mesh_solution_path_b, mesh_check_solution_path,
-                      'generate_mesh', 'check_mesh',
-                      generate_mesh_path, generate_mesh_path,
-                      success)
+checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, mesh_check_path,
+                                                                     generate_mesh_path, mesh_check_path,
+                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
+                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
+                                                                     'generate_mesh', 'check_mesh',
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     success)
 
 ################################################################
 # Variational problems test
