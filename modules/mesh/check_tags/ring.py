@@ -6,9 +6,9 @@ import numpy as np
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import list as li
 import mesh.load as lmsh
 import mesh.utils as msh
+import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.ring')
 
@@ -51,16 +51,16 @@ integral_exact_ds_R = cal.curve_integral_circle(function_test_integrals, rmsh.pa
 
 integral_exact_ds = integral_exact_ds_r + integral_exact_ds_R
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
+test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R'))
+test_mesh_integral_errors['\int f ds_r'] = msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
+test_mesh_integral_errors['\int f ds_R'] = msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
 # print to file the residuals of the tests of the mesh integrals
-li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')
+io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
-print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{max(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
