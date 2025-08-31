@@ -45,6 +45,8 @@ cmd.run_command('clear; clear', success)
 # Mesh checks test
 ################################################################
 
+# Test line mesh
+
 
 ################################################################
 # Variational problems test
