@@ -501,3 +501,18 @@ Return values:
 def merge_dictionaries(dictionary_a, dictionary_b):
     return {**dictionary_a, **dictionary_b}
 
+'''
+return the maximal among the values in a dictionary
+Input values: 
+- 'dictionary_a': the dictionary
+Return values: 
+- the maximal value
+'''
+def max_dictionary(dictionary):
+
+    max = list(dictionary.values())[0]
+    for key, value in dictionary.items():
+        if value > max:
+            max = value
+
+    return max
