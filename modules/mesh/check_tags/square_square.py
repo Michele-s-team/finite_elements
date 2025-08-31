@@ -85,7 +85,7 @@ integral_exact[1]['out_tb'] = integral_exact[1]['out_t'] + integral_exact[1]['ou
 
 integral_exact[1]['out_lrtb'] = integral_exact[1]['out_lr'] + integral_exact[1]['out_tb']
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')

@@ -76,7 +76,7 @@ integral_exact[1]['ds_r'] = function_test_integrals(rmsh.parameters['L'])
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r']
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')

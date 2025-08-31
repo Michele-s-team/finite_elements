@@ -55,18 +55,18 @@ integral_exact_ds_R = cal.curve_integral_circle(function_test_integrals, rmsh.pa
 
 integral_exact_ds = integral_exact_ds_r + integral_exact_ds_R
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_r_rho, function_test_integrals_fenics, rmsh.dx_r_rho, '\int f dx_r_rho'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx_rho_R, function_test_integrals_fenics, rmsh.dx_rho_R, '\int f dx_rho_R'))
+test_mesh_integral_errors['\int f dx_r_rho'] = msh.test_mesh_integral(integral_exact_dx_r_rho, function_test_integrals_fenics, rmsh.dx_r_rho, '\int f dx_r_rho')
+test_mesh_integral_errors['\int f dx_rho_R'] = msh.test_mesh_integral(integral_exact_dx_rho_R, function_test_integrals_fenics, rmsh.dx_rho_R, '\int f dx_rho_R')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx'))
+test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int f dx')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_rho, function_test_integrals_fenics, rmsh.ds_rho, '\int f ds_rho'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R'))
+test_mesh_integral_errors['\int f ds_r'] = msh.test_mesh_integral(integral_exact_ds_r, function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
+test_mesh_integral_errors['\int f ds_rho'] = msh.test_mesh_integral(integral_exact_ds_rho, function_test_integrals_fenics, rmsh.ds_rho, '\int f ds_rho')
+test_mesh_integral_errors['\int f ds_R'] = msh.test_mesh_integral(integral_exact_ds_R, function_test_integrals_fenics, rmsh.ds_R, '\int f ds_R')
 
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds'))
+test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
 # print to file the residuals of the tests of the mesh integrals
 li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')

@@ -44,14 +44,14 @@ class FunctionTestIntegrals(UserExpression):
 
 function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
 integral_exact_dx = cal.volume_integral_ball(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"])
 integral_exact_ds = cal.surface_integral_sphere(function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"])
 
 # print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int_ball f dx'))
-test_mesh_integral_errors.append(msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int_sphere f ds'))
+test_mesh_integral_errors['\int_ball f dx'] = msh.test_mesh_integral(integral_exact_dx, function_test_integrals_fenics, rmsh.dx, '\int_ball f dx')
+test_mesh_integral_errors['\int_sphere f ds'] = msh.test_mesh_integral(integral_exact_ds, function_test_integrals_fenics, rmsh.ds, '\int_sphere f ds')
 
 # print to file the residuals of the tests of the mesh integrals
 li.print_to_csv_file(test_mesh_integral_errors, 'check/test_mesh_integrals.csv')

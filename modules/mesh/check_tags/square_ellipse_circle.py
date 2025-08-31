@@ -89,7 +89,7 @@ integral_exact[1]['ds_ellipse'] = cal.curve_integral_ellipse(function_test_integ
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_ellipse']
 
-test_mesh_integral_errors = []
+test_mesh_integral_errors = dict([])
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
