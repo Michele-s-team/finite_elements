@@ -47,21 +47,36 @@ cmd.run_command('clear; clear', success)
 # Mesh checks test
 ################################################################
 
-# Test line mesh
 
+
+# 1d meshs
+'''
+# line mesh
 generate_mesh_path = root_path + 'generate_mesh/1d/line/'
-mesh_check_path = generate_mesh_path
-mesh_check_solution_path = io.add_trailing_slash(generate_mesh_path) + 'check'
 
 checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
                                                                      root_path,
-                                                                     generate_mesh_path, mesh_check_path,
-                                                                     generate_mesh_path, mesh_check_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     generate_mesh_path, generate_mesh_path,
                                                                      mesh_solution_path_a, mesh_check_solution_path_a,
                                                                      mesh_solution_path_b, mesh_check_solution_path_b,
                                                                      'generate_mesh', 'check_mesh',
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
+'''
+# line_vertex mesh
+generate_mesh_path = root_path + 'generate_mesh/1d/line_vertex/'
+
+checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
+                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
+                                                                     'generate_mesh_line_vertex', 'check_mesh',
+                                                                     generate_mesh_path, generate_mesh_path,
+                                                                     success)
+
 
 ################################################################
 # Variational problems test

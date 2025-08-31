@@ -32,8 +32,9 @@ function_test_integrals_fenics = Function(Q)
 # analytical expression for a  scalar function used to test the ds
 class FunctionTestIntegrals(UserExpression):
     def eval(self, values, x):
-        values[0] = function_test_integrals(x)
 
+        # here x may be a three- or two-dimensional array whose last entries are set to zero -> I give it the right dimension by doing x[:(lmsh.mesh.topology().dim())]
+        values[0] = function_test_integrals(x[:(lmsh.mesh.topology().dim())])
     def value_shape(self):
         return (1,)
 

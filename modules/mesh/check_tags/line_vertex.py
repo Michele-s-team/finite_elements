@@ -20,7 +20,7 @@ test_mesh_integral_errors =  dict([])
 
 test_mesh_integral_errors['\int dx f'] = msh.test_mesh_integral(integral_exact_dx, tf.function_test_integrals_fenics, rmsh.dx, '\int dx f')
 
-'''
+
 test_mesh_integral_errors['\int_{line l} dx f'] = msh.test_mesh_integral(integral_exact_dx_l, tf.function_test_integrals_fenics, rmsh.dx(1), '\int_{line l} dx f')
 test_mesh_integral_errors['\int_{line r} dx f'] = msh.test_mesh_integral(integral_exact_dx_r, tf.function_test_integrals_fenics, rmsh.dx(2), '\int_{line r} dx f')
 
@@ -32,4 +32,3 @@ test_mesh_integral_errors['\int_{point_in} dp f'] = msh.test_mesh_integral(tf.fu
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-'''
