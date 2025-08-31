@@ -2,9 +2,9 @@
 This code checks the mesh generated from generate_mesh.py
 
 run with
-    python3 check_mesh_square_ellipse.py [path where to find the mesh]
+    python3 check_mesh.py [path where to find the mesh]
 example:
-   python3 check_mesh_square_ellipse.py solution
+   python3 check_mesh.py solution
 '''
 
 import importlib

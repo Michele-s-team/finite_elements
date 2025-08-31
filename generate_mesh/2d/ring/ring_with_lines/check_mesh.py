@@ -2,9 +2,9 @@
 This code checks the mesh generated from generate_ring_mesh.py
 
 run with
-    clear; clear; python3 check_mesh_ring_with_lines.py [path where to find the mesh]
+    clear; clear; python3 check_mesh.py [path where to find the mesh]
 example:
-    clear; clear; python3 check_mesh_ring_with_lines.py solution
+    clear; clear; python3 check_mesh.py solution
 '''
 import importlib
 import sys
