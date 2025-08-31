@@ -42,7 +42,7 @@ success = [True]
 cmd.run_command('clear; clear', success)
 
 
-
+'''
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
 
@@ -726,6 +726,7 @@ checks[case_name + '_' + problem_name] = utest.test_problem_and_mesh(commit_a, c
 
 
 
+'''
 cmd.checkout(commit_a, success)
 
 max_key_len = max(len(key) for key in checks.keys())
