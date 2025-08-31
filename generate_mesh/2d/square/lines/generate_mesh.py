@@ -7,7 +7,7 @@ Run it with
 Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/lines"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/lines/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
-The mesh generated with this code can be checked with ~/shared/generate_mesh/2d/square/check_mesh_square.py
+The mesh generated with this code can be checked with ~/shared/generate_mesh/2d/square/check_mesh.py
 '''
 
 import meshio
@@ -21,9 +21,9 @@ sys.path.append(module_path)
 
 import input_output as io
 import list as lis
-import mesh as msh
+import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
-import read_parameters_generate_mesh as rpam
+import parameters.read.mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 

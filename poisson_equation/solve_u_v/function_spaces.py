@@ -1,8 +1,8 @@
 from fenics import *
 
-import mesh as msh
-import read_parameters_solve as rpam
-import load_mesh as lmsh
+import mesh.utils as msh
+import parameters.read.solution as rpam
+import mesh.load as lmsh
 
 # define elements and function spaces
 P_u = FiniteElement('P', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])

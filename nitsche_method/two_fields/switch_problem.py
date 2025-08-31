@@ -3,7 +3,7 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'disk':
-    rmsh = 'read_mesh_disk'
+    rmsh = 'mesh.read.disk'
     vp = 'variational_problem_bc_disk'
     prout_bc =  'print_out_bc_disk'
 

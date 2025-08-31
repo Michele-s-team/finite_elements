@@ -3,7 +3,7 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'line':
-    rmsh = 'read_mesh_line'
+    rmsh = 'mesh.read.line'
     vp = 'variational_problem_bc_line'
     prout_bc = 'print_out_bc_line'
 

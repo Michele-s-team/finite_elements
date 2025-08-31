@@ -3,7 +3,7 @@ import importlib
 import ufl as ufl
 
 import input_output as io
-import load_mesh as lmsh
+import mesh.load as lmsh
 import solution_paths as solpath
 import switch_problem as swi
 

@@ -1,7 +1,7 @@
 from fenics import *
 import ufl as ufl
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 # Global variables which will be set according to the gauge choice
 dydtheta = None

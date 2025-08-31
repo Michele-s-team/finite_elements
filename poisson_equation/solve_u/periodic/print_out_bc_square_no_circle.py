@@ -1,12 +1,13 @@
-from fenics import *
-import ufl as ufl
 import colorama as col
+from fenics import *
+import importlib
+import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import input_output as io
-import mesh as msh
-import read_mesh_square_no_circle as rmsh
+import mesh.utils as msh
+rmsh = importlib.import_module('mesh.read.square_no_circle')
 
 i, j, k, l = ufl.indices(4)
 

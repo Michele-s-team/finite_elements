@@ -2,7 +2,7 @@ from fenics import *
 import ufl as ufl
 
 import differential_geometry.manifold.geometry as geo
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 i, j, k, l, alpha = ufl.indices(5)
 

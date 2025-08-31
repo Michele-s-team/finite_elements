@@ -4,22 +4,22 @@ import runtime_arguments as rarg
 
 if rarg.args.problem == 'ring':
 
-    rmsh = 'read_mesh_ring'
+    rmsh = 'mesh.read.ring'
     vp = 'variational_problem_bc_ring'
     prout_bc = 'print_out_bc_ring'
 
 elif rarg.args.problem == 'square_no_circle_a':
-    rmsh = 'read_mesh_square_no_circle'
+    rmsh = 'mesh.read.square_no_circle'
     vp = 'variational_problem_bc_square_no_circle_a'
     prout_bc = 'print_out_bc_square_no_circle_a'
 
 elif rarg.args.problem == 'square_a':
-    rmsh = 'read_mesh_square'
+    rmsh = 'mesh.read.square'
     vp = 'variational_problem_bc_square_a'
     prout_bc =  'print_out_bc_square_a'
 
 elif rarg.args.problem == 'square_b':
-    rmsh = 'read_mesh_square'
+    rmsh = 'mesh.read.square'
     vp = 'variational_problem_bc_square_b'
     prout_bc =  'print_out_bc_square_b'
 

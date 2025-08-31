@@ -27,9 +27,9 @@ sys.path.append(module_path)
 
 import calculus as cal
 import input_output as io
-import mesh as msh
+import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
-import read_parameters_generate_mesh as rpam
+import parameters.read.mesh as rpam
 
 if rpam.parameters["c_r"][1] !=  rpam.parameters["h"]/2:
     print("ERROR: c_r[1] is not equal to  h/2")

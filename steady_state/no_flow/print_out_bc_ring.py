@@ -1,14 +1,16 @@
 from fenics import *
 import ufl as ufl
 import colorama as col
+import importlib
+
 
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import mesh as msh
+import mesh.utils as msh
 import print_out_solution as prout
-import read_mesh_ring as rmsh
-import read_parameters_solve as rpam
+rmsh = importlib.import_module('mesh.read.ring')
+import parameters.read.solution as rpam
 import variational_problem_bc_ring as vp
 
 i, j, k, l = ufl.indices(4)

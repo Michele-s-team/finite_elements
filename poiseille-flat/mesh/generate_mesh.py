@@ -20,7 +20,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append( module_path )
 
 import input_output as io
-import mesh as msh
+import mesh.utils as msh
 
 parser = argparse.ArgumentParser()
 parser.add_argument( "resolution" )

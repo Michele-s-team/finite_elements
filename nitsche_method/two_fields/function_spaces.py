@@ -1,7 +1,7 @@
 import dolfin
 from fenics import *
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 Q = FunctionSpace(lmsh.mesh, 'P', 2)
 V = VectorFunctionSpace(lmsh.mesh, 'P', 2)

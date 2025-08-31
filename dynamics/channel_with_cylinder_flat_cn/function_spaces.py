@@ -1,7 +1,7 @@
 import dolfin
 from fenics import *
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 # Define function spaces
 # the '2' in ''P', 2)' is the order of the polynomials used to describe these spaces: if they are low, then derivatives high enough of the functions projected on thee spaces will be set to zero !

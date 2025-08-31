@@ -5,8 +5,8 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
-import load_mesh as lmsh
-import read_parameters_solve as rpam
+import mesh.load as lmsh
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)

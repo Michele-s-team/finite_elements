@@ -1,7 +1,7 @@
 from fenics import *
 import importlib
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)

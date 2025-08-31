@@ -12,7 +12,7 @@ ATTENTION: c_r in mesh_parametewrs must be equal to [L/2, h/2], otherwise symmet
 Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
-This mesh can be checked with ~/shared/generate_mesh/2d/square/check_mesh_square.py
+This mesh can be checked with ~/shared/generate_mesh/2d/square/check_mesh.py
 
 
 The quarter of a mesh will be saved in [path where to store the mesh] as quarter_mesh.msh. The complete mesh will be saved in
@@ -33,9 +33,9 @@ sys.path.append(module_path)
 
 import calculus as cal
 import input_output as io
-import mesh as msh
+import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
-import read_parameters_generate_mesh as rpam
+import parameters.read.mesh as rpam
 
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 

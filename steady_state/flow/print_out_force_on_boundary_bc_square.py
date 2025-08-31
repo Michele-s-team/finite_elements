@@ -2,7 +2,7 @@ from fenics import *
 
 import differential_geometry.boundary.geometry as bgeo
 import physics as phys
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import print_out_solution as prout
 
 # print out the force exerted on the circle

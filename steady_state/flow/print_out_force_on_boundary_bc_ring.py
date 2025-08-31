@@ -4,7 +4,7 @@ import importlib
 import differential_geometry.boundary.geometry as bgeo
 import physics as phys
 import print_out_solution as prout
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)

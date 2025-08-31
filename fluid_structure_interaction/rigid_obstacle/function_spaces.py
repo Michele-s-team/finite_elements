@@ -1,7 +1,7 @@
 import dolfin
 from fenics import *
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 '''
 the variables for the problem are

@@ -20,9 +20,9 @@ sys.path.append(module_path)
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import load_mesh as lmsh
-import mesh as msh
-import read_parameters_generate_mesh as rpam
+import mesh.load as lmsh
+import mesh.utils as msh
+import parameters.read.mesh as rpam
 import runtime_arguments as rarg
 
 # radius of the smallest cell in the mesh

@@ -12,7 +12,7 @@ import elasticity as ela
 import function_spaces as fsp
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import switch_problem as swi
 from calculus import atan_quad
 

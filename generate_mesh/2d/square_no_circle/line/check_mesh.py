@@ -1,10 +1,10 @@
 '''
 This code checks the mesh generated from generate_mesh.py
 
-run with
-    clear; clear; python3 check_mesh.py [path where to find the mesh]
-example:
-    clear; clear; python3 check_mesh.py solution
+Run with
+    clear; clear; python3 check_mesh.py [path where to find the mesh] [path where to write the result of the check]
+Example:
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution"; CHECK_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/check"; rm -rf $CHECK_PATH; mkdir $CHECK_PATH; python3 check_mesh.py $MESH_PATH $CHECK_PATH
 '''
 
 import sys
@@ -13,12 +13,4 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import load_mesh as lmsh
-import mesh as msh
-import read_mesh_square_no_circle_line
-
-'''
-
-import check_mesh_tags_square_no_circle_line
-
-'''
+import mesh.check_tags.square_no_circle_line

@@ -1,7 +1,7 @@
 from fenics import *
 import dolfin
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 
 degree_function_space = 1

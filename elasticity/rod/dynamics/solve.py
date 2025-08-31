@@ -17,7 +17,7 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
-import read_parameters_solve as rpam
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 

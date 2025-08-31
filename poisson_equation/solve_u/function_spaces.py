@@ -1,6 +1,6 @@
 from fenics import *
 
-import load_mesh as lmsh
+import mesh.load as lmsh
 
 function_space_degree = 4
 
