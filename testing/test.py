@@ -47,6 +47,19 @@ cmd.run_command('clear; clear', success)
 
 # Test line mesh
 
+generate_mesh_path = root_path + 'generate_mesh/1d/line/'
+mesh_check_path = generate_mesh_path
+mesh_check_solution_path = io.add_trailing_slash(generate_mesh_path) + 'check'
+
+utest.test_mesh_check(commit_a, commit_b,
+                      root_path,
+                      generate_mesh_path, mesh_check_path,
+                      generate_mesh_path, mesh_check_path,
+                      mesh_solution_path_a, mesh_check_solution_path,
+                      mesh_solution_path_b, mesh_check_solution_path,
+                      'generate_mesh', 'check_mesh',
+                      generate_mesh_path, generate_mesh_path,
+                      success)
 
 ################################################################
 # Variational problems test
