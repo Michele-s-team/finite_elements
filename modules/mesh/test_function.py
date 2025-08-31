@@ -10,13 +10,13 @@ import mesh.load as lmsh
 import differential_geometry.manifold.geometry as geo
 
 # CHANGE PARAMETERS HERE
-c_test = [0.3, 0.76]
+c_test = [0.3, 0.76, 1.23][:lmsh.mesh.topology().dim()]
 r_test = 0.345
 # CHANGE PARAMETERS HERE
 
 
 # a function space used solely to define function_test_integrals_fenics
-Q_test = FunctionSpace(lmsh.mesh, 'P', 2)
+Q = FunctionSpace(lmsh.mesh, 'P', 2)
 
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
@@ -25,7 +25,7 @@ def function_test_integrals(x):
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
-function_test_integrals_fenics = Function(Q_test)
+function_test_integrals_fenics = Function(Q)
 
 
 # analytical expression for a  scalar function used to test the ds
@@ -37,4 +37,4 @@ class FunctionTestIntegrals(UserExpression):
         return (1,)
 
 
-function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q_test.ufl_element()))
+function_test_integrals_fenics.interpolate(FunctionTestIntegrals(element=Q.ufl_element()))
