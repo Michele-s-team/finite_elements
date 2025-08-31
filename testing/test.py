@@ -50,7 +50,7 @@ cmd.run_command('clear; clear', success)
 
 
 # 1d meshs
-'''
+
 # line mesh
 generate_mesh_path = root_path + 'generate_mesh/1d/line/'
 
@@ -63,7 +63,7 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      'generate_mesh', 'check_mesh',
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
-'''
+
 # line_vertex mesh
 generate_mesh_path = root_path + 'generate_mesh/1d/line_vertex/'
 
