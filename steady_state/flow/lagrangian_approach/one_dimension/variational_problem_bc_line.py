@@ -15,15 +15,6 @@ cmd.set_gauge('arc_length')
 
 i, j, k, l, alpha = ufl.indices(5)
 
-
-class v_l_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['v_l'][0]
-
-    def value_shape(self):
-        return (1,)
-
-
 # uncomment this to set the initial profiles from the ODE soltion
 '''
 print("Reading the initial profiles from file ...")
@@ -52,10 +43,8 @@ fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.psi_0,  fsp.mu
 print("... done")
 '''
 
-v_l = interpolate(v_l_Expression(element=fsp.Q_v.ufl_element()), fsp.Q_v)
-
 # boundary conditions (BCs)
-bc_v_l = DirichletBC(fsp.Q.sub(0), v_l, rmsh.boundary_l)
+bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
 
 bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_lr']), rmsh.boundary)
 
@@ -118,7 +107,6 @@ F_psi = ( \
 F_mu = ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
-
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
