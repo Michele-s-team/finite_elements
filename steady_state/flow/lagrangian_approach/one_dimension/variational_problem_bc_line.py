@@ -72,7 +72,6 @@ bcs = [bc_v_l, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_mu_l, bc_X_l]
 
 # variational problem
 
-F_sigma = (geo.Nabla_v(fsp.v, fsp.psi)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_v = ( \
                   rpam.parameters['rho'] * ( \
@@ -91,6 +90,10 @@ F_v = ( \
       - 2.0 * rpam.parameters['eta'] * ( \
                   + (geo.d_c(fsp.v, fsp.w, fsp.psi)[i, j] * geo.g(fsp.psi)[i, k] * (bgeo.n_lr(fsp.psi))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
           )
+
+F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi) * rmsh.dx
+
+F_sigma = (geo.Nabla_v(fsp.v, fsp.psi)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_psi = ( \
                     rpam.parameters['rho'] * (fsp.v[i] * fsp.v[k] * geo.b(fsp.psi)[k, i]) * fsp.nu_psi \
@@ -114,9 +117,8 @@ F_psi = ( \
 
 F_mu = ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
-F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi) * rmsh.dx
-
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
+
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary

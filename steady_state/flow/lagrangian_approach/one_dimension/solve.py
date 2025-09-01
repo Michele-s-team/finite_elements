@@ -19,6 +19,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -26,7 +27,7 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 set_log_level(20)
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 4
+dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
 print("Input diredtory = ", rarg.args.input_directory)
 print("Output diredtory = ", rarg.args.output_directory)
