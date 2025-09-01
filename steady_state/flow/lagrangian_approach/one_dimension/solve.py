@@ -1,5 +1,5 @@
 '''
-This file solves for the steady state of a one-dimensional fluid with no flows with the Lagrangian approach
+This file solves for the steady state of a one-dimensional fluid with flows with the Lagrangian approach.
 
 Run with
     python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
