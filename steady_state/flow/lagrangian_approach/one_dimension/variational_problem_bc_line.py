@@ -79,9 +79,9 @@ F_v = ( \
       - 2.0 * rpam.parameters['eta'] * ( \
                   + (geo.d_c(fsp.v, fsp.w, fsp.psi)[i, j] * geo.g(fsp.psi)[i, k] * (bgeo.n_lr(fsp.psi))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
           )
-
 F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
+# sign
 F_sigma = (geo.Nabla_v(fsp.v, fsp.psi)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_psi = ( \
