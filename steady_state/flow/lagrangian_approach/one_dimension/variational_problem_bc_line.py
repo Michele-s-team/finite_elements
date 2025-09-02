@@ -81,7 +81,6 @@ F_v = ( \
           )
 F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
-# sign
 F_sigma = (geo.Nabla_v(fsp.v, fsp.psi)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi) * rmsh.dx
 
 F_psi = ( \
@@ -98,10 +97,10 @@ F_psi = ( \
                     ) * fsp.nu_psi
         ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
         + rpam.parameters['rho'] * ( \
-                    + (fsp.w * fsp.nu_psi * (bgeo.n_lr(fsp.psi))[j] * geo.g(fsp.psi)[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+                    (fsp.w * fsp.nu_psi * (bgeo.n_lr(fsp.psi))[j] * geo.g(fsp.psi)[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
             ) \
         + 2.0 * rpam.parameters['kappa'] * ( \
-                    + ((bgeo.n_lr(fsp.psi))[i] * (fsp.mu.dx(i)) * fsp.nu_psi) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+                    ((bgeo.n_lr(fsp.psi))[i] * (fsp.mu.dx(i)) * fsp.nu_psi) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
             )
 
 F_mu = ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
@@ -115,4 +114,3 @@ F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
 
 # total functional for the mixed problem
 F = (F_v + F_w + F_sigma + F_psi + F_mu + F_X) + F_N
-# sign
