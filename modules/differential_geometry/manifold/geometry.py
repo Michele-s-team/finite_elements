@@ -2,13 +2,11 @@ from fenics import *
 import ufl as ufl
 import numpy as np
 
-
 # Global variables which will be set according to the gauge choice
 e = None
 K = None
 normal = None
 X = None
-
 
 
 # euclidean  norm of vector x
@@ -36,13 +34,9 @@ epsilon = ufl.PermutationSymbol(2)
 i, j, k, l = ufl.indices(4)
 
 
-
 # first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega, nu=None):
-    if nu is None:
-        return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i, j))
-    else:
-        return as_tensor((normal(omega, nu))[k] * (e(omega, nu)[i, k]).dx(j), (i, j))
+    return as_tensor((normal(omega, nu))[k] * (e(omega, nu)[i, k]).dx(j), (i, j))
 
 
 # two-covariant metric tensor: g_{ij}
@@ -203,11 +197,12 @@ Return values:
 '''
 
 
-def from_tangent_normal_to_3D_space(omega, v_t, v_n, nu = None):
+def from_tangent_normal_to_3D_space(omega, v_t, v_n, nu=None):
     if nu is None:
         return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
     else:
         return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega, nu)
+
 
 '''
 return the shape of a scalar, vector or tensor t
