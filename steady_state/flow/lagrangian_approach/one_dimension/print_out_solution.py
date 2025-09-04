@@ -38,5 +38,9 @@ io.full_print(X_output, 'X', solpath.xdmf_file_path, solpath.h5_file_path, solpa
               solpath.nodal_values_path, lmsh.mesh,
               'vector')
 
+io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              lmsh.mesh, 'scalar')
+
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
                                 io.merge_dictionaries(rmsh.parameters, rpam.parameters))
