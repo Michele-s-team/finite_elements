@@ -16,6 +16,13 @@ cmd.set_gauge('arc_length')
 i, j, k, l, alpha = ufl.indices(5)
 
 
+class nu_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters["nu_const"]
+
+    def value_shape(self):
+        return (1,)
+
 class sigma_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters["sigma_const"]
@@ -25,6 +32,7 @@ class sigma_Expression(UserExpression):
 
 
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
+fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
 
 '''
 fsp.psi_exact.interpolate(z_exact_Expression(element=fsp.Q_psi.ufl_element()))
