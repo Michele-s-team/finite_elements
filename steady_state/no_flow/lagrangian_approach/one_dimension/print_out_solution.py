@@ -19,6 +19,7 @@ i, j, k, l = ufl.indices(4)
 
 psi_output, mu_output, X_output = fsp.phi.split(deepcopy=True)
 
+# print out the solution
 io.full_print(psi_output, 'psi', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'scalar')
@@ -29,7 +30,11 @@ io.full_print(X_output, 'X', solpath.xdmf_file_path, solpath.h5_file_path, solpa
               solpath.nodal_values_path, lmsh.mesh,
               'vector')
 
+# print out the given fields of the surface tension and arc-length gauge
 io.full_print(fsp.sigma, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              lmsh.mesh, 'scalar')
+io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               lmsh.mesh, 'scalar')
 
