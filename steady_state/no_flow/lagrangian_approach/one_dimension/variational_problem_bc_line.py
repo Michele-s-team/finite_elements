@@ -76,15 +76,15 @@ fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 fu.set_from_file( fsp.X_0_read, 'solution_ode/X.csv' )
 fsp.X_0.interpolate( X_0_Expression( element=fsp.Q_X.ufl_element() ))
 
-'''
+
 import input_output as io
 import solution_paths as solpath
 import mesh.load as lmsh
 
-io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.X_0, 'X_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
-'''
+              'vector')
+
 
 # fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 #
