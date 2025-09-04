@@ -54,6 +54,13 @@ fsp.mu_exact.interpolate(mu_exact_Expression(element=fsp.Q_mu.ufl_element()))
 print("Reading the initial profiles from file ...")
 fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi.csv')
 fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
+import input_output as io
+import solution_paths as solpath
+import mesh.load as lmsh
+
+io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, lmsh.mesh,
+              'scalar')
 
 # fu.set_from_file( fsp.omega_0_r_read, 'solution-ode/omega_ode.csv' )
 # fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
