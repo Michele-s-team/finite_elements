@@ -19,7 +19,7 @@ i, j, k, l, alpha = ufl.indices(5)
 
 class nu_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters['nu_const']
+        values[0] = rpam.parameters['nu_const']*x[0]**3/(1.0+x[0]**2)
 
     def value_shape(self):
         return (1,)
@@ -61,11 +61,7 @@ class X_0_Expression(UserExpression):
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
 
-'''
-fsp.psi_exact.interpolate(z_exact_Expression(element=fsp.Q_psi.ufl_element()))
-fsp.X_exact.interpolate(omega_exact_Expression(element=fsp.Q_X.ufl_element()))
-fsp.mu_exact.interpolate(mu_exact_Expression(element=fsp.Q_mu.ufl_element()))
-'''
+
 # uncomment this to set the initial profiles from the ODE soltion
 #
 print("Reading the initial profiles from file ...")
