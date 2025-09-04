@@ -18,7 +18,7 @@ i, j, k, l, alpha = ufl.indices(5)
 
 class nu_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters["nu_const"]
+        values[0] = rpam.parameters['nu_const']
 
     def value_shape(self):
         return (1,)
