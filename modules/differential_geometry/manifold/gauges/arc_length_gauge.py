@@ -1,6 +1,6 @@
 '''
 this module contains the differential-geometry definitions
-for a one-dimensional manifold parameterized with a coordinate x^1 which is the arc-length, see "Lagrangian approach"
+for a one-dimensional manifold parameterized with a coordinate x^1, in the generalized arc-length gauge e_1^alpha e_1^alpha = nu, where nu is a function which depends on the manifold coordinate, see "Lagrangian approach"
 
 all methods specific to one dimension and to the arc-length gauge are defined here, while methods indepentend on the dimension and on the gauge are defined in geometry.py
 '''
