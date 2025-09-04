@@ -31,6 +31,10 @@ Q_psi = Q.sub(3).collapse()
 Q_mu = Q.sub(4).collapse()
 Q_X = Q.sub(5).collapse()
 
+# function space for the function nu of the arc-length gauge
+Q_nu = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
+
+
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
 as in function.set_from_list 
@@ -41,6 +45,10 @@ Q_read = FunctionSpace(lmsh.mesh, 'P', 1)
 J_phi = TrialFunction(Q)
 phi = Function(Q)
 nu_v, nu_w, nu_sigma, nu_psi, nu_mu, nu_X = TestFunctions(Q)
+
+# field for the arc-length gauge
+nu =  Function(Q_nu)
+
 
 v_output = Function(Q_v)
 w_output = Function(Q_w)

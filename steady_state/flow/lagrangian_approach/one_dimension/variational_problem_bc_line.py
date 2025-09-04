@@ -15,6 +15,16 @@ cmd.set_gauge('arc_length')
 
 i, j, k, l, alpha = ufl.indices(5)
 
+class nu_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['nu_const']
+
+    def value_shape(self):
+        return (1,)
+
+fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
+
+
 # uncomment this to set the initial profiles from the ODE soltion
 '''
 print("Reading the initial profiles from file ...")
@@ -64,52 +74,52 @@ bcs = [bc_v_l, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_mu_l, bc_X_l]
 
 F_v = ( \
                   rpam.parameters['rho'] * ( \
-                      (fsp.v[j] * geo.Nabla_v(fsp.v, fsp.psi)[i, j] - 2.0 * fsp.v[j] * fsp.w * geo.g_c(fsp.psi)[i, k] * geo.b(fsp.psi)[k, j]) * fsp.nu_v[i] \
-                      + 1.0 / 2.0 * (fsp.w ** 2) * geo.g_c(fsp.psi)[i, j] * geo.Nabla_f(fsp.nu_v, fsp.psi)[i, j] \
+                      (fsp.v[j] * geo.Nabla_v(fsp.v, fsp.psi, fsp.nu)[i, j] - 2.0 * fsp.v[j] * fsp.w * geo.g_c(fsp.psi, fsp.nu)[i, k] * geo.b(fsp.psi, fsp.nu)[k, j]) * fsp.nu_v[i] \
+                      + 1.0 / 2.0 * (fsp.w ** 2) * geo.g_c(fsp.psi, fsp.nu)[i, j] * geo.Nabla_f(fsp.nu_v, fsp.psi, fsp.nu)[i, j] \
               ) \
-                  + (fsp.sigma * geo.g_c(fsp.psi)[i, j] * geo.Nabla_f(fsp.nu_v, fsp.psi)[i, j] \
-                     + 2.0 * rpam.parameters['eta'] * geo.d_c(fsp.v, fsp.w, fsp.psi)[j, i] * geo.Nabla_f(fsp.nu_v, fsp.psi)[j, i])
-      ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
+                  + (fsp.sigma * geo.g_c(fsp.psi, fsp.nu)[i, j] * geo.Nabla_f(fsp.nu_v, fsp.psi, fsp.nu)[i, j] \
+                     + 2.0 * rpam.parameters['eta'] * geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[j, i] * geo.Nabla_f(fsp.nu_v, fsp.psi, fsp.nu)[j, i])
+      ) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx \
       - rpam.parameters['rho'] / 2.0 * ( \
-                  ((fsp.w ** 2) * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+                  ((fsp.w ** 2) * (bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
           ) \
       - ( \
-                  (fsp.sigma * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+                  (fsp.sigma * (bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
           ) \
       - 2.0 * rpam.parameters['eta'] * ( \
-                  + (geo.d_c(fsp.v, fsp.w, fsp.psi)[i, j] * geo.g(fsp.psi)[i, k] * (bgeo.n_lr(fsp.psi))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
+                  + (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
           )
-F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi) * rmsh.dx
+F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_sigma = (geo.Nabla_v(fsp.v, fsp.psi)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi) * rmsh.dx
+F_sigma = (geo.Nabla_v(fsp.v, fsp.psi, fsp.nu)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_psi = ( \
-                    rpam.parameters['rho'] * (fsp.v[i] * fsp.v[k] * geo.b(fsp.psi)[k, i]) * fsp.nu_psi \
-                    - rpam.parameters['rho'] * fsp.w * geo.Nabla_v(geo.vector_times_scalar(fsp.v, fsp.nu_psi), fsp.psi)[i, i] \
+                    rpam.parameters['rho'] * (fsp.v[i] * fsp.v[k] * geo.b(fsp.psi, fsp.nu)[k, i]) * fsp.nu_psi \
+                    - rpam.parameters['rho'] * fsp.w * geo.Nabla_v(geo.vector_times_scalar(fsp.v, fsp.nu_psi), fsp.psi, fsp.nu)[i, i] \
                     + 2.0 * rpam.parameters['kappa'] * ( \
-                                - geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(i)) * (fsp.nu_psi.dx(j)) \
-                                + 2.0 * fsp.mu * (fsp.mu ** 2 - geo.K(fsp.psi)) * fsp.nu_psi \
+                                - geo.g_c(fsp.psi, fsp.nu)[i, j] * (fsp.mu.dx(i)) * (fsp.nu_psi.dx(j)) \
+                                + 2.0 * fsp.mu * (fsp.mu ** 2 - geo.K(fsp.psi, fsp.nu)) * fsp.nu_psi \
                         ) \
                     - ( \
                                 2.0 * fsp.sigma * fsp.mu \
-                                + 2.0 * rpam.parameters['eta'] * (geo.g_c(fsp.psi)[i, k] * geo.Nabla_v(fsp.v, fsp.psi)[j, k] *
-                                                                  (geo.b(fsp.psi))[i, j] - 2.0 * fsp.w * (2.0 * fsp.mu ** 2 - geo.K(fsp.psi)))
+                                + 2.0 * rpam.parameters['eta'] * (geo.g_c(fsp.psi, fsp.nu)[i, k] * geo.Nabla_v(fsp.v, fsp.psi, fsp.nu)[j, k] *
+                                                                  (geo.b(fsp.psi, fsp.nu))[i, j] - 2.0 * fsp.w * (2.0 * fsp.mu ** 2 - geo.K(fsp.psi, fsp.nu)))
                     ) * fsp.nu_psi
-        ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
+        ) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx \
         + rpam.parameters['rho'] * ( \
-                    (fsp.w * fsp.nu_psi * (bgeo.n_lr(fsp.psi))[j] * geo.g(fsp.psi)[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+                    (fsp.w * fsp.nu_psi * (bgeo.n_lr(fsp.psi, fsp.nu))[j] * geo.g(fsp.psi, fsp.nu)[j, i] * fsp.v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
             ) \
         + 2.0 * rpam.parameters['kappa'] * ( \
-                    ((bgeo.n_lr(fsp.psi))[i] * (fsp.mu.dx(i)) * fsp.nu_psi) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+                    ((bgeo.n_lr(fsp.psi, fsp.nu))[i] * (fsp.mu.dx(i)) * fsp.nu_psi) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
             )
 
-F_mu = ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
+F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
+F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
-        ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+        ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
     )
 
 # total functional for the mixed problem

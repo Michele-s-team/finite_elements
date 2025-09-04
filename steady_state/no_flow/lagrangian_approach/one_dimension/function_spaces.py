@@ -25,7 +25,6 @@ Q_mu = Q.sub(1).collapse()
 Q_X = Q.sub(2).collapse()
 
 Q_sigma = FunctionSpace(lmsh.mesh, 'P', 1)
-# function space for the function nu of the arc-length gauge
 Q_nu = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
 
 '''
