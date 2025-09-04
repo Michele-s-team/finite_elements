@@ -78,6 +78,9 @@ fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
 fu.set_from_file(fsp.X_0_read, 'solution_ode/X.csv')
 fsp.X_0.interpolate(X_0_Expression(element=fsp.Q_X.ufl_element()))
 
+fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+print('... done')
+
 '''
 import input_output as io
 import solution_paths as solpath
