@@ -49,10 +49,11 @@ class mu_0_Expression(UserExpression):
 
 class X_0_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = fsp.mu_0_read(x[0])
+        values[0] = (fsp.X_0_read(x[0]))[0]
+        values[1] = (fsp.X_0_read(x[0]))[1]
 
     def value_shape(self):
-        return (1,)
+        return (2,)
 
 
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
@@ -69,10 +70,10 @@ print("Reading the initial profiles from file ...")
 fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi.csv')
 fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
 
-fu.set_from_file( fsp.mu_0_read, 'solution_ode/mu_ode.csv' )
+fu.set_from_file( fsp.mu_0_read, 'solution_ode/mu.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 
-fu.set_from_file( fsp.X_0_read, 'solution_ode/X_ode.csv' )
+fu.set_from_file( fsp.X_0_read, 'solution_ode/X.csv' )
 fsp.X_0.interpolate( X_0_Expression( element=fsp.Q_X.ufl_element() ))
 
 '''
