@@ -40,6 +40,13 @@ class psi_0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+class mu_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.mu_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
 
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
@@ -54,6 +61,12 @@ fsp.mu_exact.interpolate(mu_exact_Expression(element=fsp.Q_mu.ufl_element()))
 print("Reading the initial profiles from file ...")
 fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi.csv')
 fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
+
+fu.set_from_file( fsp.mu_0_read, 'solution_ode/mu_ode.csv' )
+fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
+
+
+'''
 import input_output as io
 import solution_paths as solpath
 import mesh.load as lmsh
@@ -61,13 +74,8 @@ import mesh.load as lmsh
 io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'scalar')
+'''
 
-# fu.set_from_file( fsp.omega_0_r_read, 'solution-ode/omega_ode.csv' )
-# fsp.omega_0.interpolate( omega_0_Expression( element=fsp.Q_omega.ufl_element() ) )
-#
-# fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
-# fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
-#
 # fsp.tau_exact.interpolate( tau_exact_Expression( element=fsp.Q_tau.ufl_element() ) )
 #
 # #uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., z_0
