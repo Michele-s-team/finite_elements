@@ -8,6 +8,8 @@ the fields in this problem are
 psi = psi_{Lagrangian approach}
 mu = H
 X[i] = {X^i}_{Lagrangian approach}
+nu = nu_{Lagrangian approach}
+sigma = sigma_{Lagrangian approach}
 '''
 
 P_psi = FiniteElement('P', interval, rpam.parameters['function_space_degree'])
