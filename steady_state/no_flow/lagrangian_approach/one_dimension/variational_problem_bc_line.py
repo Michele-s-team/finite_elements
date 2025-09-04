@@ -47,6 +47,13 @@ class mu_0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+class X_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.mu_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
 
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
@@ -65,6 +72,8 @@ fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
 fu.set_from_file( fsp.mu_0_read, 'solution_ode/mu_ode.csv' )
 fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
 
+fu.set_from_file( fsp.X_0_read, 'solution_ode/X_ode.csv' )
+fsp.X_0.interpolate( X_0_Expression( element=fsp.Q_X.ufl_element() ))
 
 '''
 import input_output as io
