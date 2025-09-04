@@ -29,7 +29,7 @@ Return values:
 
 
 def e(psi, nu):
-    return as_tensor([nu*[cos(psi), -sin(psi)]])
+    return as_tensor([[nu*cos(psi), -nu*sin(psi)]])
 
 
 '''
