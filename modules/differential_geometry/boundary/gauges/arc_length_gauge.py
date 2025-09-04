@@ -19,7 +19,7 @@ Input values:
 Return values: 
 - Nt^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
 '''
-def Nt_lr(psi):
+def Nt_lr(psi, nu):
 
     # load the coordinate 'x' on the mesh,
     x = ufl.SpatialCoordinate(lmsh.mesh)
@@ -30,10 +30,10 @@ def Nt_lr(psi):
     vector in the surrounding two-dimensional Euclidean space
     if x[0] lies in the left (right) half of the interval x_l, x_r, N_2d = e[0] (-e[0]), 
     '''
-    N2d = as_tensor(conditional(lt(x[0], x_middle), -1.0, 1.0) * geo.e(psi)[0, alpha], (alpha))
+    N2d = as_tensor(conditional(lt(x[0], x_middle), -1.0, 1.0) * geo.e(psi, nu)[0, alpha], (alpha))
 
     # return the projection of N_2d on the tangent bundle of the manifold
-    return as_tensor(geo.g_c(psi)[i, j] * N2d[alpha] * geo.e(psi)[j, alpha], (i))
+    return as_tensor(geo.g_c(psi, nu)[i, j] * N2d[alpha] * geo.e(psi, nu)[j, alpha], (i))
 
 
 '''
@@ -43,5 +43,5 @@ Input values:
 Return values: 
     - n^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
 '''
-def n_lr(psi):
-    return as_tensor((Nt_lr(psi))[k] / sqrt(geo.g(psi)[i, j] * (Nt_lr(psi))[i] * (Nt_lr(psi))[j]), (k))
+def n_lr(psi, nu):
+    return as_tensor((Nt_lr(psi, nu))[k] / sqrt(geo.g(psi, nu)[i, j] * (Nt_lr(psi, nu))[i] * (Nt_lr(psi, nu))[j]), (k))

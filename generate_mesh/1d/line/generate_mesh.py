@@ -9,7 +9,6 @@ Example:
 '''
 
 from fenics import *
-import math
 import sys
 
 # add the path where to find the shared modules

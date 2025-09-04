@@ -8,6 +8,8 @@ the fields in this problem are
 psi = psi_{Lagrangian approach}
 mu = H
 X[i] = {X^i}_{Lagrangian approach}
+nu = nu_{Lagrangian approach}
+sigma = sigma_{Lagrangian approach}
 '''
 
 P_psi = FiniteElement('P', interval, rpam.parameters['function_space_degree'])
@@ -23,6 +25,8 @@ Q_mu = Q.sub(1).collapse()
 Q_X = Q.sub(2).collapse()
 
 Q_sigma = FunctionSpace(lmsh.mesh, 'P', 1)
+# function space for the function nu of the arc-length gauge
+Q_nu = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
 
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
@@ -37,6 +41,7 @@ nu_psi, nu_mu, nu_X = TestFunctions(Q)
 
 # these functions are used to print the solution to file
 sigma = Function(Q_sigma)
+nu =  Function(Q_nu)
 
 psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)
@@ -46,12 +51,12 @@ psi_exact = Function(Q_psi)
 mu_exact = Function(Q_mu)
 X_exact = Function(Q_X)
 
-'''
+
 # functions used to store the nodal values read from a list or file
-psi_0_read = Function(Q_read)
-mu_0_read = Function(Q_read)
-X_0_r_read = Function(Q_read)
-'''
+psi_0_read = Function(Q_psi)
+mu_0_read = Function(Q_mu)
+X_0_read = Function(Q_X)
+
 
 # omega_0, z_0 are used to store the initial conditions
 psi_0 = Function(Q_psi)
