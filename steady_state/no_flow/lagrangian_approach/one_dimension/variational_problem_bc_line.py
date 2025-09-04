@@ -78,20 +78,20 @@ F_psi = - 4 * rpam.parameters['kappa'] *  fsp.mu.dx(0).dx(0)  * fsp.nu_psi * rms
 
 F_psi = ( \
                     rpam.parameters["kappa"] * ( \
-                        geo.g_c(fsp.psi)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) \
-                        - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K(fsp.psi)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
-            ) * geo.sqrt_detg(fsp.psi) * rmsh.dx \
+                        geo.g_c(fsp.psi, fsp.nu)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) \
+                        - 2.0 * fsp.mu * ((fsp.mu ** 2) - geo.K(fsp.psi, fsp.nu)) * fsp.nu_psi) + fsp.sigma * fsp.mu * fsp.nu_psi \
+            ) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx \
         - ( \
-                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
+                    (rpam.parameters["kappa"] * (bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_psi * (fsp.mu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
         )
 
-F_mu = ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi) * rmsh.dx
+F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
+F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
-        ((fsp.mu - geo.H(fsp.psi)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+        ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
     )
 
 # total functional for the mixed problem
