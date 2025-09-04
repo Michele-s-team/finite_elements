@@ -38,13 +38,19 @@ i, j, k, l = ufl.indices(4)
 
 
 # first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
-def b(omega):
-    return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i, j))
+def b(omega, nu=None):
+    if nu is None:
+        return as_tensor((normal(omega))[k] * (e(omega)[i, k]).dx(j), (i, j))
+    else:
+        return as_tensor((normal(omega, nu))[k] * (e(omega, nu)[i, k]).dx(j), (i, j))
 
 
 # two-covariant metric tensor: g_{ij}
-def g(omega):
-    return as_tensor(e(omega)[i, k] * e(omega)[j, k], (i, j))
+def g(omega, nu=None):
+    if nu is None:
+        return as_tensor(e(omega)[i, k] * e(omega)[j, k], (i, j))
+    else:
+        return as_tensor(e(omega, nu)[i, k] * e(omega, nu)[j, k], (i, j))
 
 
 # two-contravariant metric tensor: g^{ij}
@@ -130,8 +136,11 @@ def N3d_c_r(mesh, c_r):
 
 
 # Nt_c_r[i] = N_{t \gamma}^i_notes
-def Nt_c_r(mesh, c_r, omega):
-    return as_tensor(g_c(omega)[i, j] * N3d_c_r(mesh, c_r)[k] * e(omega)[j, k], (i))
+def Nt_c_r(mesh, c_r, omega, nu=None):
+    if nu is None:
+        return as_tensor(g_c(omega)[i, j] * N3d_c_r(mesh, c_r)[k] * e(omega)[j, k], (i))
+    else:
+        return as_tensor(g_c(omega)[i, j] * N3d_c_r(mesh, c_r)[k] * e(omega, nu)[j, k], (i))
 
 
 # n_c_r[i] = n_\gamma^i_notes
@@ -157,8 +166,11 @@ Output values:
 '''
 
 
-def from_tangent_to_3D_space(omega, v):
-    return as_tensor(v[i] * e(omega)[i, j], (j))
+def from_tangent_to_3D_space(omega, v, nu=None):
+    if nu is None:
+        return as_tensor(v[i] * e(omega)[i, j], (j))
+    else:
+        return as_tensor(v[i] * e(omega, nu)[i, j], (j))
 
 
 '''
@@ -172,8 +184,11 @@ Return values:
 '''
 
 
-def from_3D_to_tangent_space(omega, V):
-    return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
+def from_3D_to_tangent_space(omega, V, nu=None):
+    if nu is None:
+        return as_tensor(g_c(omega)[i, j] * V[k] * e(omega)[j, k], (i)), (V[l] * normal(omega)[l])
+    else:
+        return as_tensor(g_c(omega)[i, j] * V[k] * e(omega, nu)[j, k], (i)), (V[l] * normal(omega, nu)[l])
 
 
 '''
@@ -188,9 +203,11 @@ Return values:
 '''
 
 
-def from_tangent_normal_to_3D_space(omega, v_t, v_n):
-    return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
-
+def from_tangent_normal_to_3D_space(omega, v_t, v_n, nu = None):
+    if nu is None:
+        return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega)
+    else:
+        return from_tangent_to_3D_space(omega, v_t) + v_n * normal(omega, nu)
 
 '''
 return the shape of a scalar, vector or tensor t
