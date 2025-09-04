@@ -53,32 +53,43 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
 
     # Extract values and coords from CSV
     values_csv = df.iloc[:, :value_size].to_numpy(dtype=float)  # (n_nodes_csv, value_size)
-    coords_csv = df.iloc[:, value_size:value_size + gdim].to_numpy(dtype=float)  # (n_nodes_csv, gdim)
+
+    # FIX: Find coordinate columns that start with ':'
+    coord_cols = [i for i, col in enumerate(df.columns) if str(col).startswith(':')][:gdim]
+    if len(coord_cols) < gdim:
+        # Fallback to old behavior if no ':' columns found
+        coords_csv = df.iloc[:, value_size:value_size + gdim].to_numpy(dtype=float)
+    else:
+        coords_csv = df.iloc[:, coord_cols].to_numpy(dtype=float)
 
     # Get DOF coordinates (one per DOF)
     dof_coords = f.function_space().tabulate_dof_coordinates()
     # Reshape to (n_dofs, gdim)
     dof_coords = dof_coords.reshape((-1, gdim))
 
-    # Extract unique node coords by taking every value_size-th DOF coordinate
-    n_nodes = dof_coords.shape[0] // value_size
-    node_coords = dof_coords[0: n_nodes * value_size: value_size]
-
+    # FIX: For higher-order elements, we need to handle all DOF coordinates directly
     # Build KD-tree on CSV node coords
     tree = cKDTree(coords_csv)
 
-    # Find nearest CSV node for each mesh node coordinate
-    dist, idx = tree.query(node_coords, k=1)
+    # Find nearest CSV node for each DOF coordinate
+    dist, idx = tree.query(dof_coords, k=1)
     if np.max(dist) > tol:
         print(f"Warning: max coordinate mismatch = {np.max(dist):.3e} (tol={tol:.1e})")
 
-    # Prepare vector of values matching DOF ordering (component interleaved)
+    # Prepare vector of values matching DOF ordering
     reordered = np.zeros(dof_coords.shape[0])
 
-    for i_node in range(n_nodes):
-        csv_i = idx[i_node]
-        for comp in range(value_size):
-            dof_i = i_node * value_size + comp
+    if value_size == 1:
+        # Scalar field case
+        for dof_i in range(len(dof_coords)):
+            csv_i = idx[dof_i]
+            reordered[dof_i] = values_csv[csv_i, 0]
+    else:
+        # Vector field case - assign components based on DOF ordering
+        # For interleaved DOFs: [x0, y0, x1, y1, x2, y2, ...]
+        for dof_i in range(len(dof_coords)):
+            csv_i = idx[dof_i]
+            comp = dof_i % value_size
             reordered[dof_i] = values_csv[csv_i, comp]
 
     if reordered.size != f.vector().size():
@@ -92,7 +103,6 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
 
     if constraint is not None:
         constraint.apply(f.vector())
-
 
 '''
 given a function space and its mesh, return a function space on the deformed mesh, deformed according to a displacement field
