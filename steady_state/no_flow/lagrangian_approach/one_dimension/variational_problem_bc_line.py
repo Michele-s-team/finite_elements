@@ -18,10 +18,11 @@ i, j, k, l, alpha = ufl.indices(5)
 
 class nu_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters['nu_const'] * x[0]/(1.0+x[0])
+        values[0] = rpam.parameters['nu_const'] * x[0] / (1.0 + x[0])
 
     def value_shape(self):
         return (1,)
+
 
 class sigma_Expression(UserExpression):
     def eval(self, values, x):
@@ -69,12 +70,6 @@ bcs = [bc_psi_l, bc_psi_r, bc_mu_l, bc_X_l]
 
 # Define variational problem
 
-'''
-F_psi = - 4 * rpam.parameters['kappa'] *  fsp.mu.dx(0).dx(0)  * fsp.nu_psi * rmsh.dx = 
-=  4 * rpam.parameters['kappa'] *  fsp.mu.dx(0)  * fsp.nu_psi.dx(0) * rmsh.dx 
-- 4 * rpam.parameters['kappa'] *  fsp.mu.dx(0)  * fsp.nu_psi * bgeo.facet_normal[0] * rmsh.ds
-
-'''
 
 F_psi = ( \
                     rpam.parameters["kappa"] * ( \
