@@ -67,7 +67,7 @@ fsp.X_exact.interpolate(omega_exact_Expression(element=fsp.Q_X.ufl_element()))
 fsp.mu_exact.interpolate(mu_exact_Expression(element=fsp.Q_mu.ufl_element()))
 '''
 # uncomment this to set the initial profiles from the ODE soltion
-
+#
 print("Reading the initial profiles from file ...")
 fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi.csv')
 fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
@@ -80,6 +80,7 @@ fsp.X_0.interpolate(X_0_Expression(element=fsp.Q_X.ufl_element()))
 
 fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
+# 
 
 '''
 import input_output as io
