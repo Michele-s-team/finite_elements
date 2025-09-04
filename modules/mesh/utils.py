@@ -1552,7 +1552,7 @@ Input values:
 - 'n_intervals': the number of intervals into which the line mesh is divided
 - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
 - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively 
-- 'output_directory' [optional]: the path where the mesh will be written 
+- 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
 - 'metadata' [optional]: the mesh metadata to write in the output directory
 
 Return values: 
@@ -1591,6 +1591,8 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
         '''
         write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
         write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
+
+        io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
         # print mesh metadata
         if metadata is not None:
