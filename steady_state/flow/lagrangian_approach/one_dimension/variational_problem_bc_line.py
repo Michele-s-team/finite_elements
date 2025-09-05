@@ -94,7 +94,6 @@ F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_sigma = (geo.Nabla_v(fsp.v, fsp.psi, fsp.nu)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-# sign
 F_psi = ( \
                     rpam.parameters['rho'] * (fsp.v[i] * fsp.v[k] * geo.b(fsp.psi, fsp.nu)[k, i]) * fsp.nu_psi \
                     - rpam.parameters['rho'] * fsp.w * geo.Nabla_v(geo.vector_times_scalar(fsp.v, fsp.nu_psi), fsp.psi, fsp.nu)[i, i] \
@@ -115,7 +114,9 @@ F_psi = ( \
                     ((bgeo.n_lr(fsp.psi, fsp.nu))[i] * (fsp.mu.dx(i)) * fsp.nu_psi) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
             )
 
+
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+# sign
 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
 
