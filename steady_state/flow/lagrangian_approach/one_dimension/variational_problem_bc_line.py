@@ -57,7 +57,7 @@ print("... done")
 bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
 
 bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_lr']), rmsh.boundary_l)
-
+# sign
 bc_sigma_r = DirichletBC(fsp.Q.sub(2), Constant(rpam.parameters['sigma_r']), rmsh.boundary_r)
 
 bc_psi_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_l"]), rmsh.boundary_l)
