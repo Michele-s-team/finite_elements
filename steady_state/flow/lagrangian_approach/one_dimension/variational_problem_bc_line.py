@@ -16,6 +16,7 @@ cmd.set_gauge('arc_length')
 
 i, j, k, l, alpha = ufl.indices(5)
 
+
 class nu_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters['nu_const']
@@ -48,13 +49,21 @@ class X_0_Expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+
 fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
-
-
 
 # uncomment this to set the initial profiles from the ODE soltion
 #
 print("Reading the initial profiles from file ...")
+fu.set_from_file(fsp.v_0_read, 'solution_ode/v.csv')
+fsp.v_0.interpolate(v_0_Expression(element=fsp.Q_v.ufl_element()))
+
+fu.set_from_file(fsp.w_0_read, 'solution_ode/w.csv')
+fsp.w_0.interpolate(w_0_Expression(element=fsp.Q_w.ufl_element()))
+
+fu.set_from_file(fsp.sigma_0_read, 'solution_ode/sigma.csv')
+fsp.sigma_0.interpolate(sigma_0_Expression(element=fsp.Q_sigma.ufl_element()))
+
 fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi.csv')
 fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
 
@@ -64,7 +73,7 @@ fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
 fu.set_from_file(fsp.X_0_read, 'solution_ode/X.csv')
 fsp.X_0.interpolate(X_0_Expression(element=fsp.Q_X.ufl_element()))
 
-fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+fsp.assigner.assign(fsp.phi, [fsp.v_0, fsp.w_0, fsp.sigma_0, fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
 #
 
@@ -104,7 +113,6 @@ F_v = ( \
                   + (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
           )
 
-
 F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_sigma = (geo.Nabla_v(fsp.v, fsp.psi, fsp.nu)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
@@ -128,7 +136,6 @@ F_psi = ( \
         + 2.0 * rpam.parameters['kappa'] * ( \
                     ((bgeo.n_lr(fsp.psi, fsp.nu))[i] * (fsp.mu.dx(i)) * fsp.nu_psi) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
             )
-
 
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
