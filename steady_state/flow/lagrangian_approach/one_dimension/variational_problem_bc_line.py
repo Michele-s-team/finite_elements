@@ -25,6 +25,30 @@ class nu_Expression(UserExpression):
         return (1,)
 
 
+class v_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.v_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
+
+class w_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.w_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
+
+class sigma_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.sigma_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
+
 class psi_0_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = fsp.psi_0_read(x[0])

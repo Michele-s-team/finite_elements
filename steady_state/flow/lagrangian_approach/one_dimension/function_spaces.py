@@ -74,6 +74,9 @@ X_0 = Function(Q_X)
 
 
 # functions used to store the nodal values read from a list or file
+v_0_read = Function(Q_v)
+w_0_read = Function(Q_w)
+sigma_0_read = Function(Q_sigma)
 psi_0_read = Function(Q_psi)
 mu_0_read = Function(Q_mu)
 X_0_read = Function(Q_X)
