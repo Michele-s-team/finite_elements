@@ -5,6 +5,7 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import command as cmd
 import function_spaces as fsp
+import function as fu
 import differential_geometry.manifold.geometry as geo
 import parameters.read.solution as rpam
 import switch_problem as swi
@@ -22,36 +23,50 @@ class nu_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+
+class psi_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.psi_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
+
+class mu_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.mu_0_read(x[0])
+
+    def value_shape(self):
+        return (1,)
+
+
+class X_0_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = (fsp.X_0_read(x[0]))[0]
+        values[1] = (fsp.X_0_read(x[0]))[1]
+
+    def value_shape(self):
+        return (2,)
+
 fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
 
 
+
 # uncomment this to set the initial profiles from the ODE soltion
-'''
+#
 print("Reading the initial profiles from file ...")
+fu.set_from_file(fsp.psi_0_read, 'solution_ode/psi.csv')
+fsp.psi_0.interpolate(psi_0_Expression(element=fsp.Q_psi.ufl_element()))
 
-fu.set_from_file( fsp.v_0_read, 'solution-ode/v_ode.csv' )
-fsp.v_0.interpolate( v_0_Expression( element=fsp.Q_v.ufl_element() ) )
+fu.set_from_file(fsp.mu_0_read, 'solution_ode/mu.csv')
+fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
 
-fu.set_from_file( fsp.w_0_read, 'solution-ode/w_ode.csv' )
-fsp.w_0.interpolate( w_0_Expression( element=fsp.Q_w.ufl_element() ) )
+fu.set_from_file(fsp.X_0_read, 'solution_ode/X.csv')
+fsp.X_0.interpolate(X_0_Expression(element=fsp.Q_X.ufl_element()))
 
-fu.set_from_file( fsp.sigma_0_read, 'solution-ode/sigma_ode.csv' )
-fsp.sigma_0.interpolate( sigma_0_Expression( element=fsp.Q_sigma.ufl_element() ) )
-
-fu.set_from_file( fsp.psi_0_read, 'solution-ode/psi_ode.csv' )
-fsp.psi_0.interpolate( psi_0_Expression( element=fsp.Q_psi.ufl_element() ) )
-
-fu.set_from_file( fsp.mu_0_read, 'solution-ode/mu_ode.csv' )
-fsp.mu_0.interpolate( mu_0_Expression( element=fsp.Q_mu.ufl_element() ))
-
-fu.set_from_file( fsp.X_0_read, 'solution-ode/X_ode.csv' )
-fsp.X_0.interpolate( X_0_Expression( element=fsp.Q_X.ufl_element() ))
-
-
-#uncomment this if you want to assign to psi the initial profiles stored in v_0, ..., X_0
-fsp.assigner.assign(fsp.psi, [fsp.v_0, fsp.w_0, fsp.sigma_0,  fsp.psi_0,  fsp.mu_0, fsp.X_0])
-print("... done")
-'''
+fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+print('... done')
+#
 
 # boundary conditions (BCs)
 bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
