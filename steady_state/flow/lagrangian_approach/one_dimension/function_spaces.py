@@ -57,12 +57,12 @@ psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)
 X_output = Function(Q_X)
 
-v_exact = Function(Q_v)
-w_exact = Function(Q_w)
-sigma_exact = Function(Q_sigma)
-psi_exact = Function(Q_psi)
-mu_exact = Function(Q_mu)
-X_exact = Function(Q_X)
+# v_exact = Function(Q_v)
+# w_exact = Function(Q_w)
+# sigma_exact = Function(Q_sigma)
+# psi_exact = Function(Q_psi)
+# mu_exact = Function(Q_mu)
+# X_exact = Function(Q_X)
 
 # omega_0, z_0 are used to store the initial conditions
 v_0 = Function(Q_v)
@@ -71,6 +71,15 @@ sigma_0 = Function(Q_sigma)
 psi_0 = Function(Q_psi)
 mu_0 = Function(Q_mu)
 X_0 = Function(Q_X)
+
+
+# functions used to store the nodal values read from a list or file
+v_0_read = Function(Q_v)
+w_0_read = Function(Q_w)
+sigma_0_read = Function(Q_sigma)
+psi_0_read = Function(Q_psi)
+mu_0_read = Function(Q_mu)
+X_0_read = Function(Q_X)
 
 v, w, sigma, psi, mu, X = split(phi)
 assigner = FunctionAssigner(Q, [Q_v, Q_w, Q_sigma, Q_psi, Q_mu, Q_X])

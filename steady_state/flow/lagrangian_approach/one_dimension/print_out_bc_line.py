@@ -19,7 +19,7 @@ print(
     f"\t\t<<|v - v_l|^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure((prout.v_output)[0], rpam.parameters['v_l'][0], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(
-    f"\t\t<<(w - w_lr)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(prout.w_output, rpam.parameters['w_lr'], rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(w - w_lr)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.w_output, rpam.parameters['w_lr'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(
     f"\t\t<<(sigma - sigma_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(prout.sigma_output, rpam.parameters['sigma_r'], rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
