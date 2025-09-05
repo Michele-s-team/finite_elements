@@ -20,7 +20,7 @@ i, j, k, l, alpha = ufl.indices(5)
 class nu_Expression(UserExpression):
     def eval(self, values, x):
         # values[0] = rpam.parameters['nu_const']
-        values[0] = 2 * x[0]
+        values[0] = x[0]**2/(1+x[0])
 
     def value_shape(self):
         return (1,)
@@ -98,7 +98,7 @@ fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
 fu.set_from_file(fsp.X_0_read, 'solution_ode/X.csv')
 fsp.X_0.interpolate(X_0_Expression(element=fsp.Q_X.ufl_element()))
 
-# fsp.assigner.assign(fsp.phi, [fsp.v_0, fsp.w_0, fsp.sigma_0, fsp.psi_0, fsp.mu_0, fsp.X_0])
+fsp.assigner.assign(fsp.phi, [fsp.v_0, fsp.w_0, fsp.sigma_0, fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
 #
 
