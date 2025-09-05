@@ -74,7 +74,7 @@ fsp.mu_0.interpolate(mu_0_Expression(element=fsp.Q_mu.ufl_element()))
 fu.set_from_file(fsp.X_0_read, 'solution_ode/X.csv')
 fsp.X_0.interpolate(X_0_Expression(element=fsp.Q_X.ufl_element()))
 
-fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+# fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
 # 
 
@@ -116,7 +116,7 @@ F_psi = ( \
 
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * rmsh.dx
+F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
