@@ -57,7 +57,6 @@ print("... done")
 bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
 
 bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_lr']), rmsh.boundary_l)
-# sign
 bc_sigma_r = DirichletBC(fsp.Q.sub(2), Constant(rpam.parameters['sigma_r']), rmsh.boundary_r)
 
 bc_psi_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_l"]), rmsh.boundary_l)
@@ -89,10 +88,13 @@ F_v = ( \
       - 2.0 * rpam.parameters['eta'] * ( \
                   + (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
           )
+
+
 F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_sigma = (geo.Nabla_v(fsp.v, fsp.psi, fsp.nu)[i, i] - 2.0 * fsp.mu * fsp.w) * fsp.nu_sigma * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
+# sign
 F_psi = ( \
                     rpam.parameters['rho'] * (fsp.v[i] * fsp.v[k] * geo.b(fsp.psi, fsp.nu)[k, i]) * fsp.nu_psi \
                     - rpam.parameters['rho'] * fsp.w * geo.Nabla_v(geo.vector_times_scalar(fsp.v, fsp.nu_psi), fsp.psi, fsp.nu)[i, i] \
