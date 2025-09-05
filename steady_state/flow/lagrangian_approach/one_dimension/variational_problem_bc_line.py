@@ -124,6 +124,6 @@ F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
     )
 
-# sign
 # total functional for the mixed problem
 F = (F_v + F_w + F_sigma + F_psi + F_mu + F_X) + F_N
+# sign
