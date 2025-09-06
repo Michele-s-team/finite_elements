@@ -16,16 +16,31 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import function as fu
+import input_output as io
+import mesh.load as lmsh
+import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-class z_0_Expression( UserExpression ):
-    def eval(self, values, x):
 
-        values[0] = fsp.z_0_read( x[0], x[1] )
+class u_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = fsp.u_read(x[0], x[1])
 
     def value_shape(self):
         return (1,)
+
+
+fu.set_from_file(fsp.u_read, io.add_trailing_slash(rarg.args.solution_in_directory) + 'u.csv')
+fsp.u.interpolate(u_Expression(element=fsp.Q_u.ufl_element()))
+
+io.full_print(fsp.u, 'u',
+              rarg.args.output_directory,
+              rarg.args.output_directory,
+              rarg.args.output_directory,
+              rarg.args.output_directory,
+              lmsh.mesh, 'scalar')
 
 print('... done.')
