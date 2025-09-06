@@ -32,7 +32,7 @@ omega_R_const = (rmsh.parameters["R"]) * rpam.parameters["zp_R_const"] / np.sqrt
 class SurfaceTensionExpression( UserExpression ):
     def eval(self, values, x):
         values[0] =  rpam.parameters["sigma_const"]
-        # values[0] = ((2 + rpam.parameters["C"]**2) * rpam.parameters["kappa"]) / (2 * (1 + rpam.parameters["C"]**2) * geo.my_norm(x)**2)
+        # values[0] = ((2 + rpam.parameters["C"]**2) * rpam.parameters["kappa"]) / (2 * (1 + rpam.parameters["C"]**2) * geo.np.linalg.norm(x)**2)
 
     def value_shape(self):
         return (1,)
@@ -40,7 +40,7 @@ class SurfaceTensionExpression( UserExpression ):
 
 class z_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters["C"] * geo.my_norm( x )
+        values[0] = rpam.parameters["C"] * geo.np.linalg.norm( x )
 
     def value_shape(self):
         return (1,)
@@ -48,8 +48,8 @@ class z_exact_Expression( UserExpression ):
 
 class omega_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters["C"] * x[0] / (geo.my_norm( x ))
-        values[1] = rpam.parameters["C"] * x[1] / (geo.my_norm( x ))
+        values[0] = rpam.parameters["C"] * x[0] / (geo.np.linalg.norm( x ))
+        values[1] = rpam.parameters["C"] * x[1] / (geo.np.linalg.norm( x ))
 
     def value_shape(self):
         return (2,)
@@ -57,7 +57,7 @@ class omega_exact_Expression( UserExpression ):
 
 class mu_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters["C"] / (2.0 * np.sqrt( 1.0 + rpam.parameters["C"] ** 2 ) * geo.my_norm( x ))
+        values[0] = rpam.parameters["C"] / (2.0 * np.sqrt( 1.0 + rpam.parameters["C"] ** 2 ) * geo.np.linalg.norm( x ))
 
     def value_shape(self):
         return (1,)
@@ -65,7 +65,7 @@ class mu_exact_Expression( UserExpression ):
 
 class tau_exact_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters["C"] / (2.0 * ((1.0 + rpam.parameters["C"] ** 2) * (geo.my_norm( x )) ** 2) ** (3.0 / 2.0))
+        values[0] = rpam.parameters["C"] / (2.0 * ((1.0 + rpam.parameters["C"] ** 2) * (geo.np.linalg.norm( x )) ** 2) ** (3.0 / 2.0))
 
     def value_shape(self):
         return (1,)
@@ -114,8 +114,8 @@ class z_0_Expression( UserExpression ):
 class omega_0_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.my_norm(x)
-        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.my_norm(x)
+        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.np.linalg.norm(x)
+        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.np.linalg.norm(x)
 
     def value_shape(self):
         return (2,)

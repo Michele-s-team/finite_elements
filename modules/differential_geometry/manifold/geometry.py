@@ -11,10 +11,6 @@ X = None
 
 
 
-# euclidean  norm of vector x
-def my_norm(x):
-    return (sqrt(np.dot(x, x)))
-
 
 '''
 compute the norm of an ufl vector

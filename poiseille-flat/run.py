@@ -97,7 +97,7 @@ class FunctionTestIntegrals( UserExpression ):
     def eval(self, values, x):
         c_test = [0.3, 0.76]
         r_test = 0.345
-        values[0] = np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test)**2.0
+        values[0] = np.cos(geo.np.linalg.norm(np.subtract(x, c_test)) - r_test)**2.0
     def value_shape(self):
         return (1,)
 
@@ -145,7 +145,7 @@ class SurfaceTensionExpression(UserExpression):
 #analytical expression for a general scalar function
 class ScalarFunctionExpression(UserExpression):
     def eval(self, values, x):
-        values[0] = cos(my_norm(np.subtract(x, c_r)) - r) * cos(my_norm(np.subtract(x, c_R)) - R)
+        values[0] = cos(np.linalg.norm(np.subtract(x, c_r)) - r) * cos(np.linalg.norm(np.subtract(x, c_R)) - R)
     def value_shape(self):
         return (1,)
 
