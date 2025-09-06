@@ -80,7 +80,7 @@ def Nn_tb(omega, nu=None):
 
 # n^i_notes on \partial \Omega_in and out
 def n_lr(omega, nu=None):
-    return as_tensor((Nt_lr(omega, nu))[k] / sqrt(geo.g(omega, nu)[i, j] * (Nt_lr(omega, nu))[i] * (Nt_lr(omega, nu))[j]), (k))
+    return as_tensor(geo.normalize(Nt_lr(omega, nu), omega, nu))
 
 
 def n_tb(omega, nu=None):
