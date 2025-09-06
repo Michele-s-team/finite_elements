@@ -44,4 +44,4 @@ Return values:
     - n^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
 '''
 def n_lr(psi, nu):
-    return as_tensor((Nt_lr(psi, nu))[k] / sqrt(geo.g(psi, nu)[i, j] * (Nt_lr(psi, nu))[i] * (Nt_lr(psi, nu))[j]), (k))
+    return as_tensor(geo.normalize(Nt_lr(psi, nu), psi, nu))
