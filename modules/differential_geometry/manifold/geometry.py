@@ -2,15 +2,11 @@ from fenics import *
 import ufl as ufl
 import numpy as np
 
-
 # Global variables which will be set according to the gauge choice
 e = None
 K = None
 normal = None
 X = None
-
-
-
 
 '''
 compute the norm of an ufl vector
@@ -30,7 +26,6 @@ epsilon = ufl.PermutationSymbol(2)
 # definition of scalar, vectorial and tensorial quantities
 # latin indexes run on 2d curvilinear coordinates
 i, j, k, l = ufl.indices(4)
-
 
 
 # first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
@@ -200,3 +195,15 @@ Return values:
 def shape(t):
     shape = t.function_space().ufl_element().value_shape()
     return [1] if shape == () else list(shape)
+
+'''
+return a vector normalized according to a metric
+Input values: 
+    - 'v': the vector in the tangent bundle of the manifold, v[i] = v^i
+    - 'omega': the field which serves as argument for the metric, e.g., the one-form omega_i, the gradient of z, or the angle psi
+    - 'nu': the function specifying the gauge, defined, for example, by e_1^alpha e_1^alpha = nu^2 for the arc-length gauge
+Return values: 
+    - v^k/sqrt(g_{ij} v^i v^j )
+'''
+def normalize(v, omega, nu=None):
+    return as_tensor(v[k] / sqrt(g(omega, nu)[i, j] * v[i] * v[j]), (k))
