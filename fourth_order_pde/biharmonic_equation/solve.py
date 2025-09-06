@@ -84,7 +84,7 @@ h = 1.0
 # read an object with label subdomain_id from xdmf file and assign to it the ds `ds_inner`
 
 #  norm of vector x
-# def my_norm(x):
+# def np.linalg.norm(x):
 #     return (sqrt( np.dot( x, x ) ))
 
 
@@ -119,7 +119,7 @@ ds = ds_l + ds_r + ds_t + ds_b
 #     def eval(self, values, x):
 #         c_test = [0.3, 0.76]
 #         r_test = 0.345
-#         values[0] = cos( my_norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
+#         values[0] = cos( np.linalg.norm( np.subtract( x, c_test ) ) - r_test ) ** 2.0
 #
 #     def value_shape(self):
 #         return (1,)

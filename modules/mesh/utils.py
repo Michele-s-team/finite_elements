@@ -253,7 +253,7 @@ def boundary_points(mesh):
 
     # print("Degrees of freedom on the boundary:")
     # for degree_of_freedom in degrees_of_freedom:
-    # print(f"\t{x[degree_of_freedom]}, {geo.my_norm( x[degree_of_freedom])}")
+    # print(f"\t{x[degree_of_freedom]}, {geo.np.linalg.norm( x[degree_of_freedom])}")
 
     return x
 
@@ -288,7 +288,7 @@ def bulk_points(mesh):
 
     # print("Degrees of freedom on the boundary:")
     # for degree_of_freedom in degrees_of_freedom:
-    # print(f"\t{x[degree_of_freedom]}, {geo.my_norm( x[degree_of_freedom])}")
+    # print(f"\t{x[degree_of_freedom]}, {geo.np.linalg.norm( x[degree_of_freedom])}")
 
     return x
 
@@ -299,7 +299,7 @@ def boundary_points_circle(mesh, r, R, c):
 
     x = []
     for point in points:
-        if ((geo.my_norm(point - c) > r) and (geo.my_norm(point - c) < R)):
+        if ((geo.np.linalg.norm(point - c) > r) and (geo.np.linalg.norm(point - c) < R)):
             x.append(point)
 
     # csvfile = open( "test_boundary_points_circle.csv", "w" )

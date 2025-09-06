@@ -28,8 +28,8 @@ print( f"\t\t<<(sigma - sigma_R)^2>>_[partial Omega R] = {col.Fore.RED}{msh.diff
 
 class v_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['v_r_const'] * x[0] / geo.my_norm(x)
-        values[1] = rpam.parameters['v_r_const'] * x[1] / geo.my_norm(x)
+        values[0] = rpam.parameters['v_r_const'] * x[0] / geo.np.linalg.norm(x)
+        values[1] = rpam.parameters['v_r_const'] * x[1] / geo.np.linalg.norm(x)
 
     def value_shape(self):
         return (2,)
@@ -67,8 +67,8 @@ class omega_R_Expression( UserExpression ):
 class v_0_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = fsp.v_0_r_read( x[0], x[1] ) * x[0] / geo.my_norm( x )
-        values[1] = fsp.v_0_r_read( x[0], x[1] ) * x[1] / geo.my_norm( x )
+        values[0] = fsp.v_0_r_read( x[0], x[1] ) * x[0] / geo.np.linalg.norm( x )
+        values[1] = fsp.v_0_r_read( x[0], x[1] ) * x[1] / geo.np.linalg.norm( x )
 
     def value_shape(self):
         return (2,)
@@ -100,8 +100,8 @@ class z_0_Expression( UserExpression ):
 class omega_0_Expression( UserExpression ):
     def eval(self, values, x):
 
-        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.my_norm(x)
-        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.my_norm(x)
+        values[0] = fsp.omega_0_r_read(x[0], x[1]) * x[0] / geo.np.linalg.norm(x)
+        values[1] = fsp.omega_0_r_read(x[0], x[1]) * x[1] / geo.np.linalg.norm(x)
 
     def value_shape(self):
         return (2,)

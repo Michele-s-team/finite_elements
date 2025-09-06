@@ -22,7 +22,7 @@ Q = FunctionSpace(lmsh.mesh, 'P', 2)
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 def function_test_integrals(x):
-    return (np.cos(geo.my_norm(np.subtract(x, c_test)) - r_test) ** 2.0)
+    return (np.cos(geo.np.linalg.norm(np.subtract(x, c_test)) - r_test) ** 2.0)
 
 
 # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
