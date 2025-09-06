@@ -80,12 +80,12 @@ def Nn_tb(omega, nu=None):
 
 # n^i_notes on \partial \Omega_in and out
 def n_lr(omega, nu=None):
-    return as_tensor(geo.normalize(Nt_lr(omega, nu), omega, nu))
+    return geo.normalize(Nt_lr(omega, nu), omega, nu)
 
 
 def n_tb(omega, nu=None):
-    return as_tensor((Nt_tb(omega, nu))[k] / sqrt(geo.g(omega, nu)[i, j] * (Nt_tb(omega, nu))[i] * (Nt_tb(omega, nu))[j]), (k))
+    return geo.normalize(Nt_tb(omega, nu), omega, nu)
 
 
 def n_circle(omega, nu=None):
-    return as_tensor((Nt_circle(omega, nu))[k] / sqrt(geo.g(omega, nu)[i, j] * (Nt_circle(omega, nu))[i] * (Nt_circle(omega, nu))[j]), (k))
+    return geo.normalize(Nt_circle(omega, nu), omega, nu)
