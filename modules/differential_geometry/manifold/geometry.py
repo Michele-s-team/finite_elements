@@ -127,8 +127,7 @@ def Nt_c_r(mesh, c_r, omega, nu=None):
 
 # n_c_r[i] = n_\gamma^i_notes
 def n_c_r(mesh, c_r, omega, nu=None):
-    return as_tensor((Nt_c_r(mesh, c_r, omega, nu))[k] / sqrt(g(omega, nu)[i, j] * (Nt_c_r(mesh, c_r, omega, nu))[i] * (Nt_c_r(mesh, c_r, omega, nu))[j]), (k))
-
+    return normalize(Nt_c_r(mesh, c_r, omega, nu), omega, nu)
 
 def f_to_v(f, omega, nu=None):
     return as_tensor(g_c(omega, nu)[i, j] * f[j], (i))
