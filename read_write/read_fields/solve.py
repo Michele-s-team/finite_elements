@@ -15,9 +15,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import input_output as io
-import mesh.load as lmsh
-import runtime_arguments as rarg
+import function_spaces as fsp
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
