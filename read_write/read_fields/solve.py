@@ -20,6 +20,12 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
+class z_0_Expression( UserExpression ):
+    def eval(self, values, x):
 
+        values[0] = fsp.z_0_read( x[0], x[1] )
+
+    def value_shape(self):
+        return (1,)
 
 print('... done.')
