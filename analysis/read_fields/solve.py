@@ -4,7 +4,7 @@ Run with
     clear; clear; python3 run.py [path of mesh] [path of file to read] [path of file to write]
 
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; INPUT_PATH="/home/fenics/shared/read_write/read_fields/input"; SOLUTION_PATH="/home/fenics/shared/read_write/read_fields/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square $MESH_PATH $INPUT_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; INPUT_PATH="/home/fenics/shared/analysis/read_fields/input"; SOLUTION_PATH="/home/fenics/shared/analysis/read_fields/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square $MESH_PATH $INPUT_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -25,16 +25,21 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 
 
-class u_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = fsp.u_read(x[0], x[1])
+def read_from_file(file_path, u):
 
-    def value_shape(self):
-        return (1,)
+    u_dummy = Function(u.function_space())
 
+    class Expression(UserExpression):
+        def eval(self, values, x):
+            values[0] = u_dummy(x)
 
-fu.set_from_file(fsp.u_read, io.add_trailing_slash(rarg.args.solution_in_directory) + 'u.csv')
-fsp.u.interpolate(u_Expression(element=fsp.Q_u.ufl_element()))
+        def value_shape(self):
+            return (1,)
+
+    fu.set_from_file(u_dummy, file_path)
+    u.interpolate(Expression(element=u.function_space().ufl_element()))
+
+read_from_file(io.add_trailing_slash(rarg.args.solution_in_directory) + 'u.csv', fsp.u)
 
 io.full_print(fsp.u, 'u',
               rarg.args.output_directory,
