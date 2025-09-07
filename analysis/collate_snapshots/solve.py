@@ -4,8 +4,8 @@ Run with
     clear; clear; python3 run.py [path of mesh] [path of solution to be read] [path of solution to write]  [increment with which to step from one .h5 file to the next one]
 
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py square $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH
-    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/read_write/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py box_ball $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/analysis/collate_snapshots/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py square $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_IN_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution/snapshots/h5"; SOLUTION_OUT_PATH="/home/fenics/shared/analysis/collate_snapshots/solution"; rm -rf $SOLUTION_OUT_PATH; python3 solve.py box_ball $MESH_PATH $SOLUTION_IN_PATH $SOLUTION_OUT_PATH
 '''
 
 from fenics import *

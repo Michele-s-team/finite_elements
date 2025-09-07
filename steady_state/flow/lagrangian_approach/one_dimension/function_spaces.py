@@ -57,12 +57,6 @@ psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)
 X_output = Function(Q_X)
 
-# v_exact = Function(Q_v)
-# w_exact = Function(Q_w)
-# sigma_exact = Function(Q_sigma)
-# psi_exact = Function(Q_psi)
-# mu_exact = Function(Q_mu)
-# X_exact = Function(Q_X)
 
 # omega_0, z_0 are used to store the initial conditions
 v_0 = Function(Q_v)
