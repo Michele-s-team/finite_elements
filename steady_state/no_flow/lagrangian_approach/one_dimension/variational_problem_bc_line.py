@@ -17,14 +17,6 @@ cmd.set_gauge('arc_length')
 i, j, k, l, alpha = ufl.indices(5)
 
 
-class nu_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['nu_const']*x[0]**3/(1.0+x[0]**2)
-
-    def value_shape(self):
-        return (1,)
-
-
 class sigma_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters["sigma_const"]
@@ -33,18 +25,14 @@ class sigma_Expression(UserExpression):
         return (1,)
 
 
-
-
 fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
-fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
-
 
 # uncomment this to set the initial profiles from the ODE soltion
 #
 print("Reading the initial profiles from file ...")
 fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
-fu.read_from_file( 'solution_ode/mu.csv', fsp.mu_0)
-fu.read_from_file( 'solution_ode/X.csv', fsp.X_0)
+fu.read_from_file('solution_ode/mu.csv', fsp.mu_0)
+fu.read_from_file('solution_ode/X.csv', fsp.X_0)
 
 # fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
@@ -57,10 +45,10 @@ print("... done")
 
 bc_psi_l = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_l"]), rmsh.boundary_l)
 bc_psi_r = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
-bc_mu_l = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters["mu_l"]), rmsh.boundary_l)
 bc_X_l = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
+bc_X_r = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_r"][0], rpam.parameters["X_r"][1])), rmsh.boundary_r)
 
-bcs = [bc_psi_l, bc_psi_r, bc_mu_l, bc_X_l]
+bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X_r]
 
 # Define variational problem
 
@@ -77,6 +65,8 @@ F_psi = ( \
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+
+F_nu = (fsp.nu.dx(0) * fsp.nu_nu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
