@@ -124,8 +124,11 @@ def read_from_file(file_path, u):
     class Expression(UserExpression):
         def eval(self, values, x):
 
-            for i in range(n_components):
-                values[i] = (u_dummy(x))[i]
+            if n_components == 1:
+                values[0] = u_dummy(x)
+            else:
+                for i in range(n_components):
+                    values[i] = (u_dummy(x))[i]
 
         def value_shape(self):
             return (n_components,)
