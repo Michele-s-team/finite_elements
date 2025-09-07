@@ -112,12 +112,14 @@ Input values:
 - 'u': the field where the read values will be stored
 - 'type': the type of field to be read, e.g., 'scalar' or 'vector'. In this method, the number of components of the vector needs not match the dimension of the mesh
 '''
-def read_from_file(file_path, u, type):
+def read_from_file(file_path, u):
 
     u_dummy = Function(u.function_space())
 
     # obtain the number of components of u
     n_components = u.function_space().ufl_element().value_size()
+
+    print(f'number of components = {n_components}')
 
     class Expression(UserExpression):
         def eval(self, values, x):
