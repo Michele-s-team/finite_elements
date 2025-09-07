@@ -33,8 +33,9 @@ print("Reading the initial profiles from file ...")
 fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
 fu.read_from_file('solution_ode/mu.csv', fsp.mu_0)
 fu.read_from_file('solution_ode/X.csv', fsp.X_0)
+fu.read_from_file('solution_ode/nu.csv', fsp.nu_0)
 
-# fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0, fsp.nu_0])
 print('... done')
 # 
 
@@ -45,10 +46,14 @@ print("... done")
 
 bc_psi_l = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_l"]), rmsh.boundary_l)
 bc_psi_r = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
+
 bc_X_l = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
 bc_X_r = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_r"][0], rpam.parameters["X_r"][1])), rmsh.boundary_r)
 
-bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X_r]
+bc_nu_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["nu_l"]), rmsh.boundary_l)
+
+
+bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X_r, bc_nu_l]
 
 # Define variational problem
 
@@ -66,7 +71,8 @@ F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, 
 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_nu = (fsp.nu.dx(0) * fsp.nu_nu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+F_nu = (fsp.nu.dx(0) * fsp.nu_nu.dx(0)) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx \
+       - ((bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_nu * (fsp.nu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
@@ -74,4 +80,4 @@ F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     )
 
 # total functional for the mixed problem
-F = (F_psi + F_mu + F_X) + F_N
+F = (F_psi + F_mu + F_X + F_nu) + F_N
