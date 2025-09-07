@@ -174,4 +174,3 @@ F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
 
 # total functional for the mixed problem
 F = (F_v + F_w + F_sigma + F_psi + F_mu + F_X) + F_N
-# sign
