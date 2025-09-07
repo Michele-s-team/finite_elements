@@ -51,11 +51,6 @@ mu_exact = Function(Q_mu)
 X_exact = Function(Q_X)
 
 
-# functions used to store the nodal values read from a list or file
-psi_0_read = Function(Q_psi)
-mu_0_read = Function(Q_mu)
-X_0_read = Function(Q_X)
-
 
 # omega_0, z_0 are used to store the initial conditions
 psi_0 = Function(Q_psi)
