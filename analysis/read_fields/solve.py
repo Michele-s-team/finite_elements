@@ -24,22 +24,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-
-def read_from_file(file_path, u):
-
-    u_dummy = Function(u.function_space())
-
-    class Expression(UserExpression):
-        def eval(self, values, x):
-            values[0] = u_dummy(x)
-
-        def value_shape(self):
-            return (1,)
-
-    fu.set_from_file(u_dummy, file_path)
-    u.interpolate(Expression(element=u.function_space().ufl_element()))
-
-read_from_file(io.add_trailing_slash(rarg.args.solution_in_directory) + 'u.csv', fsp.u)
+fu.read_from_file(io.add_trailing_slash(rarg.args.solution_in_directory) + 'u.csv', fsp.u)
 
 io.full_print(fsp.u, 'u',
               rarg.args.output_directory,
