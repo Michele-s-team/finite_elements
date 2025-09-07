@@ -23,17 +23,17 @@ import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-'''
+
 fu.read_from_file(io.add_trailing_slash(rarg.args.solution_in_directory) + 'u.csv', fsp.u)
+fu.read_from_file(io.add_trailing_slash(rarg.args.solution_in_directory) + 'v.csv', fsp.v)
+
+
 io.full_print(fsp.u, 'u',
               rarg.args.output_directory,
               rarg.args.output_directory,
               rarg.args.output_directory,
               rarg.args.output_directory,
               lmsh.mesh, 'scalar')
-'''
-
-fu.read_from_file(io.add_trailing_slash(rarg.args.solution_in_directory) + 'v.csv', fsp.v)
 io.full_print(fsp.v, 'v',
               rarg.args.output_directory,
               rarg.args.output_directory,
