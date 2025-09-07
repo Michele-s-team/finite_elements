@@ -110,17 +110,23 @@ read a field stored in a csv file
 Input values: 
 - 'file_path': the path to the csv file, including folder, namefile and extension
 - 'u': the field where the read values will be stored
+- 'type': the type of field to be read, e.g., 'scalar' or 'vector'. In this method, the number of components of the vector needs not match the dimension of the mesh
 '''
-def read_from_file(file_path, u):
+def read_from_file(file_path, u, type):
 
     u_dummy = Function(u.function_space())
 
+    # obtain the number of components of u
+    n_components = u.function_space().ufl_element().value_size()
+
     class Expression(UserExpression):
         def eval(self, values, x):
-            values[0] = u_dummy(x)
+
+            for i in range(n_components):
+                values[i] = (u_dummy(x))[i]
 
         def value_shape(self):
-            return (1,)
+            return (n_components,)
 
     set_from_file(u_dummy, file_path)
     u.interpolate(Expression(element=u.function_space().ufl_element()))
