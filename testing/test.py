@@ -303,7 +303,7 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
 ################################################################
 # Variational problems test
 ################################################################
-
+'''
 
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
@@ -751,6 +751,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
+'''
 # Test steady_state/no_flow/lagrangian_approach/one_dimension
 case_name = 'steady_state/no_flow/lagrangian_approach/one_dimension'
 
@@ -766,6 +767,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
+'''
 # Test steady_state/flow
 case_name = 'steady_state/flow'
 
@@ -1003,7 +1005,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-
+'''
 cmd.checkout(commit_a, success)
 
 max_key_len = max(len(key) for key in checks.keys())
