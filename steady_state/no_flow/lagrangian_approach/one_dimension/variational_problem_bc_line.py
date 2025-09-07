@@ -46,23 +46,11 @@ fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
 fu.read_from_file( 'solution_ode/mu.csv', fsp.mu_0)
 fu.read_from_file( 'solution_ode/X.csv', fsp.X_0)
 
-fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+# fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
 # 
 
-'''
-import input_output as io
-import solution_paths as solpath
-import mesh.load as lmsh
 
-io.full_print(fsp.X_0, 'X_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'vector')
-io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
-
-'''
 print("... done")
 
 # boundary conditions (BCs)
