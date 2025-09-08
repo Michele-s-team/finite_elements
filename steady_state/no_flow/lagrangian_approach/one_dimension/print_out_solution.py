@@ -38,5 +38,11 @@ io.full_print(nu_output, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, sol
               solpath.nodal_values_path,
               lmsh.mesh, 'scalar')
 
+
+# geo.e(fsp.psi, fsp.nu)[0, alpha]
+io.full_print(project((fsp.X[0].dx(0) - geo.e(fsp.psi, fsp.nu)[0, 0]), fsp.Q_psi), 'err_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path, lmsh.mesh,
+              'scalar')
+
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
                                 io.merge_dictionaries(rmsh.parameters, rpam.parameters))
