@@ -46,7 +46,7 @@ fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
 fu.read_from_file( 'solution_ode/mu.csv', fsp.mu_0)
 fu.read_from_file( 'solution_ode/X.csv', fsp.X_0)
 
-# fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
+fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
 # 
 
