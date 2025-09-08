@@ -1,3 +1,11 @@
+'''
+this variational problem solves the Poisson equation with Dirichlet BCs
+
+u = u_D on \partial \Omega
+
+by imposing the BCs with Nitsche's method.
+'''
+
 from fenics import *
 import importlib
 import numpy as np
@@ -33,11 +41,13 @@ class laplacian_u_expression(UserExpression):
         return (1,)
 
 
-fsp.f.interpolate(laplacian_u_expression(element=fsp.V.ufl_element()))
-fsp.u_D.interpolate(u_expression(element=fsp.V.ufl_element()))
+fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
+fsp.u_D.interpolate(u_expression(element=fsp.Q.ufl_element()))
+
+bcs = []
 
 # this is the ordinary variational functional
-F_0 = dot(grad(fsp.u), grad(fsp.v)) * rmsh.dx + fsp.f * fsp.v * rmsh.dx + (- bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.v) * rmsh.ds
+F_0 = dot(grad(fsp.u), grad(fsp.nu_u)) * rmsh.dx + fsp.f * fsp.nu_u * rmsh.dx + (- bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u) * rmsh.ds
 # this is the term that enforces the BCs with Nitche's method
-F_N = ((+ rpam.parameters['alpha'] / h * (fsp.u - fsp.u_D)) * fsp.v - bgeo.facet_normal[i] * (fsp.v.dx(i)) * (fsp.u - fsp.u_D)) * rmsh.ds
+F_N = ((+ rpam.parameters['alpha'] / h * (fsp.u - fsp.u_D)) * fsp.nu_u - bgeo.facet_normal[i] * (fsp.nu_u.dx(i)) * (fsp.u - fsp.u_D)) * rmsh.ds
 F = F_0 + F_N

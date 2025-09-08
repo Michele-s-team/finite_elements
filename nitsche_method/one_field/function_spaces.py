@@ -1,11 +1,14 @@
 from fenics import *
 
 import mesh.load as lmsh
+import parameters.read.solution as rpam
 
-V = FunctionSpace(lmsh.mesh, 'P', 8)
+Q = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
 
 # Define variational problem
-u = Function(V)
-u_D = Function(V)
-v = TestFunction(V)
-f = Function(V)
+u = Function(Q)
+u_D = Function(Q)
+nu_u = TestFunction(Q)
+f = Function(Q)
+
+J_u = TrialFunction(Q)
