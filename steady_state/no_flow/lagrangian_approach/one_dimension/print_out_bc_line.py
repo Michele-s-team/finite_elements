@@ -19,7 +19,14 @@ print(
     f"\t\t<<(psi - psi_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.psi_output, rpam.parameters['psi_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
     f"\t\t<<(psi - psi_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(prout.psi_output, rpam.parameters['psi_r'], rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-# print(
-#     f"\t\t<<(mu - mu_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.mu_output, rpam.parameters['mu_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
 print(
     f"\t\t<<|X - X_l|^2>>_[partial Omega l] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.X_output[0] - rpam.parameters['X_l'][0]) * (prout.X_output[0] - rpam.parameters['X_l'][0]) + (prout.X_output[1] - rpam.parameters['X_l'][1]) * (prout.X_output[1] - rpam.parameters['X_l'][1])), rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(
+    f"\t\t<<|X - X_r|^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.X_output[0] - rpam.parameters['X_r'][0]) * (prout.X_output[0] - rpam.parameters['X_r'][0]) + (prout.X_output[1] - rpam.parameters['X_r'][1]) * (prout.X_output[1] - rpam.parameters['X_r'][1])), rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+print(
+    f"\t\t<<(nu - nu_l)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(prout.nu_output, rpam.parameters['nu_l'], rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(
+    f"\t\t<<(nu - nu_r)^2>>_[partial Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(prout.nu_output, rpam.parameters['nu_r'], rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
