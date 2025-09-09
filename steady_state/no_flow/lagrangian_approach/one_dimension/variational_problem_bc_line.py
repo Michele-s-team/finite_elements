@@ -45,12 +45,11 @@ bc_psi_l = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_l"]), rmsh.bo
 bc_psi_r = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
 
 bc_X_l = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
-bc_X_r = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_r"][0], rpam.parameters["X_r"][1])), rmsh.boundary_r)
+bc_X1_r = DirichletBC(fsp.Q.sub(2).sub(0), Constant(rpam.parameters["X_r"][0]), rmsh.boundary_r)
 
 bc_nu_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["nu_l"]), rmsh.boundary_l)
-bc_nu_r = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["nu_r"]), rmsh.boundary_r)
 
-bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X_r, bc_nu_l, bc_nu_r]
+bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X1_r, bc_nu_l]
 
 # Define variational problem
 
