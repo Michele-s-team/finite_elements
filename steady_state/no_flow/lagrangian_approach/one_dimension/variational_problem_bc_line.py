@@ -73,8 +73,9 @@ F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(i) * fsp.nu_nu.dx(i))
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-    # this term constraints X1 = X1_r on te r boundary
-    + (fsp.X[1] - rpam.parameters['X_r'][1]) * fsp.nu_X[1] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+        + (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+        # this term constraints X1 = X1_r on te r boundary
+        + (fsp.X[1] - rpam.parameters['X_r'][1]) * fsp.nu_X[1] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
 )
 
 # total functional for the mixed problem
