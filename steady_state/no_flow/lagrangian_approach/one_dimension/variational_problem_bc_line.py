@@ -45,11 +45,12 @@ bc_psi_l = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_l"]), rmsh.bo
 bc_psi_r = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
 
 bc_X_l = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
-bc_X1_r = DirichletBC(fsp.Q.sub(2).sub(0), Constant(rpam.parameters["X1_r"]), rmsh.boundary_r)
+bc_X1_r = DirichletBC(fsp.Q.sub(2).sub(0), Constant(rpam.parameters["X_r"][0]), rmsh.boundary_r)
+bc_X2_r = DirichletBC(fsp.Q.sub(2).sub(1), Constant(rpam.parameters["X_r"][1]), rmsh.boundary_r)
 
 bc_nu_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["nu_l"]), rmsh.boundary_l)
 
-bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X1_r, bc_nu_l]
+bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X1_r]
 
 # Define variational problem
 
@@ -72,7 +73,8 @@ F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(i) * fsp.nu_nu.dx(i))
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-    # + (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
+    # this term constraints X1 = X1_r on te r boundary
+    + (fsp.X[1] - rpam.parameters['X_r'][1]) * fsp.nu_X[1] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
 )
 
 # total functional for the mixed problem
