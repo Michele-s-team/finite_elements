@@ -54,7 +54,6 @@ bcs = [bc_psi_l, bc_psi_r, bc_X_l, bc_X_r, bc_nu_l, bc_nu_r]
 
 # Define variational problem
 
-
 F_psi = ( \
                     rpam.parameters["kappa"] * ( \
                         geo.g_c(fsp.psi, fsp.nu)[i, j] * (fsp.mu.dx(j)) * (fsp.nu_psi.dx(i)) \
@@ -68,13 +67,13 @@ F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, 
 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_nu = (fsp.nu.dx(0) * fsp.nu_nu.dx(0)) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx \
-       - ((bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_nu * (fsp.nu.dx(i))) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
+# this term penalizes spatial variations of nu, enforcing nu = const
+F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(0) * fsp.nu_nu.dx(0)) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-        + (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
+    # + (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds
 )
 
 # total functional for the mixed problem
