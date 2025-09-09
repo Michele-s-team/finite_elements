@@ -45,7 +45,7 @@ bc_psi_l = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_l"]), rmsh.bo
 bc_psi_r = DirichletBC(fsp.Q.sub(0), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
 
 bc_X_l = DirichletBC(fsp.Q.sub(2), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
-bc_X1_r = DirichletBC(fsp.Q.sub(2).sub(0), Constant(rpam.parameters["X_r"][0]), rmsh.boundary_r)
+bc_X1_r = DirichletBC(fsp.Q.sub(2).sub(0), Constant(rpam.parameters["X1_r"]), rmsh.boundary_r)
 
 bc_nu_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["nu_l"]), rmsh.boundary_l)
 
@@ -67,7 +67,7 @@ F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, 
 F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 # this term penalizes spatial variations of nu, enforcing nu = const
-F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(0) * fsp.nu_nu.dx(0)) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(i) * fsp.nu_nu.dx(i)) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
