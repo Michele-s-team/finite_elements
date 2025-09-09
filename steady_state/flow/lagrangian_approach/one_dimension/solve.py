@@ -38,19 +38,37 @@ J = derivative(vp.F, fsp.phi, fsp.J_phi)
 problem = NonlinearVariationalProblem(vp.F, fsp.phi, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
 
-# set the solver parameters here
-params = {'nonlinear_solver': 'newton',
-          'newton_solver':
-              {
-                  'linear_solver': 'superlu',
-                  # 'linear_solver'           : 'mumps',
-                  # 'linear_solver':   'lu',
-                  'absolute_tolerance': 1e-12,
-                  'relative_tolerance': 1e-12,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
-              }
-          }
+
+# to solve with SNES
+params = {
+    'nonlinear_solver': 'snes',
+    'snes_solver': {
+        'linear_solver': 'superlu',
+        'line_search': 'bt',  # backtracking line search
+        'absolute_tolerance': 1e-6,
+        'relative_tolerance': 1e-6,
+        'maximum_iterations': 1000000,
+        'report': True,
+    }
+}
+
+# Option 1: Use trust region instead of line search
+PETScOptions.clear()
+PETScOptions.set('snes_type', 'newtontr')  # Trust region method
+PETScOptions.set('snes_max_it', 10000)
+PETScOptions.set('snes_monitor')
+
+# Option 2: Use different line search with more aggressive settings
+PETScOptions.set('snes_type', 'newtonls')
+PETScOptions.set('snes_linesearch_type', 'basic')  # Simple line search
+PETScOptions.set('snes_linesearch_damping', 1.0)   # No damping initially
+PETScOptions.set('snes_linesearch_max_it', 50)     # More line search iterations
+
+# Option 3: Disable line search completely (use full Newton steps)
+PETScOptions.set('snes_linesearch_type', 'basic')
+PETScOptions.set('snes_linesearch_damping', 1.0)
+PETScOptions.set('snes_linesearch_max_it', 1)
+
 solver.parameters.update(params)
 
 solver.solve()
