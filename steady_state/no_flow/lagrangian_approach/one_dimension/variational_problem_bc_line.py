@@ -30,9 +30,9 @@ fsp.sigma.interpolate(sigma_Expression(element=fsp.Q_sigma.ufl_element()))
 # uncomment this to set the initial profiles from the ODE soltion
 #
 print("Reading the initial profiles from file ...")
-# fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
-# fu.read_from_file('solution_ode/mu.csv', fsp.mu_0)
-# fu.read_from_file('solution_ode/X.csv', fsp.X_0)
+fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
+fu.read_from_file('solution_ode/mu.csv', fsp.mu_0)
+fu.read_from_file('solution_ode/X.csv', fsp.X_0)
 fu.read_from_file('solution_ode/nu.csv', fsp.nu_0)
 
 fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0, fsp.nu_0])
