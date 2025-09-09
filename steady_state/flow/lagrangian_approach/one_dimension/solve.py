@@ -62,12 +62,12 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_type', 'newtonls')
 PETScOptions.set('snes_linesearch_type', 'basic')  # Simple line search
 PETScOptions.set('snes_linesearch_damping', 1.0)   # No damping initially
-PETScOptions.set('snes_linesearch_max_it', 50)     # More line search iterations
+PETScOptions.set('snes_linesearch_max_it', 10000)     # More line search iterations
 
 # Option 3: Disable line search completely (use full Newton steps)
 PETScOptions.set('snes_linesearch_type', 'basic')
 PETScOptions.set('snes_linesearch_damping', 1.0)
-PETScOptions.set('snes_linesearch_max_it', 1)
+PETScOptions.set('snes_linesearch_max_it', 10000)
 
 solver.parameters.update(params)
 
