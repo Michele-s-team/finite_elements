@@ -37,6 +37,22 @@ J = derivative(vp.F, fsp.phi, fsp.J_phi)
 problem = NonlinearVariationalProblem(vp.F, fsp.phi, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
 
+'''
+# to solve with SNES
+params = {
+    'nonlinear_solver': 'snes',
+    'snes_solver': {
+        'linear_solver': 'mumps',
+        'line_search': 'bt',  # backtracking line search
+        'absolute_tolerance': 1e-6,
+        'relative_tolerance': 1e-6,
+        'maximum_iterations': 1000000,
+        'report': True,
+    }
+}
+
+'''
+
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
