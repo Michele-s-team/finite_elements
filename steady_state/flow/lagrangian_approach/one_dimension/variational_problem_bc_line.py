@@ -1,3 +1,13 @@
+'''
+In this variational problem, we solve for a membrane profile at steady state with flows, by fixing the 'slope' \psi and the position X^\alpha at both ends of the membrane.
+
+To achieve this, the stretch parameter \nu is considered as a variable, and it is solved for by imposing that \partial_1 \nu = 0:
+this is achieved by considering a penalty term G = \alpha/h \int dx (\partial_1 \nu)^2 : the variation of G with respect to \nu is F_nu
+
+The BC (51) in 'Lagrangian approach'  is replaced by the BC X1_r = X1_r_0, and, given that \nu is a constant field we can chose \nu by fixing an additional BC, which is
+ X2_r = X2r_0.
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
