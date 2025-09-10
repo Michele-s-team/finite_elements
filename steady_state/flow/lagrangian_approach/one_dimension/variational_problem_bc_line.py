@@ -1,3 +1,13 @@
+'''
+In this variational problem, we solve for a membrane profile at steady state with flows, by fixing the 'slope' \psi and the position X^\alpha at both ends of the membrane.
+
+To achieve this, the stretch parameter \nu is considered as a variable, and it is solved for by imposing that \partial_1 \nu = 0:
+this is achieved by considering a penalty term G = \alpha/h \int dx (\partial_1 \nu)^2 : the variation of G with respect to \nu is F_nu
+
+The BC (51) in 'Lagrangian approach'  is replaced by the BC X1_r = X1_r_0, and, given that \nu is a constant field we can chose \nu by fixing an additional BC, which is
+ X2_r = X2r_0.
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
@@ -34,6 +44,7 @@ print('... done')
 
 # boundary conditions (BCs)
 bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
+bc_v_r = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_r'])), rmsh.boundary_r)
 
 bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_lr']), rmsh.boundary_l)
 bc_sigma_r = DirichletBC(fsp.Q.sub(2), Constant(rpam.parameters['sigma_r']), rmsh.boundary_r)
@@ -42,8 +53,9 @@ bc_psi_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_l"]), rmsh.bo
 bc_psi_r = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
 
 bc_X_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
+bc_X_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_r"][0], rpam.parameters["X_r"][1])), rmsh.boundary_r)
 
-bcs = [bc_v_l, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_X_l]
+bcs = [bc_v_l, bc_v_r, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_X_l, bc_X_r]
 
 # variational problem
 
@@ -63,9 +75,8 @@ F_v = ( \
                   (fsp.sigma * (bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
           ) \
       - 2.0 * rpam.parameters['eta'] * ( \
-                  (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
-          ) \
-      + (fsp.sigma * (bgeo.n_lr(fsp.psi, fsp.nu))[j] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+                  (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+          )
 
 F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
@@ -101,10 +112,7 @@ F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
         + (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-        # this term constraints X1 = X1_r on te r boundary
-        + (fsp.X[0] - rpam.parameters['X_r'][0]) * fsp.nu_X[0] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
-        + (fsp.X[1] - rpam.parameters['X_r'][1]) * fsp.nu_X[1] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
-)
+     )
 
 # total functional for the mixed problem
 F = (F_v + F_w + F_sigma + F_psi + F_mu + F_X + F_nu) + F_N

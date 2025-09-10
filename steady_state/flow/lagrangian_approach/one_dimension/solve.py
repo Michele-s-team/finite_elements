@@ -52,22 +52,13 @@ params = {
     }
 }
 
-# Option 1: Use trust region instead of line search
 PETScOptions.clear()
-PETScOptions.set('snes_type', 'newtontr')  # Trust region method
-PETScOptions.set('snes_max_it', 10000)
-PETScOptions.set('snes_monitor')
-
-# Option 2: Use different line search with more aggressive settings
 PETScOptions.set('snes_type', 'newtonls')
-PETScOptions.set('snes_linesearch_type', 'basic')  # Simple line search
-PETScOptions.set('snes_linesearch_damping', 1.0)   # No damping initially
-PETScOptions.set('snes_linesearch_max_it', 10000)     # More line search iterations
-
-# Option 3: Disable line search completely (use full Newton steps)
-PETScOptions.set('snes_linesearch_type', 'basic')
-PETScOptions.set('snes_linesearch_damping', 1.0)
-PETScOptions.set('snes_linesearch_max_it', 10000)
+PETScOptions.set('snes_atol', 1e-8)      # Absolute tolerance
+PETScOptions.set('snes_rtol', 1e-8)      # Relative tolerance
+PETScOptions.set('snes_stol', 1e-8)      # Step tolerance
+PETScOptions.set('snes_max_it', 100000)      # Allow more iterations
+PETScOptions.set('snes_monitor')         # Monitor convergence
 
 solver.parameters.update(params)
 
