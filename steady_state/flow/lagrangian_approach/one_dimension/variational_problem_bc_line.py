@@ -34,6 +34,7 @@ print('... done')
 
 # boundary conditions (BCs)
 bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
+bc_v_r = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_r'])), rmsh.boundary_r)
 
 bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_lr']), rmsh.boundary_l)
 bc_sigma_r = DirichletBC(fsp.Q.sub(2), Constant(rpam.parameters['sigma_r']), rmsh.boundary_r)
@@ -43,7 +44,7 @@ bc_psi_r = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_r"]), rmsh.bo
 
 bc_X_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
 
-bcs = [bc_v_l, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_X_l]
+bcs = [bc_v_l, bc_v_r, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_X_l]
 
 # variational problem
 
@@ -63,9 +64,8 @@ F_v = ( \
                   (fsp.sigma * (bgeo.n_lr(fsp.psi, fsp.nu))[i] * fsp.nu_v[i]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
           ) \
       - 2.0 * rpam.parameters['eta'] * ( \
-                  (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_l \
-          ) \
-      + (fsp.sigma * (bgeo.n_lr(fsp.psi, fsp.nu))[j] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+                  (geo.d_c(fsp.v, fsp.w, fsp.psi, fsp.nu)[i, j] * geo.g(fsp.psi, fsp.nu)[i, k] * (bgeo.n_lr(fsp.psi, fsp.nu))[k] * fsp.nu_v[j]) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+          )
 
 F_w = (fsp.w * fsp.nu_w) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
