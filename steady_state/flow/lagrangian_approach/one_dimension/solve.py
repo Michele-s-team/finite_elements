@@ -55,12 +55,12 @@ params = {
 }
 
 PETScOptions.clear()
-PETScOptions.set('snes_type', 'newtonls')
-PETScOptions.set('snes_atol', 1e-8)      # Absolute tolerance
-PETScOptions.set('snes_rtol', 1e-8)      # Relative tolerance
-PETScOptions.set('snes_stol', 1e-8)      # Step tolerance
-PETScOptions.set('snes_max_it', 100000)      # Allow more iterations
-PETScOptions.set('snes_monitor')         # Monitor convergence
+PETScOptions.set('snes_type', 'newtontr')
+PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+PETScOptions.set('snes_max_it', 100000)
+PETScOptions.set('snes_monitor')
 
 solver.parameters.update(params)
 
