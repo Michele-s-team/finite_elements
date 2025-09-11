@@ -304,7 +304,7 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
 # Variational problems test
 ################################################################
 
-'''
+
 # Test poisson_equation/solve_u
 case_name = 'poisson_equation/solve_u'
 
@@ -578,7 +578,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_ring_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
-'''
+
 # Test nitsche_method
 
 
@@ -607,7 +607,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-'''
+
 # Test nitsche_method/two_fields
 case_name = 'nitsche_method/two_fields'
 
@@ -1041,7 +1041,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-'''
+
 cmd.checkout(commit_a, success)
 
 max_key_len = max(len(key) for key in checks.keys())
