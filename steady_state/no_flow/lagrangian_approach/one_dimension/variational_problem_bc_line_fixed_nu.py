@@ -2,10 +2,11 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import differential_geometry.boundary.geometry as bgeo
 import command as cmd
-import function as fu
+import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
+import function as fu
+import input_output as io
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -42,9 +43,10 @@ fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
 # uncomment this to set the initial profiles from the ODE soltion
 #
 print("Reading the initial profiles from file ...")
-fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
-fu.read_from_file( 'solution_ode/mu.csv', fsp.mu_0)
-fu.read_from_file( 'solution_ode/X.csv', fsp.X_0)
+print(f'solution ode path = {rpam.parameters["solution_ode_path"]}')
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu.csv', fsp.mu_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X.csv', fsp.X_0)
 
 fsp.assigner.assign(fsp.phi, [fsp.psi_0, fsp.mu_0, fsp.X_0])
 print('... done')
