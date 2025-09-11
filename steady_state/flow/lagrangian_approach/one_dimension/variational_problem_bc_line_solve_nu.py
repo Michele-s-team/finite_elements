@@ -12,10 +12,11 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import differential_geometry.boundary.geometry as bgeo
 import command as cmd
-import function as fu
+import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
+import function as fu
+import input_output as io
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -30,13 +31,13 @@ i, j, k, l, alpha = ufl.indices(5)
 # uncomment this to set the initial profiles from the ODE soltion
 #
 print("Reading the initial profiles from file ...")
-fu.read_from_file('solution_ode/v.csv', fsp.v_0)
-fu.read_from_file('solution_ode/w.csv', fsp.w_0)
-fu.read_from_file('solution_ode/sigma.csv', fsp.sigma_0)
-fu.read_from_file('solution_ode/psi.csv', fsp.psi_0)
-fu.read_from_file('solution_ode/mu.csv', fsp.mu_0)
-fu.read_from_file('solution_ode/X.csv', fsp.X_0)
-fu.read_from_file('solution_ode/nu.csv', fsp.nu_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'sigma.csv', fsp.sigma_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu.csv', fsp.mu_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X.csv', fsp.X_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_0)
 
 fsp.assigner.assign(fsp.phi, [fsp.v_0, fsp.w_0, fsp.sigma_0, fsp.psi_0, fsp.mu_0, fsp.X_0, fsp.nu_0 ])
 print('... done')
