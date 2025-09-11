@@ -14,12 +14,12 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import command as cmd
-import function_spaces as fsp
 import function as fu
 import differential_geometry.manifold.geometry as geo
 import parameters.read.solution as rpam
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 cmd.set_gauge('arc_length')
