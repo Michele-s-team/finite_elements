@@ -766,7 +766,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-'''
+
 # Test steady_state/no_flow/lagrangian_approach/one_dimension
 case_name = 'steady_state/no_flow/lagrangian_approach/one_dimension'
 
@@ -791,7 +791,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-'''
+
 # Test steady_state/flow
 case_name = 'steady_state/flow'
 
@@ -851,7 +851,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-'''
+
 # Test steady_state/flow/lagrangian_approach/one_dimension
 case_name = 'steady_state/flow/lagrangian_approach/one_dimension'
 
@@ -874,7 +874,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
-'''
+
 
 # Test dynamics/channel_with_cylinder_flat_icps
 case_name = 'dynamics/channel_with_cylinder_flat_icps'
