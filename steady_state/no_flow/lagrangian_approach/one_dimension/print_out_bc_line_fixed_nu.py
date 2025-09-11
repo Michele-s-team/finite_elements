@@ -5,7 +5,7 @@ import colorama as col
 
 import input_output as io
 import mesh.utils as msh
-import print_out_solution as prout
+import print_out_solution_fixed_nu as prout
 import parameters.read.solution as rpam
 import switch_problem as swi
 
