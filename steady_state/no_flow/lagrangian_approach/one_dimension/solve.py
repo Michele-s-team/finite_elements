@@ -5,6 +5,7 @@ Run with
     python3 solve.py [name of variational problem] [path where to read the mesh] [path where to store the solution]
 
 Example:
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_fixed_nu $MESH_PATH $SOLUTION_PATH;
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_solve_nu $MESH_PATH $SOLUTION_PATH;
 '''
 
