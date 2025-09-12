@@ -84,7 +84,7 @@ F_v_bar = ( \
                       (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds
           )
 
-'''
+# sign
 
 F_w_bar = ( \
                       rpam.parameters['rho'] * ((fsp.w_bar - fsp.w_n_1) + dt * fsp.V[i] * fsp.V[k] * geo.b( fsp.omega_n_12 )[k, i]) * fsp.nu_w_bar \
@@ -111,7 +111,7 @@ F_w_bar = ( \
                       + (fsp.nu_w_bar * (bgeo.n_tb( fsp.omega_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
                       + (fsp.nu_w_bar * (bgeo.n_circle( fsp.omega_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
           )
-
+'''
 F_phi = ( \
                     dt * geo.g_c( fsp.omega_n_12 )[i, j] * (fsp.phi.dx( i )) * (fsp.nu_phi.dx( j )) \
                     + rpam.parameters['rho'] * (geo.Nabla_v( fsp.v_bar, fsp.omega_n_12 )[i, i] - 2.0 * fsp.mu_n_12 * fsp.w_bar) * fsp.nu_phi \
