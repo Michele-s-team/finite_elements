@@ -6,7 +6,9 @@ import ufl as ufl
 import command as cmd
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
+import function as fu
 import function_spaces as fsp
+import input_output as io
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -18,51 +20,50 @@ cmd.set_gauge('arc_length')
 i, j, k, l, alpha = ufl.indices( 5 )
 
 
-# CHANGE PARAMETERS HERE
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
 
+# uncomment this to set the initial profiles from the ODE soltion
+'''
+print("Reading the initial profiles from file ...")
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_bar.csv', fsp.v_bar_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_bar.csv', fsp.w_bar_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_n.csv', fsp.v_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_n.csv', fsp.w_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X_n_12.csv', fsp.X_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu_n_12.csv', fsp.nu_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi_n_12.csv', fsp.psi_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu_n_12.csv', fsp.mu_n_12_0)
 
+fsp.assigner.assign(fsp.phi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.X_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
+print('... done')
 '''
 
-# the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
-grad_circle = interpolate( grad_circle_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
-grad_square = interpolate( grad_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 
-# CHANGE PARAMETERS HERE
-l_profile_v_bar = Expression( ('v_bar_l_const', '0'), v_bar_l_const=v_bar_l_const, element=fsp.Q_v_n.ufl_element() )
-# CHANGE PARAMETERS HERE
+# boundary conditions
+bc_v_bar_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_bar_l'])), rmsh.boundary_l)
+bc_v_bar_r = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_bar_r'])), rmsh.boundary_r)
 
-# boundary conditions (BCs)
-# BCs for v_bar
-bc_v_bar_l = DirichletBC( fsp.Q.sub( 0 ), l_profile_v_bar, rmsh.boundary_l )
+bc_w_bar = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_bar_lr']), rmsh.boundary)
 
-# BCs for w_bar
-bc_w_bar_lr = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_lr )
-bc_w_bar_tb = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_tb )
-bc_w_bar_circle = DirichletBC( fsp.Q.sub( 1 ), Constant( boundary_profile_w_bar ), rmsh.boundary_circle )
+bc_phi_r = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.boundary_r)
 
-# BC for phi
-bc_phi = DirichletBC( fsp.Q.sub( 2 ), Constant( r_profile_phi ), rmsh.boundary_r )
-
-# CHANGE PARAMETERS HERE
-# BCs for z^{n-1/2}
-bc_z_circle = DirichletBC( fsp.Q.sub( 5 ), Expression( 'boundary_profile_z', element=fsp.Q.sub( 5 ).ufl_element(), boundary_profile_z=boundary_profile_z ), rmsh.boundary_circle )
-bc_z_square = DirichletBC( fsp.Q.sub( 5 ), Expression( 'boundary_profile_z', element=fsp.Q.sub( 5 ).ufl_element(), boundary_profile_z=boundary_profile_z ), rmsh.boundary_square )
-# CHANGE PARAMETERS HERE
+bc_X_n_12_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_n_12_l"][0], rpam.parameters["X_n_12_l"][1])), rmsh.boundary_l)
+bc_X_n_12_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_n_12_r"][0], rpam.parameters["X_n_12_r"][1])), rmsh.boundary_r)
 
 
 # all BCs
-bcs = [bc_v_bar_l, bc_w_bar_lr, bc_w_bar_tb, bc_w_bar_circle, bc_phi, bc_z_circle, bc_z_square]
+bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar, bc_phi_r, bc_X_n_12_l, bc_X_n_12_r]
+'''
+\b(kappa|rho|eta|T|N|alpha|quadrature_degree|function_space_degree)\b
+'''
+# sign
 
-'''
-# Define variational problem : F_vbar, F_wbar .... F_z_n_12 are related to the PDEs for v_bar, ..., z^{n-1/2} respectively . F_N enforces the BCs with Nitsche's method. 
-# To be safe, I explicitly wrote the each term on each part of the boundary with its own normal vector and pull back of the metric: for example, on the left (l) and on the right (r) sides of the rectangle, 
-# the surface elements are ds_l + ds_r, and the normal is n_lr(omega) and the pull back of the metric is sqrt_deth_lr(omega): this avoids odd interpolations at the corners of the rectangle edges. 
-'''
+# Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .  
 
 F_v_bar = ( \
-                      rho * (( \
+                      rpam.parameters['rho'] * (( \
                                          (fsp.v_bar[i] - fsp.v_n_1[i]) \
                                          + dt * ((3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * geo.Nabla_v( fsp.V, fsp.omega_n_12 )[i, j] \
                                                      - 2.0 * fsp.V[j] * fsp.W * geo.g_c( fsp.omega_n_12 )[i, k] * geo.b( fsp.omega_n_12 )[k, j]) \
@@ -71,25 +72,19 @@ F_v_bar = ( \
                              + dt * 1.0 / 2.0 * (fsp.W ** 2) * geo.g_c( fsp.omega_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.omega_n_12 )[i, j] \
                              ) \
                       + dt * (fsp.sigma_n_32 * geo.g_c( fsp.omega_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.omega_n_12 )[i, j] \
-                                  + 2.0 * eta * geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.omega_n_12 )[j, i])
+                                  + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.omega_n_12 )[j, i])
           ) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx \
-          - dt * rho / 2.0 * ( \
-                      ((fsp.W ** 2) * (bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * (rmsh.ds_l + rmsh.ds_r) \
-                      + ((fsp.W ** 2) * (bgeo.n_tb( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-                      + ((fsp.W ** 2) * (bgeo.n_circle( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
+          - dt * rpam.parameters['rho'] / 2.0 * ( \
+                      ((fsp.W ** 2) * (bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds \
           ) \
           - dt * ( \
-                      (fsp.sigma_n_32 * (bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * (rmsh.ds_l + rmsh.ds_r) \
-                      + (fsp.sigma_n_32 * (bgeo.n_tb( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-                      + (fsp.sigma_n_32 * (bgeo.n_circle( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
-          ) \
-          - dt * 2.0 * eta * ( \
-                      (geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, j] * geo.g( fsp.omega_n_12 )[i, k] * (bgeo.n_lr( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds_l \
-                      # natural BC imposed here
-                      + (geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, 1] * geo.g( fsp.omega_n_12 )[i, k] * (bgeo.n_lr( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[1]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds_r \
-                      + (geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, j] * geo.g( fsp.omega_n_12 )[i, k] * (bgeo.n_tb( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-                      + (geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, j] * geo.g( fsp.omega_n_12 )[i, k] * (bgeo.n_circle( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
+                      (fsp.sigma_n_32 * (bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds \
+           ) \
+          - dt * 2.0 * rpam.parameters['eta'] * ( \
+                      (geo.d_c( fsp.V, fsp.W, fsp.omega_n_12 )[i, j] * geo.g( fsp.omega_n_12 )[i, k] * (bgeo.n_lr( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds
           )
+
+'''
 
 F_w_bar = ( \
                       rho * ((fsp.w_bar - fsp.w_n_1) + dt * fsp.V[i] * fsp.V[k] * geo.b( fsp.omega_n_12 )[k, i]) * fsp.nu_w_bar \
