@@ -92,33 +92,30 @@ for step in range(rpam.parameters['N']):
     problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
     solver = NonlinearVariationalSolver( problem )
 
-  
-    #set the solver parameters here
-    # params = {'nonlinear_solver': 'newton',
-    #            'newton_solver':
-    #             {
-    #                 'linear_solver'           : 'mumps',
-    #                 # 'line_search' : 'bt',
-    #                 'absolute_tolerance'      : 1e-6,
-    #                 'relative_tolerance'      : 1e-6,
-    #                 'maximum_iterations'      : 1000000,
-    #                 # 'sign'                    : 'nonnegative',
-    #                 'relaxation_parameter'    : 0.95,
-    #                 # 'preconditioner'    : 'ilu',
-    #                 'lu_solver' :{
-    #                     # 'report' : True,
-    #                      'symmetric' : False
-    #                 },
-    #                 'krylov_solver' :{
-    #                     'divergence_limit' : 1e0,
-    #                     'absolute_tolerance' : 1e-6,
-    #                     'relative_tolerance' : 1e-6,
-    #                     'nonzero_initial_guess' : True
-    #                 }
-    # 
-    #              }
-    # }
-    # solver.parameters.update(params)
+
+    # to solve with SNES
+    params = {
+        'nonlinear_solver': 'snes',
+        'snes_solver': {
+            'linear_solver': 'superlu',
+            'line_search': 'bt',  # backtracking line search
+            'absolute_tolerance': 1e-6,
+            'relative_tolerance': 1e-6,
+            'maximum_iterations': 1000000,
+            'report': True,
+        }
+    }
+
+    PETScOptions.clear()
+    PETScOptions.set('snes_type', 'newtontr')
+    PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+    PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+    PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+    PETScOptions.set('snes_max_it', 100000)
+    PETScOptions.set('snes_monitor')
+
+    solver.parameters.update(params)
+
     
     solver.solve()
 
