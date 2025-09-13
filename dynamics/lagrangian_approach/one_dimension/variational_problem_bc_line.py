@@ -55,10 +55,7 @@ bc_X_n_12_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_n_12_r"][0]
 
 # all BCs
 bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar, bc_phi_r, bc_X_n_12_l, bc_X_n_12_r]
-'''
-\b(kappa|rho|eta|T|N|alpha|quadrature_degree|function_space_degree)\b
-'''
-# sign
+
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
 

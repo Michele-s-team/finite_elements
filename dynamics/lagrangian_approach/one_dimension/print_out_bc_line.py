@@ -1,5 +1,4 @@
 import csv
-import dolfin
 from fenics import *
 import importlib
 import os
