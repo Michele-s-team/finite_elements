@@ -60,14 +60,14 @@ bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar, bc_phi_r, bc_X_n_12_l, bc_X_n_12_r]
 '''
 # sign
 
-# Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .  
+# Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
 
 F_v_bar = ( \
                       rpam.parameters['rho'] * (( \
                                          (fsp.v_bar[i] - fsp.v_n_1[i]) \
                                          + dt * ((3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * geo.Nabla_v( fsp.V, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                                                      - 2.0 * fsp.V[j] * fsp.W * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * geo.b( fsp.psi_n_12, fsp.nu_n_12 )[k, j]) \
- \
+
                                  ) * fsp.nu_v_bar[i] \
                              + dt * 1.0 / 2.0 * (fsp.W ** 2) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                              ) \
@@ -108,7 +108,6 @@ F_w_bar = ( \
           )
 
 
-
 F_phi = ( \
                     dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( i )) * (fsp.nu_phi.dx( j )) \
                     + rpam.parameters['rho'] * (geo.Nabla_v( fsp.v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, i] - 2.0 * fsp.mu_n_12 * fsp.w_bar) * fsp.nu_phi \
@@ -117,11 +116,7 @@ F_phi = ( \
 - dt * ((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * (fsp.phi.dx( i )) * fsp.nu_phi) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_r
 
 
-
-
-
 F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
-
 
 
 F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
@@ -133,17 +128,22 @@ F_X_n_12 = ( \
                         ) * fsp.nu_X_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
+
+
+F_nu_psi = (
+        (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
+        * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+        +  (fsp.X_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
+        * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+    ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
+
+
 # sign
 
-
-F_nu_psi = (\
-                  (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * (-cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12)\
- ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
-
+F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
 
 '''
-F_mu_n = ((geo.H( fsp.omega_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx
 
 
 F_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
