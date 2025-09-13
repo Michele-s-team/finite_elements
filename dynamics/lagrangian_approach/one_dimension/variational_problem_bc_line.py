@@ -125,25 +125,24 @@ F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( f
 
 
 F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
+
+F_X_n_12 = ( \
+                    ( \
+                                (fsp.X_n_12[alpha] - fsp.X_n_32[alpha]) \
+                                - dt * fsp.w_n_1 * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
+                        ) * fsp.nu_X_n_12[alpha] \
+            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
+
 # sign
 
-F_z_n = ( \
-                    ( \
-                                (fsp.z_n_12 - fsp.z_n_32) \
-                                - dt * fsp.w_n_1 * ((geo.normal( fsp.omega_n_12 ))[2] - ((geo.normal( fsp.omega_n_12 ))[0] * fsp.omega_n_12[0] + (geo.normal( fsp.omega_n_12 ))[1] * fsp.omega_n_12[1])) \
-                        ) * fsp.nu_z_n_12 \
-            ) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx
+
+F_nu_psi = (\
+                  (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * (-cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12)\
+ ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
+
 
 
 '''
-
-F_omega_n = (fsp.z_n_12 * geo.Nabla_v( fsp.nu_omega_n_12, fsp.omega_n_12 )[i, i] + fsp.omega_n_12[i] * fsp.nu_omega_n_12[i]) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx \
-            - ( \
-                        ((bgeo.n_lr( fsp.omega_n_12 ))[i] * geo.g( fsp.omega_n_12 )[i, j] * fsp.z_n_12 * fsp.nu_omega_n_12[j]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * (rmsh.ds_l + rmsh.ds_r) \
-                        + ((bgeo.n_tb( fsp.omega_n_12 ))[i] * geo.g( fsp.omega_n_12 )[i, j] * fsp.z_n_12 * fsp.nu_omega_n_12[j]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-                        + ((bgeo.n_circle( fsp.omega_n_12 ))[i] * geo.g( fsp.omega_n_12 )[i, j] * fsp.z_n_12 * fsp.nu_omega_n_12[j]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle
-            )
-
 F_mu_n = ((geo.H( fsp.omega_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx
 
 
@@ -163,6 +162,6 @@ F_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
     )
 
 # total functional for the mixed problem
-F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_z_n + F_omega_n + F_mu_n) + F_N
+F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_X_n_12 + F_omega_n + F_mu_n) + F_N
 
 '''
