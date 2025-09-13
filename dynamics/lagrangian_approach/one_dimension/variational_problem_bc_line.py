@@ -129,7 +129,6 @@ F_X_n_12 = ( \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
 
-
 F_nu_psi = (
         (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
         * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
@@ -138,30 +137,20 @@ F_nu_psi = (
     ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
 
 
+F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 # sign
 
-F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
-
-'''
-
-
-F_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
- \
-            (fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_tb( fsp.omega_n_12 ))[j] * (bgeo.n_tb( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-            + (fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_circle( fsp.omega_n_12 ))[j] * (bgeo.n_circle( fsp.omega_n_12 ))[k] * fsp.nu_v_bar[k]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
- \
-            + (((bgeo.n_lr( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - grad_square) * (bgeo.n_lr( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * (rmsh.ds_l + rmsh.ds_r) \
-            + (((bgeo.n_tb( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - grad_square) * (bgeo.n_tb( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * (rmsh.ds_t + rmsh.ds_b) \
-            + (((bgeo.n_circle( fsp.omega_n_12 ))[i] * fsp.omega_n_12[i] - grad_circle) * (bgeo.n_circle( fsp.omega_n_12 ))[j] * geo.g( fsp.omega_n_12 )[j, k] * fsp.nu_omega_n_12[k]) * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (
-                    1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
-            # these terms constrain mu_n_12 = H(omega_n_12) on the boundary
-            + ((geo.H(fsp.omega_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.omega_n_12) * rmsh.ds_lr \
-            + ((geo.H(fsp.omega_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_tb(fsp.omega_n_12) * rmsh.ds_tb \
-            + ((geo.H(fsp.omega_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_circle(fsp.omega_n_12, rmsh.parameters["c_r"]) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
+F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
+        # this term constrains mu_n_12 = H(omega_n_12) on the boundary
+        ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds \
+        + (\
+              (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+              + (fsp.X_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds\
     )
 
+'''
 # total functional for the mixed problem
 F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_X_n_12 + F_omega_n + F_mu_n) + F_N
-
 '''
