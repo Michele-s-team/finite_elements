@@ -22,23 +22,15 @@ i, j, k, l, alpha = ufl.indices( 5 )
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
+class nu_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 1
 
-# uncomment this to set the initial profiles from the ODE soltion
-'''
-print("Reading the initial profiles from file ...")
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_bar.csv', fsp.v_bar_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_bar.csv', fsp.w_bar_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_n.csv', fsp.v_n_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_n.csv', fsp.w_n_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X_n_12.csv', fsp.X_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu_n_12.csv', fsp.nu_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi_n_12.csv', fsp.psi_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu_n_12.csv', fsp.mu_n_12_0)
+    def value_shape(self):
+        return (1,)
 
-fsp.assigner.assign(fsp.phi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.X_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
-print('... done')
-'''
+
+
 
 
 # boundary conditions

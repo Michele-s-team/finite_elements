@@ -47,31 +47,35 @@ print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimal
 
 
 #Option 1: set initial profiles
-'''
-fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v_n.ufl_element()))
-fsp.v_n_2.assign(fsp.v_n_1)
-fsp.w_n_1.interpolate(vp.NormalVelocityExpression(element=fsp.Q_w_n.ufl_element()))
-fsp.sigma_n_32.interpolate( vp.SurfaceTensionExpression( element=fsp.Q_phi.ufl_element() ))
-fsp.z_n_32.interpolate( vp.ManifoldExpression( element=fsp.Q_z_n.ufl_element() ) )
+
+# fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v_n.ufl_element()))
+# fsp.v_n_2.assign(fsp.v_n_1)
+# fsp.w_n_1.interpolate(vp.NormalVelocityExpression(element=fsp.Q_w_n.ufl_element()))
+# fsp.sigma_n_32.interpolate( vp.SurfaceTensionExpression( element=fsp.Q_phi.ufl_element() ))
+fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
 # omega_n_32.interpolate( vp.OmegaExpression( element=fsp.Q_omega_n.ufl_element() ))
-'''
+
 
 #Option 2:read initial profiles by reading them from file
+# uncomment this to set the initial profiles from the ODE soltion
 '''
-read_step = 400
-print("Reading initial condition from file ... ")
-HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n_" + str( read_step-1 ) + ".h5", "r" ).read(fsp.v_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/v_n_" + str( read_step-2 ) + ".h5", "r" ).read(fsp.v_n_2, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/w_n_" + str( read_step-1 ) + ".h5", "r" ).read(fsp.w_n_1, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/sigma_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(fsp.sigma_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/z_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(fsp.z_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/omega_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(fsp.omega_n_32, "/f" )
-HDF5File( MPI.comm_world, "solution/snapshots/h5/mu_n_12_" + str( read_step-1 ) + ".h5", "r" ).read(fsp.mu_n_32, "/f" )
-print("... done.")
+print("Reading the initial profiles from file ...")
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_bar.csv', fsp.v_bar_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_bar.csv', fsp.w_bar_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_n.csv', fsp.v_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_n.csv', fsp.w_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X_n_12.csv', fsp.X_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu_n_12.csv', fsp.nu_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi_n_12.csv', fsp.psi_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu_n_12.csv', fsp.mu_n_12_0)
+
+print('... done')
 '''
+fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.X_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
-'''
+
 # Time-stepping
 t = 0
 for step in range(rpam.parameters['N']):
@@ -123,9 +127,10 @@ for step in range(rpam.parameters['N']):
     #get the solution and write it to file
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, X_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
+    '''
     prout_bc.print_bcs( fsp.psi )
     prout_bc.print_solution( fsp.psi, step, t )
-
+    '''
 
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign( v_n_output )
@@ -136,7 +141,7 @@ for step in range(rpam.parameters['N']):
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     fsp.X_n_32.assign( X_n_12_output )
-'''
+
 
 
 prout_bc.csvfile_bcs.close()
