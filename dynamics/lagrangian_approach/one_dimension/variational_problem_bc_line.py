@@ -107,7 +107,6 @@ F_w_bar = ( \
                       (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds \
           )
 
-# sign
 
 
 F_phi = ( \
@@ -116,6 +115,9 @@ F_phi = ( \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
     # natural BC implemented here
 - dt * ((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * (fsp.phi.dx( i )) * fsp.nu_phi) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_r
+
+# sign
+
 
 '''
 
