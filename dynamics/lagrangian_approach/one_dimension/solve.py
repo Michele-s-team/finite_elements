@@ -25,7 +25,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
+import function as fu
 import function_spaces as fsp
 import input_output as io
 import parameters.read.solution as rpam
@@ -52,26 +52,26 @@ print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimal
 # fsp.v_n_2.assign(fsp.v_n_1)
 # fsp.w_n_1.interpolate(vp.NormalVelocityExpression(element=fsp.Q_w_n.ufl_element()))
 # fsp.sigma_n_32.interpolate( vp.SurfaceTensionExpression( element=fsp.Q_phi.ufl_element() ))
-fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
+# fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
 # omega_n_32.interpolate( vp.OmegaExpression( element=fsp.Q_omega_n.ufl_element() ))
 
 
 #Option 2:read initial profiles by reading them from file
 # uncomment this to set the initial profiles from the ODE soltion
-'''
+
 print("Reading the initial profiles from file ...")
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_bar.csv', fsp.v_bar_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_bar.csv', fsp.w_bar_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v_n.csv', fsp.v_n_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w_n.csv', fsp.w_n_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X_n_12.csv', fsp.X_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu_n_12.csv', fsp.nu_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi_n_12.csv', fsp.psi_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu_n_12.csv', fsp.mu_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_bar_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_bar_0)
+# fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X.csv', fsp.X_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu.csv', fsp.mu_n_12_0)
 
 print('... done')
-'''
+
 fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.X_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
