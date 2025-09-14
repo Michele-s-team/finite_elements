@@ -23,20 +23,39 @@ i, j, k, l, alpha = ufl.indices( 5 )
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
-class nu_n_12_0_Expression( UserExpression ):
+class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
-        epsilon = 1e-6
-        values[0] = 1 + epsilon * np.cos(2 * np.pi * x[0] )
+        values[0] = rpam.parameters['v_bar_l'][0]
 
     def value_shape(self):
         return (1,)
-    
+
 class sigma_n_32_0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = rpam.parameters['sigma_r']
 
     def value_shape(self):
         return (1,)
+
+class nu_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        epsilon = 1e-4
+        values[0] = 1 + epsilon * np.cos(2 * np.pi * x[0] )
+
+    def value_shape(self):
+        return (1,)
+    
+class X_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        epsilon = 1e-4
+        values[0] = x[0]
+        values[1] = 0 +  epsilon * np.cos(2 * np.pi * x[0] )
+
+    def value_shape(self):
+        return (2,)
+
+    
+
 
 
 
