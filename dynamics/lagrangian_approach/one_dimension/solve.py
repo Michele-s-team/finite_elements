@@ -69,7 +69,8 @@ fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_n_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_n_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X.csv', fsp.X_n_12_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_n_12_0)
+# fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_n_12_0)
+fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ))
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_n_12_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu.csv', fsp.mu_n_12_0)
 

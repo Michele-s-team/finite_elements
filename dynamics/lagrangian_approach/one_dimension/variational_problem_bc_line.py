@@ -1,5 +1,6 @@
 from fenics import *
 import importlib
+import numpy as np
 import ufl as ufl
 
 
@@ -24,7 +25,8 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 
 class nu_n_12_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 1
+        epsilon = 1e-6
+        values[0] = 1 + epsilon * np.cos(2 * np.pi * x[0] )
 
     def value_shape(self):
         return (1,)
