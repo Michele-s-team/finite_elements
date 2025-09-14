@@ -10,7 +10,7 @@ clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variati
 
 Examples:
 
-    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line $MESH_PATH $SOLUTION_PATH
 '''
 
 
@@ -93,7 +93,6 @@ for step in range(rpam.parameters['N']):
     solver = NonlinearVariationalSolver( problem )
 
 
-    # to solve with SNES
     params = {
         'nonlinear_solver': 'snes',
         'snes_solver': {
@@ -113,7 +112,10 @@ for step in range(rpam.parameters['N']):
     PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
     PETScOptions.set('snes_max_it', 100000)
     PETScOptions.set('snes_monitor')
-
+    PETScOptions.set('snes_max_funcs', 50000)         # Increase function evaluation limit
+    PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
+    # PETScOptions.set('snes_test_jacobian_display', '')
+   
     solver.parameters.update(params)
 
     
@@ -124,10 +126,10 @@ for step in range(rpam.parameters['N']):
     #get the solution and write it to file
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, X_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
-    '''
+    
     prout_bc.print_bcs( fsp.psi )
-    prout_bc.print_solution( fsp.psi, step, t )
-    '''
+    # prout_bc.print_solution( fsp.psi, step, t )
+    
 
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign( v_n_output )
@@ -142,4 +144,3 @@ for step in range(rpam.parameters['N']):
 
 
 prout_bc.csvfile_bcs.close()
-prout_bc.csvfile_F.close()
