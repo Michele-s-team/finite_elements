@@ -113,7 +113,7 @@ for step in range(rpam.parameters['N']):
     PETScOptions.set('snes_max_it', 100000)
     PETScOptions.set('snes_monitor')
     PETScOptions.set('snes_max_funcs', 50000)         # Increase function evaluation limit
-    PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
+    # PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
     # PETScOptions.set('snes_test_jacobian_display', '')
    
     solver.parameters.update(params)
