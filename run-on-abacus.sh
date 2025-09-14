@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh fluid_structure_interaction/elastic_obstacle elastic_obstacle_1 ~/Documents/finite_elements/generate_mesh/2d/square/ellipse_circle/solution
+# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution
 
 clear
 clear
@@ -11,7 +11,7 @@ OUT=mcastel1@abacus
 ssh $OUT "rm -rf "$2
 ssh $OUT "mkdir -p "$2"/mesh"
 
-rsync -av modules/*.py $OUT:$2
+rsync -av modules/ $OUT:$2
 rsync -av $1/*.py $OUT:$2
 rsync -av /Users/michelecastellana/Documents/finite_elements/script_slurm_abacus.slurm $OUT:$2
 rsync -av \

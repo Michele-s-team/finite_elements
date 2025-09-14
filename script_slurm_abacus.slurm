@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=elastic_obstacle_1
+#SBATCH --job-name=dynamics_lagrangian_approach_one_dimension_1
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=04-00:00:00
@@ -9,10 +9,10 @@
 
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
-RUN="/mnt/beegfs/home/mcastel1/elastic_obstacle_1"
+RUN="/mnt/beegfs/home/mcastel1/line_1"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
-PROBLEM="square_ellipse_circle"
+PROBLEM="line"
 
 rm -rf $SOLUTION
 mkdir $SOLUTION
