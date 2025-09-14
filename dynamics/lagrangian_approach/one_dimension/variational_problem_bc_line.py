@@ -28,6 +28,13 @@ class nu_n_12_0_Expression( UserExpression ):
 
     def value_shape(self):
         return (1,)
+    
+class sigma_n_32_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['sigma_r']
+
+    def value_shape(self):
+        return (1,)
 
 
 

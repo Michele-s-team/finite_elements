@@ -47,12 +47,14 @@ print("Output diredtory = ", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
+fsp.sigma_n_32.interpolate( vp.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
+
+
 #Option 1: set initial profiles
 
 # fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v_n.ufl_element()))
 # fsp.v_n_2.assign(fsp.v_n_1)
 # fsp.w_n_1.interpolate(vp.NormalVelocityExpression(element=fsp.Q_w_n.ufl_element()))
-# fsp.sigma_n_32.interpolate( vp.SurfaceTensionExpression( element=fsp.Q_phi.ufl_element() ))
 # fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
 # omega_n_32.interpolate( vp.OmegaExpression( element=fsp.Q_omega_n.ufl_element() ))
 
