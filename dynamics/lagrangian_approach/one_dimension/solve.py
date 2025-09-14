@@ -33,7 +33,8 @@ import runtime_arguments as rarg
 import switch_problem as swi
 
 
-prout_bc = importlib.import_module(swi.prout_bc)
+prout_bc = importlib.import_module(swi.pr_bc)
+prout_sol = importlib.import_module(swi.pr_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -128,7 +129,7 @@ for step in range(rpam.parameters['N']):
 
     
     prout_bc.print_bcs( fsp.psi )
-    # prout_bc.print_solution( fsp.psi, step, t )
+    prout_sol.print_solution( fsp.psi, step, t )
     
 
     fsp.v_n_2.assign(fsp.v_n_1)
