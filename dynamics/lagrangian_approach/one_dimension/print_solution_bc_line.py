@@ -59,7 +59,7 @@ def print_solution(psi, step, t):
                   lmsh.mesh, 'scalar')
     io.full_print(X_n_12_dummy, 'X_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  lmsh.mesh, 'vector')
     io.full_print(nu_n_12_dummy, 'nu_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.mesh, 'scalar')

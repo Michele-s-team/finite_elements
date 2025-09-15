@@ -75,6 +75,7 @@ echo "Number of files to copy:"
 wc -l "$OUT_DIR/file_list.txt"
 
 echo "Starting recursive copy..."
-rsync -avz --files-from="$OUT_DIR/file_list.txt" --relative -e ssh mcastel1@abacus:"$IN_DIR/" "$OUT_DIR/$REMOTE_DIR"
+rsync -avz --files-from="$OUT_DIR/file_list.txt" --relative -e ssh mcastel1@abacus:"$IN_DIR" "$OUT_DIR/$REMOTE_DIR"
+
 
 echo "✅ Done copying files."

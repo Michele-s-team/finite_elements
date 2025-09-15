@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=dynamics_lagrangian_approach_one_dimension_1
+#SBATCH --job-name=line_4_N1e6_vr0.5
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=04-00:00:00
@@ -9,7 +9,7 @@
 
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
-RUN="/mnt/beegfs/home/mcastel1/line_1"
+RUN="/mnt/beegfs/home/mcastel1/line_4"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
 PROBLEM="line"
