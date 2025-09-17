@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=line_5_f
+#SBATCH --job-name=line_5
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=04-00:00:00
