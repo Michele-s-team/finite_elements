@@ -63,7 +63,7 @@ class f_Expression( UserExpression ):
         return (2,)
 
     
-
+fsp.f.interpolate(f_Expression(element=fsp.Q_f.ufl_element()))
 
 
 
