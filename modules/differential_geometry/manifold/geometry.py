@@ -25,7 +25,7 @@ epsilon = ufl.PermutationSymbol(2)
 
 # definition of scalar, vectorial and tensorial quantities
 # latin indexes run on 2d curvilinear coordinates
-i, j, k, l = ufl.indices(4)
+i, j, k, l, alpha = ufl.indices(5)
 
 
 # first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
@@ -153,6 +153,21 @@ def from_tangent_to_3D_space(omega, v, nu=None):
 
 '''
 this method takes as input a vector in the in the 3d Euclidean space and
+returns its components in the tangent bundle of \Omega 
+Input values:
+- 'omega': a one-form omega_i, the gradient of z
+- 'V' : the vector in 3d space (a tuple of 3 coordinates)
+Return values:
+- the tangential part V_t^i
+'''
+
+def from_3D_to_tangent(omega, V, nu=None):
+    return as_tensor(g_c(omega, nu)[i, j] * V[alpha] * e(omega, nu)[j, alpha], (i))
+
+
+
+'''
+this method takes as input a vector in the in the 3d Euclidean space and
 returns its decomposition in components in the tangent bundle of \Omega and in the component normal ot \Omega
 Input values:
 - 'omega': a one-form omega_i, the gradient of z
@@ -163,7 +178,7 @@ Return values:
 
 
 def from_3D_to_tangent_normal(omega, V, nu=None):
-    return as_tensor(g_c(omega, nu)[i, j] * V[k] * e(omega, nu)[j, k], (i)), (V[l] * normal(omega, nu)[l])
+    return from_3D_to_tangent, (V[l] * normal(omega, nu)[l])
 
 
 '''
