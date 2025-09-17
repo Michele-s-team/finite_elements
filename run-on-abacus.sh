@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_4 ~/Documents/finite_elements/generate_mesh/1d/line/solution
+# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_5 ~/Documents/finite_elements/generate_mesh/1d/line/solution
 
 clear
 clear

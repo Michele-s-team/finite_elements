@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=line_4_N1e6_vr0.5
+#SBATCH --job-name=line_5_f
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=04-00:00:00
@@ -9,7 +9,7 @@
 
 echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non interrotte di monti..."
 
-RUN="/mnt/beegfs/home/mcastel1/line_4"
+RUN="/mnt/beegfs/home/mcastel1/line_5"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
 PROBLEM="line"
