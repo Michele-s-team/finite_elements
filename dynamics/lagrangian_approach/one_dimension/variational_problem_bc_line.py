@@ -53,6 +53,14 @@ class X_n_12_0_Expression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+    
+class f_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['f'][0]
+        values[1] = rpam.parameters['f'][1]
+
+    def value_shape(self):
+        return (2,)
 
     
 
