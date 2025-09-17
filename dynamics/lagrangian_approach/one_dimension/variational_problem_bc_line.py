@@ -97,7 +97,9 @@ F_v_bar = ( \
                              + dt * 1.0 / 2.0 * (fsp.W ** 2) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                              ) \
                       + dt * (fsp.sigma_n_32 * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
-                                  + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[j, i])
+                                  + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[j, i] \
+                                      -  geo.from_3D_to_tangent(fsp.psi_n_12, fsp.f, fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
+                            )
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
           - dt * rpam.parameters['rho'] / 2.0 * ( \
                       ((fsp.W ** 2) * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds \
@@ -121,7 +123,9 @@ F_w_bar = ( \
                                   2.0 * fsp.sigma_n_32 * fsp.mu_n_12 \
                                   + 2.0 * rpam.parameters['eta'] * (geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * geo.Nabla_v( fsp.V, fsp.psi_n_12, fsp.nu_n_12 )[j, k] *
                                                  (geo.b( fsp.psi_n_12, fsp.nu_n_12 ))[i, j] - 2.0 * fsp.W * (
-                                                         2.0 * ((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )))
+                                                         2.0 * ((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )))\
+                                  + geo.from_3D_to_normal(fsp.psi_n_12, fsp.f, fsp.nu_n_12)
+                                                             
                       ) * fsp.nu_w_bar
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
           + dt * rpam.parameters['rho'] * ( \
