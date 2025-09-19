@@ -17,7 +17,7 @@ vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
-psi_output, mu_output, X_output, nu_output = fsp.phi.split(deepcopy=True)
+psi_output, mu_output, u_output, nu_output = fsp.phi.split(deepcopy=True)
 
 # print out the solution
 io.full_print(psi_output, 'psi', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
@@ -26,7 +26,7 @@ io.full_print(psi_output, 'psi', solpath.xdmf_file_path, solpath.h5_file_path, s
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               lmsh.mesh, 'scalar')
-io.full_print(X_output, 'X', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(u_output, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'vector')
 
