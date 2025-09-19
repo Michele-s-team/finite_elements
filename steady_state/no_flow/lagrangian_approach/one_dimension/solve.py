@@ -7,6 +7,18 @@ Run with
 Example:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_fixed_nu $MESH_PATH $SOLUTION_PATH;
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_solve_nu $MESH_PATH $SOLUTION_PATH;
+    
+    
+
+the fields in this problem are
+psi = psi_{Lagrangian approach}
+mu = H
+X[alpha] = {X^alpha}_{Lagrangian approach}
+u[alpha] = {X^alpha}_{Lagrangian approach} - X_r^alpha
+X_r^alpha is the manifold in the reference configuration 
+nu = nu_{Lagrangian approach}
+sigma = sigma_{Lagrangian approach}
+
 '''
 
 import colorama as col
@@ -68,6 +80,9 @@ PETScOptions.set('snes_linesearch_max_it', 50)     # More line search iterations
 PETScOptions.set('snes_linesearch_type', 'basic')
 PETScOptions.set('snes_linesearch_damping', 1.0)
 PETScOptions.set('snes_linesearch_max_it', 1)
+PETScOptions.set('snes_atol', 1e-12)      # Absolute tolerance (much smaller)
+PETScOptions.set('snes_rtol', 1e-12)      # Relative tolerance (much smaller) 
+PETScOptions.set('snes_stol', 1e-12)      # Step tolerance
 
 '''
 # set the solver parameters here
