@@ -7,7 +7,9 @@ import parameters.read.solution as rpam
 the fields in this problem are
 psi = psi_{Lagrangian approach}
 mu = H
-X[i] = {X^i}_{Lagrangian approach}
+X[alpha] = {X^alpha}_{Lagrangian approach}
+u[alpha] = {X^alpha}_{Lagrangian approach} - X_r^alpha
+X_r^alpha is the manifold in the reference configuration 
 nu = nu_{Lagrangian approach}
 sigma = sigma_{Lagrangian approach}
 '''
@@ -19,7 +21,7 @@ P_u = VectorElement('P', interval, rpam.parameters['function_space_degree'], dim
 element = MixedElement([P_psi, P_mu, P_u])
 # total function space
 Q = FunctionSpace(lmsh.mesh, element)
-# function spaces for z, omega, eta and theta
+# function spaces for psi, mu, u
 Q_psi = Q.sub(0).collapse()
 Q_mu = Q.sub(1).collapse()
 Q_u = Q.sub(2).collapse()
@@ -42,6 +44,7 @@ nu_psi, nu_mu, nu_u = TestFunctions(Q)
 # these functions are used to print the solution to file
 sigma = Function(Q_sigma)
 nu =  Function(Q_nu)
+X_r = Function(Q_X)
 
 psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)
@@ -58,6 +61,6 @@ psi_0 = Function(Q_psi)
 mu_0 = Function(Q_mu)
 u_0 = Function(Q_u)
 
-psi, mu, X = split(phi)
+psi, mu, u = split(phi)
 assigner = FunctionAssigner(Q, [Q_psi, Q_mu, Q_u])
 
