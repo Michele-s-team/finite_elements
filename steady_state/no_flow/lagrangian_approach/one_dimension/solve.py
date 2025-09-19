@@ -57,8 +57,8 @@ params = {
     'snes_solver': {
         'linear_solver': 'superlu',
         'line_search': 'bt',  # backtracking line search
-        'absolute_tolerance': 1e-6,
-        'relative_tolerance': 1e-6,
+        'absolute_tolerance': 1e-8,
+        'relative_tolerance': 1e-8,
         'maximum_iterations': 1000000,
         'report': True,
     }
@@ -80,9 +80,9 @@ PETScOptions.set('snes_linesearch_max_it', 50)     # More line search iterations
 PETScOptions.set('snes_linesearch_type', 'basic')
 PETScOptions.set('snes_linesearch_damping', 1.0)
 PETScOptions.set('snes_linesearch_max_it', 1)
-PETScOptions.set('snes_atol', 1e-12)      # Absolute tolerance (much smaller)
-PETScOptions.set('snes_rtol', 1e-12)      # Relative tolerance (much smaller) 
-PETScOptions.set('snes_stol', 1e-12)      # Step tolerance
+PETScOptions.set('snes_atol', 1e-6)      # Absolute tolerance (much smaller)
+PETScOptions.set('snes_rtol', 1e-6)      # Relative tolerance (much smaller) 
+PETScOptions.set('snes_stol', 1e-6)      # Step tolerance
 
 '''
 # set the solver parameters here

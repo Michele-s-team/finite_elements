@@ -74,7 +74,7 @@ F_psi = ( \
 
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_X = ((fsp.X_r[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+F_X = ((fsp.X_r[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_u[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 # this term penalizes spatial variations of nu, enforcing nu = const
 F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(i) * fsp.nu_nu.dx(i)) * rmsh.dx
@@ -82,9 +82,9 @@ F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(i) * fsp.nu_nu.dx(i))
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-        + ((fsp.X_r[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-        # this term constraints X1 = X1_r on te r boundary
-        + ((fsp.X_r[1] + fsp.u[1]) - rpam.parameters['u_r'][1]) * fsp.nu_X[1] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
+        + ((fsp.X_r[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_u[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+        # this term constraints u1 = u1_r on te r boundary
+        + (fsp.u[1] - rpam.parameters['u_r'][1]) * fsp.nu_u[1] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds_r
 )
 
 # total functional for the mixed problem
