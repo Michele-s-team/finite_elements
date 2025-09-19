@@ -26,6 +26,7 @@ Q_u = Q.sub(2).collapse()
 
 Q_sigma = FunctionSpace(lmsh.mesh, 'P', 1)
 Q_nu = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
+Q_X = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], dim=2)
 
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
