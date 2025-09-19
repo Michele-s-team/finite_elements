@@ -47,6 +47,9 @@ Q_nu_n_12 = Q.sub(6).collapse()
 Q_psi_n_12 = Q.sub(7).collapse()
 Q_mu_n_12 = Q.sub(8).collapse()
 
+# function space for the external force
+Q_f = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], dim=2)
+
 
 # Define functions
 #the Jacobian
@@ -62,7 +65,7 @@ sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
 X_n_32 = Function( Q_X_n_12 )
 
-
+f = Function(Q_f)
 
 #these functions are used to print the solution to file
 #     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, omega_n_12_output, z_n_12_output = psi.split( deepcopy=True )
