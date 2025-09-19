@@ -65,239 +65,6 @@ checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, c
                                                                      generate_mesh_path, generate_mesh_path,
                                                                      success)
 
-#line_vertex mesh
-generate_mesh_path = root_path + 'generate_mesh/1d/line_vertex/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_mesh_line_vertex', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-#2d meshes
-
-#disk mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/disk/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_disk_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-#half_circle_with_line mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/half_circle_with_line/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_half_circle_with_line_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-#ring mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_ring_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-#ring_slice mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/ring/ring_slice/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_mesh_ring_slice', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-#ring_with_circle mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/ring/ring_with_circle/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_ring_with_circle_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-
-#ring_with_lines mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/ring/ring_with_lines/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_ring_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-#ring/symmetric mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_ring_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-
-#square/ellipse mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/square/ellipse/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_square_ellipse_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-#square/ellipse_circle mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/square/ellipse_circle/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-#square/square mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/square/square/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-
-#square_no_circle mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_square_no_circle_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-#square_no_circle/two_squares_no_circle mesh
-generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/two_squares_no_circle/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_two_squares_no_circle_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-
-# 3d
-#ball mesh
-generate_mesh_path = root_path + 'generate_mesh/3d/ball/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_ball_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-#box mesh
-generate_mesh_path = root_path + 'generate_mesh/3d/box/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_box_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
-
-
-#box_ball mesh
-generate_mesh_path = root_path + 'generate_mesh/3d/box_ball/'
-
-checks[generate_mesh_path] = utest.test_generate_mesh_and_check_mesh(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     mesh_solution_path_a, mesh_check_solution_path_a,
-                                                                     mesh_solution_path_b, mesh_check_solution_path_b,
-                                                                     'generate_box_ball_mesh', 'check_mesh',
-                                                                     generate_mesh_path, generate_mesh_path,
-                                                                     success)
-
 '''
 
 ################################################################
@@ -961,6 +728,19 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
+'''
+# Test dynamics/lagrangian_approach/one_dimension
+case_name = 'dynamics/lagrangian_approach/one_dimension'
+
+problem_name = 'line'
+generate_mesh_path =root_path + 'generate_mesh/1d/line'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+'''
 
 # Test fluid_structure_interaction
 case_name = 'fluid_structure_interaction/mesh_deformation'
