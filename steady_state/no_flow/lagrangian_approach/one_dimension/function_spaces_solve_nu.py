@@ -33,8 +33,9 @@ J_phi = TrialFunction(Q)
 phi = Function(Q)
 nu_psi, nu_mu, nu_X, nu_nu = TestFunctions(Q)
 
-# these functions are used to print the solution to file
 sigma = Function(Q_sigma)
+X_r = Function(Q_X)
+
 
 psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)
