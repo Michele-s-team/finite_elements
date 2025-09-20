@@ -39,10 +39,10 @@ io.full_print(nu_output, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, sol
               lmsh.mesh, 'scalar')
 
 
-io.full_print(project(((fsp.X_r[0] + fsp.u[0]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, 0]), fsp.Q_psi), 'err_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(project(((fsp.X_ref[0] + fsp.u[0]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, 0]), fsp.Q_psi), 'err_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'scalar')
-io.full_print(project(((fsp.X_r[1] + fsp.u[1]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, 1]), fsp.Q_psi), 'err_2', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(project(((fsp.X_ref[1] + fsp.u[1]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, 1]), fsp.Q_psi), 'err_2', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'scalar')
 

@@ -15,7 +15,7 @@ psi = psi_{Lagrangian approach}
 mu = H
 X[alpha] = {X^alpha}_{Lagrangian approach}
 u[alpha] = {X^alpha}_{Lagrangian approach} - X_r^alpha
-X_r^alpha is the manifold in the reference configuration 
+X_ref^alpha is the manifold in the reference configuration 
 nu = nu_{Lagrangian approach}
 sigma = sigma_{Lagrangian approach}
 

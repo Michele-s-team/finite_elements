@@ -35,7 +35,7 @@ nu_psi, nu_mu, nu_u = TestFunctions(Q)
 # these functions are used to print the solution to file
 sigma = Function(Q_sigma)
 nu =  Function(Q_nu)
-X_r = Function(Q_X)
+X_ref = Function(Q_X)
 
 psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)

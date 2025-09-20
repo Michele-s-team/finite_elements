@@ -34,7 +34,7 @@ phi = Function(Q)
 nu_psi, nu_mu, nu_u, nu_nu = TestFunctions(Q)
 
 sigma = Function(Q_sigma)
-X_r = Function(Q_X)
+X_ref = Function(Q_X)
 
 
 psi_output = Function(Q_psi)
