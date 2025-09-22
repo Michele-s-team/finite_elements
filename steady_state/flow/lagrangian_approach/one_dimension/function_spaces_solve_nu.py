@@ -3,15 +3,6 @@ from fenics import *
 import mesh.load as lmsh
 import parameters.read.solution as rpam
 
-'''
-the fields in this problem are
-v[i] = v^i_{Lagrangian approach}
-w = w_{Lagrangian approach}
-sigma = \sigma_{Lagrangian approach}
-psi = psi_{Lagrangian approach}
-mu = H
-X[i] = {X^i}_{Lagrangian approach}
-'''
 
 P_v = VectorElement('P', interval, 2)
 P_w = FiniteElement('P', interval, 1)
