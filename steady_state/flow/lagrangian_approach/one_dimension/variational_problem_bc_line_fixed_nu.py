@@ -26,10 +26,18 @@ class nu_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+# reference configuration of the manifold, a straight line which coincides with the mesh line
+class X_ref_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[0]
+        values[1] = 0
 
+    def value_shape(self):
+        return (2,)
 
 
 fsp.nu.interpolate(nu_Expression(element=fsp.Q_nu.ufl_element()))
+fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 
 # uncomment this to set the initial profiles from the ODE soltion
 #
@@ -108,7 +116,7 @@ F_psi = ( \
 
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_X = ((fsp.X_ref[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+F_X = ((fsp.X_ref[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_u[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary

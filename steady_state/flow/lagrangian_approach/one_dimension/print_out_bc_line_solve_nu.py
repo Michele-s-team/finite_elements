@@ -33,6 +33,6 @@ print(
 
 
 print(
-    f"\t\t<<|X - X_l|^2>>_[partial Omega l] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.X_output[0] - rpam.parameters['X_l'][0])**2 + (prout.X_output[1] - rpam.parameters['X_l'][1])**2), rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<|u - u_l|^2>>_[partial Omega l] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.u_output[0] - rpam.parameters['u_l'][0])**2 + (prout.u_output[1] - rpam.parameters['u_l'][1])**2), rmsh.ds_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<|X - X_r|^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.X_output[0] - rpam.parameters['X_r'][0])**2 + (prout.X_output[1] - rpam.parameters['X_r'][1])**2), rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<|u - u_r|^2>>_[partial Omega r] = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((prout.u_output[0] - rpam.parameters['u_r'][0])**2 + (prout.u_output[1] - rpam.parameters['u_r'][1])**2), rmsh.ds_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
