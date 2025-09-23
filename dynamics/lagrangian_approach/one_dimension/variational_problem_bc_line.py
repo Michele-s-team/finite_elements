@@ -154,16 +154,16 @@ F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.
 
 F_X_n_12 = ( \
                     ( \
-                                (fsp.X_n_12[alpha] - fsp.X_n_32[alpha]) \
+                                (fsp.u_n_12[alpha] - fsp.X_n_32[alpha]) \
                                 - dt * fsp.w_n_1 * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
-                        ) * fsp.nu_X_n_12[alpha] \
+                        ) * fsp.nu_u_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
 
 F_nu_psi = (
-        (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
+        (fsp.u_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
         * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-        +  (fsp.X_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
+        +  (fsp.u_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
         * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
     ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
 
@@ -176,8 +176,8 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
         ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds \
         + (\
-              (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-              + (fsp.X_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+              (fsp.u_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+              + (fsp.u_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds\
     )
 

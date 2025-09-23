@@ -67,7 +67,7 @@ fsp.sigma_n_32.interpolate( vp.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.u
 fsp.v_bar_0.interpolate( vp.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_n_0.interpolate( vp.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
 fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
-fsp.X_n_12_0.interpolate( vp.X_n_12_0_Expression( element=fsp.Q_X_n_12.ufl_element() ) )
+fsp.u_n_12_0.interpolate( vp.X_n_12_0_Expression( element=fsp.Q_u_n_12.ufl_element() ) )
 
 
 #Option 2:read initial profiles by reading them from file
@@ -87,7 +87,7 @@ fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 
 print('... done')
 '''
 
-fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.X_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
+fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.u_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
 
