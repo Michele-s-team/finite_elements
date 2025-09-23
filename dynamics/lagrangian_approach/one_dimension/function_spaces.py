@@ -50,6 +50,7 @@ v_n_2 = Function(Q_v_n)
 w_n_1 = Function(Q_w_n)
 sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
+sigma_n_12_output = Function( Q_phi )
 u_n_32 = Function( Q_u_n_12 )
 
 f = Function(Q_f)
