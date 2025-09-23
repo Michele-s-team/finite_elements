@@ -82,4 +82,3 @@ V = (v_bar + v_n_1) / 2.0
 W = (w_bar + w_n_1) / 2.0
 
 assigner = FunctionAssigner(Q, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_u_n_12, Q_nu_n_12, Q_psi_n_12, Q_mu_n_12])
-# assigner.assign(psi, [v_bar_0, w_bar_0, phi_0, v_n_0, w_n_0, z_n_0, omega_n_0, mu_n_0])
