@@ -6,7 +6,6 @@ import parameters.read.solution as rpam
 
 
 
-degree_function_space = 1
 
 # Define function spaces
 #finite elements for sigma .... omega
