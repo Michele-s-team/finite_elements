@@ -95,7 +95,7 @@ fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fs
 t = 0
 for step in range(rpam.parameters['N']):
 
-    print("\n* step = ", step, "\n")
+    print("\n* step = ", step, "\n",flush=True)
 
     # Update current time
     t += vp.dt
