@@ -5,19 +5,6 @@ import mesh.load as lmsh
 import parameters.read.solution as rpam
 
 
-'''
-the  fields are defined as follows
-- v_bar == v^{bar}_{Lagrangian approach}
-- w_bar == w^{bar}_{Lagrangian approach}
-- phi == \phi_{Lagrangian approach}
-- v_n == v^{n}_{Lagrangian approach}
-- w_n == w^{n}_{Lagrangian approach}
-- X_n_12[alpha] == X^{n-1/2, alpha}_{Lagrangian approach}
-- nu_n_12 == nu^{n-1/2}_{Lagrangian approach}
-- psi_n_12 == psi^{n-1/2}_{Lagrangian approach}
-- mu_n_12 == mu^{n-1/2}_{Lagrangian approach}
-'''
-# sign
 
 degree_function_space = 1
 

@@ -11,6 +11,18 @@ clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variati
 Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line $MESH_PATH $SOLUTION_PATH
+    
+the  fields in this problem are 
+- v_bar == v^{bar}_{Lagrangian approach}
+- w_bar == w^{bar}_{Lagrangian approach}
+- phi == \phi_{Lagrangian approach}
+- v_n == v^{n}_{Lagrangian approach}
+- w_n == w^{n}_{Lagrangian approach}
+- X_n_12[alpha] == X^{n-1/2, alpha}_{Lagrangian approach}
+- nu_n_12 == nu^{n-1/2}_{Lagrangian approach}
+- psi_n_12 == psi^{n-1/2}_{Lagrangian approach}
+- mu_n_12 == mu^{n-1/2}_{Lagrangian approach}
+
 '''
 
 
