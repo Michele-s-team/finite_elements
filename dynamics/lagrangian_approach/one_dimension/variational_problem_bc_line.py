@@ -178,7 +178,6 @@ F_nu_psi = (
 
 
 F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
-# sign
 
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
