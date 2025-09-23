@@ -53,6 +53,7 @@ sigma_n_32 = Function( Q_phi )
 u_n_32 = Function( Q_u_n_12 )
 
 f = Function(Q_f)
+X_ref = Function(Q_X)
 
 #these functions are used to print the solution to file
 v_bar_output= Function(Q_v_bar)
