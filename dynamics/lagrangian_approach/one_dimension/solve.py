@@ -11,6 +11,18 @@ clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variati
 Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line $MESH_PATH $SOLUTION_PATH
+    
+the  fields in this problem are 
+- v_bar == v^{bar}_{Lagrangian approach}
+- w_bar == w^{bar}_{Lagrangian approach}
+- phi == \phi_{Lagrangian approach}
+- v_n == v^{n}_{Lagrangian approach}
+- w_n == w^{n}_{Lagrangian approach}
+- u_n_12[alpha] == X^{n-1/2, alpha}_{Lagrangian approach} - X_ref^alpha
+- X_ref^alpha is the manifold in the reference configuration 
+- nu_n_12 == nu^{n-1/2}_{Lagrangian approach}
+- psi_n_12 == psi^{n-1/2}_{Lagrangian approach}
+- mu_n_12 == mu^{n-1/2}_{Lagrangian approach}
 '''
 
 
@@ -55,7 +67,7 @@ fsp.sigma_n_32.interpolate( vp.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.u
 fsp.v_bar_0.interpolate( vp.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_n_0.interpolate( vp.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
 fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
-fsp.X_n_12_0.interpolate( vp.X_n_12_0_Expression( element=fsp.Q_X_n_12.ufl_element() ) )
+fsp.u_n_12_0.interpolate( vp.u_n_12_0_Expression( element=fsp.Q_u_n_12.ufl_element() ) )
 
 
 #Option 2:read initial profiles by reading them from file
@@ -67,7 +79,7 @@ fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 
 # fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_n_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_n_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X.csv', fsp.X_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'u.csv', fsp.u_n_12_0)
 # fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_n_12_0)
 fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ))
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_n_12_0)
@@ -75,7 +87,7 @@ fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 
 print('... done')
 '''
 
-fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.X_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
+fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.u_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
 
@@ -83,7 +95,7 @@ fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fs
 t = 0
 for step in range(rpam.parameters['N']):
 
-    print("\n* step = ", step, "\n")
+    print("\n* step = ", step, "\n",flush=True)
 
     # Update current time
     t += vp.dt
@@ -127,7 +139,7 @@ for step in range(rpam.parameters['N']):
 
     #update previous solution:
     #get the solution and write it to file
-    v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, X_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
+    v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, u_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
     
     prout_bc.print_bcs( fsp.psi )
@@ -142,7 +154,7 @@ for step in range(rpam.parameters['N']):
     fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_output, fsp.Q_phi ) )
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    fsp.X_n_32.assign( X_n_12_output )
+    fsp.u_n_32.assign( u_n_12_output )
 
 
 

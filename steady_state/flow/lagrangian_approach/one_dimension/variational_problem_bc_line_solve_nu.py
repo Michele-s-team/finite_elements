@@ -27,6 +27,17 @@ cmd.set_gauge('arc_length')
 
 i, j, k, l, alpha = ufl.indices(5)
 
+# reference configuration of the manifold, a straight line which coincides with the mesh line
+class X_ref_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[0]
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
+
 
 # uncomment this to set the initial profiles from the ODE soltion
 #
@@ -36,10 +47,10 @@ fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'sigma.csv', fsp.sigma_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu.csv', fsp.mu_0)
-fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'X.csv', fsp.X_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'u.csv', fsp.u_0)
 fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_0)
 
-fsp.assigner.assign(fsp.phi, [fsp.v_0, fsp.w_0, fsp.sigma_0, fsp.psi_0, fsp.mu_0, fsp.X_0, fsp.nu_0 ])
+fsp.assigner.assign(fsp.phi, [fsp.v_0, fsp.w_0, fsp.sigma_0, fsp.psi_0, fsp.mu_0, fsp.u_0, fsp.nu_0 ])
 print('... done')
 #
 
@@ -47,16 +58,16 @@ print('... done')
 bc_v_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_l'])), rmsh.boundary_l)
 bc_v_r = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_r'])), rmsh.boundary_r)
 
-bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_lr']), rmsh.boundary_l)
+bc_w = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_l']), rmsh.boundary_l)
 bc_sigma_r = DirichletBC(fsp.Q.sub(2), Constant(rpam.parameters['sigma_r']), rmsh.boundary_r)
 
 bc_psi_l = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_l"]), rmsh.boundary_l)
 bc_psi_r = DirichletBC(fsp.Q.sub(3), Constant(rpam.parameters["psi_r"]), rmsh.boundary_r)
 
-bc_X_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_l"][0], rpam.parameters["X_l"][1])), rmsh.boundary_l)
-bc_X_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_r"][0], rpam.parameters["X_r"][1])), rmsh.boundary_r)
+bc_u_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_l"][0], rpam.parameters["u_l"][1])), rmsh.boundary_l)
+bc_u_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_r"][0], rpam.parameters["u_r"][1])), rmsh.boundary_r)
 
-bcs = [bc_v_l, bc_v_r, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_X_l, bc_X_r]
+bcs = [bc_v_l, bc_v_r, bc_w, bc_sigma_r, bc_psi_l, bc_psi_r, bc_u_l, bc_u_r]
 
 # variational problem
 
@@ -105,14 +116,14 @@ F_psi = ( \
 
 F_mu = ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
-F_X = (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
+F_X = ((fsp.X_ref[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_u[alpha] * geo.sqrt_detg(fsp.psi, fsp.nu) * rmsh.dx
 
 F_nu = rpam.parameters["alpha"] / rmsh.r_mesh * (fsp.nu.dx(i) * fsp.nu_nu.dx(i)) * rmsh.dx
 
 F_N = rpam.parameters["alpha"] / rmsh.r_mesh * ( \
     # these terms constrain mu = H(psi) on the boundary
         ((fsp.mu - geo.H(fsp.psi, fsp.nu)) * fsp.nu_mu) * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
-        + (fsp.X[alpha].dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_X[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
+        + ((fsp.X_ref[alpha] + fsp.u[alpha]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, alpha]) * fsp.nu_u[alpha] * bgeo.sqrt_deth_lr(fsp.psi) * rmsh.ds \
      )
 
 # total functional for the mixed problem

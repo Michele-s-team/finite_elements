@@ -3,29 +3,23 @@ from fenics import *
 import mesh.load as lmsh
 import parameters.read.solution as rpam
 
-'''
-the fields in this problem are
-psi = psi_{Lagrangian approach}
-mu = H
-X[i] = {X^i}_{Lagrangian approach}
-nu = nu_{Lagrangian approach}
-sigma = sigma_{Lagrangian approach}
-'''
+
 
 P_psi = FiniteElement('P', interval, rpam.parameters['function_space_degree'])
 P_mu = FiniteElement('P', interval, rpam.parameters['function_space_degree'])
-P_X = VectorElement('P', interval, rpam.parameters['function_space_degree'], dim=2)
+P_u = VectorElement('P', interval, rpam.parameters['function_space_degree'], dim=2)
 
-element = MixedElement([P_psi, P_mu, P_X])
+element = MixedElement([P_psi, P_mu, P_u])
 # total function space
 Q = FunctionSpace(lmsh.mesh, element)
-# function spaces for z, omega, eta and theta
+# function spaces for psi, mu, u
 Q_psi = Q.sub(0).collapse()
 Q_mu = Q.sub(1).collapse()
-Q_X = Q.sub(2).collapse()
+Q_u = Q.sub(2).collapse()
 
 Q_sigma = FunctionSpace(lmsh.mesh, 'P', 1)
 Q_nu = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
+Q_X = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], dim=2)
 
 '''
 function spaces of polynomial order 1 (which should not be changed) which are used to read in functions and assign their nodal values from a list 
@@ -36,27 +30,28 @@ Q_read = FunctionSpace(lmsh.mesh, 'P', 1)
 # Define functions
 J_phi = TrialFunction(Q)
 phi = Function(Q)
-nu_psi, nu_mu, nu_X = TestFunctions(Q)
+nu_psi, nu_mu, nu_u = TestFunctions(Q)
 
 # these functions are used to print the solution to file
 sigma = Function(Q_sigma)
 nu =  Function(Q_nu)
+X_ref = Function(Q_X)
 
 psi_output = Function(Q_psi)
 mu_output = Function(Q_mu)
-X_output = Function(Q_X)
+u_output = Function(Q_u)
 
 psi_exact = Function(Q_psi)
 mu_exact = Function(Q_mu)
-X_exact = Function(Q_X)
+u_exact = Function(Q_u)
 
 
 
 # omega_0, z_0 are used to store the initial conditions
 psi_0 = Function(Q_psi)
 mu_0 = Function(Q_mu)
-X_0 = Function(Q_X)
+u_0 = Function(Q_u)
 
-psi, mu, X = split(phi)
-assigner = FunctionAssigner(Q, [Q_psi, Q_mu, Q_X])
+psi, mu, u = split(phi)
+assigner = FunctionAssigner(Q, [Q_psi, Q_mu, Q_u])
 

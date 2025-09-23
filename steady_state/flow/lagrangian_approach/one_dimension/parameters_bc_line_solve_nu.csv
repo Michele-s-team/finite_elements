@@ -1,2 +1,2 @@
-kappa,rho,eta,v_l,v_r,w_lr,sigma_r,psi_l,psi_r,X_l,X_r,alpha,quadrature_degree,function_space_degree,solution_ode_path
-1.0,1.0,1.0,[1.0],[1.0],0.0,0.1,0,0,"[0,0]","[1,-0.740055207690927769657854241462]",1e3,4,2,"solution_ode_solve_nu"
+kappa,rho,eta,v_l,v_r,w_l,sigma_r,psi_l,psi_r,u_l,u_r,alpha,quadrature_degree,function_space_degree,solution_ode_path
+1.0,1.0,1.0,[1.0],[1.0],0.0,0.1,0,0,"[0,0]","[0,-0.740055207690927769657854241462]",1e3,4,2,"solution_ode_solve_nu"

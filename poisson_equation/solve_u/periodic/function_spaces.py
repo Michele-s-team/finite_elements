@@ -10,10 +10,8 @@ rmsh = importlib.import_module(swi.rmsh)
 function_space_degree = 4
 
 '''
-This enforces periodic boundary conditions between the left and right edge of the rectangle
-
+This enforces periodic boundary conditions which map the right edge into the left edge, and the top edge into the left edge
 '''
-
 
 class PeriodicBoundary(SubDomain):
     # Identify the "target domain": the origin corner (bottom-left)

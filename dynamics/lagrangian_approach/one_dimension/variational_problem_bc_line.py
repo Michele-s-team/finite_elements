@@ -21,7 +21,18 @@ cmd.set_gauge('arc_length')
 i, j, k, l, alpha = ufl.indices( 5 )
 
 
+
+
 dt = rpam.parameters['T'] / rpam.parameters['N']
+
+# reference configuration of the manifold, a straight line which coincides with the mesh line
+class X_ref_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = x[0]
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
 
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
@@ -45,10 +56,10 @@ class nu_n_12_0_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
     
-class X_n_12_0_Expression( UserExpression ):
+class u_n_12_0_Expression( UserExpression ):
     def eval(self, values, x):
         epsilon = 1e-4
-        values[0] = x[0]
+        values[0] = 0
         values[1] = 0 +  epsilon * np.cos(2 * np.pi * x[0] )
 
     def value_shape(self):
@@ -63,10 +74,8 @@ class f_Expression( UserExpression ):
         return (2,)
 
     
+fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 fsp.f.interpolate(f_Expression(element=fsp.Q_f.ufl_element()))
-
-
-
 
 
 # boundary conditions
@@ -77,12 +86,12 @@ bc_w_bar = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_bar_lr']), rmsh
 
 bc_phi_r = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.boundary_r)
 
-bc_X_n_12_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_n_12_l"][0], rpam.parameters["X_n_12_l"][1])), rmsh.boundary_l)
-bc_X_n_12_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["X_n_12_r"][0], rpam.parameters["X_n_12_r"][1])), rmsh.boundary_r)
+bc_u_n_12_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_n_12_l"][0], rpam.parameters["u_n_12_l"][1])), rmsh.boundary_l)
+bc_u_n_12_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_n_12_r"][0], rpam.parameters["u_n_12_r"][1])), rmsh.boundary_r)
 
 
-# all BCs
-bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar, bc_phi_r, bc_X_n_12_l, bc_X_n_12_r]
+#BCs
+bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar, bc_phi_r, bc_u_n_12_l, bc_u_n_12_r]
 
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
@@ -152,36 +161,35 @@ F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( f
 
 F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
-F_X_n_12 = ( \
+F_u_n_12 = ( \
                     ( \
-                                (fsp.X_n_12[alpha] - fsp.X_n_32[alpha]) \
+                                (fsp.u_n_12[alpha] - fsp.u_n_32[alpha]) \
                                 - dt * fsp.w_n_1 * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
-                        ) * fsp.nu_X_n_12[alpha] \
+                        ) * fsp.nu_u_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
 
 F_nu_psi = (
-        (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
+        ((fsp.X_ref[0] + fsp.u_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
         * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-        +  (fsp.X_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
+        +  ((fsp.X_ref[1] + fsp.u_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
         * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
     ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
 
 
 F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
-# sign
 
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
         ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds \
         + (\
-              (fsp.X_n_12[0].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-              + (fsp.X_n_12[1].dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+              ((fsp.X_ref[0] + fsp.u_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+              + ((fsp.X_ref[1] + fsp.u_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds\
     )
 
 
 # total functional for the mixed problem
-F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_X_n_12 + F_nu_psi + F_mu_n_12) + F_N
+F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_u_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
