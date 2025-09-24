@@ -30,4 +30,5 @@ metadata['file_format'] = 'h5'
 
 msh.genereate_line_mesh(rpam.parameters['x_l'], rpam.parameters['x_r'], int((rpam.parameters['x_r'] - rpam.parameters['x_l']) / rpam.parameters['resolution']),
                         rpam.parameters['line_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
+                        None, None,
                         output_directory, metadata)
