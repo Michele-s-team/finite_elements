@@ -69,7 +69,7 @@ bcs = [bc_u]
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds
+    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_lr
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
