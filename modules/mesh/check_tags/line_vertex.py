@@ -1,3 +1,7 @@
+'''
+this module checks the mesh tags for a mesh given by a line with a vertex in between, generated with generate_mesh/1d/line/vertex/generate_mesh.py
+'''
+
 import colorama as col
 from fenics import *
 import importlib
