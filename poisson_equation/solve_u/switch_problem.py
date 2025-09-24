@@ -6,6 +6,11 @@ if rarg.args.problem == 'line':
     rmsh = 'mesh.read.line'
     vp = 'variational_problem_bc_line'
     prout_bc = 'print_out_bc_line'
+    
+elif rarg.args.problem == 'line_vertex':
+    rmsh = 'mesh.read.line_vertex'
+    vp = 'variational_problem_bc_line_vertex'
+    prout_bc = 'print_out_bc_line_vertex'
 
 elif rarg.args.problem == 'disk':
     rmsh = 'mesh.read.disk'
