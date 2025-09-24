@@ -1551,7 +1551,9 @@ Input values:
 - 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
 - 'n_intervals': the number of intervals into which the line mesh is divided
 - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
-- 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively 
+- 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
+- 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh
+- 'vertex_m_id': the id of the middle vertex in the mesh
 - 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
 - 'metadata' [optional]: the mesh metadata to write in the output directory
 
