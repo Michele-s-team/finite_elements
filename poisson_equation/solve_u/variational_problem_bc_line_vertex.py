@@ -1,3 +1,8 @@
+'''
+This variational problem solves for a Poisson problem on a line with a vertex in between, where the solution in the left and right halves are  mirror of each other
+
+'''
+
 from fenics import *
 import importlib
 import numpy as np
