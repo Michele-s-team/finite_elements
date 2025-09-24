@@ -1552,7 +1552,7 @@ Input values:
 - 'n_intervals': the number of intervals into which the line mesh is divided
 - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
 - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
-- 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh
+- 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
 - 'vertex_m_id': the id of the middle vertex in the mesh
 - 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
 - 'metadata' [optional]: the mesh metadata to write in the output directory
@@ -1561,6 +1561,7 @@ Return values:
 - 'mesh': the one-dimensional mesh
 - 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
 - 'vertex_function_temp': the mesh function tagging vertices in the mesh
+
 
 Example of usage: 
           mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
