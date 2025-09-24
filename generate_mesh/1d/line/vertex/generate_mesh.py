@@ -5,7 +5,7 @@ because mesh cannot be written and read properly when written on xdmf files, thi
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/1d/line"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
@@ -29,5 +29,6 @@ metadata = rpam.parameters.copy()
 metadata['file_format'] = 'h5'
 
 msh.genereate_line_mesh(rpam.parameters['x_l'], rpam.parameters['x_r'], int((rpam.parameters['x_r'] - rpam.parameters['x_l']) / rpam.parameters['resolution']),
-                        rpam.parameters['line_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
+                        rpam.parameters['line_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'], 
+                        rpam.parameters['x_m'], rpam.parameters['vertex_m_id'], 
                         output_directory, metadata)
