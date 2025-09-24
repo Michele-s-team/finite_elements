@@ -1,3 +1,4 @@
+import colorama as col
 import command as cmd
 from fenics import *
 import numpy as np
@@ -1579,6 +1580,8 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
     # creat a function for the vertices
     vertex_function = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
+    
+    vertex_m_exists = False
     for vertex in vertices(mesh):
         x = vertex.point().x()  # Get x-coordinate
 
@@ -1592,7 +1595,10 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
         if (x_m is not None) and (vertex_m_id is not None):
              if math.isclose(x, x_m):
                 vertex_function[vertex] = vertex_m_id
+                vertex_m_exists = True
 
+    if vertex_m_exists is not True:
+        print(f"{col.Fore.RED}{'Error: middle vertex is not one of the mesh vertices!'}{col.Style.RESET_ALL}")
 
     if output_directory is not None:
         '''
