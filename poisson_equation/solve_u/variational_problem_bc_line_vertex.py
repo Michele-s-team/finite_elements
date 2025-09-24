@@ -11,6 +11,7 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import mesh.load as lmsh
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -39,7 +40,7 @@ class grad_u_expression(UserExpression):
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] =( 2 * np.pi / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']) )**2 * np.cos(2 * np.pi * x[0]/ (rmsh.parameters['x_r'] - rmsh.parameters['x_l'])) 
+        values[0] = -( 2 * np.pi / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']) )**2 * np.cos(2 * np.pi * x[0]/ (rmsh.parameters['x_r'] - rmsh.parameters['x_l'])) 
 
     def value_shape(self):
         return (1,)
@@ -68,9 +69,12 @@ bc_u = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary)
 bcs = [bc_u]
 
 # variational functional for the original problem (poisson equation)
-F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_lr
+F_u = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
+    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_lr
+    
+F_N = rpam.parameters['alpha']/ rmsh.r_mesh
 
+F = F_u
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
        - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
