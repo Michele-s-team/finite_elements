@@ -1,37 +1,47 @@
-'''
-This code solves the Poisson equation Nabla u = f expressed in terms of the function u
-The Hessian of u is solved in a post-processing (pp) variational problem, because one cannot take directly the second derivative of u (u.dx(i).dx(j)) [this would lead to divergences]
-run with
-
-clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
-Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/mwe/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex $MESH_PATH $SOLUTION_PATH
-'''
-
 from fenics import *
-import sys
 import numpy as np
+import ufl
+import sys
+
+mesh_path = 'mesh_files/'
+
+
+mesh = Mesh()
+with HDF5File(mesh.mpi_comm(), mesh_path + "line_mesh.h5", "r") as infile:
+    infile.read(mesh, 'mesh', False)
+
+
+# read lines and vertices
+cf = MeshFunction("size_t", mesh, mesh.topology().dim())
+with HDF5File(mesh.mpi_comm(), mesh_path + "line_mesh.h5", "r") as infile:
+    infile.read(cf, 'cf')
+    
+vf = MeshFunction("size_t", mesh, mesh.topology().dim()-1)
+with HDF5File(mesh.mpi_comm(), mesh_path + "vertex_mesh.h5", "r") as infile:
+    infile.read(vf, 'vf')
 
 
 
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
 
-import mesh.utils as msh
+# radius of the smallest cell in the mesh
+r_mesh = mesh.hmin()
 
-
-# add the path where to find the shared modules
-module_path = '/home/fenics/shared/modules'
-sys.path.append(module_path)
-
-mesh, sf = msh.read_from_file('/home/fenics/shared/generate_mesh/1d/line/vertex/solution', 'h5')
+# measures for the line, for left and right points and for middle point
+dx = Measure("dx", domain=mesh, subdomain_data=cf, subdomain_id=1)
+ds_l = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=2)
+ds_r = Measure("ds", domain=mesh, subdomain_data=vf, subdomain_id=3)
+ds_m = Measure("dS", domain=mesh, subdomain_data=vf, subdomain_id=4)
+ds_lr = Measure("ds", domain=mesh)
 
 
+# define boundaries for left and right points, and for middle point
+boundary = 'on_boundary'
+boundary_l = f'near(x[0], {0.0})'
+boundary_r = f'near(x[0], {1.0})'
+boundary_m = f'near(x[0], {0.5})'
 
 Q = FunctionSpace(mesh, 'P', 4)
 
-# Define variational problem
 u = Function(Q)
 nu_u = TestFunction(Q)
 f = Function(Q)
@@ -39,7 +49,7 @@ J_u = TrialFunction(Q)
 u_exact = Function(Q)
 
 
-
+# consider a Poisson equation for which I know the exact solution
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
@@ -71,16 +81,30 @@ u_exact.interpolate(u_exact_expression(element=Q.ufl_element()))
 f.interpolate(laplacian_u_expression(element=Q.ufl_element()))
 
 
-'''
-bc_u = DirichletBC(Q, u_exact, rmsh.boundary)
-bcs = [bc_u]
+# Dirichlet boundary conditions on left and right edge
+bc_l = DirichletBC(Q, u_exact, boundary_l )
+bc_r = DirichletBC(Q, u_exact, boundary_r )
 
-# variational functional for the original problem (poisson equation)
-F = (u.dx(i) * nu_u.dx(i) + f * nu_u) * rmsh.dx \
-    - bgeo.facet_normal[i] * (u.dx(i)) * nu_u * rmsh.ds_lr
+# tentative condition to enforce u = u _exact at the middle (m) point
+bc_m = DirichletBC(Q, u_exact, boundary_m )
 
-J = derivative(vp.F, u, J_u)
-problem = NonlinearVariationalProblem(vp.F, u, vp.bcs, J)
+#case A: this works
+bcs = [bc_l, bc_r]
+# case B: this does not work
+# bcs = [bc_l, bc_m]
+
+i = ufl.indices(1)
+facet_normal = FacetNormal(mesh)
+
+
+# variational problem
+F = (u.dx(i) * nu_u.dx(i) + f * nu_u) * dx \
+    - facet_normal[i] * (u.dx(i)) * nu_u * ds_lr
+
+
+
+J = derivative(F, u, J_u)
+problem = NonlinearVariationalProblem(F, u, bcs, J)
 solver = NonlinearVariationalSolver(problem)
 
 # set the solver parameters here
@@ -88,22 +112,14 @@ params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
                   'linear_solver': 'superlu',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
+                  'absolute_tolerance': 1e-12,
+                  'relative_tolerance': 1e-12,
                   'maximum_iterations': 1000000,
                   'relaxation_parameter': 0.95,
               }
           }
 solver.parameters.update(params)
 
-
-
-# solve original problem
 solver.solve()
 
-
-# solve pp problem
-solver_pp.solve()
-
-prout_bc = importlib.import_module(swi.prout_bc)
-'''
+print(f'\nerror = {assemble((u - u_exact)**2 * dx)/assemble(Constant(1)* dx)}')

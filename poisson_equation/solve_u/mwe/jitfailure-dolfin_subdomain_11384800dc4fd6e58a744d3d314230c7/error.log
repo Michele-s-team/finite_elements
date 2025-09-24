@@ -1,0 +1,4 @@
+/tmp/tmps6mgux7s/dolfin_subdomain_11384800dc4fd6e58a744d3d314230c7.cpp: In member function ‘virtual bool dolfin::dolfin_subdomain_11384800dc4fd6e58a744d3d314230c7::inside(Eigen::Ref<const Eigen::Matrix<double, -1, 1> >, bool) const’:
+/tmp/tmps6mgux7s/dolfin_subdomain_11384800dc4fd6e58a744d3d314230c7.cpp:63:31: error: expected ‘)’ before ‘;’ token
+          return near(x[0], 0.0;
+                               ^
