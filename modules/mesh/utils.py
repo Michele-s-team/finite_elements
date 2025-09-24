@@ -1566,7 +1566,8 @@ Example of usage:
 '''
 
 
-def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, output_directory=None, metadata=None):
+def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, x_m=None, vertex_m_id=None, output_directory=None, metadata=None):
+    
     mesh = IntervalMesh(n_intervals, x_l, x_r)
 
     # create a function for the lines
@@ -1583,6 +1584,12 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         if math.isclose(x, x_r):
             vertex_function[vertex] = vertex_r_id
+            
+        # if there is a middle vertex, tag id with vertex_m_id
+        if (x_m is not None) and (vertex_m_id is not None):
+             if math.isclose(x, x_m):
+                vertex_function[vertex] = vertex_m_id
+
 
     if output_directory is not None:
         '''
