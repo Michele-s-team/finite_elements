@@ -46,7 +46,8 @@ if "n_sub_meshes" in parameters:
 
                 # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
                 sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
-                                                                                      parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
+                                                                                      parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
+                                                                                      None, None)
                 sub_meshes.append(sub_mesh_1d)
 
         print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
