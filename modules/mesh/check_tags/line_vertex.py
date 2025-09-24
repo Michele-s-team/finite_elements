@@ -26,6 +26,7 @@ test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_d
 
 test_mesh_integral_errors['\int f ds_l'] = msh.test_mesh_integral(integral_exact_ds_l, tf.function_test_integrals_fenics, rmsh.ds_l, '\int f ds_l')
 test_mesh_integral_errors['\int f ds_r'] = msh.test_mesh_integral(integral_exact_ds_r, tf.function_test_integrals_fenics, rmsh.ds_r, '\int f ds_r')
+test_mesh_integral_errors['\int f ds_m'] = msh.test_mesh_integral(integral_exact_ds_m, tf.function_test_integrals_fenics, rmsh.ds_m, '\int f ds_m')
 
 test_mesh_integral_errors['\int f ds_lr'] = msh.test_mesh_integral(integral_exact_ds_lr, tf.function_test_integrals_fenics, rmsh.ds_lr, '\int f ds_lr')
 
