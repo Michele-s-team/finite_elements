@@ -1581,7 +1581,10 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
     # creat a function for the vertices
     vertex_function = MeshFunction("size_t", mesh, mesh.topology().dim() - 1)
     
-    vertex_m_exists = False
+    if (x_m is not None) and (vertex_m_id is not None):
+        # I am generating a mesh with a middle vertex -> create the boolean variable vertex_m_exists to check whether x_m matches one of the coordinates of the mesh vertices
+        vertex_m_exists = False
+        
     for vertex in vertices(mesh):
         x = vertex.point().x()  # Get x-coordinate
 
@@ -1593,12 +1596,15 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
             
         # if there is a middle vertex, tag id with vertex_m_id
         if (x_m is not None) and (vertex_m_id is not None):
+            # I am generating a mesh with a middle vertex -> check if the mesh vertex coordinate under consideration matches x_m
              if math.isclose(x, x_m):
                 vertex_function[vertex] = vertex_m_id
                 vertex_m_exists = True
 
-    if vertex_m_exists is not True:
-        print(f"{col.Fore.RED}{'Error: middle vertex is not one of the mesh vertices!'}{col.Style.RESET_ALL}")
+    if (x_m is not None) and (vertex_m_id is not None):
+        # I am generating a mesh with a middle vertex -> if no vertex coordinate matches x_m, print an error message
+        if vertex_m_exists is not True:
+            print(f"{col.Fore.RED}{'Error: middle vertex is not one of the mesh vertices!'}{col.Style.RESET_ALL}")
 
     if output_directory is not None:
         '''
