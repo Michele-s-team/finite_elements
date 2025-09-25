@@ -7,8 +7,8 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/half_circle"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/half_circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import meshio
 import gmsh
+import meshio
 import pygmsh
 import sys
 
@@ -40,41 +40,38 @@ geometry = pygmsh.geo.Geometry()
 # Fetch model we would like to add data to
 model = geometry.__enter__()
 
-half_circle_center = model.add_point((rpam.parameters["c_r_x"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])
+half_circle_center = gmsh.model.geo.addPoint(rpam.parameters["c_r_x"], rpam.parameters["h"], 0)
 
 # add the points which describe the l, r and b edge, and the parts of the t edge which surround the semi-circle, and the semi-circle
-my_points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters["resolution"]),
-             model.add_point((rpam.parameters["L"], 0, 0), mesh_size=rpam.parameters["resolution"]),
-             model.add_point((rpam.parameters["L"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
-             model.add_point((rpam.parameters["c_r_x"] + rpam.parameters["r"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
-             model.add_point((rpam.parameters["c_r_x"], rpam.parameters["h"] - rpam.parameters["r"], 0), mesh_size=rpam.parameters["resolution"]),
-             model.add_point((rpam.parameters["c_r_x"] - rpam.parameters["r"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
-             model.add_point((0, rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])
+my_points = [gmsh.model.geo.addPoint(0, 0, 0),
+             gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0),
+             gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0),
+             gmsh.model.geo.addPoint(rpam.parameters["c_r_x"] + rpam.parameters["r"], rpam.parameters["h"], 0),
+             gmsh.model.geo.addPoint(rpam.parameters["c_r_x"], rpam.parameters["h"] - rpam.parameters["r"], 0),
+             gmsh.model.geo.addPoint(rpam.parameters["c_r_x"] - rpam.parameters["r"], rpam.parameters["h"], 0),
+             gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)
              ]
 
 
 # Add lines between all points creating the rectangle
-line_b = model.add_line(my_points[0], my_points[1])
-line_r = model.add_line(my_points[1], my_points[2])
-line_tr = model.add_line(my_points[2], my_points[3])
-arc_r = model.add_circle_arc(my_points[3], half_circle_center, my_points[4])
-arc_l = model.add_circle_arc(my_points[4], half_circle_center, my_points[5])
-line_tl = model.add_line(my_points[5], my_points[6])
-line_l = model.add_line(my_points[6], my_points[0])
+line_b = gmsh.model.geo.addLine(my_points[0], my_points[1])
+line_r = gmsh.model.geo.addLine(my_points[1], my_points[2])
+line_tr = gmsh.model.geo.addLine(my_points[2], my_points[3])
+arc_r = gmsh.model.geo.addCircleArc(my_points[3], half_circle_center, my_points[4])
+arc_l = gmsh.model.geo.addCircleArc(my_points[4], half_circle_center, my_points[5])
+line_tl = gmsh.model.geo.addLine(my_points[5], my_points[6])
+line_l = gmsh.model.geo.addLine(my_points[6], my_points[0])
 
-channel_lines = [line_b, line_r, line_tr,
-                 arc_r, arc_l,
-                 line_tl, line_l
-                 ]
+loop = gmsh.model.geo.addCurveLoop([line_b, line_r, line_tr, arc_r, arc_l, line_tl, line_l])
+plane_surface = gmsh.model.geo.addPlaneSurface([loop])
 
-channel_loop = model.add_curve_loop(channel_lines)
-
-
-plane_surface = model.add_plane_surface(channel_loop)
-
+'''
 model.synchronize()
 
-model.add_physical([plane_surface], "Volume")
+gmsh.model.addPhysicalGroup(2, [plane_surface._id], tag=1)
+gmsh.model.setPhysicalName(2, 1, "Volume")
+
+# model.add_physical([plane_surface], "Volume", tag=rpam.parameters['surface_id'])
 model.add_physical([line_b], "b")
 model.add_physical([line_r], "r")
 model.add_physical([line_l], "l")
@@ -91,3 +88,4 @@ msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True
 
 gmsh.clear()
 geometry.__exit__()
+'''
