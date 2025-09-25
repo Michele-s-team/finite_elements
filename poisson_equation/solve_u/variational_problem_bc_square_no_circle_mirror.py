@@ -1,3 +1,8 @@
+'''
+solve for the Poisson equation in a square (A), which represents half of an imaginary square, whose right half will be denoted by B. The right edge of A represents the symmetry axis which mirrors A into B. 
+All fields in A are the mirror image of their profiles in B. 
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
