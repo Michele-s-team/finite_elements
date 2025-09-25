@@ -75,6 +75,11 @@ elif rarg.args.problem == 'square_symmetric_left_right_top_bottom':
     rmsh = 'mesh.read.square'
     vp = 'variational_problem_bc_square_symmetric_left_right_top_bottom'
     prout_bc = 'print_out_bc_square_symmetric_left_right_top_bottom'
+    
+elif rarg.args.problem == 'square_half_circle':
+    rmsh = 'mesh.read.square_half_circle'
+    vp = 'variational_problem_bc_square_half_circle'
+    prout_bc = 'print_out_bc_square_half_circle'
 
 elif rarg.args.problem == 'square_ellipse':
     rmsh = 'mesh.read.square_ellipse'
