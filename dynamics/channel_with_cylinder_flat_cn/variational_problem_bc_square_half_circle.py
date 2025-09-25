@@ -52,7 +52,7 @@ bc_v__half_circle = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.mf, rmsh.paramet
 bc_phi_r = DirichletBC(fsp.Q, Constant(0), rmsh.mf, rmsh.parameters['line_r_id'])
 
 # boundary conditions for the surface_tension p
-bc_v_ = [bc_v__l, bc_v__b, bc_v__half_circle]
+bc_v_ = [bc_v__l, bc_v__b, bc_v_y_tl, bc_v__half_circle, bc_v_y_tr]
 bc_phi = [bc_phi_r]
 
 # Define variational problem for step 1
