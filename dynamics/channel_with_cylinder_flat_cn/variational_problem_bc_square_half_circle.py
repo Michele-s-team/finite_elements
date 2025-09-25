@@ -42,6 +42,9 @@ v__profile_l = Expression((f'4.0*1.5*x[1]*({2*rmsh.parameters["h"]} - x[1]) / po
 bc_v__l = DirichletBC(fsp.Q_v, v__profile_l, rmsh.mf, rmsh.parameters['line_l_id'])
 # on the bottom edge there is a wall: the velocity is zero there
 bc_v__b = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.mf, rmsh.parameters['line_b_id'])
+# on the tl and tr edges, v_bar_y must vanish
+bc_v_y_tl = DirichletBC(fsp.Q_v.sub(1), Constant(0), rmsh.mf, rmsh.parameters['line_tl_id'])
+bc_v_y_tr = DirichletBC(fsp.Q_v.sub(1), Constant(0), rmsh.mf, rmsh.parameters['line_tr_id'])
 # on the half circle there is a wall: the velcoty is zero there
 bc_v__half_circle = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.mf, rmsh.parameters['half_circle_id'])
 
@@ -60,11 +63,8 @@ F1 = ( \
                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) \
                 + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
          ) * rmsh.dx \
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_l\
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_tl\
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_half_circle\
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_tr\
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_b\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(0) + (fsp.V[0]).dx(i)) * (fsp.nu[0]) * rmsh.ds_tl\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(0) + (fsp.V[0]).dx(i)) * (fsp.nu[0]) * rmsh.ds_tr\
     - fsp.sigma_n_32 * bgeo.facet_normal[i] * fsp.nu[i] * rmsh.ds
 
 # step 2
