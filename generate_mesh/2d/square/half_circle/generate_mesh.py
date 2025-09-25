@@ -101,7 +101,7 @@ gmsh.model.setPhysicalName(1, rpam.parameters['line_b_id'], "line_b")
 
 
 # set the resolution
-# se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
+# se resolution equal to parameters["resolution"] at  distance 0 from surface, and to parameters["resolution"] at distance max(rpam.parameters["L"],rpam.parameters["h"]) from surface
 distance = gmsh.model.mesh.field.add("Distance")
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface])
 
