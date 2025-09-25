@@ -70,24 +70,7 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-'''
-print("=== DEBUG: Shapes of main objects ===")
-print("u:", fsp.u.ufl_shape)
-print("nu_u:", fsp.nu_u.ufl_shape)
-print("grad(u):", grad(fsp.u).ufl_shape)
-print("grad(nu_u):", grad(fsp.nu_u).ufl_shape)
-print("hess_u:", fsp.hess_u.ufl_shape)
-print("nu_hess_u:", fsp.nu_hess_u.ufl_shape)
-print("div(nu_hess_u):", div(fsp.nu_hess_u).ufl_shape)
-print("u.dx(j):", fsp.u.dx(j).ufl_shape)
-print("nu_hess_u[i,j]:", fsp.nu_hess_u[i,j].ufl_shape)
-print("facet_normal:", bgeo.facet_normal.ufl_shape)
-print("f:", fsp.f.ufl_shape)
-print("u_exact:", fsp.u_exact.ufl_shape)
-print("grad_u:", fsp.grad_u.ufl_shape)
-print("hess_u_exact:", fsp.hess_u_exact.ufl_shape)
-print("=====================================")
-'''
+
 
 bc_u = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary)
 bcs = [bc_u]
