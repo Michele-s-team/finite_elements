@@ -41,6 +41,8 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 half_circle_center = gmsh.model.geo.addPoint(rpam.parameters["c_r_x"], rpam.parameters["h"], 0)
+gmsh.model.geo.synchronize()
+
 
 # add the points which describe the l, r and b edge, and the parts of the t edge which surround the semi-circle, and the semi-circle
 my_points = [gmsh.model.geo.addPoint(0, 0, 0),
@@ -51,6 +53,8 @@ my_points = [gmsh.model.geo.addPoint(0, 0, 0),
              gmsh.model.geo.addPoint(rpam.parameters["c_r_x"] - rpam.parameters["r"], rpam.parameters["h"], 0),
              gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)
              ]
+gmsh.model.geo.synchronize()
+
 
 
 # Add lines between all points creating the rectangle
@@ -61,31 +65,67 @@ arc_r = gmsh.model.geo.addCircleArc(my_points[3], half_circle_center, my_points[
 arc_l = gmsh.model.geo.addCircleArc(my_points[4], half_circle_center, my_points[5])
 line_tl = gmsh.model.geo.addLine(my_points[5], my_points[6])
 line_l = gmsh.model.geo.addLine(my_points[6], my_points[0])
+gmsh.model.geo.synchronize()
 
 loop = gmsh.model.geo.addCurveLoop([line_b, line_r, line_tr, arc_r, arc_l, line_tl, line_l])
-plane_surface = gmsh.model.geo.addPlaneSurface([loop])
+gmsh.model.geo.synchronize()
 
-'''
-model.synchronize()
+surface = gmsh.model.geo.addPlaneSurface([loop])
+gmsh.model.geo.synchronize()
 
-gmsh.model.addPhysicalGroup(2, [plane_surface._id], tag=1)
-gmsh.model.setPhysicalName(2, 1, "Volume")
 
-# model.add_physical([plane_surface], "Volume", tag=rpam.parameters['surface_id'])
-model.add_physical([line_b], "b")
-model.add_physical([line_r], "r")
-model.add_physical([line_l], "l")
-model.add_physical([line_tl], "tl")
-model.add_physical([line_tr], "tr")
-model.add_physical([arc_l, arc_r], "half_circle")
+# tag the surface
+gmsh.model.addPhysicalGroup(2, [surface], rpam.parameters['surface_id'])
+gmsh.model.setPhysicalName(2, rpam.parameters['surface_id'], "surface")
 
-geometry.generate_mesh(dim=2)
+
+# tag lines
+
+gmsh.model.addPhysicalGroup(1, [line_l], rpam.parameters['line_l_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['line_l_id'], "line_l")
+
+gmsh.model.addPhysicalGroup(1, [line_r], rpam.parameters['line_r_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['line_r_id'], "line_r")
+
+gmsh.model.addPhysicalGroup(1, [line_tl], rpam.parameters['line_tl_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['line_tl_id'], "line_tl")
+
+gmsh.model.addPhysicalGroup(1, [line_tr], rpam.parameters['line_tr_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['line_tr_id'], "line_tr")
+
+gmsh.model.addPhysicalGroup(1, [arc_l, arc_r], rpam.parameters['half_circle_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['half_circle_id'], "arc")
+
+gmsh.model.addPhysicalGroup(1, [line_b], rpam.parameters['line_b_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['line_b_id'], "line_b")
+
+
+# set the resolution
+# se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
+distance = gmsh.model.mesh.field.add("Distance")
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface])
+
+threshold = gmsh.model.mesh.field.add("Threshold")
+gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+
+minimum = gmsh.model.mesh.field.add("Min")
+gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
+gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+
+gmsh.model.geo.synchronize()
+
+
+
+# Mesh and write
+gmsh.model.mesh.generate(2)
 gmsh.write(mesh_file)
 
 mesh_from_file = meshio.read(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
-gmsh.clear()
-geometry.__exit__()
-'''
+gmsh.finalize()
