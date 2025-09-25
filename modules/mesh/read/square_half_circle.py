@@ -24,12 +24,14 @@ ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameter
 
 ds_tl = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_tl_id'])
 ds_tr = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_tr_id'])
+
 ds_half_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['half_circle_id'])
 
 ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_b_id'])
 
 ds_lr = ds_l + ds_r
-ds_t = ds_tl + ds_tr + ds_half_circle
+ds_tl_tr = ds_tl + ds_tr
+ds_t = ds_tl_tr + ds_half_circle
 ds_tb = ds_t + ds_b
 
 ds = ds_lr + ds_tb
