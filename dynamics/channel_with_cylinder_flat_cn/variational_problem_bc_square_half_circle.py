@@ -65,14 +65,14 @@ F1 = ( \
                 + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
          ) * rmsh.dx \
     - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_l\
-    - bgeo.facet_normal[1] * (rpam.parameters['mu'] * ((fsp.V[1]).dx(1) + (fsp.V[1]).dx(1)) * (fsp.nu[1]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_tl_tr\
+    - bgeo.facet_normal[1] * (rpam.parameters['mu'] * ((fsp.V[1]).dx(1) + (fsp.V[1]).dx(1)) * (fsp.nu[1]) + fsp.sigma_n_32 * fsp.nu[1]) * rmsh.ds_tl_tr\
     - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_half_circle\
     - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_b
 
 # step 2
 # natural BC imposed here on ds_l, ds_b, ds_half_circle due to the Dirichlet conditions on v_
 # natural BC imposed here on ds_tl_tr due to the symmetry
-F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx
+F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx\
     - bgeo.facet_normal[i] * (fsp.phi.dx(i)) * fsp.q * rmsh.ds_r\
 
 # Define variational problem for step 3
