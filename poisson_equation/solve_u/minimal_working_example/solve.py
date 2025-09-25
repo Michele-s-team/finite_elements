@@ -1,6 +1,9 @@
 '''
 this is a minimal working example for the solution of Poisson equation on a line with an inner vertex, where everything is in one file, 
 to be used on the Fenics forum for example
+
+Run with 
+    python3 solve.py
 '''
 
 from fenics import *
