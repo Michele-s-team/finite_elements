@@ -37,13 +37,11 @@ def print_bcs():
     # write the residual of natural BCs on step 2 to file
     writer.writerows( [{ \
         fieldnames[0]: \
-            (sqrt( assemble( (fsp.v_[i] - vp.v__profile_l[i])  * (fsp.v_[i] - vp.v__profile_l[i]) * rmsh.ds_l ) + assemble( fsp.v_[i] * fsp.v_[i] * (rmsh.ds_t + rmsh.ds_b + rmsh.ds_circle) ) ) / \
-             assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_t + rmsh.ds_b + rmsh.ds_circle) )), \
+            sqrt( assemble( (fsp.v_[i] - vp.v__profile_l[i])  * (fsp.v_[i] - vp.v__profile_l[i]) * rmsh.ds_l ) + assemble( fsp.v_[i] * fsp.v_[i] * (rmsh.ds_b + rmsh.ds_half_circle ) ) / \
+             assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_b + rmsh.ds_half_circle) )), \
         fieldnames[1]: \
-            sqrt( (assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * rmsh.ds_l ) \
-                   + assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * (rmsh.ds_t + rmsh.ds_b) ) \
-                   + assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * rmsh.ds_circle )) \
-                  / assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_t + rmsh.ds_b + rmsh.ds_circle) ) ), \
+            sqrt(  assemble( (bgeo.facet_normal[i] * (fsp.phi.dx( i ))) ** 2 * (rmsh.ds_l + rmsh.ds_tl + rmsh.ds_half_circle + rmsh.ds_tr + rmsh.ds_b) ) \
+                  / assemble( Constant( 1.0 ) * (rmsh.ds_l + rmsh.ds_tl + rmsh.ds_half_circle  + rmsh.ds_tr + rmsh.ds_b) ) ), \
         fieldnames[2]: \
             sqrt( assemble( (fsp.phi) ** 2 * rmsh.ds_r ) /
                   assemble( Constant( 1.0 ) * rmsh.ds_r ) ) \

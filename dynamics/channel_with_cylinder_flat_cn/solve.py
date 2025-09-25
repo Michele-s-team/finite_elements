@@ -95,6 +95,6 @@ for n in range(rpam.parameters['num_steps']):
 
     pr_sol.print_solution(t, step, vp.dt)
 
-    print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
+    print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
