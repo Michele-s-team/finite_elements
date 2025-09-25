@@ -16,7 +16,7 @@ sys.path.append(module_path)
 
 import mesh.load as lmsh
 import mesh.utils as msh
-rmsh = importlib.import_module('mesh.read.square.half_circle')
+rmsh = importlib.import_module('mesh.read.square_half_circle')
 
-import mesh.check_tags.square.half_circle
+import mesh.check_tags.square_half_circle
 
