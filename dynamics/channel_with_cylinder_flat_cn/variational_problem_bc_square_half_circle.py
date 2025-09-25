@@ -56,8 +56,16 @@ bc_v_ = [bc_v__l, bc_v__b, bc_v_y_tl, bc_v__half_circle, bc_v_y_tr]
 bc_phi = [bc_phi_r]
 
 # Define variational problem for step 1
-# step 1 for v
-# natural BC imoposed on ds_r
+# step 1 
+'''
+On rmsh.ds_tl_tr
+- v_n_1[0].dx(1) = v_n_1[1].dx(0) = 0
+- v_[0].dx(1) = v_[1].dx(0) = 0,
+thus
+V[0].dx(1) = V[1].dx(0) = 0
+
+In the boundary term with rmsh.ds_half_circle, I observe that the term ~ bgeo.facet_normal[0] vanishes, and in the term ~ bgeo.facet_normal[1] I set to zero V[0].dx(1) and V[1].dx(0), resulting in a natural BC
+'''
 F1 = ( \
                 rpam.parameters['rho'] * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
                 + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu[i] \
@@ -75,5 +83,5 @@ F1 = ( \
 F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx\
     - bgeo.facet_normal[i] * (fsp.phi.dx(i)) * fsp.q * rmsh.ds_r\
 
-# Define variational problem for step 3
+#  step 3
 F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.parameters['rho']) * (fsp.phi.dx(i))) * fsp.nu[i]) * rmsh.dx
