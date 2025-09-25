@@ -20,7 +20,7 @@ i, j = ufl.indices(2)
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = np.cos(2*np.pi*x[0]/rmsh.parameters['L']) * x[1]
+        values[0] = x[1] * np.cos(np.pi * x[0] / rmsh.parameters['L'])
 
     def value_shape(self):
         return (1,)
@@ -28,7 +28,7 @@ class u_exact_expression(UserExpression):
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = -((4 * (np.pi)**2 * x[1] * np.cos((2 * np.pi * x[0])/(rmsh.parameters['L'])))/(rmsh.parameters['L'])**2)
+        values[0] = -np.pi**2 * x[1] * np.cos(np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']**2
 
     def value_shape(self):
         return (1,)
@@ -40,9 +40,9 @@ class hess_u_exact_expression(UserExpression):
 
     def eval(self, values, x):
         # test case 1
-        values[0] = -4 * np.pi**2 * x[1] * np.cos(2 * np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']**2
-        values[1] = -2 * np.pi * np.sin(2 * np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']
-        values[2] = -2 * np.pi * np.sin(2 * np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']
+        values[0] = -np.pi**2 * x[1] * np.cos(np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']**2
+        values[1] = -np.pi * np.sin(np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']
+        values[2] = -np.pi * np.sin(np.pi * x[0] / rmsh.parameters['L']) / rmsh.parameters['L']
         values[3] = 0
 
     def value_shape(self):
