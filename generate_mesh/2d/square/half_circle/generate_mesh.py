@@ -80,7 +80,6 @@ gmsh.model.setPhysicalName(2, rpam.parameters['surface_id'], "surface")
 
 
 # tag lines
-
 gmsh.model.addPhysicalGroup(1, [line_l], rpam.parameters['line_l_id'])
 gmsh.model.setPhysicalName(1, rpam.parameters['line_l_id'], "line_l")
 
@@ -90,11 +89,11 @@ gmsh.model.setPhysicalName(1, rpam.parameters['line_r_id'], "line_r")
 gmsh.model.addPhysicalGroup(1, [line_tl], rpam.parameters['line_tl_id'])
 gmsh.model.setPhysicalName(1, rpam.parameters['line_tl_id'], "line_tl")
 
-gmsh.model.addPhysicalGroup(1, [line_tr], rpam.parameters['line_tr_id'])
-gmsh.model.setPhysicalName(1, rpam.parameters['line_tr_id'], "line_tr")
-
 gmsh.model.addPhysicalGroup(1, [arc_l, arc_r], rpam.parameters['half_circle_id'])
 gmsh.model.setPhysicalName(1, rpam.parameters['half_circle_id'], "arc")
+
+gmsh.model.addPhysicalGroup(1, [line_tr], rpam.parameters['line_tr_id'])
+gmsh.model.setPhysicalName(1, rpam.parameters['line_tr_id'], "line_tr")
 
 gmsh.model.addPhysicalGroup(1, [line_b], rpam.parameters['line_b_id'])
 gmsh.model.setPhysicalName(1, rpam.parameters['line_b_id'], "line_b")

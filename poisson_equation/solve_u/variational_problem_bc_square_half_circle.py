@@ -99,10 +99,11 @@ bc_u_tl = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.parameters['line_tl_id']
 bc_u_half_circle = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.parameters['half_circle_id'])
 bc_u_tr = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.parameters['line_tr_id'])
 bc_u_b = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.parameters['line_b_id'])
-bcs = [bc_u_l, bc_u_r, bc_u_tl, bc_u_half_circle, bc_u_tr, bc_u_r, bc_u_b]
+
+bcs = [bc_u_l, bc_u_r, bc_u_tl, bc_u_half_circle, bc_u_tr, bc_u_b]
 
 # variational functional for the original problem (poisson equation)
-F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx \
+F = ((fsp.u.dx(i))*(fsp.nu_u.dx(i)) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
