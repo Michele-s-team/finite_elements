@@ -52,7 +52,7 @@ elif rarg.args.problem == 'square_no_circle':
     prout_bc = 'print_out_bc_square_no_circle'
     
 elif rarg.args.problem == 'square_no_circle_mirror':
-    rmsh = 'mesh.read.square_no_circle_mirror'
+    rmsh = 'mesh.read.square_no_circle'
     vp = 'variational_problem_bc_square_no_circle_mirror'
     prout_bc = 'print_out_bc_square_no_circle_mirror'
 
