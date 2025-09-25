@@ -63,14 +63,11 @@ F1 = ( \
                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) \
                 + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
          ) * rmsh.dx \
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(0) + (fsp.V[0]).dx(i)) * (fsp.nu[0]) * rmsh.ds_tl\
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(0) + (fsp.V[0]).dx(i)) * (fsp.nu[0]) * rmsh.ds_tr\
-    - fsp.sigma_n_32 * bgeo.facet_normal[i] * fsp.nu[i] * rmsh.ds
+    - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds
 
 # step 2
 F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx
-    # - bgeo.facet_normal[i] * (fsp.phi.dx(i)) * fsp.q * rmsh.ds_tl\
-    # - bgeo.facet_normal[i] * (fsp.phi.dx(i)) * fsp.q * rmsh.ds_tr\
+    - bgeo.facet_normal[i] * (fsp.phi.dx(i)) * fsp.q * rmsh.ds\
 
 # Define variational problem for step 3
 F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.parameters['rho']) * (fsp.phi.dx(i))) * fsp.nu[i]) * rmsh.dx
