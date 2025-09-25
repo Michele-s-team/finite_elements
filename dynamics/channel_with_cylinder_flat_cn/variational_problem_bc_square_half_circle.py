@@ -60,7 +60,11 @@ F1 = ( \
                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) \
                 + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
          ) * rmsh.dx \
-    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_l\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_tl\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_half_circle\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_tr\
+    - rpam.parameters['mu'] * bgeo.facet_normal[i] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) * rmsh.ds_b\
     - fsp.sigma_n_32 * bgeo.facet_normal[i] * fsp.nu[i] * rmsh.ds
 
 # step 2
