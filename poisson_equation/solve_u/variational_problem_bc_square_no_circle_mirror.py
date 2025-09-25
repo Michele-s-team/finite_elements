@@ -54,11 +54,13 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
+#  I impose the values of u on l, r and t edges as Dirichlet BCs
 bc_u_tb = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_tb)
 bc_u_l = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_l)
+
 bcs = [bc_u_l, bc_u_tb]
 
-# variational functional for the original problem (poisson equation)
+# variational functional for the original problem (poisson equation): to enforce the mirror symmetry, I impose that \partial_1 u = 0 on the axis of symmetry as a natural BC
 F = (fsp.u.dx(i)*fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_l \
     - bgeo.facet_normal[1] * (fsp.u.dx(1)) * fsp.nu_u * rmsh.ds_r \
