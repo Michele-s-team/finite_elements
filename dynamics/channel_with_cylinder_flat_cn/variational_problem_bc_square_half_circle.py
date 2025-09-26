@@ -34,7 +34,7 @@ class SurfaceTensionExpression(UserExpression):
         return (1,)
 
 
-v__profile_l = Expression((f'4.0*1.5*x[1]*({2*rmsh.parameters["h"]} - x[1]) / pow({2*rmsh.parameters["h"]}, 2)', '0'), degree=2, h=rmsh.parameters["h"])
+v__profile_l = Expression((f'{rpam.parameters["v__l_const"]} * 4.0*1.5*x[1]*({2*rmsh.parameters["h"]} - x[1]) / pow({2*rmsh.parameters["h"]}, 2)', '0'), degree=2, h=rmsh.parameters["h"])
 
 
 
