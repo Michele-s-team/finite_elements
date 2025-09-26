@@ -7,6 +7,7 @@ rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/half_circle/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_half_circle $MESH_PATH $SOLUTION_PATH
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -23,6 +24,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 import print_out_solution as pr_sol
@@ -40,9 +42,9 @@ print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}"
 
 print("L = ", rmsh.parameters["L"])
 print("h = ", rmsh.parameters["h"])
-print("mu = ", vp.mu)
-print("T = ", vp.T)
-print("N = ", vp.num_steps)
+print("mu = ", rpam.parameters['mu'])
+print("T = ", rpam.parameters['T'])
+print("N = ", rpam.parameters['num_steps'])
 
 # set the initial profiles
 fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
@@ -55,7 +57,7 @@ print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
-for n in range(vp.num_steps):
+for n in range(rpam.parameters['num_steps']):
     # Update current time
     t += vp.dt
     step += 1
@@ -93,6 +95,6 @@ for n in range(vp.num_steps):
 
     pr_sol.print_solution(t, step, vp.dt)
 
-    print("\t%.2f %%" % (100.0 * (t / vp.T)), flush=True)
+    print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
