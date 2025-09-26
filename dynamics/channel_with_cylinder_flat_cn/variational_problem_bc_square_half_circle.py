@@ -59,12 +59,12 @@ bc_phi = [bc_phi_r]
 # step 1 
 '''
 On rmsh.ds_tl_tr
-- v_n_1[0].dx(1) = v_n_1[1].dx(0) = 0
-- v_[0].dx(1) = v_[1].dx(0) = 0,
+- v_n_1[0].dx(1) =  0
+- v_[0].dx(1) = 0,
 thus
-V[0].dx(1) = V[1].dx(0) = 0
+V[0].dx(1) = 0
 
-In the boundary term with rmsh.ds_half_circle, I observe that the term ~ bgeo.facet_normal[0] vanishes, and in the term ~ bgeo.facet_normal[1] I set to zero V[0].dx(1) and V[1].dx(0), resulting in a natural BC
+In the boundary term with rmsh.ds_half_circle, I observe that the term ~ bgeo.facet_normal[0] vanishes, and drop it,  and in the term ~ bgeo.facet_normal[1] I set to zero V[0].dx(1), resulting in a natural BC
 '''
 F1 = ( \
                 rpam.parameters['rho'] * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
@@ -73,7 +73,7 @@ F1 = ( \
                 + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
          ) * rmsh.dx \
     - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_l\
-    - bgeo.facet_normal[1] * (rpam.parameters['mu'] * ((fsp.V[1]).dx(1) + (fsp.V[1]).dx(1)) * (fsp.nu[1]) + fsp.sigma_n_32 * fsp.nu[1]) * rmsh.ds_tl_tr\
+    - bgeo.facet_normal[1] * (rpam.parameters['mu'] * ( ((fsp.V[1]).dx(0) ) * (fsp.nu[0]) + ((fsp.V[1]).dx(1) + (fsp.V[1]).dx(1)) * (fsp.nu[1]) ) + fsp.sigma_n_32 * fsp.nu[1]) * rmsh.ds_tl_tr\
     - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_half_circle\
     - bgeo.facet_normal[i] * (rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]) + fsp.sigma_n_32 * fsp.nu[i]) * rmsh.ds_b
 
