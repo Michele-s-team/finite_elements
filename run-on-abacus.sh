@@ -1,13 +1,17 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh [path where the execution code is located] [name of the folder and job on abacus] [path of mesh solution]
-# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution
+# ./run-on-abacus.sh [path where the execution code is located] [name of the folder and job on abacus] [path of mesh solution] [name of problem to solve]
+# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution line_a
 
 clear
 clear
 
 OUT=mcastel1@abacus
+
+echo "Problem: $4"
+
+
 
 #clean up 
 # move $2 to trash and then launch clean_up which will delete trash
@@ -18,7 +22,7 @@ ssh $OUT "mkdir -p "$2"/mesh"
 
 # replace FOLDER_NAME into script_slurm_abacus.slurm with the actual name of the folder where the job will be executed
 rm script_slurm_abacus.slurm
-sed 's/FOLDER_NAME/'$2'/' script_slurm_abacus_blank.slurm > script_slurm_abacus.slurm
+sed 's/FOLDER_NAME/'$2'/; s/PROBLEM_NAME/'$4'/' script_slurm_abacus_blank.slurm > script_slurm_abacus.slurm
 
 
 # copy mesh, code and modules to abacus

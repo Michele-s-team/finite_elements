@@ -12,7 +12,7 @@ echo "Quel ramo del lago di Como, che volge a mezzogiorno, tra due catene non in
 RUN="/mnt/beegfs/home/mcastel1/FOLDER_NAME"
 MESH=$RUN"/mesh/solution"
 SOLUTION=$RUN"/solution"
-PROBLEM="line"
+PROBLEM="PROBLEM_NAME"
 
 rm -rf $SOLUTION
 mkdir $SOLUTION
