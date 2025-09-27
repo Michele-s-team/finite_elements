@@ -2,7 +2,7 @@
 
 # run with
 # ./run-on-abacus.sh [path where the execution code is located] [name of the folder and job on abacus] [path of mesh solution] [name of problem to solve]
-# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution line_bc_a
+# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution line_a
 
 clear
 clear
