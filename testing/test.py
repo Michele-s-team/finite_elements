@@ -770,7 +770,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 # Test dynamics/lagrangian_approach/one_dimension
 case_name = 'dynamics/lagrangian_approach/one_dimension'
 
-problem_name = 'line'
+problem_name = 'line_a'
 generate_mesh_path =root_path + 'generate_mesh/1d/line'
 checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
                                                                      root_path,

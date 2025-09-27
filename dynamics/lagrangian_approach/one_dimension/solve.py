@@ -10,7 +10,7 @@ clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variati
 
 Examples:
 
-    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_a $MESH_PATH $SOLUTION_PATH
     
 the  fields in this problem are 
 - v_bar == v^{bar}_{Lagrangian approach}
