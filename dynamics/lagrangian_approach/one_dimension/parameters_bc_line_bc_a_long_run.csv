@@ -1,2 +1,2 @@
 kappa,rho,eta,v_bar_l,v_bar_r,w_bar_lr,sigma_r,u_n_12_l,u_n_12_r,f,T,N,alpha,quadrature_degree,function_space_degree,solution_ode_path
-0.001,1.0,1.0,[0.0],[0.0],0.0,0.1,"[0,0]","[0,0]","[0,-1]",1e1,100000,1e3,4,2,"/home/fenics/shared/steady_state/flow/lagrangian_approach/one_dimension/solution_ode_solve_nu"
+0.001,1.0,1.0,[0.0],[0.0],0.0,0.1,"[0,0]","[0,0]","[0,-1e1]",1e1,10000,1e3,4,2,"/home/fenics/shared/steady_state/flow/lagrangian_approach/one_dimension/solution_ode_solve_nu"
