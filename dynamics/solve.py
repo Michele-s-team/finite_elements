@@ -53,6 +53,7 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -72,12 +73,7 @@ print("Output diredtory = ", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
-print("T = ", vp.T)
-print("kappa = ", vp.kappa)
-print("rho = ", vp.rho)
-print("eta = ", vp.eta)
-print("v = ", vp.v_bar_l_const)
-print("N = ", vp.N)
+
 
 
 #Option 1: set initial profiles
@@ -108,7 +104,7 @@ print("... done.")
 
 # Time-stepping
 t = 0
-for step in range(vp.N):
+for step in range(rpam.parameters['N']):
 
     print("\n* step = ", step, "\n")
 
