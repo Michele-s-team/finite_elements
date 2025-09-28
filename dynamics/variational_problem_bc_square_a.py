@@ -26,7 +26,7 @@ i, j, k, l = ufl.indices( 4 )
 # v_bar_l_const = 1.0
 # N = 10
 
-dt = T / N
+dt = rpam.parameters['T'] / rpam.parameters['N']
 
 # boundary_profile_w_bar = 0.0
 # r_profile_phi = 0.0
