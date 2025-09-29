@@ -18,18 +18,6 @@ cmd.set_gauge('monge')
 i, j, k, l = ufl.indices( 4 )
 
 
-# CHANGE PARAMETERS HERE
-# T = 0.001
-# kappa = 1.0
-# rho = 1.0
-# eta = 1.0
-# v_bar_l_const = 1.0
-# N = 10
-
-# z_square_const = 0.0
-# omega_n_square_const = 0.0
-# omega_r_circle_const = 0.1
-# alpha = 1e4
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
@@ -157,7 +145,6 @@ bc_z_square = DirichletBC( fsp.Q.sub( 5 ), z_square, rmsh.boundary_square )
 
 omega_circle = interpolate( omega_circle_Expression( element=fsp.Q_omega_n.ufl_element() ), fsp.Q_omega_n )
 bc_omega_circle = DirichletBC( fsp.Q.sub( 6 ), omega_circle, rmsh.boundary_circle )
-# CHANGE PARAMETERS HERE
 
 
 # all BCs
