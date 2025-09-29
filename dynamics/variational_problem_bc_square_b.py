@@ -24,13 +24,15 @@ rho = 1.0
 eta = 1.0
 v_bar_l_const = 1.0
 N = 10
-dt = T / N
 
 z_square_const = 0.0
 omega_n_square_const = 0.0
 omega_r_circle_const = 0.1
 # Nitche's parameter
 alpha = 1e4
+
+dt = T / N
+
 
 class v_bar_l_Expression( UserExpression ):
     def eval(self, values, x):
