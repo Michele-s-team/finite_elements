@@ -18,25 +18,8 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
 
-Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
-#CHANGE PARAMETERS HERE
-'''
 
-'''
-To produce figure_10: 
-- select bc_a
-- set everywhere
-    L = 2
-    h = 1
-    r = 0.05
-    c_r = [L/4, h/2, 0]
-- do 
-  in mesh/
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.02 $SOLUTION_PAT
-  in dynamics/
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH 10 1e-06 0.01293 1.85e-07 1e-2 10000
-
-
+To produce figure_10, use parameter file parameters_bc_square_a_figure_10.csv, run with problem 'square_a'. 
 '''
 
 import colorama as col
