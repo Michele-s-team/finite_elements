@@ -18,25 +18,11 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
 
-Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the Rectangle, etc...) is changed are bracketed by
-#CHANGE PARAMETERS HERE
-'''
 
-'''
-To produce figure_10: 
-- select bc_a
-- set everywhere
-    L = 2
-    h = 1
-    r = 0.05
-    c_r = [L/4, h/2, 0]
-- do 
-  in mesh/
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.02 $SOLUTION_PAT
-  in dynamics/
-    clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/mesh/solution /home/fenics/shared/dynamics/$SOLUTION_PATH 10 1e-06 0.01293 1.85e-07 1e-2 10000
-
-
+To produce figure_10, 
+- generate the mesh with /home/fenics/shared/generate_mesh/2d/square/figure_10_parameters/mesh_parameters.csv 
+- use parameter file parameters_bc_square_a_figure_10.csv
+- run with problem 'square_a'. 
 '''
 
 import colorama as col
@@ -53,6 +39,7 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -72,12 +59,7 @@ print("Output diredtory = ", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
-print("T = ", vp.T)
-print("kappa = ", vp.kappa)
-print("rho = ", vp.rho)
-print("eta = ", vp.eta)
-print("v = ", vp.v_bar_l_const)
-print("N = ", vp.N)
+
 
 
 #Option 1: set initial profiles
@@ -108,7 +90,7 @@ print("... done.")
 
 # Time-stepping
 t = 0
-for step in range(vp.N):
+for step in range(rpam.parameters['N']):
 
     print("\n* step = ", step, "\n")
 

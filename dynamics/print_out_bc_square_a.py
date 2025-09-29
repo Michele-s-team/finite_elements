@@ -1,5 +1,4 @@
 import csv
-import dolfin
 from fenics import *
 import importlib
 import os
@@ -14,6 +13,7 @@ import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import physics as phys
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
@@ -68,11 +68,11 @@ def print_bcs(psi):
         fieldnames_bcs[4]: \
             f"{msh.abs_wrt_measure( sqrt((vp.l_profile_v_bar[i] - v_bar_dummy[i]) * (vp.l_profile_v_bar[i] - v_bar_dummy[i])), rmsh.ds_l ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[5]: \
-            f"{msh.abs_wrt_measure( w_bar_dummy - vp.boundary_profile_w_bar, rmsh.ds ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( w_bar_dummy - rpam.parameters['boundary_profile_w_bar'], rmsh.ds ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[6]: \
-            f"{msh.abs_wrt_measure( phi_dummy - vp.r_profile_phi, rmsh.ds_r ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( phi_dummy - rpam.parameters['r_profile_phi'], rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[7]: \
-            f"{msh.abs_wrt_measure( z_n_12_dummy - vp.boundary_profile_z, rmsh.ds ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( z_n_12_dummy - rpam.parameters['boundary_profile_z'], rmsh.ds ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[8]: \
             f"{msh.difference_wrt_measure(mu_n_12_dummy, geo.H(omega_n_12_dummy), rmsh.ds):.{io.number_of_decimals}e}", \
         }] )
@@ -135,9 +135,9 @@ def print_solution(psi, step, t):
 
     # print to file the forces which appear in the RHS of the equations (5a) in notes
     # tangential forces
-    fsp.f_visc_t.assign( project( phys.fvisc_t( fsp.d, omega_n_12_output, vp.eta ), fsp.Q_f_t ) )
+    fsp.f_visc_t.assign( project( phys.fvisc_t( fsp.d, omega_n_12_output, rpam.parameters['eta'] ), fsp.Q_f_t ) )
     fsp.f_sigma_t.assign(project( phys.fsigma_t( fsp.sigma_n_32, omega_n_12_output ), fsp.Q_f_t ))
-    fsp.f_v_t.assign( project( phys.ma_cn_t( v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, vp.rho, vp.dt ), fsp.Q_f_t ) )
+    fsp.f_v_t.assign( project( phys.ma_cn_t( v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, rpam.parameters['rho'], vp.dt ), fsp.Q_f_t ) )
 
     files.xdmffile_f.write( fsp.f_visc_t, t )
     files.xdmffile_f.write( fsp.f_sigma_t, t )
@@ -149,8 +149,8 @@ def print_solution(psi, step, t):
 
 
     # normal forces
-    fsp.f_visc_n.assign(project( phys.fvisc_n( fsp.V, fsp.W, omega_n_12_output, fsp.mu_n_12, vp.eta ), fsp.Q_f_n ))
-    fsp.f_el_n.assign(project( phys.fel_n( omega_n_12_output, mu_n_12_output, fsp.tau_n_12, vp.kappa ), fsp.Q_f_n ))
+    fsp.f_visc_n.assign(project( phys.fvisc_n( fsp.V, fsp.W, omega_n_12_output, fsp.mu_n_12, rpam.parameters['eta'] ), fsp.Q_f_n ))
+    fsp.f_el_n.assign(project( phys.fel_n( omega_n_12_output, mu_n_12_output, fsp.tau_n_12, rpam.parameters['kappa'] ), fsp.Q_f_n ))
     fsp.f_laplace.assign( project( phys.flaplace( fsp.sigma_n_32, omega_n_12_output ), fsp.Q_f_n ) )
 
     files.xdmffile_f.write( fsp.f_visc_n, t )
@@ -164,8 +164,8 @@ def print_solution(psi, step, t):
 
     #print tangential (normal) force per unit length (surface)
 
-    fsp.dFdl.assign(project(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_n_12_output)), fsp.Q_dFdl))
-    fsp.dFds.assign( project( phys.ma_cn_n(v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, vp.rho, vp.dt), fsp.Q_dFds ) )
+    fsp.dFdl.assign(project(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12, rpam.parameters['eta'], geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_n_12_output)), fsp.Q_dFdl))
+    fsp.dFds.assign( project( phys.ma_cn_n(v_bar_output, fsp.v_n_1, fsp.v_n_2, w_bar_output, fsp.w_n_1, omega_n_12_output, rpam.parameters['rho'], vp.dt), fsp.Q_dFds ) )
 
     files.xdmffile_dFdl.write( fsp.dFdl, t )
     files.xdmffile_dFds.write( fsp.dFds, t )
@@ -201,9 +201,9 @@ def print_solution(psi, step, t):
     # write the force F extered on ds_circle to file
     writer_F.writerows( [{ \
         fieldnames_F[0]: \
-            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.parameters['c_r'][:2], omega_n_12_output))[0] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.parameters['c_r'][:2]) * (1.0 / rmsh.parameters['r']) * rmsh.ds_circle)}", \
+            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, rpam.parameters['eta'], geo.n_c_r(lmsh.mesh, rmsh.parameters['c_r'][:2], omega_n_12_output))[0] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.parameters['c_r'][:2]) * (1.0 / rmsh.parameters['r']) * rmsh.ds_circle)}", \
         fieldnames_F[1]: \
-            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, vp.eta, geo.n_c_r(lmsh.mesh, rmsh.parameters['c_r'][:2], omega_n_12_output))[1] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.parameters['c_r'][:2]) * (1.0 / rmsh.parameters['r']) * rmsh.ds_circle)}", \
+            f"{assemble(phys.dFdl_eta_sigma_t(v_n_output, w_n_output, omega_n_12_output, fsp.sigma_n_12_output, rpam.parameters['eta'], geo.n_c_r(lmsh.mesh, rmsh.parameters['c_r'][:2], omega_n_12_output))[1] * bgeo.sqrt_deth_circle(omega_n_12_output, rmsh.parameters['c_r'][:2]) * (1.0 / rmsh.parameters['r']) * rmsh.ds_circle)}", \
         }] )
     csvfile_F.flush()
 
