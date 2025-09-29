@@ -18,18 +18,17 @@ i, j, k, l = ufl.indices( 4 )
 
 
 # CHANGE PARAMETERS HERE
-T = 0.001
-kappa = 1.0
-rho = 1.0
-eta = 1.0
-v_bar_l_const = 1.0
-N = 10
+# T = 0.001
+# kappa = 1.0
+# rho = 1.0
+# eta = 1.0
+# v_bar_l_const = 1.0
+# N = 10
 
-z_square_const = 0.0
-omega_n_square_const = 0.0
-omega_r_circle_const = 0.1
-# Nitche's parameter
-alpha = 1e4
+# z_square_const = 0.0
+# omega_n_square_const = 0.0
+# omega_r_circle_const = 0.1
+# alpha = 1e4
 
 dt = T / N
 
