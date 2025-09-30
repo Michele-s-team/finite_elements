@@ -2,7 +2,6 @@ import colorama as col
 from fenics import *
 import importlib
 import numpy as np
-import termcolor
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
@@ -16,7 +15,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-z_output, omega_output, mu_output, rho_output, tau_output = fsp.psi.split(deepcopy=True)
+z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
+rho_output, tau_output = fsp.psi_pp.split(deepcopy=True)
 
 print("Check of BCs: ")
 print(f"\t<<(z - z_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(z_output, fsp.z_exact), 'red')}")
@@ -26,5 +26,6 @@ print(f"\t<<(mu - mu_exact)^2>>_partial Omega = {termcolor.colored(msh.differenc
 print(
     f"\t<<|rho - rho_exact|^2>>_partial Omega = {termcolor.colored(np.sqrt(assemble((rho_output[i] - fsp.rho_exact[i]) * (rho_output[i] - fsp.rho_exact[i]) * rmsh.ds) / assemble(Constant(1) * rmsh.ds)), 'red')}")
 print(f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored(msh.difference_on_boundary(tau_output, fsp.f), 'red')}")
+
 
 import print_out_solution

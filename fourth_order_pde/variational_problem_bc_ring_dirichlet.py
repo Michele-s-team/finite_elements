@@ -63,6 +63,7 @@ class f_exact_expression(UserExpression):
 fsp.z_exact.interpolate(z_exact_expression(element=fsp.Q_z.ufl_element()))
 fsp.omega_exact.interpolate(omega_exact_expression(element=fsp.Q_omega.ufl_element()))
 fsp.mu_exact.interpolate(mu_exact_expression(element=fsp.Q_mu.ufl_element()))
+
 fsp.rho_exact.interpolate(rho_exact_expression(element=fsp.Q_rho.ufl_element()))
 fsp.tau_exact.interpolate(f_exact_expression(element=fsp.Q_tau.ufl_element()))
 fsp.f.interpolate(f_exact_expression(element=fsp.Q_z.ufl_element()))
