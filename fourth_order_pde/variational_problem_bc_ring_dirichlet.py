@@ -75,6 +75,7 @@ tau_profile = Expression('(1.0 / 8.0) * (3 * pow(x[0], 4) + pow(x[0], 2) * pow(x
 bc_z = DirichletBC(fsp.Q.sub(0), z_profile, rmsh.boundary)
 bc_mu = DirichletBC(fsp.Q.sub(2), mu_profile, rmsh.boundary)
 
+bcs = [bc_z, bc_mu]
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
 assigner.assign(fsp.psi, [fsp.f, fsp.omega_exact, fsp.mu_exact, fsp.rho_exact, fsp.tau_exact])
@@ -91,13 +92,17 @@ F_omega = (fsp.z * ((fsp.nu_omega[i]).dx(i)) + fsp.omega[i] * fsp.nu_omega[i]) *
 F_mu = (fsp.z * fsp.omega[i] * (fsp.nu_mu.dx(i)) + fsp.mu * fsp.nu_mu) * rmsh.dx \
        - bgeo.facet_normal[i] * fsp.z * fsp.omega[i] * fsp.nu_mu * rmsh.ds
        
-       
-F = F_z + F_omega + F_mu
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds
+
+ 
+F = (F_omega + F_z + F_mu ) + F_N
 
 
 #post-processing variational problem
 bc_rho = DirichletBC(fsp.Q.sub(3), rho_profile, rmsh.boundary)
 bc_tau = DirichletBC(fsp.Q.sub(4), tau_profile, rmsh.boundary)
+
+bcs_pp = bc_rho, bc_tau
 
 F_rho = (fsp.mu * ((fsp.nu_rho[i]).dx(i)) + fsp.rho[i] * fsp.nu_rho[i]) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.mu * fsp.nu_rho[i] * rmsh.ds
@@ -107,8 +112,5 @@ F_tau = (fsp.tau * fsp.nu_tau + fsp.rho[i] * (fsp.nu_tau.dx(i))) * rmsh.dx \
         
 F_pp = F_rho + F_tau
 
-F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds
 
-F = (F_omega + F_z + F_mu + F_rho + F_tau) + F_N
-# bcs = [bc_z]
-bcs = [bc_z, bc_mu, bc_rho, bc_tau]
+
