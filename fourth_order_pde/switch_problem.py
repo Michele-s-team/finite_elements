@@ -2,7 +2,12 @@ import colorama as col
 
 import runtime_arguments as rarg
 
-if rarg.args.problem == 'ring_dirichlet':
+if rarg.args.problem == 'line_vertex_dirichlet':
+    rmsh = 'mesh.read.line_vertex'
+    vp = 'variational_problem_bc_line_vertex_dirichlet'
+    prout_bc = 'print_out_bc_line_vertex_dirichlet'
+
+elif rarg.args.problem == 'ring_dirichlet':
     rmsh = 'mesh.read.ring'
     vp = 'variational_problem_bc_ring_dirichlet'
     prout_bc = 'print_out_bc_ring_dirichlet'
