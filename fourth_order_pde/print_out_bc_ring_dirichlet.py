@@ -18,13 +18,6 @@ i, j, k, l = ufl.indices(4)
 z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
 rho_output, tau_output = fsp.psi_pp.split( deepcopy=True )
 
-'''
-
-print(
-    f"\t\t<<(hess_u - hess_u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure((fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]) * (fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]), Constant(0), rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-
-'''
-
 print( "Check of BCs: " )
 print( f"\t<<(z - z_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
@@ -32,7 +25,7 @@ print(
 print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {col.Fore.RED}{ msh.difference_on_boundary( mu_output, fsp.mu_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 print(
     f"\t<<|rho - rho_exact|^2>>_partial Omega = {col.Fore.RED}{ np.sqrt( assemble( (rho_output[i] - fsp.rho_exact[i]) * (rho_output[i] - fsp.rho_exact[i]) * rmsh.ds ) / assemble( Constant( 1 ) * rmsh.ds ) ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
-# print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {termcolor.colored( msh.difference_on_boundary( tau_output, fsp.f ), 'red' )}" )
+print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( tau_output, fsp.f ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
 
 
 import print_out_solution

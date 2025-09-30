@@ -8,9 +8,10 @@ This code solves the biharmonic equation Nabla Nabla \partial_i (z \partial_i z)
 
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
 
-run with
+Run with
     python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
-example:
+
+Example:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_dirichlet $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_nitsche $MESH_PATH $SOLUTION_PATH
 '''

@@ -1,7 +1,8 @@
 import dolfin
 from fenics import *
 
-import differential_geometry.boundary.geometry as bgeo
+
+import mesh.utils as msh
 import mesh.load as lmsh
 
 
@@ -9,15 +10,17 @@ import mesh.load as lmsh
 function_space_degree = 4
 # CHANGE PARAMETERS HERE
 
-P_z = FiniteElement('P', triangle, function_space_degree)
-P_omega = VectorElement('P', triangle, function_space_degree)
-P_mu = FiniteElement('P', triangle, function_space_degree)
+element_geometry = msh.element_geometry(lmsh.mesh)
+
+P_z = FiniteElement('P', element_geometry, function_space_degree)
+P_omega = VectorElement('P', element_geometry, function_space_degree)
+P_mu = FiniteElement('P', element_geometry, function_space_degree)
 
 element = MixedElement([P_z, P_omega, P_mu])
 
 
-P_rho = VectorElement('P', triangle, function_space_degree)
-P_tau = FiniteElement('P', triangle, function_space_degree)
+P_rho = VectorElement('P', element_geometry, function_space_degree)
+P_tau = FiniteElement('P', element_geometry, function_space_degree)
 
 element_pp = MixedElement([P_rho, P_tau])
 
