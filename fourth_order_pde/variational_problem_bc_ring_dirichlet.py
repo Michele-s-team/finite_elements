@@ -99,10 +99,10 @@ F = (F_omega + F_z + F_mu ) + F_N
 
 
 #post-processing variational problem
-bc_rho = DirichletBC(fsp.Q.sub(3), rho_profile, rmsh.boundary)
-bc_tau = DirichletBC(fsp.Q.sub(4), tau_profile, rmsh.boundary)
+bc_pp_rho = DirichletBC(fsp.Q.sub(3), rho_profile, rmsh.boundary)
+bc_pp_tau = DirichletBC(fsp.Q.sub(4), tau_profile, rmsh.boundary)
 
-bcs_pp = bc_rho, bc_tau
+bcs_pp = [bc_pp_rho, bc_pp_tau]
 
 F_rho = (fsp.mu * ((fsp.nu_rho[i]).dx(i)) + fsp.rho[i] * fsp.nu_rho[i]) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.mu * fsp.nu_rho[i] * rmsh.ds
