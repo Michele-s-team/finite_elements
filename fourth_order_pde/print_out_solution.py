@@ -9,7 +9,8 @@ import solution_paths as solpath
 
 i, j, k, l = ufl.indices(4)
 
-fsp.z_output, fsp.omega_output, fsp.mu_output, fsp.rho_output, fsp.tau_output = fsp.psi.split(deepcopy=True)
+fsp.z_output, fsp.omega_output, fsp.mu_output = fsp.psi.split(deepcopy=True)
+fsp.rho_output, fsp.tau_output  = fsp.psi_pp.split(deepcopy=True)
 
 
 xdmffile_check = XDMFFile((rarg.args.output_directory) + "/check.xdmf")

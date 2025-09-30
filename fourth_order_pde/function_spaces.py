@@ -28,8 +28,8 @@ Q_z = Q.sub(0).collapse()
 Q_omega = Q.sub(1).collapse()
 Q_mu = Q.sub(2).collapse()
 
-Q_rho = Q.sub(3).collapse()
-Q_tau = Q.sub(4).collapse()
+Q_rho = Q_pp.sub(0).collapse()
+Q_tau = Q_pp.sub(1).collapse()
 
 # Define variational problem
 psi = Function(Q)
