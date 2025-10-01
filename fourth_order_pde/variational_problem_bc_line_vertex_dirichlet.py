@@ -16,7 +16,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-assigner = FunctionAssigner(fsp.Q, [fsp.Q_z, fsp.Q_omega, fsp.Q_mu])
 
 
 
@@ -111,7 +110,7 @@ fsp.f.interpolate(f_exact_expression(element=fsp.Q_z.ufl_element()))
 fsp.z_0.interpolate(z_0_expression(element=fsp.Q_z.ufl_element()))
 fsp.omega_0.interpolate(omega_0_expression(element=fsp.Q_omega.ufl_element()))
 fsp.mu_0.interpolate(mu_0_expression(element=fsp.Q_mu.ufl_element()))
-assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
+fsp.assigner.assign(fsp.psi, [fsp.z_0, fsp.omega_0, fsp.mu_0])
 
 
 
@@ -143,10 +142,13 @@ F = (F_omega + F_z + F_mu) + F_N
 
 
 #post-processing variational problem
-bc_pp_rho = DirichletBC(fsp.Q_pp.sub(0), fsp.rho_exact, rmsh.boundary)
-bc_pp_tau = DirichletBC(fsp.Q_pp.sub(1), fsp.tau_exact, rmsh.boundary)
+bc_pp_rho_l = DirichletBC(fsp.Q_pp.sub(0), fsp.rho_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
+bc_pp_rho_r = DirichletBC(fsp.Q_pp.sub(0), fsp.rho_exact, rmsh.vf, rmsh.parameters['vertex_r_id'])
 
-bcs_pp = [bc_pp_rho, bc_pp_tau]
+bc_pp_tau_l = DirichletBC(fsp.Q_pp.sub(1), fsp.tau_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
+bc_pp_tau_r = DirichletBC(fsp.Q_pp.sub(1), fsp.tau_exact, rmsh.vf, rmsh.parameters['vertex_r_id'])
+
+bcs_pp = [bc_pp_rho_l, bc_pp_rho_r, bc_pp_tau_l, bc_pp_tau_r]
 
 F_rho = (fsp.mu * ((fsp.nu_rho[i]).dx(i)) + fsp.rho[i] * fsp.nu_rho[i]) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.mu * fsp.nu_rho[i] * rmsh.ds

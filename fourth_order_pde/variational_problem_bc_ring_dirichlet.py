@@ -11,9 +11,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-assigner = FunctionAssigner(fsp.Q, [fsp.Q_z, fsp.Q_omega, fsp.Q_mu])
-
-
 
 
 class z_exact_expression(UserExpression):
@@ -82,7 +79,7 @@ bc_mu = DirichletBC(fsp.Q.sub(2), mu_profile, rmsh.boundary)
 bcs = [bc_z, bc_mu]
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
-assigner.assign(fsp.psi, [fsp.f, fsp.omega_exact, fsp.mu_exact])
+fsp.assigner.assign(fsp.psi, [fsp.f, fsp.omega_exact, fsp.mu_exact])
 
 
 # main variational problem
