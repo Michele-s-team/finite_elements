@@ -1,10 +1,10 @@
 '''
 This code solves the fourth-order PDE \partial_j \partial_j \partial_i (z \partial_i z) = f expressed in terms of the function
-- z
-- omega[i] = \partial_i z
-- mu = \partial_i (z omega_i)
-- rho_i = \partial_i mu
-- tau = \partial_i rho_i
+    - z
+    - omega[i] = \partial_i z
+    - mu = \partial_i (z omega_i)
+    - rho_i = \partial_i mu
+    - tau = \partial_i rho_i
 
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
 
