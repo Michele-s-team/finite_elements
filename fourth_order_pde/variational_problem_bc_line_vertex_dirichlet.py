@@ -18,6 +18,7 @@ assigner = FunctionAssigner(fsp.Q, [fsp.Q_z, fsp.Q_omega, fsp.Q_mu])
 
 class z_exact_expression(UserExpression):
     def eval(self, values, x):
+        # test case 1
         values[0] = (x[0] ** 4) / 48.0
 
     def value_shape(self):
@@ -26,6 +27,7 @@ class z_exact_expression(UserExpression):
 
 class omega_exact_expression(UserExpression):
     def eval(self, values, x):
+        # test case 1
         values[0] = (x[0] ** 3) / 12.0
 
     def value_shape(self):
@@ -34,6 +36,7 @@ class omega_exact_expression(UserExpression):
 
 class mu_exact_expression(UserExpression):
     def eval(self, values, x):
+        # test case 1
         values[0] = (7 * x[0] ** 6 ) / 576.0
 
     def value_shape(self):
@@ -42,6 +45,7 @@ class mu_exact_expression(UserExpression):
 
 class rho_exact_expression(UserExpression):
     def eval(self, values, x):
+        # test case 1
         values[0] = (7.0 * x[0] ** 5) / 96.0
 
     def value_shape(self):
@@ -50,6 +54,7 @@ class rho_exact_expression(UserExpression):
 
 class f_exact_expression(UserExpression):
     def eval(self, values, x):
+        # test case 1
         values[0] = (35.0 * x[0] ** 4 ) / 96.0
 
     def value_shape(self):
