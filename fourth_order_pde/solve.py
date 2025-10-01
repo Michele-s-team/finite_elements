@@ -39,19 +39,29 @@ J_pp = derivative(vp.F_pp, fsp.psi_pp, fsp.J_Q_pp)
 problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.psi_pp, vp.bcs_pp, J_pp)
 solver_pp = NonlinearVariationalSolver(problem_pp)
 
-# set the solver parameters here
-params = {'nonlinear_solver': 'newton',
-          'newton_solver':
-              {
-                  # 'linear_solver': 'superlu',
-                  'linear_solver': 'mumps',
-                  'absolute_tolerance': 1e-12,
-                  'relative_tolerance': 1e-12,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
-              }
-          }
-solver.parameters.update(params)
+
+params = {
+    'nonlinear_solver': 'snes',
+    'snes_solver': {
+        'linear_solver': 'superlu',
+        'line_search': 'bt',  # backtracking line search
+        'absolute_tolerance': 1e-6,
+        'relative_tolerance': 1e-6,
+        'maximum_iterations': 1000000,
+        'report': True,
+    }
+}
+
+PETScOptions.clear()
+PETScOptions.set('snes_type', 'newtontr')
+PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+PETScOptions.set('snes_max_it', 100000)
+PETScOptions.set('snes_monitor')
+PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
+# PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
+# PETScOptions.set('snes_test_jacobian_display', '')
 
 # solve original problem
 solver.solve()
