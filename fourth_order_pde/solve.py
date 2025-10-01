@@ -1,5 +1,5 @@
 '''
-This code solves the biharmonic equation Nabla Nabla \partial_i (z \partial_i z) = f expressed in terms of the function
+This code solves the fourth-order PDE \partial_j \partial_j \partial_i (z \partial_i z) = f expressed in terms of the function
 - z
 - omega[i] = \partial_i z
 - mu = \partial_i (z omega_i)
