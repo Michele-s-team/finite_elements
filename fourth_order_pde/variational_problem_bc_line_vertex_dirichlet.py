@@ -71,10 +71,12 @@ fsp.tau_exact.interpolate(f_exact_expression(element=fsp.Q_tau.ufl_element()))
 fsp.f.interpolate(f_exact_expression(element=fsp.Q_z.ufl_element()))
 
 
-bc_z = DirichletBC(fsp.Q.sub(0), fsp.z_exact, rmsh.boundary)
-bc_mu = DirichletBC(fsp.Q.sub(2), fsp.mu_exact, rmsh.boundary)
+bc_z_l = DirichletBC(fsp.Q.sub(0), fsp.z_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
+bc_z_r = DirichletBC(fsp.Q.sub(0), fsp.z_exact, rmsh.vf, rmsh.parameters['vertex_r_id'])
+bc_mu_l = DirichletBC(fsp.Q.sub(2), fsp.mu_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
+bc_mu_r = DirichletBC(fsp.Q.sub(2), fsp.mu_exact, rmsh.vf, rmsh.parameters['vertex_r_id'])
 
-bcs = [bc_z, bc_mu]
+bcs = [bc_z_l, bc_z_r, bc_mu_l, bc_mu_r]
 
 # here is assign a wrong value to u (f) on purpose to see whether the solver conveges to the right solution
 assigner.assign(fsp.psi, [fsp.f, fsp.omega_exact, fsp.mu_exact])
