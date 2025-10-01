@@ -20,7 +20,7 @@ class z_exact_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
         values[0] = (x[0] ** 4) / 48.0
-
+        
     def value_shape(self):
         return (1,)
 
