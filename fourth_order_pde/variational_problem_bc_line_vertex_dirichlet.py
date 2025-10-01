@@ -1,3 +1,7 @@
+'''
+Here we solve for the PDE given in solve.py, by imposing both Dirichlet BCs on z at the left and right boundary, and Dirichlet conditions on omega and mu at the middle vertex.
+'''
+
 from fenics import *
 import importlib
 import numpy as np
