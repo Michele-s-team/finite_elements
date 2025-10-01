@@ -18,8 +18,7 @@ assigner = FunctionAssigner(fsp.Q, [fsp.Q_z, fsp.Q_omega, fsp.Q_mu])
 
 class z_exact_expression(UserExpression):
     def eval(self, values, x):
-        # values[0] = np.cos( x[0] + x[1] ) * np.sin( x[0] - x[1] )
-        values[0] = (x[0] ** 4 + x[1] ** 4) / 48.0
+        values[0] = (x[0] ** 4) / 48.0
 
     def value_shape(self):
         return (1,)
@@ -28,15 +27,14 @@ class z_exact_expression(UserExpression):
 class omega_exact_expression(UserExpression):
     def eval(self, values, x):
         values[0] = (x[0] ** 3) / 12.0
-        values[1] = (x[1] ** 3) / 12.0
 
     def value_shape(self):
-        return (2,)
+        return (1,)
 
 
 class mu_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = (7 * x[0] ** 6 + 3 * x[0] ** 4 * x[1] ** 2 + 3 * x[0] ** 2 * x[1] ** 4 + 7 * x[1] ** 6) / 576.0
+        values[0] = (7 * x[0] ** 6 ) / 576.0
 
     def value_shape(self):
         return (1,)
@@ -44,17 +42,15 @@ class mu_exact_expression(UserExpression):
 
 class rho_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0] * (7 * x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + x[1] ** 4) / 96.0
-        values[1] = x[1] * (x[0] ** 4 + 2 * x[0] ** 2 * x[1] ** 2 + 7 * x[1] ** 4) / 96.0
+        values[0] = (7.0 * x[0] ** 5) / 96.0
 
     def value_shape(self):
-        return (2,)
+        return (1,)
 
 
 class f_exact_expression(UserExpression):
     def eval(self, values, x):
-        # values[0] = -16 * (np.cos( 4 * x[0] ) + np.cos( 4 * x[1] ) + np.sin( 2 * x[0] ) * np.sin( 2 * x[1] ))
-        values[0] = 1 / 8.0 * (3 * x[0] ** 4 + x[0] ** 2 * x[1] ** 2 + 3 * x[1] ** 4)
+        values[0] = (35.0 * x[0] ** 4 ) / 96.0
 
     def value_shape(self):
         return (1,)
@@ -66,18 +62,12 @@ fsp.mu_exact.interpolate(mu_exact_expression(element=fsp.Q_mu.ufl_element()))
 
 fsp.rho_exact.interpolate(rho_exact_expression(element=fsp.Q_rho.ufl_element()))
 fsp.tau_exact.interpolate(f_exact_expression(element=fsp.Q_tau.ufl_element()))
+
 fsp.f.interpolate(f_exact_expression(element=fsp.Q_z.ufl_element()))
 
-z_profile = Expression('(pow(x[0], 4) + pow(x[1], 4)) / 48.0', element=fsp.Q.sub(0).ufl_element())
-mu_profile = Expression('(7 * pow(x[0], 6) + 3 * pow(x[0], 4) * pow(x[1], 2) + 3 * pow(x[0], 2) * pow(x[1], 4) + 7 * pow(x[1], 6))/576.0', element=fsp.Q.sub(2).ufl_element())
 
-rho_profile = Expression(
-    ('(1.0 / 96.0) * x[0] * (7.0 * pow(x[0], 4) + 2.0 * pow(x[0], 2) * pow(x[1], 2) + pow(x[1], 4))', '(1.0 / 96.0) * x[1] * (pow(x[0], 4) + 2 * pow(x[0], 2) * pow(x[1], 2) + 7 * pow(x[1], 4))'),
-    element=fsp.Q_pp.sub(0).ufl_element())
-tau_profile = Expression('(1.0 / 8.0) * (3 * pow(x[0], 4) + pow(x[0], 2) * pow(x[1], 2) + 3 * pow(x[1], 4))', element=fsp.Q_pp.sub(1).ufl_element())
-
-bc_z = DirichletBC(fsp.Q.sub(0), z_profile, rmsh.boundary)
-bc_mu = DirichletBC(fsp.Q.sub(2), mu_profile, rmsh.boundary)
+bc_z = DirichletBC(fsp.Q.sub(0), fsp.z_exact, rmsh.boundary)
+bc_mu = DirichletBC(fsp.Q.sub(2), fsp.mu_exact, rmsh.boundary)
 
 bcs = [bc_z, bc_mu]
 
