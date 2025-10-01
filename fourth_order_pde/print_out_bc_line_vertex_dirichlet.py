@@ -1,0 +1,30 @@
+import colorama as col
+from fenics import *
+import importlib
+import numpy as np
+import ufl as ufl
+
+import differential_geometry.boundary.geometry as bgeo
+import function_spaces as fsp
+import input_output as io
+import mesh.utils as msh
+
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+
+i, j, k, l = ufl.indices(4)
+
+z_output, omega_output, mu_output = fsp.psi.split( deepcopy=True )
+rho_output, tau_output = fsp.psi_pp.split( deepcopy=True )
+
+print( "Check of BCs: " )
+print( f"\t<<(z - z_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( z_output, fsp.z_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+
+print( f"\t<<(mu - mu_exact)^2>>_partial Omega = {col.Fore.RED}{ msh.difference_on_boundary( mu_output, fsp.mu_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+
+print(
+    f"\t<<(rho - rho_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( rho_output, fsp.rho_exact ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+print( f"\t<<(tau - tau_exact)^2>>_partial Omega = {col.Fore.RED}{msh.difference_on_boundary( tau_output, fsp.f ):.{io.number_of_decimals}e}{col.Style.RESET_ALL}" )
+
+import print_out_solution

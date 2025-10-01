@@ -93,8 +93,8 @@ F = (F_omega + F_z + F_mu ) + F_N
 
 
 #post-processing variational problem
-bc_pp_rho = DirichletBC(fsp.Q_pp.sub(0), rho_profile, rmsh.boundary)
-bc_pp_tau = DirichletBC(fsp.Q_pp.sub(1), tau_profile, rmsh.boundary)
+bc_pp_rho = DirichletBC(fsp.Q_pp.sub(0), fsp.rho_exact, rmsh.boundary)
+bc_pp_tau = DirichletBC(fsp.Q_pp.sub(1), fsp.tau_exact, rmsh.boundary)
 
 bcs_pp = [bc_pp_rho, bc_pp_tau]
 
