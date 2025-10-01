@@ -1,4 +1,3 @@
-import dolfin
 from fenics import *
 
 
@@ -54,6 +53,15 @@ mu_exact = Function(Q_mu)
 
 rho_exact = Function(Q_rho)
 tau_exact = Function(Q_tau)
+
+
+z_0 = Function(Q_z)
+omega_0 = Function(Q_omega)
+mu_0 = Function(Q_mu)
+
+rho_0 = Function(Q_rho)
+tau_0 = Function(Q_tau)
+
 
 f = Function(Q_z)
 J_Q = TrialFunction(Q)
