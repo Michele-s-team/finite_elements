@@ -1,10 +1,9 @@
 '''
-This code solves the biharmonic equation Nabla Nabla u = f expressed in terms of the function u and v = Nabla u
+This code solves the third-order equation d^3 u /dx^3 = f expressed in terms of the function u and v =  du/dx
 Run with
     clear; clear; python3 solve.py [problem name] [path where to read the mesh ] [path where to store the solution]
 Example:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/biharmonic_equation/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex $MESH_PATH $SOLUTION_PATH
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/biharmonic_equation/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
 
 '''
 
@@ -27,9 +26,6 @@ J = derivative( vp.F, fsp.psi, fsp.J_Q)
 problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
 solver = NonlinearVariationalSolver( problem )
 
-J_pp = derivative( vp.F_pp, fsp.w, fsp.J_Q_w)
-problem_pp = NonlinearVariationalProblem( vp.F_pp, fsp.w, vp.bcs_pp, J_pp )
-solver_pp = NonlinearVariationalSolver( problem_pp )
 
 
 '''

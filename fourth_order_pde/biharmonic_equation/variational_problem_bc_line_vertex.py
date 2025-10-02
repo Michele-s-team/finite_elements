@@ -15,7 +15,7 @@ i, j, k, l = ufl.indices( 4 )
 
 class u_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = np.cos(x[0]+x[1]) * np.sin(x[0]-x[1])
+        values[0] = np.cos(x[0]) * np.sin(x[0])
 
     def value_shape(self):
         return (1,)
@@ -23,7 +23,7 @@ class u_exact_expression( UserExpression ):
 
 class v_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = - 4 * np.cos(x[0])*np.sin(x[0]) + 4 * np.cos(x[1])*np.sin(x[1])
+        values[0] = - 4 * np.cos(x[0])*np.sin(x[0])
 
     def value_shape(self):
         return (1,)
@@ -31,7 +31,7 @@ class v_exact_expression( UserExpression ):
 
 class w_exact_expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 8 * (np.sin(2*x[0]) - np.sin(2*x[1]))
+        values[0] = 8 * np.sin(2*x[0])
 
     def value_shape(self):
         return (1,)
@@ -43,15 +43,17 @@ fsp.f.interpolate( w_exact_expression( element=fsp.Q_w.ufl_element() ) )
 
 
 # main variational problem
-bc_u = DirichletBC( fsp.Q.sub( 0 ), fsp.u_exact, rmsh.boundary )
-bc_v = DirichletBC( fsp.Q.sub( 1 ), fsp.v_exact, rmsh.boundary )
+bc_u_l = DirichletBC( fsp.Q.sub( 0 ), fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_l_id'] )
+bc_u_r = DirichletBC( fsp.Q.sub( 0 ), fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_r_id'] )
+bc_v_l = DirichletBC( fsp.Q.sub( 1 ), fsp.v_exact, rmsh.vf, rmsh.parameters['vertex_l_id'] )
+bc_v_r = DirichletBC( fsp.Q.sub( 1 ), fsp.v_exact, rmsh.vf, rmsh.parameters['vertex_r_id'] )
 
-bcs = [bc_u, bc_v]
+bcs = [bc_u_l, bc_u_r, bc_v_l, bc_v_r]
 
 F_v = ((fsp.v.dx( i )) * (fsp.nu_v.dx( i )) + fsp.f * fsp.nu_v) * rmsh.dx \
-      - bgeo.facet_normal[i] * (fsp.v.dx( i )) * fsp.nu_v * rmsh.ds
+      - bgeo.facet_normal[i] * (fsp.v.dx( i )) * fsp.nu_v * rmsh.ds_lr
 F_u = ((fsp.u.dx( i )) * (fsp.nu_u.dx( i )) + fsp.v * fsp.nu_u) * rmsh.dx \
-      - bgeo.facet_normal[i] * (fsp.u.dx( i )) * fsp.nu_u * rmsh.ds
+      - bgeo.facet_normal[i] * (fsp.u.dx( i )) * fsp.nu_u * rmsh.ds_lr
       
 F = F_u + F_v
      
@@ -63,6 +65,6 @@ bc_w = DirichletBC( fsp.Q_w, fsp.w_exact, rmsh.boundary )
 bcs_pp = [bc_w] 
       
 F_w = ((fsp.v.dx( i )) * (fsp.nu_w.dx( i )) + fsp.w * fsp.nu_w) * rmsh.dx \
-      - bgeo.facet_normal[i] * (fsp.v.dx( i )) * fsp.nu_w * rmsh.ds
+      - bgeo.facet_normal[i] * (fsp.v.dx( i )) * fsp.nu_w * rmsh.ds_lr
 
 F_pp = F_w

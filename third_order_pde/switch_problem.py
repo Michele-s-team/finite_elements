@@ -7,10 +7,6 @@ if rarg.args.problem == 'line_vertex':
     vp = 'variational_problem_bc_line_vertex'
     prout_bc = 'print_out_bc_line_vertex'
 
-elif rarg.args.problem == 'ring':
-    rmsh = 'mesh.read.ring'
-    vp = 'variational_problem_bc_ring'
-    prout_bc = 'print_out_bc_ring'
 
 
 
