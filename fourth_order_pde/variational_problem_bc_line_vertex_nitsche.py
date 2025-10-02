@@ -135,7 +135,10 @@ F_omega = (fsp.z * ((fsp.nu_omega[i]).dx(i)) + fsp.omega[i] * fsp.nu_omega[i]) *
 F_mu = (fsp.z * fsp.omega[i] * (fsp.nu_mu.dx(i)) + fsp.mu * fsp.nu_mu) * rmsh.dx \
        - bgeo.facet_normal[i] * fsp.z * fsp.omega[i] * fsp.nu_mu * rmsh.ds
        
-F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (\
+    (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds\
+    (fsp.omega - fsp.omega_exact) * fsp.nu_omega * rmsh.ds_m
+    )
 
  
 F = (F_omega + F_z + F_mu) + F_N
