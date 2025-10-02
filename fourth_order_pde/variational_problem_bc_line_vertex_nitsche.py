@@ -122,7 +122,7 @@ bc_z_r = DirichletBC(fsp.Q.sub(0), fsp.z_exact, rmsh.vf, rmsh.parameters['vertex
 bc_omega_m = DirichletBC(fsp.Q.sub(1), fsp.omega_exact, rmsh.vf, rmsh.parameters['vertex_m_id'])
 bc_mu_m = DirichletBC(fsp.Q.sub(2), fsp.mu_exact, rmsh.vf, rmsh.parameters['vertex_m_id'])
 
-bcs = [bc_z_l, bc_z_r, bc_omega_m, bc_mu_m]
+bcs = [bc_z_l, bc_z_r, bc_mu_m]
 
 
 
@@ -137,7 +137,7 @@ F_mu = (fsp.z * fsp.omega[i] * (fsp.nu_mu.dx(i)) + fsp.mu * fsp.nu_mu) * rmsh.dx
        
 F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (\
     (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds\
-    (fsp.omega - fsp.omega_exact) * fsp.nu_omega * rmsh.ds_m
+    + ((fsp.omega[i]("+") + fsp.omega[i]("-")) / 2.0 - (fsp.omega_exact[i]("+") + fsp.omega_exact[i]("-")) / 2.0)  * (fsp.nu_omega[i]("+") + fsp.nu_omega[i]("-")) / 2.0 * rmsh.ds_m\
     )
 
  
