@@ -215,6 +215,14 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
     u_sub_mesh_on_mesh.vector()[:] = dof_values
     return u_sub_mesh_on_mesh
 
+
+'''
+Compute the average between left and right side ('+' and '-') of a field on an internal mesh domain
+Input values: 
+- 'f': the field (so far, this method works if 'f' is a scalar or a vector of any dimension, but it does not work if 'f' is a tensor)
+Return values: 
+- (f('+') + f('-'))/2.0 for a scalar,  as_tensor((((f('+'))[i] + (f('-'))[i])/2.0), (i)) for a vector
+'''
 def average_dS(f):
     
     shape = f.ufl_shape
