@@ -3,7 +3,7 @@ This code solves the third-order equation d^3 u /dx^3 = f expressed in terms of 
 Run with
     clear; clear; python3 solve.py [problem name] [path where to read the mesh ] [path where to store the solution]
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/biharmonic_equation/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/third_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex $MESH_PATH $SOLUTION_PATH
 
 '''
 
@@ -56,8 +56,5 @@ solver_pp.parameters.update(params)
 
 
 solver.solve()
-solver_pp.solve()
-
-# u_output, v_output, w_output = psi.split( deepcopy=True )
 
 prout_bc = importlib.import_module(swi.prout_bc)
