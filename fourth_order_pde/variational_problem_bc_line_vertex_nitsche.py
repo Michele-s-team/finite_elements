@@ -18,8 +18,10 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l = ufl.indices(4)
 
 
-
-
+# import mesh.load as lmsh
+# T = TensorFunctionSpace(lmsh.mesh, 'P', 1, shape=(3,3))
+# t = Function(T)
+# fu.average_dS(t)
 
 class z_exact_expression(UserExpression):
     def eval(self, values, x):
@@ -123,7 +125,7 @@ bc_z_r = DirichletBC(fsp.Q.sub(0), fsp.z_exact, rmsh.vf, rmsh.parameters['vertex
 bc_omega_m = DirichletBC(fsp.Q.sub(1), fsp.omega_exact, rmsh.vf, rmsh.parameters['vertex_m_id'])
 bc_mu_m = DirichletBC(fsp.Q.sub(2), fsp.mu_exact, rmsh.vf, rmsh.parameters['vertex_m_id'])
 
-bcs = [bc_z_l, bc_z_r, bc_mu_m]
+bcs = [bc_z_l, bc_z_r]
 
 
 
@@ -138,7 +140,8 @@ F_mu = (fsp.z * fsp.omega[i] * (fsp.nu_mu.dx(i)) + fsp.mu * fsp.nu_mu) * rmsh.dx
        
 F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (\
     (bgeo.facet_normal[i] * fsp.omega[i] - bgeo.facet_normal[i] * fsp.omega_exact[i]) * bgeo.facet_normal[j] * fsp.nu_omega[j] * rmsh.ds\
-    + ((fsp.omega[i]("+") + fsp.omega[i]("-")) / 2.0 - (fsp.omega_exact[i]("+") + fsp.omega_exact[i]("-")) / 2.0)  * (fsp.nu_omega[i]("+") + fsp.nu_omega[i]("-")) / 2.0 * rmsh.ds_m\
+    + (fu.average_dS(fsp.omega)[i] - fu.average_dS(fsp.omega_exact)[i]) * fu.average_dS(fsp.nu_omega)[i] * rmsh.ds_m\
+    + (fu.average_dS(fsp.mu) - fu.average_dS(fsp.mu_exact)) * fu.average_dS(fsp.nu_mu) * rmsh.ds_m\
     )
 
  

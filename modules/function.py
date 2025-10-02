@@ -1,8 +1,11 @@
-import dolfin
+import colorama as col
 from fenics import *
 import importlib
 import numpy as np
 import math
+import ufl
+
+i, j, k, l = ufl.indices(4)
 
 msh = importlib.import_module('mesh.utils')
 
@@ -218,14 +221,13 @@ def average_dS(f):
     rank = len(shape)
     
     if rank == 0:
-        print("f is a scalar")
-        # scalar operations
+        
+        return ((f('+') + f('-'))/2.0)
+        
     elif rank == 1:
-        print(f"f is a vector of dimension {shape[0]}")
-        # vector operations
-    elif rank == 2:
-        print(f"f is a tensor of shape {shape}")
-        # tensor operations
+        
+        return as_tensor((((f('+'))[i] + (f('-'))[i])/2.0), (i))
+
     else:
-        print(f"f is a higher-order tensor of shape {shape}")
-    
+        print(f"{col.Fore.RED}{'Error: called compute average_dS with a tensor, I cannot compute average_dS !'}{col.Style.RESET_ALL}")
+     
