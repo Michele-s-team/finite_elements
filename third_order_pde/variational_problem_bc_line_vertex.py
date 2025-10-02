@@ -1,3 +1,10 @@
+'''
+in this variational problme we use Dirichlet conditions on a vertex within the mesh: we impose
+- Dirichlet BCs for v on ds_l and ds_r
+- a Dirichlet condition for u on the vertex in the middle of the line, ds_m
+'''
+
+
 from fenics import *
 import importlib
 import numpy as np
@@ -42,12 +49,12 @@ fsp.f.interpolate( f_expression( element=fsp.Q_u.ufl_element() ) )
 
 
 # main variational problem
-bc_u_l = DirichletBC( fsp.Q.sub( 0 ), fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_l_id'] )
+bc_u_m = DirichletBC( fsp.Q.sub( 0 ), fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_m_id'] )
 
 bc_v_l = DirichletBC( fsp.Q.sub( 1 ), fsp.v_exact, rmsh.vf, rmsh.parameters['vertex_l_id'] )
 bc_v_r = DirichletBC( fsp.Q.sub( 1 ), fsp.v_exact, rmsh.vf, rmsh.parameters['vertex_r_id'] )
 
-bcs = [bc_v_l, bc_v_r, bc_u_l]
+bcs = [bc_v_l, bc_v_r, bc_u_m]
 
 F_v = ((fsp.v.dx( i )) * (fsp.nu_v.dx( i )) + fsp.f * fsp.nu_v) * rmsh.dx \
       - bgeo.facet_normal[i] * (fsp.v.dx( i )) * fsp.nu_v * rmsh.ds_lr
