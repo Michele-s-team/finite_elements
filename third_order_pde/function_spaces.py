@@ -31,7 +31,7 @@ v_exact = Function( Q_v )
 
 
 
-f = Function( Q_w )
+f = Function( Q_u )
 J_Q = TrialFunction( Q )
 
 u, v = split( psi )
