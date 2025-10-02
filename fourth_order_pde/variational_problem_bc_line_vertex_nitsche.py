@@ -8,6 +8,7 @@ import numpy as np
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
+import function as fu
 import function_spaces as fsp
 import parameters.read.solution as rpam
 import switch_problem as swi

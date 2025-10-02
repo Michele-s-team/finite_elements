@@ -211,3 +211,21 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
 
     u_sub_mesh_on_mesh.vector()[:] = dof_values
     return u_sub_mesh_on_mesh
+
+def average_dS(f):
+    
+    shape = f.ufl_shape
+    rank = len(shape)
+    
+    if rank == 0:
+        print("f is a scalar")
+        # scalar operations
+    elif rank == 1:
+        print(f"f is a vector of dimension {shape[0]}")
+        # vector operations
+    elif rank == 2:
+        print(f"f is a tensor of shape {shape}")
+        # tensor operations
+    else:
+        print(f"f is a higher-order tensor of shape {shape}")
+    
