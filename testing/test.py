@@ -416,8 +416,48 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_disk_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
+# Test third_order_pde
+case_name = 'third_order_pde'
+
+problem_name = 'line_vertex_dirichlet'
+generate_mesh_path = root_path + 'generate_mesh/1d/line/vertex'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', os.path.join(generate_mesh_path, 'resolution_0.1'), os.path.join(generate_mesh_path, 'resolution_0.1'), problem_name, problem_name, success)
+
+problem_name = 'line_vertex_nitsche'
+generate_mesh_path = root_path + 'generate_mesh/1d/line/vertex'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', os.path.join(generate_mesh_path, 'resolution_0.1'), os.path.join(generate_mesh_path, 'resolution_0.1'), problem_name, problem_name, success)
+
+
 # Test fourth_order_pde
 case_name = 'fourth_order_pde'
+
+problem_name = 'line_vertex_dirichlet'
+generate_mesh_path = root_path + 'generate_mesh/1d/line/vertex'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', os.path.join(generate_mesh_path, 'resolution_0.1'), os.path.join(generate_mesh_path, 'resolution_0.1'), problem_name, problem_name, success)
+
+problem_name = 'line_vertex_nitsche'
+generate_mesh_path = root_path + 'generate_mesh/1d/line/vertex'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', os.path.join(generate_mesh_path, 'resolution_0.1'), os.path.join(generate_mesh_path, 'resolution_0.1'), problem_name, problem_name, success)
 
 problem_name = 'ring_dirichlet'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
@@ -439,6 +479,17 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 # Test fourth_order_pde/biharmonic_equation
 case_name = 'fourth_order_pde/biharmonic_equation'
+
+
+problem_name = 'line_vertex'
+generate_mesh_path = root_path + 'generate_mesh/1d/line/vertex'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', os.path.join(generate_mesh_path, 'resolution_0.1'), os.path.join(generate_mesh_path, 'resolution_0.1'), problem_name, problem_name, success)
+
 
 problem_name = 'ring'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/'

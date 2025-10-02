@@ -1,8 +1,13 @@
+import colorama as col
+# this import is needed, do not remove it 
 import dolfin
 from fenics import *
 import importlib
 import numpy as np
 import math
+import ufl
+
+i, j, k, l = ufl.indices(4)
 
 msh = importlib.import_module('mesh.utils')
 
@@ -211,3 +216,28 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
 
     u_sub_mesh_on_mesh.vector()[:] = dof_values
     return u_sub_mesh_on_mesh
+
+
+'''
+Compute the average between left and right side ('+' and '-') of a field on an internal mesh domain
+Input values: 
+- 'f': the field (so far, this method works if 'f' is a scalar or a vector of any dimension, but it does not work if 'f' is a tensor)
+Return values: 
+- (f('+') + f('-'))/2.0 for a scalar,  as_tensor((((f('+'))[i] + (f('-'))[i])/2.0), (i)) for a vector
+'''
+def average_dS(f):
+    
+    shape = f.ufl_shape
+    rank = len(shape)
+    
+    if rank == 0:
+        
+        return ((f('+') + f('-'))/2.0)
+        
+    elif rank == 1:
+        
+        return as_tensor((((f('+'))[i] + (f('-'))[i])/2.0), (i))
+
+    else:
+        print(f"{col.Fore.RED}{'Error: called compute average_dS with a tensor, I cannot compute average_dS !'}{col.Style.RESET_ALL}")
+     

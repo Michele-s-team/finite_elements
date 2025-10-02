@@ -15,22 +15,13 @@ element = MixedElement( [P_u, P_v] )
 # mixed function space for main variational problem
 Q = FunctionSpace( lmsh.mesh, element )
 
-# function space for post-processing variational problem
-Q_w = FunctionSpace( lmsh.mesh, 'P', rpam.parameters['function_space_degree'] )
-
-
 Q_u = Q.sub( 0 ).collapse()
 Q_v = Q.sub( 1 ).collapse()
 
 
-Q_grad_v = VectorFunctionSpace( lmsh.mesh, 'P', rpam.parameters['function_space_degree'] )
 
 psi = Function( Q )
 nu_u, nu_v = TestFunctions( Q )
-
-nu_w = TestFunction( Q_w )
-
-grad_v = Function( Q_grad_v )
 
 u_output = Function( Q_u )
 v_output = Function( Q_v )
@@ -39,11 +30,8 @@ u_exact = Function( Q_u )
 v_exact = Function( Q_v )
 
 
-w_exact = Function( Q_w )
 
-f = Function( Q_w )
+f = Function( Q_u )
 J_Q = TrialFunction( Q )
-J_Q_w = TrialFunction( Q_w )
 
 u, v = split( psi )
-w = Function( Q_w )
