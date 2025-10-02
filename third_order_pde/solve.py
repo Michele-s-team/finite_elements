@@ -3,7 +3,8 @@ This code solves the third-order equation d^3 u /dx^3 = f expressed in terms of 
 Run with
     clear; clear; python3 solve.py [problem name] [path where to read the mesh ] [path where to store the solution]
 Example:
-    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/third_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/third_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex_dirichlet $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/third_order_pde/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex_nitsche $MESH_PATH $SOLUTION_PATH
 
 '''
 
