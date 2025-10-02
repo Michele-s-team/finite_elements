@@ -1,36 +1,49 @@
-import dolfin
 from fenics import *
 
 import differential_geometry.boundary.geometry as bgeo
+import mesh.utils as msh
 import mesh.load as lmsh
+import parameters.read.solution as rpam
 
-# CHANGE PARAMETERS HERE
-function_space_degree = 4
-# CHANGE PARAMETERS HERE
+element_geometry = msh.element_geometry(lmsh.mesh)
 
 
-P_u = FiniteElement( 'P', triangle, function_space_degree )
-P_v = FiniteElement( 'P', triangle, function_space_degree )
-P_w = FiniteElement( 'P', triangle, function_space_degree )
-element = MixedElement( [P_u, P_v, P_w] )
+P_u = FiniteElement( 'P', element_geometry, rpam.parameters['function_space_degree'] )
+P_v = FiniteElement( 'P', element_geometry, rpam.parameters['function_space_degree'] )
+element = MixedElement( [P_u, P_v] )
+
+# mixed function space for main variational problem
 Q = FunctionSpace( lmsh.mesh, element )
+
+# function space for post-processing variational problem
+Q_w = FunctionSpace( lmsh.mesh, 'P', rpam.parameters['function_space_degree'] )
+
 
 Q_u = Q.sub( 0 ).collapse()
 Q_v = Q.sub( 1 ).collapse()
-Q_w = Q.sub( 2 ).collapse()
-Q_grad_v = VectorFunctionSpace( lmsh.mesh, 'P', function_space_degree )
+
+
+Q_grad_v = VectorFunctionSpace( lmsh.mesh, 'P', rpam.parameters['function_space_degree'] )
 
 psi = Function( Q )
-nu_u, nu_v, nu_w = TestFunctions( Q )
+nu_u, nu_v = TestFunctions( Q )
+
+nu_w = TestFunction( Q_w )
 
 grad_v = Function( Q_grad_v )
+
 u_output = Function( Q_u )
 v_output = Function( Q_v )
-w_output = Function( Q_w )
+
 u_exact = Function( Q_u )
 v_exact = Function( Q_v )
+
+
 w_exact = Function( Q_w )
 
 f = Function( Q_w )
-J_uvw = TrialFunction( Q )
-u, v, w = split( psi )
+J_Q = TrialFunction( Q )
+J_Q_w = TrialFunction( Q_w )
+
+u, v = split( psi )
+w = Function( Q_w )
