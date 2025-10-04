@@ -43,24 +43,22 @@ class v_n_0_Expression( UserExpression ):
 
 class sigma_n_32_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_r']
+        values[0] = rpam.parameters['sigma_n_12_0']
 
     def value_shape(self):
         return (1,)
 
 class nu_n_12_0_Expression( UserExpression ):
     def eval(self, values, x):
-        epsilon = 1e-4
-        values[0] = 1 + epsilon * np.cos(2 * np.pi * x[0] )
+        values[0] = 1
 
     def value_shape(self):
         return (1,)
     
 class u_n_12_0_Expression( UserExpression ):
     def eval(self, values, x):
-        epsilon = 1e-4
         values[0] = 0
-        values[1] = 0 +  epsilon * np.cos(2 * np.pi * x[0] )
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -82,17 +80,16 @@ fsp.f.interpolate(f_Expression(element=fsp.Q_f.ufl_element()))
 bc_v_bar_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_bar_l'])), rmsh.vf, rmsh.parameters['vertex_l_id'])
 bc_v_bar_r = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_bar_r'])), rmsh.vf, rmsh.parameters['vertex_r_id'])
 
-bc_w_bar_l = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_bar_lr']), rmsh.vf, rmsh.parameters['vertex_l_id'])
-bc_w_bar_r = DirichletBC(fsp.Q.sub(1), Constant(rpam.parameters['w_bar_lr']), rmsh.vf, rmsh.parameters['vertex_r_id'])
+bc_w_bar_l = DirichletBC(fsp.Q.sub(1), Constant(0), rmsh.vf, rmsh.parameters['vertex_l_id'])
 
-bc_phi_r = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.vf, rmsh.parameters['vertex_r_id'])
+bc_phi_l = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.vf, rmsh.parameters['vertex_l_id'])
 
 bc_u_n_12_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_n_12_l"][0], rpam.parameters["u_n_12_l"][1])), rmsh.vf, rmsh.parameters['vertex_l_id'])
-bc_u_n_12_r = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_n_12_r"][0], rpam.parameters["u_n_12_r"][1])), rmsh.vf, rmsh.parameters['vertex_r_id'])
+bc_u_n_12_0_r = DirichletBC(fsp.Q.sub(5).sub(0), Constant(0), rmsh.vf, rmsh.parameters['vertex_r_id'])
 
 
 #BCs
-bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_w_bar_r, bc_phi_r, bc_u_n_12_l, bc_u_n_12_r]
+bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_u_n_12_l, bc_u_n_12_0_r]
 
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
@@ -148,13 +145,11 @@ F_w_bar = ( \
                       (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds \
           )
 
-
+# natural BC implemented here
 F_phi = ( \
                     dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( i )) * (fsp.nu_phi.dx( j )) \
                     + rpam.parameters['rho'] * (geo.Nabla_v( fsp.v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, i] - 2.0 * fsp.mu_n_12 * fsp.w_bar) * fsp.nu_phi \
-            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
-    # natural BC implemented here
-- dt * ((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * (fsp.phi.dx( i )) * fsp.nu_phi) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_r
+            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx 
 
 
 F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
@@ -188,8 +183,12 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
               ((fsp.X_ref[0] + fsp.u_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
               + ((fsp.X_ref[1] + fsp.u_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds\
-    )
-
+        + (\
+        # this implements BC (128) 
+            (fsp.w_bar.dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] *(fsp.nu_w_bar.dx(j)) \
+        # this implements BC (132)
+            +   (fsp.u_n_12[1].dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.nu_u_n_12[1].dx(j))
+        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_r    )
 
 # total functional for the mixed problem
 F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_u_n_12 + F_nu_psi + F_mu_n_12) + F_N

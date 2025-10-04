@@ -11,18 +11,19 @@ clear; clear; rm -rf solution; mkdir solution; python3 solve.py [name of variati
 Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_b $MESH_PATH $SOLUTION_PATH
     
 the  fields in this problem are 
-- v_bar == v^{bar}_{Lagrangian approach}
-- w_bar == w^{bar}_{Lagrangian approach}
-- phi == \phi_{Lagrangian approach}
-- v_n == v^{n}_{Lagrangian approach}
-- w_n == w^{n}_{Lagrangian approach}
-- u_n_12[alpha] == X^{n-1/2, alpha}_{Lagrangian approach} - X_ref^alpha
-- X_ref^alpha is the manifold in the reference configuration 
-- nu_n_12 == nu^{n-1/2}_{Lagrangian approach}
-- psi_n_12 == psi^{n-1/2}_{Lagrangian approach}
-- mu_n_12 == mu^{n-1/2}_{Lagrangian approach}
+    - v_bar == v^{bar}_{Lagrangian approach}
+    - w_bar == w^{bar}_{Lagrangian approach}
+    - phi == \phi_{Lagrangian approach}
+    - v_n == v^{n}_{Lagrangian approach}
+    - w_n == w^{n}_{Lagrangian approach}
+    - u_n_12[alpha] == X^{n-1/2, alpha}_{Lagrangian approach} - X_ref^alpha
+    - X_ref^alpha is the manifold in the reference configuration 
+    - nu_n_12 == nu^{n-1/2}_{Lagrangian approach}
+    - psi_n_12 == psi^{n-1/2}_{Lagrangian approach}
+    - mu_n_12 == mu^{n-1/2}_{Lagrangian approach}
 '''
 
 
@@ -130,7 +131,7 @@ for step in range(rpam.parameters['N']):
     PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
     # PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
     # PETScOptions.set('snes_test_jacobian_display', '')
-   
+
     solver.parameters.update(params)
 
     
