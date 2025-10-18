@@ -40,7 +40,7 @@ params = {'nonlinear_solver': 'newton',
 rmsh = importlib.import_module(swi.rmsh)
 vp_membrane = importlib.import_module(swi.vp_membrane)
 vp_fluid = importlib.import_module(swi.vp_fluid)
-vp_fictitious_elastic_body = importlib.import_module(swi.vp_fictitious_elastic_body)
+vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
