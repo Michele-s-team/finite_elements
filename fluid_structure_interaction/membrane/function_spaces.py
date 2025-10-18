@@ -1,4 +1,3 @@
-import dolfin
 from fenics import *
 
 import mesh.load as lmsh
@@ -8,29 +7,28 @@ the variables for the problem are
 1) for the membrane: 
     - v_n = {v^n}_{'channel flow with membrane'}
     - w_n = {w^n}_{'channel flow with membrane'}
+    - v_bar = \overline{v}_{'channel flow with membrane'}
+    - w_bar = \overline{w}_{'channel flow with membrane'}
+    - phi = phi_{'channel flow with membrane'}
     - sigma_n_12 = {sigma^{n-1/2}}_{'channel flow with membrane'}
-    - X^{n-1/2}[ = {X^{n-1/2}}_{'channel flow with membrane'}
+    - X^{n-1/2} = {X^{n-1/2}}_{'channel flow with membrane'}
     - nu_n_12 = {nu^{n-1/2}}_{'channel flow with membrane'}
     - psi_n_12 = {psi^{n-1/2}}_{'channel flow with membrane'}
     - mu_n_12 = {mu^{n-1/2}}_{'channel flow with membrane'}
     
+2) for the fictitious elastic body: 
+    - u_n = {u^n}_{'channel flow with membrane'}
+    - u_dot_n = {\dot{u}^n}_{'channel flow with membrane'}
 
-- 'theta_n', 'theta_n_1' : \theta^n, \theta^{n-1} in notes
-- 'omega_n', 'omega_n_1' : \omega^n, \omega^{n-1} in notes
-- 'v^n' = \textrm{v}^n_notes
-- 'v_' = \textrm{v}^*_notes
-- 'phi' = phi_notes
-- 'sigma' = \varsigma_notes
-- 'u', 'u_dot' = u_notes, \dot{u}_notes
+3) for the fluid:     
+    - 'v_fl_n' = {\textrm{v_FL}^n}_{'channel flow with membrane'}
+    - 'v_fl_bar' = {\overline{v_FL}}_{'channel flow with membrane'}
+    - 'sigma_fl_n_12' = {\varsigma_FL^{n-1/2}}_{'channel flow with membrane'}
+    - 'phi_fl' = {phi_FL}_{'channel flow with membrane'}
 '''
 
-
-theta_n : float
-omega_n : float
-theta_n_1 : float
-omega_n_1 : float
-
 # Define function spaces
+# 1) for the membrane: 
 Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_v_ = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_phi = FunctionSpace(lmsh.mesh, 'P', 1)
