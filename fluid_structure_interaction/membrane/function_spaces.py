@@ -31,21 +31,77 @@ the variables for the problem are
 
 # Define function spaces
 # 1) for the membrane: 
+# mixed funtion space
 P_v_bar = VectorElement( 'P', interval, 2 )
 P_w_bar = FiniteElement( 'P', interval, 1 )
 P_phi = FiniteElement('P', interval, 1)
 P_v_n = VectorElement( 'P', interval, 2 )
 P_w_n = FiniteElement( 'P', interval, 1 )
-P_U_n_12 = VectorElement('P', interval, rpam.parameters['function_space_degree_membrane'], dim=2)
-P_nu_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree_membrane'])
-P_psi_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree_membrane'])
-P_mu_n_12 = FiniteElement( 'P', interval, rpam.parameters['function_space_degree_membrane'] )
+P_U_n_12 = VectorElement('P', interval, rpam.parameters['function_space_degree_mem'], dim=2)
+P_nu_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree_mem'])
+P_psi_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree_mem'])
+P_mu_n_12 = FiniteElement( 'P', interval, rpam.parameters['function_space_degree_mem'] )
+
+element_mem = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_U_n_12, P_nu_n_12, P_psi_n_12, P_mu_n_12] )
+Q_mem = FunctionSpace(lmsh.sub_meshes[1], element_mem)
+
+# collapsed function spaces
+Q_v_bar = Q_mem.sub(0).collapse()
+Q_w_bar = Q_mem.sub(1).collapse()
+Q_phi = Q_mem.sub(2).collapse()
+Q_v_n = Q_mem.sub(3).collapse()
+Q_w_n = Q_mem.sub(4).collapse()
+Q_U_n_12 = Q_mem.sub(5).collapse()
+Q_nu_n_12 = Q_mem.sub(6).collapse()
+Q_psi_n_12 = Q_mem.sub(7).collapse()
+Q_mu_n_12 = Q_mem.sub(8).collapse()
+
+# function space for the X field
+Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
 
-# function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
-Q_y = VectorFunctionSpace(lmsh.mesh, 'P', 2)
-Q_dyds = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 
+# 2) for the fictitious elastic body: 
+P_u = VectorElement( 'P', triangle, 1 )
+P_u_dot = VectorElement( 'P', triangle, 1 )
+
+element_el = MixedElement( [P_u, P_u_dot] )
+Q_el = FunctionSpace(lmsh.sub_meshes[0], element_el)
+
+
+# 3) for the fluid:   
+Q_v_fl = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_v_fl_bar = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+  
+
+
+# define fields 
+# 1) for the membrane:
+#fields at the preceeding steps
+v_n_1 = Function(Q_v_n)
+v_n_2 = Function(Q_v_n)
+w_n_1 = Function(Q_w_n)
+
+sigma_n_12 = Function( Q_phi )
+sigma_n_32 = Function( Q_phi )
+sigma_n_12_output = Function( Q_phi )
+
+U_n_32 = Function( Q_U_n_12 )
+
+#reference configuration
+X_ref = Function(Q_X)
+
+#these functions are used to print the solution to file
+v_bar_output= Function(Q_v_bar)
+w_bar_output = Function(Q_w_bar)
+phi_output = Function(Q_phi)
+v_n_output = Function(Q_v_n)
+w_n_output = Function(Q_w_n)
+U_n_12_output = Function(Q_U_n_12)
+nu_n_12_output = Function(Q_nu_n_12)
+psi_n_12_output = Function(Q_psi_n_12)
+mu_n_12_output = Function(Q_mu_n_12)
 
 
 # Define functions for solutions at previous and current time steps
