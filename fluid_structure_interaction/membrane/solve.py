@@ -1,17 +1,12 @@
 """
-This code solves for the dynamics of the Navier Stokes equations with a rigid obstacle which can rotate about a fixed point,
- on a flat manifold Crank Nicholson discretization scheme
+This code solves for the dynamics of the Navier Stokes equations for a fluid in a square whose top edge is a membrane. The coupled dynamics of  membrane, fluid and of the fictitious elastic body (which defines the region where the fluid moves) are solved. 
 
 run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse $MESH_PATH $SOLUTION_PATH
-
-Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the rectangle, etc...) is changed are bracketed by
-#CHANGE PARAMETERS HERE
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/membrane/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_line_a $MESH_PATH $SOLUTION_PATH
 """
-
 import dolfin
 from fenics import *
 import importlib
@@ -22,13 +17,13 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import read_parameters as rpam
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
 import print_out_solution as pr_sol
 
-dt = rpam.T / rpam.num_steps  # time step size
+dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -49,9 +44,9 @@ fsp.theta_n_1 = rpam.theta_0
 fsp.omega_n_1 = rpam.omega_0
 
 rmsh = importlib.import_module(swi.rmsh)
-ap_ellipse = importlib.import_module(swi.ap_ellipse)
+vp_membrane = importlib.import_module(swi.vp_membrane)
 vp_fluid = importlib.import_module(swi.vp_fluid)
-vp_mesh = importlib.import_module(swi.vp_mesh)
+vp_fictitious_elastic_body = importlib.import_module(swi.vp_fictitious_elastic_body)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -59,12 +54,16 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
-# set the initial profiles
+# set the initial profiles:
+# 1) for the membrane
+# 2) for the fictitious elastic body 
+# 3) for the fluid
 fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
+'''
 print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
@@ -156,3 +155,4 @@ for n in range(rpam.num_steps):
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
 
 print("... done.", flush=True)
+'''
