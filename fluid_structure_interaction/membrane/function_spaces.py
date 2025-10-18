@@ -1,21 +1,23 @@
 from fenics import *
 
 import mesh.load as lmsh
+import parameters.read.solution as rpam
 
 '''
 the variables for the problem are
 1) for the membrane: 
-    - v_n = {v^n}_{'channel flow with membrane'}
-    - w_n = {w^n}_{'channel flow with membrane'}
     - v_bar = \overline{v}_{'channel flow with membrane'}
     - w_bar = \overline{w}_{'channel flow with membrane'}
     - phi = phi_{'channel flow with membrane'}
-    - sigma_n_12 = {sigma^{n-1/2}}_{'channel flow with membrane'}
-    - X^{n-1/2} = {X^{n-1/2}}_{'channel flow with membrane'}
+    - v_n = {v^n}_{'channel flow with membrane'}
+    - w_n = {w^n}_{'channel flow with membrane'}
+    - U_n_12 = {U^{n-1/2}}_{'channel flow with membrane'} or X_n_12 = {X^{n-1/2}}_{'channel flow with membrane'}
     - nu_n_12 = {nu^{n-1/2}}_{'channel flow with membrane'}
     - psi_n_12 = {psi^{n-1/2}}_{'channel flow with membrane'}
     - mu_n_12 = {mu^{n-1/2}}_{'channel flow with membrane'}
     
+    - sigma_n_12 = {sigma^{n-1/2}}_{'channel flow with membrane'}
+
 2) for the fictitious elastic body: 
     - u_n = {u^n}_{'channel flow with membrane'}
     - u_dot_n = {\dot{u}^n}_{'channel flow with membrane'}
@@ -29,11 +31,16 @@ the variables for the problem are
 
 # Define function spaces
 # 1) for the membrane: 
-Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2)
-Q_v_ = VectorFunctionSpace(lmsh.mesh, 'P', 2)
-Q_phi = FunctionSpace(lmsh.mesh, 'P', 1)
-Q_u = VectorFunctionSpace(lmsh.mesh, 'P', 1)
-Q_u_dot = VectorFunctionSpace(lmsh.mesh, 'P', 1)
+P_v_bar = VectorElement( 'P', interval, 2 )
+P_w_bar = FiniteElement( 'P', interval, 1 )
+P_phi = FiniteElement('P', interval, 1)
+P_v_n = VectorElement( 'P', interval, 2 )
+P_w_n = FiniteElement( 'P', interval, 1 )
+P_U_n_12 = VectorElement('P', interval, rpam.parameters['function_space_degree_membrane'], dim=2)
+P_nu_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree_membrane'])
+P_psi_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree_membrane'])
+P_mu_n_12 = FiniteElement( 'P', interval, rpam.parameters['function_space_degree_membrane'] )
+
 
 # function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
 Q_y = VectorFunctionSpace(lmsh.mesh, 'P', 2)
