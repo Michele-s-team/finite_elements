@@ -78,6 +78,11 @@ Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
 # define fields 
 # 1) for the membrane:
+#Jacobian
+J_psi_mem = TrialFunction(Q_mem)
+psi_mem = Function(Q_mem)
+nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_U_n_12, nu_nu_n_12, nu_psi_n_12,  nu_mu_n_12 = TestFunctions( Q_mem )
+
 #fields at the preceeding steps
 v_n_1 = Function(Q_v_n)
 v_n_2 = Function(Q_v_n)
