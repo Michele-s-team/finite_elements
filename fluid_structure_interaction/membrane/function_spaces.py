@@ -5,6 +5,16 @@ import mesh.load as lmsh
 
 '''
 the variables for the problem are
+1) for the membrane: 
+    - v_n = {v^n}_{'channel flow with membrane'}
+    - w_n = {w^n}_{'channel flow with membrane'}
+    - sigma_n_12 = {sigma^{n-1/2}}_{'channel flow with membrane'}
+    - X^{n-1/2}[ = {X^{n-1/2}}_{'channel flow with membrane'}
+    - nu_n_12 = {nu^{n-1/2}}_{'channel flow with membrane'}
+    - psi_n_12 = {psi^{n-1/2}}_{'channel flow with membrane'}
+    - mu_n_12 = {mu^{n-1/2}}_{'channel flow with membrane'}
+    
+
 - 'theta_n', 'theta_n_1' : \theta^n, \theta^{n-1} in notes
 - 'omega_n', 'omega_n_1' : \omega^n, \omega^{n-1} in notes
 - 'v^n' = \textrm{v}^n_notes
