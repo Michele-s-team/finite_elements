@@ -93,7 +93,7 @@ U_n_32 = Function( Q_U_n_12 )
 X_ref = Function(Q_X)
 
 #these functions are used to print the solution to file
-v_bar_output= Function(Q_v_bar)
+v_bar_output = Function(Q_v_bar)
 w_bar_output = Function(Q_w_bar)
 phi_output = Function(Q_phi)
 v_n_output = Function(Q_v_n)
@@ -102,6 +102,17 @@ U_n_12_output = Function(Q_U_n_12)
 nu_n_12_output = Function(Q_nu_n_12)
 psi_n_12_output = Function(Q_psi_n_12)
 mu_n_12_output = Function(Q_mu_n_12)
+
+#fields to store the initial conditions
+v_bar_0 = Function( Q_v_bar )
+w_bar_0 = Function( Q_w_bar )
+phi_0 = Function( Q_phi )
+v_n_0 = Function( Q_v_n )
+w_n_0 = Function( Q_w_n )
+U_n_12_0 = Function( Q_U_n_12)
+nu_n_12_0 = Function( Q_nu_n_12 )
+psi_n_12_0 = Function( Q_psi_n_12 )
+mu_n_12_0 = Function( Q_mu_n_12 )
 
 
 # Define functions for solutions at previous and current time steps
