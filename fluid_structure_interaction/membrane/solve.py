@@ -23,7 +23,7 @@ import switch_problem as swi
 
 import print_out_solution as pr_sol
 
-dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
+dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -36,12 +36,6 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
-
-# initialize values
-fsp.theta_n = rpam.theta_0
-fsp.omega_n = rpam.omega_0
-fsp.theta_n_1 = rpam.theta_0
-fsp.omega_n_1 = rpam.omega_0
 
 rmsh = importlib.import_module(swi.rmsh)
 vp_membrane = importlib.import_module(swi.vp_membrane)
