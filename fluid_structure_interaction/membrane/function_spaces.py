@@ -29,7 +29,8 @@ the variables for the problem are
     - 'phi_fl' = {phi_FL}_{'channel flow with membrane'}
 '''
 
-# Define function spaces
+################## Define function spaces ##################
+
 # 1) for the membrane: 
 # mixed funtion space
 P_v_bar = VectorElement( 'P', interval, 2 )
@@ -62,11 +63,8 @@ Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_spa
 
 
 # 2) for the fictitious elastic body: 
-P_u = VectorElement( 'P', triangle, 1 )
-P_u_dot = VectorElement( 'P', triangle, 1 )
-
-element_el = MixedElement( [P_u, P_u_dot] )
-Q_el = FunctionSpace(lmsh.sub_meshes[0], element_el)
+Q_u = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_u_dot = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
 
 # 3) for the fluid:   
@@ -76,11 +74,13 @@ Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
   
 
 
-# define fields 
+################## define fields ##################
 # 1) for the membrane:
 #Jacobian
 J_psi_mem = TrialFunction(Q_mem)
 psi_mem = Function(Q_mem)
+
+# test functions
 nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_U_n_12, nu_nu_n_12, nu_psi_n_12,  nu_mu_n_12 = TestFunctions( Q_mem )
 
 #fields at the preceeding steps
@@ -119,47 +119,45 @@ nu_n_12_0 = Function( Q_nu_n_12 )
 psi_n_12_0 = Function( Q_psi_n_12 )
 mu_n_12_0 = Function( Q_mu_n_12 )
 
+# functions derived from psi_mem
+v_bar, w_bar, phi, v_n, w_n, U_n_12, nu_n_12, psi_n_12, mu_n_12 = split( psi_mem )
 
-# Define functions for solutions at previous and current time steps
-v_n = Function(Q_v)
-v_n_1 = Function(Q_v)
-v_n_2 = Function(Q_v)
-v_ = Function(Q_v_)
-# sigma^{n-1/2}
-sigma_n_12 = Function(Q_phi)
-# sigma^{n-3/2}
-sigma_n_32 = Function(Q_phi)
-phi = Function(Q_phi)
+V = (v_bar + v_n_1) / 2.0
+W = (w_bar + w_n_1) / 2.0
+
+assigner_mem = FunctionAssigner(Q_mem, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q_U_n_12, Q_nu_n_12, Q_psi_n_12, Q_mu_n_12])
+
+
+# 2) for the fictitious elastic body:
 u_n = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
-u_n_1 = Function(Q_u)
-u_dot_n_1 = Function(Q_u_dot)
-u_n_2 = Function(Q_u)
-u_dot_n_2 = Function(Q_u_dot)
 
-u_ellipse = Function(Q_u)
-u_square = Function(Q_u)
-u_dot_ellipse = Function(Q_u_dot)
-u_dot_square = Function(Q_u_dot)
+# jacobians
+J_u = TrialFunction(Q_u)
+J_u_dot = TrialFunction(Q_u_dot)
 
-# y_ellipse = {y^s}_notes
-ys_ellipse = Function(Q_y)
-# dyds_ellipse = {dy^s/ds}_notes
-dyds_ellipse = Function(Q_dyds)
-
-# Define test functions
-nu_v_n = TestFunction(Q_v)
-nu_v_ = TestFunction(Q_v_)
-nu_phi = TestFunction(Q_phi)
+# test functions
 nu_u = TestFunction(Q_u)
 nu_u_dot = TestFunction(Q_u_dot)
 
 
-# Jacobians
-J_v_ = TrialFunction(Q_v_)
-J_v_n = TrialFunction(Q_v)
-J_phi = TrialFunction(Q_phi)
-J_u = TrialFunction(Q_u)
-J_u_dot = TrialFunction(Q_u_dot)
+# 3) for the fluid
+v_fl_n = Function(Q_v_fl)
+v_fl_n_1 = Function(Q_v_fl)
+v_fl_n_2 = Function(Q_v_fl)
+v_fl_bar = Function(Q_v_fl_bar)
+sigma_fl_n_12 = Function(Q_phi_fl)
+sigma_fl_n_32 = Function(Q_phi_fl)
+phi_fl = Function(Q_phi_fl)
 
-V = 0.5 * (v_n_1 + v_)
+# jacobians
+J_v_fl_bar = TrialFunction(Q_v_fl_bar)
+J_v_fl_n = TrialFunction(Q_v_fl)
+J_phi_fl = TrialFunction(Q_phi_fl)
+
+# test functions
+nu_v_fl_n = TestFunction(Q_v_fl)
+nu_v_fl_bar = TestFunction(Q_v_fl_bar)
+nu_phi_fl = TestFunction(Q_phi_fl)
+
+V_fl =  (v_fl_n_1 + v_fl_bar) / 2.0
