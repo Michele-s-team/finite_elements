@@ -32,11 +32,10 @@ class X_ref_Expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-# sign
 
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['v_bar_l'][0]
+        values[0] = rpam.parameters['v_n_0_const'][0]
 
     def value_shape(self):
         return (1,)
@@ -55,25 +54,17 @@ class nu_n_12_0_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
     
-class u_n_12_0_Expression( UserExpression ):
+class U_n_12_0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = 0
         values[1] = 0
 
     def value_shape(self):
         return (2,)
-    
-class f_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['f'][0]
-        values[1] = rpam.parameters['f'][1]
-
-    def value_shape(self):
-        return (2,)
-
-    
+        
 fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
-fsp.f.interpolate(f_Expression(element=fsp.Q_f.ufl_element()))
+
+# sign
 
 
 # boundary conditions
