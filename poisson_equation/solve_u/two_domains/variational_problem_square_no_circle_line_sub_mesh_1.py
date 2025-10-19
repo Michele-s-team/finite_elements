@@ -47,7 +47,12 @@ fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_1_expression(element=fsp.Q[1].uf
 
 # sub_mesh[1]
 # boundary conditions for sub_mesh[1]: constrain u[1] on the whole boundary of sub_mesh[1], i.e., on the ellipse and outer rectangle (lrtb)
-bcs = [DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['lr'])]
+# bcs = [DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['lr'])]
+
+bc_l = DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_r = DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+
+bcs = [bc_l, bc_r]
 
 F = (fsp.u[1].dx(i) * fsp.nu_u[1].dx(i) + fsp.f[1] * fsp.nu_u[1]) * rmsh.dx_sub_mesh[1] \
     - bgeo.sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)) * fsp.nu_u[1] * rmsh.ds_sub_mesh[1]['ds']
