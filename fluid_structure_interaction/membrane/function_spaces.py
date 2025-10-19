@@ -119,6 +119,12 @@ nu_n_12_0 = Function( Q_nu_n_12 )
 psi_n_12_0 = Function( Q_psi_n_12 )
 mu_n_12_0 = Function( Q_mu_n_12 )
 
+
+# fields for the boundary conditions
+v_bar_l = Function( Q_v_bar )
+v_bar_r = Function( Q_v_bar )
+
+
 # functions derived from psi_mem
 v_bar, w_bar, phi, v_n, w_n, U_n_12, nu_n_12, psi_n_12, mu_n_12 = split( psi_mem )
 

@@ -39,8 +39,9 @@ params = {'nonlinear_solver': 'newton',
 
 rmsh = importlib.import_module(swi.rmsh)
 vp_membrane = importlib.import_module(swi.vp_membrane)
-vp_fluid = importlib.import_module(swi.vp_fluid)
+'''
 vp_mesh = importlib.import_module(swi.vp_mesh)
+vp_fluid = importlib.import_module(swi.vp_fluid)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -57,7 +58,8 @@ fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-'''
+
+
 print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0

@@ -32,7 +32,6 @@ class X_ref_Expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = rpam.parameters['v_n_0_const'][0]
@@ -61,26 +60,52 @@ class U_n_12_0_Expression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+    
+    
+# expressions for the boundary conditions
+class v_bar_l_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['v_bar_l']
+
+    def value_shape(self):
+        return (1,)
+    
+class v_bar_r_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['v_bar_r']
+
+    def value_shape(self):
+        return (1,)
+        
+        
         
 fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 
-# sign
+fsp.v_bar_l.interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+
 
 
 # boundary conditions
-bc_v_bar_l = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_bar_l'])), rmsh.vf, rmsh.parameters['vertex_l_id'])
-bc_v_bar_r = DirichletBC(fsp.Q.sub(0), Constant((rpam.parameters['v_bar_r'])), rmsh.vf, rmsh.parameters['vertex_r_id'])
 
-bc_w_bar_l = DirichletBC(fsp.Q.sub(1), Constant(0), rmsh.vf, rmsh.parameters['vertex_l_id'])
+bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_l, rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
-bc_phi_l = DirichletBC(fsp.Q.sub(2), Constant(0), rmsh.vf, rmsh.parameters['vertex_l_id'])
+bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
 
-bc_u_n_12_l = DirichletBC(fsp.Q.sub(5), Constant((rpam.parameters["u_n_12_l"][0], rpam.parameters["u_n_12_l"][1])), rmsh.vf, rmsh.parameters['vertex_l_id'])
-bc_u_n_12_0_r = DirichletBC(fsp.Q.sub(5).sub(0), Constant(0), rmsh.vf, rmsh.parameters['vertex_r_id'])
+bc_phi_l = DirichletBC(fsp.Q_mem.sub(2), Constant(0), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+
+bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5), Constant((0,0)), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+
+
+
+
+
 
 
 #BCs
-bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_u_n_12_l, bc_u_n_12_0_r]
+bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
 
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
@@ -96,6 +121,7 @@ F_v_bar = ( \
                              ) \
                       + dt * (fsp.sigma_n_32 * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                                   + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[j, i] \
+                                # sign
                                     #   external force is added here
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, fsp.f, fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
                             )
@@ -110,7 +136,7 @@ F_v_bar = ( \
                       (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds
           )
 
-
+'''
 F_w_bar = ( \
                       rpam.parameters['rho'] * ((fsp.w_bar - fsp.w_n_1) + dt * fsp.V[i] * fsp.V[k] * geo.b( fsp.psi_n_12, fsp.nu_n_12 )[k, i]) * fsp.nu_w_bar \
                       - dt * rpam.parameters['rho'] * fsp.W * geo.Nabla_v( geo.vector_times_scalar( 3.0 / 2.0 * fsp.v_n_1 - 1.0 / 2.0 * fsp.v_n_2, fsp.nu_w_bar ), fsp.psi_n_12, fsp.nu_n_12 )[i, i] \
@@ -184,3 +210,4 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
 # total functional for the mixed problem
 F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_u_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
+'''
