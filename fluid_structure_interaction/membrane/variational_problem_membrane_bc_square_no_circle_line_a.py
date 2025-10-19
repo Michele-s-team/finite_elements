@@ -21,18 +21,18 @@ cmd.set_gauge('arc_length')
 i, j, k, l, alpha = ufl.indices( 5 )
 
 
-
-
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
 # reference configuration of the manifold, a straight line which coincides with the mesh line
 class X_ref_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
-        values[1] = 0
+        values[1] = rmsh.parameters['h']
 
     def value_shape(self):
         return (2,)
+    
+# sign
 
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
