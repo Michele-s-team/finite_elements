@@ -157,8 +157,9 @@ u_n = Function(Q_u)
 u_n_1 = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
 
-# function space to store the projection of the membrane deformation field on the mesh
+# function space to store the projection of the membrane deformation field and of its derivative on the mesh
 U_n_12_on_mesh = Function(Q_u)
+U_dot_n_12_on_mesh = Function(Q_u_dot)
 
 
 # jacobians

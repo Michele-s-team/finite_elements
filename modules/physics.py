@@ -5,7 +5,7 @@ import ufl as ufl
 import elasticity as ela
 import differential_geometry.manifold.geometry as geo
 
-i, j, k, l = ufl.indices(4)
+i, j, k, l, alpha = ufl.indices(5)
 
 
 # Pi(v, w, omega, sigma)[i, j] = \Pi^{ij}_notes, i.e., the momentum-flux tensor
@@ -247,3 +247,16 @@ Return values:
 
 def lhs_force_balance_equation(kappa, omega, mu, sigma, tau):
     return (fel_n(omega, mu, tau, kappa) + 2 * sigma * mu)
+
+
+'''
+time derivative of the deformation field U for a one-dimensional manifold
+Input values: 
+    - 'w': normal velocity
+    - 'n': normal vector to the manifold, a vector in the Euclidean space in which the manifold is embedded
+    
+Return values: 
+    - dU/dt, a vector in the Euclidean space in which the manifold is embedded
+'''
+def U_dot(w, n):
+    return as_tensor(w * n[alpha], (alpha))
