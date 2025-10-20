@@ -36,69 +36,6 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-
-# 
-import function as fu
-import input_output as io 
-import mesh.utils as msh
-import numpy as np
-import solution_paths as solpath
-
-
-class f_sub_mesh_Expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = np.cos(2.0 * np.pi * x[0]) / (1+ 10 * x[0])
-
-    def value_shape(self):
-        return (1,)
-
-class v_sub_mesh_Expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = np.cos(2.0 * np.pi * x[0]) / (1+ 10 * x[0])
-        values[1] = np.sin(2.0 * np.pi * x[0]) / (1+ 3*x[0]**2)
-
-    def value_shape(self):
-        return (2,)
-    
-class t_sub_mesh_Expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = np.cos(2.0 * np.pi * x[0]) / (1+ 10 * x[0])
-        values[1] = np.sin(2.0 * np.pi * x[0]) / (1+ 3*x[0]**2)
-        values[2] = np.cos(9.0 * np.pi * x[0]) / (1+ 3*x[0]**2)
-        values[3] = np.sin(12.0 * np.pi * x[0]**2) / (1+ 3*x[0]**2)
-
-    def value_shape(self):
-        return (2,)
-    
-    
-
-
-fsp.f_sub_mesh.interpolate(f_sub_mesh_Expression(element=fsp.Q_sub_mesh.ufl_element()))
-fsp.v_sub_mesh.interpolate(v_sub_mesh_Expression(element=fsp.V_sub_mesh.ufl_element()))
-fsp.t_sub_mesh.interpolate(t_sub_mesh_Expression(element=fsp.T_sub_mesh.ufl_element()))
-
-fu.transfer_sub_mesh_to_mesh(fsp.f_sub_mesh, fsp.f_mesh)
-fu.transfer_sub_mesh_to_mesh(fsp.v_sub_mesh, fsp.v_mesh)
-fu.transfer_sub_mesh_to_mesh(fsp.t_sub_mesh, fsp.t_mesh)
-
-io.full_print(fsp.f_mesh, f'f_mesh', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0], 'scalar')
-
-io.full_print(fsp.v_mesh, f'v_mesh', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0], 'vector')
-
-io.xdmf_print(fsp.t_mesh, solpath.xdmf_file_path +  't_mesh.xdmf')
-
-
-
-# 
-
-'''
 J = [None] * len(rmsh.lmsh.sub_meshes)
 problem = [None] * len(rmsh.lmsh.sub_meshes)
 solver = [None] * len(rmsh.lmsh.sub_meshes)
@@ -126,4 +63,3 @@ solver[0].solve()
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
-'''
