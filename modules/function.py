@@ -222,8 +222,8 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
 '''
 transfer a function defined on a mesh, on a sub mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge
 Input values: 
-    - 'f_mesh': the function defined on the mesh
-    - 'f_sub_mesh': the function defined on the sub mesh
+    - 'f_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
+    - 'f_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
     - 'h': the height of the rectangle mesh 
 '''
 def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
