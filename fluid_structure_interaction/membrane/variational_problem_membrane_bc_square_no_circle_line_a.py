@@ -177,38 +177,47 @@ F_w_bar = ( \
                       (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
           )
           
-# sign       
 
           
-'''
+
 # natural BC implemented here
 F_phi = ( \
                     dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( i )) * (fsp.nu_phi.dx( j )) \
                     + rpam.parameters['rho'] * (geo.Nabla_v( fsp.v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, i] - 2.0 * fsp.mu_n_12 * fsp.w_bar) * fsp.nu_phi \
-            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx 
+            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1] 
 
 
-F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
 
-F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
-F_u_n_12 = ( \
+F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1]
+
+
+
+
+F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1]
+
+
+
+
+F_U_n_12 = ( \
                     ( \
-                                (fsp.u_n_12[alpha] - fsp.u_n_32[alpha]) \
+                                (fsp.U_n_12[alpha] - fsp.U_n_32[alpha]) \
                                 - dt * fsp.w_n_1 * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
-                        ) * fsp.nu_u_n_12[alpha] \
-            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
+                        ) * fsp.nu_U_n_12[alpha] \
+            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1]
+
+# sign       
 
 
 F_nu_psi = (
-        ((fsp.X_ref[0] + fsp.u_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
+        ((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
         * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-        +  ((fsp.X_ref[1] + fsp.u_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
+        +  ((fsp.X_ref[1] + fsp.U_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1])\
         * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-    ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx
+    ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx_sub_mesh[1]
 
-
+'''
 F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
 
 
