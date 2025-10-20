@@ -230,56 +230,46 @@ func_2d : Function
 func_1d : Function
     Function defined on the 1D submesh (target)
 """
-def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh):
-
-
-    # Get DOF coordinates for the submesh function
+def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
+    # Get DOF coordinates
     sub_mesh_dim = f_sub_mesh.function_space().mesh().geometry().dim()
     dof_coords_sub_mesh = f_sub_mesh.function_space().tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
     
-    # Get the value shape from the function space element
+    # Get value shape
     element = f_sub_mesh.function_space().ufl_element()
     value_shape = element.value_shape()
     
-    print(f'sub_mesh_dim = {sub_mesh_dim}')
-    print(f'dof_coords_sub_mesh = {dof_coords_sub_mesh}')
-    
-    print(f'value_shape = {value_shape}')
-    
-    # Calculate total value size
     if len(value_shape) == 0:
-        # Scalar
         value_size = 1
     elif len(value_shape) == 1:
-        # Vector
         value_size = value_shape[0]
     else:
-        # Tensor (or higher order)
         value_size = np.prod(value_shape)
+    
+    # For tensor/vector spaces, coordinates are repeated for each component
+    # We need to evaluate only at unique coordinates
+    num_unique_points = len(dof_coords_sub_mesh) // value_size
+    
+    # Create flat array to store all DOF values
+    all_values = []
+    
+    # Evaluate at each unique coordinate
+    for i in range(num_unique_points):
+        coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
         
-    print(f'value_size = {value_size}')
+        val = f_mesh([coord[0], h])
         
-    '''
+        if value_size == 1:
+            all_values.append(val)
+        else:
+            # val is already the full tensor (4 components for 2x2)
+            all_values.extend(np.array(val).flatten())
+                
+
     
-    # Evaluate the mesh function at each submesh DOF coordinate
-    values = np.zeros((len(dof_coords_sub_mesh), value_size))
+    # Assign to the submesh function
+    f_sub_mesh.vector()[:] = np.array(all_values)
     
-    for i, coord in enumerate(dof_coords_sub_mesh):
-        try:
-            val = f_mesh(coord)
-            if value_size == 1:
-                values[i, 0] = val
-            else:
-                values[i, :] = np.array(val).flatten()
-        except RuntimeError as e:
-            # If point is not found (shouldn't happen if meshes align), use zero
-            print(f"Warning: Could not evaluate at coordinate {coord}: {e}")
-            values[i, :] = 0.0
-    
-    # Flatten and assign to the submesh function
-    f_sub_mesh.vector()[:] = values.flatten()
-    
-    '''
     
 
 

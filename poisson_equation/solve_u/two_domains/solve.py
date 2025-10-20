@@ -40,8 +40,23 @@ params = {'nonlinear_solver': 'newton',
 # 
 import function as fu
 
-# fsp.t_sub_mesh.assign(project(fsp.t_mesh, fsp.T_sub_mesh))
-fu.transfer_mesh_to_sub_mesh(fsp.t_mesh, fsp.t_sub_mesh)
+class t_mesh_expression(UserExpression):
+    def init(self, **kwargs):
+        super().init(**kwargs)
+
+    def eval(self, values, x):
+        
+        values[0] = 2
+        values[1] = 0
+        values[2] = 0
+        values[3] = 4
+
+    def value_shape(self):
+        return (2, 2)
+
+fsp.t_mesh.interpolate(t_mesh_expression(element=fsp.T_mesh.ufl_element()))
+
+fu.transfer_mesh_to_sub_mesh(fsp.t_mesh, fsp.t_sub_mesh, rmsh.parameters['h'])
 # 
 
 '''
