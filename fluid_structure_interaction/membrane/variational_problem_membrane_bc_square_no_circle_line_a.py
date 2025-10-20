@@ -9,6 +9,7 @@ import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import elasticity as ela
+import fluid as flu
 import function as fu
 import function_spaces as fsp
 import input_output as io
@@ -109,6 +110,9 @@ bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.mf_sub_me
 #BCs
 bcs = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
 
+'''
+                                                             - ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fl'])[alpha, beta] * geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)[beta]
+                                                             '''
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
 
@@ -126,8 +130,11 @@ F_v_bar = ( \
                                 # sign
                                     #   external force is added here
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, 
-                                                             - ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fl'])[alpha, beta] * geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)[beta]
-                                                                , fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
+                                                             flu.dFdl(
+                                                                 ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fl']), 
+                                                                 geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)
+                                                                 ), 
+                                                             fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
                             )
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
           - dt * rpam.parameters['rho'] / 2.0 * ( \
