@@ -218,6 +218,71 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
     return u_sub_mesh_on_mesh
 
 
+
+"""
+Transfer nodal values from a function on a 2D mesh to a function on a 1D submesh.
+Works for scalar, vector, and tensor function spaces of any polynomial degree.
+
+Parameters:
+-----------
+func_2d : Function
+    Function defined on the 2D mesh (source)
+func_1d : Function
+    Function defined on the 1D submesh (target)
+"""
+def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh):
+
+
+    # Get DOF coordinates for the submesh function
+    sub_mesh_dim = f_sub_mesh.function_space().mesh().geometry().dim()
+    dof_coords_sub_mesh = f_sub_mesh.function_space().tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
+    
+    # Get the value shape from the function space element
+    element = f_sub_mesh.function_space().ufl_element()
+    value_shape = element.value_shape()
+    
+    print(f'sub_mesh_dim = {sub_mesh_dim}')
+    print(f'dof_coords_sub_mesh = {dof_coords_sub_mesh}')
+    
+    print(f'value_shape = {value_shape}')
+    
+    # Calculate total value size
+    if len(value_shape) == 0:
+        # Scalar
+        value_size = 1
+    elif len(value_shape) == 1:
+        # Vector
+        value_size = value_shape[0]
+    else:
+        # Tensor (or higher order)
+        value_size = np.prod(value_shape)
+        
+    print(f'value_size = {value_size}')
+        
+    '''
+    
+    # Evaluate the mesh function at each submesh DOF coordinate
+    values = np.zeros((len(dof_coords_sub_mesh), value_size))
+    
+    for i, coord in enumerate(dof_coords_sub_mesh):
+        try:
+            val = f_mesh(coord)
+            if value_size == 1:
+                values[i, 0] = val
+            else:
+                values[i, :] = np.array(val).flatten()
+        except RuntimeError as e:
+            # If point is not found (shouldn't happen if meshes align), use zero
+            print(f"Warning: Could not evaluate at coordinate {coord}: {e}")
+            values[i, :] = 0.0
+    
+    # Flatten and assign to the submesh function
+    f_sub_mesh.vector()[:] = values.flatten()
+    
+    '''
+    
+
+
 '''
 Compute the average between left and right side ('+' and '-') of a field on an internal mesh domain
 Input values: 

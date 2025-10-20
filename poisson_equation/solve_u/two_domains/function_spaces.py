@@ -40,3 +40,5 @@ u_1_on_0 = Function(Q[0])
 T_mesh = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', function_space_degree, shape=(2, 2))
 T_sub_mesh = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', function_space_degree, shape=(2, 2))
 
+t_mesh = Function(T_mesh)
+t_sub_mesh = Function(T_sub_mesh)
