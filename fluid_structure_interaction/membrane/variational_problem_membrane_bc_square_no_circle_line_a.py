@@ -224,18 +224,18 @@ F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
-        ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds \
+        ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds'] \
         + (\
-              ((fsp.X_ref[0] + fsp.u_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-              + ((fsp.X_ref[1] + fsp.u_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds\
+              ((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+              + ((fsp.X_ref[1] + fsp.U_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
+        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']\
         + (\
-        # this implements BC (128) 
+        # this implements BC (79) 
             (fsp.w_bar.dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] *(fsp.nu_w_bar.dx(j)) \
-        # this implements BC (132)
-            +   (fsp.u_n_12[1].dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.nu_u_n_12[1].dx(j))
-        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_r    )
+        # this implements BC (66)
+            +   (fsp.U_n_12[1].dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.nu_U_n_12[1].dx(j))
+        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_r']    )
 
 # total functional for the mixed problem
-F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_u_n_12 + F_nu_psi + F_mu_n_12) + F_N
+F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
