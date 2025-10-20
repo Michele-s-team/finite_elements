@@ -207,7 +207,6 @@ F_U_n_12 = ( \
                         ) * fsp.nu_U_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1]
 
-# sign       
 
 
 F_nu_psi = (
@@ -217,8 +216,10 @@ F_nu_psi = (
         * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
     ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx_sub_mesh[1]
 
-'''
-F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx
+
+F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1]
+
+# sign       
 
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
@@ -238,4 +239,3 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
 # total functional for the mixed problem
 F = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_u_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
-'''
