@@ -218,6 +218,57 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
     return u_sub_mesh_on_mesh
 
 
+
+'''
+transfer on a sub mesh a function defined on a mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge. 
+Input values: 
+    - 'f_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
+    - 'f_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
+    - 'h': the height of the rectangle mesh 
+'''
+def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
+    # Get DOF coordinates
+    sub_mesh_dim = f_sub_mesh.function_space().mesh().geometry().dim()
+    dof_coords_sub_mesh = f_sub_mesh.function_space().tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
+    
+    # Get value shape
+    element = f_sub_mesh.function_space().ufl_element()
+    value_shape = element.value_shape()
+    
+    if len(value_shape) == 0:
+        value_size = 1
+    elif len(value_shape) == 1:
+        value_size = value_shape[0]
+    else:
+        value_size = np.prod(value_shape)
+    
+    # For tensor/vector spaces, coordinates are repeated for each component
+    # We need to evaluate only at unique coordinates
+    num_unique_points = len(dof_coords_sub_mesh) // value_size
+    
+    # Create flat array to store all DOF values
+    all_values = []
+    
+    # Evaluate at each unique coordinate
+    for i in range(num_unique_points):
+        coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
+        
+        val = f_mesh([coord[0], h])
+        
+        if value_size == 1:
+            all_values.append(val)
+        else:
+            # val is already the full tensor (4 components for 2x2)
+            all_values.extend(np.array(val).flatten())
+                
+
+    
+    # Assign to the submesh function
+    f_sub_mesh.vector()[:] = np.array(all_values)
+    
+    
+
+
 '''
 Compute the average between left and right side ('+' and '-') of a field on an internal mesh domain
 Input values: 
