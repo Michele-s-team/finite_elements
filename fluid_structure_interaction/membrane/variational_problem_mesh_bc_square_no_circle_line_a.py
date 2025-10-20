@@ -13,7 +13,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l = ufl.indices(4)
+alpha, beta = ufl.indices(2)
 
 # BCs
 # BCs for u
@@ -22,12 +22,11 @@ bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parame
 
 bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
 
-bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_t_id"])
+bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"])
+
 
 bcs_u = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
 
-
-# sign
 
 # BCs for u_dot
 bc_u_dot_l = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
@@ -35,29 +34,27 @@ bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf_sub_mesh[0], rms
 
 bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
 
-bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_t_id"])
+bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"])
 
 
 bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
-'''
+
+# sign
+
+
 
 
 # variational functional for the original problem
-F_msh_u = (ela.P(fsp.u_msh_n, ela.K(fsp.u_msh_n, rpam.parameters['exponent']), ela.mu(fsp.u_msh_n, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_msh[k].dx(i))) * rmsh.dx_sub_mesh[1]
-
-bc_u_msh_dot_ellipse = DirichletBC(fsp.Q_u_msh_dot, fsp.u_el_dot_n_on_sub_mesh_1, rmsh.boundary[1]['ellipse'])
-bc_u_msh_dot_square = DirichletBC(fsp.Q_u_msh_dot, Constant((0, 0)), rmsh.boundary[1]['lrtb'])
-bcs_msh_dot = [bc_u_msh_dot_ellipse, bc_u_msh_dot_square]
+F_msh_u = (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_sub_mesh[1]
 
 F_msh_u_dot = ( \
-                          (ela.F_dot(fsp.u_msh_dot_n)[k, j] * ela.S(fsp.u_msh_n, ela.K(fsp.u_msh_n, rpam.parameters['exponent']), ela.mu(fsp.u_msh_n, rpam.parameters['exponent']))[j, i] \
-                           + ela.F(fsp.u_msh_n)[k, j] * ela.S_dot(fsp.u_msh_n,
-                                                                  fsp.u_msh_dot_n,
-                                                                  ela.K(fsp.u_msh_n, rpam.parameters['exponent']),
-                                                                  ela.K_dot(fsp.u_msh_n, fsp.u_msh_dot_n, rpam.parameters['exponent']),
-                                                                  ela.mu(fsp.u_msh_n, rpam.parameters['exponent']),
-                                                                  ela.mu_dot(fsp.u_msh_n, fsp.u_msh_dot_n, rpam.parameters['exponent']))[j, i]) \
-                          * (fsp.nu_u_msh_dot[k].dx(i))) * rmsh.dx_sub_mesh[1]
+                          (ela.F_dot(fsp.u_dot_n)[alpha, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[j, beta] \
+                           + ela.F(fsp.u_n)[alpha, j] * ela.S_dot(fsp.u_n,
+                                                                  fsp.u_dot_n,
+                                                                  ela.K(fsp.u_n, rpam.parameters['exponent']),
+                                                                  ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']),
+                                                                  ela.mu(fsp.u_n, rpam.parameters['exponent']),
+                                                                  ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']))[j, beta]) \
+                          * (fsp.nu_u_dot[alpha].dx(beta))) * rmsh.dx_sub_mesh[1]
 
 
-'''
