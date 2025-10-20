@@ -36,6 +36,16 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+
+# 
+import function as fu
+
+fu.transfer_sub_mesh_to_mesh(fsp.v_sub_mesh, fsp.V_mesh, fsp.V_sub_mesh, rmsh.parameters['h'])
+
+
+# 
+
+'''
 J = [None] * len(rmsh.lmsh.sub_meshes)
 problem = [None] * len(rmsh.lmsh.sub_meshes)
 solver = [None] * len(rmsh.lmsh.sub_meshes)
@@ -63,3 +73,4 @@ solver[0].solve()
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
+'''

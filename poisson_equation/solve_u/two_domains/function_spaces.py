@@ -36,3 +36,10 @@ u[1].set_allow_extrapolation(True)
 v = Function(Q[1])
 u_1_on_0 = Function(Q[0])
 
+# 
+V_mesh = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', function_space_degree, dim=2)
+V_sub_mesh = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', function_space_degree, dim=2)
+
+v_mesh = Function(V_mesh)
+v_sub_mesh = Function(V_sub_mesh)
+# 
