@@ -104,9 +104,13 @@ for n in range(rpam.num_steps):
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
     
-    # project the field U_n_12 from sub_mesh[1] onto sub_mesh[0] to set BCs for the mesh problem
+    # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
+    # a) project U_n_12
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
     fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
+    # b) project U_dot_n_12
+    fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
+    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
 
     vp_mesh = importlib.reload(vp_mesh)
 
