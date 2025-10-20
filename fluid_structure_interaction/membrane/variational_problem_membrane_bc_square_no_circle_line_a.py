@@ -156,10 +156,10 @@ F_w_bar = ( \
                           ) \
                       - dt * ( \
                                   2.0 * fsp.sigma_n_32 * fsp.mu_n_12 \
-                               # sign       
                                   + 2.0 * rpam.parameters['eta'] * (geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * geo.Nabla_v( fsp.V, fsp.psi_n_12, fsp.nu_n_12 )[j, k] *
                                                  (geo.b( fsp.psi_n_12, fsp.nu_n_12 ))[i, j] - 2.0 * fsp.W * (
                                                          2.0 * ((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )))\
+                               # sign       
                                   #   external force is added here
                                   + geo.from_3D_to_normal(fsp.psi_n_12, fsp.f, fsp.nu_n_12)
                                                              
