@@ -40,13 +40,19 @@ params = {'nonlinear_solver': 'newton',
           }
 
 rmsh = importlib.import_module(swi.rmsh)
-vp_membrane = importlib.import_module(swi.vp_membrane)
 
 fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
 fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
+vp_membrane = importlib.import_module(swi.vp_membrane)
+
+
+# project field U_n_12 from sub_mesh[0] onto sub_mesh[1] to set BCs for the mesh problem
+v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
+fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
+
 '''
 vp_fluid = importlib.import_module(swi.vp_fluid)
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -78,11 +84,11 @@ for n in range(rpam.num_steps):
 
     # step 1): update theta and omega
     print('Solving membrane problem ...', flush=True)
-    
+   
+    # project from sub_mesh[0] onto sub_mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
     fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
     fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
-    
     ap_ellipse = importlib.reload(ap_ellipse)
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
@@ -91,6 +97,10 @@ for n in range(rpam.num_steps):
 
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
+    
+    # project the field U_n_12 from sub_mesh[1] onto sub_mesh[0] to set BCs for the mesh problem
+    v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
+    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
 
     vp_mesh = importlib.reload(vp_mesh)
 
