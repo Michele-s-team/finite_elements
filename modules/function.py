@@ -219,17 +219,13 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
 
 
 
-"""
-Transfer nodal values from a function on a 2D mesh to a function on a 1D submesh.
-Works for scalar, vector, and tensor function spaces of any polynomial degree.
-
-Parameters:
------------
-func_2d : Function
-    Function defined on the 2D mesh (source)
-func_1d : Function
-    Function defined on the 1D submesh (target)
-"""
+'''
+transfer a function defined on a mesh, on a sub mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge
+Input values: 
+    - 'f_mesh': the function defined on the mesh
+    - 'f_sub_mesh': the function defined on the sub mesh
+    - 'h': the height of the rectangle mesh 
+'''
 def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
     # Get DOF coordinates
     sub_mesh_dim = f_sub_mesh.function_space().mesh().geometry().dim()

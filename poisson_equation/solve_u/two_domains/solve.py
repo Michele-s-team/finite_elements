@@ -52,7 +52,7 @@ class t_mesh_expression(UserExpression):
         values[0] = np.cos(2 * np.pi * (x[0] + 1.23 * x[1]))
         values[1] = np.cos(4 * np.pi * (x[0] - x[1]))
         values[2] = np.sin(3 * np.pi * (x[0] + 0.5 * x[1]))
-        values[3] = np.cos(2* np.pi * (x[0] + x[1]**2))
+        values[3] = np.cos(2* np.pi * (x[0] + x[1]**2))/(1+x[0])
 
     def value_shape(self):
         return (2, 2)
