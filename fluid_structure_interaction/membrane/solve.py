@@ -45,8 +45,9 @@ vp_membrane = importlib.import_module(swi.vp_membrane)
 fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
 fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
-'''
+
 vp_mesh = importlib.import_module(swi.vp_mesh)
+'''
 vp_fluid = importlib.import_module(swi.vp_fluid)
 pr_bc = importlib.import_module(swi.prout_bc)
 
