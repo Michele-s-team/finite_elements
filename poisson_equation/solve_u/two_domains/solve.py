@@ -39,8 +39,26 @@ params = {'nonlinear_solver': 'newton',
 
 # 
 import function as fu
+import input_output as io 
+import numpy as np
+import solution_paths as solpath
+
+class v_sub_mesh_Expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2.0 * np.pi * x[0]) 
+        values[1] = np.sin(2.0 * np.pi * x[0]) 
+
+    def value_shape(self):
+        return (2,)
+    
+fsp.v_sub_mesh.interpolate(v_sub_mesh_Expression(element=fsp.V_sub_mesh.ufl_element()))
 
 fu.transfer_sub_mesh_to_mesh(fsp.v_sub_mesh, fsp.v_mesh, rmsh.parameters['h'])
+
+io.full_print(fsp.v_mesh, f'v_mesh', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.sub_meshes[0], 'vector')
 
 
 # 
