@@ -44,6 +44,15 @@ import mesh.utils as msh
 import numpy as np
 import solution_paths as solpath
 
+
+class f_sub_mesh_Expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2.0 * np.pi * x[0]) / (1+ 10 * x[0])
+
+    def value_shape(self):
+        return (1,)
+
 class v_sub_mesh_Expression(UserExpression):
     def eval(self, values, x):
 
@@ -56,10 +65,15 @@ class v_sub_mesh_Expression(UserExpression):
     
 
 
+fsp.f_sub_mesh.interpolate(f_sub_mesh_Expression(element=fsp.Q_sub_mesh.ufl_element()))
 fsp.v_sub_mesh.interpolate(v_sub_mesh_Expression(element=fsp.V_sub_mesh.ufl_element()))
 
+fu.transfer_sub_mesh_to_mesh(fsp.f_sub_mesh, fsp.f_mesh)
 fu.transfer_sub_mesh_to_mesh(fsp.v_sub_mesh, fsp.v_mesh)
 
+io.full_print(fsp.f_mesh, f'f_mesh', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.sub_meshes[0], 'scalar')
 io.full_print(fsp.v_mesh, f'v_mesh', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
                   rmsh.lmsh.sub_meshes[0], 'vector')

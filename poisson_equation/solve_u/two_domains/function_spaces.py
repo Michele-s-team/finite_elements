@@ -37,8 +37,15 @@ v = Function(Q[1])
 u_1_on_0 = Function(Q[0])
 
 # 
+Q_mesh = FunctionSpace(lmsh.sub_meshes[0], 'P', function_space_degree)
+Q_sub_mesh = FunctionSpace(lmsh.sub_meshes[1], 'P', function_space_degree)
+
+
 V_mesh = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', function_space_degree, dim=2)
 V_sub_mesh = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', function_space_degree, dim=2)
+
+f_mesh = Function(Q_mesh)
+f_sub_mesh = Function(Q_sub_mesh)
 
 v_mesh = Function(V_mesh)
 v_sub_mesh = Function(V_sub_mesh)
