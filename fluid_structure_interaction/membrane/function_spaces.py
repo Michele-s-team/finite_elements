@@ -27,6 +27,8 @@ the variables for the problem are
     - 'v_fl_bar' = {\overline{v_FL}}_{'channel flow with membrane'}
     - 'sigma_fl_n_12' = {\varsigma_FL^{n-1/2}}_{'channel flow with membrane'}
     - 'phi_fl' = {phi_FL}_{'channel flow with membrane'}
+    
+    - 'var_tensor_sigma_fl[alpha, beta]' = {\varsigma_FL_{alpha beta}}_{'channel flow with membrane'}
 '''
 
 ################## Define function spaces ##################
@@ -61,7 +63,7 @@ Q_mu_n_12 = Q_mem.sub(8).collapse()
 Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
 # tensor function space to project the stress tensor of the fluid mesh on the membrane mesh
-Q_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+Q_var_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
 
 
 
@@ -76,6 +78,8 @@ Q_v_fl = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
 Q_v_fl_bar = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
 Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
   
+Q_var_tensor_sigma_fl = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+
 
 
 ################## define fields ##################
@@ -103,7 +107,7 @@ U_n_32 = Function( Q_U_n_12 )
 X_ref = Function(Q_X)
 
 # function to store the fluid stress tensor projected on the membrane
-var_tensor_sigma_fl_on_mem = Function(Q_tensor_sigma_fl_on_mem)
+var_tensor_sigma_fl_on_mem = Function(Q_var_tensor_sigma_fl_on_mem)
 
 #these functions are used to print the solution to file
 v_bar_output = Function(Q_v_bar)
@@ -164,6 +168,10 @@ v_fl_bar = Function(Q_v_fl_bar)
 sigma_fl_n_12 = Function(Q_phi_fl)
 sigma_fl_n_32 = Function(Q_phi_fl)
 phi_fl = Function(Q_phi_fl)
+
+# stress tensor of the fluid 
+var_tensor_sigma_fl= Function(Q_var_tensor_sigma_fl)
+
 
 # jacobians
 J_v_fl_bar = TrialFunction(Q_v_fl_bar)
