@@ -43,6 +43,17 @@ import input_output as io
 import numpy as np
 import solution_paths as solpath
 
+class f_mesh_expression(UserExpression):
+    def init(self, **kwargs):
+        super().init(**kwargs)
+
+    def eval(self, values, x):
+        
+        values[0] = np.cos(2* np.pi * (x[0] + x[1]**2))/(1+x[0])
+
+    def value_shape(self):
+        return (1,)
+
 class t_mesh_expression(UserExpression):
     def init(self, **kwargs):
         super().init(**kwargs)
@@ -57,7 +68,12 @@ class t_mesh_expression(UserExpression):
     def value_shape(self):
         return (2, 2)
 
+
+fsp.f_mesh.interpolate(f_mesh_expression(element=fsp.Q_mesh.ufl_element()))
 fsp.t_mesh.interpolate(t_mesh_expression(element=fsp.T_mesh.ufl_element()))
+
+fu.transfer_mesh_to_sub_mesh(fsp.f_mesh, fsp.f_sub_mesh, rmsh.parameters['h'])
+io.xdmf_print(fsp.f_sub_mesh, solpath.xdmf_file_path + 'f_sub_mesh.xdmf')
 
 fu.transfer_mesh_to_sub_mesh(fsp.t_mesh, fsp.t_sub_mesh, rmsh.parameters['h'])
 io.xdmf_print(fsp.t_sub_mesh, solpath.xdmf_file_path + 't_sub_mesh.xdmf')
