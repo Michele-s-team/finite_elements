@@ -127,11 +127,10 @@ F_v_bar = ( \
                              ) \
                       + dt * (fsp.sigma_n_32 * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                                   + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[j, i] \
-                                # sign
-                                    #   external force is added here
+                                    #   force exerted by the fluid on the membrane
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, 
                                                              flu.dFdl(
-                                                                 ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fl']), 
+                                                                 ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), 
                                                                  geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)
                                                                  ), 
                                                              fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
@@ -147,6 +146,7 @@ F_v_bar = ( \
                       (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds
           )
 
+# sign
 '''
 F_w_bar = ( \
                       rpam.parameters['rho'] * ((fsp.w_bar - fsp.w_n_1) + dt * fsp.V[i] * fsp.V[k] * geo.b( fsp.psi_n_12, fsp.nu_n_12 )[k, i]) * fsp.nu_w_bar \
