@@ -41,7 +41,7 @@ params = {'nonlinear_solver': 'newton',
 rmsh = importlib.import_module(swi.rmsh)
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-fsp.var_tensor_sigma_fl_on_mem.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_tensor_sigma_fl_on_mem))
+# fsp.var_tensor_sigma_fl_on_mem.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_tensor_sigma_fl_on_mem))
 
 
 '''
