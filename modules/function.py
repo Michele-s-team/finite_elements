@@ -219,13 +219,14 @@ Returns:
 Function
     u_sub_mesh_on_mesh : Function defined on Q_mesh
 """
+
+
 def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, h):
 
+    Q_mesh = u_mesh.function_space()
 
     # Get DOF coordinates for the mesh function space
-    mesh_coordinates = u_mesh.function_space().tabulate_dof_coordinates()
-    
-    '''
+    mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
     
     # Determine the value shape (scalar, vector, or tensor)
     value_shape = Q_mesh.ufl_element().value_shape()
@@ -242,47 +243,40 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, h):
         # Tensor field (e.g., 2x2 matrix has 4 components)
         num_components = int(np.prod(value_shape))
     
-    # Initialize all values to 0
-    dof_values = np.zeros(Q_mesh.dim())
+    # For tensor/vector spaces, coordinates are repeated for each component
+    # We need to evaluate only at unique coordinates
+    num_unique_points = len(mesh_coordinates) // num_components
     
-    # Process each DOF
-    for mesh_id, mesh_coord in enumerate(mesh_coordinates):
-        # Check if this DOF is on the edge y = h
-        if math.isclose(mesh_coord[1], h, rel_tol=1e-9, abs_tol=1e-9):
-            try:
-                # Evaluate the sub_mesh function at x-coordinate
-                value = u_sub_mesh(mesh_coord[0])
-                
-                if num_components == 1:
-                    # Scalar field - direct assignment
-                    dof_values[mesh_id] = value
-                else:
-                    # Vector or tensor field
-                    # Convert to numpy array and flatten
-                    value_array = np.array(value, dtype=float).flatten()
-                    
-                    # For vector/tensor spaces, we need to determine which component
-                    # this DOF corresponds to. FEniCS typically uses blocked ordering
-                    # where DOFs are grouped by component.
-                    
-                    # Calculate which component this DOF represents
-                    dofs_per_component = Q_mesh.dim() // num_components
-                    component_idx = mesh_id // dofs_per_component
-                    
-                    # Make sure we don't exceed array bounds
-                    if component_idx < len(value_array):
-                        dof_values[mesh_id] = value_array[component_idx]
-                    
-            except (RuntimeError, ValueError) as e:
-                # Point might be outside the sub_mesh domain or other evaluation error
-                # Leave as zero (already initialized)
-                pass
+    # Create list to store all DOF values (using list for efficiency with extend)
+    all_values = []
+    
+    # Process each unique point
+    for i in range(num_unique_points):
+        # Take the coordinate of the first occurrence of each unique point
+        mesh_coord = mesh_coordinates[i * num_components]
+        
+        # Check if this point is on the edge y = h
+        if math.isclose(mesh_coord[1], h):
+            # Evaluate the sub_mesh function at x-coordinate
+            value = u_sub_mesh(mesh_coord[0])
+            
+            if num_components == 1:
+                # Scalar field - direct assignment
+                all_values.append(value)
+            else:
+                # Vector or tensor field
+                # Extend with all components at once (interleaved ordering)
+                all_values.extend(np.array(value, dtype=float).flatten())
+        else:
+            # Point not on edge - add zeros
+            if num_components == 1:
+                all_values.append(0.0)
+            else:
+                all_values.extend([0.0] * num_components)
     
     # Set the values in the function
-    u_mesh.vector()[:] = dof_values
-    
-    return u_mesh
-    '''
+    u_mesh.vector()[:] = np.array(all_values)
+        
 
 
 '''
