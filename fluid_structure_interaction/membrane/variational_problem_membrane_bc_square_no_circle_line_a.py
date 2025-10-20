@@ -159,9 +159,13 @@ F_w_bar = ( \
                                   + 2.0 * rpam.parameters['eta'] * (geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * geo.Nabla_v( fsp.V, fsp.psi_n_12, fsp.nu_n_12 )[j, k] *
                                                  (geo.b( fsp.psi_n_12, fsp.nu_n_12 ))[i, j] - 2.0 * fsp.W * (
                                                          2.0 * ((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )))\
-                               # sign       
-                                  #   external force is added here
-                                  + geo.from_3D_to_normal(fsp.psi_n_12, fsp.f, fsp.nu_n_12)
+                                    #   force exerted by the fluid on the membrane
+                                  + geo.from_3D_to_normal(fsp.psi_n_12, 
+                                                          flu.dFdl(
+                                                                 fsp.var_tensor_sigma_fl_on_mem, 
+                                                                 geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)
+                                                                 ), 
+                                                          fsp.nu_n_12)
                                                              
                       ) * fsp.nu_w_bar
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1] \
@@ -172,6 +176,10 @@ F_w_bar = ( \
           + dt * 2.0 * rpam.parameters['kappa'] * ( \
                       (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
           )
+          
+# sign       
+
+          
 '''
 # natural BC implemented here
 F_phi = ( \
