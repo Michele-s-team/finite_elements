@@ -62,6 +62,9 @@ Q_mu_n_12 = Q_mem.sub(8).collapse()
 # function space for the X field
 Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
+# function space to store the time derivative of U_n_12
+Q_U_dot_n_12 = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
+
 # tensor function space to project the stress tensor of the fluid mesh on the membrane mesh
 Q_var_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
 
@@ -130,6 +133,9 @@ U_n_12_0 = Function( Q_U_n_12)
 nu_n_12_0 = Function( Q_nu_n_12 )
 psi_n_12_0 = Function( Q_psi_n_12 )
 mu_n_12_0 = Function( Q_mu_n_12 )
+
+
+U_dot_n_12 = Function( Q_U_dot_n_12)
 
 
 # fields for the boundary conditions
