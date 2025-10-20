@@ -17,6 +17,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import elasticity as ela
+import function as fu
 import function_spaces as fsp
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -41,8 +42,8 @@ params = {'nonlinear_solver': 'newton',
 rmsh = importlib.import_module(swi.rmsh)
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-# fsp.var_tensor_sigma_fl_on_mem.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_tensor_sigma_fl_on_mem))
-
+fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
 '''
 vp_mesh = importlib.import_module(swi.vp_mesh)
@@ -77,7 +78,8 @@ for n in range(rpam.num_steps):
     # step 1): update theta and omega
     print('Solving membrane problem ...', flush=True)
     
-    fsp.var_tensor_sigma_fl_on_mem.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_tensor_sigma_fl_on_mem))
+    fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
     
     ap_ellipse = importlib.reload(ap_ellipse)
