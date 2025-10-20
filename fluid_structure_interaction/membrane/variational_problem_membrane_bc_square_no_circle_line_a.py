@@ -7,6 +7,8 @@ import ufl as ufl
 import command as cmd
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
+import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
+import elasticity as ela
 import function as fu
 import function_spaces as fsp
 import input_output as io
@@ -18,7 +20,7 @@ rmsh = importlib.import_module(swi.rmsh)
 cmd.set_gauge('arc_length')
 
 
-i, j, k, l, alpha = ufl.indices( 5 )
+i, j, k, l, alpha, beta = ufl.indices( 6 )
 
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
@@ -124,8 +126,7 @@ F_v_bar = ( \
                                 # sign
                                     #   external force is added here
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, 
-                                                                
-                                                                
+                                                             - ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fl'])[alpha, beta] * geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)[beta]
                                                                 , fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
                             )
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
