@@ -47,8 +47,8 @@ import solution_paths as solpath
 class v_sub_mesh_Expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2.0 * np.pi * x[0]) 
-        values[1] = np.sin(2.0 * np.pi * x[0]) 
+        values[0] = np.cos(2.0 * np.pi * x[0]) / (1+ 10 * x[0])
+        values[1] = np.sin(2.0 * np.pi * x[0]) / (1+ 3*x[0]**2)
 
     def value_shape(self):
         return (2,)
