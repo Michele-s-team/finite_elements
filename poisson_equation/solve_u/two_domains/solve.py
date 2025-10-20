@@ -39,6 +39,9 @@ params = {'nonlinear_solver': 'newton',
 
 # 
 import function as fu
+import input_output as io
+import numpy as np
+import solution_paths as solpath
 
 class t_mesh_expression(UserExpression):
     def init(self, **kwargs):
@@ -46,10 +49,10 @@ class t_mesh_expression(UserExpression):
 
     def eval(self, values, x):
         
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
+        values[0] = np.cos(2 * np.pi * (x[0] + 1.23 * x[1]))
+        values[1] = np.cos(4 * np.pi * (x[0] - x[1]))
+        values[2] = np.sin(3 * np.pi * (x[0] + 0.5 * x[1]))
+        values[3] = np.cos(2* np.pi * (x[0] + x[1]**2))
 
     def value_shape(self):
         return (2, 2)
@@ -57,6 +60,7 @@ class t_mesh_expression(UserExpression):
 fsp.t_mesh.interpolate(t_mesh_expression(element=fsp.T_mesh.ufl_element()))
 
 fu.transfer_mesh_to_sub_mesh(fsp.t_mesh, fsp.t_sub_mesh, rmsh.parameters['h'])
+io.xdmf_print(fsp.t_sub_mesh, solpath.xdmf_file_path + 't_sub_mesh.xdmf')
 # 
 
 '''
