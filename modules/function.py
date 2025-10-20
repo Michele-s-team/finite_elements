@@ -200,28 +200,13 @@ def deform_function(f, u):
 
 
 
-"""
-Transfer a function from a sub_mesh to a mesh along the line y=h.
+'''
 
-Works for scalar, vector, and tensor function spaces of any polynomial degree.
-
-Parameters:
------------
-u_sub_mesh : Function
-    Function defined on the sub_mesh (1D edge)
-Q_mesh : FunctionSpace
-    Target function space on the full mesh (2D)
-Q_sub_mesh : FunctionSpace
-    Source function space on the sub_mesh (1D)
-h : float
-    y-coordinate of the edge where transfer occurs
-
-Returns:
---------
-Function
-    u_sub_mesh_on_mesh : Function defined on Q_mesh
-"""
-
+given a rectangular mesh and a sub mesh given by its top edge, transfer the values of a function defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
+Input values:
+    - 'u_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'u_mesh')
+    - 'u_mesh': the function defined on the mesh (a scalar, vector
+'''
 
 def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
 
@@ -250,7 +235,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
         # Tensor field (e.g., 2x2 matrix has 4 components)
         num_components = int(np.prod(value_shape))
     
-    # For tensor/vector spaces, coordinates are repeated for each component
+    # For vector spaces, coordinates are repeated for each component
     # We need to evaluate only at unique coordinates
     num_unique_points = len(mesh_coordinates) // num_components
     
@@ -259,7 +244,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
     
     # Process each unique point
     for i in range(num_unique_points):
-        # Take the coordinate of the first occurrence of each unique point
+        # run through mesh_coordinates with step num_components
         mesh_coord = mesh_coordinates[i * num_components]
         
         # Check if this point is on the edge y = h
