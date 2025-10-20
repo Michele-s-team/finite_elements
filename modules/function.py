@@ -7,6 +7,8 @@ import numpy as np
 import math
 import ufl
 
+import mesh.utils as msh
+
 i, j, k, l = ufl.indices(4)
 
 msh = importlib.import_module('mesh.utils')
@@ -196,27 +198,77 @@ def deform_function(f, u):
     return g
 
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, Q_mesh, Q_sub_mesh, h):
-    u_sub_mesh_on_mesh = Function(Q_mesh)
-
-    # Get DOF coordinates for both function spaces
-    mesh_coordinagtes = Q_mesh.tabulate_dof_coordinates()
-    sub_mesh_coordinates = Q_sub_mesh.tabulate_dof_coordinates()  # DOFs, not just vertices!
-
-    # initialize all the values to 0
-    dof_values = np.zeros(Q_mesh.dim())
-
-    for mesh_id, mesh_coord in enumerate(mesh_coordinagtes):
 
 
+'''
+
+given a rectangular mesh and a sub mesh given by its top edge, transfer the values of a field (scalar, vector or tensor) defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
+Input values:
+    - 'u_sub_mesh': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
+    - 'u_mesh': the field defined on the mesh
+'''
+
+def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
+
+
+    Q_mesh = u_mesh.function_space()
+    
+    # compute the height of the mesh rectangle 
+    h = (msh.compute_size(Q_mesh.mesh()))[1]
+    
+
+    # Get DOF coordinates for the mesh function space
+    mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
+    
+    # Determine the value shape (scalar, vector, or tensor)
+    value_shape = Q_mesh.ufl_element().value_shape()
+    value_rank = len(value_shape)
+    
+    # Calculate total number of components
+    if value_rank == 0:
+        # Scalar field
+        num_components = 1
+    elif value_rank == 1:
+        # Vector field
+        num_components = value_shape[0]
+    else:
+        # Tensor field (e.g., 2x2 matrix has 4 components)
+        num_components = int(np.prod(value_shape))
+    
+    # For vector spaces, coordinates are repeated for each component
+    # We need to evaluate only at unique coordinates
+    num_unique_points = len(mesh_coordinates) // num_components
+    
+    # Create list to store all DOF values (using list for efficiency with extend)
+    all_values = []
+    
+    # Process each unique point
+    for i in range(num_unique_points):
+        # run through mesh_coordinates with step num_components
+        mesh_coord = mesh_coordinates[i * num_components]
+        
+        # Check if this point is on the edge y = h
         if math.isclose(mesh_coord[1], h):
-            # print(f'point on edge is TRUE for mesh_coord = {mesh_coord}')
-            dof_values[mesh_id] = u_sub_mesh(mesh_coord[0])
-
-
-    u_sub_mesh_on_mesh.vector()[:] = dof_values
-    return u_sub_mesh_on_mesh
-
+            # Evaluate the sub_mesh function at x-coordinate
+            value = u_sub_mesh(mesh_coord[0])
+            
+            if num_components == 1:
+                # Scalar field - direct assignment
+                all_values.append(value)
+            else:
+                # Vector or tensor field
+                # Extend with all components at once (interleaved ordering)
+                all_values.extend(np.array(value, dtype=float).flatten())
+        else:
+            # Point not on edge - add zeros
+            if num_components == 1:
+                all_values.append(0.0)
+            else:
+                all_values.extend([0.0] * num_components)
+    
+    # Set the values in the function
+    u_mesh.vector()[:] = np.array(all_values)
+        
 
 
 '''
