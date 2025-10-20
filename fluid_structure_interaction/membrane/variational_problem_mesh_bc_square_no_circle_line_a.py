@@ -15,19 +15,32 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-# sign
+# BCs
+# BCs for u
 bc_u_l = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
 bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
 bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
 
-bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
+bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_t_id"])
 
+bcs_u = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
+
+
+# sign
+
+# BCs for u_dot
+bc_u_dot_l = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
+bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+
+bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
+
+bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_t_id"])
+
+
+bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 '''
 
-bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_el_n_on_sub_mesh_1, rmsh.boundary[1]['ellipse'])
-bc_u_msh_square = DirichletBC(fsp.Q_u_msh, Constant((0, 0)), rmsh.boundary[1]['lrtb'])
-bcs_msh = [bc_u_msh_ellipse, bc_u_msh_square]
 
 # variational functional for the original problem
 F_msh_u = (ela.P(fsp.u_msh_n, ela.K(fsp.u_msh_n, rpam.parameters['exponent']), ela.mu(fsp.u_msh_n, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_msh[k].dx(i))) * rmsh.dx_sub_mesh[1]
