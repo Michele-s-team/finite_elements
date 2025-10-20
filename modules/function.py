@@ -7,6 +7,8 @@ import numpy as np
 import math
 import ufl
 
+import mesh.utils as msh
+
 i, j, k, l = ufl.indices(4)
 
 msh = importlib.import_module('mesh.utils')
@@ -221,9 +223,14 @@ Function
 """
 
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, h):
+def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
+
 
     Q_mesh = u_mesh.function_space()
+    
+    # compute the height of the mesh rectangle 
+    h = (msh.compute_size(Q_mesh.mesh()))[1]
+    
 
     # Get DOF coordinates for the mesh function space
     mesh_coordinates = Q_mesh.tabulate_dof_coordinates()

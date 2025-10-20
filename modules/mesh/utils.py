@@ -352,9 +352,29 @@ def extremal_coordinates(mesh):
                 x_max = point[0]
 
 
-        print(f"\textremal coordinates: {x_min}, {x_max}")
-
         return [x_min, x_max]
+    
+    
+'''
+compute the size of the mesh in each dimension
+Input values: 
+    - 'mesh': the mesh
+Return values:
+    - [size_x, size_y, ...]: the difference between the lasgest and the smallest coordinate in each dimension
+'''
+
+def compute_size(mesh):
+    
+    if mesh.topology().dim() == 1:
+        [x_min, x_max] = extremal_coordinates(mesh)
+        
+        return x_max - x_min
+        
+    elif mesh.topology().dim() == 2:
+        [[x_min, x_max], [y_min, y_max]] = extremal_coordinates(mesh)
+        
+        return [x_max - x_min, y_max - y_min]
+    
 '''
 compute the difference between functions f and g on the boundary of the mesh on which f and g are defined, returning 
 sqrt(\sum_{i \in {vertices in the boundary of the mesh} [f(x_i) - g(x_i)]^2/ (number of vertices in the boundary of the mesh})
