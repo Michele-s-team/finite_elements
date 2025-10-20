@@ -130,7 +130,7 @@ F_v_bar = ( \
                                     #   force exerted by the fluid on the membrane
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, 
                                                              flu.dFdl(
-                                                                 ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), 
+                                                                 fsp.var_tensor_sigma_fl_on_mem, 
                                                                  geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)
                                                                  ), 
                                                              fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\

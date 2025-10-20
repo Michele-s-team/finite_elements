@@ -60,11 +60,15 @@ Q_mu_n_12 = Q_mem.sub(8).collapse()
 # function space for the X field
 Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
+# tensor function space to project the stress tensor of the fluid mesh on the membrane mesh
+Q_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+
 
 
 # 2) for the fictitious elastic body: 
 Q_u = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 Q_u_dot = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+
 
 
 # 3) for the fluid:   
@@ -75,6 +79,7 @@ Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 
 
 ################## define fields ##################
+
 # 1) for the membrane:
 #Jacobian
 J_psi_mem = TrialFunction(Q_mem)
@@ -96,6 +101,9 @@ U_n_32 = Function( Q_U_n_12 )
 
 #reference configuration
 X_ref = Function(Q_X)
+
+# function to store the fluid stress tensor projected on the membrane
+var_tensor_sigma_fl_on_mem = Function(Q_tensor_sigma_fl_on_mem)
 
 #these functions are used to print the solution to file
 v_bar_output = Function(Q_v_bar)
