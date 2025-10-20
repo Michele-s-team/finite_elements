@@ -40,7 +40,7 @@ params = {'nonlinear_solver': 'newton',
 # 
 import function as fu
 
-fu.transfer_sub_mesh_to_mesh(fsp.v_sub_mesh, fsp.V_mesh, fsp.V_sub_mesh, rmsh.parameters['h'])
+fu.transfer_sub_mesh_to_mesh(fsp.v_sub_mesh, fsp.v_mesh, rmsh.parameters['h'])
 
 
 # 
