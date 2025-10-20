@@ -123,7 +123,10 @@ F_v_bar = ( \
                                   + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[j, i] \
                                 # sign
                                     #   external force is added here
-                                      -  geo.from_3D_to_tangent(fsp.psi_n_12, fsp.f, fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
+                                      -  geo.from_3D_to_tangent(fsp.psi_n_12, 
+                                                                
+                                                                
+                                                                , fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
                             )
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx \
           - dt * rpam.parameters['rho'] / 2.0 * ( \
