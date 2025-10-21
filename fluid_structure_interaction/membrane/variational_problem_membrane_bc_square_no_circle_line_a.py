@@ -221,7 +221,7 @@ F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12
 
 
 
-F_N =  rpam.parameters["alpha"] / rmsh.r_mesh * (
+F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
         ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds'] \
         + (\

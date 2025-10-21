@@ -43,12 +43,14 @@ params = {'nonlinear_solver': 'newton',
 
 rmsh = importlib.import_module(swi.rmsh)
 
+# test calls of problems
+# 1) membrane problem
 fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
 fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-
+# 2) mesh problem
 # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
 # a) project U_n_12
 v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
@@ -114,20 +116,20 @@ for n in range(rpam.num_steps):
 
     vp_mesh = importlib.reload(vp_mesh)
 
-    J_u = derivative(vp_mesh.F_u, fsp.u_n, fsp.J_u)
-    problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs, J_u)
-    solver_u = NonlinearVariationalSolver(problem_u)
+    J_msh = derivative(vp_mesh.F_msh, fsp.u_n, fsp.J_u)
+    problem_msh = NonlinearVariationalProblem(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_msh, J_msh)
+    solver_msh = NonlinearVariationalSolver(problem_msh)
 
-    J_u_dot = derivative(vp_mesh.F_u_dot, fsp.u_dot_n, fsp.J_u_dot)
-    problem_u_dot = NonlinearVariationalProblem(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_dot, J_u_dot)
-    solver_u_dot = NonlinearVariationalSolver(problem_u_dot)
+    J_msh_dot = derivative(vp_mesh.F_msh_dot, fsp.u_dot_n, fsp.J_u_dot)
+    problem_msh_dot = NonlinearVariationalProblem(vp_mesh.F_msh_dot, fsp.u_dot_n, vp_mesh.bcs_msh_dot, J_msh_dot)
+    solver_msh_dot = NonlinearVariationalSolver(problem_msh_dot)
 
-    solver_u.parameters.update(params)
-    solver_u_dot.parameters.update(params)
+    solver_msh.parameters.update(params)
+    solver_msh_dot.parameters.update(params)
 
     # solve for u and u_dot
-    solver_u.solve()
-    solver_u_dot.solve()
+    solver_msh.solve()
+    solver_msh_dot.solve()
 
     print('... done.', flush=True)
 
