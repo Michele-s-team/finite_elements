@@ -143,13 +143,13 @@ for n in range(rpam.num_steps):
 
     # step 3.1
     J_fluid_1 = derivative(vp_fluid.F_v_, fsp.v_, fsp.J_v_)
-    problem_fluid_1 = NonlinearVariationalProblem(vp_fluid.F_v_, fsp.v_, vp_fluid.bc_v_, J_fluid_1)
+    problem_fluid_1 = NonlinearVariationalProblem(vp_fluid.F_v_, fsp.v_, vp_fluid.bc_v_fl_bar, J_fluid_1)
     solver_fluid_1 = NonlinearVariationalSolver(problem_fluid_1)
     solver_fluid_1.solve()
 
     # Step 3.2: surface_tension correction step
     J_fluid_2 = derivative(vp_fluid.F_phi, fsp.phi, fsp.J_phi)
-    problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi, fsp.phi, vp_fluid.bc_phi, J_fluid_2)
+    problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi, fsp.phi, vp_fluid.bc_phi_fl, J_fluid_2)
     solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
     solver_fluid_2.solve()
 
