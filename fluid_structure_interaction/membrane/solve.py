@@ -73,18 +73,35 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadr
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
+fsp.sigma_n_32.interpolate( vp.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
 
+
+#Option 1: set initial profiles
+
+fsp.v_bar_0.interpolate( vp.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+fsp.v_n_0.interpolate( vp.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
+fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
+fsp.u_n_12_0.interpolate( vp.u_n_12_0_Expression( element=fsp.Q_u_n_12.ufl_element() ) )
+
+
+#Option 2:read initial profiles by reading them from file
+# uncomment this to set the initial profiles from the ODE soltion
 '''
-# set the initial profiles:
-# 1) for the membrane
-# 2) for the fictitious elastic body 
-# 3) for the fluid
-fsp.v_fl_n_1.interpolate(vp_fluid.v_fl_0_Expression(element=fsp.Q_v_n.ufl_element()))
-fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
-fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi_fl.ufl_element()))
-fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+print("Reading the initial profiles from file ...")
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_bar_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_bar_0)
+# fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'phi.csv', fsp.phi_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'v.csv', fsp.v_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'w.csv', fsp.w_n_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'u.csv', fsp.u_n_12_0)
+# fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'nu.csv', fsp.nu_n_12_0)
+fsp.nu_n_12_0.interpolate( vp.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ))
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'psi.csv', fsp.psi_n_12_0)
+fu.read_from_file(io.add_trailing_slash(rpam.parameters['solution_ode_path']) + 'mu.csv', fsp.mu_n_12_0)
+print('... done')
 '''
 
+fsp.assigner.assign(fsp.psi, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.u_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
 print("Starting time iteration ...", flush=True)
