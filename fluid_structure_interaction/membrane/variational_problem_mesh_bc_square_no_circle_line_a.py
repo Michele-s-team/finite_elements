@@ -49,7 +49,9 @@ F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.
     + (bgeo.facet_normal[beta] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * fsp.nu_u[alpha]) * rmsh.ds_sub_mesh[0]['ds']
 
 
-
+F_u_N = rpam.parameters["alpha"] / rmsh.r_mesh * (
+            () * rmsh.ds_sub_mesh[0]['ds_r']    
+        )
 
 F_u_dot = - ( \
                     (
