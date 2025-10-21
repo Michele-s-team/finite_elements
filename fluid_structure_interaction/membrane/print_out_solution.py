@@ -29,7 +29,7 @@ writer.writeheader()
 def print_solution(t, step, dt):
     
     # 1) membrane problem
-    v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, u_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
+    v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
 
     fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_dummy, fsp.Q_phi ) )
 
@@ -41,7 +41,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_w_n.write( w_n_dummy, t )
     fi.xdmffile_sigma_n_12.write( fsp.sigma_n_12, t - dt / 2.0 )
     fi.xdmffile_phi.write( phi_dummy, t )
-    fi.xdmffile_u_n_12.write( u_n_12_dummy, t - dt / 2.0 )
+    fi.xdmffile_u_n_12.write( U_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_nu_n_12.write( nu_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_nu_n_12.write( psi_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_mu_n_12.write( mu_n_12_dummy, t - dt / 2.0 )
@@ -61,7 +61,7 @@ def print_solution(t, step, dt):
     io.full_print(fsp.sigma_n_12, 'sigma_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[1], 'scalar')
-    io.full_print(u_n_12_dummy, 'u_n_12_' + str(step + 1), \
+    io.full_print(U_n_12_dummy, 'U_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[1], 'vector')
     io.full_print(nu_n_12_dummy, 'nu_n_12_' + str(step + 1), \
@@ -75,7 +75,7 @@ def print_solution(t, step, dt):
                   lmsh.sub_meshes[1], 'scalar')
     
     
-    io.full_print(project(fsp.X_ref + u_n_12_dummy, fsp.Q_X), 'X_n_12_' + str(step + 1), \
+    io.full_print(project(fsp.X_ref + U_n_12_dummy, fsp.Q_X), 'X_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[1], 'vector')
 
