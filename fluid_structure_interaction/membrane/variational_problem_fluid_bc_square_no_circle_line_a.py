@@ -67,14 +67,14 @@ F_v_fl_bar = ( \
             )
 # sign
 
-alpha, beta, k, l = ufl.indices(4)
+alpha, beta, k, delta = ufl.indices(4)
 
 # step 2 for phi
 F_phi = ( \
-                    - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi.dx(beta)) * ela.G(fsp.u_n_1)[l, alpha] * (fsp.nu_phi.dx(l)) \
+                    - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi.dx(beta)) * ela.G(fsp.u_n_1)[delta, alpha] * (fsp.nu_phi.dx(delta)) \
                     - (rpam.parameters['rho_fluid'] / dt) * ela.G(fsp.u_n_1)[beta, alpha] * ((fsp.v_fl_bar[alpha]).dx(beta)) * fsp.nu_phi \
             ) * ela.detF(fsp.u_n_1) * rmsh.dx \
-        + (ela.G(fsp.u_n_1)[l, alpha] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi.dx(beta)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_r
+        + (ela.G(fsp.u_n_1)[delta, alpha] * bgeo.facet_normal[delta] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi.dx(beta)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_r
 
 
 '''
