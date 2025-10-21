@@ -33,8 +33,11 @@ sub_mesh = lmsh.sub_meshes[1]
 sf_sub_mesh.append(lmsh.cf_sub_mesh_1d)
 mf_sub_mesh.append(lmsh.vf_sub_mesh_1d)
 
-# radius of the smallest cell in the mesh
-r_mesh = lmsh.mesh.hmin()
+# r_mesh[i] is the radius of the smallest cell in sub_meshes[i]
+r_mesh =  [lmsh.sub_meshes[i].hmin() for i in range(len(lmsh.sub_meshes))]
+
+print(f'r_mesh = {r_mesh}')
+
 
 # create line and surface elements for sub_meshes
 dx_sub_mesh = []
