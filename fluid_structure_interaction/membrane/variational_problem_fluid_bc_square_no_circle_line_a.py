@@ -30,7 +30,7 @@ class sigma_fl_n_12_Expression(UserExpression):
 class v_fl_bar_b_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
-        values[1] = rpam.parameters['v_fl_bar_b_const']* 4.0 * 1.5 * x[0] * (rmsh.parameters['L'] - x[0]) / (rmsh.parameters['L']**2)
+        values[1] = rpam.parameters['v_fl_bar_b_const']* 4.0 * 1.5 * x[0]/2 * (rmsh.parameters['L'] - x[0]/2) / (rmsh.parameters['L']**2)
 
     def value_shape(self):
         return (2,)
