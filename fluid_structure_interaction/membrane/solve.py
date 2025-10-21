@@ -73,18 +73,20 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadr
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
+fsp.sigma_n_32.interpolate( vp_membrane.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
 
-'''
-# set the initial profiles:
-# 1) for the membrane
-# 2) for the fictitious elastic body 
-# 3) for the fluid
-fsp.v_fl_n_1.interpolate(vp_fluid.v_fl_0_Expression(element=fsp.Q_v_n.ufl_element()))
-fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
-fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi_fl.ufl_element()))
-fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
-'''
 
+#Option 1: set initial profiles
+fsp.v_bar_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+fsp.v_n_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
+fsp.nu_n_12_0.interpolate( vp_membrane.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
+fsp.U_n_12_0.interpolate( vp_membrane.U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
+
+
+#Option 2:read initial profiles by reading them from file
+
+
+fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.U_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
 print("Starting time iteration ...", flush=True)
@@ -105,7 +107,6 @@ for n in range(rpam.parameters['N']):
     fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
     fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
     
-    # sign
 
     vp_membrane = importlib.import_module(swi.vp_membrane)
     
@@ -117,7 +118,10 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
+    # sign
+
     '''
+
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
     
@@ -142,11 +146,12 @@ for n in range(rpam.parameters['N']):
     solver_msh.parameters.update(params)
     solver_msh_dot.parameters.update(params)
 
-    # solve for u and u_dot
+    # solve for u_n and u_dot_n
     solver_msh.solve()
     solver_msh_dot.solve()
 
     print('... done.', flush=True)
+
 
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
