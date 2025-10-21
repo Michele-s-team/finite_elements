@@ -71,14 +71,14 @@ alpha, beta, k, delta = ufl.indices(4)
 
 # step 2 for phi
 F_phi = ( \
-                    - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi.dx(beta)) * ela.G(fsp.u_n_1)[delta, alpha] * (fsp.nu_phi.dx(delta)) \
+                    - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)) * ela.G(fsp.u_n_1)[delta, alpha] * (fsp.nu_phi.dx(delta)) \
                     - (rpam.parameters['rho_fluid'] / dt) * ela.G(fsp.u_n_1)[beta, alpha] * ((fsp.v_fl_bar[alpha]).dx(beta)) * fsp.nu_phi \
             ) * ela.detF(fsp.u_n_1) * rmsh.dx \
-        + (ela.G(fsp.u_n_1)[delta, alpha] * bgeo.facet_normal[delta] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi.dx(beta)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_r
+        + (ela.G(fsp.u_n_1)[delta, alpha] * bgeo.facet_normal[delta] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_r
 
 
 '''
 
 # step 3 for v_n
-F_v_n = (((fsp.v_fl_n[i] - fsp.v_fl_bar[i]) + (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_n_1) * rmsh.dx
+F_v_n = (((fsp.v_fl_n[i] - fsp.v_fl_bar[i]) + (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_n_1)[l, i] * (fsp.phi_fl.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_n_1) * rmsh.dx
 '''
