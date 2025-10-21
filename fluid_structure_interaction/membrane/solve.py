@@ -120,7 +120,6 @@ for n in range(rpam.parameters['N']):
 
     # sign
 
-    '''
 
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
@@ -152,6 +151,7 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
+    '''
 
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
