@@ -32,10 +32,11 @@ class X_ref_Expression(UserExpression):
 
     def value_shape(self):
         return (2,)
-    
+
+# expressions for the initial conditions
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['v_n_0_const'][0]
+        values[0] = rpam.parameters['v_bar_l'][0]
 
     def value_shape(self):
         return (1,)
@@ -66,14 +67,14 @@ class U_n_12_0_Expression( UserExpression ):
 # expressions for the boundary conditions
 class v_bar_l_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['v_bar_l']
+        values[0] = rpam.parameters['v_bar_l'][0]
 
     def value_shape(self):
         return (1,)
     
 class v_bar_r_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['v_bar_r']
+        values[0] = rpam.parameters['v_bar_r'][0]
 
     def value_shape(self):
         return (1,)
