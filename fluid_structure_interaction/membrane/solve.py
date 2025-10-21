@@ -109,15 +109,15 @@ for n in range(rpam.parameters['N']):
 
     vp_membrane = importlib.import_module(swi.vp_membrane)
     
-    J_membrane = derivative(vp_membrane.F_membrane, fsp.psi_membrane, fsp.J_psi_membrane)
-    problem_membrane = NonlinearVariationalProblem(vp_membrane.F_membrane, fsp.psi_membrane, vp_membrane.bcs_membrane, J_membrane)
-    solver_membrane = NonlinearVariationalSolver(problem_membrane)
-    solver_membrane.parameters.update(params)
-    solver_membrane.solve()
-
+    J_mem = derivative(vp_membrane.F_mem, fsp.psi_mem, fsp.J_psi_mem)
+    problem_mem = NonlinearVariationalProblem(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, J_mem)
+    solver_mem = NonlinearVariationalSolver(problem_mem)
+    solver_mem.parameters.update(params)
+    solver_mem.solve()
 
     print('... done.', flush=True)
 
+    '''
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
     
@@ -198,6 +198,7 @@ for n in range(rpam.parameters['N']):
     pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
+    
+    '''
 
 print("... done.", flush=True)
-'''
