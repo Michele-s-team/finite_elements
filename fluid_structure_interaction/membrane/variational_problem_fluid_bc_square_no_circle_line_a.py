@@ -1,5 +1,5 @@
 '''
-this module solves for the fields, v^n, sigma,  which define the state of the fluid
+this module solves for the fields, \textrm_{v_FL}^n, \varsigma,  which define the state of the fluid
 '''
 
 from fenics import *
@@ -9,37 +9,43 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
-import read_parameters as rpam
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-dt = rpam.T / rpam.num_steps  # time step size
+dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 
-# trial analytical expression for a vector
-class v_expression(UserExpression):
+class v_fl_bar_b_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
-        values[1] = 0
+        values[1] = rpam.parameters['v_fl_bar_b_const']* 4.0 * 1.5 * x[0] * (rmsh.parameters['L'] - x[0]) / (rmsh.parameters['L']**2)
 
     def value_shape(self):
         return (2,)
 
 
-# trial analytical expression for the  surface tension sigma(x,y)
-class sigma_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-
-    def value_shape(self):
-        return (1,)
+fsp.v_fl_bar_b.interpolate(v_fl_bar_b_Expression(element=fsp.Q_v_fl_bar.ufl_element()))
 
 
-v__profile_l = Expression((f'{rpam.v_l}* 4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.parameters["h"])
-bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.boundary_l)
+bc_v_fl_bar_b = DirichletBC(fsp.Q_v_fl_bar, fsp.v_fl_bar_b, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+bc_v_fl_bar_l = DirichletBC(fsp.Q_v_fl_bar, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
+bc_v_fl_bar_0_r = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
+bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"])
+
+bc_v_fl_bar = [bc_v_fl_bar_b, bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
+
+# sign
+# bc_v__ellipse = DirichletBC(fsp.Q_v_, fsp.u_msh_dot_n, rmsh.boundary[1]['ellipse'])
+
+
+
+
+'''
+
 bc_v__tb = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.boundary_tb)
 
 v__profile_ellipse = Expression((f'{fsp.omega_n} * (-sin({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - cos({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))', f'{fsp.omega_n} * (cos({fsp.theta_n}) * (x[0] - {rmsh.focus[0]}) - sin({fsp.theta_n}) * (x[1] - {rmsh.focus[1]}))'), element=fsp.Q_v_.ufl_element())
@@ -75,3 +81,4 @@ F_phi = ( \
 
 # step 3 for v_n
 F_v_n = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.rho) * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_n_1) * rmsh.dx
+'''

@@ -61,8 +61,11 @@ fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
 
-'''
+
+# 3) fluid problem
 vp_fluid = importlib.import_module(swi.vp_fluid)
+
+'''
 pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10

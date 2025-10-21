@@ -8,11 +8,8 @@ import command as cmd
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
-import elasticity as ela
 import fluid as flu
-import function as fu
 import function_spaces as fsp
-import input_output as io
 import parameters.read.solution as rpam
 import switch_problem as swi
 

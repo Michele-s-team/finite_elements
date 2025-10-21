@@ -183,6 +183,10 @@ phi_fl = Function(Q_phi_fl)
 # stress tensor of the fluid 
 var_tensor_sigma_fl= Function(Q_var_tensor_sigma_fl)
 
+# fields to store the BCs
+v_fl_bar_b = Function(Q_v_fl_bar)
+
+
 
 # jacobians
 J_v_fl_bar = TrialFunction(Q_v_fl_bar)
