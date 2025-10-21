@@ -6,6 +6,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
+import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
 import parameters.read.solution as rpam
@@ -13,7 +14,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-alpha, beta = ufl.indices(2)
+alpha, beta, gamma = ufl.indices(3)
 
 # BCs
 # BCs for u
@@ -39,22 +40,31 @@ bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf_sub_mesh[0
 
 bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
-# sign
 
 
 
 
 # variational functional for the original problem
-F_msh_u = (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_sub_mesh[1]
+F_msh_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_sub_mesh[0] \
+    + (bgeo.facet_normal[beta] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * fsp.nu_u[alpha]) * rmsh.ds_sub_mesh[0]['ds']
 
-F_msh_u_dot = ( \
-                          (ela.F_dot(fsp.u_dot_n)[alpha, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[j, beta] \
-                           + ela.F(fsp.u_n)[alpha, j] * ela.S_dot(fsp.u_n,
-                                                                  fsp.u_dot_n,
-                                                                  ela.K(fsp.u_n, rpam.parameters['exponent']),
-                                                                  ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']),
-                                                                  ela.mu(fsp.u_n, rpam.parameters['exponent']),
-                                                                  ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']))[j, beta]) \
-                          * (fsp.nu_u_dot[alpha].dx(beta))) * rmsh.dx_sub_mesh[1]
+
+# sign
+
+
+F_msh_u_dot = - ( \
+                    (
+                        ela.F_dot(fsp.u_dot_n)[alpha, gamma] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[gamma, beta] \
+                        + ela.F(fsp.u_n)[alpha, gamma] * ela.S_dot(
+                                                                    fsp.u_n,
+                                                                    fsp.u_dot_n,
+                                                                    ela.K(fsp.u_n, rpam.parameters['exponent']),
+                                                                    ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']),
+                                                                    ela.mu(fsp.u_n, rpam.parameters['exponent']),
+                                                                    ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent'])
+                                                                )[gamma, beta]
+                    ) * (fsp.nu_u_dot[alpha].dx(beta))\
+                ) * rmsh.dx_sub_mesh[0]
+
 
 
