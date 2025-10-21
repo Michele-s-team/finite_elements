@@ -176,9 +176,9 @@ for n in range(rpam.parameters['N']):
     J_fluid_2 = derivative(vp_fluid.F_phi_fl, fsp.phi_fl, fsp.J_phi_fl)
     problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, J_fluid_2)
     solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
+    solver_fluid_2.solve()
 
     '''
-    solver_fluid_2.solve()
 
     # step 3.3
     J_fluid_3 = derivative(vp_fluid.F_v_n, fsp.v_n, fsp.J_v_n)
