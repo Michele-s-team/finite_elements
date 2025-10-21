@@ -155,6 +155,8 @@ assigner_mem = FunctionAssigner(Q_mem, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q
 # 2) for the fictitious elastic body:
 u_n = Function(Q_u)
 u_n_1 = Function(Q_u)
+u_n_2 = Function(Q_u)
+
 u_dot_n = Function(Q_u_dot)
 u_dot_n_1 = Function(Q_u_dot)
 u_dot_n_2 = Function(Q_u_dot)
