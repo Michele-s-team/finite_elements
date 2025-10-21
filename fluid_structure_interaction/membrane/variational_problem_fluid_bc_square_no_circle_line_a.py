@@ -14,7 +14,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-alpha, beta, gamma, delta, beta, gamma, beta = ufl.indices(7)
+alpha, beta, gamma, delta = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
