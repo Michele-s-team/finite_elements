@@ -178,17 +178,18 @@ for n in range(rpam.parameters['N']):
     solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
     solver_fluid_2.solve()
 
-    '''
 
     # step 3.3
-    J_fluid_3 = derivative(vp_fluid.F_v_n, fsp.v_n, fsp.J_v_n)
-    problem_fluid_3 = NonlinearVariationalProblem(vp_fluid.F_v_n, fsp.v_n, [], J_fluid_3)
+    J_fluid_3 = derivative(vp_fluid.F_v_fl_n, fsp.v_fl_n, fsp.J_v_fl_n)
+    problem_fluid_3 = NonlinearVariationalProblem(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], J_fluid_3)
     solver_fluid_3 = NonlinearVariationalSolver(problem_fluid_3)
     solver_fluid_3.solve()
+
+    
+
     '''
     print('... done.', flush=True)
     
-    '''
 
     pr_bc.print_bcs()
 
