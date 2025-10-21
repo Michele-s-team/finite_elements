@@ -10,6 +10,7 @@ import differential_geometry.manifold.geometry as geo
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import fluid as flu
 import function_spaces as fsp
+import mesh.load as lmsh
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -134,13 +135,13 @@ F_v_bar = ( \
                             )
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1]  \
           - dt * rpam.parameters['rho'] / 2.0 * ( \
-                      ((fsp.W ** 2) * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
+                      ((fsp.W ** 2) * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.sub_meshes[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
           ) \
           - dt * ( \
-                      (fsp.sigma_n_32 * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
+                      (fsp.sigma_n_32 * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.sub_meshes[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
            ) \
           - dt * 2.0 * rpam.parameters['eta'] * ( \
-                      (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds']
+                      (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.sub_meshes[1]))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds']
           )
 
 
@@ -167,11 +168,11 @@ F_w_bar = ( \
                       ) * fsp.nu_w_bar
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_sub_mesh[1] \
           + dt * rpam.parameters['rho'] * ( \
-                      (fsp.W * fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[j, i] * (3.0 / 2.0 * fsp.v_n_1[i] - 1.0 / 2.0 * fsp.v_n_2[i])) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
+                      (fsp.W * fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.sub_meshes[1]))[j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[j, i] * (3.0 / 2.0 * fsp.v_n_1[i] - 1.0 / 2.0 * fsp.v_n_2[i])) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
 
           ) \
           + dt * 2.0 * rpam.parameters['kappa'] * ( \
-                      (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12 ))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
+                      (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.sub_meshes[1]))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_sub_mesh[1]['ds'] \
           )
           
 
