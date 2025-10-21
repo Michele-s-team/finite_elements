@@ -44,15 +44,16 @@ bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
 
 
-# variational functional for the original problem
+# variational functional for u
 F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_sub_mesh[0] \
     + (bgeo.facet_normal[beta] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * fsp.nu_u[alpha]) * rmsh.ds_sub_mesh[0]['ds']
 
+F_u_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_n[1].dx(0)) * fsp.nu_u[1].dx(0) ) * rmsh.ds_sub_mesh[0]['ds_r']    
+        
+F_msh = F_u + F_u_N
 
-F_u_N = rpam.parameters["alpha"] / rmsh.r_mesh * (
-            () * rmsh.ds_sub_mesh[0]['ds_r']    
-        )
 
+# variational problem for u_dot
 F_u_dot = - ( \
                     (
                         ela.F_dot(fsp.u_dot_n)[alpha, gamma] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[gamma, beta] \
@@ -80,5 +81,9 @@ F_u_dot = - ( \
                     )    
                 ) * fsp.nu_u_dot[alpha] * rmsh.ds_sub_mesh[0]['ds']
 
-#sign
 
+F_u_dot_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_dot_n[1].dx(0)) * fsp.nu_u_dot[1].dx(0) ) * rmsh.ds_sub_mesh[0]['ds_r']    
+
+F_msh_dot = F_u_dot + F_u_dot_N
+
+#sign
