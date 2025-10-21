@@ -48,8 +48,8 @@ bc_phi_fl = [bc_phi_fl_b]
 
 # step 1 for v_
 F_v_fl_bar = ( \
-                   rpam.parameters['rho_fl'] * ((fsp.v_fl_bar[i] - fsp.v_n_1[i]) / dt \
-                               + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k]) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
+                   rpam.parameters['rho_fl'] * ((fsp.v_fl_bar[i] - fsp.v_fl_n_1[i]) / dt \
+                               + (3.0 / 2.0 * (fsp.v_fl_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_fl_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k]) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
                    + fsp.sigma_n_32 * ela.G(fsp.u_n_1)[l, i] * (fsp.nu_v_[i]).dx(l) + rpam.parameters['eta_fl'] * ela.G(fsp.u_n_1)[k, j] * ((fsp.V[i]).dx(k)) * ela.G(fsp.u_n_1)[l, j] * (fsp.nu_v_[i]).dx(l) \
            ) * ela.detF(fsp.u_n_1) * rmsh.dx \
        - (ela.G(fsp.u_n_1)[l, i] * bgeo.facet_normal[l] * fsp.sigma_n_32 * fsp.nu_v_[i]) * ela.detF(fsp.u_n_1) * rmsh.ds \
@@ -72,5 +72,5 @@ F_phi = ( \
         + (ela.G(fsp.u_n_1)[l, i] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_r
 
 # step 3 for v_n
-F_v_n = (((fsp.v_n[i] - fsp.v_fl_bar[i]) + (dt / rpam.parameters['rho_fl']) * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_n_1) * rmsh.dx
+F_v_n = (((fsp.v_fl_n[i] - fsp.v_fl_bar[i]) + (dt / rpam.parameters['rho_fl']) * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l))) * fsp.nu_v_n[i]) * ela.detF(fsp.u_n_1) * rmsh.dx
 '''
