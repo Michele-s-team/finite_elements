@@ -156,6 +156,8 @@ assigner_mem = FunctionAssigner(Q_mem, [Q_v_bar, Q_w_bar, Q_phi, Q_v_n, Q_w_n, Q
 u_n = Function(Q_u)
 u_n_1 = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
+u_dot_n_1 = Function(Q_u_dot)
+u_dot_n_2 = Function(Q_u_dot)
 
 # function space to store the projection of the membrane deformation field and of its derivative on the mesh
 U_n_12_on_mesh = Function(Q_u)
