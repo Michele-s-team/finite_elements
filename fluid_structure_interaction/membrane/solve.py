@@ -30,6 +30,8 @@ import print_out_solution as pr_sol
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 # set the solver parameters here
+# parameters with Netwon method
+'''
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
@@ -40,6 +42,32 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
+'''
+
+# parameters with SNES method
+# 
+params = {
+    'nonlinear_solver': 'snes',
+    'snes_solver': {
+        'linear_solver': 'superlu',
+        'line_search': 'bt',  # backtracking line search
+        'absolute_tolerance': 1e-6,
+        'relative_tolerance': 1e-6,
+        'maximum_iterations': 1000000,
+        'report': True,
+    }
+}
+
+PETScOptions.clear()
+PETScOptions.set('snes_type', 'newtontr')
+PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+PETScOptions.set('snes_max_it', 100000)
+PETScOptions.set('snes_monitor')
+PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
+# 
+
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -125,7 +153,6 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
-    # sign
 
 
     # step 2): update u and u_dot (mesh problem)
@@ -169,6 +196,7 @@ for n in range(rpam.parameters['N']):
     J_fluid_1 = derivative(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, fsp.J_v_fl_bar)
     problem_fluid_1 = NonlinearVariationalProblem(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, J_fluid_1)
     solver_fluid_1 = NonlinearVariationalSolver(problem_fluid_1)
+    solver_fluid_1.parameters.update(params)
     solver_fluid_1.solve()
 
 
@@ -176,6 +204,7 @@ for n in range(rpam.parameters['N']):
     J_fluid_2 = derivative(vp_fluid.F_phi_fl, fsp.phi_fl, fsp.J_phi_fl)
     problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, J_fluid_2)
     solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
+    solver_fluid_2.parameters.update(params)
     solver_fluid_2.solve()
 
 
@@ -183,40 +212,55 @@ for n in range(rpam.parameters['N']):
     J_fluid_3 = derivative(vp_fluid.F_v_fl_n, fsp.v_fl_n, fsp.J_v_fl_n)
     problem_fluid_3 = NonlinearVariationalProblem(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], J_fluid_3)
     solver_fluid_3 = NonlinearVariationalSolver(problem_fluid_3)
+    solver_fluid_3.parameters.update(params)
     solver_fluid_3.solve()
 
     
 
-    '''
     print('... done.', flush=True)
     
 
-    pr_bc.print_bcs()
 
+    # pr_bc.print_bcs()
+
+    
     # update the fields
-    # 1)
-    fsp.theta_n_1 = fsp.theta_n
-    fsp.omega_n_1 = fsp.omega_n
+    # 1) update the membrane problem 
+    v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
 
-    # 2)
+    fsp.v_n_2.assign( fsp.v_n_1 )
+    fsp.v_n_1.assign( v_n_output )
+
+    fsp.w_n_1.assign( w_n_output )
+
+    fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_output, fsp.Q_phi ) )
+    fsp.sigma_n_32.assign( fsp.sigma_n_12 )
+
+    fsp.U_n_32.assign( U_n_12_output )
+
+
+    # 2) update the mesh problem
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(fsp.u_n)
 
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
-
-    # 3)
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
-
-    fsp.v_n_2.assign(fsp.v_n_1)
-    fsp.v_n_1.assign(fsp.v_n)
-
-    fsp.sigma_n_32.assign(fsp.sigma_n_12)
-
-    pr_sol.print_solution(t, step, dt)
-
-    print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
     
-    '''
+    # sign
+
+
+    # 3) update the fluid problem
+    fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
+
+    fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
+    fsp.v_fl_n_1.assign(fsp.v_fl_n)
+
+    fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+
+    # pr_sol.print_solution(t, step, dt)
+
+    print(f'\t{(100.0 * (t / rpam.parameters["T"]))} %', flush=True)
+    
+    
 
 print("... done.", flush=True)
