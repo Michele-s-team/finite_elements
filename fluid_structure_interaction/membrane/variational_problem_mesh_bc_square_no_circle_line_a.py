@@ -45,14 +45,13 @@ bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
 
 # variational functional for the original problem
-F_msh_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_sub_mesh[0] \
+F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_sub_mesh[0] \
     + (bgeo.facet_normal[beta] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * fsp.nu_u[alpha]) * rmsh.ds_sub_mesh[0]['ds']
 
 
-# sign
 
 
-F_msh_u_dot = - ( \
+F_u_dot = - ( \
                     (
                         ela.F_dot(fsp.u_dot_n)[alpha, gamma] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[gamma, beta] \
                         + ela.F(fsp.u_n)[alpha, gamma] * ela.S_dot(
@@ -64,7 +63,20 @@ F_msh_u_dot = - ( \
                                                                     ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent'])
                                                                 )[gamma, beta]
                     ) * (fsp.nu_u_dot[alpha].dx(beta))\
-                ) * rmsh.dx_sub_mesh[0]
+                ) * rmsh.dx_sub_mesh[0] \
+                + (\
+                    bgeo.facet_normal[beta] * (
+                        ela.F_dot(fsp.u_dot_n)[alpha, gamma] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[gamma, beta] \
+                        + ela.F(fsp.u_n)[alpha, gamma] * ela.S_dot(
+                                                                    fsp.u_n,
+                                                                    fsp.u_dot_n,
+                                                                    ela.K(fsp.u_n, rpam.parameters['exponent']),
+                                                                    ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']),
+                                                                    ela.mu(fsp.u_n, rpam.parameters['exponent']),
+                                                                    ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent'])
+                                                                )[gamma, beta]
+                    )    
+                ) * fsp.nu_u_dot[alpha] * rmsh.ds_sub_mesh[0]['ds']
 
-
+#sign
 
