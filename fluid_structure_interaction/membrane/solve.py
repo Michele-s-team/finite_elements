@@ -246,9 +246,6 @@ for n in range(rpam.parameters['N']):
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
     
-    # sign
-
-
     # 3) update the fluid problem
     fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
 
@@ -257,7 +254,7 @@ for n in range(rpam.parameters['N']):
 
     fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
-    # pr_sol.print_solution(t, step, dt)
+    pr_sol.print_solution(t, step, dt)
 
     print(f'\t{(100.0 * (t / rpam.parameters["T"]))} %', flush=True)
     
