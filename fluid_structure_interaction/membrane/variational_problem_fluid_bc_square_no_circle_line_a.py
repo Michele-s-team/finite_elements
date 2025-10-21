@@ -18,7 +18,15 @@ alpha, beta, gamma, delta = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
+# expressions for initial conditions
+class sigma_fl_n_12_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['sigma_fl_n_12_0_b']
 
+    def value_shape(self):
+        return (1,)
+
+# expressions for boundary conditions
 class v_fl_bar_b_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
