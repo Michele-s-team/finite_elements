@@ -65,22 +65,25 @@ vp_mesh = importlib.import_module(swi.vp_mesh)
 # 3) fluid problem
 vp_fluid = importlib.import_module(swi.vp_fluid)
 
-'''
+
 pr_bc = importlib.import_module(swi.prout_bc)
 
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
 
+
+'''
 # set the initial profiles:
 # 1) for the membrane
 # 2) for the fictitious elastic body 
 # 3) for the fluid
-fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
-fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
-fsp.sigma_n_32.assign(fsp.sigma_n_12)
+fsp.v_fl_n_1.interpolate(vp_fluid.v_fl_0_Expression(element=fsp.Q_v_n.ufl_element()))
+fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
+fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi_fl.ufl_element()))
+fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+'''
 
 
 
@@ -88,7 +91,7 @@ print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
-for n in range(rpam.num_steps):
+for n in range(rpam.parameters['N']):
     # Update current time
     t += dt
     step += 1
@@ -96,14 +99,23 @@ for n in range(rpam.num_steps):
     # step 1): update theta and omega
     print('Solving membrane problem ...', flush=True)
    
+
+   
     # project from sub_mesh[0] onto sub_mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
     fsp.var_tensor_sigma_fl.assign(project(ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
     fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
+    
+    # sign
 
-    ap_ellipse = importlib.reload(ap_ellipse)
+    vp_membrane = importlib.import_module(swi.vp_membrane)
+    
+    J_membrane = derivative(vp_membrane.F_membrane, fsp.psi_membrane, fsp.J_psi_membrane)
+    problem_membrane = NonlinearVariationalProblem(vp_membrane.F_membrane, fsp.psi_membrane, vp_membrane.bcs_membrane, J_membrane)
+    solver_membrane = NonlinearVariationalSolver(problem_membrane)
+    solver_membrane.parameters.update(params)
+    solver_membrane.solve()
 
-    fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
-    fsp.omega_n = fsp.omega_n_1 + dt / rpam.I_ellipse * ap_ellipse.M_ellipse
+
     print('... done.', flush=True)
 
     # step 2): update u and u_dot (mesh problem)
