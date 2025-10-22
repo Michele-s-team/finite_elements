@@ -221,7 +221,7 @@ for n in range(rpam.parameters['N']):
     
 
 
-    # pr_bc.print_bcs()
+    pr_bc.print_bcs()
 
     
     # update the fields
