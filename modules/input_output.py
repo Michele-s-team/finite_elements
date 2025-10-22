@@ -82,17 +82,18 @@ def print_vector_to_csvfile(f, filename):
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    with open(filename, "w") as csvfile:
-        print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+    csvfile = open(filename, "w")
+    print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
-        for x, v in zip(coords, values):
-            # padded_v = list(v) + [0] * (3 - shape)
-            padded_v = pad(v, 3)
-            # padded_x = list(x) + [0] * (3 - gdim)
-            padded_x = pad(x, 3)
-            print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
-                  f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+    for x, v in zip(coords, values):
+        # padded_v = list(v) + [0] * (3 - shape)
+        padded_v = pad(v, 3)
+        # padded_x = list(x) + [0] * (3 - gdim)
+        padded_x = pad(x, 3)
+        print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
+                f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
 
+    csvfile.close()
 
 
 # Fixed version of your print_nodal_values_vector_to_csvfile method
