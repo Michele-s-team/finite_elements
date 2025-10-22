@@ -254,7 +254,9 @@ for n in range(rpam.parameters['N']):
 
     fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
-    pr_sol.print_solution(t, step, dt)
+    if step % rpam.parameters['print_out_stride'] == 0:
+    # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+        pr_sol.print_solution(t, step, dt)
 
     print(f'\t{(100.0 * (t / rpam.parameters["T"]))} %', flush=True)
     
