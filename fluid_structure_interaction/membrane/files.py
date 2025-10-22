@@ -22,6 +22,6 @@ xdmffile_u_dot_n = XDMFFile( os.path.join(rarg.args.output_directory , 'u_dot_n.
 
 # 3) fluid problem 
 xdmffile_v_fl_n = XDMFFile( os.path.join(rarg.args.output_directory , 'v_fl_n.xdmf') )
-xdmffile_v_fl_bar = XDMFFile( os.path.join(rarg.args.output_directory , 'v_var_fl.xdmf') )
+xdmffile_v_fl_bar = XDMFFile( os.path.join(rarg.args.output_directory , 'v_bar_fl.xdmf') )
 xdmffile_sigma_fl = XDMFFile( os.path.join(rarg.args.output_directory , 'sigma_fl_n_12.xdmf') )
 xdmffile_phi_fl = XDMFFile( os.path.join(rarg.args.output_directory , 'phi_fl.xdmf') )
