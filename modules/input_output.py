@@ -266,7 +266,9 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     xdmf_print(f, path_xdmf_file_with_slash + field_name + '.xdmf')
 
     # write to h5 file
-    HDF5File(MPI.comm_world, path_h5_file_with_slash + field_name + '.h5', "w").write(f, "/f")
+    hdf5_file = HDF5File(MPI.comm_world, path_h5_file_with_slash + field_name + '.h5', "w")
+    hdf5_file.write(f, "/f")
+    hdf5_file.close()
 
     # write to csv file and the nodal values to csv file
     if type == 'scalar':
