@@ -477,6 +477,50 @@ def print_mesh_lines_to_csv(infile, outfile):
     csvfile.close()
 
 
+
+def print_mesh_triangles_to_csv(infile, outfile):
+    # open the .msh file
+    gmsh.open(infile)
+
+    # get the list of components with dimension 2 from the mesh (triangles)
+    triangles = gmsh.model.mesh.getElements(dim=2)
+    # print( "triangles = ", triangles )
+
+    # construct a map which, given the tag of a node, gives its coordinates
+    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    # print( "node map = ", node_map )
+
+    # Store unique edges from the triangle elements
+    # initialize a 'list' of unique elements, this sets the list to empty
+    triplets = set()
+
+    # loop over all triangle nodes
+    triangle_nodes = triangles[2][0] if len(triangles[2]) > 0 else []
+    for i in range(0, len(triangle_nodes), 3):
+        # store into triplet = [ID_1, ID_2, ID_3] the IDs of the vertices which form the triangle
+        triplet = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1], triangle_nodes[i+2]]))
+        
+        # this pushes back the triplet to cells
+        triplets.update([triplet])
+        
+    print(f'triplets = {triplets}')
+
+    '''
+    # loop through the edges added before and write the endoints of their lines to file
+    csvfile = open(outfile, "w")
+    print(f"\"start:0\",\"start:1\",\"start:2\",\"end:0\",\"end:1\",\"end:2\"", file=csvfile)
+    for edge in cells:
+        # apply node_map to obtain the coordinates of the starting vertex in edge from their IDs, and similarly for p_end
+        p_start = node_map[edge[0]]
+        p_end = node_map[edge[1]]
+        # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
+        print(f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile)
+
+    csvfile.close()
+    '''
+
+
 '''
 print the coordinates of start and end points of line 'line'
 '''
@@ -1286,6 +1330,8 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
+    
+    print_mesh_triangles_to_csv(mesh_file, output_directory_slash + "triangles.csv")
 
     # print mesh metadata
     io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
