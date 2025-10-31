@@ -1334,6 +1334,7 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
     
+    # print the mesh triangles to csv
     print_mesh_triangles_to_csv(mesh_file, output_directory_slash + "triangles.csv")
 
     # print mesh metadata
