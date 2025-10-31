@@ -477,19 +477,23 @@ def print_mesh_lines_to_csv(infile, outfile):
     csvfile.close()
 
 
+'''
+print the mesh triangles to csv file. The mesh triangles will be stored in a csvfile in columns, in the format "p_1:0,p_1:1,p_1:2,p_2:0,p_2:1,p_2:2", where p_1, p_2 and p_3 are the vertices of the triangle, and p_1:0 is the x coordinate of p_1, p_1:1 the y coordinate of p_1, ...
 
+* Input values: 
+    - 'infile': the .msh file from which the mesh will be read
+    - 'outfile': the path, name and extension of the csv file where the triangles will be stored 
+'''
 def print_mesh_triangles_to_csv(infile, outfile):
     # open the .msh file
     gmsh.open(infile)
 
     # get the list of components with dimension 2 from the mesh (triangles)
     triangles = gmsh.model.mesh.getElements(dim=2)
-    # print( "triangles = ", triangles )
 
     # construct a map which, given the tag of a node, gives its coordinates
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
     node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
-    # print( "node map = ", node_map )
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -501,24 +505,24 @@ def print_mesh_triangles_to_csv(infile, outfile):
         # store into triplet = [ID_1, ID_2, ID_3] the IDs of the vertices which form the triangle
         triplet = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1], triangle_nodes[i+2]]))
         
-        # this pushes back the triplet to cells
+        # this pushes back the triplet to triplets
         triplets.update([triplet])
         
     print(f'triplets = {triplets}')
 
-    '''
-    # loop through the edges added before and write the endoints of their lines to file
+    
+    # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"\"start:0\",\"start:1\",\"start:2\",\"end:0\",\"end:1\",\"end:2\"", file=csvfile)
-    for edge in cells:
-        # apply node_map to obtain the coordinates of the starting vertex in edge from their IDs, and similarly for p_end
-        p_start = node_map[edge[0]]
-        p_end = node_map[edge[1]]
-        # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
-        print(f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile)
+    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\"", file=csvfile)
+    for triplet in triplets:
+        # apply node_map to obtain the coordinates of the  vertices in triplet from their IDs
+        p_1 = node_map[triplet[0]]
+        p_2 = node_map[triplet[1]]
+        p_3 = node_map[triplet[2]]
+        print(f"{p_1[0]}, {p_1[1]}, {p_1[2]}, {p_2[0]}, {p_2[1]}, {p_2[2]}, {p_3[0]}, {p_3[1]}, {p_3[2]}", file=csvfile)
 
     csvfile.close()
-    '''
+    
 
 
 '''
