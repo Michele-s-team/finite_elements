@@ -513,7 +513,7 @@ def print_mesh_triangles_to_csv(infile, outfile):
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\"", file=csvfile)
+    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\",\"p_3:0\",\"p_3:1\",\"p_3:2\"", file=csvfile)
     for triplet in triplets:
         # apply node_map to obtain the coordinates of the  vertices in triplet from their IDs
         p_1 = node_map[triplet[0]]
