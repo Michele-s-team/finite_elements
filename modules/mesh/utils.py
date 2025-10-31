@@ -1586,12 +1586,19 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # create entity map for boundary mesh for lines
     mf_boundary_sub_mesh = transfer_facet_tags_to_bounday_mesh(sub_mesh_boundary, mf_sub_mesh)
 
-    # write the triangles for sub_mesh to file
+    # write the triangles for sub_mesh to xdmf file
     write_mesh(sub_mesh, submesh_path_slash + "triangle_mesh.xdmf", sf_sub_mesh)
-    # write the lines of the boundary mesh to file
+    # write the lines of the boundary mesh to xdmf file
     write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
+    
     # print  submesh vertices to csv file
     io.print_mesh_vertices_to_csv(sub_mesh, submesh_path_slash + "vertices.csv")
+    
+    if sub_mesh.topology().dim() == 2:
+        #  sub_mesh is two-dimensional -> print its coordinates 
+        # print  submesh triangles to csv file
+        io.print_mesh_triangles_to_csv(sub_mesh, submesh_path_slash + "triangles.csv")
+    
     # print sub mesh metadata
     # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
