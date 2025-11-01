@@ -255,14 +255,28 @@ def boundary_points(mesh, filename=None):
     coordinates = tab_degrees_of_freedom[degrees_of_freedom]
     
     # 
-    for facet in facets(mesh):
+    exterior_facets = []
+    for facet in facets(mesh):        
+        if facet.exterior(): 
+            exterior_facets.append(facet)
+            
+    print(f'\n\texterior facets = {exterior_facets}')
+                
+    exterior_vertices = [next(vertices(exterior_facets[0]))]
+    
+    # Get the point object
+    point = [exterior_vertices[0].point().x(), exterior_vertices[0].point().y(), exterior_vertices[0].point().z() ]
+    print(f'coordinates:{point}')
+    
+    '''
+    for facet in exterior_facets:
         print(f'I am on facet {facet}')
         
         if facet.exterior():  # Check if facet is on the boundary
             
             vertices_of_facet = [v.index() for v in vertices(facet)]
             print(f'\t vertices of facet are : {vertices_of_facet}')
-    
+    '''
     
     # 
 
