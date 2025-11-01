@@ -253,6 +253,18 @@ def boundary_points(mesh, filename=None):
 
     tab_degrees_of_freedom = Q_dummy.tabulate_dof_coordinates()
     coordinates = tab_degrees_of_freedom[degrees_of_freedom]
+    
+    # 
+    for facet in facets(mesh):
+        print(f'I am on facet {facet}')
+        
+        if facet.exterior():  # Check if facet is on the boundary
+            
+            vertices_of_facet = [v.index() for v in vertices(facet)]
+            print(f'\t vertices of facet are : {vertices_of_facet}')
+    
+    
+    # 
 
     if filename != None:
         
