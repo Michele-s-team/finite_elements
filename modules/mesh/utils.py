@@ -223,9 +223,15 @@ class BoundaryMarker(SubDomain):
     def inside(self, x, on_boundary):
         return on_boundary
 
-
+'''
+print the coordinates of a vertex
+Input values: 
+    - 'vertex' <class 'dolfin.cpp.mesh.Vertex'>: the vertex
+Return values: 
+    - a list containing the coordinates of the vertex
+'''
 def vertex_coordinates(vertex):
-    
+        
     return [vertex.point().x(), vertex.point().y(), vertex.point().z() ]
 
 
@@ -289,9 +295,9 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
                     found = True
                     break
 
-    print(f'vertices:')
-    for v in vertex_list:
-        print(f'\t{vertex_coordinates(v)}')
+    # print(f'vertices:')
+    # for v in vertex_list:
+    #     print(f'\t{vertex_coordinates(v)}')
 
                    
 
