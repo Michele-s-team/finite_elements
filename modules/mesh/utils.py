@@ -251,8 +251,8 @@ def boundary_points(mesh, filename=None):
 
     degrees_of_freedom = vertex_to_degree_of_freedom_map[boundary_vertices]
 
-    x = Q_dummy.tabulate_dof_coordinates()
-    coordinates = x[degrees_of_freedom]
+    tab_degrees_of_freedom = Q_dummy.tabulate_dof_coordinates()
+    coordinates = tab_degrees_of_freedom[degrees_of_freedom]
 
     if filename != None:
         
