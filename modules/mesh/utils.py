@@ -224,6 +224,87 @@ class BoundaryMarker(SubDomain):
         return on_boundary
 
 
+def vertex_coordinates(vertex):
+    
+    return [vertex.point().x(), vertex.point().y(), vertex.point().z() ]
+
+
+
+def connected_boundary_points(mesh, mesh_path):
+    
+    mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
+
+    # build a list of facets which lie on the boundary of the mesh
+    exterior_facets = []
+    for facet in facets(mesh):        
+        if facet.exterior(): 
+            exterior_facets.append(facet)
+            
+    print(f'\n\texterior facets = {exterior_facets}')
+      
+    #initialize exterior vertices   
+    exterior_vertices=[]
+    
+    # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
+    exterior_vertices.append(next(vertices(exterior_facets[0])))
+    del exterior_facets[0]
+    
+    print(f'\n\texterior_vertices = {[vertex_coordinates(v) for v in exterior_vertices]}')
+    
+    # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
+    while len(exterior_facets) > 0:
+
+        # append the next vertex: loop through facets
+        found = False
+        for i in range(len(exterior_facets)):   
+            
+            if found:
+                break
+                          
+            # loop through vertices in the facet under consideration
+            for v in vertices(exterior_facets[i]): 
+                
+                # if the vertex is equal to the last vertex in exterior_vertices, append the *other* vertex in the facet to exterior_vertices and stop the loops and delete the facet under consideration from exterior_facets so it will not be reconsidered at next iterations
+                if v.index() == exterior_vertices[-1].index():
+                    # print(f'Added new vertex from facet = {exterior_facets[i]}')
+                    
+                    # Find the other vertex (the one that is not v)
+                    # Get all vertices of this facet as a list
+                    facet_vertices = list(vertices(exterior_facets[i]))
+                    other_vertex = [vertex for vertex in facet_vertices if vertex.index() != v.index()][0]
+
+                    # append other_vertex to exterior_vertices
+                    exterior_vertices.append(other_vertex)
+                    del exterior_facets[i]
+                    
+                    found = True
+                    break
+
+    print(f'exterior_verties:')
+    for v in exterior_vertices:
+        print(f'\t{vertex_coordinates(v)}')
+
+                    
+        
+    # # Get the point object
+    # point = [exterior_vertices[0].point().x(), exterior_vertices[0].point().y(), exterior_vertices[0].point().z() ]
+    # print(f'coordinates:{point}')
+    
+    
+    # 
+
+    # if filename != None:
+        
+    #     csvfile = open(filename, "w" )
+
+    #     print(f"\":0\",\":1\",\"2\"", file=csvfile)
+
+    #     for p in coordinates:
+    #         padded_p = io.pad(p, 3)
+    #         print( f"{padded_p[0]},{padded_p[1]},{padded_p[2]}", file=csvfile)
+            
+    #     csvfile.close()
+
 '''
 return the coordinates of the boundary points of a mesh
 Input values: 
@@ -232,7 +313,7 @@ Input values:
     * Optional: 
         - 'filename': path, name and extension of the csv file where the coordinates will be stored. If 'filename' is None,  coordinates will not be stored on file. 
 '''
-def boundary_points(mesh, filename=None):
+def boundary_points(mesh):
     # create a dummy function space of degree 1 which will be used only to extract the boundary points
     Q_dummy = FunctionSpace(mesh, 'CG', 1)
 
@@ -253,44 +334,7 @@ def boundary_points(mesh, filename=None):
 
     tab_degrees_of_freedom = Q_dummy.tabulate_dof_coordinates()
     coordinates = tab_degrees_of_freedom[degrees_of_freedom]
-    
-    # 
-    exterior_facets = []
-    for facet in facets(mesh):        
-        if facet.exterior(): 
-            exterior_facets.append(facet)
-            
-    print(f'\n\texterior facets = {exterior_facets}')
-                
-    exterior_vertices = [next(vertices(exterior_facets[0]))]
-    
-    # Get the point object
-    point = [exterior_vertices[0].point().x(), exterior_vertices[0].point().y(), exterior_vertices[0].point().z() ]
-    print(f'coordinates:{point}')
-    
-    '''
-    for facet in exterior_facets:
-        print(f'I am on facet {facet}')
-        
-        if facet.exterior():  # Check if facet is on the boundary
-            
-            vertices_of_facet = [v.index() for v in vertices(facet)]
-            print(f'\t vertices of facet are : {vertices_of_facet}')
-    '''
-    
-    # 
-
-    if filename != None:
-        
-        csvfile = open(filename, "w" )
-
-        print(f"\":0\",\":1\",\"2\"", file=csvfile)
-
-        for p in coordinates:
-            padded_p = io.pad(p, 3)
-            print( f"{padded_p[0]},{padded_p[1]},{padded_p[2]}", file=csvfile)
-            
-        csvfile.close()
+   
 
     return coordinates
 
@@ -1371,7 +1415,7 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
     
-    boundary_points(mesh, output_directory_slash + 'boundary_points.csv')
+    connected_boundary_points(mesh, output_directory_slash)
     
     if mesh.topology().dim() > 1:
         # the mesh has dimension > 1 -> print the mesh triangles to csv
