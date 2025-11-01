@@ -174,4 +174,18 @@ msh.full_write(mesh_file, ['triangle', 'line'], mesh_metadata, output_directory,
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
 
+
+# print the boundary points of the boundaries given by the ellipse and circle
+msh.sorted_boundary_points(
+    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+    output_directory, 
+    rpam.parameters['ellipse_loop_id'],
+    os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['ellipse_loop_id']) + '.csv'))
+
+msh.sorted_boundary_points(
+    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+    output_directory, 
+    rpam.parameters['circle_loop_id'],
+    os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'))
+
 model.__exit__()

@@ -230,7 +230,7 @@ def vertex_coordinates(vertex):
 
 
 
-def connected_boundary_points(mesh, mesh_path, id):
+def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
     
     mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
 
@@ -240,7 +240,7 @@ def connected_boundary_points(mesh, mesh_path, id):
         if mf[facet] == id:
             facet_list.append(facet)
                 
-    print(f'\n\t facet list = {facet_list}')
+    # print(f'\n\t facet list = {facet_list}')
       
     #initialize list of vertices   
     vertex_list = []
@@ -249,7 +249,6 @@ def connected_boundary_points(mesh, mesh_path, id):
     vertex_list.append(next(vertices(facet_list[0])))
     del facet_list[0]
     
-    print(f'\n\texterior_vertices = {[vertex_coordinates(v) for v in vertex_list]}')
     
     # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
     while len(facet_list) > 0:
@@ -280,30 +279,23 @@ def connected_boundary_points(mesh, mesh_path, id):
                     found = True
                     break
 
-    print(f'exterior_verties:')
+    print(f'vertices:')
     for v in vertex_list:
         print(f'\t{vertex_coordinates(v)}')
 
-                    
+                   
+
+    if outfile != None:
         
-    # # Get the point object
-    # point = [exterior_vertices[0].point().x(), exterior_vertices[0].point().y(), exterior_vertices[0].point().z() ]
-    # print(f'coordinates:{point}')
-    
-    
-    # 
+        csvfile = open(outfile, "w" )
 
-    # if filename != None:
-        
-    #     csvfile = open(filename, "w" )
+        print(f"\":0\",\":1\",\"2\"", file=csvfile)
 
-    #     print(f"\":0\",\":1\",\"2\"", file=csvfile)
-
-    #     for p in coordinates:
-    #         padded_p = io.pad(p, 3)
-    #         print( f"{padded_p[0]},{padded_p[1]},{padded_p[2]}", file=csvfile)
+        for v in vertex_list:
+            coordinates = vertex_coordinates(v)
+            print( f"{coordinates[0]},{coordinates[1]},{coordinates[2]}", file=csvfile)
             
-    #     csvfile.close()
+        csvfile.close()
 
 '''
 return the coordinates of the boundary points of a mesh
