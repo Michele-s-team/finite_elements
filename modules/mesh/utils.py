@@ -252,7 +252,7 @@ def boundary_points(mesh, filename=None):
     degrees_of_freedom = vertex_to_degree_of_freedom_map[boundary_vertices]
 
     x = Q_dummy.tabulate_dof_coordinates()
-    x = x[degrees_of_freedom]
+    coordinates = x[degrees_of_freedom]
 
     if filename != None:
         
@@ -260,13 +260,13 @@ def boundary_points(mesh, filename=None):
 
         print(f"\":0\",\":1\",\"2\"", file=csvfile)
 
-        for p in x:
+        for p in coordinates:
             padded_p = io.pad(p, 3)
             print( f"{padded_p[0]},{padded_p[1]},{padded_p[2]}", file=csvfile)
             
         csvfile.close()
 
-    return x
+    return coordinates
 
 
 # returns the bulk points of the mesh `mesh`
