@@ -229,7 +229,17 @@ def vertex_coordinates(vertex):
     return [vertex.point().x(), vertex.point().y(), vertex.point().z() ]
 
 
+'''
+coumpute the points on a tagged boundary of a 2d mesh and returns them in an ordered way (in the order in which they are connected by edges: vertex[0], then the vertex to which vertex[0] is connected, ..)
+Input values: 
+    * Mandatory: 
+        - 'mesh': the mesh
+        - 'mesh_path': the path where 'triangle_mesh.xdmf' and 'line_mesh.xdmf' are located
+        - 'id': the tag of the boundary whose vertices will be computed
+    * Optional: 
+        - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
 
+'''
 def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
     
     mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
