@@ -230,58 +230,58 @@ def vertex_coordinates(vertex):
 
 
 
-def connected_boundary_points(mesh, mesh_path):
+def connected_boundary_points(mesh, mesh_path, id):
     
     mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
 
     # build a list of facets which lie on the boundary of the mesh
-    exterior_facets = []
-    for facet in facets(mesh):        
-        if facet.exterior(): 
-            exterior_facets.append(facet)
-            
-    print(f'\n\texterior facets = {exterior_facets}')
+    facet_list = []
+    for facet in facets(mesh):    
+        if mf[facet] == id:
+            facet_list.append(facet)
+                
+    print(f'\n\t facet list = {facet_list}')
       
-    #initialize exterior vertices   
-    exterior_vertices=[]
+    #initialize list of vertices   
+    vertex_list = []
     
     # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
-    exterior_vertices.append(next(vertices(exterior_facets[0])))
-    del exterior_facets[0]
+    vertex_list.append(next(vertices(facet_list[0])))
+    del facet_list[0]
     
-    print(f'\n\texterior_vertices = {[vertex_coordinates(v) for v in exterior_vertices]}')
+    print(f'\n\texterior_vertices = {[vertex_coordinates(v) for v in vertex_list]}')
     
     # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
-    while len(exterior_facets) > 0:
+    while len(facet_list) > 0:
 
         # append the next vertex: loop through facets
         found = False
-        for i in range(len(exterior_facets)):   
+        for i in range(len(facet_list)):   
             
             if found:
                 break
                           
             # loop through vertices in the facet under consideration
-            for v in vertices(exterior_facets[i]): 
+            for v in vertices(facet_list[i]): 
                 
                 # if the vertex is equal to the last vertex in exterior_vertices, append the *other* vertex in the facet to exterior_vertices and stop the loops and delete the facet under consideration from exterior_facets so it will not be reconsidered at next iterations
-                if v.index() == exterior_vertices[-1].index():
+                if v.index() == vertex_list[-1].index():
                     # print(f'Added new vertex from facet = {exterior_facets[i]}')
                     
                     # Find the other vertex (the one that is not v)
                     # Get all vertices of this facet as a list
-                    facet_vertices = list(vertices(exterior_facets[i]))
+                    facet_vertices = list(vertices(facet_list[i]))
                     other_vertex = [vertex for vertex in facet_vertices if vertex.index() != v.index()][0]
 
                     # append other_vertex to exterior_vertices
-                    exterior_vertices.append(other_vertex)
-                    del exterior_facets[i]
+                    vertex_list.append(other_vertex)
+                    del facet_list[i]
                     
                     found = True
                     break
 
     print(f'exterior_verties:')
-    for v in exterior_vertices:
+    for v in vertex_list:
         print(f'\t{vertex_coordinates(v)}')
 
                     
@@ -1414,9 +1414,7 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
-    
-    connected_boundary_points(mesh, output_directory_slash)
-    
+        
     if mesh.topology().dim() > 1:
         # the mesh has dimension > 1 -> print the mesh triangles to csv
         print_mesh_triangles_to_csv(mesh_file, output_directory_slash + "triangles.csv")
