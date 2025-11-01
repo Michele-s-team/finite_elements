@@ -224,8 +224,15 @@ class BoundaryMarker(SubDomain):
         return on_boundary
 
 
-# returns the boundary points of the mesh `mesh`
-def boundary_points(mesh):
+'''
+return the coordinates of the boundary points of a mesh
+Input values: 
+    * Mandatory: 
+        - 'mesh': the mesh of which the boundary points
+    * Optional: 
+        - 'filename': path, name and extension of the csv file where the coordinates will be stored. If 'filename' is None,  coordinates will not be stored on file. 
+'''
+def boundary_points(mesh, filename=None):
     # create a dummy function space of degree 1 which will be used only to extract the boundary points
     Q_dummy = FunctionSpace(mesh, 'CG', 1)
 
@@ -247,14 +254,17 @@ def boundary_points(mesh):
     x = Q_dummy.tabulate_dof_coordinates()
     x = x[degrees_of_freedom]
 
-    # csvfile = open( "test_boundary_points.csv", "w" )
-    # for p in x:
-    #     print( f"{p[0]},{p[1]}", file=csvfile )
-    # csvfile.close()
+    if filename != None:
+        
+        csvfile = open(filename, "w" )
 
-    # print("Degrees of freedom on the boundary:")
-    # for degree_of_freedom in degrees_of_freedom:
-    # print(f"\t{x[degree_of_freedom]}, {geo.np.linalg.norm( x[degree_of_freedom])}")
+        print(f"\":0\",\":1\",\"2\"", file=csvfile)
+
+        for p in x:
+            padded_p = io.pad(p, 3)
+            print( f"{padded_p[0]},{padded_p[1]},{padded_p[2]}", file=csvfile)
+            
+        csvfile.close()
 
     return x
 
@@ -1334,6 +1344,8 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
+    
+    boundary_points(mesh, output_directory_slash + 'boundary_points.csv')
     
     if mesh.topology().dim() > 1:
         # the mesh has dimension > 1 -> print the mesh triangles to csv
