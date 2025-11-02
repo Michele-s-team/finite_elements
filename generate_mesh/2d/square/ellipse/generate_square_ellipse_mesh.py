@@ -7,9 +7,10 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import meshio
 import gmsh
+import meshio
 import numpy as np
+import os
 import pygmsh
 import sys
 
@@ -117,6 +118,14 @@ mesh_from_file = meshio.read(mesh_file)
 # io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
 
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+
+# print the boundary points of the boundaries given by the ellipse, where the ellipse id is 6
+ellipse_id = 6
+msh.sorted_boundary_points(
+    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+    output_directory, 
+    ellipse_id,
+    os.path.join(output_directory, 'boundary_points_id_' + str(ellipse_id) + '.csv'))
 
 
 gmsh.clear()

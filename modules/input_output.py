@@ -160,6 +160,29 @@ def print_mesh_vertices_to_csv(mesh, filename):
     csvfile.close()
 
 
+def print_mesh_triangles_to_csv(mesh, filename):
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    csvfile = open(filename, "w")
+    # Header with coordinate labels for 3 vertices
+    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\",\"p_3:0\",\"p_3:1\",\"p_3:2\"", file=csvfile)
+
+    # Iterate through all cells (triangles) in the mesh
+    for cell in cells(mesh):
+        # Get the coordinates of the three vertices of this triangle
+        vertices = cell.get_vertex_coordinates()
+        
+        # pad each vertex with z=0
+        p1 = pad(vertices[0:2], 3)
+        p2 = pad(vertices[2:4], 3)
+        p3 = pad(vertices[4:6], 3)
+        
+        print(f"{p1[0]},{p1[1]},{p1[2]},{p2[0]},{p2[1]},{p2[2]},{p3[0]},{p3[1]},{p3[2]}", file=csvfile)
+
+    csvfile.close()
+
+
 '''
 print the coordinates of the extermal points of the lines of a mesh to csv file
 Input values: 

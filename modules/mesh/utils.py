@@ -223,8 +223,104 @@ class BoundaryMarker(SubDomain):
     def inside(self, x, on_boundary):
         return on_boundary
 
+'''
+print the coordinates of a vertex
+Input values: 
+    - 'vertex' <class 'dolfin.cpp.mesh.Vertex'>: the vertex
+Return values: 
+    - a list containing the coordinates of the vertex
+'''
+def vertex_coordinates(vertex):
+        
+    return [vertex.point().x(), vertex.point().y(), vertex.point().z() ]
 
-# returns the boundary points of the mesh `mesh`
+
+'''
+coumpute the points on a tagged boundary of a 2d mesh and returns them in an ordered way (in the order in which they are connected by edges: vertex[0], then the vertex to which vertex[0] is connected, ..)
+Input values: 
+    * Mandatory: 
+        - 'mesh': the mesh
+        - 'mesh_path': the path where 'triangle_mesh.xdmf' and 'line_mesh.xdmf' are located
+        - 'id': the tag of the boundary whose vertices will be computed
+    * Optional: 
+        - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
+
+'''
+def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
+    
+    mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
+
+    # build a list of facets which lie on the boundary of the mesh
+    facet_list = []
+    for facet in facets(mesh):    
+        if mf[facet] == id:
+            facet_list.append(facet)
+                
+    # print(f'\n\t facet list = {facet_list}')
+      
+    #initialize list of vertices   
+    vertex_list = []
+    
+    # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
+    vertex_list.append(next(vertices(facet_list[0])))
+    del facet_list[0]
+    
+    
+    # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
+    while len(facet_list) > 0:
+
+        # append the next vertex: loop through facets
+        found = False
+        for i in range(len(facet_list)):   
+            
+            if found:
+                break
+                          
+            # loop through vertices in the facet under consideration
+            for v in vertices(facet_list[i]): 
+                
+                # if the vertex is equal to the last vertex in exterior_vertices, append the *other* vertex in the facet to exterior_vertices and stop the loops and delete the facet under consideration from exterior_facets so it will not be reconsidered at next iterations
+                if v.index() == vertex_list[-1].index():
+                    # print(f'Added new vertex from facet = {exterior_facets[i]}')
+                    
+                    # Find the other vertex (the one that is not v)
+                    # Get all vertices of this facet as a list
+                    facet_vertices = list(vertices(facet_list[i]))
+                    other_vertex = [vertex for vertex in facet_vertices if vertex.index() != v.index()][0]
+
+                    # append other_vertex to exterior_vertices
+                    vertex_list.append(other_vertex)
+                    del facet_list[i]
+                    
+                    found = True
+                    break
+
+    # print(f'vertices:')
+    # for v in vertex_list:
+    #     print(f'\t{vertex_coordinates(v)}')
+
+                   
+
+    if outfile != None:
+        
+        csvfile = open(outfile, "w" )
+
+        print(f"\":0\",\":1\",\"2\"", file=csvfile)
+
+        for v in vertex_list:
+            coordinates = vertex_coordinates(v)
+            print( f"{coordinates[0]},{coordinates[1]},{coordinates[2]}", file=csvfile)
+            
+        csvfile.close()
+
+'''
+return the coordinates of the boundary points of a mesh
+Input values: 
+    * Mandatory: 
+        - 'mesh': the mesh of which the boundary points
+    * Optional: 
+        - 'filename': path, name and extension of the csv file where the coordinates will be stored. If 'filename' is None,  coordinates will not be stored on file. 
+'''
 def boundary_points(mesh):
     # create a dummy function space of degree 1 which will be used only to extract the boundary points
     Q_dummy = FunctionSpace(mesh, 'CG', 1)
@@ -244,19 +340,11 @@ def boundary_points(mesh):
 
     degrees_of_freedom = vertex_to_degree_of_freedom_map[boundary_vertices]
 
-    x = Q_dummy.tabulate_dof_coordinates()
-    x = x[degrees_of_freedom]
+    tab_degrees_of_freedom = Q_dummy.tabulate_dof_coordinates()
+    coordinates = tab_degrees_of_freedom[degrees_of_freedom]
+   
 
-    # csvfile = open( "test_boundary_points.csv", "w" )
-    # for p in x:
-    #     print( f"{p[0]},{p[1]}", file=csvfile )
-    # csvfile.close()
-
-    # print("Degrees of freedom on the boundary:")
-    # for degree_of_freedom in degrees_of_freedom:
-    # print(f"\t{x[degree_of_freedom]}, {geo.np.linalg.norm( x[degree_of_freedom])}")
-
-    return x
+    return coordinates
 
 
 # returns the bulk points of the mesh `mesh`
@@ -475,6 +563,54 @@ def print_mesh_lines_to_csv(infile, outfile):
         print(f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile)
 
     csvfile.close()
+
+
+'''
+print the mesh triangles to csv file. The mesh triangles will be stored in a csvfile in columns, in the format "p_1:0,p_1:1,p_1:2,p_2:0,p_2:1,p_2:2", where p_1, p_2 and p_3 are the vertices of the triangle, and p_1:0 is the x coordinate of p_1, p_1:1 the y coordinate of p_1, ...
+
+* Input values: 
+    - 'infile': the .msh file from which the mesh will be read
+    - 'outfile': the path, name and extension of the csv file where the triangles will be stored 
+'''
+def print_mesh_triangles_to_csv(infile, outfile):
+    # open the .msh file
+    gmsh.open(infile)
+
+    # get the list of components with dimension 2 from the mesh (triangles)
+    triangles = gmsh.model.mesh.getElements(dim=2)
+
+    # construct a map which, given the tag of a node, gives its coordinates
+    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+
+    # Store unique edges from the triangle elements
+    # initialize a 'list' of unique elements, this sets the list to empty
+    triplets = set()
+
+    # loop over all triangle nodes
+    triangle_nodes = triangles[2][0] if len(triangles[2]) > 0 else []
+    for i in range(0, len(triangle_nodes), 3):
+        # store into triplet = [ID_1, ID_2, ID_3] the IDs of the vertices which form the triangle
+        triplet = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1], triangle_nodes[i+2]]))
+        
+        # this pushes back the triplet to triplets
+        triplets.update([triplet])
+        
+    #print(f'triplets = {triplets}')
+
+    
+    # loop through the triplets added before and write the vertices of each triplet to file
+    csvfile = open(outfile, "w")
+    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\",\"p_3:0\",\"p_3:1\",\"p_3:2\"", file=csvfile)
+    for triplet in triplets:
+        # apply node_map to obtain the coordinates of the  vertices in triplet from their IDs
+        p_1 = node_map[triplet[0]]
+        p_2 = node_map[triplet[1]]
+        p_3 = node_map[triplet[2]]
+        print(f"{p_1[0]}, {p_1[1]}, {p_1[2]}, {p_2[0]}, {p_2[1]}, {p_2[2]}, {p_3[0]}, {p_3[1]}, {p_3[2]}", file=csvfile)
+
+    csvfile.close()
+    
 
 
 '''
@@ -1286,6 +1422,10 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
+        
+    if mesh.topology().dim() > 1:
+        # the mesh has dimension > 1 -> print the mesh triangles to csv
+        print_mesh_triangles_to_csv(mesh_file, output_directory_slash + "triangles.csv")
 
     # print mesh metadata
     io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
@@ -1534,12 +1674,19 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
     # create entity map for boundary mesh for lines
     mf_boundary_sub_mesh = transfer_facet_tags_to_bounday_mesh(sub_mesh_boundary, mf_sub_mesh)
 
-    # write the triangles for sub_mesh to file
+    # write the triangles for sub_mesh to xdmf file
     write_mesh(sub_mesh, submesh_path_slash + "triangle_mesh.xdmf", sf_sub_mesh)
-    # write the lines of the boundary mesh to file
+    # write the lines of the boundary mesh to xdmf file
     write_mesh(sub_mesh_boundary, submesh_path_slash + "line_mesh.xdmf", mf_boundary_sub_mesh)
+    
     # print  submesh vertices to csv file
     io.print_mesh_vertices_to_csv(sub_mesh, submesh_path_slash + "vertices.csv")
+    
+    if sub_mesh.topology().dim() == 2:
+        #  sub_mesh is two-dimensional -> print its coordinates 
+        # print  submesh triangles to csv file
+        io.print_mesh_triangles_to_csv(sub_mesh, submesh_path_slash + "triangles.csv")
+    
     # print sub mesh metadata
     # io.write_parameters_to_csv_file(submesh_path_slash + "mesh_metadata.csv", submesh_parameters)
 
