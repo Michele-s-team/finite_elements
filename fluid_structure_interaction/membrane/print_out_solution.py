@@ -46,7 +46,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_nu_n_12.write( psi_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_mu_n_12.write( mu_n_12_dummy, t - dt / 2.0 )
 
-    io.full_print(v_bar_dummy, 'v_bar_' + str(step+1), \
+    io.full_print(v_bar_dummy, 'v_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[1], 'vector')
     io.full_print(w_bar_dummy, 'w_bar_' + str(step + 1), \
@@ -81,10 +81,10 @@ def print_solution(t, step, dt):
 
 
     # 2) mesh problem
-    io.full_print(fsp.u_n, 'u_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+    io.full_print(fsp.u_n, 'u_n_' + str(step + 1), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
-    io.full_print(fsp.u_dot_n, 'u_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
+    io.full_print(fsp.u_dot_n, 'u_dot_n_' + str(step + 1), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
                   lmsh.sub_meshes[0], 'vector')
 
@@ -94,24 +94,24 @@ def print_solution(t, step, dt):
 
     # Write the deformed mesh to file
     deformed_mesh = msh.deform_mesh(lmsh.sub_meshes[0], fsp.u_n)
-    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
+    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step + 1) + '.xdmf') as xdmf:
         xdmf.write(deformed_mesh)
-    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
-    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
+    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step + 1) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step + 1) + '.csv')
 
 
 
     # 3) fluid problem
-    io.full_print(fsp.v_fl_bar, 'v_fl_bar_' + str(step), \
+    io.full_print(fsp.v_fl_bar, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0], 'vector')
-    io.full_print(fsp.v_fl_n, 'v_fl_n_' + str(step), \
+    io.full_print(fsp.v_fl_n, 'v_fl_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0], 'vector')
-    io.full_print(fsp.sigma_fl_n_12, 'sigma_fl_n_12_' + str(step), \
+    io.full_print(fsp.sigma_fl_n_12, 'sigma_fl_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0], 'scalar')
-    io.full_print(fsp.phi_fl, 'phi_fl_' + str(step), \
+    io.full_print(fsp.phi_fl, 'phi_fl_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0], 'scalar')
 
@@ -121,13 +121,13 @@ def print_solution(t, step, dt):
     fi.xdmffile_sigma_fl.write(fsp.sigma_fl_n_12, t - dt / 2.0)
     fi.xdmffile_phi_fl.write(fsp.phi_fl, t)
 
-    io.full_print_deformed(fsp.v_fl_bar, fsp.u_n, 'v_fl_bar_' + str(step), \
+    io.full_print_deformed(fsp.v_fl_bar, fsp.u_n, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0], 'vector')
-    io.full_print_deformed(fsp.v_fl_n, fsp.u_n, 'v_fl_n_' + str(step), \
+    io.full_print_deformed(fsp.v_fl_n, fsp.u_n, 'v_fl_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0], 'vector')
-    io.full_print_deformed(fsp.sigma_fl_n_12, fsp.u_n, 'sigma_fl_n_12_' + str(step), \
+    io.full_print_deformed(fsp.sigma_fl_n_12, fsp.u_n, 'sigma_fl_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0], 'scalar')
-    io.full_print_deformed(fsp.phi_fl, fsp.u_n, 'phi_fl_' + str(step), \
+    io.full_print_deformed(fsp.phi_fl, fsp.u_n, 'phi_fl_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0], 'scalar')
 
 
