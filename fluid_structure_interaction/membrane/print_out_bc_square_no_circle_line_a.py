@@ -19,7 +19,7 @@ rmsh = importlib.import_module(swi.rmsh)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 
-i, j, k, l = ufl.indices(4)
+i, j, k, l, alpha = ufl.indices(5)
 
 # create the path for the csv file if it does not exist
 filename_bcs = rarg.args.output_directory + '/bcs.csv'
@@ -31,7 +31,8 @@ fieldnames_fl = [ \
     '<<|v_bar_fl|^2>>_{ds_l}',
     '<<|v_bar_fl_0|^2>>_{ds_r}',
     '<<|v_bar_fl - u_dot_n|^2>>_{ds_t}',
-    '<<|phi_fl|^2>>_{ds_b}'
+    '<<|phi_fl|^2>>_{ds_b}',
+    '<<G^{n-1}_{alpha 1 partial V_{FL}^2 / partial y^alpha}>>_{ds_r}'
     ]
 writer_fl = csv.DictWriter(csvfile, fieldnames=fieldnames_fl)
 writer_fl.writeheader()
@@ -50,7 +51,9 @@ def print_bcs_fl():
         fieldnames_fl[3]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.u_dot_n), rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",
         fieldnames_fl[4]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.phi_fl), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}"
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.phi_fl), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
+        fieldnames_fl[5]: \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[alpha, 0] * (((fsp.v_fl_n_1[1] + fsp.v_fl_bar[1]) / 2.0).dx(alpha)), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
         }])
 
     csvfile.flush()
