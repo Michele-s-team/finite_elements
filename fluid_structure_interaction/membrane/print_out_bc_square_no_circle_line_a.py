@@ -26,7 +26,7 @@ filename_bcs = rarg.args.output_directory + '/bcs.csv'
 os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
-fieldnames_fl = [ \
+fieldnames = [ \
     '<<|v_bar_fl - h|^2>>_{ds_b}',
     '<<|v_bar_fl|^2>>_{ds_l}',
     '<<|v_bar_fl_0|^2>>_{ds_r}',
@@ -37,29 +37,29 @@ fieldnames_fl = [ \
     '<<(G^{n-1}_{beta 1} \\partial phi_{FL} / \\partial y_beta )^2>>_{ds_r}',
     
     ]
-writer_fl = csv.DictWriter(csvfile, fieldnames=fieldnames_fl)
-writer_fl.writeheader()
+writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+writer.writeheader()
 
 
 # this function prints out the residuals of BCs for the fluid problem
 def print_bcs_fl():
     
-    writer_fl.writerows([{
-        fieldnames_fl[0]: \
+    writer.writerows([{
+        fieldnames[0]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.v_fl_bar_b), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
-        fieldnames_fl[1]: \
+        fieldnames[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar), rmsh.ds_sub_mesh[0]['ds_l']):.{io.number_of_decimals}e}",
-        fieldnames_fl[2]: \
+        fieldnames[2]: \
             f"{msh.abs_wrt_measure(abs(fsp.v_fl_bar[0]), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
-        fieldnames_fl[3]: \
+        fieldnames[3]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.u_dot_n), rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",
-        fieldnames_fl[4]: \
+        fieldnames[4]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.phi_fl), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
-        fieldnames_fl[5]: \
+        fieldnames[5]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[alpha, 0] * (((fsp.v_fl_n_1[1] + fsp.v_fl_bar[1]) / 2.0).dx(alpha)), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
-        fieldnames_fl[6]: \
+        fieldnames[6]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[gamma, alpha] * (bgeo.sub_mesh_facet_normal[0])[gamma] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)), rmsh.ds_sub_mesh[0]['ds_l'] + rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",        
-        fieldnames_fl[7]: \
+        fieldnames[7]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[beta, 0] * (fsp.phi_fl.dx(beta)) , rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}"        
             }])
 
