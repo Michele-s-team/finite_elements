@@ -27,6 +27,13 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
+    # membrane problem
+    
+    # mesh problem
+    '<<|u^n|^2>>_{ds_lb}',
+    
+    
+    # fluid problem
     '<<|v_bar_fl - h|^2>>_{ds_b}',
     '<<|v_bar_fl|^2>>_{ds_l}',
     '<<|v_bar_fl_0|^2>>_{ds_r}',
@@ -45,21 +52,28 @@ writer.writeheader()
 def print_bcs_fl():
     
     writer.writerows([{
+        # membrane problem
+        
+        # mesh problem
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.v_fl_bar_b), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_sub_mesh[0]['ds_l'] + rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
+            
+        # fluid problem
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar), rmsh.ds_sub_mesh[0]['ds_l']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.v_fl_bar_b), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(abs(fsp.v_fl_bar[0]), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar), rmsh.ds_sub_mesh[0]['ds_l']):.{io.number_of_decimals}e}",
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.u_dot_n), rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(abs(fsp.v_fl_bar[0]), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
         fieldnames[4]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.phi_fl), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.u_dot_n), rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",
         fieldnames[5]: \
-            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[alpha, 0] * (((fsp.v_fl_n_1[1] + fsp.v_fl_bar[1]) / 2.0).dx(alpha)), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.phi_fl), rmsh.ds_sub_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
         fieldnames[6]: \
-            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[gamma, alpha] * (bgeo.sub_mesh_facet_normal[0])[gamma] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)), rmsh.ds_sub_mesh[0]['ds_l'] + rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",        
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[alpha, 0] * (((fsp.v_fl_n_1[1] + fsp.v_fl_bar[1]) / 2.0).dx(alpha)), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
         fieldnames[7]: \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[gamma, alpha] * (bgeo.sub_mesh_facet_normal[0])[gamma] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)), rmsh.ds_sub_mesh[0]['ds_l'] + rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",        
+        fieldnames[8]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[beta, 0] * (fsp.phi_fl.dx(beta)) , rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}"        
             }])
 
