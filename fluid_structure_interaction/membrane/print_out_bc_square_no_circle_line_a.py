@@ -32,8 +32,10 @@ fieldnames_fl = [ \
     '<<|v_bar_fl_0|^2>>_{ds_r}',
     '<<|v_bar_fl - u_dot_n|^2>>_{ds_t}',
     '<<|phi_fl|^2>>_{ds_b}',
-    '<<G^{n-1}_{alpha 1 partial V_{FL}^2 / partial y^\alpha}>>_{ds_r}',
-    '<<nu_gamma G^{n-1}_{gamma alpha} G^{n-1}_{beta alpha} \\partial \\phi_{FL} / \\partial y^\\beta>>_{ds_lt}',
+    '<<(G^{n-1}_{alpha 1 \partial V_{FL}^2 / \partial y^\alpha})^2>>_{ds_r}',
+    '<<(nu_gamma G^{n-1}_{gamma alpha} G^{n-1}_{beta alpha} \\partial \\phi_{FL} / \\partial y^\\beta)^2>>_{ds_lt}',
+    '<<(G^{n-1}_{beta 1} \\partial phi_{FL} / \\partial y_beta )^2>>_{ds_r}',
+    
     ]
 writer_fl = csv.DictWriter(csvfile, fieldnames=fieldnames_fl)
 writer_fl.writeheader()
@@ -56,7 +58,9 @@ def print_bcs_fl():
         fieldnames_fl[5]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[alpha, 0] * (((fsp.v_fl_n_1[1] + fsp.v_fl_bar[1]) / 2.0).dx(alpha)), rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}",
         fieldnames_fl[6]: \
-            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[gamma, alpha] * (bgeo.sub_mesh_facet_normal[0])[gamma] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)), rmsh.ds_sub_mesh[0]['ds_l'] + rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}"        
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[gamma, alpha] * (bgeo.sub_mesh_facet_normal[0])[gamma] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)), rmsh.ds_sub_mesh[0]['ds_l'] + rmsh.ds_sub_mesh[0]['ds_t']):.{io.number_of_decimals}e}",        
+        fieldnames_fl[7]: \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[beta, 0] * (fsp.phi_fl.dx(beta)) , rmsh.ds_sub_mesh[0]['ds_r']):.{io.number_of_decimals}e}"        
             }])
 
     csvfile.flush()
