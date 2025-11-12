@@ -305,7 +305,7 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
         
         csvfile = open(outfile, "w" )
 
-        print(f"\":0\",\":1\",\"2\"", file=csvfile)
+        print(f"\":0\",\":1\",\":2\"", file=csvfile)
 
         for v in vertex_list:
             coordinates = vertex_coordinates(v)
