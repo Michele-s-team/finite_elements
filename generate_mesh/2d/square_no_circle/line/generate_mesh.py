@@ -114,6 +114,15 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
+# print the boundary points of the boundaries given by the top line (sub_mesh 1)
+msh.sorted_boundary_points(
+    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+    output_directory, 
+    rpam.parameters['sub_mesh_1_id'],
+    os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['sub_mesh_1_id']) + '.csv'))
+
+
+
 model.__exit__()
 
 # ========================================================================
