@@ -36,7 +36,7 @@ fieldnames = [ \
     '<<|U^{n-1/2}|^2>>_{ds_{~ l}}',
     '<<(U^{n-1/2, 1})^2>>_{ds_{~ r}}',
     '<<(n^{n-1/2, i} \\Nabla^{n-1/2}_i phi)^2>>_{ds_{~}}',
-
+    '<<(\\Nabla^{n-1/2}_i w_bar)^2>>_{ds_{~ r}}',
     
     # mesh problem
     # u problem
@@ -87,6 +87,8 @@ def print_bcs_fl():
             f"{msh.abs_wrt_measure(fsp.U_n_12[0], rmsh.ds_sub_mesh[1]['ds_r']):.{io.number_of_decimals}e}",
         fieldnames[6]: \
             f"{msh.abs_wrt_measure((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.sub_meshes[1]))[i] * (fsp.phi.dx(i)), rmsh.ds_sub_mesh[1]['ds']):.{io.number_of_decimals}e}",
+        fieldnames[7]: \
+            f"{msh.abs_wrt_measure(fsp.w_bar.dx(0), rmsh.ds_sub_mesh[1]['ds_r']):.{io.number_of_decimals}e}",
             
 
         
