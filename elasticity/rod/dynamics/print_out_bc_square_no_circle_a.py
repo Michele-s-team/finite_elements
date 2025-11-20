@@ -56,10 +56,10 @@ def print_solution(psi, step, t):
     u_n_output, v_n_output = psi.split(deepcopy=True)
 
 
-    io.full_print(u_n_output, 'u_n_' + str(step+1), \
+    io.full_print(u_n_output, 'u_n_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'vector')
-    io.full_print(v_n_output, 'v_n_' + str(step+1), \
+    io.full_print(v_n_output, 'v_n_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'vector')
 
