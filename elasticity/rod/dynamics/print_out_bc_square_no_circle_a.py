@@ -62,6 +62,12 @@ def print_solution(psi, step, t):
     io.full_print(v_n_output, 'v_n_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'vector')
+    
+    '''
+    import function_spaces as fsp
+    io.full_print_deformed(Constant(1), u_n_output, 'det_F_n_' + str(step), \
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.lmsh.mesh, 'scalar')
+    '''    
 
     fi.xdmffile_u.write( u_n_output, t )
     fi.xdmffile_v.write( v_n_output, t )
