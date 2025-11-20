@@ -124,7 +124,7 @@ ellipse_id = 6
 msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
     output_directory, 
-    ellipse_id,
+    [ellipse_id],
     os.path.join(output_directory, 'boundary_points_id_' + str(ellipse_id) + '.csv'))
 
 
