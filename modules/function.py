@@ -7,8 +7,6 @@ import numpy as np
 import math
 import ufl
 
-import mesh.utils as msh
-
 i, j, k, l = ufl.indices(4)
 
 msh = importlib.import_module('mesh.utils')
