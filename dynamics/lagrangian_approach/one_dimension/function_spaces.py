@@ -65,7 +65,7 @@ w_n_output = Function(Q_w_n)
 u_n_12_output = Function(Q_u_n_12)
 nu_n_12_output = Function(Q_nu_n_12)
 psi_n_12_output = Function(Q_psi_n_12)
-mu_n_output = Function(Q_mu_n_12)
+mu_n_12_output = Function(Q_mu_n_12)
 
 #vbar_0, ...., z_n_0 are used to store the initial conditions
 v_bar_0 = Function( Q_v_bar )

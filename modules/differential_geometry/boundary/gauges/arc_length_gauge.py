@@ -15,14 +15,15 @@ def sqrt_deth_lr(psi):
 '''
 vector in the tangent bundle of Omega which normal to \partial Omega and points outside \Omega
 Input values:
-- 'psi': the angle psi_here = psi_{Lagrangian approach}
+    - 'psi': the angle psi_here = psi_{Lagrangian approach}
+    - 'mesh' [optional]: the mesh where to compute Nt_lr (default is the lmsh.mesh)
 Return values: 
-- Nt^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
+    - Nt^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
 '''
-def Nt_lr(psi, nu):
+def Nt_lr(psi, nu, mesh=lmsh.mesh):
 
     # load the coordinate 'x' on the mesh,
-    x = ufl.SpatialCoordinate(lmsh.mesh)
+    x = ufl.SpatialCoordinate(mesh)
     # define the middle point of the coordinate 'x'
     x_middle = (lmsh.parameters['x_l'] + lmsh.parameters['x_r']) / 2.0
 
@@ -40,8 +41,9 @@ def Nt_lr(psi, nu):
 normalized vector in the tangent bundle of Omega which normal to \partial Omega and points outside \Omega
 Input values:
     - 'psi': the angle psi_here = psi_{Lagrangian approach}
+    - 'mesh' [optional]: the mesh where to compute n_lr (default is the lmsh.mesh)
 Return values: 
     - n^i_{'Eq. (A9) for a one-dimensional manifold' in notes deserno2004notes}  on partial Omega
 '''
-def n_lr(psi, nu):
-    return geo.normalize(Nt_lr(psi, nu), psi, nu)
+def n_lr(psi, nu, mesh=lmsh.mesh):
+    return geo.normalize(Nt_lr(psi, nu, mesh), psi, nu)
