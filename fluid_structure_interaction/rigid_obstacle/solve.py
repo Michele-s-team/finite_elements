@@ -22,13 +22,13 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import read_parameters as rpam
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
 import print_out_solution as pr_sol
 
-dt = rpam.T / rpam.num_steps  # time step size
+dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -43,10 +43,10 @@ params = {'nonlinear_solver': 'newton',
           }
 
 # initialize values
-fsp.theta_n = rpam.theta_0
-fsp.omega_n = rpam.omega_0
-fsp.theta_n_1 = rpam.theta_0
-fsp.omega_n_1 = rpam.omega_0
+fsp.theta_n = rpam.parameters["theta_0"]
+fsp.omega_n = rpam.parameters["omega_0"]
+fsp.theta_n_1 = rpam.parameters["theta_0"]
+fsp.omega_n_1 = rpam.parameters["omega_0"]
 
 rmsh = importlib.import_module(swi.rmsh)
 ap_ellipse = importlib.import_module(swi.ap_ellipse)
@@ -69,7 +69,7 @@ print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
-for n in range(rpam.num_steps):
+for n in range(rpam.parameters["num_steps"]):
     # Update current time
     t += dt
     step += 1
@@ -79,7 +79,7 @@ for n in range(rpam.num_steps):
     ap_ellipse = importlib.reload(ap_ellipse)
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
-    fsp.omega_n = fsp.omega_n_1 + dt / rpam.I_ellipse * ap_ellipse.M_ellipse
+    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_ellipse.M_ellipse
     print('... done.', flush=True)
 
     # step 2): update u and u_dot (mesh problem)
@@ -150,9 +150,11 @@ for n in range(rpam.num_steps):
     fsp.v_n_1.assign(fsp.v_n)
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
+    
+    if step % rpam.parameters['print_out_stride'] == 0:
+        # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+        pr_sol.print_solution(t, step, dt)
 
-    pr_sol.print_solution(t, step, dt)
-
-    print("\t%.2f %%" % (100.0 * (t / rpam.T)), flush=True)
+    print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
 print("... done.", flush=True)

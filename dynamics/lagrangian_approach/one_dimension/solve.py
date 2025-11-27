@@ -144,7 +144,10 @@ for step in range(rpam.parameters['N']):
 
     
     prout_bc.print_bcs( fsp.psi )
-    prout_sol.print_solution( fsp.psi, step, t )
+    
+    if step % rpam.parameters['print_out_stride'] == 0:
+        # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+        prout_sol.print_solution(fsp.psi, step, t)
     
 
     fsp.v_n_2.assign(fsp.v_n_1)

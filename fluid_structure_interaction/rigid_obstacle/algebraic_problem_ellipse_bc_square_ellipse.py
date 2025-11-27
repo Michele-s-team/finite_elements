@@ -13,7 +13,7 @@ import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
-import read_parameters as rpam
+import parameters.read.solution as rpam
 import solution_paths as solpath
 import switch_problem as swi
 from calculus import atan_quad
@@ -21,7 +21,7 @@ from calculus import atan_quad
 rmsh = importlib.import_module(swi.rmsh)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 
-dt = rpam.T / rpam.num_steps  # time step size
+dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
 i, j, k, l, m, n = ufl.indices(6)
 
@@ -77,7 +77,7 @@ by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellips
 
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.mu)[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
+    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
 
 
