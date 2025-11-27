@@ -60,7 +60,7 @@ def print_bcs():
         fieldnames[6]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(vp_fluid.v__profile_ellipse - fsp.v_), rmsh.ds_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[7]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.parameters["mu"] * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.parameters['mu'] * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
         fieldnames[8]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[j, i] * bgeo.facet_normal[j] * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l)), rmsh.ds_l_tb_ellipse):.{io.number_of_decimals}e}", \
         fieldnames[9]: \
