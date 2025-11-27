@@ -13,7 +13,7 @@ import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
-import read_parameters as rpam
+import parameters.read.solution as rpam
 import solution_paths as solpath
 import switch_problem as swi
 from calculus import atan_quad

@@ -10,7 +10,7 @@ import calculus as cal
 import elasticity as ela
 import function_spaces as fsp
 import numpy as np
-import read_parameters as rpam
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
