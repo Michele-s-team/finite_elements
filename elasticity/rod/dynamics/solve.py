@@ -91,7 +91,10 @@ for n in range(rpam.parameters['num_steps']):
     fsp.v_n_1.assign(v_n_output)
 
     prout.print_bcs(fsp.psi)
-    prout.print_solution(fsp.psi, step, t)
+    
+    if step % rpam.parameters['print_out_stride'] == 0:
+        # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+        prout.print_solution(fsp.psi, step, t)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 

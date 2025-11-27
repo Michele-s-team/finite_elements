@@ -15,6 +15,9 @@ G = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree)
 U_u_n = U.sub(0).collapse()
 U_v_n = U.sub(1).collapse()
 
+# function space to store the determinant of F(u)
+U_det_F = FunctionSpace(lmsh.mesh, 'P', function_space_degree)
+
 R = FunctionSpace(lmsh.mesh, 'P', function_space_degree)
 
 J_psi = TrialFunction(U)

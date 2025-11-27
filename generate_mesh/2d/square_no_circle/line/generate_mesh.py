@@ -120,7 +120,7 @@ msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True
 msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
     output_directory, 
-    rpam.parameters['sub_mesh_1_id'],
+    [rpam.parameters['sub_mesh_1_id']],
     os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['sub_mesh_1_id']) + '.csv'))
 
 

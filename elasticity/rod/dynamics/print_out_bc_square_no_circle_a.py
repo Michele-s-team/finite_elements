@@ -8,6 +8,7 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import files as fi
+import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -56,12 +57,18 @@ def print_solution(psi, step, t):
     u_n_output, v_n_output = psi.split(deepcopy=True)
 
 
-    io.full_print(u_n_output, 'u_n_' + str(step+1), \
+    io.full_print(u_n_output, 'u_n_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'vector')
-    io.full_print(v_n_output, 'v_n_' + str(step+1), \
+    io.full_print(v_n_output, 'v_n_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'vector')
+    
+    # print the determinant of the gradient of the deformation field
+    io.full_print_deformed(
+        project(ela.detF(u_n_output), fsp.U_det_F), 
+        u_n_output, 'det_F_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.lmsh.mesh, 'scalar')
+     
 
     fi.xdmffile_u.write( u_n_output, t )
     fi.xdmffile_v.write( v_n_output, t )

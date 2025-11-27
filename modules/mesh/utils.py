@@ -241,7 +241,7 @@ Input values:
     * Mandatory: 
         - 'mesh': the mesh
         - 'mesh_path': the path where 'triangle_mesh.xdmf' and 'line_mesh.xdmf' are located
-        - 'id': the tag of the boundary whose vertices will be computed
+        - 'id': a list of tags tag of the boundary whose vertices will be computed
     * Optional: 
         - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
 
@@ -252,8 +252,10 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
 
     # build a list of facets which lie on the boundary of the mesh
     facet_list = []
-    for facet in facets(mesh):    
-        if mf[facet] == id:
+    for facet in facets(mesh):  
+        # run through all facets of the mesh  
+        if mf[facet] in id:
+            # the ID of the facet under consideration is equal to one of the IDs in 'id' -> add it to facet_list
             facet_list.append(facet)
                 
     # print(f'\n\t facet list = {facet_list}')

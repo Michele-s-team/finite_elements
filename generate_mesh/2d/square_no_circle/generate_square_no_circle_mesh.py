@@ -9,6 +9,7 @@ Example:
 
 import meshio
 import gmsh
+import os
 import pygmsh
 import sys
 
@@ -64,6 +65,17 @@ msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 mesh_from_file = meshio.read(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+
+# print the boundary points of the boudary given by the square
+# this is a list that contains the IDs of the lines: left, right, top, bottom
+line_lrtb_id = [2, 3, 4, 5]
+# print the boundary points which belong to edges which are identified by line_lrtb_id
+msh.sorted_boundary_points(
+    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+    output_directory, 
+    line_lrtb_id,
+    os.path.join(output_directory, 'boundary_points_id_' + str(line_lrtb_id) + '.csv'))
+
 
 gmsh.clear()
 geometry.__exit__()
