@@ -31,6 +31,9 @@ Q_el = FunctionSpace(lmsh.sub_meshes[0], element_el)
 Q_u_el = Q_el.sub(0).collapse()
 Q_u_el_dot = Q_el.sub(1).collapse()
 
+# function space to store the determinant of F(u_el)
+Q_det_F_u_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+
 Q_v_el = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
 Q_sigma_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
 Q_rho_el = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
