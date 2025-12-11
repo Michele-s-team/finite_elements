@@ -342,7 +342,16 @@ def average_dS(f):
     else:
         print(f"{col.Fore.RED}{'Error: called compute average_dS with a tensor, I cannot compute average_dS !'}{col.Style.RESET_ALL}")
      
-     
+'''
+return the error norm of the difference between two functions. The two functions will be interpolated on a function space with higher degree than the respective function spaces of the two functions, and then the norm of the difference between these two interpolated functions will  be taken  
+Input values: 
+    - Mandatory: 
+        * 'f' and 'g': the two functions
+        * 'measure': the measure where the error norm will be computed
+    - Optional: 
+        * 'delta_function_space_degree': the increment of the degree of the polynomial space. The max of the degree of the space of f and g, will be incremented by 'delta_function_space_degree', and this will give the degree of 'Q_high', the polynomial space where f and g will be interpolated
+
+'''
 def error_norm(f, g, measure, delta_function_space_degree=3):
     
     mesh = f.function_space().mesh()    
