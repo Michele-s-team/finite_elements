@@ -342,3 +342,22 @@ def average_dS(f):
     else:
         print(f"{col.Fore.RED}{'Error: called compute average_dS with a tensor, I cannot compute average_dS !'}{col.Style.RESET_ALL}")
      
+     
+def error_norm(f, g, measure, delta_function_space_degree=3):
+    
+    mesh = f.function_space().mesh()    
+    
+    degree_f = f.function_space().ufl_element().degree()
+    degree_g = g.function_space().ufl_element().degree()
+        
+    Q_high = FunctionSpace(mesh, 'P', max(degree_f, degree_g) + delta_function_space_degree)
+    error = Function(Q_high)  
+    
+    f_high = interpolate(f, Q_high) 
+    g_high = interpolate(g, Q_high) 
+    
+    # Subtract degrees of freedom for the error field 
+    error.vector()[:] = g_high.vector().get_local() -  f_high.vector().get_local() 
+    error = (error**2)*measure
+    
+    return sqrt(assemble(error))

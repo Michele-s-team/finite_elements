@@ -3,7 +3,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import differential_geometry.boundary.geometry as bgeo
+import function as fu
 import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
@@ -22,6 +22,9 @@ print(f"\t\t<<(u - phi)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_
 
 print("Comparison with exact solution: ")
 print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+print(f"\t\terror_norm(u, u_exact)_Omega = {col.Fore.RED}{fu.error_norm(fsp.u, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
 print(
     f"\t\t<<(hess_u - hess_u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure((fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]) * (fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]), Constant(0), rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
