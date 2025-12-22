@@ -27,9 +27,11 @@ Examples:
 
 
 import colorama as col
+import dolfin
 from fenics import *
 import importlib
-import dolfin
+import time
+
 
 import sys
 
@@ -99,8 +101,18 @@ problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
 solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
 solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
+start_time = time.time()
 solver.solve()
+end_time = time.time()
+
 solver_pp_tau.solve()
 solver_pp_d.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
+
+# import print_out_error
+
+'''
+import print_out_time as prt
+prt.print_time(end_time - start_time)
+'''
