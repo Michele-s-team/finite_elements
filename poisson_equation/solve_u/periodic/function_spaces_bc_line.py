@@ -6,7 +6,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-function_space_degree = 4
+function_space_degree = 1
 
 # This enforces periodic boundary conditions which map the l vertex into the r vertex
 class PeriodicBoundary(SubDomain):
