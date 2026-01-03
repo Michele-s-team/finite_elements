@@ -8,37 +8,23 @@ rmsh = importlib.import_module(swi.rmsh)
 
 function_space_degree = 4
 
-'''
-This enforces periodic boundary conditions which map the right edge into the left edge, and the top edge into the left edge
-'''
-
+# This enforces periodic boundary conditions which map the l vertex into the r vertex
 class PeriodicBoundary(SubDomain):
-    # Identify the "target domain": the origin corner (bottom-left)
+    # Identify the "target domain": the left vertex
     def inside(self, x, on_boundary):
-        return (near(x[0], 0) or near(x[1], 0)) and on_boundary
+        return near(x[0], rmsh.parameters['x_l']) and on_boundary
 
     # Map the other boundaries to the "target domain"
     def map(self, x, y):
-        if near(x[0], rmsh.parameters["L"]) and near(x[1], rmsh.parameters["h"]):
-            # Top-right corner → bottom-left corner
-            y[0] = x[0] - rmsh.parameters["L"]
-            y[1] = x[1] - rmsh.parameters["h"]
-        elif near(x[0], rmsh.parameters["L"]):
-            # Right edge → left edge
-            y[0] = x[0] - rmsh.parameters["L"]
-            y[1] = x[1]
-        elif near(x[1], rmsh.parameters["h"]):
-            # Top edge → bottom edge
-            y[0] = x[0]
-            y[1] = x[1] - rmsh.parameters["h"]
+        if near(x[0], rmsh.parameters['x_r']):
+            # right vertex → left vertex
+            y[0] = rmsh.parameters['x_l']
         else:
             # Required: set unmapped points to identity
             y[0] = x[0]
-            y[1] = x[1]
 
 
 periodic_boundary = PeriodicBoundary()
-
 
 Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
 V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
