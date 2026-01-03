@@ -1,6 +1,5 @@
 '''
-This code solves the Poisson equation Nabla u = f expressed in terms of the function u on a square with no circle inside, and periodic boundary conditions
-between the left and right edge of the square
+This code solves the Poisson equation Nabla u = f expressed in terms of the function u on a square with no circle inside, and periodic boundary conditions between the left and right edge of the square
 
 clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 Examples:
@@ -8,12 +7,10 @@ Examples:
 
 '''
 
-import print_out_solution
 import switch_problem as swi
 import runtime_arguments as rarg
 from fenics import *
 import importlib
-import dolfin
 import sys
 
 # add the path where to find the shared modules
@@ -55,3 +52,5 @@ solver.solve()
 solver_pp.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
+
+import print_out_solution
