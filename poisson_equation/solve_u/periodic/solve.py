@@ -8,6 +8,9 @@ Examples:
 
 '''
 
+import print_out_solution
+import switch_problem as swi
+import runtime_arguments as rarg
 from fenics import *
 import importlib
 import dolfin
@@ -17,15 +20,13 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import function_spaces as fsp
-import runtime_arguments as rarg
-import switch_problem as swi
-
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 
-print(f'Input directory = {rarg.args.input_directory}\nOutput directory = {rarg.args.output_directory}')
+print(
+    f'Input directory = {rarg.args.input_directory}\nOutput directory = {rarg.args.output_directory}')
 
 J = derivative(vp.F, fsp.u, fsp.J_u)
 problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
@@ -54,4 +55,3 @@ solver.solve()
 solver_pp.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
-import print_out_solution

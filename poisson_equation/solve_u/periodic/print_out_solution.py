@@ -1,21 +1,21 @@
+import switch_problem as swi
+import solution_paths as solpath
+import runtime_arguments as rarg
+import mesh.load as lmsh
+import input_output as io
 from fenics import *
 import importlib
 import ufl as ufl
 
-import function_spaces as fsp
-import input_output as io
-import mesh.load as lmsh
-import runtime_arguments as rarg
-import solution_paths as solpath
-import switch_problem as swi
-
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 i, j, k, l = ufl.indices(4)
 
 xdmffile_check = XDMFFile(rarg.args.output_directory + "/check.xdmf")
-xdmffile_check.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
+xdmffile_check.parameters.update(
+    {"functions_share_mesh": True, "rewrite_function_mesh": False})
 
 xdmffile_check.write(project(fsp.hess_u[i, i], fsp.Q), 0)
 xdmffile_check.write(fsp.f, 0)
