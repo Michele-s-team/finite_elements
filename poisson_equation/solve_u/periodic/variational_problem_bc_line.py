@@ -56,16 +56,14 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 fsp.hess_u_exact.interpolate(
     hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-#
-# fsp.u.interpolate(u_0_Expression(element=fsp.Q.ufl_element()))
-#
-
-bcs = []
+# import a Dirichlet boundary condition on the left vertex, the BC on the right vertex is given by periodicity
+bc_u_l = DirichletBC(fsp.Q, fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
+bcs = [bc_u_l]
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    # - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_l\
-    # - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_r
+    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_l\
+    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_r
  
     # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
