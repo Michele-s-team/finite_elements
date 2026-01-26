@@ -1,0 +1,124 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      3321,        114]
+NotebookOptionsPosition[      2626,         93]
+NotebookOutlinePosition[      3019,        109]
+CellTagsIndexPosition[      2976,        106]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"eq", "=", 
+  RowBox[{"{", 
+   RowBox[{"\[Nu]", "==", 
+    RowBox[{
+     RowBox[{"1", "/", "2"}], 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"3", "K"}], "-", 
+        RowBox[{"2", " ", "\[Mu]"}]}], ")"}], "/", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"3", "K"}], "+", "\[Mu]"}], ")"}]}]}]}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.97842475454751*^9, 3.978424779306082*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"0e4ac175-fb62-429e-930a-44bc6dd864cb"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"\[Nu]", "\[Equal]", 
+   FractionBox[
+    RowBox[{
+     RowBox[{"3", " ", "K"}], "-", 
+     RowBox[{"2", " ", "\[Mu]"}]}], 
+    RowBox[{"2", " ", 
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{"3", " ", "K"}], "+", "\[Mu]"}], ")"}]}]]}], "}"}]], "Output",
+ CellChangeTimes->{3.978424779959066*^9},
+ CellLabel->"Out[1]=",ExpressionUUID->"bcdff92a-7d81-4d62-80cb-7eb807cf9c4a"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{"\[Nu]", "==", 
+    RowBox[{
+     RowBox[{"1", "/", "2"}], 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"3", "K"}], "-", 
+        RowBox[{"2", " ", "\[Mu]"}]}], ")"}], "/", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"3", "K"}], "+", "\[Mu]"}], ")"}]}]}]}], ",", "K"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.978424780636752*^9, 3.978424801783556*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"8e3de401-6eb1-47b2-996d-c1c9e434cec7"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", 
+   RowBox[{"K", "\[Rule]", 
+    RowBox[{"-", 
+     FractionBox[
+      RowBox[{"2", " ", "\[Mu]", " ", 
+       RowBox[{"(", 
+        RowBox[{"1", "+", "\[Nu]"}], ")"}]}], 
+      RowBox[{"3", " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"-", "1"}], "+", 
+         RowBox[{"2", " ", "\[Nu]"}]}], ")"}]}]]}]}], "}"}], "}"}]], "Output",\
+
+ CellChangeTimes->{{3.978424791393519*^9, 3.978424802650462*^9}},
+ CellLabel->"Out[2]=",ExpressionUUID->"4b879493-7ace-4585-8e01-baad92a9cd2f"]
+}, Open  ]]
+},
+WindowSize->{1170, 448},
+WindowMargins->{{4, Automatic}, {Automatic, 4}},
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (March 16, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0e670794-6def-445e-99b7-9d4574436285"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 512, 15, 29, "Input",ExpressionUUID->"0e4ac175-fb62-429e-930a-44bc6dd864cb"],
+Cell[1091, 39, 417, 12, 48, "Output",ExpressionUUID->"bcdff92a-7d81-4d62-80cb-7eb807cf9c4a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1545, 56, 524, 16, 29, "Input",ExpressionUUID->"8e3de401-6eb1-47b2-996d-c1c9e434cec7"],
+Cell[2072, 74, 538, 16, 48, "Output",ExpressionUUID->"4b879493-7ace-4585-8e01-baad92a9cd2f"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
