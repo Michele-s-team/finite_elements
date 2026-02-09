@@ -1,12 +1,11 @@
+import switch_problem as swi
+import numpy as np
 from fenics import *
 import importlib
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import function_spaces as fsp
-import numpy as np
-import switch_problem as swi
-
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
@@ -14,7 +13,8 @@ i, j = ufl.indices(2)
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = np.cos(2 * np.pi * x[0] / rmsh.parameters["L"]) * np.cos(2 * np.pi * x[1] / rmsh.parameters["h"])
+        values[0] = np.cos(2 * np.pi * x[0] / rmsh.parameters["L"]) * \
+            np.cos(2 * np.pi * x[1] / rmsh.parameters["h"])
 
     def value_shape(self):
         return (1,)
@@ -22,8 +22,10 @@ class u_exact_expression(UserExpression):
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = - (2 * np.pi / rmsh.parameters["L"]) * np.cos(2 * np.pi * x[1] / rmsh.parameters["h"]) * np.sin(2 * np.pi * x[0] / rmsh.parameters["L"])
-        values[1] = - (2 * np.pi / rmsh.parameters["h"]) * np.cos(2 * np.pi * x[0] / rmsh.parameters["L"]) * np.sin(2 * np.pi * x[1] / rmsh.parameters["h"])
+        values[0] = - (2 * np.pi / rmsh.parameters["L"]) * np.cos(2 * np.pi * x[1] /
+                                                                  rmsh.parameters["h"]) * np.sin(2 * np.pi * x[0] / rmsh.parameters["L"])
+        values[1] = - (2 * np.pi / rmsh.parameters["h"]) * np.cos(2 * np.pi * x[0] /
+                                                                  rmsh.parameters["L"]) * np.sin(2 * np.pi * x[1] / rmsh.parameters["h"])
 
     def value_shape(self):
         return (2,)
@@ -51,10 +53,14 @@ class hess_u_exact_expression(UserExpression):
         pi2 = 4 * np.pi ** 2
 
         # Matrix components
-        values[0] = - (pi2 * cos_x * cos_y) / rmsh.parameters["L"] ** 2  # [0, 0]
-        values[1] = (pi2 * sin_x * sin_y) / (rmsh.parameters["h"] * rmsh.parameters["L"])  # [0, 1]
-        values[2] = (pi2 * sin_x * sin_y) / (rmsh.parameters["h"] * rmsh.parameters["L"])  # [1, 0]
-        values[3] = - (pi2 * cos_x * cos_y) / rmsh.parameters["h"] ** 2  # [1, 1]
+        values[0] = - (pi2 * cos_x * cos_y) / \
+            rmsh.parameters["L"] ** 2  # [0, 0]
+        values[1] = (pi2 * sin_x * sin_y) / (rmsh.parameters["h"]
+                                             * rmsh.parameters["L"])  # [0, 1]
+        values[2] = (pi2 * sin_x * sin_y) / (rmsh.parameters["h"]
+                                             * rmsh.parameters["L"])  # [1, 0]
+        values[3] = - (pi2 * cos_x * cos_y) / \
+            rmsh.parameters["h"] ** 2  # [1, 1]
 
     def value_shape(self):
         return (2, 2)
@@ -74,7 +80,8 @@ fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q.ufl_element()))
 fsp.grad_u.interpolate(grad_u_expression(element=fsp.V.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
-fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
+fsp.hess_u_exact.interpolate(
+    hess_u_exact_expression(element=fsp.T.ufl_element()))
 
 #
 # fsp.u.interpolate(u_0_Expression(element=fsp.Q.ufl_element()))
@@ -91,4 +98,4 @@ F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
  \
     # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
-       - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
+    - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds

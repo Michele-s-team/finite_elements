@@ -1,4 +1,3 @@
-import dolfin
 from fenics import *
 import importlib
 
@@ -40,9 +39,10 @@ class PeriodicBoundary(SubDomain):
 
 periodic_boundary = PeriodicBoundary()
 
+
 Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
 V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
-T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(2, 2), constrained_domain=periodic_boundary)
+T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(rmsh.lmsh.mesh.topology().dim(), rmsh.lmsh.mesh.topology().dim()), constrained_domain=periodic_boundary)
 
 # Define variational problem
 u = Function(Q)
