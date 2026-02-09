@@ -13,7 +13,7 @@ i, j = ufl.indices(2)
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = np.sin(2 * np.pi * x[0] / (rmsh.parameters["x_r"] - rmsh.parameters['x_l']))
+        values[0] = np.sin(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2)
 
     def value_shape(self):
         return (1,)
@@ -21,7 +21,8 @@ class u_exact_expression(UserExpression):
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
-        values[0] =  (2 * np.pi / (rmsh.parameters["x_r"] - rmsh.parameters['x_l'])) * np.cos(2 * np.pi * x[0] / (rmsh.parameters["x_r"] - rmsh.parameters['x_l']))
+        values[0] = (4*np.pi*x[0]*np.cos(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2))/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2
+
 
 
     def value_shape(self):
@@ -30,7 +31,8 @@ class grad_u_expression(UserExpression):
 
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = - ((2 * np.pi / (rmsh.parameters["x_r"] - rmsh.parameters['x_l']))**2) * np.sin(2 * np.pi * x[0] / (rmsh.parameters["x_r"] - rmsh.parameters['x_l']))
+        values[0] = (4*np.pi*((rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2*np.cos(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2) - 4*np.pi*x[0]**2*np.sin(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2)))/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**4
+
 
     def value_shape(self):
         return (1,)
@@ -43,7 +45,8 @@ class hess_u_exact_expression(UserExpression):
     def eval(self, values, x):
       
         # Matrix components
-        values[0] = - ((2 * np.pi / (rmsh.parameters["x_r"] - rmsh.parameters['x_l']))**2) * np.sin(2 * np.pi * x[0] / (rmsh.parameters["x_r"] - rmsh.parameters['x_l']))
+        values[0] = (4*np.pi*((rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2*np.cos(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2) - 4*np.pi*x[0]**2*np.sin(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**2)))/(rmsh.parameters['x_r'] - rmsh.parameters['x_l'])**4
+
      
     def value_shape(self):
         return (1, 1)
