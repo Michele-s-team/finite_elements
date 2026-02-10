@@ -60,9 +60,11 @@ fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()
 bc_u_l = DirichletBC(fsp.Q, fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
 bcs = [bc_u_l]
 
+# bcs=[]
+
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u.dx(0) * fsp.nu_u - fsp.f * fsp.nu_u) * rmsh.dx
+F = (fsp.u.dx(0) - fsp.f) * fsp.nu_u.dx(0) * rmsh.dx
  
-    # variational functional for post-processing problem (pp) to obtain the hessian (hess)
+# variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
     - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
