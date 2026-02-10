@@ -46,9 +46,9 @@ J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
 problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
 solver_pp = NonlinearVariationalSolver(problem_pp)
 
+
 # solve original problem
 solver.solve()
-
 
 # solve pp problem
 solver_pp.solve()
