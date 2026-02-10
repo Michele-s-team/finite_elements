@@ -15,7 +15,10 @@ class u_exact_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = np.cos(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        # values[0] = np.cos(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+
+        # test case 2
+        values[0] = np.cos(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (1,)
@@ -25,7 +28,10 @@ class grad_u_exact_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = - 2*np.pi/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']) * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        # values[0] = - 2*np.pi/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']) * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+
+        # test case 2
+        values[0] = - 2*np.pi*2*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']) * np.sin(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (1,)
@@ -35,7 +41,10 @@ class f_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = - 2*np.pi/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']) * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        # values[0] = - 2*np.pi/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']) * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+
+        # test case 2
+        values[0] = - 2*np.pi*2*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']) * np.sin(2*np.pi*x[0]**2/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (1,)
