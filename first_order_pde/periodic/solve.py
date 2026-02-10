@@ -44,10 +44,13 @@ J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
 problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
 solver_pp = NonlinearVariationalSolver(problem_pp)
 
+
+fsp.u.assign(Constant(1))
+
 # solve original problem
 solver.solve()
 # solve pp problem
-solver_pp.solve()
+# solver_pp.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
 
