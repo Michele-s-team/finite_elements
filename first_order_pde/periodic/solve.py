@@ -1,5 +1,7 @@
 '''
 This code solves a first-order  equation in the unknown u with periodic boundary conditions 
+NOTE: For this variational problme, the solution of the boundary-value problem may be non unique: to make it unique one may add a Dirichlet boundary condition. 
+
 
 clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 
@@ -40,15 +42,16 @@ params = {'nonlinear_solver': 'newton',
           }
 solver.parameters.update(params)
 
-J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
-problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
+J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
+problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.grad_u, [], J_pp)
 solver_pp = NonlinearVariationalSolver(problem_pp)
 
 
 # solve original problem
 solver.solve()
+
 # solve pp problem
-# solver_pp.solve()
+solver_pp.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)
 
