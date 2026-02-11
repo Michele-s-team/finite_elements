@@ -4,7 +4,7 @@ import ufl as ufl
 import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
 
-alpha, beta = ufl.indices(2)
+alpha, beta, gamma = ufl.indices(3)
 
 epsilon = ufl.PermutationSymbol(2)
 
@@ -63,8 +63,29 @@ Input values:
     - 'ys': a two-dimensional vector for the reference curve configuration
     - 'u': a two-dimensional vector for the displacement field between current and reference configuration
 Return values: 
-    - 'n': unit normal to the curve in the current configuration (a two-dimensional vector with unit norm)
+    - 'n_ale': unit normal to the curve in the current configuration (a two-dimensional vector with unit norm)
 '''
 def n_ale(ys, u):
     V = as_tensor(-epsilon[alpha, beta] * (ys.dx(0)[beta] + u.dx(0)[beta]), (alpha))
     return as_tensor(V[alpha] / geo.ufl_norm(ys.dx(0) + u.dx(0)), (alpha))
+
+'''
+variation of n_ale with respect to u
+Input values: 
+    - 'ys': a two-dimensional vector for the reference curve configuration
+    - 'u': a two-dimensional vector for the displacement field between current and reference configuration
+    - 'nu': the variation of u, nu = delta_u (two-dimensional vector field)
+Return values: 
+    - 'delta_n_ale': the variation od n_ale with respect to u (a two-dimensional vector with unit norm)
+'''
+def delta_n_ale(ys, u, nu):
+
+    dxds = as_tensor((ys.dx(0)[alpha] + u.dx(0)[alpha]), (alpha))
+    norm_dxds = geo.ufl_norm(dxds)
+
+    return as_tensor(
+        1.0/norm_dxds * (1.0/norm_dxds**2 * dxds[gamma] * nu.dx(0)[gamma] * epsilon[alpha, beta] * dxds[beta] - \
+                         epsilon[alpha, beta] * nu.dx(0)[beta]), 
+        (alpha))
+
+
