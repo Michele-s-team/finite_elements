@@ -7,6 +7,7 @@ clear; clear; python3 solve.py [name of the variational problem to solve] [path 
 
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/first_order_pde/periodic/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 solve.py line_scalar $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/first_order_pde/periodic/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 solve.py line_vector $MESH_PATH $SOLUTION_PATH;
 
 '''
 
