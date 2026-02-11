@@ -21,12 +21,23 @@ class v_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+
+class ys_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2.0 * np.pi * x[0] / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[1] = np.sin(2.0 * np.pi * x[0] / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+
+    def value_shape(self):
+        return (2,)
 
 fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
+fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
 def hat_n(u):
-    V = as_tensor(-epsilon[alpha, beta] * (u.dx(0))[beta], (alpha))
-    return as_tensor(V[alpha] / geo.ufl_norm(u.dx(0)), (alpha))
+    V = as_tensor(-epsilon[alpha, beta] * (fsp.ys.dx(0)[beta] + u.dx(0)[beta]), (alpha))
+    return as_tensor(V[alpha] / geo.ufl_norm(fsp.ys.dx(0) + u.dx(0)), (alpha))
 
 
 '''

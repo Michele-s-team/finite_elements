@@ -34,6 +34,8 @@ V = TensorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree']
 u = Function(Q)
 nu_u = TestFunction(Q)
 v = Function(Q)
+#y_s_notes
+ys = Function(Q)
 J_u = TrialFunction(Q)
 
 # Define gradient of u for post-processing (pp) variational problem
