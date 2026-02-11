@@ -5,6 +5,8 @@ import switch_problem as swi
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
+import parameters.read.solution as rpam
+
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
@@ -15,7 +17,7 @@ alpha, beta = ufl.indices(2)
 class v_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 0.1 * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[0] = rpam.parameters['dt'] * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))**2
         values[1] = 0
 
     def value_shape(self):
