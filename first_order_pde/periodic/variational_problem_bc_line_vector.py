@@ -38,7 +38,7 @@ Here the solution of the boundary-value problem may be non unique: to make it un
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u[alpha].dx(0) - fsp.v[alpha]) * fsp.nu_u.dx(0)[alpha] * rmsh.dx
+F = (fsp.u[alpha] - (fsp.v[beta] * hat_n(fsp.u)[beta]) * hat_n(fsp.u)[alpha]) * fsp.nu_u[alpha] * rmsh.dx
  
 # variational functional for post-processing problem (pp) to obtain the gradient of u
 # F_pp = (fsp.grad_u[alpha] - fsp.u.dx(alpha)) * fsp.nu_grad_u[alpha] * rmsh.dx
