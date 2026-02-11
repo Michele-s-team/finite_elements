@@ -1,7 +1,13 @@
 from fenics import *
 import ufl as ufl
 
+import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
+
+alpha, beta = ufl.indices(2)
+
+epsilon = ufl.PermutationSymbol(2)
+
 
 # Global variables which will be set according to the gauge choice
 dydtheta = None
@@ -50,3 +56,15 @@ def calc_normal_cg2(mesh):
 def facet_normal_smooth():
     u = calc_normal_cg2(lmsh.mesh)
     return as_tensor(u[k], (k))
+
+'''
+normal to a curve expressed n term of the reference and current configuration of a curve
+Input values: 
+    - 'ys': a two-dimensional vector for the reference curve configuration
+    - 'u': a two-dimensional vector for the displacement field between current and reference configuration
+Return values: 
+    - 'n': unit normal to the curve in the current configuration (a two-dimensional vector with unit norm)
+'''
+def n_ale(ys, u):
+    V = as_tensor(-epsilon[alpha, beta] * (ys.dx(0)[beta] + u.dx(0)[beta]), (alpha))
+    return as_tensor(V[alpha] / geo.ufl_norm(ys.dx(0) + u.dx(0)), (alpha))

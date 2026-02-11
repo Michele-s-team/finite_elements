@@ -4,13 +4,12 @@ import numpy as np
 import switch_problem as swi
 import ufl as ufl
 
-import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
+
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 alpha, beta = ufl.indices(2)
-epsilon = ufl.PermutationSymbol(2)
 
 
 class v_expression(UserExpression):
@@ -35,9 +34,6 @@ class ys_expression(UserExpression):
 fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
 fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
-def hat_n(u):
-    V = as_tensor(-epsilon[alpha, beta] * (fsp.ys.dx(0)[beta] + u.dx(0)[beta]), (alpha))
-    return as_tensor(V[alpha] / geo.ufl_norm(fsp.ys.dx(0) + u.dx(0)), (alpha))
 
 
 '''
@@ -49,7 +45,7 @@ Here the solution of the boundary-value problem may be non unique: to make it un
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u[alpha] - (fsp.v[beta] * hat_n(fsp.u)[beta]) * hat_n(fsp.u)[alpha]) * fsp.nu_u[alpha] * rmsh.dx
+F = (fsp.u[alpha] - (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha]) * fsp.nu_u[alpha] * rmsh.dx
  
 # variational functional for post-processing problem (pp) to obtain the gradient of u
 # F_pp = (fsp.grad_u[alpha] - fsp.u.dx(alpha)) * fsp.nu_grad_u[alpha] * rmsh.dx
