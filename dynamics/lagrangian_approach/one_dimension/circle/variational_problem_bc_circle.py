@@ -26,8 +26,8 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 class v_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))**2
-        values[1] = np.cos(4*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[0] = 1
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -52,12 +52,12 @@ class ys_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-fsp.u0.interpolate(u0_expression(element=fsp.Q.ufl_element()))
+# fsp.u0.interpolate(u0_expression(element=fsp.Q.ufl_element()))
 
 fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
 fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
-fsp.u.assign(fsp.u0)
+# fsp.u.assign(fsp.u0)
 
 
 # no BCs are needed here: the periodic BC is already implemented through the periodicity of the function space
@@ -74,4 +74,4 @@ F = (fsp.u[alpha] - fsp.u0[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u
     ) * rmsh.dx
  
 # variational functional for post-processing problem (pp) to obtain the gradient of u
-F_pp = (fsp.grad_u[alpha, beta] - (fsp.u[alpha]).dx(beta)) * fsp.nu_grad_u[alpha, beta] * rmsh.dx
+# F_pp = (fsp.grad_u[alpha, beta] - (fsp.u[alpha]).dx(beta)) * fsp.nu_grad_u[alpha, beta] * rmsh.dx
