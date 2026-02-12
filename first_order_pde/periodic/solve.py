@@ -7,6 +7,7 @@ clear; clear; python3 solve.py [name of the variational problem to solve] [path 
 
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/first_order_pde/periodic/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 solve.py line_scalar $MESH_PATH $SOLUTION_PATH;
+    MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/first_order_pde/periodic/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 solve.py line_vector $MESH_PATH $SOLUTION_PATH;
 
 '''
 
@@ -29,6 +30,10 @@ J = derivative(vp.F, fsp.u, fsp.J_u)
 problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
 solver = NonlinearVariationalSolver(problem)
 
+J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
+problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.grad_u, [], J_pp)
+solver_pp = NonlinearVariationalSolver(problem_pp)
+
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
@@ -41,17 +46,16 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 solver.parameters.update(params)
+solver_pp.parameters.update(params)
 
-J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
-problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.grad_u, [], J_pp)
-solver_pp = NonlinearVariationalSolver(problem_pp)
 
 
 # solve original problem
-solver.solve()
+solver.solve()  
 
-# solve pp problem
+# solve post-processing problem
 solver_pp.solve()
+
 
 prout_bc = importlib.import_module(swi.prout_bc)
 prout_sol = importlib.import_module(swi.prout_sol)
