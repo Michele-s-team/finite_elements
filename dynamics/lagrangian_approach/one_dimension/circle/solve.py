@@ -68,13 +68,14 @@ for step in range(rpam.parameters['N']):
     # solver_pp.parameters.update(params)
 
     # solve original problem
-    solver.solve()  
+    solver.solve()      
 
     # solve post-processing problem
     # solver_pp.solve()
 
-    prout_bc.print_bcs()
-    prout_sol.print_solution(step)
+    if(step % rpam.parameters['print_out_stride'] == 0):
+        prout_bc.print_bcs()
+        prout_sol.print_solution(step)
 
 
     #update the solution
