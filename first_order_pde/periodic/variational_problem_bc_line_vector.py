@@ -72,4 +72,4 @@ F = (fsp.u[alpha] - fsp.u0[alpha] - rpam.parameters['dt'] * (fsp.v[beta] * bgeo.
     ) * rmsh.dx
  
 # variational functional for post-processing problem (pp) to obtain the gradient of u
-# F_pp = (fsp.grad_u[alpha] - fsp.u.dx(alpha)) * fsp.nu_grad_u[alpha] * rmsh.dx
+F_pp = (fsp.grad_u[alpha, beta] - (fsp.u[alpha]).dx(beta)) * fsp.nu_grad_u[alpha, beta] * rmsh.dx
