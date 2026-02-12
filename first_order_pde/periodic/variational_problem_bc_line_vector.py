@@ -18,17 +18,17 @@ class v_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))**2
-        values[1] = 0
+        values[1] = np.cos(4*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (2,)
     
 
-class u_expression(UserExpression):
+class u0_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 0.1 * np.cos(4*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
-        values[1] = 0.1 * np.sin(8*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[0] = np.cos(4*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[1] = np.sin(8*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (2,)
@@ -43,13 +43,12 @@ class ys_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-# REMOVE THIS WHEN YOU SOLVE THE VARIATIONAL PROBLEM
-# fsp.u.interpolate(u_expression(element=fsp.Q.ufl_element()))
+fsp.u0.interpolate(u0_expression(element=fsp.Q.ufl_element()))
 
 fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
 fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
-
+fsp.u.assign(fsp.u0)
 
 '''
 Here the solution of the boundary-value problem may be non unique: to make it unique one may add a Dirichlet boundary condition on the left vertex

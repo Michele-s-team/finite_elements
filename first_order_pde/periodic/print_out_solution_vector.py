@@ -22,6 +22,10 @@ sys_io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solp
               solpath.nodal_values_path,
               lmsh.mesh, 'vector')
 
+sys_io.full_print(fsp.u0, 'u0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              lmsh.mesh, 'vector')
+
 sys_io.full_print(fsp.ys, 'ys', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               lmsh.mesh, 'vector')
