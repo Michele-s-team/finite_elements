@@ -22,6 +22,8 @@ import switch_problem as swi
 
 
 fsp = importlib.import_module(swi.fsp)
+prout_bc = importlib.import_module(swi.prout_bc)
+prout_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -70,6 +72,10 @@ for step in range(rpam.parameters['N']):
 
     # solve post-processing problem
     # solver_pp.solve()
+
+    prout_bc.print_bcs()
+    prout_sol.print_solution(step)
+
 
     #update the solution
     fsp.u0.assign(fsp.u)
