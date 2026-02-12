@@ -17,7 +17,7 @@ alpha, beta = ufl.indices(2)
 class v_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['dt'] * np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))**2
+        values[0] = np.sin(2*np.pi*x[0]/(rmsh.parameters['x_r'] - rmsh.parameters['x_l']))**2
         values[1] = 0
 
     def value_shape(self):
@@ -60,11 +60,13 @@ Here the solution of the boundary-value problem may be non unique: to make it un
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u[alpha] - (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha]) * \
+F = (fsp.u[alpha] - fsp.u0[alpha] - rpam.parameters['dt'] * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha]) * \
     (
-        fsp.nu_u[alpha] -\
-        (fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha] - \
-        (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[alpha]
+        fsp.nu_u[alpha] - \
+        rpam.parameters['dt'] * (
+            fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[beta] * bgeo.n_ale(fsp.ys, fsp.u)[alpha] + \
+            fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[alpha]
+        )
     ) * rmsh.dx
  
 # variational functional for post-processing problem (pp) to obtain the gradient of u
