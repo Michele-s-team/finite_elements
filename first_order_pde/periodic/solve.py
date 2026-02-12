@@ -43,13 +43,23 @@ params = {'nonlinear_solver': 'newton',
           }
 solver.parameters.update(params)
 
+
+# Time-stepping
+t = 0
+N=1000
+for step in range(N):
+    # solve original problem
+    solver.solve()  
+
+    fsp.u0.assign(fsp.u)
+
+
 # J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
 # problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.grad_u, [], J_pp)
 # solver_pp = NonlinearVariationalSolver(problem_pp)
 
 
-# solve original problem
-solver.solve()
+
 
 # solve pp problem
 # solver_pp.solve()

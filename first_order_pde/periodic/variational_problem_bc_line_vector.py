@@ -1,3 +1,10 @@
+'''
+this variational problem corresponds to the ODE
+u - u_0 = dt * (\vec{v} \cdot \hat{n}(u)) \hat{n}(u)
+with periodic BCs u(x_l) = u(x_r)
+'''
+
+
 from fenics import *
 import importlib
 import numpy as np
@@ -50,12 +57,8 @@ fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
 fsp.u.assign(fsp.u0)
 
-'''
-Here the solution of the boundary-value problem may be non unique: to make it unique one may add a Dirichlet boundary condition on the left vertex
-'''
-# bc_u_l = DirichletBC(fsp.Q, fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
-# bcs = [bc_u_l]
 
+# no BCs are needed here: the periodic BC is already implemented through the periodicity of the function space
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
