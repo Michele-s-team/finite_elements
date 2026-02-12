@@ -10,27 +10,26 @@ Examples:
 
 from fenics import *
 import importlib
-import runtime_arguments as rarg
 import sys
-import switch_problem as swi
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import parameters.read.solution as rpam
+import switch_problem as swi
+
+
+
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
+#set initial profiles
+fsp.u.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
+fsp.u0.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
 
-J = derivative(vp.F, fsp.u, fsp.J_u)
-problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
-solver = NonlinearVariationalSolver(problem)
-
-J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
-problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.grad_u, [], J_pp)
-solver_pp = NonlinearVariationalSolver(problem_pp)
-
+# set solver parameters
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
@@ -42,14 +41,39 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
-solver.parameters.update(params)
-solver_pp.parameters.update(params)
 
-# solve original problem
-solver.solve()  
+# Time-stepping
+t = 0
+for step in range(rpam.parameters['N']):
 
-# solve post-processing problem
-solver_pp.solve()
+    print("\n* step = ", step, "\n",flush=True)
+
+    # Update current time
+    t += vp.dt
+
+    vp = importlib.import_module(swi.vp)
+
+    J = derivative(vp.F, fsp.u, fsp.J_u)
+    problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
+    solver = NonlinearVariationalSolver(problem)
+
+    # J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
+    # problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.grad_u, [], J_pp)
+    # solver_pp = NonlinearVariationalSolver(problem_pp)
+
+
+    solver.parameters.update(params)
+    # solver_pp.parameters.update(params)
+
+    # solve original problem
+    solver.solve()  
+
+    # solve post-processing problem
+    # solver_pp.solve()
+
+    #update the solution
+    fsp.u0.assign(fsp.u)
+
 
 
 prout_bc = importlib.import_module(swi.prout_bc)

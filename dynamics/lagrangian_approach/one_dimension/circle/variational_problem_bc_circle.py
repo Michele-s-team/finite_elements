@@ -20,6 +20,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 alpha, beta = ufl.indices(2)
 
+dt = rpam.parameters['T'] / rpam.parameters['N']
+
 
 class v_expression(UserExpression):
     def eval(self, values, x):
@@ -62,10 +64,10 @@ fsp.u.assign(fsp.u0)
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u[alpha] - fsp.u0[alpha] - rpam.parameters['dt'] * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha]) * \
+F = (fsp.u[alpha] - fsp.u0[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha]) * \
     (
         fsp.nu_u[alpha] - \
-        rpam.parameters['dt'] * (
+        dt * (
             fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[beta] * bgeo.n_ale(fsp.ys, fsp.u)[alpha] + \
             fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[alpha]
         )
