@@ -66,10 +66,10 @@ bcs=[ ]
 # variational functional for the original problem (first-order equation equation)
 F = (fsp.u_n[alpha] - fsp.u_n_1[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta]) * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha]) * \
     (
-        fsp.nu_u[alpha] - \
+        fsp.nu_u_n[alpha] - \
         dt * (
-            fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u_n, fsp.nu_u)[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha] + \
-            fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u_n, fsp.nu_u)[alpha]
+            fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u_n, fsp.nu_u_n)[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha] + \
+            fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u_n, fsp.nu_u_n)[alpha]
         )
     ) * rmsh.dx
  

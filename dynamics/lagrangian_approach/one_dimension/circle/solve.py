@@ -63,7 +63,7 @@ for step in range(rpam.parameters['N']):
 
     vp = importlib.import_module(swi.vp)
 
-    J = derivative(vp.F, fsp.u_n, fsp.J_u)
+    J = derivative(vp.F, fsp.u_n, fsp.J_u_n)
     problem = NonlinearVariationalProblem(vp.F, fsp.u_n, vp.bcs, J)
     solver = NonlinearVariationalSolver(problem)
 
