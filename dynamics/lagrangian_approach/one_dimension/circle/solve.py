@@ -16,7 +16,10 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import input_output as sys_io
+import mesh.load as lmsh
 import parameters.read.solution as rpam
+import solution_paths as solpath
 import switch_problem as swi
 
 
@@ -43,6 +46,11 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
+
+# print the reference configuration 
+sys_io.full_print(fsp.ys, 'ys', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              lmsh.mesh, 'vector')
 
 # Time-stepping
 t = 0
