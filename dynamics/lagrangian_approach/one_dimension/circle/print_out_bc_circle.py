@@ -36,8 +36,8 @@ def print_bcs():
      # write the residual of natural BCs on step 2 to file
     writer_bcs.writerows( [{ \
         fieldnames_bcs[0]: \
-            f"{abs((fsp.u(rmsh.parameters['x_l'])[0] - fsp.u(rmsh.parameters['x_r'])[0])):.{io.number_of_decimals}e}",\
+            f"{abs((fsp.u_n(rmsh.parameters['x_l'])[0] - fsp.u_n(rmsh.parameters['x_r'])[0])):.{io.number_of_decimals}e}",\
         fieldnames_bcs[1]: \
-            f"{abs((fsp.u(rmsh.parameters['x_l'])[1] - fsp.u(rmsh.parameters['x_r'])[1])):.{io.number_of_decimals}e}"
+            f"{abs((fsp.u_n(rmsh.parameters['x_l'])[1] - fsp.u_n(rmsh.parameters['x_r'])[1])):.{io.number_of_decimals}e}"
         }] )
     csvfile_bcs.flush()

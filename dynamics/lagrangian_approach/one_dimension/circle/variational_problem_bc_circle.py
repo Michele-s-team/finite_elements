@@ -57,21 +57,21 @@ class ys_expression(UserExpression):
 fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
 fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
-# fsp.u.assign(fsp.u0)
+# fsp.u_n.assign(fsp.u0)
 
 
 # no BCs are needed here: the periodic BC is already implemented through the periodicity of the function space
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u[alpha] - fsp.u0[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta]) * bgeo.n_ale(fsp.ys, fsp.u)[alpha]) * \
+F = (fsp.u_n[alpha] - fsp.u0[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta]) * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha]) * \
     (
         fsp.nu_u[alpha] - \
         dt * (
-            fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[beta] * bgeo.n_ale(fsp.ys, fsp.u)[alpha] + \
-            fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u, fsp.nu_u)[alpha]
+            fsp.v[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u_n, fsp.nu_u)[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha] + \
+            fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.u_n, fsp.nu_u)[alpha]
         )
     ) * rmsh.dx
  
 # variational functional for post-processing problem (pp) to obtain the gradient of u
-# F_pp = (fsp.grad_u[alpha, beta] - (fsp.u[alpha]).dx(beta)) * fsp.nu_grad_u[alpha, beta] * rmsh.dx
+# F_pp = (fsp.grad_u[alpha, beta] - (fsp.u_n[alpha]).dx(beta)) * fsp.nu_grad_u[alpha, beta] * rmsh.dx

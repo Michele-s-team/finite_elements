@@ -31,7 +31,7 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 #set initial profiles
-fsp.u.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
+fsp.u_n.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
 fsp.u0.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
 
 # set solver parameters
@@ -63,8 +63,8 @@ for step in range(rpam.parameters['N']):
 
     vp = importlib.import_module(swi.vp)
 
-    J = derivative(vp.F, fsp.u, fsp.J_u)
-    problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
+    J = derivative(vp.F, fsp.u_n, fsp.J_u)
+    problem = NonlinearVariationalProblem(vp.F, fsp.u_n, vp.bcs, J)
     solver = NonlinearVariationalSolver(problem)
 
     # J_pp = derivative(vp.F_pp, fsp.grad_u, fsp.J_grad_u)
@@ -87,7 +87,7 @@ for step in range(rpam.parameters['N']):
 
 
     #update the solution
-    fsp.u0.assign(fsp.u)
+    fsp.u0.assign(fsp.u_n)
 
 
 
