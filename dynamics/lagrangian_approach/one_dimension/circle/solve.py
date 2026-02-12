@@ -31,8 +31,8 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 #set initial profiles
-fsp.u_n.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
-fsp.u0.interpolate( vp.u0_expression( element=fsp.Q.ufl_element() ))
+fsp.u_n.interpolate( vp.u_n_1_expression( element=fsp.Q.ufl_element() ))
+fsp.u_n_1.interpolate( vp.u_n_1_expression( element=fsp.Q.ufl_element() ))
 
 # set solver parameters
 # set the solver parameters here
@@ -87,7 +87,7 @@ for step in range(rpam.parameters['N']):
 
 
     #update the solution
-    fsp.u0.assign(fsp.u_n)
+    fsp.u_n_1.assign(fsp.u_n)
 
 
 

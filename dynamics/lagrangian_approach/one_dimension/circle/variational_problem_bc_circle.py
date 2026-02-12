@@ -33,7 +33,7 @@ class v_expression(UserExpression):
         return (2,)
     
 
-class u0_expression(UserExpression):
+class u_n_1_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
@@ -52,19 +52,19 @@ class ys_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-# fsp.u0.interpolate(u0_expression(element=fsp.Q.ufl_element()))
+# fsp.u_n_1.interpolate(u_n_1_expression(element=fsp.Q.ufl_element()))
 
 fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
 fsp.ys.interpolate(ys_expression(element=fsp.Q.ufl_element()))
 
-# fsp.u_n.assign(fsp.u0)
+# fsp.u_n.assign(fsp.u_n_1)
 
 
 # no BCs are needed here: the periodic BC is already implemented through the periodicity of the function space
 bcs=[ ]
 
 # variational functional for the original problem (first-order equation equation)
-F = (fsp.u_n[alpha] - fsp.u0[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta]) * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha]) * \
+F = (fsp.u_n[alpha] - fsp.u_n_1[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, fsp.u_n)[beta]) * bgeo.n_ale(fsp.ys, fsp.u_n)[alpha]) * \
     (
         fsp.nu_u[alpha] - \
         dt * (
