@@ -848,7 +848,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
-# Test dynamics/lagrangian_approach/one_dimension/line
+# Test dynamics/lagrangian_approach/one_dimension
 case_name = 'dynamics/lagrangian_approach/one_dimension/line'
 
 problem_name = 'line_a'
@@ -873,6 +873,20 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_mesh', 
                                                                      os.path.join(generate_mesh_path, 'resolution_0.1'), os.path.join(generate_mesh_path, 'resolution_0.1'), 
                                                                      problem_name, problem_name, success)
+
+
+
+case_name = 'dynamics/lagrangian_approach/one_dimension/circle'
+
+problem_name = 'circle'
+generate_mesh_path =root_path + 'generate_mesh/1d/line'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 
+                                                                     generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
