@@ -39,7 +39,12 @@ print("output_directory = ", rarg.args.output_directory)
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
-# add  rectangle
+
+
+
+#1. add  rectangle
+
+
 p_out_1 = gmsh.model.geo.addPoint(0, 0, 0)
 p_out_2 = gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0)
 p_out_3 = gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0)
@@ -55,6 +60,9 @@ gmsh.model.geo.synchronize()
 loop_out = gmsh.model.geo.addCurveLoop([line_out_12, line_out_23, line_out_34, line_out_41])
 gmsh.model.geo.synchronize()
 
+
+#2. add circle
+
 # angular fraction corresponding to each segment of the circle
 delta_theta = 2 * np.pi / rpam.parameters["N"]
 
@@ -62,19 +70,22 @@ circle_coordinates = [np.array([rpam.parameters["c_r"][0] + rpam.parameters['r']
 circle_points = [gmsh.model.occ.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
 gmsh.model.occ.synchronize()
 
+circle_lines = []
 
-# add circle
+print(f'added point with coordinates {circle_coordinates[-1]}')
+
+
 print("Starting loop over circle ... ")
-for i in range(1, rpam.parameters["N"]):
+for i in range(1, rpam.parameters["N"]+1):
 
     circle_coordinates.append(
-        np.add(rpam.parameters['c_r'], cal.R(- i * delta_theta).dot(np.subtract(circle_coordinates[0], rpam.parameters['c_r'])))
+        np.add(rpam.parameters['c_r'], cal.R(i * delta_theta).dot(np.subtract(circle_coordinates[0], rpam.parameters['c_r'])))
         )
 
     circle_points.append(gmsh.model.occ.addPoint(circle_coordinates[-1][0], circle_coordinates[-1][1], 0))
     gmsh.model.occ.synchronize()
 
-    circle_line = gmsh.model.occ.addLine(circle_points[-2], circle_points[-1])
+    circle_lines.append(gmsh.model.occ.addLine(circle_points[-2], circle_points[-1]))
     gmsh.model.occ.synchronize()
 
     print(f'added point with coordinates {circle_coordinates[-1]}')
@@ -82,36 +93,24 @@ for i in range(1, rpam.parameters["N"]):
 print("... done.")
 
 
-
-'''
-p_in_1 = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_in_2 = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["L_in"], rpam.parameters["p"][1], rpam.parameters["p"][2])
-p_in_3 = gmsh.model.geo.addPoint(rpam.parameters["p"][0] + rpam.parameters["L_in"], rpam.parameters["p"][1] + rpam.parameters["h_in"], rpam.parameters["p"][2])
-p_in_4 = gmsh.model.geo.addPoint(rpam.parameters["p"][0], rpam.parameters["p"][1] + rpam.parameters["h_in"], rpam.parameters["p"][2])
+circle_loop = gmsh.model.geo.addCurveLoop(circle_lines)
 gmsh.model.geo.synchronize()
 
-line_in_12 = gmsh.model.geo.addLine(p_in_1, p_in_2)
-line_in_23 = gmsh.model.geo.addLine(p_in_2, p_in_3)
-line_in_34 = gmsh.model.geo.addLine(p_in_3, p_in_4)
-line_in_41 = gmsh.model.geo.addLine(p_in_4, p_in_1)
+square_minus_circle_surface = gmsh.model.geo.addPlaneSurface([loop_out, circle_loop])
 gmsh.model.geo.synchronize()
 
-loop_in = gmsh.model.geo.addCurveLoop([line_in_12, line_in_23, line_in_34, line_in_41])
+gmsh.model.mesh.embed(1, circle_lines, 2, square_minus_circle_surface)
 gmsh.model.geo.synchronize()
 
-surface_out = gmsh.model.geo.addPlaneSurface([loop_out, loop_in])
+circle_surface = gmsh.model.geo.addPlaneSurface([circle_loop])
 gmsh.model.geo.synchronize()
 
-gmsh.model.mesh.embed(1, [line_in_12, line_in_23, line_in_34, line_in_41], 2, surface_out)
-gmsh.model.geo.synchronize()
 
-surface_in = gmsh.model.geo.addPlaneSurface([loop_in])
-gmsh.model.geo.synchronize()
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
-# outer lines
+# square lines
 gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_1_b_id"])
 gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_1_b_id"], "line_out_12")
 
@@ -124,18 +123,16 @@ gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_1_t_id"],
 gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_1_l_id"])
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "line_out_41")
 
-# inner lines
-gmsh.model.addPhysicalGroup(lines[4][0], [lines[4][1]], rpam.parameters["line_sub_mesh_0_b_id"])
-gmsh.model.setPhysicalName(lines[4][0], rpam.parameters["line_sub_mesh_0_b_id"], "line_in_12")
+'''
+#ellipse loop
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 8)], rpam.parameters["ellipse_loop_id"])
+gmsh.model.setPhysicalName(1, rpam.parameters["ellipse_loop_id"], "ellipse_loop")
 
-gmsh.model.addPhysicalGroup(lines[5][0], [lines[5][1]], rpam.parameters["line_sub_mesh_0_r_id"])
-gmsh.model.setPhysicalName(lines[5][0], rpam.parameters["line_sub_mesh_0_r_id"], "line_in_23")
+#circle loop
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(8, 12)], rpam.parameters["circle_loop_id"])
+gmsh.model.setPhysicalName(1, rpam.parameters["circle_loop_id"], "circle_loop")
+'''
 
-gmsh.model.addPhysicalGroup(lines[6][0], [lines[6][1]], rpam.parameters["line_sub_mesh_0_t_id"])
-gmsh.model.setPhysicalName(lines[6][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_in_34")
-
-gmsh.model.addPhysicalGroup(lines[7][0], [lines[7][1]], rpam.parameters["line_sub_mesh_0_l_id"])
-gmsh.model.setPhysicalName(lines[7][0], rpam.parameters["line_sub_mesh_0_l_id"], "line_in_41")
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
@@ -145,32 +142,3 @@ gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_1_id"], "su
 
 gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_id"])
 gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "surface_in")
-
-# set the resolution
-# se resolution equal to parameters["resolution"] at buth distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
-distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_in])
-
-threshold = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
-
-minimum = gmsh.model.mesh.field.add("Min")
-gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
-gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
-
-gmsh.model.geo.synchronize()
-
-geometry.generate_mesh(dim=2)
-gmsh.write(mesh_file)
-
-msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
-
-msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
-msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
-
-model.__exit__()
-'''
