@@ -18,6 +18,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as cal
 import input_output as io
 import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
@@ -57,8 +58,29 @@ gmsh.model.geo.synchronize()
 # angular fraction corresponding to each segment of the circle
 delta_theta = 2 * np.pi / rpam.parameters["N"]
 
+circle_coordinates = [np.array([rpam.parameters["c_r"][0] + rpam.parameters['r'], rpam.parameters['c_r'][1]])]
+circle_points = [gmsh.model.occ.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
+gmsh.model.occ.synchronize()
+
 
 # add circle
+print("Starting loop over circle ... ")
+for i in range(1, rpam.parameters["N"]):
+
+    circle_coordinates.append(
+        np.add(rpam.parameters['c_r'], cal.R(- i * delta_theta).dot(np.subtract(circle_coordinates[0], rpam.parameters['c_r'])))
+        )
+
+    circle_points.append(gmsh.model.occ.addPoint(circle_coordinates[-1][0], circle_coordinates[-1][1], 0))
+    gmsh.model.occ.synchronize()
+
+    circle_line = gmsh.model.occ.addLine(circle_points[-2], circle_points[-1])
+    gmsh.model.occ.synchronize()
+
+    print(f'added point with coordinates {circle_coordinates[-1]}')
+
+print("... done.")
+
 
 
 '''
