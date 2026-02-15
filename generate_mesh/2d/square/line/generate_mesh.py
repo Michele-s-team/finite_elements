@@ -24,23 +24,42 @@ import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
 import parameters.read.mesh as rpam
 
-print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 
-output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
-mesh_file = os.path.join(rarg.args.output_directory, "mesh.msh")
+# mesh A will be stored in output_directory_square_mesh
+output_directory_square_mesh = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'square'))
+os.mkdir(output_directory_square_mesh)
+# mesh B will be stored in output_directory_line_mesh
+output_directory_line_mesh = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'line'))
+os.mkdir(output_directory_line_mesh)
+
+square_mesh_file = os.path.join(output_directory_square_mesh, "mesh.msh")
+
+# angular fraction corresponding to each segment of the circle
+delta_theta = 2 * np.pi / rpam.parameters["N"]
+
 
 # write into metadata the file format wich which the mesh will be written
-metadata = rpam.parameters.copy()
-metadata['file_format'] = 'xdmf'
+square_mesh_metadata = rpam.parameters.copy()
+square_mesh_metadata['file_format'] = 'xdmf'
+
+line_mesh_metadata = {}
+line_mesh_metadata['L'] = rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0)
+line_mesh_metadata['r'] = square_mesh_metadata['r']
+line_mesh_metadata['N'] = square_mesh_metadata['N']
+line_mesh_metadata['circle_loop_id'] = square_mesh_metadata['circle_loop_id']
+line_mesh_metadata['line_mesh_vertex_l_id'] = square_mesh_metadata['line_mesh_vertex_l_id']
+line_mesh_metadata['line_mesh_vertex_r_id'] = square_mesh_metadata['line_mesh_vertex_r_id']
+line_mesh_metadata['sub_mesh_1_id'] = square_mesh_metadata['sub_mesh_1_id']
+line_mesh_metadata['file_format'] = 'h5'
+
 
 print("output_directory = ", rarg.args.output_directory)
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
-
-
+# A) generate mesh A (square with circle)
 
 #1. add  square
 
@@ -63,8 +82,6 @@ gmsh.model.geo.synchronize()
 
 #2. add circle
 
-# angular fraction corresponding to each segment of the circle
-delta_theta = 2 * np.pi / rpam.parameters["N"]
 
 circle_coordinates = [np.array([rpam.parameters["c_r"][0] + rpam.parameters['r'], rpam.parameters['c_r'][1]])]
 circle_points = [gmsh.model.geo.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
@@ -72,7 +89,7 @@ gmsh.model.geo.synchronize()
 
 circle_lines = []
 
-print(f'added point with coordinates {circle_coordinates[-1]}')
+print(f'Added point with coordinates {circle_coordinates[-1]}')
 
 
 print("Starting loop over circle ... ")
@@ -88,7 +105,7 @@ for i in range(1, rpam.parameters["N"]):
     circle_lines.append(gmsh.model.geo.addLine(circle_points[-2], circle_points[-1]))
     gmsh.model.geo.synchronize()
 
-    print(f'added point with coordinates {circle_coordinates[-1]}')
+    print(f'Added point with coordinates {circle_coordinates[-1]}')
 
 print("... done.")
 
@@ -164,19 +181,32 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 gmsh.model.geo.synchronize()
 
 geometry.generate_mesh(dim=2)
-gmsh.write(mesh_file)
+gmsh.write(square_mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+msh.full_write(square_mesh_file, ['triangle', 'line'], square_mesh_metadata, output_directory_square_mesh, True)
 
-msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
-msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
+msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
+msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
 
 
-# print the boundary points of the boundary given by the and circle
+# print the boundary points of the boundary given by the circle
 msh.sorted_boundary_points(
-    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
-    output_directory, 
+    msh.read_mesh(os.path.join(output_directory_square_mesh, 'triangle_mesh.xdmf')), 
+    output_directory_square_mesh, 
     [rpam.parameters['circle_loop_id']],
-    os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'))
+    os.path.join(output_directory_square_mesh, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'))
+
+
+
+# B) mesh B (line)
+
+
+# generate the line mesh corresponding to the circle
+msh.genereate_line_mesh(0, rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), rpam.parameters['N'],
+                        rpam.parameters['circle_loop_id'], rpam.parameters['line_mesh_vertex_l_id'], rpam.parameters['line_mesh_vertex_r_id'],
+                        x_m=None,
+                        vertex_m_id=None,
+                        output_directory=output_directory_line_mesh, 
+                        metadata=line_mesh_metadata)
 
 model.__exit__()
