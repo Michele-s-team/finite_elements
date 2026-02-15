@@ -33,16 +33,15 @@ integral_exact[1] = dict([ \
     ('ds', 0), \
     ])
 
-'''
+
 # exact surface integrals
-integral_exact[0]['dx'] = cal.surface_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0) \
-                          - cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'])
+integral_exact[0]['dx'] = cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c_r'])
 integral_exact[1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals, [0, 0], [rmsh.parameters['L'], rmsh.parameters['h']]) \
-                          - cal.surface_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 0)
+                          - cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c_r'])
+
 # exact line integrals
 # form mesh #0
-integral_exact[0]['ds_circle'] = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'][:2])
-integral_exact[0]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2], 0)
+integral_exact[0]['ds_circle'] = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c_r'][:2])
 
 # for mesh #1
 integral_exact[1]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
@@ -54,9 +53,9 @@ integral_exact[1]['ds_lr'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r
 integral_exact[1]['ds_tb'] = integral_exact[1]['ds_t'] + integral_exact[1]['ds_b']
 
 integral_exact[1]['ds_lrtb'] = integral_exact[1]['ds_lr'] + integral_exact[1]['ds_tb']
-integral_exact[1]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2], 0)
+integral_exact[1]['ds_circle'] = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c_r'][:2])
 
-integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_ellipse']
+integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_circle']
 
 test_mesh_integral_errors = dict([])
 
@@ -70,7 +69,6 @@ for i in range(len(lmsh.sub_meshes)):
 # line intergrals
 # for mesh #0
 test_mesh_integral_errors[f'\int f ds_sub_mesh_{0}_circle'] = msh.test_mesh_integral(integral_exact[0]['ds_circle'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_circle'], f'\int f ds_sub_mesh_{0}_circle')
-test_mesh_integral_errors[f'\int f ds_sub_mesh_{0}_ellipse'] = msh.test_mesh_integral(integral_exact[0]['ds_ellipse'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[0]['ds_ellipse'], f'\int f ds_sub_mesh_{0}_ellipse')
 
 # for mesh #1
 test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_l'], f'\int f ds_sub_mesh_{1}_l')
@@ -82,7 +80,7 @@ test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_lr'] = msh.test_mesh_integral
 test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_tb'] = msh.test_mesh_integral(integral_exact[1]['ds_tb'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_tb'], f'\int f ds_sub_mesh_{1}_tb')
 
 test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_lrtb'] = msh.test_mesh_integral(integral_exact[1]['ds_lrtb'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_lrtb'], f'\int f ds_sub_mesh_{1}_lrtb')
-test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_ellipse'] = msh.test_mesh_integral(integral_exact[1]['ds_ellipse'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_ellipse'], f'\int f ds_sub_mesh_{1}_ellipse')
+test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}_circle'] = msh.test_mesh_integral(integral_exact[1]['ds_circle'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds_circle'], f'\int f ds_sub_mesh_{1}_circle')
 
 test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}'] = msh.test_mesh_integral(integral_exact[1]['ds'], tf.function_test_integrals_fenics, rmsh.ds_sub_mesh[1]['ds'], f'\int f ds_sub_mesh_{1}')
 
@@ -90,4 +88,3 @@ test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}'] = msh.test_mesh_integral(in
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
-'''

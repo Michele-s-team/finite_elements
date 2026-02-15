@@ -58,27 +58,3 @@ import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
-
-# Define boundaries: it is important that these boundaries are defined in the right order, because a definition may call a preceeding one
-
-boundary = [''] * len(lmsh.sub_meshes)
-boundary[0] = dict([])
-
-boundary[0]['circle'] = f'on_boundary && sqrt(pow(x[0] - {parameters["c_r"][0]}, 2) + pow(x[1] - {parameters["c_r"][1]}, 2)) < {(parameters["r"] + parameters["b"]) / 2}'
-
-boundary[1] = dict([ \
-    ('l', f'near(x[0], {0})'), \
-    ('r', f'near(x[0], {parameters["L"]})'), \
-    ('t', f'near(x[1], {parameters["h"]})'), \
-    ('b', f'near(x[1], {0})') \
-    ])
-
-boundary[1]['lr'] = f"({boundary[1]['l']}) || ({boundary[1]['r']})"
-boundary[1]['tb'] = f"({boundary[1]['t']}) || ({boundary[1]['b']})"
-
-boundary[1]['lrtb'] = f"({boundary[1]['lr']}) || ({boundary[1]['tb']})"
-
-
-boundary[1]['circle'] = boundary[0]['circle']
-
-boundary[1]['lrtb_circle'] = f"({boundary[1]['lrtb']}) || ({boundary[0]['circle']})"
