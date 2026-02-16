@@ -30,7 +30,7 @@ sf_sub_mesh.append(msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf))
 mf_sub_mesh.append(msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf))
 
 sub_mesh = lmsh.sub_meshes[1]
-sf_sub_mesh.append(lmsh.cf_sub_meshes[1])
+sf_sub_mesh.append(lmsh.sf_sub_meshes[1])
 mf_sub_mesh.append(lmsh.vf_sub_meshes[1])
 
 
@@ -39,7 +39,7 @@ To test if old and new method give the same result:
 print(f'**** A: {msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf).array()}')
 print(f'**** B: {lmsh.vf_sub_meshes[0].array()}')
 
-if (msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf).array() == lmsh.cf_sub_meshes[0].array()).all():
+if (msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf).array() == lmsh.sf_sub_meshes[0].array()).all():
     print('OK')
 else:
     print('NOT OK ')
