@@ -1832,6 +1832,11 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     if "n_sub_meshes" in mesh_medatada:
 
+        # read the functions that tag elements of the parent mesh
+        cf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
+        vf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "triangle_mesh.xdmf"))
+
+
         # mesh_parameters contain the field n_sub_meshes -> generate sub_meshes
 
         # the list of sub_meshes
@@ -1852,10 +1857,9 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     # the sub_mesh under consideration has dimension > 1: generate it in the ordinary way  with 'SubMesh'
                     sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
 
-                    # CHANGE THIS - START
-                    cf_sub_meshes.append(None)
-                    vf_sub_meshes.append(None)
-                    # CHANGE THIS - END
+                    # the functions that tag cells and vertices on the sub-mesh are obtained by transferring the respective functiosn on the parent mesh 
+                    cf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], cf_mesh))
+                    vf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], vf_mesh))
 
                 elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
                     '''
