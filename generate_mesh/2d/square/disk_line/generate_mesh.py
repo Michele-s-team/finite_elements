@@ -60,7 +60,7 @@ line_mesh_metadata['N'] = square_mesh_metadata['N']
 line_mesh_metadata['circle_loop_id'] = square_mesh_metadata['circle_loop_id']
 line_mesh_metadata['line_mesh_vertex_l_id'] = square_mesh_metadata['line_mesh_vertex_l_id']
 line_mesh_metadata['line_mesh_vertex_r_id'] = square_mesh_metadata['line_mesh_vertex_r_id']
-line_mesh_metadata['sub_mesh_1_id'] = square_mesh_metadata['sub_mesh_1_id']
+line_mesh_metadata['sub_mesh_0_1_id'] = square_mesh_metadata['sub_mesh_0_1_id']
 line_mesh_metadata['file_format'] = 'h5'
 
 
@@ -162,8 +162,8 @@ gmsh.model.setPhysicalName(1, rpam.parameters["circle_loop_id"], "circle_loop")
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_1_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_1_id"], "square_minus_circle_surface")
+gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_0_1_id"])
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_1_id"], "square_minus_circle_surface")
 
 gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_id"])
 gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "circle_surface")
@@ -171,7 +171,7 @@ gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "ci
 
 
 # set the resolution
-# se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_1_id
+# se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_0_1_id
 distance = gmsh.model.mesh.field.add("Distance")
 
 gmsh.model.mesh.field.setNumbers(distance, "FacesList", [circle_loop])
@@ -196,7 +196,7 @@ gmsh.write(square_mesh_file)
 msh.full_write(square_mesh_file, ['triangle', 'line'], square_mesh_metadata, output_directory_square_mesh, True)
 
 msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
-msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
+msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_0_1_id"])
 
 
 # print the boundary points of the boundary given by the circle
