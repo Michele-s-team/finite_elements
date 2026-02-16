@@ -77,7 +77,8 @@ mesh_0_metadata['file_format'] = 'xdmf'
 mesh_1_metadata = {}
 
 mesh_1_metadata['L'] = rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0)
-mesh_1_metadata['r'] = rpam.parameters['r']
+mesh_1_metadata['x_l'] = 0
+mesh_1_metadata['x_r'] = mesh_1_metadata['L']
 mesh_1_metadata['N'] = rpam.parameters['N']
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['line_mesh_vertex_l_id']
