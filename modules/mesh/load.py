@@ -1,4 +1,5 @@
 from fenics import *
+import os
 
 import input_output as io
 import mesh.utils as msh
@@ -64,3 +65,14 @@ if "n_meshes" not in parameters:
 
 else: 
     print(f'***** There are multiple meshes.')
+
+    mesh = [None] * parameters["n_meshes"]
+    sf = [None] * parameters["n_meshes"]
+
+    for i in range(parameters["n_meshes"]):
+        # run through the meshes
+
+        # read the i-th mesh
+        mesh[i], sf[i] = msh.read_from_file(os.path.join(rarg.args.input_directory, f'mesh_{i}'), parameters[f'mesh_{i}_file_format'])
+
+
