@@ -142,17 +142,17 @@ gmsh.model.geo.synchronize()
 lines = gmsh.model.getEntities(dim=1)
 
 # add square lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_1_b_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_1_b_id"], "square_line_b")
+gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_0_1_b_id"])
+gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_0_1_b_id"], "square_line_b")
 
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_1_r_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_1_r_id"], "square_line_r")
+gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_0_1_r_id"])
+gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_0_1_r_id"], "square_line_r")
 
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_1_t_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_1_t_id"], "square_line_t")
+gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_0_1_t_id"])
+gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_0_1_t_id"], "square_line_t")
 
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_1_l_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_1_l_id"], "square_line_l")
+gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_0_1_l_id"])
+gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_0_1_l_id"], "square_line_l")
 
 #add circle lines
 gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + rpam.parameters['N'])], rpam.parameters["circle_loop_id"])
@@ -165,8 +165,8 @@ surfaces = gmsh.model.getEntities(dim=2)
 gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_0_1_id"])
 gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_1_id"], "square_minus_circle_surface")
 
-gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_id"])
-gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_id"], "circle_surface")
+gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_0_id"])
+gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_0_id"], "circle_surface")
 
 
 
@@ -195,7 +195,7 @@ gmsh.write(square_mesh_file)
 
 msh.full_write(square_mesh_file, ['triangle', 'line'], square_mesh_metadata, output_directory_square_mesh, True)
 
-msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
+msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_0_id"])
 msh.generate_sub_mesh(output_directory_square_mesh, os.path.join(output_directory_square_mesh, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_0_1_id"])
 
 
