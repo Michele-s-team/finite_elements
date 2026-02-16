@@ -1825,8 +1825,8 @@ Input values:
     - 'input_directory': the directory where 'mesh' is stored
 Return values:
     - 'sub_meshes': a list containing the sub_meshes
-    - 'cf_sub_meshes':  a list containing a function to tag the sub_mesh cells. cf_sub_meshes[i] contains a function to tag cells of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
-    - 'vf_sub_meshes': a list containing a function to tag the sub_mesh vertices. vf_sub_meshes[i] contains a function to tag vertices of the i-th sub_mesh  of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
+    - 'sf_sub_meshes':  a list containing a function to tag the sub_mesh cells. cf_sub_meshes[i] contains a function to tag cells of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
+    - 'mf_sub_meshes': a list containing a function to tag the sub_mesh vertices. vf_sub_meshes[i] contains a function to tag vertices of the i-th sub_mesh  of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
 '''
 def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
