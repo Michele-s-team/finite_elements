@@ -1833,8 +1833,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     if "n_sub_meshes" in mesh_medatada:
 
         # read the functions that tag elements of the parent mesh
-        cf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
-        vf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "line_mesh.xdmf"))
+        sf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
+        mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "line_mesh.xdmf"))
 
 
         # mesh_parameters contain the field n_sub_meshes -> generate sub_meshes
@@ -1843,8 +1843,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
         sub_meshes = []
 
         # the list of functions to tag objects in sub_meshes
-        cf_sub_meshes = []
-        vf_sub_meshes = []
+        sf_sub_meshes = []
+        mf_sub_meshes = []
 
         if mesh_medatada["n_sub_meshes"] > 1:
             #  'mesh' contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
@@ -1858,8 +1858,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
 
                     # the functions that tag cells and vertices on the sub-mesh are obtained by transferring the respective functiosn on the parent mesh 
-                    cf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], cf_mesh))
-                    vf_sub_meshes.append(transfer_facet_tags_to_sub_mesh(mesh, sub_meshes[p], vf_mesh))
+                    sf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], sf_mesh))
+                    mf_sub_meshes.append(transfer_facet_tags_to_sub_mesh(mesh, sub_meshes[p], mf_mesh))
 
                 elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
                     '''
@@ -1889,11 +1889,11 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                                                                                         None, None)
                     
                     sub_meshes.append(sub_mesh_1d)
-                    cf_sub_meshes.append(cf_sub_mesh_1d)
-                    vf_sub_meshes.append(vf_sub_mesh_1d)
+                    sf_sub_meshes.append(cf_sub_mesh_1d)
+                    mf_sub_meshes.append(vf_sub_mesh_1d)
 
             print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
 
-            return sub_meshes, cf_sub_meshes, vf_sub_meshes
+            return sub_meshes, sf_sub_meshes, mf_sub_meshes
 
         print('... done.')
