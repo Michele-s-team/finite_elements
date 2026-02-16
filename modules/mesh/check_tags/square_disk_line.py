@@ -7,13 +7,13 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
 
-'''
+
 import mesh.test_function as tf
 import mesh.utils as msh
 import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.square_disk_line')
-
+'''
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 integral_exact = [''] * len(lmsh.sub_meshes)

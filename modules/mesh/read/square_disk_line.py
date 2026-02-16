@@ -13,6 +13,8 @@ import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg
 
+
+'''
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")
 # read the lines
@@ -20,34 +22,31 @@ mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.ar
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-# create a list of map functions for triangles and lines for each sub_mesh
-sf_sub_mesh = []
-mf_sub_mesh = []
-for sub_mesh in lmsh.sub_meshes:
-    sf_sub_mesh.append(msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf))
-    mf_sub_mesh.append(msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf))
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
-# create line and surface elements for sub_meshes
+# create volume and line elements for sub_meshes
+# volume elements
 dx_sub_mesh = []
 
 for p in range(len(lmsh.sub_meshes)):
-    dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=sf_sub_mesh[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
+    dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=lmsh.sf_sub_meshes[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
 
+
+# line elements
 ds_sub_mesh = [''] * len(lmsh.sub_meshes)
 
 ds_sub_mesh[0] = dict([ \
-    ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"circle_loop_id"])), 
+    ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"circle_loop_id"])), 
     ])
 
 ds_sub_mesh[1] = dict([ \
-    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])), \
-    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])), \
-    ('ds_t', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_t_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])), \
-    ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"circle_loop_id"])) \
+    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])), \
+    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])), \
+    ('ds_t', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_t_id"])), \
+    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])), \
+    ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"circle_loop_id"])) \
     ])
 ds_sub_mesh[1]['ds_lr'] = ds_sub_mesh[1]['ds_l'] + ds_sub_mesh[1]['ds_r']
 ds_sub_mesh[1]['ds_tb'] = ds_sub_mesh[1]['ds_t'] + ds_sub_mesh[1]['ds_b']
@@ -58,3 +57,4 @@ import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_disk_line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
+'''
