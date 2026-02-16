@@ -25,26 +25,24 @@ mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.ar
 sf_sub_mesh = []
 mf_sub_mesh = []
 
-sub_mesh = lmsh.sub_meshes[0]
-sf_sub_mesh.append(msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf))
-mf_sub_mesh.append(msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf))
+sf_sub_mesh.append(lmsh.sf_sub_meshes[0])
+mf_sub_mesh.append(lmsh.mf_sub_meshes[0])
 
-sub_mesh = lmsh.sub_meshes[1]
 sf_sub_mesh.append(lmsh.sf_sub_meshes[1])
-mf_sub_mesh.append(lmsh.vf_sub_meshes[1])
+mf_sub_mesh.append(lmsh.mf_sub_meshes[1])
 
 
 '''
 To test if old and new method give the same result: 
 print(f'**** A: {msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf).array()}')
-print(f'**** B: {lmsh.vf_sub_meshes[0].array()}')
+print(f'**** B: {lmsh.mf_sub_meshes[0].array()}')
 
 if (msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf).array() == lmsh.sf_sub_meshes[0].array()).all():
     print('OK')
 else:
     print('NOT OK ')
 
-if (msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf).array() == lmsh.vf_sub_meshes[0].array()).all():
+if (msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf).array() == lmsh.mf_sub_meshes[0].array()).all():
     print('OK')
 else:
     print('NOT OK ')

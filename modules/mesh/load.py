@@ -17,7 +17,7 @@ if "n_meshes" not in parameters:
     mesh, sf = msh.read_from_file(rarg.args.input_directory, parameters['file_format'])
 
     # read the sub_meshes and generate their functions tagging cells and vertices
-    sub_meshes, sf_sub_meshes, vf_sub_meshes = msh.read_sub_meshes(mesh, sf, parameters, rarg.args.input_directory)
+    sub_meshes, sf_sub_meshes, mf_sub_meshes = msh.read_sub_meshes(mesh, sf, parameters, rarg.args.input_directory)
 
     '''
     if "n_sub_meshes" in parameters:
