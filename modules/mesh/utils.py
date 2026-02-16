@@ -1823,15 +1823,23 @@ Input values:
     - 'sf': the MeshFunctionSizet for the geometrical components with the largest dimension in 'mesh'. For example, if 'mesh' is 3d, this will be a function for tetrahedra, if 'mesh' is 2d this will be a function for triangles, etc. 
     - 'mesh_metadata': a dictionary containing the mesh metadata for 'mesh'
     - 'input_directory': the directory where 'mesh' is stored
-
-
+Return values:
+    - 'sub_meshes': a list containing the sub_meshes
+    - 'cf_sub_meshes':  a list containing a function to tag the sub_mesh cells. cf_sub_meshes[i] contains a function to tag cells of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
+    - 'vf_sub_meshes': a list containing a function to tag the sub_mesh vertices. vf_sub_meshes[i] contains a function to tag vertices of the i-th sub_mesh  of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
 '''
 def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     if "n_sub_meshes" in mesh_medatada:
 
         # mesh_parameters contain the field n_sub_meshes -> generate sub_meshes
+
+        # the list of sub_meshes
         sub_meshes = []
+
+        # the list of functions to tag objects in sub_meshes
+        cf_sub_meshes = []
+        vf_sub_meshes = []
 
         if mesh_medatada["n_sub_meshes"] > 1:
             #  'mesh' contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
@@ -1843,6 +1851,11 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                     # the sub_mesh under consideration has dimension > 1: generate it in the ordinary way  with 'SubMesh'
                     sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
+
+                    # CHANGE THIS - START
+                    cf_sub_meshes.append(None)
+                    vf_sub_meshes.append(None)
+                    # CHANGE THIS - END
 
                 elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
                     '''
@@ -1870,7 +1883,10 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
                                                                                         mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada['vertex_sub_mesh_1_l_id'], mesh_medatada['vertex_sub_mesh_1_r_id'],
                                                                                         None, None)
+                    
                     sub_meshes.append(sub_mesh_1d)
+                    cf_sub_meshes.append(cf_sub_mesh_1d)
+                    vf_sub_meshes.append(vf_sub_mesh_1d)
 
             print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
 
