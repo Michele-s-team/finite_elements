@@ -59,6 +59,7 @@ else:
 
     c_test = [None] * lmsh.parameters["n_meshes"]
     Q = [None] * lmsh.parameters["n_meshes"]
+    function_test_integrals = [None] * lmsh.parameters["n_meshes"]
     function_test_integrals_fenics = [None] * lmsh.parameters["n_meshes"]
 
     for p in range(lmsh.parameters['n_meshes']):
@@ -72,26 +73,32 @@ else:
 
 
         # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-        def function_test_integrals(x):
+        def function_test_integrals_p(x, p=p):
             return (np.cos(geo.np.linalg.norm(np.subtract(x, c_test[p])) - r_test) ** 2.0)
 
+        function_test_integrals[p] = function_test_integrals_p
 
-        # function_test_integrals_fenics is the same as function_test_integrals, but in fenics format
+        # function_test_integrals_fenics is the same as function_test_integrals_p, but in fenics format
         function_test_integrals_fenics[p] = Function(Q[p])
 
 
         # analytical expression for a  scalar function used to test the ds
         class FunctionTestIntegrals(UserExpression):
+
+            def __init__(self, p_val, **kwargs):  # ← Added this
+                self.p_val = p_val                 # ← Added this
+                super().__init__(**kwargs)         # ← Added this
+
             def eval(self, values, x):
 
                 # here x may be a three- or two-dimensional array whose last entries are set to zero -> I give it the right dimension by doing x[:(lmsh.mesh.topology().dim())]
-                values[0] = function_test_integrals(x[:(((lmsh.mesh)[p]).topology().dim())])
+                values[0] = function_test_integrals_p(x[:(((lmsh.mesh)[self.p_val]).topology().dim())], self.p_val)
 
             def value_shape(self):
                 return (1,)
 
 
-        function_test_integrals_fenics[p].interpolate(FunctionTestIntegrals(element=Q[p].ufl_element()))
+        function_test_integrals_fenics[p].interpolate(FunctionTestIntegrals(p_val=p, element=Q[p].ufl_element()))
 
     print(f'... done.')
 
