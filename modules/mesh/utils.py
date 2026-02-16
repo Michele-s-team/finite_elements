@@ -1817,7 +1817,7 @@ def element_geometry(mesh):
         return interval
 
 '''
-read the sub-meshes of a mesh
+read the sub-meshes of a mesh. This only works if the parent mesh is two-dimensional. 
 Input values: 
     - 'mesh': the mesh of which the sub-meshes will be read
     - 'sf': the MeshFunctionSizet for the geometrical components with the largest dimension in 'mesh'. For example, if 'mesh' is 3d, this will be a function for tetrahedra, if 'mesh' is 2d this will be a function for triangles, etc. 
