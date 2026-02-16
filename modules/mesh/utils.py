@@ -1626,6 +1626,8 @@ def read_from_h5_file(mesh_path):
         mesh = read_mesh(mesh_path_with_slash + "line_mesh.h5")
         cf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.h5", "cf")
 
+        print('1d mesh')
+
         result = mesh, cf
 
     else:
