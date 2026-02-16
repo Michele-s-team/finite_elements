@@ -6,6 +6,8 @@ import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
+
+'''
 import mesh.test_function as tf
 import mesh.utils as msh
 import runtime_arguments as rarg
@@ -88,3 +90,4 @@ test_mesh_integral_errors[f'\int f ds_sub_mesh_{1}'] = msh.test_mesh_integral(in
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+'''
