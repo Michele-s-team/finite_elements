@@ -55,7 +55,7 @@ if "n_meshes" not in lmsh.parameters:
 else: 
     # multiple meshes are being read
 
-    print(f'Generating test function for a multiple meshes ... ')
+    print(f'Generating test function for multiple meshes ... ')
 
     c_test = [None] * lmsh.parameters["n_meshes"]
     Q = [None] * lmsh.parameters["n_meshes"]

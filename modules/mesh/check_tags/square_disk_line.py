@@ -13,15 +13,15 @@ import mesh.utils as msh
 import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.square_disk_line')
-'''
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
-integral_exact = [''] * len(lmsh.sub_meshes)
+integral_exact = [''] * lmsh.parameters['n_meshes']
 
 integral_exact[0] = dict([ \
     ('dx', 0), \
     ('ds_circle', 0), \
     ])
+
 
 integral_exact[1] = dict([ \
     ('dx', 0), \
@@ -35,7 +35,7 @@ integral_exact[1] = dict([ \
     ('ds', 0), \
     ])
 
-
+'''
 # exact surface integrals
 integral_exact[0]['dx'] = cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c_r'])
 integral_exact[1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals, [0, 0], [rmsh.parameters['L'], rmsh.parameters['h']]) \
