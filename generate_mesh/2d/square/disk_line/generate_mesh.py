@@ -4,7 +4,7 @@ This code generates a 2d mesh (A) given by a square with a circle (the circle is
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 from fenics import *

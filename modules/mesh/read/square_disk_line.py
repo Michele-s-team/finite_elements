@@ -55,6 +55,6 @@ ds_sub_mesh[1]['ds_lrtb'] = ds_sub_mesh[1]['ds_lr'] + ds_sub_mesh[1]['ds_tb']
 ds_sub_mesh[1]['ds'] = ds_sub_mesh[1]['ds_lrtb'] + ds_sub_mesh[1]['ds_circle']
 
 import importlib
-check_mesh_module = importlib.import_module('mesh.check_tags.square_line')
+check_mesh_module = importlib.import_module('mesh.check_tags.square_disk_line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
