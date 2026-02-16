@@ -1834,7 +1834,7 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
         # read the functions that tag elements of the parent mesh
         cf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
-        vf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "triangle_mesh.xdmf"))
+        vf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "line_mesh.xdmf"))
 
 
         # mesh_parameters contain the field n_sub_meshes -> generate sub_meshes
@@ -1859,7 +1859,7 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                     # the functions that tag cells and vertices on the sub-mesh are obtained by transferring the respective functiosn on the parent mesh 
                     cf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], cf_mesh))
-                    vf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], vf_mesh))
+                    vf_sub_meshes.append(transfer_facet_tags_to_sub_mesh(mesh, sub_meshes[p], vf_mesh))
 
                 elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
                     '''
