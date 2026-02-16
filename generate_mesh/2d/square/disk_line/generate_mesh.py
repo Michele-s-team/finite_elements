@@ -80,10 +80,9 @@ mesh_1_metadata['L'] = rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * np.si
 mesh_1_metadata['r'] = rpam.parameters['r']
 mesh_1_metadata['N'] = rpam.parameters['N']
 
-mesh_1_metadata['circle_loop_id'] = rpam.parameters['circle_loop_id']
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['line_mesh_vertex_l_id']
 mesh_1_metadata['vertex_r_id'] = rpam.parameters['line_mesh_vertex_r_id']
-mesh_1_metadata['sub_mesh_id'] = rpam.parameters['sub_mesh_0_1_id']
+mesh_1_metadata['line_id'] = rpam.parameters['circle_loop_id']
 
 mesh_1_metadata['file_format'] = 'h5'
 
