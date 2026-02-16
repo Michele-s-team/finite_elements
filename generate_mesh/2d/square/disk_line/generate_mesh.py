@@ -43,11 +43,14 @@ os.mkdir(output_directory_mesh_0)
 output_directory_mesh_1 = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'mesh_1'))
 os.mkdir(output_directory_mesh_1)
 
-square_mesh_file = os.path.join(output_directory_mesh_0, "mesh.msh")
+mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
 # angular fraction corresponding to each segment of the circle
 delta_theta = 2 * np.pi / rpam.parameters["N"]
 
+
+#write metadata for ensemble mesh
+mesh_metadata = rpam.parameters.copy()
 
 # write metadata for mesh 0
 mesh_0_metadata = {}
@@ -215,9 +218,9 @@ gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
 gmsh.model.geo.synchronize()
 
 geometry.generate_mesh(dim=2)
-gmsh.write(square_mesh_file)
+gmsh.write(mesh_0_file)
 
-msh.full_write(square_mesh_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
+msh.full_write(mesh_0_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
 
 msh.generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_0'), rpam.parameters["sub_mesh_0_0_id"])
 msh.generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), rpam.parameters["sub_mesh_0_1_id"])
@@ -242,5 +245,10 @@ msh.genereate_line_mesh(0, rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * n
                         vertex_m_id=None,
                         output_directory=output_directory_mesh_1, 
                         metadata=mesh_1_metadata)
+
+
+
+#print overall mesh metadata
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
 model.__exit__()
