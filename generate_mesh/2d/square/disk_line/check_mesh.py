@@ -8,7 +8,7 @@ Example:
 
 
 # to check only the square mesh do      
-# clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution/square"; CHECK_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/check"; rm -rf $CHECK_PATH; mkdir $CHECK_PATH; python3 check_mesh.py $MESH_PATH $CHECK_PATH
+# clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution/mesh_0"; CHECK_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/check"; rm -rf $CHECK_PATH; mkdir $CHECK_PATH; python3 check_mesh.py $MESH_PATH $CHECK_PATH
 
 '''
 import importlib
