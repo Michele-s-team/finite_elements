@@ -1815,3 +1815,63 @@ def element_geometry(mesh):
         return triangle
     elif d == 1:
         return interval
+
+'''
+read the sub-meshes of a mesh
+Input values: 
+    - 'mesh': the mesh of which the sub-meshes will be read
+    - 'sf': the MeshFunctionSizet for the geometrical components with the largest dimension in 'mesh'. For example, if 'mesh' is 3d, this will be a function for tetrahedra, if 'mesh' is 2d this will be a function for triangles, etc. 
+    - 'mesh_metadata': a dictionary containing the mesh metadata for 'mesh'
+    - 'input_directory': the directory where 'mesh' is stored
+
+
+'''
+def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
+
+    if "n_sub_meshes" in mesh_medatada:
+
+        # mesh_parameters contain the field n_sub_meshes -> generate sub_meshes
+        sub_meshes = []
+
+        if mesh_medatada["n_sub_meshes"] > 1:
+            #  'mesh' contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
+            
+            print('Generating sub_meshes ... ')
+            for p in range(mesh_medatada["n_sub_meshes"]):
+
+                if mesh_medatada[f'sub_mesh_{p}_dim'] > 1:
+
+                    # the sub_mesh under consideration has dimension > 1: generate it in the ordinary way  with 'SubMesh'
+                    sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
+
+                elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
+                    '''
+                    the sub_mesh under consideration has dimension 1 -> it is a line: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
+                    I would obtain a one-dimensional mesh embedded in two-dimensional space, thus in fact a two-dimensional mesh, which is not what I want : I want a truly one-dimensional mesh. 
+                    -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
+                    '''
+
+                    # read the line components from the parent mesh and create the relative mesh function 'cf'
+                    line_mesh = read_mesh(io.add_trailing_slash(input_directory) + "line_mesh.xdmf")
+                    cf = read_mesh_components(line_mesh, line_mesh.topology().dim(), io.add_trailing_slash(input_directory) + "line_mesh.xdmf")
+
+                    # create  submesh_2d from the cell function 'cf' and the id which identifies the sub_mesh under consideration: submesh_2d is a line embedded in 2d space
+                    submesh_2d = SubMesh(mesh, cf, mesh_medatada[f'sub_mesh_{p}_id'])
+
+                    # transform submesh_2d into a truly 1d mesh
+                    # Extract x-coordinates from the 2D submesh
+                    x_coordinates = []
+                    for vertex in vertices(submesh_2d):
+                        x_coordinates.append(vertex.point().x())
+
+                    x_coordinates = sorted(list(set(x_coordinates)))  # Remove duplicates and sort
+
+                    # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
+                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
+                                                                                        mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada['vertex_sub_mesh_1_l_id'], mesh_medatada['vertex_sub_mesh_1_r_id'],
+                                                                                        None, None)
+                    sub_meshes.append(sub_mesh_1d)
+
+            print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
+
+        print('... done.')
