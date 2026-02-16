@@ -1890,4 +1890,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
             print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
 
+            return sub_meshes, cf_sub_meshes, vf_sub_meshes
+
         print('... done.')
