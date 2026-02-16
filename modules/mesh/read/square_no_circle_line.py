@@ -21,16 +21,6 @@ sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.i
 # read the lines
 mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
-# create a list of map functions for triangles and lines for each sub_mesh
-# lmsh.sf_sub_meshes = []
-# lmsh.mf_sub_meshes = []
-
-# lmsh.sf_sub_meshes.append(lmsh.sf_sub_meshes[0])
-# lmsh.mf_sub_meshes.append(lmsh.mf_sub_meshes[0])
-
-# lmsh.sf_sub_meshes.append(lmsh.sf_sub_meshes[1])
-# lmsh.mf_sub_meshes.append(lmsh.mf_sub_meshes[1])
-
 
 # r_mesh[i] is the radius of the smallest cell in sub_meshes[i]
 r_mesh =  [lmsh.sub_meshes[i].hmin() for i in range(len(lmsh.sub_meshes))]
