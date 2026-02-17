@@ -61,10 +61,10 @@ ds_mesh = [None] * lmsh.parameters['n_meshes']
 
 
 ds_mesh[0] = dict([ \
-    ('ds_l', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_sub_mesh_{0}_l_id"])), \
-    ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_sub_mesh_{0}_r_id"])), \
-    ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"sub_mesh_{1}_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_sub_mesh_{0}_b_id"])), \
+    ('ds_l', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_l_id"])), \
+    ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_r_id"])), \
+    ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_t_id"])), \
+    ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_b_id"]))
     ])
 
 
@@ -77,11 +77,6 @@ for p in range(len(lmsh.sub_meshes[0])):
 
 
 '''
-
-
-
-
-
 # line elements
 ds_sub_mesh = [''] * len(lmsh.sub_meshes)
 

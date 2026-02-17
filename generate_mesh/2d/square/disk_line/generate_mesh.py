@@ -86,7 +86,7 @@ mesh_0_metadata['line_sub_mesh_1_l_id'] = rpam.parameters['line_l_id']
 mesh_0_metadata['line_sub_mesh_1_r_id'] = rpam.parameters['line_r_id']
 mesh_0_metadata['line_sub_mesh_1_t_id'] = rpam.parameters['line_t_id']
 mesh_0_metadata['line_sub_mesh_1_b_id'] = rpam.parameters['line_b_id']
-mesh_0_metadata['circle_loop_id'] = rpam.parameters['circle_loop_id']
+mesh_0_metadata['circle_id'] = rpam.parameters['circle_id']
 
 mesh_0_metadata['file_format'] = 'xdmf'
 
@@ -100,7 +100,7 @@ mesh_1_metadata['N'] = N
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_l_id']
 mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_r_id']
-mesh_1_metadata['line_id'] = rpam.parameters['circle_loop_id']
+mesh_1_metadata['line_id'] = rpam.parameters['circle_id']
 
 mesh_1_metadata['file_format'] = 'h5'
 
@@ -196,8 +196,8 @@ gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_l_
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_l_id"], "square_line_l")
 
 #add circle lines
-gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["circle_loop_id"])
-gmsh.model.setPhysicalName(1, rpam.parameters["circle_loop_id"], "circle_loop")
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["circle_id"])
+gmsh.model.setPhysicalName(1, rpam.parameters["circle_id"], "circle_loop")
 
 
 # add 2-dimensional objects
@@ -244,8 +244,8 @@ msh.generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mes
 msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
     output_directory_mesh_0, 
-    [rpam.parameters['circle_loop_id']],
-    os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'))
+    [rpam.parameters['circle_id']],
+    os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(rpam.parameters['circle_id']) + '.csv'))
 
 
 
@@ -254,7 +254,7 @@ msh.sorted_boundary_points(
 
 # generate the line mesh corresponding to the circle
 msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), N,
-                        rpam.parameters['circle_loop_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
+                        rpam.parameters['circle_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
                         x_m=None,
                         vertex_m_id=None,
                         output_directory=output_directory_mesh_1, 
