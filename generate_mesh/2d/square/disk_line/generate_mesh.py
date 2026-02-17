@@ -45,8 +45,22 @@ os.mkdir(output_directory_mesh_1)
 
 mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
+'''
+the number of segments in the disk is chosen in such a way that the side of the circle polygon is (at the most) equal to the mesh resolution: 
+
+2 * r * sin(2 * pi / N / 2) = resolution
+pi / N = arcsin(resolution / (2 r))
+N = pi / arcsin(resolution / (2 r))
+
+thus I set
+'''
+
+N = int(np.ceil(np.pi / np.arcsin(rpam.parameters['resolution']/ (2.0 * rpam.parameters['r']))))
+
+print(f'N = {N}')
+
 # angular fraction corresponding to each segment of the circle
-delta_theta = 2 * np.pi / rpam.parameters["N"]
+delta_theta = 2 * np.pi / N
 
 
 #write metadata for ensemble mesh
@@ -58,7 +72,7 @@ mesh_0_metadata['L'] = rpam.parameters['L']
 mesh_0_metadata['h'] = rpam.parameters['h']
 mesh_0_metadata['r'] = rpam.parameters['r']
 mesh_0_metadata['c_r'] = rpam.parameters['c_r']
-mesh_0_metadata['N'] = rpam.parameters['N']
+mesh_0_metadata['N'] = N
 mesh_0_metadata['resolution'] = rpam.parameters['resolution']
 mesh_0_metadata['n_sub_meshes'] = rpam.parameters['n_sub_meshes_0']
 
@@ -79,10 +93,10 @@ mesh_0_metadata['file_format'] = 'xdmf'
 # write metadata for mesh 1
 mesh_1_metadata = {}
 
-mesh_1_metadata['L'] = rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0)
+mesh_1_metadata['L'] = N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0)
 mesh_1_metadata['x_l'] = 0
 mesh_1_metadata['x_r'] = mesh_1_metadata['L']
-mesh_1_metadata['N'] = rpam.parameters['N']
+mesh_1_metadata['N'] = N
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['line_mesh_vertex_l_id']
 mesh_1_metadata['vertex_r_id'] = rpam.parameters['line_mesh_vertex_r_id']
@@ -130,7 +144,7 @@ print(f'Added point with coordinates {circle_coordinates[-1]}')
 
 
 print("Starting loop over circle ... ")
-for i in range(1, rpam.parameters["N"]):
+for i in range(1, N):
 
     circle_coordinates.append(
         np.add(rpam.parameters['c_r'], cal.R(i * delta_theta).dot(np.subtract(circle_coordinates[0], rpam.parameters['c_r'])))
@@ -182,7 +196,7 @@ gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_su
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_0_1_l_id"], "square_line_l")
 
 #add circle lines
-gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + rpam.parameters['N'])], rpam.parameters["circle_loop_id"])
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["circle_loop_id"])
 gmsh.model.setPhysicalName(1, rpam.parameters["circle_loop_id"], "circle_loop")
 
 
@@ -239,7 +253,7 @@ msh.sorted_boundary_points(
 
 
 # generate the line mesh corresponding to the circle
-msh.genereate_line_mesh(0, rpam.parameters['N'] * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), rpam.parameters['N'],
+msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), N,
                         rpam.parameters['circle_loop_id'], rpam.parameters['line_mesh_vertex_l_id'], rpam.parameters['line_mesh_vertex_r_id'],
                         x_m=None,
                         vertex_m_id=None,
