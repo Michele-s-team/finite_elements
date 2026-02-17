@@ -7,6 +7,7 @@ here integral_exact[i][j] is a dictionary containing the values of the exact int
 import colorama as col
 from fenics import *
 import importlib
+import os
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
@@ -43,17 +44,27 @@ integral_exact[1] = dict([ \
     ('dx', 0)
     ])
 
-
+'''
+here the exact integrals are computed. Note that the structure of the nested lists integral_exact does not follow the same structure as the nested list of meshes / sub_meshes. 
+For example, the exact integral over the circular boundary of sub_mesh 1 of mesh 0 is integral_exact[0][0]['ds'] (the integral over the only boundary of sub_mesh 0 of mesh 0), because they are the same thing.
+'''
 #1 exact integrals of mesh 0
 #1.1 exact bulk integrals for mesh 0
+
+#1.1.1 exact bulk integrals for sub_mesh 0 of mesh 0 
 integral_exact[0][0]['dx'] = cal.surface_integral_disk(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
+
+#1.1.2 exact bulk integrals for sub_mesh 1 of mesh 0 
 integral_exact[0][1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']]) - \
                                         cal.surface_integral_disk(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
 
 
 #1.2 exact boundary integrals for mesh 0
+
+#1.2.1 exact boundary integrals for sub mesh 0 of mesh 0 
 integral_exact[0][0]['ds'] = cal.curve_integral_circle(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
 
+#1.2.2 exact boundary integrals for sub mesh 1 of mesh 0 
 integral_exact[0][1]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], [0, lmsh.mesh_parameters[0]['h']])
 integral_exact[0][1]['ds_r'] = cal.curve_integral_line(tf.function_test_integrals[0], [lmsh.mesh_parameters[0]['L'], 0], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']])
 integral_exact[0][1]['ds_t'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, lmsh.mesh_parameters[0]['h']], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']])
@@ -70,19 +81,20 @@ integral_exact[1]['ds_r'] = (tf.function_test_integrals_fenics[1])(lmsh.mesh_par
 
 
 
-print(f'exact integrals = {integral_exact}')
-
 test_mesh_integral_errors = dict([])
 
 #1. check integrals on meshes
 
 # 1.1 bulk integrals
+
 # 1.1.1 bulk integrals on mesh 0
 test_mesh_integral_errors[f'\int_mesh_{0} f dx'] = msh.test_mesh_integral(integral_exact[0][0]['dx'] + integral_exact[0][1]['dx'], tf.function_test_integrals_fenics[0], rmsh.dx_mesh[0], f'\int_mesh_{0} f dx')
+
 # 1.1.2 bulk integrals on mesh 1
 test_mesh_integral_errors[f'\int_mesh_{1} f dx'] = msh.test_mesh_integral(integral_exact[1]['dx'], tf.function_test_integrals_fenics[1], rmsh.dx_mesh[1], f'\int_mesh_{1} f dx')
 
 # 1.2 boundary integrals
+
 # 1.2.1. boundary integrals on mesh 0
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_l'] = msh.test_mesh_integral(integral_exact[0][1]['ds_l'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_l'], f'\int_mesh_{0} f ds_l')
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_r'] = msh.test_mesh_integral(integral_exact[0][1]['ds_r'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_r'], f'\int_mesh_{0} f ds_r')
@@ -95,16 +107,21 @@ test_mesh_integral_errors[f'\int_mesh_{1} f ds_l'] = msh.test_mesh_integral(inte
 test_mesh_integral_errors[f'\int_mesh_{1} f ds_r'] = msh.test_mesh_integral(integral_exact[1]['ds_r'], tf.function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_r'], f'\int_mesh_{1} f ds_r')
 
 
+
+
 # 2. check mesh integral on sub_meshes
 print(f'Check integrals on the sub_meshes: ')
 
 # 2.1 bulk integrals
+
 # 2.1.1 bulk integrals on sub_meshes of mesh 0
 for i in range(lmsh.mesh_parameters[0]['n_sub_meshes']):
 
     test_mesh_integral_errors[f'\int_sub_mesh_{0}_{i} f dx'] = msh.test_mesh_integral(integral_exact[0][i]['dx'], tf.function_test_integrals_fenics[0], rmsh.dx_sub_mesh[0][i], f'\int_sub_mesh_{0}_{i} f dx')
 
+
 # 2.2 boundary integrals
+
 # 2.2.1 boundary integrals on sub_meshes of mesh 0
 
 # 2.2.1.1 boundary integrals on sub_mesh 0 of mesh 0
@@ -118,8 +135,8 @@ test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_b'] = msh.test_mesh_integral(
 test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_circle'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_sub_mesh[0][1]['ds_circle'], f'\int_mesh_{0}_{1} f ds_circle')
 
 
-'''
+
 # print to file the residuals of the tests of the mesh integrals
-io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
-'''
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'test_integral_errors.csv'), test_mesh_integral_errors)
+
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')

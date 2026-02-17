@@ -50,6 +50,7 @@ r_mesh[1] = lmsh.mesh[1].hmin()
 print(f'lmsh_sub_meshes: {lmsh.sub_meshes}')
 print(f'sf_sub_meshes: {lmsh.sf_sub_meshes}')
 
+#  define measures
 
 #1.  define bulk and boundary measures for meshes
 dx_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
@@ -77,6 +78,7 @@ ds_mesh[1] = dict([ \
     ('ds_l', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=lmsh.mesh_parameters[1][f"vertex_l_id"])), \
     ('ds_r', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=lmsh.mesh_parameters[1][f"vertex_r_id"]))
     ])
+
 
 #2. define bulk and boundary measures for sub-meshes
 dx_sub_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
