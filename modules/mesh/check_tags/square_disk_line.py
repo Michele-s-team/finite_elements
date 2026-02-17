@@ -1,3 +1,9 @@
+'''
+here integral_exact[i][j] is a dictionary containing the values of the exact integrals on the j-th submesh of the i-th mesh. If the i-th mesh contains no sub-meshes, then integral_exact[i][0] contains simply the exact integrals of the i-th mesh
+'''
+
+
+
 import colorama as col
 from fenics import *
 import importlib
@@ -17,12 +23,17 @@ print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 integral_exact = [''] * lmsh.parameters['n_meshes']
 
-integral_exact[0] = [dict([ \
+integral_exact[0] = [
+    # exact integrals of sub_mesh 0 of mesh 0
+    dict([ \
     ('dx', 0)
-    ]), dict([ \
+    ]), 
+    # exact integrals of sub_mesh 1 of mesh 0
+    dict([ \
     ('dx', 0)
     ])]
 
+# exact integrals of mesh 1
 integral_exact[1] = dict([ \
     ('dx', 0)
     ])
