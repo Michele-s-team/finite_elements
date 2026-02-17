@@ -78,7 +78,7 @@ fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_expression(element=fsp.Q[0].uf
 fsp.u_1_on_0.assign(project((fsp.u[1]) ** 2, fsp.Q[0]))
 
 bcs = [ \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["ellipse_loop_id"]) \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["ellipse_loop_id"]) \
     ]
 
 # functional for sub_mesh[0]
