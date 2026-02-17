@@ -84,6 +84,7 @@ integral_exact[1]['ds_r'] = (tf.function_test_integrals_fenics[1])(lmsh.mesh_par
 test_mesh_integral_errors = dict([])
 
 #1. check integrals on meshes
+print(f'Check integrals on meshes: ')
 
 # 1.1 bulk integrals
 
@@ -110,7 +111,7 @@ test_mesh_integral_errors[f'\int_mesh_{1} f ds_r'] = msh.test_mesh_integral(inte
 
 
 # 2. check mesh integral on sub_meshes
-print(f'Check integrals on the sub_meshes: ')
+print(f'Check integrals on sub_meshes: ')
 
 # 2.1 bulk integrals
 
