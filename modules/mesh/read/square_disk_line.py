@@ -6,7 +6,8 @@ Notation:
     - mf: a list of map functions, where mf[i] is the map function for the lines of the i-th mesh
 
 * Measures: 
-    - dx_sub_mesh[i][j] is the volume measure of the j-th submesh of the i-th mesh
+    - dx_mesh[i] is the volume measure of the i-th mesh, and it includes all sub-meshes of the i-th mesh
+    - dx_sub_mesh[i][j] is the volume measure of the j-th submesh of the i-th mesh. If the i-th mesh has no sub-meshes, then dx_sub_mesh[i] is empty. 
 '''
 
 from fenics import *
@@ -44,13 +45,21 @@ r_mesh[0] = lmsh.mesh[0].hmin()
 r_mesh[1] = lmsh.mesh[1].hmin()
 
 
-#A) mesh_0:
+
 
 print(f'lmsh_sub_meshes: {lmsh.sub_meshes}')
 print(f'sf_sub_meshes: {lmsh.sf_sub_meshes}')
 
-# create volume and line elements for sub_meshes
-# volume elements
+
+#1.  define surface and line elements for meshes
+dx_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
+
+dx_mesh[0] = Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0])
+dx_mesh[1] = Measure("dx", domain=lmsh.mesh[1], subdomain_data=lmsh.sf[1])
+
+
+#2. define surface and line elements for sub-meshes
+
 dx_sub_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
 
 for p in range(len(lmsh.sub_meshes[0])):
