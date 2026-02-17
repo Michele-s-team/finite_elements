@@ -64,8 +64,11 @@ ds_mesh[0] = dict([ \
     ('ds_l', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_l_id"])), \
     ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_t_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_b_id"]))
+    ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_b_id"])), \
+    ('ds_circle', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"circle_id"]))
     ])
+
+print(f'INT = {assemble(Constant(1) * ds_mesh[0]["ds_circle"])}')
 
 
 #2. define surface and line elements for sub-meshes

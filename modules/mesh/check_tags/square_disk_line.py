@@ -26,7 +26,8 @@ integral_exact = [''] * lmsh.parameters['n_meshes']
 integral_exact[0] = [
     # exact integrals of sub_mesh 0 of mesh 0
     dict([ \
-    ('dx', 0)
+    ('dx', 0),\
+    ('ds', 0)
     ]), 
     # exact integrals of sub_mesh 1 of mesh 0
     dict([ \
@@ -43,11 +44,10 @@ integral_exact[0][0]['dx'] = cal.surface_integral_disk(tf.function_test_integral
 integral_exact[0][1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']]) - \
                                         cal.surface_integral_disk(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
 
-
 integral_exact[1]['dx'] = cal.curve_integral_line(tf.function_test_integrals[1], lmsh.mesh_parameters[1]['x_l'], lmsh.mesh_parameters[1]['x_r'])
 
-
-# cal.curve_integral_line(tf.function_test_integrals[1], lmsh.mesh_parameters[1]['x_l'], lmsh.mesh_parameters[1]['x_r'])
+# exact line integrals
+integral_exact[0][0]['ds'] = cal.curve_integral_circle(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
 
 
 print(f'exact integrals = {integral_exact}')
@@ -72,11 +72,14 @@ integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_c
 '''
 test_mesh_integral_errors = dict([])
 
-# check integrals on meshes
+#1. check integrals on meshes
 
+# surface integrals
 test_mesh_integral_errors[f'\int_mesh_{0} f dx'] = msh.test_mesh_integral(integral_exact[0][0]['dx'] + integral_exact[0][1]['dx'], tf.function_test_integrals_fenics[0], rmsh.dx_mesh[0], f'\int_mesh_{0} f dx')
 test_mesh_integral_errors[f'\int_mesh_{1} f dx'] = msh.test_mesh_integral(integral_exact[1]['dx'], tf.function_test_integrals_fenics[1], rmsh.dx_mesh[1], f'\int_mesh_{1} f dx')
 
+# line integrals
+test_mesh_integral_errors[f'\int_mesh_{0} f ds_circle'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_circle'], f'\int_mesh_{0} f ds_circle')
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
