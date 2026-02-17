@@ -82,10 +82,10 @@ mesh_0_metadata['sub_mesh_1_dim'] = rpam.parameters['sub_mesh_0_1_dim']
 mesh_0_metadata['sub_mesh_0_id'] = rpam.parameters['sub_mesh_0_0_id']
 mesh_0_metadata['sub_mesh_1_id'] = rpam.parameters['sub_mesh_0_1_id']
 
-mesh_0_metadata['line_sub_mesh_1_l_id'] = rpam.parameters['line_l_id']
-mesh_0_metadata['line_sub_mesh_1_r_id'] = rpam.parameters['line_r_id']
-mesh_0_metadata['line_sub_mesh_1_t_id'] = rpam.parameters['line_t_id']
-mesh_0_metadata['line_sub_mesh_1_b_id'] = rpam.parameters['line_b_id']
+mesh_0_metadata['line_l_id'] = rpam.parameters['line_l_id']
+mesh_0_metadata['line_r_id'] = rpam.parameters['line_r_id']
+mesh_0_metadata['line_t_id'] = rpam.parameters['line_t_id']
+mesh_0_metadata['line_b_id'] = rpam.parameters['line_b_id']
 mesh_0_metadata['circle_id'] = rpam.parameters['circle_id']
 
 mesh_0_metadata['file_format'] = 'xdmf'

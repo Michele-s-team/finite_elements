@@ -51,15 +51,15 @@ print(f'lmsh_sub_meshes: {lmsh.sub_meshes}')
 print(f'sf_sub_meshes: {lmsh.sf_sub_meshes}')
 
 
-#1.  define surface and line elements for meshes
+#1.  define bulk and boundary measures for meshes
 dx_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
-
-dx_mesh[0] = Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0])
-dx_mesh[1] = Measure("dx", domain=lmsh.mesh[1], subdomain_data=lmsh.sf[1])
-
 ds_mesh = [None] * lmsh.parameters['n_meshes']
 
+# 1.1 mesh 0
+# 1.1.1 bulk measures
+dx_mesh[0] = Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0])
 
+# 1.1.2 boundary measures
 ds_mesh[0] = dict([ \
     ('ds_l', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_l_id"])), \
     ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_r_id"])), \
@@ -68,37 +68,40 @@ ds_mesh[0] = dict([ \
     ('ds_circle', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"circle_id"]))
     ])
 
-print(f'INT = {assemble(Constant(1) * ds_mesh[0]["ds_circle"])}')
+# 1.2 mesh 1
+# 1.2.1 bulk measures
+dx_mesh[1] = Measure("dx", domain=lmsh.mesh[1], subdomain_data=lmsh.sf[1])
 
+# 1.2.2 boundary measures
+ds_mesh[1] = dict([ \
+    ('ds_l', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=lmsh.mesh_parameters[1][f"vertex_l_id"])), \
+    ('ds_r', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=lmsh.mesh_parameters[1][f"vertex_r_id"]))
+    ])
 
-#2. define surface and line elements for sub-meshes
-
+#2. define bulk and boundary measures for sub-meshes
 dx_sub_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
+ds_sub_mesh = [[None, None], None]
 
+# 2.1 sub_meshes of mesh 0
+# 2.1.1 bulk measures
 for p in range(len(lmsh.sub_meshes[0])):
     dx_sub_mesh[0].append(Measure("dx", domain=lmsh.sub_meshes[0][p], subdomain_data=lmsh.sf_sub_meshes[0][p], subdomain_id=lmsh.mesh_parameters[0][f"sub_mesh_{p}_id"]))
 
+# 2.1.2 boundary measures
+# 2.1.2.1 boundary measures of sub_mesh 0 of mesh 0
+ds_sub_mesh[0][0] = dict([
+        ('ds', Measure("ds", domain=lmsh.sub_meshes[0][0], subdomain_data=lmsh.mf_sub_meshes[0][0], subdomain_id=lmsh.mesh_parameters[0][f"circle_id"]))
+])
 
-'''
-# line elements
-ds_sub_mesh = [''] * len(lmsh.sub_meshes)
+# 2.1.2.1 boundary measures of sub_mesh 1 of mesh 0
+ds_sub_mesh[0][1] = dict([
+        ('ds_l', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["line_l_id"])),\
+        ('ds_r', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["line_r_id"])),\
+        ('ds_t', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["line_t_id"])),\
+        ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["line_b_id"])),\
+        ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["circle_id"]))
+])
 
-ds_sub_mesh[0] = dict([ \
-    ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"circle_loop_id"])), 
-    ])
-
-ds_sub_mesh[1] = dict([ \
-    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])), \
-    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])), \
-    ('ds_t', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_t_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])), \
-    ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"circle_loop_id"])) \
-    ])
-ds_sub_mesh[1]['ds_lr'] = ds_sub_mesh[1]['ds_l'] + ds_sub_mesh[1]['ds_r']
-ds_sub_mesh[1]['ds_tb'] = ds_sub_mesh[1]['ds_t'] + ds_sub_mesh[1]['ds_b']
-ds_sub_mesh[1]['ds_lrtb'] = ds_sub_mesh[1]['ds_lr'] + ds_sub_mesh[1]['ds_tb']
-ds_sub_mesh[1]['ds'] = ds_sub_mesh[1]['ds_lrtb'] + ds_sub_mesh[1]['ds_circle']
-'''
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_disk_line')
 
