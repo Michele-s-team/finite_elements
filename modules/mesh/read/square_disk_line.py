@@ -57,6 +57,16 @@ dx_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
 dx_mesh[0] = Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0])
 dx_mesh[1] = Measure("dx", domain=lmsh.mesh[1], subdomain_data=lmsh.sf[1])
 
+ds_mesh = [None] * lmsh.parameters['n_meshes']
+
+
+ds_mesh[0] = dict([ \
+    ('ds_l', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_sub_mesh_{0}_l_id"])), \
+    ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_sub_mesh_{0}_r_id"])), \
+    ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"sub_mesh_{1}_id"])), \
+    ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_sub_mesh_{0}_b_id"])), \
+    ])
+
 
 #2. define surface and line elements for sub-meshes
 
