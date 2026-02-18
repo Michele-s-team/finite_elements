@@ -1,11 +1,3 @@
-'''
-Notation:
-- sub_mesh: either of the parts of the total mesh
-
-- sf_sub_mesh: a list of map functions, where sf_sub_mesh[i] is the map function for the triangles of the i-th sub_mesh
-- mf_sub_mesh: a list of map functions, where mf_sub_mesh[i] is the map function for the lines of the i-th sub_mesh
-'''
-
 from fenics import *
 
 import input_output as io
@@ -21,17 +13,6 @@ sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.i
 # read the lines
 mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
-# create a list of map functions for triangles and lines for each sub_mesh
-sf_sub_mesh = []
-mf_sub_mesh = []
-
-sub_mesh = lmsh.sub_meshes[0]
-sf_sub_mesh.append(msh.transfer_cell_tags_to_sub_mesh(sub_mesh, sf))
-mf_sub_mesh.append(msh.transfer_facet_tags_to_sub_mesh(lmsh.mesh, sub_mesh, mf))
-
-sub_mesh = lmsh.sub_meshes[1]
-sf_sub_mesh.append(lmsh.cf_sub_mesh_1d)
-mf_sub_mesh.append(lmsh.vf_sub_mesh_1d)
 
 # r_mesh[i] is the radius of the smallest cell in sub_meshes[i]
 r_mesh =  [lmsh.sub_meshes[i].hmin() for i in range(len(lmsh.sub_meshes))]
@@ -43,17 +24,16 @@ print(f'r_mesh = {r_mesh}')
 dx_sub_mesh = []
 
 for p in range(len(lmsh.sub_meshes)):
-    dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=sf_sub_mesh[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
+    dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=lmsh.sf_sub_meshes[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
 
-print(f'test: {assemble(Constant(1) * dx_sub_mesh[1])}')
 
 ds_sub_mesh = [''] * len(lmsh.sub_meshes)
 
 ds_sub_mesh[0] = dict([ \
-    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"line_sub_mesh_{0}_l_id"])), \
-    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"line_sub_mesh_{0}_r_id"])), \
-    ('ds_t', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"sub_mesh_{1}_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=mf_sub_mesh[0], subdomain_id=parameters[f"line_sub_mesh_{0}_b_id"])), \
+    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_l_id"])), \
+    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_r_id"])), \
+    ('ds_t', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"sub_mesh_{1}_id"])), \
+    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_b_id"])), \
     ])
 
 ds_sub_mesh[0]['ds_lr'] = ds_sub_mesh[0]['ds_l'] + ds_sub_mesh[0]['ds_r']
@@ -62,9 +42,9 @@ ds_sub_mesh[0]['ds_tb'] = ds_sub_mesh[0]['ds_t'] + ds_sub_mesh[0]['ds_b']
 ds_sub_mesh[0]['ds'] = ds_sub_mesh[0]['ds_lr'] + ds_sub_mesh[0]['ds_tb']
 
 ds_sub_mesh[1] = dict([ \
-    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"vertex_sub_mesh_{1}_l_id"])), \
-    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1], subdomain_id=parameters[f"vertex_sub_mesh_{1}_r_id"])), \
-    ('ds', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=mf_sub_mesh[1]))
+    ('ds_l', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"vertex_sub_mesh_{1}_l_id"])), \
+    ('ds_r', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1], subdomain_id=parameters[f"vertex_sub_mesh_{1}_r_id"])), \
+    ('ds', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1]))
 ])
 
 import importlib

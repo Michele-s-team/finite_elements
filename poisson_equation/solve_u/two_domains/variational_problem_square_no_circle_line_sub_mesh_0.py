@@ -69,10 +69,10 @@ fsp.v.interpolate(v_Expression(element=fsp.Q[1].ufl_element()))
 fu.transfer_sub_mesh_to_mesh(fsp.v, fsp.u_1_on_0)
 
 bcs = [ \
-    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_1_on_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"]), \
+    DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 ]
 
 F = (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0] \

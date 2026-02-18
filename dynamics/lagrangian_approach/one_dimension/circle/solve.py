@@ -83,7 +83,6 @@ for step in range(rpam.parameters['N']):
     
     prout_bc.print_bcs()
 
-
     if(step % rpam.parameters['print_out_stride'] == 0):
         prout_sol.print_solution(step)
 

@@ -40,15 +40,15 @@ fsp.v_fl_bar_b.interpolate(v_fl_bar_b_Expression(element=fsp.Q_v_fl_bar.ufl_elem
 
 # BCs
 # 1) for step 1
-bc_v_fl_bar_b = DirichletBC(fsp.Q_v_fl_bar, fsp.v_fl_bar_b, rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
-bc_v_fl_bar_l = DirichletBC(fsp.Q_v_fl_bar, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
-bc_v_fl_bar_0_r = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
-bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"])
+bc_v_fl_bar_b = DirichletBC(fsp.Q_v_fl_bar, fsp.v_fl_bar_b, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+bc_v_fl_bar_l = DirichletBC(fsp.Q_v_fl_bar, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"])
+bc_v_fl_bar_0_r = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_r_id"])
+bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
 bc_v_fl_bar = [bc_v_fl_bar_b, bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
 
 # 2) for step 2
-bc_phi_fl_b = DirichletBC(fsp.Q_phi_fl, Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+bc_phi_fl_b = DirichletBC(fsp.Q_phi_fl, Constant(0), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
 bc_phi_fl = [bc_phi_fl_b]
 

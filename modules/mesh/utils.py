@@ -1626,6 +1626,8 @@ def read_from_h5_file(mesh_path):
         mesh = read_mesh(mesh_path_with_slash + "line_mesh.h5")
         cf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.h5", "cf")
 
+        print('1d mesh')
+
         result = mesh, cf
 
     else:
@@ -1813,3 +1815,106 @@ def element_geometry(mesh):
         return triangle
     elif d == 1:
         return interval
+
+'''
+read the sub-meshes of a mesh. This only works if the parent mesh is two-dimensional. 
+Input values: 
+    - 'mesh': the mesh of which the sub-meshes will be read
+    - 'sf': the MeshFunctionSizet for the geometrical components with the largest dimension in 'mesh'. For example, if 'mesh' is 3d, this will be a function for tetrahedra, if 'mesh' is 2d this will be a function for triangles, etc. 
+    - 'mesh_metadata': a dictionary containing the mesh metadata for 'mesh'
+    - 'input_directory': the directory where 'mesh' is stored
+Return values:
+    - 'sub_meshes': a list containing the sub_meshes
+    - 'sf_sub_meshes':  a list containing a function to tag the sub_mesh cells. sf_sub_meshes[i] contains a function to tag cells of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
+    - 'mf_sub_meshes': a list containing a function to tag the sub_mesh vertices. mf_sub_meshes[i] contains a function to tag vertices of the i-th sub_mesh  of the i-th sub_mesh if sub_mesh[i] is one-dimensional, and it is None otherwise
+'''
+def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
+
+    if "n_sub_meshes" in mesh_medatada:
+
+        print(f'Found sub_meshes')
+
+        # read the functions that tag elements of the parent mesh
+        sf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
+        mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "line_mesh.xdmf"))
+
+
+        # mesh_parameters contain the field n_sub_meshes -> generate sub_meshes
+
+        # the list of sub_meshes
+        sub_meshes = []
+
+        # the list of functions to tag objects in sub_meshes
+        sf_sub_meshes = []
+        mf_sub_meshes = []
+
+        if mesh_medatada["n_sub_meshes"] > 1:
+            #  'mesh' contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
+            
+            print('Generating sub_meshes ... ')
+            for p in range(mesh_medatada["n_sub_meshes"]):
+
+                if mesh_medatada[f'sub_mesh_{p}_dim'] > 1:
+
+                    # the sub_mesh under consideration has dimension > 1: generate it in the ordinary way  with 'SubMesh'
+                    sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
+
+                    # the functions that tag cells and vertices on the sub-mesh are obtained by transferring the respective functiosn on the parent mesh 
+                    sf_sub_meshes.append(transfer_cell_tags_to_sub_mesh(sub_meshes[p], sf_mesh))
+                    mf_sub_meshes.append(transfer_facet_tags_to_sub_mesh(mesh, sub_meshes[p], mf_mesh))
+
+                elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
+                    '''
+                    the sub_mesh under consideration has dimension 1 -> it is a line: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
+                    I would obtain a one-dimensional mesh embedded in two-dimensional space, thus in fact a two-dimensional mesh, which is not what I want : I want a truly one-dimensional mesh. 
+                    -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
+                    '''
+
+                    # read the line components from the parent mesh and create the relative mesh function 'cf'
+                    line_mesh = read_mesh(io.add_trailing_slash(input_directory) + "line_mesh.xdmf")
+                    cf = read_mesh_components(line_mesh, line_mesh.topology().dim(), io.add_trailing_slash(input_directory) + "line_mesh.xdmf")
+
+                    # create  submesh_2d from the cell function 'cf' and the id which identifies the sub_mesh under consideration: submesh_2d is a line embedded in 2d space
+                    submesh_2d = SubMesh(mesh, cf, mesh_medatada[f'sub_mesh_{p}_id'])
+
+                    # transform submesh_2d into a truly 1d mesh
+                    # Extract x-coordinates from the 2D submesh
+                    x_coordinates = []
+                    for vertex in vertices(submesh_2d):
+                        x_coordinates.append(vertex.point().x())
+
+                    x_coordinates = sorted(list(set(x_coordinates)))  # Remove duplicates and sort
+
+                    # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
+                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
+                                                                                        mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],
+                                                                                        None, None)
+                    
+                    sub_meshes.append(sub_mesh_1d)
+                    sf_sub_meshes.append(cf_sub_mesh_1d)
+                    mf_sub_meshes.append(vf_sub_mesh_1d)
+
+                print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
+
+            print('... done.')
+
+        else:
+            # mesh does not contain multiple sub_meshes -> return None for all fields
+    
+            sub_meshes = None
+            sf_sub_meshes = None 
+            mf_sub_meshes = None
+
+    else:
+        # did not find sub_meshes -> return None for all fields
+
+        print(f'Did not find sub_meshes')
+
+        sub_meshes = None
+        sf_sub_meshes = None 
+        mf_sub_meshes = None
+
+
+    return sub_meshes, sf_sub_meshes, mf_sub_meshes
+
+

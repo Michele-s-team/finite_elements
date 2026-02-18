@@ -3,7 +3,7 @@ generate a  mesh given by a line
 because mesh cannot be written and read properly when written on xdmf files, this 1d mesh is written to h5 files
 
 Run it with
-    python3 generate_half_circle_with_line_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/1d/line"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
