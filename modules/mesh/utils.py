@@ -1887,7 +1887,7 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
                     sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
-                                                                                        mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada['vertex_sub_mesh_1_l_id'], mesh_medatada['vertex_sub_mesh_1_r_id'],
+                                                                                        mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],
                                                                                         None, None)
                     
                     sub_meshes.append(sub_mesh_1d)
