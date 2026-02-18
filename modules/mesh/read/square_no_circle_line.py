@@ -1,11 +1,3 @@
-'''
-Notation:
-- sub_mesh: either of the parts of the total mesh
-
-- sf_sub_mesh: a list of map functions, where sf_sub_mesh[i] is the map function for the triangles of the i-th sub_mesh
-- mf_sub_mesh: a list of map functions, where mf_sub_mesh[i] is the map function for the lines of the i-th sub_mesh
-'''
-
 from fenics import *
 
 import input_output as io
