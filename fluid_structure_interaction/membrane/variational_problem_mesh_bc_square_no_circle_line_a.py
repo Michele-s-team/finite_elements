@@ -18,24 +18,24 @@ alpha, beta, gamma = ufl.indices(3)
 
 # BCs
 # BCs for u
-bc_u_l = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
-bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+bc_u_l = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"])
+bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
-bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
+bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_r_id"])
 
-bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"])
+bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
 
 bcs_msh = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
 
 
 # BCs for u_dot
-bc_u_dot_l = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_l_id"])
-bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_b_id"])
+bc_u_dot_l = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"])
+bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
-bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.mf_sub_mesh[0], rmsh.parameters["line_sub_mesh_0_r_id"])
+bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_r_id"])
 
-bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf_sub_mesh[0], rmsh.parameters["sub_mesh_1_id"])
+bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
 
 bcs_msh_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]

@@ -90,15 +90,15 @@ fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() )
 
 # boundary conditions
 
-bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_l, rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_l, rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
-bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
 
-bc_phi_l = DirichletBC(fsp.Q_mem.sub(2), Constant(0), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_phi_l = DirichletBC(fsp.Q_mem.sub(2), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
 
-bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5), Constant((0,0)), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.mf_sub_mesh[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5), Constant((0,0)), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 
 
