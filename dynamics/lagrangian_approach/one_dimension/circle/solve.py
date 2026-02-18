@@ -80,9 +80,11 @@ for step in range(rpam.parameters['N']):
 
     # solve post-processing problem
     # solver_pp.solve()
+    
+    prout_bc.print_bcs()
+
 
     if(step % rpam.parameters['print_out_stride'] == 0):
-        prout_bc.print_bcs()
         prout_sol.print_solution(step)
 
 
