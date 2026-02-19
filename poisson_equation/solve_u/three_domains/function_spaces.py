@@ -11,6 +11,21 @@ rmsh = importlib.import_module(swi.rmsh)
 here Q[i][j] is the scalar function space for the j-th submesh of the i-th mesh, and similarly of other spaces
 '''
 
+# This enforces periodic boundary conditions which map the l vertex into the r vertex or mesh 1
+class PeriodicBoundary(SubDomain):
+    # Identify the "target domain": the left vertex
+    def inside(self, x, on_boundary):
+        return near(x[0], lmsh.mesh_parameters[1]['x_l']) and on_boundary
+
+    # Map the other boundaries to the "target domain"
+    def map(self, x, y):
+        if near(x[0], lmsh.mesh_parameters[1]['x_r']):
+            # right vertex → left vertex
+            y[0] = lmsh.mesh_parameters[1]['x_l']
+        else:
+            # Required: set unmapped points to identity
+            y[0] = x[0]
+            
 
 Q, V, T = [], [], []
 u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [], [], [], [], [], [], [], [], [], []
