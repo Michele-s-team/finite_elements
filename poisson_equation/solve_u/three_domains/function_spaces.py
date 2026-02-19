@@ -15,9 +15,20 @@ here Q[i][j] is the scalar function space for the j-th submesh of the i-th mesh,
 Q, V, T = [[]], [[]], [[]]
 u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]]
 
-for i in range(len(rmsh.lmsh.meshes)):
+for i in range(len(lmsh.mesh)):
 
-    for j in range(len(lmsh.sub_meshes[i])):
+    if "n_sub_meshes" not in lmsh.mesh_parameters[i]:
+        # mesh i has no sub-meshes: index j, which runs across the sub-meshes, only takes value 0
+
+        values_j = [0]
+
+    else:
+        # mesh i has  sub-meshes: index j, which runs across the sub-meshes, is range(len(lmsh.sub_meshes[i]))
+
+        values_j = range(len(lmsh.sub_meshes[i]))
+
+
+    for j in values_j:
 
         Q[i].append(FunctionSpace(lmsh.sub_meshes[i][j], 'P', rpam.parameters['function_space_degree']))
         V[i].append(VectorFunctionSpace(lmsh.sub_meshes[i][j], 'P', rpam.parameters['function_space_degree']))
