@@ -42,8 +42,8 @@ solver_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
 # solve problem on sub_mesh[1]
 vp_mesh_0[1] = importlib.import_module(swi.vp_sub_mesh_0_1)
 
-J_mesh_0[1] = derivative(vp_mesh_0[1].F, fsp.u[1], fsp.J_u[1])
-problem_mesh_0[1] = NonlinearVariationalProblem(vp_mesh_0[1].F, fsp.u[1], vp_mesh_0[1].bcs, J_mesh_0[1])
+J_mesh_0[1] = derivative(vp_mesh_0[1].F, fsp.u[0][1], fsp.J_u[0][1])
+problem_mesh_0[1] = NonlinearVariationalProblem(vp_mesh_0[1].F, fsp.u[0][1], vp_mesh_0[1].bcs, J_mesh_0[1])
 solver_mesh_0[1] = NonlinearVariationalSolver(problem_mesh_0[1])
 solver_mesh_0[1].parameters.update(params)
 
@@ -53,8 +53,8 @@ solver_mesh_0[1].solve()
 # solve problem on sub_mesh[0] by using the solution above on sub_mesh[1] as a BC
 vp_mesh_0[0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 
-J_mesh_0[0] = derivative(vp_mesh_0[0].F, fsp.u[0], fsp.J_u[0])
-problem_mesh_0[0] = NonlinearVariationalProblem(vp_mesh_0[0].F, fsp.u[0], vp_mesh_0[0].bcs, J_mesh_0[0])
+J_mesh_0[0] = derivative(vp_mesh_0[0].F, fsp.u[0][0], fsp.J_u[0][0])
+problem_mesh_0[0] = NonlinearVariationalProblem(vp_mesh_0[0].F, fsp.u[0][0], vp_mesh_0[0].bcs, J_mesh_0[0])
 solver_mesh_0[0] = NonlinearVariationalSolver(problem_mesh_0[0])
 solver_mesh_0[0].parameters.update(params)
 
