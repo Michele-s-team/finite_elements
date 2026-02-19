@@ -14,72 +14,69 @@ i, j = ufl.indices(2)
 
 # exact expression for sub_mesh 0
 
-class u_exact_sub_mesh_0_expression(UserExpression):
+class u_exact_sub_mesh_0_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        # values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
+        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
 
         # test case 2
-        values[0] = (np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)) ** 2
+        # values[0] = (np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)) ** 2
 
     def value_shape(self):
         return (1,)
 
 
-class grad_u_exact_sub_mesh_0_expression(UserExpression):
+class grad_u_exact_sub_mesh_0_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        # values[0] = 4 * x[0] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
-        # values[1] = 8 * x[1] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[0] = 4 * x[0] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[1] = 8 * x[1] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
 
         # test case 2
-        values[0] = (
-                4 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) *
-                (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] + x[1])) +
-                 2 * (-x[0] + x[1]) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])))
-        )
+        # values[0] = (
+        #         4 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) *
+        #         (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] + x[1])) +
+        #          2 * (-x[0] + x[1]) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])))
+        # )
 
-        values[1] = (
-                4 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) *
-                (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] + x[1])) +
-                 2 * (x[0] - x[1]) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])))
-        )
+        # values[1] = (
+        #         4 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) *
+        #         (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] + x[1])) +
+        #          2 * (x[0] - x[1]) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])))
+        # )
 
     def value_shape(self):
         return (2,)
 
 
-class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
+class laplacian_u_exact_sub_mesh_0_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        # values[0] = 8 * x[0] ** 2 + 32 * x[1] ** 2 + 12 * (1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[0] = 8 * x[0] ** 2 + 32 * x[1] ** 2 + 12 * (1 + x[0] ** 2 + 2 * x[1] ** 2)
 
         # test case 2
-        values[0] = (
-                16 * np.pi ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.cos(2 * np.pi * (x[0] + x[1])) ** 2
-                - 16 * np.pi ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-                - 64 * np.pi ** 2 * (x[0] - x[1]) ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-                - 16 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-                + 64 * np.pi ** 2 * (x[0] - x[1]) ** 2 * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-        )
+        # values[0] = (
+        #         16 * np.pi ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.cos(2 * np.pi * (x[0] + x[1])) ** 2
+        #         - 16 * np.pi ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
+        #         - 64 * np.pi ** 2 * (x[0] - x[1]) ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
+        #         - 16 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
+        #         + 64 * np.pi ** 2 * (x[0] - x[1]) ** 2 * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
+        # )
 
     def value_shape(self):
         return (1,)
 
 
-fsp.u_exact[0].interpolate(u_exact_sub_mesh_0_expression(element=fsp.Q[0].ufl_element()))
-fsp.grad_u[0].interpolate(grad_u_exact_sub_mesh_0_expression(element=fsp.V[0].ufl_element()))
-fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_expression(element=fsp.Q[0].ufl_element()))
+fsp.u_exact[0].interpolate(u_exact_sub_mesh_0_0_expression(element=fsp.Q[0].ufl_element()))
+fsp.grad_u[0].interpolate(grad_u_exact_sub_mesh_0_0_expression(element=fsp.V[0].ufl_element()))
+fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_0_expression(element=fsp.Q[0].ufl_element()))
 
 fsp.u_0_1_on_0_0.assign(project((fsp.u[1])**2, fsp.Q[0]))
 
 bcs = [ \
-    DirichletBC(fsp.Q[0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_r_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_t_id"]), \
-    DirichletBC(fsp.Q[0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"]) \
+    DirichletBC(fsp.Q[0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["circle_id"])
     ]
 
 # functional for sub_mesh[0]
-F = (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0] \
-    - bgeo.sub_mesh_facet_normal[0][i] * fsp.u[0].dx(i) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0]['lrtb']
+F = (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_sub_mesh[0][0] \
+    - bgeo.sub_mesh_facet_normal[0][0][i] * fsp.u[0].dx(i) * fsp.nu_u[0] * rmsh.ds_sub_mesh[0][0]['ds']
