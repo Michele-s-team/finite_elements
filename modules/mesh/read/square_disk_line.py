@@ -104,6 +104,14 @@ ds_sub_mesh[0][1] = dict([
         ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["circle_id"]))
 ])
 
+ds_sub_mesh[0][1]['ds_lr'] = ds_sub_mesh[0][1]['ds_l'] + ds_sub_mesh[0][1]['ds_r']
+ds_sub_mesh[0][1]['ds_tb'] = ds_sub_mesh[0][1]['ds_t'] + ds_sub_mesh[0][1]['ds_b']
+
+ds_sub_mesh[0][1]['ds_lrtb'] = ds_sub_mesh[0][1]['ds_lr'] + ds_sub_mesh[0][1]['ds_tb']
+
+
+ds_sub_mesh[0][1]['ds'] = ds_sub_mesh[0][1]['ds_lrtb'] + ds_sub_mesh[0][1]['ds_circle']
+
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_disk_line')
 

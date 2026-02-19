@@ -49,7 +49,7 @@ solver_mesh_0[1].parameters.update(params)
 
 solver_mesh_0[1].solve()
 
-
+'''
 # solve problem on sub_mesh[0] by using the solution above on sub_mesh[1] as a BC
 vp_mesh_0[0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 
@@ -59,6 +59,6 @@ solver_mesh_0[0] = NonlinearVariationalSolver(problem_mesh_0[0])
 solver_mesh_0[0].parameters.update(params)
 
 solver_mesh_0[0].solve()
-
+'''
 
 prout_bc = importlib.import_module(swi.prout_bc)
