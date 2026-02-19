@@ -18,13 +18,13 @@ print(f"\t- Check of BCs:")
 print(f"\t\tBCs for sub_mesh_{0}_{1}:")
 print(f"\t\t\t<<(u - phi)^2>>_[partial Omega_{0}_{1}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[1], fsp.u_exact[1], rmsh.ds_sub_mesh[0][1]['ds']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-'''
-print(f"\t\tBCs for sub_mesh {1}:")
-print(f"\t\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega {1} in_lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)), bgeo.sub_mesh_facet_normal[1][i] * fsp.grad_u[1][i], rmsh.ds_sub_mesh[1]['in_lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {1} out_lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[1], fsp.u_exact[1], rmsh.ds_sub_mesh[1]['out_lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-'''
+
+print(f"\t\tBCs for sub_mesh_{0}_{1}:")
+print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {0}_{1}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0], fsp.u_0_1_on_0_0, rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
 print(f"\t- Comparison with exact solution: ")
-print(f"\t\t<<(u - u_exact)^2>>_[Omega {0} {1}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[1], fsp.u_exact[1], rmsh.dx_sub_mesh[0][1]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+for i in range(2):
+    print(f"\t\t<<(u - u_exact)^2>>_[Omega {0} {i}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[i], fsp.u_exact[i], rmsh.dx_sub_mesh[0][i]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 # import print_out_solution

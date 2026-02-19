@@ -8,9 +8,8 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 
 
-Q, V, T = [], [], []
-
-u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [], [], [], [], [], [], [], [], [], []
+Q, V, T = [[]], [[]], [[]]
+u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]]
 
 for i in range(len(lmsh.sub_meshes[0])):
 
