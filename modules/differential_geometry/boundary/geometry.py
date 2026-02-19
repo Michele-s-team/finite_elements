@@ -24,6 +24,30 @@ n_circle = None
 n_lr = None
 n_tb = None
 
+'''
+build the facet normals to all sub-meshes of a parent mesh
+Input values: 
+    - 'sub_meshes': the list of sub_meshes of the parent mesh
+    - 'mesh_parameters': the dictionary of parameters of the parent mesh
+
+Return values: 
+    - 'sub_mesh_facet_normal': list of normals to each sub_mesh of the parent mesh
+'''
+
+def facet_normal_sub_meshes(sub_meshes, mesh_parameters):
+
+    sub_mesh_facet_normal = []
+
+    if ("n_sub_meshes" in mesh_parameters) and (mesh_parameters["n_sub_meshes"] > 1):
+
+        # there are multiple sub-meshes in the parent mesh -> define the facet normal for each sub-mesh
+
+        for p in range(mesh_parameters["n_sub_meshes"]):
+
+            sub_mesh_facet_normal.append(FacetNormal(sub_meshes[p]))
+
+    return sub_mesh_facet_normal
+
 # here I define the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 
 if "n_meshes" not in lmsh.parameters: 
@@ -31,14 +55,17 @@ if "n_meshes" not in lmsh.parameters:
 
     facet_normal = FacetNormal(lmsh.mesh)
 
+    sub_mesh_facet_normal = facet_normal_sub_meshes(lmsh.sub_meshes, lmsh.parameters)
+
+    '''
     if ("n_sub_meshes" in lmsh.parameters) and (lmsh.parameters["n_sub_meshes"] > 1):
 
         # 1.1 there are multiple sub-meshes of the parent mesh -> define the facet normal for each sub mesh
-
         sub_mesh_facet_normal = []
-        
+
         for p in range(lmsh.parameters["n_sub_meshes"]):
             sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[p]))
+    '''
 
 else:
     # 2 There are multiple meshes
@@ -50,14 +77,18 @@ else:
 
         facet_normal.append(FacetNormal(lmsh.mesh[i]))
 
+        sub_mesh_facet_normal[i] = facet_normal_sub_meshes(lmsh.sub_meshes[i], lmsh.mesh_parameters[i])
+
+        '''
+        sub_mesh_facet_normal[i] = []
 
         if ("n_sub_meshes" in lmsh.mesh_parameters[i]) and (lmsh.mesh_parameters[i]["n_sub_meshes"] > 1):
 
             # 2.1 there are multiple sub-meshes in the parent mesh[i] -> define the facet normal for each sub mesh
-            sub_mesh_facet_normal[i] = []
 
             for p in range(lmsh.mesh_parameters[i]["n_sub_meshes"]):
                 sub_mesh_facet_normal[i].append(FacetNormal(lmsh.sub_meshes[i][p]))
+        '''
 
 
 i, j, k, l = ufl.indices(4)

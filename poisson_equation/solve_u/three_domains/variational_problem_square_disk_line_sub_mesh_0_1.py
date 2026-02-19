@@ -58,8 +58,12 @@ fsp.grad_u[1].interpolate(grad_u_exact_sub_mesh_0_1_expression(element=fsp.V[1].
 fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_0_1_expression(element=fsp.Q[1].ufl_element()))
 
 # boundary conditions for sub_mesh[1]: constrain u[1] on the outer boundary of sub_mesh[1], i.e.,  outer rectangle
+
+#     DirichletBC(fsp.Q[0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \
+
+
 bcs = [ \
-    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.boundary[1]['out_lrtb']) \
+    DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["sub_mesh_1_id"]) \
     ]
 
 # functional for sub_mesh[1]
