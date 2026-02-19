@@ -24,7 +24,6 @@ print(f"\t\t\t<<(u - phi)^2>>_[partial Omega_{0}_{1}] = {col.Fore.RED}{msh.diffe
 
 
 
-
 print(f"\t- Comparison with exact solution: ")
 for i in range(2):
     print(f"\t\t<<(u - u_exact)^2>>_[Omega {0} {i}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0][i], fsp.u_exact[0][i], rmsh.dx_sub_mesh[0][i]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
