@@ -24,14 +24,41 @@ n_circle = None
 n_lr = None
 n_tb = None
 
-# the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
-facet_normal = FacetNormal(lmsh.mesh)
+# here I define the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 
-if ("n_sub_meshes" in lmsh.parameters) and (lmsh.parameters["n_sub_meshes"] > 1):
-    # lmsh loads multiple sub-meshes -> define the facet normal for each sub mesh
-    sub_mesh_facet_normal = []
-    for p in range(lmsh.parameters["n_sub_meshes"]):
-        sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[p]))
+if "n_meshes" not in lmsh.parameters: 
+    # 1 There is only one mesh
+
+    facet_normal = FacetNormal(lmsh.mesh)
+
+    if ("n_sub_meshes" in lmsh.parameters) and (lmsh.parameters["n_sub_meshes"] > 1):
+
+        # 1.1 there are multiple sub-meshes of the parent mesh -> define the facet normal for each sub mesh
+
+        sub_mesh_facet_normal = []
+        
+        for p in range(lmsh.parameters["n_sub_meshes"]):
+            sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[p]))
+
+else:
+    # 2 There are multiple meshes
+
+    facet_normal = [None] * lmsh.parameters['n_meshes']
+    sub_mesh_facet_normal = [None] * lmsh.parameters['n_meshes']
+
+    for i in range(lmsh.parameters["n_meshes"]):
+
+        facet_normal.append(FacetNormal(lmsh.mesh[i]))
+
+
+        if ("n_sub_meshes" in lmsh.mesh_parameters[i]) and (lmsh.mesh_parameters[i]["n_sub_meshes"] > 1):
+
+            # 2.1 there are multiple sub-meshes in the parent mesh[i] -> define the facet normal for each sub mesh
+            sub_mesh_facet_normal[i] = []
+
+            for p in range(lmsh.mesh_parameters[i]["n_sub_meshes"]):
+                sub_mesh_facet_normal[i].append(FacetNormal(lmsh.sub_meshes[i][p]))
+
 
 i, j, k, l = ufl.indices(4)
 
