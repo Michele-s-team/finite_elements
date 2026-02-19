@@ -15,6 +15,10 @@ for i in range(len(rmsh.lmsh.sub_meshes[0])):
     io.full_print(fsp.u[0][i], f'u_{0}_{i}', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
                   rmsh.lmsh.sub_meshes[0][i], 'scalar')
+    
+io.full_print(fsp.u[1], f'u_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'scalar')
 
 # io.full_print(fsp.u_0_on_1, f'u_0_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
 #                   solpath.nodal_values_path,

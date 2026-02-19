@@ -27,6 +27,8 @@ class PeriodicBoundary(SubDomain):
             y[0] = x[0]
             
 
+periodic_boundary = PeriodicBoundary()
+
 Q, V, T = [], [], []
 u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [], [], [], [], [], [], [], [], [], []
 
@@ -35,9 +37,9 @@ for i in range(len(lmsh.mesh)):
     if "n_sub_meshes" not in lmsh.mesh_parameters[i]:
         # mesh i has no sub-meshes 
 
-        Q.append(FunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree']))
-        V.append(VectorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree']))
-        T.append(TensorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], shape=(lmsh.mesh[i].topology().dim(), lmsh.mesh[i].topology().dim())))
+        Q.append(FunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary))
+        V.append(VectorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary))
+        T.append(TensorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], shape=(lmsh.mesh[i].topology().dim(), lmsh.mesh[i].topology().dim()), constrained_domain=periodic_boundary))
 
         # Define variational problem
         u.append(Function(Q[i]))

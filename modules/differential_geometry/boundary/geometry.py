@@ -75,7 +75,7 @@ else:
 
     for i in range(lmsh.parameters["n_meshes"]):
 
-        facet_normal.append(FacetNormal(lmsh.mesh[i]))
+        facet_normal[i] = FacetNormal(lmsh.mesh[i])
 
         sub_mesh_facet_normal[i] = facet_normal_sub_meshes(lmsh.sub_meshes[i], lmsh.mesh_parameters[i])
 

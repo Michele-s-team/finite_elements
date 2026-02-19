@@ -79,6 +79,8 @@ ds_mesh[1] = dict([ \
     ('ds_r', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=lmsh.mesh_parameters[1][f"vertex_r_id"]))
     ])
 
+ds_mesh[1]['ds'] = ds_mesh[1]['ds_l'] + ds_mesh[1]['ds_r']
+
 
 #2. define bulk and boundary measures for sub-meshes
 dx_sub_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
