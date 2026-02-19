@@ -7,30 +7,36 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
+'''
+here Q[i][j] is the scalar function space for the j-th submesh of the i-th mesh, and similarly of other spaces
+'''
+
 
 Q, V, T = [[]], [[]], [[]]
 u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]], [[]]
 
-for i in range(len(lmsh.sub_meshes[0])):
+for i in range(len(rmsh.lmsh.meshes)):
 
-    Q.append(FunctionSpace(lmsh.sub_meshes[0][i], 'P', rpam.parameters['function_space_degree']))
-    V.append(VectorFunctionSpace(lmsh.sub_meshes[0][i], 'P', rpam.parameters['function_space_degree']))
-    T.append(TensorFunctionSpace(lmsh.sub_meshes[0][i], 'P', rpam.parameters['function_space_degree'], shape=(lmsh.sub_meshes[0][i].topology().dim(), lmsh.sub_meshes[0][i].topology().dim())))
+    for j in range(len(lmsh.sub_meshes[i])):
 
-    # Define variational problem
-    u.append(Function(Q[i]))
-    nu_u.append(TestFunction(Q[i]))
-    f.append(Function(Q[i]))
-    grad_u.append(Function(V[i]))
-    J_u.append(TrialFunction(Q[i]))
-    u_exact.append(Function(Q[i]))
+        Q[i].append(FunctionSpace(lmsh.sub_meshes[i][j], 'P', rpam.parameters['function_space_degree']))
+        V[i].append(VectorFunctionSpace(lmsh.sub_meshes[i][j], 'P', rpam.parameters['function_space_degree']))
+        T[i].append(TensorFunctionSpace(lmsh.sub_meshes[i][j], 'P', rpam.parameters['function_space_degree'], shape=(lmsh.sub_meshes[i][j].topology().dim(), lmsh.sub_meshes[i][j].topology().dim())))
 
-    # Define post-processing (pp) variational problem
-    # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
-    hess_u.append(Function(T[i]))
-    nu_hess_u.append(TestFunction(T[i]))
-    hess_u_exact.append(Function(T[i]))
-    J_hess_u.append(TrialFunction(T[i]))
+        # Define variational problem
+        u[i].append(Function(Q[i][j]))
+        nu_u[i].append(TestFunction(Q[i][j]))
+        f[i].append(Function(Q[i][j]))
+        grad_u[i].append(Function(V[i][j]))
+        J_u[i].append(TrialFunction(Q[i][j]))
+        u_exact[i].append(Function(Q[i][j]))
+
+        # Define post-processing (pp) variational problem
+        # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
+        hess_u[i].append(Function(T[i][j]))
+        nu_hess_u[i].append(TestFunction(T[i][j]))
+        hess_u_exact[i].append(Function(T[i][j]))
+        J_hess_u[i].append(TrialFunction(T[i][j]))
 
 u[1].set_allow_extrapolation(True)
 
