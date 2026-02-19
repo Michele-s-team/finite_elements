@@ -1870,20 +1870,15 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
                     '''
 
-                    # read the line components from the parent mesh and create the relative mesh function 'cf'
-                    line_mesh = read_mesh(io.add_trailing_slash(input_directory) + "line_mesh.xdmf")
-                    cf = read_mesh_components(line_mesh, line_mesh.topology().dim(), io.add_trailing_slash(input_directory) + "line_mesh.xdmf")
-
-                    # create  submesh_2d from the cell function 'cf' and the id which identifies the sub_mesh under consideration: submesh_2d is a line embedded in 2d space
-                    submesh_2d = SubMesh(mesh, cf, mesh_medatada[f'sub_mesh_{p}_id'])
-
-                    # transform submesh_2d into a truly 1d mesh
-                    # Extract x-coordinates from the 2D submesh
+                    # create the one-dimensional submesh from the facet function 'mf_mesh' and the id which identifies the sub_mesh under consideration: first extract the coordinates of the points in the one-dimensional submesh and store them into x_coordinates
                     x_coordinates = []
-                    for vertex in vertices(submesh_2d):
-                        x_coordinates.append(vertex.point().x())
+                    for facet in facets(mesh):
+                        if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
+                            for vertex in vertices(facet):
+                                x_coordinates.append(vertex.point().x())
 
-                    x_coordinates = sorted(list(set(x_coordinates)))  # Remove duplicates and sort
+                    # then remove duplicates from x_coordinates and sort it 
+                    x_coordinates = sorted(list(set(x_coordinates)))  
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
                     sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
