@@ -35,30 +35,26 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
-J_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
-problem_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
-solver_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
+'''
+here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th mesh, and similarly for problem, solver, ... 
+'''
+J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
-# solve problem on sub_mesh[1]
-vp_mesh_0[1] = importlib.import_module(swi.vp_sub_mesh_0_1)
+# solve the variational problem in sub_mesh[0][1], and obtain the solution 
+vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
+J[0][1] = derivative(vp[0][1].F, fsp.u[0][1], fsp.J_u[0][1])
+problem[0][1] = NonlinearVariationalProblem(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, J[0][1])
+solver[0][1] = NonlinearVariationalSolver(problem[0][1])
 
-J_mesh_0[1] = derivative(vp_mesh_0[1].F, fsp.u[0][1], fsp.J_u[0][1])
-problem_mesh_0[1] = NonlinearVariationalProblem(vp_mesh_0[1].F, fsp.u[0][1], vp_mesh_0[1].bcs, J_mesh_0[1])
-solver_mesh_0[1] = NonlinearVariationalSolver(problem_mesh_0[1])
-solver_mesh_0[1].parameters.update(params)
+solver[0][1].solve()
 
-solver_mesh_0[1].solve()
+# use the solution obtained for sub_mesh[0][1] to specify the BCs for sub_mesh[0][0], and solve the variational problem in sub_mesh[0][0]
+vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
+J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
+problem[0][0] = NonlinearVariationalProblem(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, J[0][0])
+solver[0][0] = NonlinearVariationalSolver(problem[0][0])
 
-
-# solve problem on sub_mesh[0] by using the solution above on sub_mesh[1] as a BC
-vp_mesh_0[0] = importlib.import_module(swi.vp_sub_mesh_0_0)
-
-J_mesh_0[0] = derivative(vp_mesh_0[0].F, fsp.u[0][0], fsp.J_u[0][0])
-problem_mesh_0[0] = NonlinearVariationalProblem(vp_mesh_0[0].F, fsp.u[0][0], vp_mesh_0[0].bcs, J_mesh_0[0])
-solver_mesh_0[0] = NonlinearVariationalSolver(problem_mesh_0[0])
-solver_mesh_0[0].parameters.update(params)
-
-solver_mesh_0[0].solve()
+solver[0][0].solve()
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
