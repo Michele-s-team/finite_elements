@@ -20,7 +20,7 @@ import function_spaces as fsp
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-vp = ['','']
+vp_mesh_0 = ['','']
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -34,30 +34,31 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-J = [None] * len(rmsh.lmsh.sub_meshes)
-problem = [None] * len(rmsh.lmsh.sub_meshes)
-solver = [None] * len(rmsh.lmsh.sub_meshes)
+
+J_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
+problem_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
+solver_mesh_0 = [None] * len(rmsh.lmsh.sub_meshes[0])
 
 # solve problem on sub_mesh[1]
-vp[1] = importlib.import_module(swi.vp_sub_mesh_1)
+vp_mesh_0[1] = importlib.import_module(swi.vp_sub_mesh_0_1)
 
-J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
-problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
-solver[1] = NonlinearVariationalSolver(problem[1])
-solver[1].parameters.update(params)
+J_mesh_0[1] = derivative(vp_mesh_0[1].F, fsp.u[1], fsp.J_u[1])
+problem_mesh_0[1] = NonlinearVariationalProblem(vp_mesh_0[1].F, fsp.u[1], vp_mesh_0[1].bcs, J_mesh_0[1])
+solver_mesh_0[1] = NonlinearVariationalSolver(problem_mesh_0[1])
+solver_mesh_0[1].parameters.update(params)
 
-solver[1].solve()
+solver_mesh_0[1].solve()
 
 
 # solve problem on sub_mesh[0] by using the solution above on sub_mesh[1] as a BC
-vp[0] = importlib.import_module(swi.vp_sub_mesh_0)
+vp_mesh_0[0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 
-J[0] = derivative(vp[0].F, fsp.u[0], fsp.J_u[0])
-problem[0] = NonlinearVariationalProblem(vp[0].F, fsp.u[0], vp[0].bcs, J[0])
-solver[0] = NonlinearVariationalSolver(problem[0])
-solver[0].parameters.update(params)
+J_mesh_0[0] = derivative(vp_mesh_0[0].F, fsp.u[0], fsp.J_u[0])
+problem_mesh_0[0] = NonlinearVariationalProblem(vp_mesh_0[0].F, fsp.u[0], vp_mesh_0[0].bcs, J_mesh_0[0])
+solver_mesh_0[0] = NonlinearVariationalSolver(problem_mesh_0[0])
+solver_mesh_0[0].parameters.update(params)
 
-solver[0].solve()
+solver_mesh_0[0].solve()
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
