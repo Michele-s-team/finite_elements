@@ -12,7 +12,7 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j = ufl.indices(2)
 
 
-class u_exact_sub_mesh_1_expression(UserExpression):
+class u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
@@ -24,7 +24,7 @@ class u_exact_sub_mesh_1_expression(UserExpression):
         return (1,)
 
 
-class grad_u_exact_sub_mesh_1_expression(UserExpression):
+class grad_u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
         # values[0] = 2.0 * x[0]
@@ -40,7 +40,7 @@ class grad_u_exact_sub_mesh_1_expression(UserExpression):
         return (2,)
 
 
-class laplacian_u_exact_sub_mesh_1_expression(UserExpression):
+class laplacian_u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
         # values[0] = 6.0
@@ -53,9 +53,9 @@ class laplacian_u_exact_sub_mesh_1_expression(UserExpression):
         return (1,)
 
 
-fsp.u_exact[1].interpolate(u_exact_sub_mesh_1_expression(element=fsp.Q[1].ufl_element()))
-fsp.grad_u[1].interpolate(grad_u_exact_sub_mesh_1_expression(element=fsp.V[1].ufl_element()))
-fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_1_expression(element=fsp.Q[1].ufl_element()))
+fsp.u_exact[1].interpolate(u_exact_sub_mesh_0_1_expression(element=fsp.Q[1].ufl_element()))
+fsp.grad_u[1].interpolate(grad_u_exact_sub_mesh_0_1_expression(element=fsp.V[1].ufl_element()))
+fsp.f[1].interpolate(laplacian_u_exact_sub_mesh_0_1_expression(element=fsp.Q[1].ufl_element()))
 
 # boundary conditions for sub_mesh[1]: constrain u[1] on the outer boundary of sub_mesh[1], i.e.,  outer rectangle
 bcs = [ \

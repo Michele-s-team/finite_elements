@@ -16,7 +16,7 @@ i, j, k, l = ufl.indices(4)
 
 print(f"\t- Check of BCs:")
 print(f"\t\tBCs for sub_mesh {0}:")
-print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {0} lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0], fsp.u_1_on_0, rmsh.ds_sub_mesh[0]['lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {0} lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0], fsp.u_0_1_on_0_0, rmsh.ds_sub_mesh[0]['lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(f"\t\tBCs for sub_mesh {1}:")
 print(f"\t\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega {1} in_lrtb] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.sub_mesh_facet_normal[1][i] * (fsp.u[1].dx(i)), bgeo.sub_mesh_facet_normal[1][i] * fsp.grad_u[1][i], rmsh.ds_sub_mesh[1]['in_lrtb']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
