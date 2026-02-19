@@ -30,4 +30,4 @@ for i in range(2):
     print(f"\t\t<<(u - u_exact)^2>>_[Omega {0} {i}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0][i], fsp.u_exact[0][i], rmsh.dx_sub_mesh[0][i]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
-# import print_out_solution
+import print_out_solution
