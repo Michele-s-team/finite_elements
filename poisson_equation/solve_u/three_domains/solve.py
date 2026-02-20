@@ -35,7 +35,10 @@ params = {'nonlinear_solver': 'newton',
           }
 
 ####################
+
+import input_output as io
 import mesh.utils as msh
+import solution_paths as solpath
 
 class u_0_0_Expression(UserExpression):
     def eval(self, values, x):
@@ -49,6 +52,14 @@ fsp.u[0][0].interpolate(u_0_0_Expression(element=fsp.Q[0][0].ufl_element()))
 
 
 msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-2)
+
+io.full_print(fsp.u[0][0], f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.sub_meshes[0][0], 'scalar')
+
+io.full_print(fsp.u[1], f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'scalar')
 ####################
 
 
