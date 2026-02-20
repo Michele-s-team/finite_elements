@@ -17,6 +17,7 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
+import colorama as col
 from fenics import *
 import gmsh
 import numpy as np
@@ -246,6 +247,38 @@ msh.sorted_boundary_points(
     output_directory_mesh_0, 
     [rpam.parameters['circle_id']],
     os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(rpam.parameters['circle_id']) + '.csv'))
+
+
+# check that the number of mesh vertices on the circle matches N and if it does not, abort. 
+mesh_0 = msh.read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf'))
+mf_mesh_0 = msh.read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
+
+# collect unique vertex indices touched by facets tagged with circle_id
+circle_vertex_ids = set()
+
+for facet in facets(mesh_0):
+    #run through all facets of mesh_0 
+
+    if mf_mesh_0[facet] == rpam.parameters['circle_id']:
+        # the facet under consideration belongs to the circle
+
+        for v in vertices(facet):
+            # run through the vertices of the facet under consideration, and ad them to circel_vertex_ids
+
+            circle_vertex_ids.add(v.index())
+
+n_vertices_on_circle = len(circle_vertex_ids)
+print(f'Number of vertices on circle = {n_vertices_on_circle}')
+
+if n_vertices_on_circle != N:
+    # the meshing algorithm has added additional vertices on the circle, while I want the number of vertices on the circle to match N, and thus the number of vertices in the line mesh -> print an error message
+
+    print(f"{col.Fore.RED}{'Error: the number of vertices on circle does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
+
+    sys.exit()
+
+
+
 
 
 
