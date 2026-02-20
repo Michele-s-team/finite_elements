@@ -43,7 +43,7 @@ import solution_paths as solpath
 class u_0_0_Expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
     def value_shape(self):
         return (1,)
