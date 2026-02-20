@@ -37,6 +37,17 @@ params = {'nonlinear_solver': 'newton',
 ####################
 import mesh.utils as msh
 
+class u_0_0_Expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
+
+    def value_shape(self):
+        return (1,)
+    
+fsp.u[0][0].interpolate(u_0_0_Expression(element=fsp.Q[0][0].ufl_element()))
+
+
 msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-2)
 ####################
 
