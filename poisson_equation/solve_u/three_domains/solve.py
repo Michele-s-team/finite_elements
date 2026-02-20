@@ -34,9 +34,12 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+####################
 import mesh.utils as msh
 
 msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-2)
+####################
+
 
 '''
 here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th mesh, and similarly for problem, solver, ... 
