@@ -1913,10 +1913,22 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     return sub_meshes, sf_sub_meshes, mf_sub_meshes
 
 
-
-
 def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
+    """
+    Transfer f_2d (defined on sub_mesh[0][0] or sub_mesh[0][1]) restricted
+    to the circular polygon boundary, onto f_line (periodic 1D line mesh).
 
+    No interpolation. Works for scalar, vector, tensor, any polynomial degree.
+
+    Parameters
+    ----------
+    f_2d  : Function on the 2D submesh
+    f_line: Function on the 1D periodic line mesh, modified in place
+    c_r   : [cx, cy], centre of the circle
+    r     : radius of the circle
+    N     : number of polygon segments (mesh_parameters[0]['N'])
+    tol   : tolerance for identifying DOFs on the polygon edges
+    """
     V_2d   = f_2d.function_space()
     V_line = f_line.function_space()
 
@@ -1933,9 +1945,9 @@ def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
     coords_2d   = V_2d.tabulate_dof_coordinates().reshape(-1, gdim)
     coords_line = V_line.tabulate_dof_coordinates().reshape(-1, 1)
 
-    cx, cy      = float(c_r[0]), float(c_r[1])
-    delta_theta = 2.0 * np.pi / N
-    chord       = r * 2.0 * np.sin(delta_theta / 2.0)
+    cx, cy        = float(c_r[0]), float(c_r[1])
+    delta_theta   = 2.0 * np.pi / N
+    chord         = r * 2.0 * np.sin(delta_theta / 2.0)
     circumference = N * chord
 
     # Polygon vertices P[i] = c_r + R(i*delta_theta) * [r, 0]
@@ -1943,7 +1955,7 @@ def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
     P = np.column_stack([cx + r * np.cos(angles),
                          cy + r * np.sin(angles)])   # shape (N, 2)
 
-    # --- Find DOFs on the polygon and compute their arc-length ---------------
+    # --- Find 2D DOFs on the polygon and compute their arc-length ------------
     # A DOF lies on edge i if its orthogonal distance to the chord is < tol.
     on_circle_idx   = []
     s_of_circle_dof = []
@@ -1960,15 +1972,14 @@ def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
             edge  = P_j - P_i
 
             edge_len_sq = np.dot(edge, edge)
-            v = np.array([x, y]) - P_i
-            t = np.dot(v, edge) / edge_len_sq
-
+            v        = np.array([x, y]) - P_i
+            t        = np.dot(v, edge) / edge_len_sq
             proj     = P_i + t * edge
             residual = np.linalg.norm(proj - np.array([x, y]))
 
             if 0.0 - tol <= t <= 1.0 + tol and residual < tol:
                 s = (i + max(0.0, min(1.0, t))) * chord
-                # wrap closing vertex back to s=0
+                # wrap the closing vertex (s ≈ circumference) back to s = 0
                 if s >= circumference - tol:
                     s = 0.0
                 on_circle_idx.append(dof_2d)
@@ -1988,9 +1999,14 @@ def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
     )
 
     # --- Build permutation by sorted rank ------------------------------------
-    # Both arc-length arrays should have the same rank ordering even if their
-    # floating-point values differ slightly, so we match by rank not by value.
-    s_line    = coords_line[:, 0]
+    # Match by rank in arc-length order rather than by value, to avoid
+    # sensitivity to floating-point differences between the two coordinate sets.
+    #
+    # Also wrap any line DOF coordinate equal to circumference back to 0:
+    # FEniCS may store the periodic master DOF at x = L1 instead of x = 0.
+    s_line = coords_line[:, 0].copy()
+    s_line[s_line >= circumference - tol] = 0.0
+
     sort_2d   = np.argsort(s_of_circle_dof)
     sort_line = np.argsort(s_line)
 
@@ -1998,5 +2014,5 @@ def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
     for rank in range(n_dofs_line):
         perm[sort_line[rank]] = on_circle_idx[sort_2d[rank]]
 
-    # --- Copy DOF values ------------------------------------------------------
+    # --- Copy DOF values (no interpolation) ----------------------------------
     f_line.vector()[:] = f_2d.vector()[:][perm]
