@@ -73,8 +73,11 @@ coord = np.add(np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0]
                [-delta_l * np.cos(alpha),
                 delta_l * np.sin(alpha)])
     
+print(f'Comparing the two functions on polygon vertices: ')
+for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+    print(f'u_line = {fsp.u[1](i*delta_l)}\t u_2d = {fsp.u[0][0](np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
 
-print(f'u_line = {fsp.u[1](delta_l)}\n u_2d = {fsp.u[0][0](coord)}')
+# print(f'u_line = {fsp.u[1](delta_l)}\n u_2d = {fsp.u[0][0](coord)}')
 ####################
 
 
