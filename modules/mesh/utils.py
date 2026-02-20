@@ -1913,3 +1913,143 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     return sub_meshes, sf_sub_meshes, mf_sub_meshes
 
 
+import numpy as np
+from fenics import Function
+
+
+"""
+Transfer the values of f_2d (defined on sub_mesh[0][0] or sub_mesh[0][1])
+restricted to the circular boundary, onto f_line (the periodic 1D line mesh).
+
+No interpolation: each DOF on the circle boundary of the 2D mesh is matched
+to the DOF on the line mesh at the same position along the polygon, and its
+value is copied directly.
+
+Works for scalar, vector, and tensor function spaces of any polynomial degree.
+Correctly handles the periodicity of the line function space (the slave DOF
+at x=L is identified with the master DOF at x=0 and never appears in the
+DOF vector of the periodic space).
+
+Parameters
+----------
+f_2d  : Function defined on sub_mesh[0][0] or sub_mesh[0][1]
+f_line: Function defined on mesh[1] (periodic line), modified in place
+c_r   : array-like [cx, cy], centre of the circle in the 2D mesh
+r     : float, radius of the circle
+N     : int, number of polygon segments (same N as in generate_mesh.py,
+        stored in mesh_parameters[0]['N'])
+tol   : geometric tolerance for identifying DOFs on the circle
+"""
+def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-10):
+  
+    V_2d   = f_2d.function_space()
+    V_line = f_line.function_space()
+
+    # sanity check: same element on both sides
+    assert V_2d.ufl_element().family()  == V_line.ufl_element().family(),  "element family mismatch"
+    assert V_2d.ufl_element().degree()  == V_line.ufl_element().degree(),  "element degree mismatch"
+    assert V_2d.ufl_element().value_shape() == V_line.ufl_element().value_shape(), "value shape mismatch"
+
+    gdim = V_2d.mesh().geometry().dim()   # 2
+
+    n_dofs_line = V_line.dim()
+
+    # --- DOF coordinates ------------------------------------------------------
+    # tabulate_dof_coordinates returns one row per scalar DOF (repeated for each
+    # component in vector/tensor spaces), so the permutation we build below
+    # operates uniformly on the full DOF vector.
+    coords_2d   = V_2d.tabulate_dof_coordinates().reshape(-1, gdim)
+    coords_line = V_line.tabulate_dof_coordinates().reshape(-1, 1)  # 1D
+
+    # --- Reconstruct the N circle vertices P_i --------------------------------
+    delta_theta = 2.0 * np.pi / N
+    chord       = r * 2.0 * np.sin(delta_theta / 2.0)
+
+    # P[i] = c_r + R(i*delta_theta) * [r, 0]
+    angles = np.arange(N) * delta_theta
+    P = np.column_stack([c_r[0] + r * np.cos(angles),
+                         c_r[1] + r * np.sin(angles)])   # shape (N, 2)
+
+    # --- Identify 2D DOFs on the circle ---------------------------------------
+    dist = np.sqrt((coords_2d[:, 0] - c_r[0])**2 + (coords_2d[:, 1] - c_r[1])**2)
+    on_circle_idx = np.where(np.abs(dist - r) < tol)[0]
+
+    print(f'coords_2d = {coords_2d}')
+
+    assert len(on_circle_idx) == n_dofs_line, (
+        f"Found {len(on_circle_idx)} DOFs on the circle boundary, "
+        f"but the line mesh has {n_dofs_line} DOFs. "
+        f"Check c_r, r, N, tol and that both function spaces have the same "
+        f"element family and degree."
+    )
+
+    # --- For each circle DOF compute its arc-length s along the polygon -------
+    # A DOF at 2D position (x, y) lies on edge i at fraction t in [0, 1):
+    #     (x, y) = P[i] + t * (P[(i+1) % N] - P[i])
+    # Its arc-length on the line is  s = (i + t) * chord.
+    # t = 0 gives a vertex DOF; t = j/k (j=1..k-1) gives an interior DOF.
+    # The periodic endpoint at s = N*chord wraps to s = 0 (master DOF).
+
+    s_of_circle_dof = np.empty(len(on_circle_idx))
+
+    for k_idx, dof_2d in enumerate(on_circle_idx):
+        x, y = coords_2d[dof_2d]
+
+        # Use angle to narrow the search to 1–2 candidate edges (O(1) per DOF)
+        theta     = np.arctan2(y - c_r[1], x - c_r[0]) % (2.0 * np.pi)
+        i_approx  = int(theta / delta_theta) % N
+
+        found = False
+        for di in range(-1, 3):          # check 4 consecutive edges to be safe
+            i    = (i_approx + di) % N
+            P_i  = P[i]
+            P_j  = P[(i + 1) % N]
+            edge = P_j - P_i             # chord vector
+
+            edge_len_sq = np.dot(edge, edge)
+            v  = np.array([x, y]) - P_i
+            t  = np.dot(v, edge) / edge_len_sq
+
+            # Check that the projection actually lands on the DOF
+            proj = P_i + t * edge
+            if (0.0 - tol / chord <= t <= 1.0 + tol / chord and
+                    np.linalg.norm(proj - np.array([x, y])) < tol):
+
+                s = (i + max(0.0, min(1.0, t))) * chord
+                # Wrap the closing vertex (s ≈ N*chord) to s = 0
+                if s >= N * chord - tol:
+                    s = 0.0
+                s_of_circle_dof[k_idx] = s
+                found = True
+                break
+
+        assert found, (
+            f"DOF at ({x:.8f}, {y:.8f}) could not be assigned to any circle edge. "
+            f"Check tol or that the 2D mesh was built with the same N={N}."
+        )
+
+    # --- Build the permutation: line DOF i  ←  circle DOF perm[i] ------------
+    s_line = coords_line[:, 0]
+
+    # Sort circle DOFs by arc-length for fast lookup
+    sort_idx = np.argsort(s_of_circle_dof)
+    s_sorted = s_of_circle_dof[sort_idx]
+
+    perm = np.empty(n_dofs_line, dtype=int)   # perm[i] = index in f_2d.vector()
+
+    for i, s in enumerate(s_line):
+        j = int(np.searchsorted(s_sorted, s))
+        # Check the two nearest candidates (wrap-around at the periodic endpoint)
+        candidates = [j % n_dofs_line, (j - 1) % n_dofs_line]
+        best = min(candidates, key=lambda k: abs(s_sorted[k] - s))
+        gap  = abs(s_sorted[best] - s)
+
+        assert gap < tol, (
+            f"No circle DOF found for line DOF {i} at s={s:.8f} "
+            f"(closest gap = {gap:.2e}). "
+            f"Check tol and that both meshes were built with the same N={N}."
+        )
+        perm[i] = on_circle_idx[sort_idx[best]]
+
+    # --- Copy DOF values ------------------------------------------------------
+    f_line.vector()[:] = f_2d.vector()[:][perm]
