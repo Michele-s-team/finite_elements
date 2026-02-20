@@ -42,7 +42,10 @@ import numpy as np
 import solution_paths as solpath
 
 delta_theta = 2 * np.pi / rmsh.lmsh.mesh_parameters[0]['N']
+alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
+
+# fsp.u[0][0].set_allow_extrapolation(True)
 
 
 class u_0_0_Expression(UserExpression):
@@ -66,10 +69,12 @@ io.full_print(fsp.u[1], f'u_line', solpath.xdmf_file_path, solpath.h5_file_path,
                   solpath.nodal_values_path,
                   rmsh.lmsh.mesh[1], 'scalar')
 
-coord = np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0])
+coord = np.add(np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0]), 
+               [-delta_l * np.cos(alpha),
+                delta_l * np.sin(alpha)])
     
 
-print(f'u_line = {fsp.u[1](0)}\n u_2d = {fsp.u[0][0](coord)}')
+print(f'u_line = {fsp.u[1](delta_l)}\n u_2d = {fsp.u[0][0](coord)}')
 ####################
 
 
