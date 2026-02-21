@@ -224,7 +224,12 @@ Input values:
     - 'filename': the path, filename and extension of the csv file where the tensor will be written 
 '''
 
-def print_nodal_values_tensor_to_csvfile(f, mesh, filename):
+def print_nodal_values_tensor_to_csvfile(t, mesh, filename):
+    
+    # the shape of the tensor, for example (2, 3)
+    tensor_shape = t.function_space().ufl_element().value_shape()
+    # value_size is the total number of components of the tensor, for example for a (2, 3) tensor shape_size = 2 * 3 
+    tensor_shape_size  = int(np.prod(tensor_shape))
 
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
@@ -234,31 +239,30 @@ def print_nodal_values_tensor_to_csvfile(f, mesh, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
-    print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    component_headers = ",".join([f'"f:{i}"' for i in range(tensor_shape_size)])
+    coord_headers     = ",".join([f'":{i}"' for i in range(3)])
+
+    print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for i in range(Q.dim()):
+        # run through the nodes
+
         coordinate = coordinates[i]
         # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
         padded_coordinate = pad(coordinate, 3)
 
         # evaluate the function at the coordinate
-        f_value = f(*coordinate)
+        t_value = t(*coordinate)
 
-        # Handle the case where f_value might be a scalar numpy.float64 or an array
-        if hasattr(f_value, '__iter__'):
-            # f_value is already iterable (list, tuple, or numpy array)
-            f_as_list = f_value
-        else:
-            # f_value is a scalar (numpy.float64), convert to list
-            f_as_list = [f_value]
+        component_str = ",".join([str(t_value[j]) for j in range(tensor_shape_size)])
+        coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
 
-        # convert the value of the vector field in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
-        padded_f = pad(f_as_list, 3)
+        print(f"{component_str},{coord_str}", file=csvfile)
 
-        print(f"{padded_f[0]}, {padded_f[1]}, {padded_f[2]}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
 
     csvfile.close()
-
+    
 
 '''
 print the coordinates of the vertices of a mesh to csv file
