@@ -51,8 +51,8 @@ delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 class v_sub_mesh_0_0_Expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-        values[1] = 1 - x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 1 - x[0] + 2 * x[1] ** 2
+        values[1] = 1 - 4 * x[0] ** 2 + 2 * x[1] ** 2
 
     def value_shape(self):
         return (2,)
