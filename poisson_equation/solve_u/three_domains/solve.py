@@ -138,9 +138,9 @@ io.full_print(fsp.t_sub_mesh_0_0, f't_2d', solpath.xdmf_file_path, solpath.h5_fi
                   solpath.nodal_values_path,
                   rmsh.lmsh.sub_meshes[0][0], 'tensor')
 
-# io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-#                   solpath.nodal_values_path,
-#                   rmsh.lmsh.mesh[1], 'tensor')
+io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'tensor')
     
 print(f'Comparing the two functions on polygon vertices: ')
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
