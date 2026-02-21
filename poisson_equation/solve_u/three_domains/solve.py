@@ -48,26 +48,27 @@ delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 # fsp.u[0][0].set_allow_extrapolation(True)
 
 
-class u_0_0_Expression(UserExpression):
+class v_sub_mesh_0_0_Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[1] = 1 - x[0] ** 2 + 2 * x[1] ** 2
 
     def value_shape(self):
-        return (1,)
+        return (2,)
     
-fsp.u[0][0].interpolate(u_0_0_Expression(element=fsp.Q[0][0].ufl_element()))
+fsp.v_sub_mesh_0_0.interpolate(v_sub_mesh_0_0_Expression(element=fsp.V_sub_mesh_0_0.ufl_element()))
 
 
-msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-2)
+msh.transfer_2d_submesh_to_line(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-4)
 
-io.full_print(fsp.u[0][0], f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][0], 'scalar')
+                  rmsh.lmsh.sub_meshes[0][0], 'vector')
 
-io.full_print(fsp.u[1], f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.v_mesh_1, f'v_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'scalar')
+                  rmsh.lmsh.mesh[1], 'vector')
 
 coord = np.add(np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0]), 
                [-delta_l * np.cos(alpha),
@@ -75,7 +76,7 @@ coord = np.add(np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0]
     
 print(f'Comparing the two functions on polygon vertices: ')
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f'u_line = {fsp.u[1](i*delta_l)}\t u_2d = {fsp.u[0][0](np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
+    print(f'v_line = {fsp.v_mesh_1(i*delta_l)}\t v_2d = {fsp.v_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
 
 # print(f'u_line = {fsp.u[1](delta_l)}\n u_2d = {fsp.u[0][0](coord)}')
 ####################
