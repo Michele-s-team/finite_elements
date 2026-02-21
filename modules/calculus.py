@@ -625,3 +625,26 @@ def line_is_radial(line_to_check, N, mesh):
             break
 
     return is_radial
+
+
+'''
+given a list of point coordinates, find the minimal distance between pairs of points in the list
+Input values: 
+    - 'points' = [[point0x, point0y, ...], [point1x, point1y, ...], ] the list containing the coordinates of the points 
+
+Return values: 
+    - 'result': the minimal distance
+'''
+def min_distance(points):
+
+    result = np.inf
+
+    for i in range(len(points)):
+        for j in range(i+1, len(points)):
+
+            distance = np.linalg.norm(np.subtract(points[i], points[j]))
+
+            if distance < result:
+                result = distance
+
+    return result

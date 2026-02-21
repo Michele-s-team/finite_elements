@@ -1943,6 +1943,8 @@ def transfer_2d_submesh_to_line(f_2d, f_line, c_r, r, N, tol=1e-2):
     coords_2d_all = V_2d.tabulate_dof_coordinates().reshape(-1, gdim)
     coords_2d     = coords_2d_all[::value_size]   # unique physical points
 
+    print(f'coordinates of DOFs on 2d mesh: {coords_2d}')
+
     coords_line_all = V_line.tabulate_dof_coordinates().reshape(-1, 1)
     coords_line     = coords_line_all[::value_size]  # unique physical points
     n_pts_line      = len(coords_line)
