@@ -100,7 +100,7 @@ for i in range(len(lmsh.mesh)):
 u[0][1].set_allow_extrapolation(True)
 
 V_sub_mesh_0_0 = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'])
-V_mesh_1 = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'], dim=2)
+V_mesh_1 = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, dim=2)
 
 v_sub_mesh_0_0 = Function(V_sub_mesh_0_0)
 v_mesh_1 = Function(V_mesh_1)
