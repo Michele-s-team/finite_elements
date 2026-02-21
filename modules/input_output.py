@@ -14,7 +14,14 @@ msh = importlib.import_module('mesh.utils')
 number_of_decimals = 2
 
 
-# print the scalar field 'f' to csv file 'filename'
+
+'''
+prints a scalar to csv file
+Input values: 
+    - 'f': the scalar
+    - 'filename': path, filename and extension of the csv file
+'''
+
 def print_scalar_to_csvfile(f, filename):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -60,16 +67,17 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
 '''
 prints a vector to csv file
 Input values: 
-    - 'f': the vector
+    - 'v': the vector
     - 'filename': path, filename and extension of the csv file
 '''
 
-def print_vector_to_csvfile(f, filename):
-    V = f.function_space()
+def print_vector_to_csvfile(v, filename):
+
+    V = v.function_space()
     mesh = V.mesh()
     gdim = mesh.geometry().dim()  # geometric dimension (2 or 3)
-    vdim = f.value_rank()  # 1 for vector, 0 for scalar
-    shape = f.value_dimension(0) if vdim > 0 else 1
+    vdim = v.value_rank()  # 1 for vector, 0 for scalar
+    shape = v.value_dimension(0) if vdim > 0 else 1
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
     '''
@@ -82,21 +90,21 @@ def print_vector_to_csvfile(f, filename):
         [5.0, 6.0],  # vector at point 2
         ]
      '''
-    values = f.vector().get_local().reshape(-1, shape)
+    values = v.vector().get_local().reshape(-1, shape)
 
     # Subsample coordinates by skipping repeats:
-    coords = coords_all[::shape]
+    coordinates = coords_all[::shape]
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
     print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
 
-    for x, v in zip(coords, values):
-        # padded_v = list(v) + [0] * (3 - shape)
-        padded_v = pad(v, 3)
+    for coordinate, value in zip(coordinates, values):
+        # padded_v = list(value) + [0] * (3 - shape)
+        padded_v = pad(value, 3)
         # padded_x = list(x) + [0] * (3 - gdim)
-        padded_x = pad(x, 3)
+        padded_x = pad(coordinate, 3)
         print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
                 f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
 
