@@ -91,6 +91,9 @@ def print_vector_to_csvfile(v, filename):
     print(f'values size = {value_size}')
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
+
+    print(f'--- coords_all = {coords_all}')
+
     '''
      reshape the vector field: before reshaping the vector is, for example, 
      [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
@@ -106,6 +109,10 @@ def print_vector_to_csvfile(v, filename):
     # Subsample coordinates by skipping repeats:
     coordinates = coords_all[::value_size]
 
+    print(f'--- coordinates = {coordinates}')
+
+
+
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
@@ -117,6 +124,8 @@ def print_vector_to_csvfile(v, filename):
 
     for coordinate, value in zip(coordinates, values):
 
+        padded_coordinate = pad(coordinate, 3)
+
         if value_size <= 3:
             # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
 
@@ -126,10 +135,10 @@ def print_vector_to_csvfile(v, filename):
 
             padded_value = value
 
-        value_string = ",".join([f'"{padded_value[i]}"' for i in range(len(padded_value))])
+        value_string = ",".join([f'{padded_value[i]}' for i in range(len(padded_value))])
 
 
-        print(f"{value_string}",f"{coordinate[0]},{coordinate[1]},{coordinate[2]}", file=csvfile)
+        print(f"{value_string}",f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}", file=csvfile)
 
     csvfile.close()
 
