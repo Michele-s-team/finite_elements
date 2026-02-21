@@ -120,11 +120,13 @@ class t_sub_mesh_0_0_Expression(UserExpression):
         # test case 1
         values[0] = np.cos(2* np.pi * (x[0]*x[1]))
         values[1] = np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1])
-        values[2] = np.cos(2* np.pi * x[0])**2 - np.sin(2* np.pi * x[1])
-        values[3] = np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1]))
+        values[2] = (np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1]))**2
+        values[3] = np.cos(2* np.pi * x[0])**2 - np.sin(2* np.pi * x[1])
+        values[4] = np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1]))
+        values[5] = (np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1])))**2
 
     def value_shape(self):
-        return (2, 2)
+        return (2, 3)
     
 
 fsp.t_sub_mesh_0_0.interpolate(t_sub_mesh_0_0_Expression(element=fsp.T_sub_mesh_0_0.ufl_element()))
