@@ -117,8 +117,8 @@ def print_tensor_to_csvfile(t, filename):
     # value_size is the total number of components of the tensor, for example for a (2, 3) tensor values_size = 2 * 3 
     value_size  = int(np.prod(value_shape)) if value_shape else 1
 
-    print(f'value shape = {value_shape}')
-    print(f'value size = {value_size}')
+    # print(f'value shape = {value_shape}')
+    # print(f'value size = {value_size}')
 
     '''
     coords_all is a list containing the coordinates of the points where the DOFs of the tensor sit 
@@ -129,7 +129,7 @@ def print_tensor_to_csvfile(t, filename):
     '''
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
 
-    print(f'coords_all = {coords_all}')
+    # print(f'coords_all = {coords_all}')
 
     '''
     reshape the tensor field: before reshaping the vector is, for example,
@@ -146,11 +146,11 @@ def print_tensor_to_csvfile(t, filename):
     f.vector().get_local() = [T00_0, T01_0, T10_0, T11_0, T00_1, T01_1, T10_1, T11_1, T00_2, T01_2, T10_2, T11_2, ...]
     '''
 
-    print(f'flat tensor values = {t.vector().get_local()}')
+    # print(f'flat tensor values = {t.vector().get_local()}')
 
     values = t.vector().get_local().reshape(-1, value_size)
 
-    print(f'nested tensor values = {values}')
+    # print(f'nested tensor values = {values}')
 
 
     '''
@@ -159,7 +159,7 @@ def print_tensor_to_csvfile(t, filename):
     '''
     coords = coords_all[::value_size]
 
-    print(f'coords = {coords}')
+    # print(f'coords = {coords}')
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
