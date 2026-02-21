@@ -96,6 +96,9 @@ def print_vector_to_csvfile(f, filename):
     csvfile.close()
 
 def print_tensor_to_csvfile(f, filename):
+
+    np.set_printoptions(threshold=np.inf)
+
     
     V = f.function_space()
     mesh = V.mesh()
@@ -133,8 +136,18 @@ def print_tensor_to_csvfile(f, filename):
         [T00_1, T01_1, T10_1, T11_1],  # tensor at point 1
         ...
     ]
+
+    Here f.vector().get_local() returns the DOF vector as a flat 1D numpy array, for example for a 2×2 tensor with 3 physical points:
+
+    f.vector().get_local() = [T00_0, T01_0, T10_0, T11_0, T00_1, T01_1, T10_1, T11_1, T00_2, T01_2, T10_2, T11_2, ...]
     '''
+
+    print(f'flat tensor values = {f.vector().get_local()}')
+
     values = f.vector().get_local().reshape(-1, value_size)
+
+    print(f'nested tensor values = {values}')
+
 
     # subsample coordinates by skipping repeats (one physical point per value_size DOFs)
     coords = coords_all[::value_size]
