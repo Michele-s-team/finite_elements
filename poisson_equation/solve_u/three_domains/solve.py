@@ -46,8 +46,9 @@ delta_theta = 2 * np.pi / rmsh.lmsh.mesh_parameters[0]['N']
 alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
-# 1 transfer scalar
 
+'''
+# 1 transfer scalar
 
 class u_0_0_Expression(UserExpression):
     def eval(self, values, x):
@@ -107,7 +108,7 @@ print(f'Comparing the two functions on polygon vertices: ')
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
     print(f'v_line = {fsp.v_mesh_1(i*delta_l)}\t v_2d = {fsp.v_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
 
-
+'''
 
 # 3 transfer tensor
 
@@ -117,13 +118,15 @@ class t_sub_mesh_0_0_Expression(UserExpression):
 
     def eval(self, values, x):
         # test case 1
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
+        values[0] = np.cos(2* np.pi * (x[0]*x[1]))
+        values[1] = np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1])
+        values[2] = (np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1]))**2
+        values[3] = np.cos(2* np.pi * x[0])**2 - np.sin(2* np.pi * x[1])
+        values[4] = np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1]))
+        values[5] = (np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1])))**2
 
     def value_shape(self):
-        return (2, 2)
+        return (2, 3)
     
 
 fsp.t_sub_mesh_0_0.interpolate(t_sub_mesh_0_0_Expression(element=fsp.T_sub_mesh_0_0.ufl_element()))
@@ -135,9 +138,9 @@ io.full_print(fsp.t_sub_mesh_0_0, f't_2d', solpath.xdmf_file_path, solpath.h5_fi
                   solpath.nodal_values_path,
                   rmsh.lmsh.sub_meshes[0][0], 'tensor')
 
-io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'tensor')
+# io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+#                   solpath.nodal_values_path,
+#                   rmsh.lmsh.mesh[1], 'tensor')
     
 print(f'Comparing the two functions on polygon vertices: ')
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):

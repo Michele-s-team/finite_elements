@@ -106,8 +106,8 @@ V_mesh_1 = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_spac
 v_sub_mesh_0_0 = Function(V_sub_mesh_0_0)
 v_mesh_1 = Function(V_mesh_1)
 
-T_sub_mesh_0_0 = TensorFunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'], shape=(2,2))
-T_mesh_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, shape=(2,2))
+T_sub_mesh_0_0 = TensorFunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'], shape=(2,3))
+T_mesh_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, shape=(2,3))
 
 t_sub_mesh_0_0 = Function(T_sub_mesh_0_0)
 t_mesh_1 = Function(T_mesh_1)
