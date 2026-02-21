@@ -117,7 +117,7 @@ def print_vector_to_csvfile(v, filename):
 
     csvfile = open(filename, "w")
 
-    component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
+    component_headers = ",".join([f'"f:{i}"' for i in range(3)])
     coord_headers     = ",".join([f'":{i}"' for i in range(3)])
 
     print(f"{component_headers},{coord_headers}", file=csvfile)
@@ -138,7 +138,7 @@ def print_vector_to_csvfile(v, filename):
         value_string = ",".join([f'{padded_value[i]}' for i in range(len(padded_value))])
 
 
-        print(f"{value_string}",f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}", file=csvfile)
+        print(f"{value_string}",f",{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}", file=csvfile)
 
     csvfile.close()
 
