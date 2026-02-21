@@ -118,10 +118,10 @@ class t_sub_mesh_0_0_Expression(UserExpression):
 
     def eval(self, values, x):
         # test case 1
-        values[0] = np.cos(x[0]*x[1])
-        values[1] = np.sin(x[0]) - np.sin(x[1])
-        values[2] = np.cos(x[0])**2 - np.sin(x[1])
-        values[3] = np.cos(x[0])**3 - np.sin(x[0]+x[1])
+        values[0] = np.cos(2* np.pi * (x[0]*x[1]))
+        values[1] = np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1])
+        values[2] = np.cos(2* np.pi * x[0])**2 - np.sin(2* np.pi * x[1])
+        values[3] = np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1]))
 
     def value_shape(self):
         return (2, 2)
