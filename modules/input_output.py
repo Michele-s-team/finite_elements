@@ -352,13 +352,13 @@ def xdmf_print(f, path):
 '''
 print a field as xdmf, h5, csv file and its nodal values on a csv file
 Input values:
-- 'f': the field
-- 'path_xdmf_file' the path of the xdmf file
-- 'path_csv_file' the path of the csv file
-- 'path_h5_file' the path of the h5 file
-- 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
-- 'mesh': the mesh where 'f' is defined
-- 'type': the type of 'f', which may be 'scalar', 'vector'
+    - 'f': the field
+    - 'path_xdmf_file' the path of the xdmf file
+    - 'path_csv_file' the path of the csv file
+    - 'path_h5_file' the path of the h5 file
+    - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+    - 'mesh': the mesh where 'f' is defined
+    - 'type': the type of 'f', which may be 'scalar', 'vector'
 '''
 
 
