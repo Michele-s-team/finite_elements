@@ -73,11 +73,22 @@ Input values:
 
 def print_vector_to_csvfile(v, filename):
 
+    print(f'Printing vector to csv file ... ')
+
     V = v.function_space()
     mesh = V.mesh()
-    gdim = mesh.geometry().dim()  # geometric dimension (2 or 3)
-    vdim = v.value_rank()  # 1 for vector, 0 for scalar
-    shape = v.value_dimension(0) if vdim > 0 else 1
+    gdim = mesh.geometry().dim()  # geometric dimension
+
+    # value_size for a tensor: e.g. 4 for a 2x2 tensor
+    element  = V.ufl_element()
+
+    # value_shape is the shape of the vector, for example (2,) for a vector with two components
+    value_shape = element.value_shape()
+
+    # value_size is the number of components of the vector
+    value_size = int(value_shape[0])
+
+    print(f'values size = {value_size}')
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
     '''
@@ -90,25 +101,39 @@ def print_vector_to_csvfile(v, filename):
         [5.0, 6.0],  # vector at point 2
         ]
      '''
-    values = v.vector().get_local().reshape(-1, shape)
+    values = v.vector().get_local().reshape(-1, value_size)
 
     # Subsample coordinates by skipping repeats:
-    coordinates = coords_all[::shape]
+    coordinates = coords_all[::value_size]
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
-    print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
+    coord_headers     = ",".join([f'":{i}"' for i in range(3)])
+
+    print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for coordinate, value in zip(coordinates, values):
-        # padded_v = list(value) + [0] * (3 - shape)
-        padded_v = pad(value, 3)
-        # padded_x = list(x) + [0] * (3 - gdim)
-        padded_x = pad(coordinate, 3)
-        print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
-                f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+
+        if value_size <= 3:
+            # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
+
+            padded_value = pad(value, 3)
+        else: 
+            # the number of components of the vector is > 3: print all the components 
+
+            padded_value = value
+
+        value_string = ",".join([f'"{padded_value[i]}"' for i in range(len(padded_value))])
+
+
+        print(f"{value_string}",f"{coordinate[0]},{coordinate[1]},{coordinate[2]}", file=csvfile)
 
     csvfile.close()
+
+    print('... done. ')
 
 
 '''
