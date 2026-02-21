@@ -57,6 +57,13 @@ def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
     csvfile.close()
 
 
+'''
+prints a vector to csv file
+Input values: 
+    - 'f': the vector
+    - 'filename': path, filename and extension of the csv file
+'''
+
 def print_vector_to_csvfile(f, filename):
     V = f.function_space()
     mesh = V.mesh()
