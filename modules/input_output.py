@@ -96,6 +96,47 @@ def print_vector_to_csvfile(f, filename):
     csvfile.close()
 
 
+def print_tensor_to_csvfile(f, filename):
+    
+    V = f.function_space()
+    mesh = V.mesh()
+    gdim = mesh.geometry().dim()  # geometric dimension (2 or 3)
+    vdim = f.value_rank()  # 1 for vector, 0 for scalar
+    shape = f.value_dimension(0) if vdim > 0 else 1
+
+    coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
+    '''
+     reshape the vector field: before reshaping the vector is, for example, 
+     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
+     and after reshaping it is
+     [
+        [1.0, 2.0],  # vector at point 0
+        [3.0, 4.0],  # vector at point 1
+        [5.0, 6.0],  # vector at point 2
+        ]
+     '''
+    values = f.vector().get_local().reshape(-1, shape)
+
+    # Subsample coordinates by skipping repeats:
+    coords = coords_all[::shape]
+
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    csvfile = open(filename, "w")
+    print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    for x, v in zip(coords, values):
+        # padded_v = list(v) + [0] * (3 - shape)
+        padded_v = pad(v, 3)
+        # padded_x = list(x) + [0] * (3 - gdim)
+        padded_x = pad(x, 3)
+        print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
+                f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+
+    csvfile.close()
+
+
+
 # Fixed version of your print_nodal_values_vector_to_csvfile method
 def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
