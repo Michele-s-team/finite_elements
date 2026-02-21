@@ -95,17 +95,21 @@ def print_vector_to_csvfile(f, filename):
 
     csvfile.close()
 
-def print_tensor_to_csvfile(f, filename):
 
-    np.set_printoptions(threshold=np.inf)
-
+'''
+prints a tensor with any shape to csv file
+Input values: 
+    - 't': the tensor
+    - 'filename': path, filename and extension of the csv file
+'''
+def print_tensor_to_csvfile(t, filename):
     
-    V = f.function_space()
+    V = t.function_space()
     mesh = V.mesh()
     gdim = mesh.geometry().dim()
 
     # value_size for a tensor: e.g. 4 for a 2x2 tensor
-    element     = V.ufl_element()
+    element  = V.ufl_element()
 
     # value shape is the shape of the tensor, for example (2, 2)
     value_shape = element.value_shape()
@@ -142,29 +146,33 @@ def print_tensor_to_csvfile(f, filename):
     f.vector().get_local() = [T00_0, T01_0, T10_0, T11_0, T00_1, T01_1, T10_1, T11_1, T00_2, T01_2, T10_2, T11_2, ...]
     '''
 
-    print(f'flat tensor values = {f.vector().get_local()}')
+    print(f'flat tensor values = {t.vector().get_local()}')
 
-    values = f.vector().get_local().reshape(-1, value_size)
+    values = t.vector().get_local().reshape(-1, value_size)
 
     print(f'nested tensor values = {values}')
 
 
-    # subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    '''
+    subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    This line coords_all, runs through it by takking every value_size entry in it, and writes the result into coords
+    '''
     coords = coords_all[::value_size]
+
+    print(f'coords = {coords}')
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
 
-    # header: one column per tensor component, then coordinates
+    # header: one column per tensor component, then the three coordinates in three-dimensional space
     component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
-    coord_headers     = ",".join([f'":{ i}"' for i in range(3)])
+    coord_headers     = ",".join([f'":{i}"' for i in range(3)])
     print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for x, v in zip(coords, values):
-        padded_v = pad(list(v), value_size)   # already the right size, pad only if needed
         padded_x = pad(list(x), 3)
-        component_str = ",".join([str(padded_v[i]) for i in range(value_size)])
+        component_str = ",".join([str(list(v)[i]) for i in range(value_size)])
         coord_str     = f"{padded_x[0]},{padded_x[1]},{padded_x[2]}"
         print(f"{component_str},{coord_str}", file=csvfile)
 
