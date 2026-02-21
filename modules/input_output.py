@@ -217,6 +217,50 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
 
 
 '''
+print the nodal values of a tensor to csv file
+Input values: 
+    - 't': the tensor
+    - 'mesh': the mesh where the tensor is defined
+    - 'filename': the path, filename and extension of the csv file where the tensor will be written 
+'''
+
+def print_nodal_values_tensor_to_csvfile(f, mesh, filename):
+
+    # a dummy function space of order 1 used to tabulated the vertices
+    Q = FunctionSpace(mesh, 'CG', 1)
+    coordinates = Q.tabulate_dof_coordinates()
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    csvfile = open(filename, "w")
+    print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    for i in range(Q.dim()):
+        coordinate = coordinates[i]
+        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_coordinate = pad(coordinate, 3)
+
+        # evaluate the function at the coordinate
+        f_value = f(*coordinate)
+
+        # Handle the case where f_value might be a scalar numpy.float64 or an array
+        if hasattr(f_value, '__iter__'):
+            # f_value is already iterable (list, tuple, or numpy array)
+            f_as_list = f_value
+        else:
+            # f_value is a scalar (numpy.float64), convert to list
+            f_as_list = [f_value]
+
+        # convert the value of the vector field in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+        padded_f = pad(f_as_list, 3)
+
+        print(f"{padded_f[0]}, {padded_f[1]}, {padded_f[2]}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
+
+    csvfile.close()
+
+
+'''
 print the coordinates of the vertices of a mesh to csv file
 Input values: 
 - 'mesh' <dolfin.Mesh>: the mesh
@@ -388,7 +432,7 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
 
     elif type == 'tensor':
         print_tensor_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        # print_nodal_values_tensor_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+        print_nodal_values_tensor_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 
 def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
