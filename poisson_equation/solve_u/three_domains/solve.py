@@ -143,11 +143,18 @@ io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_p
                   rmsh.lmsh.mesh[1], 'tensor')
     
 print(f'Comparing the two functions on polygon vertices: ')
+error = 0
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
     print(f't_line = {fsp.t_mesh_1(i*delta_l)}\t t_2d = {fsp.t_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
 
+    a = fsp.t_mesh_1(i*delta_l)
+    b = fsp.t_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
 
+    for j in range(len(a)):
+        if abs(a[j]-b[j]) > error:
+            error = abs(a[j]-b[j])
 
+print(f'error = {error}')
 ####################
 
 
