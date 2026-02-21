@@ -46,8 +46,9 @@ delta_theta = 2 * np.pi / rmsh.lmsh.mesh_parameters[0]['N']
 alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
-# 1 transfer scalar
 
+'''
+# 1 transfer scalar
 
 class u_0_0_Expression(UserExpression):
     def eval(self, values, x):
@@ -107,7 +108,7 @@ print(f'Comparing the two functions on polygon vertices: ')
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
     print(f'v_line = {fsp.v_mesh_1(i*delta_l)}\t v_2d = {fsp.v_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
 
-
+'''
 
 # 3 transfer tensor
 

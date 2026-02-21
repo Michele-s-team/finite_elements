@@ -97,7 +97,7 @@ def print_vector_to_csvfile(f, filename):
 
 
 def print_tensor_to_csvfile(f, filename):
-    
+
     V = f.function_space()
     mesh = V.mesh()
     gdim = mesh.geometry().dim()  # geometric dimension (2 or 3)
@@ -137,7 +137,6 @@ def print_tensor_to_csvfile(f, filename):
 
 
 
-# Fixed version of your print_nodal_values_vector_to_csvfile method
 def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
@@ -342,6 +341,10 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     elif type == 'vector':
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
         print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+    elif type == 'tensor':
+        print_tensor_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        # print_nodal_values_tensor_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 
 def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
