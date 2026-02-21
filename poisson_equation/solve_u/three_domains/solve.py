@@ -61,7 +61,7 @@ class u_0_0_Expression(UserExpression):
 fsp.u[0][0].interpolate(u_0_0_Expression(element=fsp.Q[0][0].ufl_element()))
 
 
-msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-2)
+msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
 io.full_print(fsp.u[0][0], f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
@@ -94,7 +94,7 @@ class v_sub_mesh_0_0_Expression(UserExpression):
 fsp.v_sub_mesh_0_0.interpolate(v_sub_mesh_0_0_Expression(element=fsp.V_sub_mesh_0_0.ufl_element()))
 
 
-msh.transfer_2d_submesh_to_line(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-4)
+msh.transfer_2d_submesh_to_line(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
 io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
@@ -132,7 +132,7 @@ class t_sub_mesh_0_0_Expression(UserExpression):
 fsp.t_sub_mesh_0_0.interpolate(t_sub_mesh_0_0_Expression(element=fsp.T_sub_mesh_0_0.ufl_element()))
 
 
-msh.transfer_2d_submesh_to_line(fsp.t_sub_mesh_0_0, fsp.t_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-4)
+msh.transfer_2d_submesh_to_line(fsp.t_sub_mesh_0_0, fsp.t_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
 io.full_print(fsp.t_sub_mesh_0_0, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
