@@ -88,11 +88,11 @@ def print_vector_to_csvfile(v, filename):
     # value_size is the number of components of the vector
     value_size = int(value_shape[0])
 
-    print(f'values size = {value_size}')
+    # print(f'values size = {value_size}')
 
     coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
 
-    print(f'--- coords_all = {coords_all}')
+    # print(f'--- coords_all = {coords_all}')
 
     '''
      reshape the vector field: before reshaping the vector is, for example, 
@@ -109,7 +109,7 @@ def print_vector_to_csvfile(v, filename):
     # Subsample coordinates by skipping repeats:
     coordinates = coords_all[::value_size]
 
-    print(f'--- coordinates = {coordinates}')
+    # print(f'--- coordinates = {coordinates}')
 
 
 
