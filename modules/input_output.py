@@ -95,45 +95,68 @@ def print_vector_to_csvfile(f, filename):
 
     csvfile.close()
 
-
 def print_tensor_to_csvfile(f, filename):
-
+    
     V = f.function_space()
     mesh = V.mesh()
-    gdim = mesh.geometry().dim()  # geometric dimension (2 or 3)
-    vdim = f.value_rank()  # 1 for vector, 0 for scalar
-    shape = f.value_dimension(0) if vdim > 0 else 1
+    gdim = mesh.geometry().dim()
 
-    coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
+    # value_size for a tensor: e.g. 4 for a 2x2 tensor
+    element     = V.ufl_element()
+
+    # value shape is the shape of the tensor, for example (2, 2)
+    value_shape = element.value_shape()
+
+    # value_size is the total number of components of the tensor, for example for a (2, 3) tensor values_size = 2 * 3 
+    value_size  = int(np.prod(value_shape)) if value_shape else 1
+
+    print(f'value shape = {value_shape}')
+    print(f'value size = {value_size}')
+
     '''
-     reshape the vector field: before reshaping the vector is, for example, 
-     [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]  # [vx0, vy0, vx1, vy1, vx2, vy2] 
-     and after reshaping it is
-     [
-        [1.0, 2.0],  # vector at point 0
-        [3.0, 4.0],  # vector at point 1
-        [5.0, 6.0],  # vector at point 2
-        ]
-     '''
-    values = f.vector().get_local().reshape(-1, shape)
+    coords_all is a list containing the coordinates of the points where the DOFs of the tensor sit 
+    For example, coords_all ->
+        row 0: [x0, y0]   ← x-component DOF at point 0
+        row 1: [x0, y0]   ← y-component DOF at point 0
+        row 2: [x1, y1]   ← x-component DOF at point 1
+    '''
+    coords_all = V.tabulate_dof_coordinates().reshape(-1, gdim)
 
-    # Subsample coordinates by skipping repeats:
-    coords = coords_all[::shape]
+    print(f'coords_all = {coords_all}')
+
+    '''
+    reshape the tensor field: before reshaping the vector is, for example,
+    [T00_0, T01_0, T10_0, T11_0, T00_1, T01_1, T10_1, T11_1, ...]
+    and after reshaping it is
+    [
+        [T00_0, T01_0, T10_0, T11_0],  # tensor at point 0
+        [T00_1, T01_1, T10_1, T11_1],  # tensor at point 1
+        ...
+    ]
+    '''
+    values = f.vector().get_local().reshape(-1, value_size)
+
+    # subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    coords = coords_all[::value_size]
 
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
-    print("\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    # header: one column per tensor component, then coordinates
+    component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
+    coord_headers     = ",".join([f'":{ i}"' for i in range(3)])
+    print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for x, v in zip(coords, values):
-        # padded_v = list(v) + [0] * (3 - shape)
-        padded_v = pad(v, 3)
-        # padded_x = list(x) + [0] * (3 - gdim)
-        padded_x = pad(x, 3)
-        print(f"{padded_v[0]},{padded_v[1]},{padded_v[2]},"
-                f"{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+        padded_v = pad(list(v), value_size)   # already the right size, pad only if needed
+        padded_x = pad(list(x), 3)
+        component_str = ",".join([str(padded_v[i]) for i in range(value_size)])
+        coord_str     = f"{padded_x[0]},{padded_x[1]},{padded_x[2]}"
+        print(f"{component_str},{coord_str}", file=csvfile)
 
     csvfile.close()
+
 
 
 
