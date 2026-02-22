@@ -2094,7 +2094,7 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # perm_pt[i] = physical point index in 2D mesh corresponding to
     #              physical point i in line mesh
     '''
-    permutation_pt[i] = [index in of vertex in coords_2d corresponding to the i-th point in arc_length_line on the line
+    permutation_pt[i] is the index in coords_2d of the 2D DOF point that has the same arc-length as line point i
     Example: 
 
         arc_length_points_on_circle = [0.8, 0.1, 0.5, 0.3]  # 4 polygon points
@@ -2136,3 +2136,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
     f_line.vector()[:] = f_2d.vector()[:][permutation_dof]
+
+    # to set in the opposite direction: 
+    # f_2d.vector()[permutation_dof] = f_line.vector()[:]
