@@ -2021,7 +2021,9 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
         # i_approx is the index of the polygon slice containing the DOF point under consideration. If the point under consideration does lie on the circle, then i_approxi is the index of the polygon edge containing the DOF point under consideration 
         i_approx = int(theta / delta_theta) % N
 
-        for di in range(-1, 3):
+        for di in range(-1, 2):
+            # run through the polygon edges #i_approx (di = 0), and on the adjacent polygon edges (di = -1 and di=+1)
+
             i           = (i_approx + di) % N
             P_i         = polygon_vertices[i]
             P_j         = polygon_vertices[(i + 1) % N]
