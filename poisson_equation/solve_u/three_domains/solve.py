@@ -46,10 +46,11 @@ delta_theta = 2 * np.pi / rmsh.lmsh.mesh_parameters[0]['N']
 alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
+
+'''
 # 1 transfer scalar
 
-
-class u_0_0_Expression(UserExpression):
+class f_0_0_Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
@@ -57,34 +58,35 @@ class u_0_0_Expression(UserExpression):
     def value_shape(self):
         return (1,)
     
-fsp.u[0][0].interpolate(u_0_0_Expression(element=fsp.Q[0][0].ufl_element()))
+fsp.f_sub_mesh_0_0.interpolate(f_0_0_Expression(element=fsp.Q[0][0].ufl_element()))
 
 
-msh.transfer_2d_submesh_to_line(fsp.u[0][0], fsp.u[1], rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-2)
+msh.transfer_2d_submesh_to_line(fsp.f_sub_mesh_0_0, fsp.f_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
-io.full_print(fsp.u[0][0], f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.f_sub_mesh_0_0, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
                   rmsh.lmsh.sub_meshes[0][0], 'scalar')
 
-io.full_print(fsp.u[1], f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.f_mesh_1, f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
                   rmsh.lmsh.mesh[1], 'scalar')
-
-coord = np.add(np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0]), 
-               [-delta_l * np.cos(alpha),
-                delta_l * np.sin(alpha)])
     
 print(f'Comparing the two functions on polygon vertices: ')
-for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f'u_line = {fsp.u[1](i*delta_l)}\t u_2d = {fsp.u[0][0](np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
+error = 0
 
+for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+    print(f'u_line = {fsp.f_mesh_1(i*delta_l)}\t u_2d = {fsp.f_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
+
+    a = fsp.f_mesh_1(i*delta_l)
+    b = fsp.f_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
+
+    if abs(a-b) > error:
+            error = abs(a-b)
+
+print(f'error = {error}')
+'''
 
 # 2 transfer vector
-
-
-
-# fsp.u[0][0].set_allow_extrapolation(True)
-
 
 class v_sub_mesh_0_0_Expression(UserExpression):
     def eval(self, values, x):
@@ -98,7 +100,7 @@ class v_sub_mesh_0_0_Expression(UserExpression):
 fsp.v_sub_mesh_0_0.interpolate(v_sub_mesh_0_0_Expression(element=fsp.V_sub_mesh_0_0.ufl_element()))
 
 
-msh.transfer_2d_submesh_to_line(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'],tol=1e-4)
+msh.transfer_2d_submesh_to_line(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
 io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
@@ -107,16 +109,72 @@ io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_fi
 io.full_print(fsp.v_mesh_1, f'v_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
                   rmsh.lmsh.mesh[1], 'vector')
-
-coord = np.add(np.add(rmsh.lmsh.parameters["c_r"],[rmsh.lmsh.parameters['r'], 0]), 
-               [-delta_l * np.cos(alpha),
-                delta_l * np.sin(alpha)])
     
 print(f'Comparing the two functions on polygon vertices: ')
+error = 0
+
 for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
     print(f'v_line = {fsp.v_mesh_1(i*delta_l)}\t v_2d = {fsp.v_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
 
-# print(f'u_line = {fsp.u[1](delta_l)}\n u_2d = {fsp.u[0][0](coord)}')
+    a = fsp.v_mesh_1(i*delta_l)
+    b = fsp.v_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
+
+    for j in range(len(a)):
+        if abs(a[j]-b[j]) > error:
+            error = abs(a[j]-b[j])
+
+print(f'error = {error}')
+
+
+
+
+'''
+# 3 transfer tensor
+
+class t_sub_mesh_0_0_Expression(UserExpression):
+    def init(self, **kwargs):
+        super().init(**kwargs)
+
+    def eval(self, values, x):
+        # test case 1
+        values[0] = np.cos(2* np.pi * (x[0]*x[1]))
+        values[1] = np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1])
+        values[2] = (np.sin(2* np.pi * x[0]) - np.sin(2* np.pi * x[1]))**2
+        values[3] = np.cos(2* np.pi * x[0])**2 - np.sin(2* np.pi * x[1])
+        values[4] = np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1]))
+        values[5] = (np.cos(2* np.pi * x[0])**3 - np.sin(2* np.pi * (x[0]+x[1])))**2
+
+    def value_shape(self):
+        return (2, 3)
+    
+
+fsp.t_sub_mesh_0_0.interpolate(t_sub_mesh_0_0_Expression(element=fsp.T_sub_mesh_0_0.ufl_element()))
+
+
+msh.transfer_2d_submesh_to_line(fsp.t_sub_mesh_0_0, fsp.t_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+
+io.full_print(fsp.t_sub_mesh_0_0, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.sub_meshes[0][0], 'tensor')
+
+io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'tensor')
+    
+print(f'Comparing the two functions on polygon vertices: ')
+error = 0
+for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+    print(f't_line = {fsp.t_mesh_1(i*delta_l)}\t t_2d = {fsp.t_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
+
+    a = fsp.t_mesh_1(i*delta_l)
+    b = fsp.t_sub_mesh_0_0(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
+
+    for j in range(len(a)):
+        if abs(a[j]-b[j]) > error:
+            error = abs(a[j]-b[j])
+
+print(f'error = {error}')
+'''
 ####################
 
 
