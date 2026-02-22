@@ -1912,13 +1912,15 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     return sub_meshes, sf_sub_meshes, mf_sub_meshes
 
-def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
-    """
-    Transfer f_2d (defined on sub_mesh[0][0] or sub_mesh[0][1]) restricted
-    to the circular polygon boundary, onto f_line (periodic 1D line mesh).
+"""
+Transfer f_2d (defined on sub_mesh[0][0] or sub_mesh[0][1]) restricted
+to the circular polygon boundary, onto f_line (periodic 1D line mesh).
 
-    No interpolation. Works for scalar, vector, tensor, any polynomial degree.
-    """
+No interpolation. Works for scalar, vector, tensor, any polynomial degree.
+"""
+
+def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
+
     V_2d   = f_2d.function_space()
     V_line = f_line.function_space()
 
