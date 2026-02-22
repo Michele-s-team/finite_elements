@@ -87,7 +87,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a-b)
 
 print(f'error = {error}')
-'''
+
 
 # 1.2 transfer from line  to 2d
 
@@ -126,10 +126,11 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a-b)
 
 print(f'error = {error}')
-
 '''
-# 2 transfer vector
 
+# 2 transfer vector
+'''
+# 2.1 transfer from 2d mesh to line mesh 
 class v_sub_mesh_0_1_Expression(UserExpression):
     def eval(self, values, x):
 
@@ -166,11 +167,48 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
+'''
+
+# 2.2 transfer from line mesh to 2d mesh 
+class v_mesh_1_Expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2.0*np.pi*x[0]/(rmsh.lmsh.mesh_parameters[1]['x_r']-rmsh.lmsh.mesh_parameters[1]['x_l']))
+        values[1] = np.sin(4.0*np.pi*x[0]/(rmsh.lmsh.mesh_parameters[1]['x_r']-rmsh.lmsh.mesh_parameters[1]['x_l']))
+
+    def value_shape(self):
+        return (2,)
+    
+fsp.v_mesh_1.interpolate(v_mesh_1_Expression(element=fsp.V_mesh_1.ufl_element()))
 
 
+msh.transfer_line_to_circle(fsp.v_mesh_1, fsp.v_sub_mesh_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+
+io.full_print(fsp.v_sub_mesh_0_1, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.sub_meshes[0][1], 'vector')
+
+io.full_print(fsp.v_mesh_1, f'v_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'vector')
+    
+print(f'Comparing the two functions on polygon vertices: ')
+error = 0
+
+for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+    print(f'v_line = {fsp.v_mesh_1(i*delta_l)}\t v_2d = {fsp.v_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
+
+    a = fsp.v_mesh_1(i*delta_l)
+    b = fsp.v_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
+
+    for j in range(len(a)):
+        if abs(a[j]-b[j]) > error:
+            error = abs(a[j]-b[j])
+
+print(f'error = {error}')
 
 
-
+'''
 # 3 transfer tensor
 
 class t_sub_mesh_0_1_Expression(UserExpression):
