@@ -1924,12 +1924,13 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     V_2d   = f_2d.function_space()
     V_line = f_line.function_space()
 
+    # check whether V_2d and V_line are compatible
     assert V_2d.ufl_element().family() == V_line.ufl_element().family(), \
-        "element family mismatch"
+        "Error: element family mismatch!"
     assert V_2d.ufl_element().degree() == V_line.ufl_element().degree(), \
-        "element degree mismatch"
+        "Error: element degree mismatch!"
     assert V_2d.ufl_element().value_shape() == V_line.ufl_element().value_shape(), \
-        "value shape mismatch"
+        "Error: value shape mismatch!"
 
     # value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
     value_shape = V_2d.ufl_element().value_shape()
