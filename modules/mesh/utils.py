@@ -2001,8 +2001,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     print(f'angles = {angles}\nP = {polygon_vertices}')
 
     # --- Find physical points on the polygon and their arc-lengths -----------
-    on_circle_pt_idx = []   # index into coords_2d (physical points)
-    s_of_circle_pt   = []
+    id_points_on_circle = []   # index into coords_2d (physical points)
+    arc_length_points_on_circle   = []
 
     '''
         enumerate contains pairs of (index, element) at each iteration. So for a 2D array coords_2d of shape N×2, enumerate is 
@@ -2013,8 +2013,11 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
         ]
     '''
     for point_id, (point_coordinate_x, point_coordinate_y) in enumerate(coords_2d):
+        # run through the DOF points of V_2d
 
+        # theta is the polar angle of the DOF point under consideration with respect to polar coordinates cetered on c_r
         theta    = np.arctan2(point_coordinate_y - c_r[1], point_coordinate_x - c_r[0]) % (2.0 * np.pi)
+        
         i_approx = int(theta / delta_theta) % N
 
         for di in range(-1, 3):
@@ -2032,19 +2035,19 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
                 s = (i + max(0.0, min(1.0, t))) * polygon_size
                 if s >= polygon_length - tol:
                     s = 0.0
-                on_circle_pt_idx.append(point_id)
-                s_of_circle_pt.append(s)
+                id_points_on_circle.append(point_id)
+                arc_length_points_on_circle.append(s)
                 break
 
-    on_circle_pt_idx = np.array(on_circle_pt_idx)
-    s_of_circle_pt   = np.array(s_of_circle_pt)
+    id_points_on_circle = np.array(id_points_on_circle)
+    arc_length_points_on_circle   = np.array(arc_length_points_on_circle)
 
-    print(f'[transfer] found {len(on_circle_pt_idx)} physical points on polygon, '
+    print(f'[transfer] found {len(id_points_on_circle)} physical points on polygon, '
           f'line mesh has {n_pts_line} physical points, '
           f'value_size = {f2d_value_size}')
 
-    assert len(on_circle_pt_idx) == n_pts_line, (
-        f"Found {len(on_circle_pt_idx)} physical points on polygon boundary but "
+    assert len(id_points_on_circle) == n_pts_line, (
+        f"Found {len(id_points_on_circle)} physical points on polygon boundary but "
         f"line mesh has {n_pts_line} physical points. "
         f"Check c_r, r, N (currently {N}), tol (currently {tol:.1e})."
     )
@@ -2053,14 +2056,14 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     s_line = coords_line[:, 0].copy()
     s_line[s_line >= polygon_length - tol] = 0.0
 
-    sort_2d   = np.argsort(s_of_circle_pt)
+    sort_2d   = np.argsort(arc_length_points_on_circle)
     sort_line = np.argsort(s_line)
 
     # perm_pt[i] = physical point index in 2D mesh corresponding to
     #              physical point i in line mesh
     perm_pt = np.empty(n_pts_line, dtype=int)
     for rank in range(n_pts_line):
-        perm_pt[sort_line[rank]] = on_circle_pt_idx[sort_2d[rank]]
+        perm_pt[sort_line[rank]] = id_points_on_circle[sort_2d[rank]]
 
     # --- Expand permutation to all scalar DOFs --------------------------------
     # For value_size=k, physical point p maps to scalar DOFs
