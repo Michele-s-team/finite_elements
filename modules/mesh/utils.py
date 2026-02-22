@@ -2004,8 +2004,17 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     on_circle_pt_idx = []   # index into coords_2d (physical points)
     s_of_circle_pt   = []
 
-    for pt_idx, (x, y) in enumerate(coords_2d):
-        theta    = np.arctan2(y - c_r[1], x - c_r[0]) % (2.0 * np.pi)
+    '''
+        enumerate contains pairs of (index, element) at each iteration. So for a 2D array coords_2d of shape N×2, enumerate is 
+        [
+        (0, [coordinate_0_x, coordinate_0_y]),
+        (1, [coordinate_1_x, coordinate_1_y]),
+        ...
+        ]
+    '''
+    for point_id, (point_coordinate_x, point_coordinate_y) in enumerate(coords_2d):
+
+        theta    = np.arctan2(point_coordinate_y - c_r[1], point_coordinate_x - c_r[0]) % (2.0 * np.pi)
         i_approx = int(theta / delta_theta) % N
 
         for di in range(-1, 3):
@@ -2014,16 +2023,16 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             P_j         = polygon_vertices[(i + 1) % N]
             edge        = P_j - P_i
             edge_len_sq = np.dot(edge, edge)
-            v           = np.array([x, y]) - P_i
+            v           = np.array([point_coordinate_x, point_coordinate_y]) - P_i
             t           = np.dot(v, edge) / edge_len_sq
             proj        = P_i + t * edge
-            residual    = np.linalg.norm(proj - np.array([x, y]))
+            residual    = np.linalg.norm(proj - np.array([point_coordinate_x, point_coordinate_y]))
 
             if 0.0 - tol <= t <= 1.0 + tol and residual < tol:
                 s = (i + max(0.0, min(1.0, t))) * polygon_size
                 if s >= polygon_length - tol:
                     s = 0.0
-                on_circle_pt_idx.append(pt_idx)
+                on_circle_pt_idx.append(point_id)
                 s_of_circle_pt.append(s)
                 break
 
