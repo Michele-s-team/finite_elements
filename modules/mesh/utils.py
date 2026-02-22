@@ -1966,7 +1966,7 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_line is different
     coords_line     = coords_line_all[::f_line_value_size]  # unique physical points
 
-    print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
+    # print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
 
 
     n_pts_line      = len(coords_line)
@@ -2080,21 +2080,36 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
         f"Check c_r, r, N (currently {N}), tol (currently {tol:.1e})."
     )
 
-    # sign
 
 
     # --- Build permutation at the physical point level -----------------------
-    s_line = coords_line[:, 0].copy()
-    s_line[s_line >= polygon_length - tol] = 0.0
+    # arc_legnth_line contains the (x, and only) coordinate of points on the line, which is the same as their arc length
+    arc_length_line = coords_line[:, 0].copy()
+    print(f'coords_line = {coords_line}')
+    print(f'arc_length_line = {arc_length_line}')
 
-    sort_2d   = np.argsort(arc_length_points_on_circle)
-    sort_line = np.argsort(s_line)
+
+    arc_length_line[arc_length_line >= polygon_length - tol] = 0.0
+
+    '''
+    permutation_2d is the permutation that sorts in in creasing order the DOF points on the polygon in increasing order of arc_legnth_points_on_circle
+    Example: if 
+        arc_length_points_on_circle = [0.5, 0.1, 0.8, 0.3]
+        permutation_2d =  np.argsort(arc_length_points_on_circle)  # gives [1, 3, 0, 2]
+    
+    and similarly for permutation_line
+    '''
+    permutation_2d   = np.argsort(arc_length_points_on_circle)
+    permutation_line = np.argsort(arc_length_line)
+
+    # sign
+
 
     # perm_pt[i] = physical point index in 2D mesh corresponding to
     #              physical point i in line mesh
     perm_pt = np.empty(n_pts_line, dtype=int)
     for rank in range(n_pts_line):
-        perm_pt[sort_line[rank]] = id_points_on_circle[sort_2d[rank]]
+        perm_pt[permutation_line[rank]] = id_points_on_circle[permutation_2d[rank]]
 
     # --- Expand permutation to all scalar DOFs --------------------------------
     # For value_size=k, physical point p maps to scalar DOFs
