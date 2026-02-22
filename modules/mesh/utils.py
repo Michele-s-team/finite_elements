@@ -2048,17 +2048,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
                 # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
 
-                '''
-                  clamped_l 'clamps' the length l in the interval [0, 1], that is:
-                    - if l < 0 -> clamped_l = 0
-                    - if l > 0 -> clamped_l = 1
-                    - otherwise -> clamped_l = l 
-                '''
-            
-                clamped_l = max(0.0, min(1.0, l / polygon_edge_dr_length))
-
                 # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
-                s = (i + clamped_l) * polygon_edge_length
+                s = (i + l / polygon_edge_dr_length) * polygon_edge_length
                 if s >= polygon_length - tol:
                     s = 0.0
                 id_points_on_circle.append(point_id)
