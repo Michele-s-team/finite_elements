@@ -1978,8 +1978,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # the total polygon length
     polygon_length = N * polygon_edge_length
 
-    # sign
-
 
     # Polygon vertices
     # agnles is [0, 2π/N, 2·2π/N, ..., (N-1)·2π/N]
@@ -2050,6 +2048,9 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
                 # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
                 s = (i + l / polygon_edge_dr_length) * polygon_edge_length
+
+                # sign
+
                 if s >= polygon_length - tol:
                     s = 0.0
                 id_points_on_circle.append(point_id)
