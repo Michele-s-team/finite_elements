@@ -1969,9 +1969,9 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
 
 
-    n_pts_line      = len(coords_line)
+    n_points_line      = len(coords_line)
 
-    assert n_dofs_line == f_2d_value_size * n_pts_line, \
+    assert n_dofs_line == f_2d_value_size * n_points_line, \
         "Unexpected DOF layout in line function space"
     
 
@@ -2071,12 +2071,12 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
 
     print(f'Found {len(id_points_on_circle)} physical points on polygon, '
-          f'line mesh has {n_pts_line} physical points, '
+          f'line mesh has {n_points_line} physical points, '
           f'value_size = {f_2d_value_size}')
 
-    assert len(id_points_on_circle) == n_pts_line, (
+    assert len(id_points_on_circle) == n_points_line, (
         f"Error! Found {len(id_points_on_circle)} physical points on polygon boundary but "
-        f"line mesh has {n_pts_line} physical points. "
+        f"line mesh has {n_points_line} physical points. "
         f"Check c_r, r, N (currently {N}), tol (currently {tol:.1e})."
     )
 
@@ -2107,17 +2107,46 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     # perm_pt[i] = physical point index in 2D mesh corresponding to
     #              physical point i in line mesh
-    perm_pt = np.empty(n_pts_line, dtype=int)
-    for rank in range(n_pts_line):
-        perm_pt[permutation_line[rank]] = id_points_on_circle[permutation_2d[rank]]
+    '''
+    permutation_pt[i] = [index in of vertex in coords_2d corresponding to the i-th point in arc_length_line on the line
+    Example: 
 
-    # --- Expand permutation to all scalar DOFs --------------------------------
-    # For value_size=k, physical point p maps to scalar DOFs
-    # p*k, p*k+1, ..., p*k+(k-1)  in both the 2D and line DOF vectors.
-    perm_dof = np.empty(n_dofs_line, dtype=int)
-    for line_pt, circ_pt in enumerate(perm_pt):
-        for c in range(f_2d_value_size):
-            perm_dof[line_pt * f_2d_value_size + c] = circ_pt * f_2d_value_size + c
+        arc_length_points_on_circle = [0.8, 0.1, 0.5, 0.3]  # 4 polygon points
+        arc_length_line             = [0.5, 0.3, 0.1, 0.8]  # 4 line points
 
-    # --- Copy DOF values (no interpolation) ----------------------------------
-    f_line.vector()[:] = f_2d.vector()[:][perm_dof]
+        permutation_2d   = [1, 3, 2, 0]   # polygon point 1 is smallest, then 3, then 2, then 0
+        permutation_line = [2, 1, 0, 3]   # line point 2 is smallest, then 1, then 0, then 3
+
+        then 
+
+        rank=0: permutation_pt[permutation_line[0]] = id_points_on_circle[permutation_2d[0]]
+        permutation_pt[2] = id_points_on_circle[1]
+        # line point 2 (arc=0.1) corresponds to polygon point 1 (arc=0.1) 
+
+        rank=1: permutation_pt[permutation_line[1]] = id_points_on_circle[permutation_2d[1]]
+        permutation_pt[1] = id_points_on_circle[3]
+        # line point 1 (arc=0.3) corresponds to polygon point 3 (arc=0.3) 
+
+    '''
+    permutation_pt = np.empty(n_points_line, dtype=int)
+    for rank in range(n_points_line):
+        permutation_pt[permutation_line[rank]] = id_points_on_circle[permutation_2d[rank]]
+
+
+    '''
+    fill in the permutation vector of DOFs for the line, by assignign to each DOF on the line the corresponding DOFs on the 2d space
+    Here circle-point is the index in coords_2d
+    '''
+    permutation_dof = np.empty(n_dofs_line, dtype=int)
+
+    for i in range(len(permutation_pt)):
+        # run through all DOF points in the line
+
+        for j in range(f_2d_value_size):
+            # run through all components of the field associated with the DOF on the line under consideration 
+
+            # set the field component to be equal to the correspodning field componenbt of the corresponding DOF on the 2d mesh
+            permutation_dof[i * f_2d_value_size + j] = permutation_pt[i] * f_2d_value_size + j
+
+    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
+    f_line.vector()[:] = f_2d.vector()[:][permutation_dof]
