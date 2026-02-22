@@ -2033,15 +2033,20 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
             # vector going from start to end point of the polygon edge under consideration and its squared length 
             polygon_edge_dr        = polygon_vertex_end - polygon_vertex_start
-            polygon_edge_dr_length_squared = np.dot(polygon_edge_dr, polygon_edge_dr)
+            polygon_edge_dr_length = np.linalg.norm(polygon_edge_dr)
 
-            v           = np.array([point_coordinate_x, point_coordinate_y]) - polygon_vertex_start
-            t           = np.dot(v, polygon_edge_dr) / polygon_edge_dr_length_squared
-            proj        = polygon_vertex_start + t * polygon_edge_dr
+            # delta is the vector going from polygon_vertex_start to the DOF point under consideration 
+            delta           = np.array([point_coordinate_x, point_coordinate_y]) - polygon_vertex_start
+
+            # t is the length of the projection of delta along the line going through polygon_vertex_start to and polygon_vertex_end
+            t           = np.dot(delta, polygon_edge_dr) / polygon_edge_dr_length
+
+
+            proj        = polygon_vertex_start + t * polygon_edge_dr / polygon_edge_dr_length
             residual    = np.linalg.norm(proj - np.array([point_coordinate_x, point_coordinate_y]))
 
-            if 0.0 - tol <= t <= 1.0 + tol and residual < tol:
-                s = (i + max(0.0, min(1.0, t))) * polygon_size
+            if 0.0 - tol <= t / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
+                s = (i + max(0.0, min(1.0, t / polygon_edge_dr_length))) * polygon_size
                 if s >= polygon_length - tol:
                     s = 0.0
                 id_points_on_circle.append(point_id)
