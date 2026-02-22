@@ -2017,7 +2017,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
         # theta is the polar angle of the DOF point under consideration with respect to polar coordinates cetered on c_r
         theta    = np.arctan2(point_coordinate_y - c_r[1], point_coordinate_x - c_r[0]) % (2.0 * np.pi)
-        
+
+        # i_approx is the index of the polygon slice containing the DOF point under consideration. If the point under consideration does lie on the circle, then i_approxi is the index of the polygon edge containing the DOF point under consideration 
         i_approx = int(theta / delta_theta) % N
 
         for di in range(-1, 3):
