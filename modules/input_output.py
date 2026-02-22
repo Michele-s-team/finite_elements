@@ -79,7 +79,7 @@ def print_vector_to_csvfile(v, filename):
     mesh = V.mesh()
     gdim = mesh.geometry().dim()  # geometric dimension
 
-    # value_size for a tensor: e.g. 4 for a 2x2 tensor
+    # value_size for a vector: e.g. 4 for a vector with four components
     element  = V.ufl_element()
 
     # value_shape is the shape of the vector, for example (2,) for a vector with two components
@@ -228,9 +228,23 @@ def print_tensor_to_csvfile(t, filename):
     csvfile.close()
 
 
+'''
+print the nodal values of a vector to csv file
+Input values: 
+    - 'v': the vector
+    - 'mesh': the mesh where the vector is defined
+    - 'filename': the path, filename and extension of the csv file where the vector will be written 
+'''
 
 
-def print_nodal_values_vector_to_csvfile(f, mesh, filename):
+def print_nodal_values_vector_to_csvfile(v, mesh, filename):
+
+    # value_shape is the shape of the vector, for example (2,) for a vector with two components
+    vector_shape = v.function_space().ufl_element().value_shape()
+
+    # value_size is the number of components of the vector
+    vector_shape_size = int(vector_shape[0])
+
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q.tabulate_dof_coordinates()
@@ -239,28 +253,37 @@ def print_nodal_values_vector_to_csvfile(f, mesh, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
-    print(f"\"f:0\",\"f:1\",\"f:2\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    component_headers = ",".join([f'"f:{i}"' for i in range(vector_shape_size)])
+    coord_headers     = ",".join([f'":{i}"' for i in range(3)])
+
+    print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for i in range(Q.dim()):
+        # run through the nodes
+
         coordinate = coordinates[i]
         # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
         padded_coordinate = pad(coordinate, 3)
 
         # evaluate the function at the coordinate
-        f_value = f(*coordinate)
+        v_value = v(*coordinate)
 
-        # Handle the case where f_value might be a scalar numpy.float64 or an array
-        if hasattr(f_value, '__iter__'):
-            # f_value is already iterable (list, tuple, or numpy array)
-            f_as_list = f_value
-        else:
-            # f_value is a scalar (numpy.float64), convert to list
-            f_as_list = [f_value]
+        if vector_shape_size <= 3:
+            # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
 
-        # convert the value of the vector field in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
-        padded_f = pad(f_as_list, 3)
+            padded_v_value = pad(v_value, 3)
 
-        print(f"{padded_f[0]}, {padded_f[1]}, {padded_f[2]}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
+        else: 
+            # the number of components of the vector is > 3: print all the components 
+
+            padded_v_value = v_value
+
+        value_string = ",".join([f'{padded_v_value[i]}' for i in range(len(padded_v_value))])
+        coordinate_string  = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
+
+        print(f"{value_string},{coordinate_string}", file=csvfile)
+
 
     csvfile.close()
 
