@@ -1943,8 +1943,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     f_line_value_shape = V_line.ufl_element().value_shape()
     f_line_value_size  = int(np.prod(f_line_value_shape)) if f_line_value_shape else 1
 
-    print(f'2d value shape = {f_2d_value_shape}\nvalue_size = {f_2d_value_size}')
-
     gdim        = V_2d.mesh().geometry().dim()   # 2
     n_dofs_line = V_line.dim()                   # includes all components of the fields in V_line
 
@@ -1958,8 +1956,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_2d is different
     coords_2d     = coords_2d_all[::f_2d_value_size]   # unique physical points
 
-    # print(f'coords_2d_all = {coords_2d_all}\ncoords_2d = {coords_2d}')
-
     tol = cal.min_distance(coords_2d)/2.0
 
 
@@ -1968,8 +1964,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_line is different
     coords_line     = coords_line_all[::f_line_value_size]  # unique physical points
-
-    # print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
 
 
     n_points_line      = len(coords_line)
@@ -2003,7 +1997,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     polygon_vertices = np.column_stack([c_r[0] + r * np.cos(angles),
                          c_r[1] + r * np.sin(angles)])
 
-    print(f'angles = {angles}\nP = {polygon_vertices}')
 
     # --- Find physical points on the polygon and their arc-lengths -----------
     id_points_on_circle = []   # index into coords_2d (physical points)
@@ -2072,11 +2065,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     arc_length_points_on_circle   = np.array(arc_length_points_on_circle)
 
 
-
-    print(f'Found {len(id_points_on_circle)} physical points on polygon, '
-          f'line mesh has {n_points_line} physical points, '
-          f'value_size = {f_2d_value_size}')
-
     assert len(id_points_on_circle) == n_points_line, (
         f"Error! Found {len(id_points_on_circle)} physical points on polygon boundary but "
         f"line mesh has {n_points_line} physical points. "
@@ -2088,9 +2076,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # --- Build permutation at the physical point level -----------------------
     # arc_legnth_line contains the (x, and only) coordinate of points on the line, which is the same as their arc length
     arc_length_line = coords_line[:, 0].copy()
-    print(f'coords_line = {coords_line}')
-    print(f'arc_length_line = {arc_length_line}')
-
 
     arc_length_line[arc_length_line >= polygon_length - tol] = 0.0
 
