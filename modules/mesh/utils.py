@@ -1932,11 +1932,15 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     assert V_2d.ufl_element().value_shape() == V_line.ufl_element().value_shape(), \
         "Error: value shape mismatch!"
 
-    # value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
-    f2d_value_shape = V_2d.ufl_element().value_shape()
-    f2d_value_size  = int(np.prod(f2d_value_shape)) if f2d_value_shape else 1
+    # f_2d_value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
+    f_2d_value_shape = V_2d.ufl_element().value_shape()
+    f_2d_value_size  = int(np.prod(f_2d_value_shape)) if f_2d_value_shape else 1
 
-    print(f'value shape = {f2d_value_shape}\nvalue_size = {f2d_value_size}')
+    # f_line_value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
+    f_line_value_shape = V_line.ufl_element().value_shape()
+    f_line_value_size  = int(np.prod(f_line_value_shape)) if f_line_value_shape else 1
+
+    print(f'2d value shape = {f_2d_value_shape}\nvalue_size = {f_2d_value_size}')
 
     gdim        = V_2d.mesh().geometry().dim()   # 2
     n_dofs_line = V_line.dim()                   # includes all components of the fields in V_line
@@ -1949,7 +1953,7 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     coords_2d_all = V_2d.tabulate_dof_coordinates().reshape(-1, gdim)
 
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_2d is different
-    coords_2d     = coords_2d_all[::f2d_value_size]   # unique physical points
+    coords_2d     = coords_2d_all[::f_2d_value_size]   # unique physical points
 
     # print(f'coords_2d_all = {coords_2d_all}\ncoords_2d = {coords_2d}')
 
@@ -1960,14 +1964,14 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     coords_line_all = V_line.tabulate_dof_coordinates().reshape(-1, 1)
 
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_line is different
-    coords_line     = coords_line_all[::f2d_value_size]  # unique physical points
+    coords_line     = coords_line_all[::f_line_value_size]  # unique physical points
 
     print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
 
 
     n_pts_line      = len(coords_line)
 
-    assert n_dofs_line == f2d_value_size * n_pts_line, \
+    assert n_dofs_line == f_2d_value_size * n_pts_line, \
         "Unexpected DOF layout in line function space"
     
 
@@ -2064,18 +2068,20 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     id_points_on_circle = np.array(id_points_on_circle)
     arc_length_points_on_circle   = np.array(arc_length_points_on_circle)
 
-    # sign
 
 
-    print(f'[transfer] found {len(id_points_on_circle)} physical points on polygon, '
+    print(f'Found {len(id_points_on_circle)} physical points on polygon, '
           f'line mesh has {n_pts_line} physical points, '
-          f'value_size = {f2d_value_size}')
+          f'value_size = {f_2d_value_size}')
 
     assert len(id_points_on_circle) == n_pts_line, (
-        f"Found {len(id_points_on_circle)} physical points on polygon boundary but "
+        f"Error! Found {len(id_points_on_circle)} physical points on polygon boundary but "
         f"line mesh has {n_pts_line} physical points. "
         f"Check c_r, r, N (currently {N}), tol (currently {tol:.1e})."
     )
+
+    # sign
+
 
     # --- Build permutation at the physical point level -----------------------
     s_line = coords_line[:, 0].copy()
@@ -2095,8 +2101,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # p*k, p*k+1, ..., p*k+(k-1)  in both the 2D and line DOF vectors.
     perm_dof = np.empty(n_dofs_line, dtype=int)
     for line_pt, circ_pt in enumerate(perm_pt):
-        for c in range(f2d_value_size):
-            perm_dof[line_pt * f2d_value_size + c] = circ_pt * f2d_value_size + c
+        for c in range(f_2d_value_size):
+            perm_dof[line_pt * f_2d_value_size + c] = circ_pt * f_2d_value_size + c
 
     # --- Copy DOF values (no interpolation) ----------------------------------
     f_line.vector()[:] = f_2d.vector()[:][perm_dof]
