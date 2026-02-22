@@ -1982,9 +1982,23 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
 
     # Polygon vertices
+    # agnles is [0, 2π/N, 2·2π/N, ..., (N-1)·2π/N]
+
     angles = np.arange(N) * delta_theta
-    P = np.column_stack([c_r[0] + r * np.cos(angles),
+
+    '''
+    here P is a list of the coordinates of the polygon vertices
+
+    P = [[cx + r*cos(angles[0]),   cy + r*sin(angles[0])  ],   # vertex 0
+        [cx + r*cos(angles[1]),   cy + r*sin(angles[1])  ],   # vertex 1
+        ...
+        [cx + r*cos(angles[N-1]), cy + r*sin(angles[N-1])]]   # vertex N-1
+    
+    '''
+    polygon_vertices = np.column_stack([c_r[0] + r * np.cos(angles),
                          c_r[1] + r * np.sin(angles)])
+
+    print(f'angles = {angles}\nP = {polygon_vertices}')
 
     # --- Find physical points on the polygon and their arc-lengths -----------
     on_circle_pt_idx = []   # index into coords_2d (physical points)
@@ -1996,8 +2010,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
         for di in range(-1, 3):
             i           = (i_approx + di) % N
-            P_i         = P[i]
-            P_j         = P[(i + 1) % N]
+            P_i         = polygon_vertices[i]
+            P_j         = polygon_vertices[(i + 1) % N]
             edge        = P_j - P_i
             edge_len_sq = np.dot(edge, edge)
             v           = np.array([x, y]) - P_i
