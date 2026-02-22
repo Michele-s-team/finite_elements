@@ -50,7 +50,7 @@ delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
 # 1 transfer scalar
 
-'''
+
 # 1.1 transfer from 2d to line 
 
 class f_0_1_Expression(UserExpression):
@@ -208,9 +208,9 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 print(f'error = {error}')
 
 
-'''
+
 # 3 transfer tensor
-'''
+
 # 3.1 transfer from 2d to line mesh
 
 class t_sub_mesh_0_1_Expression(UserExpression):
@@ -256,7 +256,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
-'''
+
 
 
 # 3.2 transfer from line mesh to 2d mesh 
