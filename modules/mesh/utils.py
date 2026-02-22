@@ -2041,9 +2041,9 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             # l is the length of the projection of delta along the line going through polygon_vertex_start to and polygon_vertex_end
             l           = np.dot(delta, polygon_edge_dr) / polygon_edge_dr_length
 
-
-            proj        = polygon_vertex_start + l * polygon_edge_dr / polygon_edge_dr_length
-            residual    = np.linalg.norm(proj - np.array([point_coordinate_x, point_coordinate_y]))
+            # projection is the orthogonal projection of the DOF coordinate under consideration on the line going through polygon_vertex_start and polygon_vertex_end
+            projection        = polygon_vertex_start + l * polygon_edge_dr / polygon_edge_dr_length
+            residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
 
             if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
                 s = (i + max(0.0, min(1.0, l / polygon_edge_dr_length))) * polygon_size
