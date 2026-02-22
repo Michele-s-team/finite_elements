@@ -1987,9 +1987,9 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     angles = np.arange(N) * delta_theta
 
     '''
-    here P is a list of the coordinates of the polygon vertices
+    polygon_vertices is a list of the coordinates of the polygon vertices
 
-    P = [[cx + r*cos(angles[0]),   cy + r*sin(angles[0])  ],   # vertex 0
+    polygon_vertices = [[cx + r*cos(angles[0]),   cy + r*sin(angles[0])  ],   # vertex 0
         [cx + r*cos(angles[1]),   cy + r*sin(angles[1])  ],   # vertex 1
         ...
         [cx + r*cos(angles[N-1]), cy + r*sin(angles[N-1])]]   # vertex N-1
