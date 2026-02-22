@@ -2179,7 +2179,7 @@ Input values:
     - 'N': the number of polygon segments 
 '''
 
-def transfer_line_to_circle(f_2d, f_line, c_r, r, N):
+def transfer_line_to_circle(f_line, f_2d, c_r, r, N):
 
     permutation_dof = map_circle_line(f_2d, f_line, c_r, r, N)
 

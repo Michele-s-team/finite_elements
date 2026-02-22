@@ -50,6 +50,9 @@ delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
 # 1 transfer scalar
 
+'''
+# 1.1 transfer from 2d to line 
+
 class f_0_1_Expression(UserExpression):
     def eval(self, values, x):
 
@@ -84,8 +87,47 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a-b)
 
 print(f'error = {error}')
+'''
+
+# 1.2 transfer from line  to 2d
+
+# here one needs to choose a periodic analytical expression, because f_mesh_1 is defined on a periodic space Q[1]
+class f_1_Expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2.0*np.pi*x[0]/(rmsh.lmsh.mesh_parameters[1]['x_r']-rmsh.lmsh.mesh_parameters[1]['x_l']))
+
+    def value_shape(self):
+        return (1,)
+    
+fsp.f_mesh_1.interpolate(f_1_Expression(element=fsp.Q[1].ufl_element()))
 
 
+msh.transfer_line_to_circle(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+
+io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.sub_meshes[0][1], 'scalar')
+
+io.full_print(fsp.f_mesh_1, f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'scalar')
+    
+print(f'Comparing the two functions on polygon vertices: ')
+error = 0
+
+for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+    print(f'u_line = {fsp.f_mesh_1(i*delta_l)}\t u_2d = {fsp.f_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
+
+    a = fsp.f_mesh_1(i*delta_l)
+    b = fsp.f_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
+
+    if abs(a-b) > error:
+            error = abs(a-b)
+
+print(f'error = {error}')
+
+'''
 # 2 transfer vector
 
 class v_sub_mesh_0_1_Expression(UserExpression):
@@ -174,7 +216,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
-
+'''
 ####################
 
 
