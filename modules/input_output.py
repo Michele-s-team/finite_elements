@@ -73,8 +73,6 @@ Input values:
 
 def print_vector_to_csvfile(v, filename):
 
-    print(f'Printing vector to csv file ... ')
-
     V = v.function_space()
     mesh = V.mesh()
     gdim = mesh.geometry().dim()  # geometric dimension
@@ -141,8 +139,6 @@ def print_vector_to_csvfile(v, filename):
         print(f"{value_string}",f",{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}", file=csvfile)
 
     csvfile.close()
-
-    print('... done. ')
 
 
 '''
