@@ -1912,121 +1912,244 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     return sub_meshes, sf_sub_meshes, mf_sub_meshes
 
-"""
-Transfer f_2d (defined on sub_mesh[0][0] or sub_mesh[0][1]) restricted
-to the circular polygon boundary, onto f_line (periodic 1D line mesh).
-
-No interpolation. Works for scalar, vector, tensor, any polynomial degree.
-"""
+'''
+transfer a field (scalar, vector or tensor) defined on the 2d mesh which contains a circle boudary, on a 1d line mesh which is obtained by laying flat the circle
+Input values: 
+    - 'f_2d': the field on the 2d mesh
+    - 'f_line': the field on the line mesh
+    - 'c_r': [cr_x, cr_y], the coordinates of the circle (polygon) center 
+    - 'r': the circle radius
+    - 'N': the number of polygon segments 
+'''
 
 def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     V_2d   = f_2d.function_space()
     V_line = f_line.function_space()
 
+    # check whether V_2d and V_line are compatible
     assert V_2d.ufl_element().family() == V_line.ufl_element().family(), \
-        "element family mismatch"
+        "Error: element family mismatch!"
     assert V_2d.ufl_element().degree() == V_line.ufl_element().degree(), \
-        "element degree mismatch"
+        "Error: element degree mismatch!"
     assert V_2d.ufl_element().value_shape() == V_line.ufl_element().value_shape(), \
-        "value shape mismatch"
+        "Error: value shape mismatch!"
 
-    # value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
-    value_shape = V_2d.ufl_element().value_shape()
-    value_size  = int(np.prod(value_shape)) if value_shape else 1
+    # f_2d_value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
+    f_2d_value_shape = V_2d.ufl_element().value_shape()
+    f_2d_value_size  = int(np.prod(f_2d_value_shape)) if f_2d_value_shape else 1
+
+    # f_line_value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
+    f_line_value_shape = V_line.ufl_element().value_shape()
+    f_line_value_size  = int(np.prod(f_line_value_shape)) if f_line_value_shape else 1
+
+    print(f'2d value shape = {f_2d_value_shape}\nvalue_size = {f_2d_value_size}')
 
     gdim        = V_2d.mesh().geometry().dim()   # 2
-    n_dofs_line = V_line.dim()                   # includes all components
+    n_dofs_line = V_line.dim()                   # includes all components of the fields in V_line
 
-    # tabulate_dof_coordinates returns one row per scalar DOF.
+
+
+    # for V_2d, tabulate_dof_coordinates returns one row per scalar DOF -> there may be some repeated points in coords_2d_all, and we wanto to remove this redundancy 
     # For a vector space with value_size=k, each physical point
     # appears k consecutive times with the same coordinate.
-    # We take every value_size-th row to get unique physical coordinates.
     coords_2d_all = V_2d.tabulate_dof_coordinates().reshape(-1, gdim)
-    coords_2d     = coords_2d_all[::value_size]   # unique physical points
 
-    # print(f'coordinates of DOFs on 2d mesh: {coords_2d}')
-    # print(f'minimal distance between DOF coordinatess: {cal.min_distance(coords_2d)}')
+    # We take every value_size-th row to get unique physical coordinates -> every point in coords_2d is different
+    coords_2d     = coords_2d_all[::f_2d_value_size]   # unique physical points
+
+    # print(f'coords_2d_all = {coords_2d_all}\ncoords_2d = {coords_2d}')
 
     tol = cal.min_distance(coords_2d)/2.0
 
+
+    # for V_line, tabulate_dof_coordinates returns one row per scalar DOF -> there may be some repeated points in coords_line_all, and we wanto to remove this redundancy 
     coords_line_all = V_line.tabulate_dof_coordinates().reshape(-1, 1)
-    coords_line     = coords_line_all[::value_size]  # unique physical points
-    n_pts_line      = len(coords_line)
 
-    assert n_dofs_line == value_size * n_pts_line, \
-        "Unexpected DOF layout in line function space"
+    # We take every value_size-th row to get unique physical coordinates -> every point in coords_line is different
+    coords_line     = coords_line_all[::f_line_value_size]  # unique physical points
 
-    cx, cy        = float(c_r[0]), float(c_r[1])
+    # print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
+
+
+    n_points_line      = len(coords_line)
+
+    assert n_dofs_line == f_line_value_size * n_points_line, \
+        "Error: number of DOFs on the line does not match!"
+    
+
+    # the angle corresponding to each slice of the polygon
     delta_theta   = 2.0 * np.pi / N
-    chord         = r * 2.0 * np.sin(delta_theta / 2.0)
-    circumference = N * chord
+    # the length of each side of the polygon
+    polygon_edge_length         = r * 2.0 * np.sin(delta_theta / 2.0)
+    # the total polygon length
+    polygon_length = N * polygon_edge_length
+
 
     # Polygon vertices
+    # agnles is [0, 2π/N, 2·2π/N, ..., (N-1)·2π/N]
+
     angles = np.arange(N) * delta_theta
-    P = np.column_stack([cx + r * np.cos(angles),
-                         cy + r * np.sin(angles)])
+
+    '''
+    polygon_vertices is a list of the coordinates of the polygon vertices
+
+    polygon_vertices = [[cx + r*cos(angles[0]),   cy + r*sin(angles[0])  ],   # vertex 0
+        [cx + r*cos(angles[1]),   cy + r*sin(angles[1])  ],   # vertex 1
+        ...
+        [cx + r*cos(angles[N-1]), cy + r*sin(angles[N-1])]]   # vertex N-1
+    
+    '''
+    polygon_vertices = np.column_stack([c_r[0] + r * np.cos(angles),
+                         c_r[1] + r * np.sin(angles)])
+
+    print(f'angles = {angles}\nP = {polygon_vertices}')
 
     # --- Find physical points on the polygon and their arc-lengths -----------
-    on_circle_pt_idx = []   # index into coords_2d (physical points)
-    s_of_circle_pt   = []
+    id_points_on_circle = []   # index into coords_2d (physical points)
+    arc_length_points_on_circle   = []
 
-    for pt_idx, (x, y) in enumerate(coords_2d):
-        theta    = np.arctan2(y - cy, x - cx) % (2.0 * np.pi)
+    '''
+        enumerate contains pairs of (index, element) at each iteration. So for a 2D array coords_2d of shape N×2, enumerate is 
+        [
+        (0, [coordinate_0_x, coordinate_0_y]),
+        (1, [coordinate_1_x, coordinate_1_y]),
+        ...
+        ]
+    '''
+    for point_id, (point_coordinate_x, point_coordinate_y) in enumerate(coords_2d):
+        # run through the DOF points of V_2d
+
+        # theta is the polar angle of the DOF point under consideration with respect to polar coordinates cetered on c_r
+        theta    = np.arctan2(point_coordinate_y - c_r[1], point_coordinate_x - c_r[0]) % (2.0 * np.pi)
+
+        # i_approx is the index of the polygon slice containing the DOF point under consideration. If the point under consideration does lie on the circle, then i_approxi is the index of the polygon edge containing the DOF point under consideration 
         i_approx = int(theta / delta_theta) % N
 
-        for di in range(-1, 3):
-            i           = (i_approx + di) % N
-            P_i         = P[i]
-            P_j         = P[(i + 1) % N]
-            edge        = P_j - P_i
-            edge_len_sq = np.dot(edge, edge)
-            v           = np.array([x, y]) - P_i
-            t           = np.dot(v, edge) / edge_len_sq
-            proj        = P_i + t * edge
-            residual    = np.linalg.norm(proj - np.array([x, y]))
+        for di in range(-1, 2):
+            # run through the polygon edges #i_approx (di = 0), and on the adjacent polygon edges (di = -1 and di=+1)
 
-            if 0.0 - tol <= t <= 1.0 + tol and residual < tol:
-                s = (i + max(0.0, min(1.0, t))) * chord
-                if s >= circumference - tol:
-                    s = 0.0
-                on_circle_pt_idx.append(pt_idx)
-                s_of_circle_pt.append(s)
+            # i id the id of the polygon edge under consideration 
+            i           = (i_approx + di) % N
+
+            # polygon_vertex_start and polygon_vertex_end are the polygon points bracketing the polygon edge under consideration 
+            polygon_vertex_start         = polygon_vertices[i]
+            polygon_vertex_end         = polygon_vertices[(i + 1) % N]
+
+            # vector going from start to end point of the polygon edge under consideration and its squared length 
+            polygon_edge_dr        = polygon_vertex_end - polygon_vertex_start
+            polygon_edge_dr_length = np.linalg.norm(polygon_edge_dr)
+
+            # delta is the vector going from polygon_vertex_start to the DOF point under consideration 
+            delta           = np.array([point_coordinate_x, point_coordinate_y]) - polygon_vertex_start
+
+            # l is the length of the projection of delta along the line going through polygon_vertex_start to and polygon_vertex_end
+            l           = np.dot(delta, polygon_edge_dr) / polygon_edge_dr_length
+
+            # projection is the orthogonal projection of the DOF coordinate under consideration on the line going through polygon_vertex_start and polygon_vertex_end
+            projection        = polygon_vertex_start + l * polygon_edge_dr / polygon_edge_dr_length
+            residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
+
+            if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
+                # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
+
+                # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
+                arc_length = (i + l / polygon_edge_dr_length) * polygon_edge_length
+
+
+                if arc_length >= polygon_length - tol:
+                    arc_length = 0.0
+
+                # append the DOF point under consideration to point_id and its arc-length to arc_length_points_on_circle
+                id_points_on_circle.append(point_id)
+                arc_length_points_on_circle.append(arc_length)
+
                 break
 
-    on_circle_pt_idx = np.array(on_circle_pt_idx)
-    s_of_circle_pt   = np.array(s_of_circle_pt)
 
-    print(f'[transfer] found {len(on_circle_pt_idx)} physical points on polygon, '
-          f'line mesh has {n_pts_line} physical points, '
-          f'value_size = {value_size}')
 
-    assert len(on_circle_pt_idx) == n_pts_line, (
-        f"Found {len(on_circle_pt_idx)} physical points on polygon boundary but "
-        f"line mesh has {n_pts_line} physical points. "
+    id_points_on_circle = np.array(id_points_on_circle)
+    arc_length_points_on_circle   = np.array(arc_length_points_on_circle)
+
+
+
+    print(f'Found {len(id_points_on_circle)} physical points on polygon, '
+          f'line mesh has {n_points_line} physical points, '
+          f'value_size = {f_2d_value_size}')
+
+    assert len(id_points_on_circle) == n_points_line, (
+        f"Error! Found {len(id_points_on_circle)} physical points on polygon boundary but "
+        f"line mesh has {n_points_line} physical points. "
         f"Check c_r, r, N (currently {N}), tol (currently {tol:.1e})."
     )
 
-    # --- Build permutation at the physical point level -----------------------
-    s_line = coords_line[:, 0].copy()
-    s_line[s_line >= circumference - tol] = 0.0
 
-    sort_2d   = np.argsort(s_of_circle_pt)
-    sort_line = np.argsort(s_line)
+
+    # --- Build permutation at the physical point level -----------------------
+    # arc_legnth_line contains the (x, and only) coordinate of points on the line, which is the same as their arc length
+    arc_length_line = coords_line[:, 0].copy()
+    print(f'coords_line = {coords_line}')
+    print(f'arc_length_line = {arc_length_line}')
+
+
+    arc_length_line[arc_length_line >= polygon_length - tol] = 0.0
+
+    '''
+    permutation_2d is the permutation that sorts in in creasing order the DOF points on the polygon in increasing order of arc_legnth_points_on_circle
+    Example: if 
+        arc_length_points_on_circle = [0.5, 0.1, 0.8, 0.3]
+        permutation_2d =  np.argsort(arc_length_points_on_circle)  # gives [1, 3, 0, 2]
+    
+    and similarly for permutation_line
+    '''
+    permutation_2d   = np.argsort(arc_length_points_on_circle)
+    permutation_line = np.argsort(arc_length_line)
+
+    # sign
+
 
     # perm_pt[i] = physical point index in 2D mesh corresponding to
     #              physical point i in line mesh
-    perm_pt = np.empty(n_pts_line, dtype=int)
-    for rank in range(n_pts_line):
-        perm_pt[sort_line[rank]] = on_circle_pt_idx[sort_2d[rank]]
+    '''
+    permutation_pt[i] = [index in of vertex in coords_2d corresponding to the i-th point in arc_length_line on the line
+    Example: 
 
-    # --- Expand permutation to all scalar DOFs --------------------------------
-    # For value_size=k, physical point p maps to scalar DOFs
-    # p*k, p*k+1, ..., p*k+(k-1)  in both the 2D and line DOF vectors.
-    perm_dof = np.empty(n_dofs_line, dtype=int)
-    for line_pt, circ_pt in enumerate(perm_pt):
-        for c in range(value_size):
-            perm_dof[line_pt * value_size + c] = circ_pt * value_size + c
+        arc_length_points_on_circle = [0.8, 0.1, 0.5, 0.3]  # 4 polygon points
+        arc_length_line             = [0.5, 0.3, 0.1, 0.8]  # 4 line points
 
-    # --- Copy DOF values (no interpolation) ----------------------------------
-    f_line.vector()[:] = f_2d.vector()[:][perm_dof]
+        permutation_2d   = [1, 3, 2, 0]   # polygon point 1 is smallest, then 3, then 2, then 0
+        permutation_line = [2, 1, 0, 3]   # line point 2 is smallest, then 1, then 0, then 3
+
+        then 
+
+        rank=0: permutation_pt[permutation_line[0]] = id_points_on_circle[permutation_2d[0]]
+        permutation_pt[2] = id_points_on_circle[1]
+        # line point 2 (arc=0.1) corresponds to polygon point 1 (arc=0.1) 
+
+        rank=1: permutation_pt[permutation_line[1]] = id_points_on_circle[permutation_2d[1]]
+        permutation_pt[1] = id_points_on_circle[3]
+        # line point 1 (arc=0.3) corresponds to polygon point 3 (arc=0.3) 
+
+    '''
+    permutation_pt = np.empty(n_points_line, dtype=int)
+    for rank in range(n_points_line):
+        permutation_pt[permutation_line[rank]] = id_points_on_circle[permutation_2d[rank]]
+
+
+    '''
+    fill in the permutation vector of DOFs for the line, by assignign to each DOF on the line the corresponding DOFs on the 2d space
+    Here circle-point is the index in coords_2d
+    '''
+    permutation_dof = np.empty(n_dofs_line, dtype=int)
+
+    for i in range(len(permutation_pt)):
+        # run through all DOF points in the line
+
+        for j in range(f_2d_value_size):
+            # run through all components of the field associated with the DOF on the line under consideration 
+
+            # set the field component to be equal to the correspodning field componenbt of the corresponding DOF on the 2d mesh
+            permutation_dof[i * f_2d_value_size + j] = permutation_pt[i] * f_2d_value_size + j
+
+    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
+    f_line.vector()[:] = f_2d.vector()[:][permutation_dof]
