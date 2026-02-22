@@ -2047,18 +2047,25 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
                 # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
 
                 # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
-                s = (i + l / polygon_edge_dr_length) * polygon_edge_length
+                arc_length = (i + l / polygon_edge_dr_length) * polygon_edge_length
 
-                # sign
 
-                if s >= polygon_length - tol:
-                    s = 0.0
+                if arc_length >= polygon_length - tol:
+                    arc_length = 0.0
+
+                # append the DOF point under consideration to point_id and its arc-length to arc_length_points_on_circle
                 id_points_on_circle.append(point_id)
-                arc_length_points_on_circle.append(s)
+                arc_length_points_on_circle.append(arc_length)
+
                 break
+
+
 
     id_points_on_circle = np.array(id_points_on_circle)
     arc_length_points_on_circle   = np.array(arc_length_points_on_circle)
+
+    # sign
+
 
     print(f'[transfer] found {len(id_points_on_circle)} physical points on polygon, '
           f'line mesh has {n_pts_line} physical points, '
