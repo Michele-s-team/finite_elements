@@ -1974,9 +1974,9 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # the angle corresponding to each slice of the polygon
     delta_theta   = 2.0 * np.pi / N
     # the length of each side of the polygon
-    polygon_size         = r * 2.0 * np.sin(delta_theta / 2.0)
+    polygon_edge_length         = r * 2.0 * np.sin(delta_theta / 2.0)
     # the total polygon length
-    polygon_length = N * polygon_size
+    polygon_length = N * polygon_edge_length
 
     # sign
 
@@ -2046,9 +2046,19 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
 
             if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
-                # the DOI point under consideration lies on the polygon edge under consideration 
+                # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
 
-                s = (i + max(0.0, min(1.0, l / polygon_edge_dr_length))) * polygon_size
+                '''
+                  clamped_l 'clamps' the length l in the interval [0, 1], that is:
+                    - if l < 0 -> clamped_l = 0
+                    - if l > 0 -> clamped_l = 1
+                    - otherwise -> clamped_l = l 
+                '''
+            
+                clamped_l = max(0.0, min(1.0, l / polygon_edge_dr_length))
+
+                # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
+                s = (i + clamped_l) * polygon_edge_length
                 if s >= polygon_length - tol:
                     s = 0.0
                 id_points_on_circle.append(point_id)
