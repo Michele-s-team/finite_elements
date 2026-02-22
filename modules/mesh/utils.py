@@ -1970,24 +1970,28 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     assert n_dofs_line == f2d_value_size * n_pts_line, \
         "Unexpected DOF layout in line function space"
     
+
+    # the angle corresponding to each slice of the polygon
+    delta_theta   = 2.0 * np.pi / N
+    # the length of each side of the polygon
+    polygon_size         = r * 2.0 * np.sin(delta_theta / 2.0)
+    # the total polygon length
+    polygon_length = N * polygon_size
+
     # sign
 
-    cx, cy        = float(c_r[0]), float(c_r[1])
-    delta_theta   = 2.0 * np.pi / N
-    chord         = r * 2.0 * np.sin(delta_theta / 2.0)
-    circumference = N * chord
 
     # Polygon vertices
     angles = np.arange(N) * delta_theta
-    P = np.column_stack([cx + r * np.cos(angles),
-                         cy + r * np.sin(angles)])
+    P = np.column_stack([c_r[0] + r * np.cos(angles),
+                         c_r[1] + r * np.sin(angles)])
 
     # --- Find physical points on the polygon and their arc-lengths -----------
     on_circle_pt_idx = []   # index into coords_2d (physical points)
     s_of_circle_pt   = []
 
     for pt_idx, (x, y) in enumerate(coords_2d):
-        theta    = np.arctan2(y - cy, x - cx) % (2.0 * np.pi)
+        theta    = np.arctan2(y - c_r[1], x - c_r[0]) % (2.0 * np.pi)
         i_approx = int(theta / delta_theta) % N
 
         for di in range(-1, 3):
@@ -2002,8 +2006,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             residual    = np.linalg.norm(proj - np.array([x, y]))
 
             if 0.0 - tol <= t <= 1.0 + tol and residual < tol:
-                s = (i + max(0.0, min(1.0, t))) * chord
-                if s >= circumference - tol:
+                s = (i + max(0.0, min(1.0, t))) * polygon_size
+                if s >= polygon_length - tol:
                     s = 0.0
                 on_circle_pt_idx.append(pt_idx)
                 s_of_circle_pt.append(s)
@@ -2024,7 +2028,7 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     # --- Build permutation at the physical point level -----------------------
     s_line = coords_line[:, 0].copy()
-    s_line[s_line >= circumference - tol] = 0.0
+    s_line[s_line >= polygon_length - tol] = 0.0
 
     sort_2d   = np.argsort(s_of_circle_pt)
     sort_line = np.argsort(s_line)
