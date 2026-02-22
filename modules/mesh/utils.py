@@ -2105,8 +2105,6 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     permutation_2d   = np.argsort(arc_length_points_on_circle)
     permutation_line = np.argsort(arc_length_line)
 
-    # sign
-
 
     # perm_pt[i] = physical point index in 2D mesh corresponding to
     #              physical point i in line mesh
