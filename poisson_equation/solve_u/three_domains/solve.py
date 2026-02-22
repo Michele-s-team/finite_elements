@@ -47,7 +47,7 @@ alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
 
-
+'''
 # 1 transfer scalar
 
 class f_0_0_Expression(UserExpression):
@@ -84,7 +84,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a-b)
 
 print(f'error = {error}')
-
+'''
 
 # 2 transfer vector
 
@@ -128,7 +128,7 @@ print(f'error = {error}')
 
 
 
-
+'''
 # 3 transfer tensor
 
 class t_sub_mesh_0_0_Expression(UserExpression):
@@ -174,6 +174,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
+'''
 ####################
 
 
