@@ -2024,14 +2024,20 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
         for di in range(-1, 2):
             # run through the polygon edges #i_approx (di = 0), and on the adjacent polygon edges (di = -1 and di=+1)
 
+            # i id the id of the polygon edge under consideration 
             i           = (i_approx + di) % N
-            P_i         = polygon_vertices[i]
-            P_j         = polygon_vertices[(i + 1) % N]
-            edge        = P_j - P_i
-            edge_len_sq = np.dot(edge, edge)
-            v           = np.array([point_coordinate_x, point_coordinate_y]) - P_i
-            t           = np.dot(v, edge) / edge_len_sq
-            proj        = P_i + t * edge
+
+            # polygon_vertex_start and polygon_vertex_end are the polygon points bracketing the polygon edge under consideration 
+            polygon_vertex_start         = polygon_vertices[i]
+            polygon_vertex_end         = polygon_vertices[(i + 1) % N]
+
+            # vector going from start to end point of the polygon edge under consideration and its squared length 
+            polygon_edge_dr        = polygon_vertex_end - polygon_vertex_start
+            polygon_edge_dr_length_squared = np.dot(polygon_edge_dr, polygon_edge_dr)
+
+            v           = np.array([point_coordinate_x, point_coordinate_y]) - polygon_vertex_start
+            t           = np.dot(v, polygon_edge_dr) / polygon_edge_dr_length_squared
+            proj        = polygon_vertex_start + t * polygon_edge_dr
             residual    = np.linalg.norm(proj - np.array([point_coordinate_x, point_coordinate_y]))
 
             if 0.0 - tol <= t <= 1.0 + tol and residual < tol:
