@@ -1933,30 +1933,44 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
         "Error: value shape mismatch!"
 
     # value_size: 1 for scalar, 2 for 2D vector, 4 for 2x2 tensor, etc.
-    value_shape = V_2d.ufl_element().value_shape()
-    value_size  = int(np.prod(value_shape)) if value_shape else 1
+    f2d_value_shape = V_2d.ufl_element().value_shape()
+    f2d_value_size  = int(np.prod(f2d_value_shape)) if f2d_value_shape else 1
+
+    print(f'value shape = {f2d_value_shape}\nvalue_size = {f2d_value_size}')
 
     gdim        = V_2d.mesh().geometry().dim()   # 2
-    n_dofs_line = V_line.dim()                   # includes all components
+    n_dofs_line = V_line.dim()                   # includes all components of the fields in V_line
 
-    # tabulate_dof_coordinates returns one row per scalar DOF.
+
+
+    # for V_2d, tabulate_dof_coordinates returns one row per scalar DOF -> there may be some repeated points in coords_2d_all, and we wanto to remove this redundancy 
     # For a vector space with value_size=k, each physical point
     # appears k consecutive times with the same coordinate.
-    # We take every value_size-th row to get unique physical coordinates.
     coords_2d_all = V_2d.tabulate_dof_coordinates().reshape(-1, gdim)
-    coords_2d     = coords_2d_all[::value_size]   # unique physical points
 
-    # print(f'coordinates of DOFs on 2d mesh: {coords_2d}')
-    # print(f'minimal distance between DOF coordinatess: {cal.min_distance(coords_2d)}')
+    # We take every value_size-th row to get unique physical coordinates -> every point in coords_2d is different
+    coords_2d     = coords_2d_all[::f2d_value_size]   # unique physical points
+
+    # print(f'coords_2d_all = {coords_2d_all}\ncoords_2d = {coords_2d}')
 
     tol = cal.min_distance(coords_2d)/2.0
 
+
+    # for V_line, tabulate_dof_coordinates returns one row per scalar DOF -> there may be some repeated points in coords_line_all, and we wanto to remove this redundancy 
     coords_line_all = V_line.tabulate_dof_coordinates().reshape(-1, 1)
-    coords_line     = coords_line_all[::value_size]  # unique physical points
+
+    # We take every value_size-th row to get unique physical coordinates -> every point in coords_line is different
+    coords_line     = coords_line_all[::f2d_value_size]  # unique physical points
+
+    print(f'coords_line_all = {coords_line_all}\ncoords_line = {coords_line}')
+
+
     n_pts_line      = len(coords_line)
 
-    assert n_dofs_line == value_size * n_pts_line, \
+    assert n_dofs_line == f2d_value_size * n_pts_line, \
         "Unexpected DOF layout in line function space"
+    
+    # sign
 
     cx, cy        = float(c_r[0]), float(c_r[1])
     delta_theta   = 2.0 * np.pi / N
@@ -2000,7 +2014,7 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     print(f'[transfer] found {len(on_circle_pt_idx)} physical points on polygon, '
           f'line mesh has {n_pts_line} physical points, '
-          f'value_size = {value_size}')
+          f'value_size = {f2d_value_size}')
 
     assert len(on_circle_pt_idx) == n_pts_line, (
         f"Found {len(on_circle_pt_idx)} physical points on polygon boundary but "
@@ -2026,8 +2040,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
     # p*k, p*k+1, ..., p*k+(k-1)  in both the 2D and line DOF vectors.
     perm_dof = np.empty(n_dofs_line, dtype=int)
     for line_pt, circ_pt in enumerate(perm_pt):
-        for c in range(value_size):
-            perm_dof[line_pt * value_size + c] = circ_pt * value_size + c
+        for c in range(f2d_value_size):
+            perm_dof[line_pt * f2d_value_size + c] = circ_pt * f2d_value_size + c
 
     # --- Copy DOF values (no interpolation) ----------------------------------
     f_line.vector()[:] = f_2d.vector()[:][perm_dof]
