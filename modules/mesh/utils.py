@@ -1913,16 +1913,27 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     return sub_meshes, sf_sub_meshes, mf_sub_meshes
 
 '''
-transfer a field (scalar, vector or tensor) defined on the 2d mesh which contains a circle boudary, on a 1d line mesh which is obtained by laying flat the circle
+Returns a permutation vector which is used to map fields (scalar, tensor, vector) between a 2d mesh given by a recangle with a circle in it, and a line mesh obtained by lying the circle on a line
 Input values: 
     - 'f_2d': the field on the 2d mesh
-    - 'f_line': the field on the line mesh
-    - 'c_r': [cr_x, cr_y], the coordinates of the circle (polygon) center 
-    - 'r': the circle radius
-    - 'N': the number of polygon segments 
-'''
+    - 'f_line': the respective field on the line mesh 
+    - 'c_r' = [c_rx, c_ry], the position of the circle center in the 2d mesh 
+    - 'r' the radius of the circle 
+Return values: 
 
-def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
+    -  Given  'coords_components_2d': a list of the that  components of f_2d takes on each DOF of the 2d mesh
+        coords_components_2d = [
+        f0_DOF_position_0, f1_DOF_position_0, ..., 
+        f0_DOF_position_1, f1_DOF_position_1, ..., 
+        ], this method returns 'permutation_dof': a vector that maps the fields components of f_2d on the DOFs of 2d mesh with the field components of f_line on the line mesh. Given an entry i of coords_components_line on the line mesh, where
+    coords_components_line = [
+        f0_DOF_position_0, f1_DOF_position_0, ..., 
+        f0_DOF_position_1, f1_DOF_position_1, ..., 
+        ]
+       permutation_dof[i] is the respective index of the entry in coords_components_2d
+'''
+def map_circle_line(f_2d, f_line, c_r, r, N):
+
 
     V_2d   = f_2d.function_space()
     V_line = f_line.function_space()
@@ -2134,8 +2145,44 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             # set the field component to be equal to the correspodning field componenbt of the corresponding DOF on the 2d mesh
             permutation_dof[i * f_2d_value_size + j] = permutation_pt[i] * f_2d_value_size + j
 
-    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
-    f_line.vector()[:] = f_2d.vector()[:][permutation_dof]
 
-    # to set in the opposite direction: 
-    # f_2d.vector()[permutation_dof] = f_line.vector()[:]
+    return permutation_dof
+
+'''
+Given 2d mesh given by a recangle with a circle in it, and a line mesh obtained by lying the circle on a line, this method transfers a field (scalar, vector or tensor) defined on the 2d mesh, on the  line mesh. 
+
+Input values: 
+    - 'f_2d': the field on the 2d mesh
+    - 'f_line': the field on the line mesh
+    - 'c_r': [cr_x, cr_y], the coordinates of the circle (polygon) center 
+    - 'r': the circle radius
+    - 'N': the number of polygon segments 
+'''
+
+def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
+
+    permutation_dof = map_circle_line(f_2d, f_line, c_r, r, N)
+
+    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
+    for i in range(len(permutation_dof)): 
+        f_line.vector()[i] = f_2d.vector()[permutation_dof[i]]
+
+
+
+'''
+Given 2d mesh given by a recangle with a circle in it, and a line mesh obtained by lying the circle on a line, this method transfers a field (scalar, vector or tensor) defined on the line mesh, on the respective field on the 2d mesh, by setting the components of this field related to DOF points on the circle
+Input values: 
+    - 'f_2d': the field on the 2d mesh
+    - 'f_line': the field on the line mesh
+    - 'c_r': [cr_x, cr_y], the coordinates of the circle (polygon) center 
+    - 'r': the circle radius
+    - 'N': the number of polygon segments 
+'''
+
+def transfer_line_to_circle(f_2d, f_line, c_r, r, N):
+
+    permutation_dof = map_circle_line(f_2d, f_line, c_r, r, N)
+
+    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
+    for i in range(len(permutation_dof)): 
+         f_2d.vector()[permutation_dof[i]] = f_line.vector()[i]
