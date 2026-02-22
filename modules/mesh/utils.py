@@ -1974,8 +1974,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
 
     n_points_line      = len(coords_line)
 
-    assert n_dofs_line == f_2d_value_size * n_points_line, \
-        "Unexpected DOF layout in line function space"
+    assert n_dofs_line == f_line_value_size * n_points_line, \
+        "Error: number of DOFs on the line does not match!"
     
 
     # the angle corresponding to each slice of the polygon
