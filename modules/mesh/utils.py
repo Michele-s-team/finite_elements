@@ -2046,6 +2046,8 @@ def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
             residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
 
             if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
+                # the DOI point under consideration lies on the polygon edge under consideration 
+
                 s = (i + max(0.0, min(1.0, l / polygon_edge_dr_length))) * polygon_size
                 if s >= polygon_length - tol:
                     s = 0.0
