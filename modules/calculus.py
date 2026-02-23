@@ -648,3 +648,14 @@ def min_distance(points):
                 result = distance
 
     return result
+
+
+def min_distance_new (points):
+    
+    from scipy.spatial import cKDTree
+
+    tree = cKDTree(points)
+    # query the 2 nearest neighbors (the point itself and its closest neighbor)
+    distances, _ = tree.query(points, k=2)
+    # distances[:, 0] is always 0 (distance to itself), distances[:, 1] is the nearest neighbor
+    return np.min(distances[:, 1])
