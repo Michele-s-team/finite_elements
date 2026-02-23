@@ -26,7 +26,7 @@ print(f"\t\tBCs for sub_mesh_{0}_{0}:")
 print(f"\t\t\t<<(u - phi)^2>>_[partial Omega {0}_{0}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0][0], fsp.u_1_on_0_0, rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(f"\t\tBCs for mesh_{1}:")
-print(f'\t\t|u[1](x_l) - u[1](x_r)| = {col.Fore.RED}{abs(fsp.u[1](rmsh.lmsh.mesh_parameters[1]["x_l"]) - fsp.u[1](rmsh.lmsh.mesh_parameters[1]["x_r"])):.{io.number_of_decimals}e}{col.Style.RESET_ALL}')
+print(f'\t\t\t|u[1](x_l) - u[1](x_r)| = {col.Fore.RED}{abs(fsp.u[1](rmsh.lmsh.mesh_parameters[1]["x_l"]) - fsp.u[1](rmsh.lmsh.mesh_parameters[1]["x_r"])):.{io.number_of_decimals}e}{col.Style.RESET_ALL}')
 
 
 print(f"\t- Comparison with exact solution: ")
