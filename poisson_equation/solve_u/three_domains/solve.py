@@ -17,7 +17,9 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import input_output as io
 import mesh.utils as msh
+import solution_paths as solpath
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -39,9 +41,7 @@ params = {'nonlinear_solver': 'newton',
 ####################
 # test transfer function
 
-import input_output as io
 import numpy as np
-import solution_paths as solpath
 
 delta_theta = 2 * np.pi / rmsh.lmsh.mesh_parameters[0]['N']
 alpha = (np.pi - delta_theta)/2.0
@@ -350,7 +350,12 @@ msh.transfer_circle_to_line(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh_paramete
 print(f'... done.')
 
 
-'''
+io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path,
+                  rmsh.lmsh.mesh[1], 'scalar')
+
+
+
 # solve the variational problem on mesh[1]
 print('Solving the problem in mesh[1]...')
 # use the solution obtained for sub_mesh[0][1] in the variational problem on mesh[1]
@@ -362,6 +367,7 @@ solver[1] = NonlinearVariationalSolver(problem[1])
 solver[1].solve()
 print('...done.')
 
+'''
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
 problem[0][0] = NonlinearVariationalProblem(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, J[0][0])
@@ -370,9 +376,6 @@ solver[0][0] = NonlinearVariationalSolver(problem[0][0])
 print('Solving the problem in sub_mesh[0][0]...')
 solver[0][0].solve()
 print('...done.')
-
-
-
 '''
 
 prout_bc = importlib.import_module(swi.prout_bc)

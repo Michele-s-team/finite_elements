@@ -61,5 +61,5 @@ fsp.hess_u_exact[1].interpolate(
 bc_l = DirichletBC(fsp.Q[1], Constant(-2.0 * (rmsh.lmsh.parameters['r'])**2), rmsh.mf[1], rmsh.lmsh.mesh_parameters[1]['vertex_l_id'])
 bcs = [bc_l]
 
-# variational functional for the original problem (poisson equation)
-F = (fsp.u[1].dx(0) - fsp.u_0_1_on_1) *  fsp.nu_u[1] * rmsh.dx_mesh[1]
+# variational functional
+F = (fsp.u[1].dx(0) - fsp.u_0_1_on_1) *  fsp.nu_u[1].dx(0) * rmsh.dx_mesh[1]
