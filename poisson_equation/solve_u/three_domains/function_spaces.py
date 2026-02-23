@@ -105,7 +105,7 @@ u_0_1_on_1 = Function(Q[1])
 # a function which allows to bridge between mesh[1] and sub_mesh[0][0], and thus to impose the BCs for problem on sub_mesh[0][0] in terms of the solution of the problem on mesh[1]
 u_1_on_0_0 = Function(Q[0][0])
 
-'''
+
 #  for testing trasnfer - start
 # scalar
 Q_sub_mesh_0_1 = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'])
@@ -131,5 +131,5 @@ t_sub_mesh_0_1 = Function(T_sub_mesh_0_1)
 t_mesh_1 = Function(T_mesh_1)
 
 #  for testing trasnfer - end
-'''
+
 
