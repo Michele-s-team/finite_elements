@@ -310,16 +310,21 @@ here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th 
 ''''
 The three variational problems (VPs) are solved as follows:
 1)  Solve Poisson VP on sub_mesh[0][1] for u[0][1] ->
-    Obtain u[0][1] = 1 + (x[0] - cr[0]) + 2 * (x[1] - cr[1])
+    Obtain 
+        a) For test case 1: u[0][1] = 1 + (x[0] - cr[0]) + 2 * (x[1] - cr[1])
+        b) For test case 2: u[0][1] = 1 + 2 * (x[0] - cr[0])**3 + (x[1] - cr[1])**3
 2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1
     r theta = s
     L1 = 2 pi r 
     Given that x[0] = cr[0] + r * cos(s/r), x[1] = cr[1] + r * sin(s/r), where s is the coordinate along mesh[1] and along the circle, we have 
-    Obtain u_0_1_on_1(s)  = 1 + (r * cos(s/r)) + 2 * (r * sin(s/r))
+    Obtain 
+        a) For test case 1: u_0_1_on_1(s)  = 1 + (r * cos(s/r)) + 2 * (r * sin(s/r))
+        b) For test case 2: u_0_1_on_1(s)  = 1 + 2 * (r * cos(s/r))**3 + (r * sin(s/r))**3
 3)  Solve on mesh[1] the VP
     u[1]'(s) = u_0_1_on_1(s)
     The solution is 
-    u[1](s) = C[1] - 2 r^2 Cos[s/r] + r^2 Sin[s/r]
+      a) For test case 1: u[1](s) = s + C[1] + r^2 (-2 Cos[s/r] + Sin[s/r])
+      b) For test case 2: u[1](s) = s + C[1] + 1/12 r^2 (-9 Cos[s/r] + Cos[(3 s)/r] + 4 (5 + Cos[(2 s)/r]) Sin[s/r])
     where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
 4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u_1_on_0_0 -> 
     On the circle 
