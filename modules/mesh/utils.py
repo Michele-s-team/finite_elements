@@ -173,24 +173,12 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
         raise ValueError(f"File extension is invalid: {filename}")
 
     if file_format.lower() == "h5":
-        '''
-        mf = MeshFunction("size_t", mesh, dim)
-        with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
-            infile.read(mf, mf_name)
-        return mf
-        '''
-        print('Reading mesh components from .h5 file.')
+
         return read_mesh_components_h5(mesh, dim, filename, name_to_read)
 
 
     elif file_format.lower() == "xdmf":
-        # mesh_value_collection = MeshValueCollection("size_t", mesh, dim)
-        # with XDMFFile(filename) as infile:
-        #     infile.read(mesh_value_collection, mf_name)
-        #     infile.close()
-        # return cpp.mesh.MeshFunctionSizet(mesh, mesh_value_collection)
-        print('Reading mesh components from .xdmf file.')
-
+ 
         return read_mesh_components_xdmf(mesh, dim, filename)
 
     else:
