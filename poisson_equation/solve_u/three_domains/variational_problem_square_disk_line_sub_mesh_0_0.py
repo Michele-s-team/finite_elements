@@ -71,11 +71,11 @@ fsp.u_exact[0][0].interpolate(u_exact_sub_mesh_0_0_expression(element=fsp.Q[0][0
 fsp.grad_u[0][0].interpolate(grad_u_exact_sub_mesh_0_0_expression(element=fsp.V[0][0].ufl_element()))
 fsp.f[0][0].interpolate(laplacian_u_exact_sub_mesh_0_0_expression(element=fsp.Q[0][0].ufl_element()))
 
-fsp.u_0_1_on_0_0.assign(project((fsp.u[0][1])**2, fsp.Q[0][0]))
+# fsp.u_0_1_on_0_0.assign(project((fsp.u[0][1])**2, fsp.Q[0][0]))
 
-bcs = [ \
-    DirichletBC(fsp.Q[0][0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["circle_id"])
-    ]
+# bcs = [ \
+#     DirichletBC(fsp.Q[0][0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+#     ]
 
 # functional for sub_mesh[0]
 F = (fsp.u[0][0].dx(i) * fsp.nu_u[0][0].dx(i) + fsp.f[0][0] * fsp.nu_u[0][0]) * rmsh.dx_sub_mesh[0][0] \
