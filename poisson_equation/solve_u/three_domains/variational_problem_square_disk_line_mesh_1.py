@@ -58,7 +58,11 @@ fsp.hess_u_exact[1].interpolate(
 '''
 
 # impose a Dirichlet boundary condition on the left vertex in order to set C[1] -> 0
-bc_l = DirichletBC(fsp.Q[1], Constant(-2.0 * (rmsh.lmsh.parameters['r'])**2), rmsh.mf[1], rmsh.lmsh.mesh_parameters[1]['vertex_l_id'])
+# test case 1
+# bc_l = DirichletBC(fsp.Q[1], Constant(-2.0 * (rmsh.lmsh.parameters['r'])**2), rmsh.mf[1], rmsh.lmsh.mesh_parameters[1]['vertex_l_id'])
+# test case 2
+bc_l = DirichletBC(fsp.Q[1], Constant(-2.0/3.0 * (rmsh.lmsh.parameters['r'])**2), rmsh.mf[1], rmsh.lmsh.mesh_parameters[1]['vertex_l_id'])
+
 bcs = [bc_l]
 
 # variational functional
