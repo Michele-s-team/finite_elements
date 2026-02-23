@@ -1989,6 +1989,8 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
     polygon_edge_length         = r * 2.0 * np.sin(delta_theta / 2.0)
     # the total polygon length
     polygon_length = N * polygon_edge_length
+    # interior radius of the polygon
+    polygon_r_in = r * np.cos(delta_theta/2.0)
 
 
     # Polygon vertices
@@ -2024,51 +2026,56 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
     for point_id, (point_coordinate_x, point_coordinate_y) in enumerate(coords_2d):
         # run through the DOF points of V_2d
 
-        # theta is the polar angle of the DOF point under consideration with respect to polar coordinates cetered on c_r
-        theta    = np.arctan2(point_coordinate_y - c_r[1], point_coordinate_x - c_r[0]) % (2.0 * np.pi)
+        distance = np.linalg.norm(np.subtract([point_coordinate_x, point_coordinate_y], c_r))
 
-        # i_approx is the index of the polygon slice containing the DOF point under consideration. If the point under consideration does lie on the circle, then i_approxi is the index of the polygon edge containing the DOF point under consideration 
-        i_approx = int(theta / delta_theta) % N
+        if (distance > polygon_r_in - tol) and (distance < r + tol):
+            # the DOF point under consideration may lie on the polygon (I tested its distance from c_r )
 
-        for di in range(-1, 2):
-            # run through the polygon edges #i_approx (di = 0), and on the adjacent polygon edges (di = -1 and di=+1)
+            # theta is the polar angle of the DOF point under consideration with respect to polar coordinates cetered on c_r
+            theta    = np.arctan2(point_coordinate_y - c_r[1], point_coordinate_x - c_r[0]) % (2.0 * np.pi)
 
-            # i id the id of the polygon edge under consideration 
-            i           = (i_approx + di) % N
+            # i_approx is the index of the polygon slice containing the DOF point under consideration. If the point under consideration does lie on the circle, then i_approxi is the index of the polygon edge containing the DOF point under consideration 
+            i_approx = int(theta / delta_theta) % N
 
-            # polygon_vertex_start and polygon_vertex_end are the polygon points bracketing the polygon edge under consideration 
-            polygon_vertex_start         = polygon_vertices[i]
-            polygon_vertex_end         = polygon_vertices[(i + 1) % N]
+            for di in range(-1, 2):
+                # run through the polygon edges #i_approx (di = 0), and on the adjacent polygon edges (di = -1 and di=+1)
 
-            # vector going from start to end point of the polygon edge under consideration and its squared length 
-            polygon_edge_dr        = polygon_vertex_end - polygon_vertex_start
-            polygon_edge_dr_length = np.linalg.norm(polygon_edge_dr)
+                # i id the id of the polygon edge under consideration 
+                i           = (i_approx + di) % N
 
-            # delta is the vector going from polygon_vertex_start to the DOF point under consideration 
-            delta           = np.array([point_coordinate_x, point_coordinate_y]) - polygon_vertex_start
+                # polygon_vertex_start and polygon_vertex_end are the polygon points bracketing the polygon edge under consideration 
+                polygon_vertex_start         = polygon_vertices[i]
+                polygon_vertex_end         = polygon_vertices[(i + 1) % N]
 
-            # l is the length of the projection of delta along the line going through polygon_vertex_start to and polygon_vertex_end
-            l           = np.dot(delta, polygon_edge_dr) / polygon_edge_dr_length
+                # vector going from start to end point of the polygon edge under consideration and its squared length 
+                polygon_edge_dr        = polygon_vertex_end - polygon_vertex_start
+                polygon_edge_dr_length = np.linalg.norm(polygon_edge_dr)
 
-            # projection is the orthogonal projection of the DOF coordinate under consideration on the line going through polygon_vertex_start and polygon_vertex_end
-            projection        = polygon_vertex_start + l * polygon_edge_dr / polygon_edge_dr_length
-            residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
+                # delta is the vector going from polygon_vertex_start to the DOF point under consideration 
+                delta           = np.array([point_coordinate_x, point_coordinate_y]) - polygon_vertex_start
 
-            if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
-                # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
+                # l is the length of the projection of delta along the line going through polygon_vertex_start to and polygon_vertex_end
+                l           = np.dot(delta, polygon_edge_dr) / polygon_edge_dr_length
 
-                # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
-                arc_length = (i + l / polygon_edge_dr_length) * polygon_edge_length
+                # projection is the orthogonal projection of the DOF coordinate under consideration on the line going through polygon_vertex_start and polygon_vertex_end
+                projection        = polygon_vertex_start + l * polygon_edge_dr / polygon_edge_dr_length
+                residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
+
+                if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
+                    # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
+
+                    # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
+                    arc_length = (i + l / polygon_edge_dr_length) * polygon_edge_length
 
 
-                if arc_length >= polygon_length - tol:
-                    arc_length = 0.0
+                    if arc_length >= polygon_length - tol:
+                        arc_length = 0.0
 
-                # append the DOF point under consideration to point_id and its arc-length to arc_length_points_on_circle
-                id_points_on_circle.append(point_id)
-                arc_length_points_on_circle.append(arc_length)
+                    # append the DOF point under consideration to point_id and its arc-length to arc_length_points_on_circle
+                    id_points_on_circle.append(point_id)
+                    arc_length_points_on_circle.append(arc_length)
 
-                break
+                    break
 
 
 
