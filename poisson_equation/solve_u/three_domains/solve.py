@@ -339,7 +339,7 @@ The three variational problems (VPs) are solved as follows:
 
 4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u_1_on_0_0. 
     On the circle 
-
+# sign
         a) Test case 1: u_1_on_0_0 = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1])
         b) Test case 2: u_1_on_0_0 =  (9 * r**2  * (crx - x) + (-crx + x)**3 + 3 * (crx - x) * (cry - y)**2 + 
  2 * (cry - y)**3 + 18 * r**2 (-cry + y) + 6 * (crx - x)**2 (-cry + y))/(12.0 * r)
