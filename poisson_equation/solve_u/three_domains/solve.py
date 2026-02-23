@@ -320,8 +320,19 @@ print('Solving the problem in sub_mesh[0][1]...')
 solver[0][1].solve()
 print('...done.')
 
+
+# solve the variational problem on mesh[1]
+# use the solution obtained for sub_mesh[0][1] in the variational problem on mesh[1]
+vp[1] = importlib.import_module(swi.vp_mesh_1)
+J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
+problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
+solver[1] = NonlinearVariationalSolver(problem[1])
+
+print('Solving the problem in mesh[1]...')
+solver[1].solve()
+print('...done.')
+
 '''
-# use the solution obtained for sub_mesh[0][1] to specify the BCs for sub_mesh[0][0], and solve the variational problem in sub_mesh[0][0]
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
 problem[0][0] = NonlinearVariationalProblem(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, J[0][0])
@@ -332,15 +343,7 @@ solver[0][0].solve()
 print('...done.')
 
 
-# solve the variational problem on mesh[1]
-vp[1] = importlib.import_module(swi.vp_mesh_1)
-J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
-problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
-solver[1] = NonlinearVariationalSolver(problem[1])
 
-print('Solving the problem in mesh[1]...')
-solver[1].solve()
-print('...done.')
 '''
 
 prout_bc = importlib.import_module(swi.prout_bc)
