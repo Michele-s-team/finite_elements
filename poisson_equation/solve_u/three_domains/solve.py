@@ -128,9 +128,9 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
 print(f'error = {error}')
 
-
+'''
 # 2 transfer vector
-
+'''
 # 2.1 transfer from 2d mesh to line mesh 
 class v_sub_mesh_0_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -168,7 +168,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
-
+'''
 
 # 2.2 transfer from line mesh to 2d mesh 
 class v_mesh_1_Expression(UserExpression):
@@ -208,7 +208,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
 print(f'error = {error}')
 
-'''
+
 
 # 3 transfer tensor
 '''
@@ -257,7 +257,6 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
-'''
 
 
 # 3.2 transfer from line mesh to 2d mesh 
@@ -300,6 +299,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
+'''
 
 ####################
 
