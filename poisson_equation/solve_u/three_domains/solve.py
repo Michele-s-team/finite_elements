@@ -321,7 +321,7 @@ The three variational problems (VPs) are solved as follows:
     The solution is 
     u[1](s) = C[1] - 2 r^2 Cos[s/r] + r^2 Sin[s/r]
     where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
-4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u[0][0] -> 
+4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u_1_on_0_0 -> 
     On the circle 
     u_1_on_0_0 = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1])
 5)  Solve a Poisson problem on sub_mesh[0][0] 
@@ -364,6 +364,10 @@ solver[1] = NonlinearVariationalSolver(problem[1])
 
 solver[1].solve()
 print('...done.')
+
+print(f'Transferring solution on mesh[1] to sub_mesh[0][0] ...')
+msh.transfer_line_to_circle(fsp.u[1], fsp.u_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+print(f'... done.')
 
 '''
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
