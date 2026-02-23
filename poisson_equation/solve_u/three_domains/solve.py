@@ -322,6 +322,12 @@ The three variational problems (VPs) are solved as follows:
     The solution is 
     u[1](s) = C[1] - 2 r^2 Cos[s/r] + r^2 Sin[s/r]
     where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
+4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u[0][0] -> 
+    On the circle 
+    u_1_on_0_0 = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1])
+5)  Solve a Poisson problem on sub_mesh[0][0] 
+    The problem has exact solution u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]), and Dirichlet BC u[0][0] = u_1_on_0_0 on the circle -> 
+    Obtain u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]) in sub_mesh[0][0]
 
 
 
