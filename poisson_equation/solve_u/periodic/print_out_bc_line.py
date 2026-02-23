@@ -22,9 +22,9 @@ i, j, k, l = ufl.indices(4)
 # check if the boundary conditions (BCs) are satisfied
 print("Check of BCs:")
 print(
-    f"\t\t<<(u - phi)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds):.{sys_io.number_of_decimals}e}{col.Style.RESET_ALL}")
-# print(
-#     f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * (fsp.u.dx(i)), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds_lr):.{sys_io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<(u - phi)^2>>_[partial Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds_l):.{sys_io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f'\t\t|u(x_l) - u(x_r)| = {col.Fore.RED}{abs(fsp.u(rmsh.parameters["x_l"]) - fsp.u(rmsh.parameters["x_r"])):.{sys_io.number_of_decimals}e}{col.Style.RESET_ALL}')
+
 
 print("Comparison with exact solution: ")
 print(

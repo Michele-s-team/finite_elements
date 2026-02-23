@@ -11,6 +11,23 @@ rmsh = importlib.import_module(swi.rmsh)
 here Q[i][j] is the scalar function space for the j-th submesh of the i-th mesh, and similarly of other spaces
 '''
 
+# This enforces periodic boundary conditions which map the l vertex into the r vertex or mesh 1
+class PeriodicBoundary(SubDomain):
+    # Identify the "target domain": the left vertex
+    def inside(self, x, on_boundary):
+        return near(x[0], lmsh.mesh_parameters[1]['x_l']) and on_boundary
+
+    # Map the other boundaries to the "target domain"
+    def map(self, x, y):
+        if near(x[0], lmsh.mesh_parameters[1]['x_r']):
+            # right vertex → left vertex
+            y[0] = lmsh.mesh_parameters[1]['x_l']
+        else:
+            # Required: set unmapped points to identity
+            y[0] = x[0]
+            
+
+periodic_boundary = PeriodicBoundary()
 
 Q, V, T = [], [], []
 u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [], [], [], [], [], [], [], [], [], []
@@ -20,9 +37,9 @@ for i in range(len(lmsh.mesh)):
     if "n_sub_meshes" not in lmsh.mesh_parameters[i]:
         # mesh i has no sub-meshes 
 
-        Q.append(FunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree']))
-        V.append(VectorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree']))
-        T.append(TensorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], shape=(lmsh.mesh[i].topology().dim(), lmsh.mesh[i].topology().dim())))
+        Q.append(FunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary))
+        V.append(VectorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary))
+        T.append(TensorFunctionSpace(lmsh.mesh[i], 'P', rpam.parameters['function_space_degree'], shape=(lmsh.mesh[i].topology().dim(), lmsh.mesh[i].topology().dim()), constrained_domain=periodic_boundary))
 
         # Define variational problem
         u.append(Function(Q[i]))
@@ -81,6 +98,36 @@ for i in range(len(lmsh.mesh)):
 
 
 u[0][1].set_allow_extrapolation(True)
+
+
+
+
+#  for testing trasnfer - start
+
+# scalar
+Q_sub_mesh_0_1 = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'])
+Q_mesh_1 = FunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary)
+
+f_sub_mesh_0_1 = Function(Q_sub_mesh_0_1)
+f_mesh_1 = Function(Q_mesh_1)
+
+
+# vector
+V_sub_mesh_0_1 = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'])
+V_mesh_1 = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, dim=2)
+
+v_sub_mesh_0_1 = Function(V_sub_mesh_0_1)
+v_mesh_1 = Function(V_mesh_1)
+
+
+# tensor
+T_sub_mesh_0_1 = TensorFunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'], shape=(2,3))
+T_mesh_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, shape=(2,3))
+
+t_sub_mesh_0_1 = Function(T_sub_mesh_0_1)
+t_mesh_1 = Function(T_mesh_1)
+#  for testing trasnfer - end
+
 
 # a function which allows to bridge between sub_mesh[0][1] and sub_mesh[0][0], and thus to impose the BCs for problem on sub_mesh[0][0] in terms of the solution of the problem on sub_mesh[0][1]
 v = Function(Q[0][1])
