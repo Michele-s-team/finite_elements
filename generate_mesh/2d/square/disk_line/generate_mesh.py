@@ -157,8 +157,6 @@ for i in range(1, N):
     circle_lines.append(gmsh.model.geo.addLine(circle_points[-2], circle_points[-1]))
     gmsh.model.geo.synchronize()
 
-    print(f'Added point with coordinates {circle_coordinates[-1]}')
-
 print("... done.")
 
 circle_lines.append(gmsh.model.geo.addLine(circle_points[-1], circle_points[0]))
