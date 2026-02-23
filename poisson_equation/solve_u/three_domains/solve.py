@@ -48,10 +48,8 @@ alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
 
-'''
+
 # 1 transfer scalar
-
-
 # 1.1 transfer from 2d to line 
 
 class f_0_1_Expression(UserExpression):
@@ -90,6 +88,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 print(f'error = {error}')
 
 
+'''
 # 1.2 transfer from line  to 2d
 
 # here one needs to choose a periodic analytical expression, because f_mesh_1 is defined on a periodic space Q[1]
@@ -168,7 +167,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
-'''
+
 
 # 2.2 transfer from line mesh to 2d mesh 
 class v_mesh_1_Expression(UserExpression):
@@ -208,7 +207,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
 print(f'error = {error}')
 
-
+'''
 
 # 3 transfer tensor
 '''
