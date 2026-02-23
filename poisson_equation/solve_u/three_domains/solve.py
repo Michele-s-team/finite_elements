@@ -308,6 +308,17 @@ print(f'error = {error}')
 here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th mesh, and similarly for problem, solver, ... 
 '''
 
+''''
+The three variational problems (VPs) are solved as follows:
+1)  Solve Poisson VP on sub_mesh[0][1] for u[0][1] ->
+    Obtain u[0][1] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1. 
+    Given that x[0] = cr[0] + r cos(s/L1), x[1] = cr[1] + r sin(s/L1), where s is the coordinate along mesh[1], we have 
+    Obtain u_0_1_on_1(s)  = 1 + (cr[0] + r cos(s/L1)) ** 2 + 2 * (cr[1] + r sin(s/L1)) ** 2
+3) 
+
+'''
+
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
