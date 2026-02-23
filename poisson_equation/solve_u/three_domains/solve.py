@@ -374,7 +374,6 @@ solver[0][0] = NonlinearVariationalSolver(problem[0][0])
 print('Solving the problem in sub_mesh[0][0]...')
 solver[0][0].solve()
 print('...done.')
-
+'''
 
 prout_bc = importlib.import_module(swi.prout_bc)
-'''
