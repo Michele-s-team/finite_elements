@@ -1,5 +1,7 @@
 import numpy as np
+from scipy.spatial import cKDTree
 import scipy.integrate as spi
+
 
 small_number = 1e-3
 
@@ -635,16 +637,21 @@ Input values:
 Return values: 
     - 'result': the minimal distance
 '''
-def min_distance(points):
 
-    result = np.inf
+def min_distance (points):
 
-    for i in range(len(points)):
-        for j in range(i+1, len(points)):
+    # query the 2 nearest neighbors among 'points' (the point itself and its closest neighbor)
+    tree = cKDTree(points)
+    
+    '''
+    distances contains, for each point, the distance from itself (0) and from its nearest neighbor. For example
+    distances = [
+    [0.0,  0.3],   # point 0: distance 0 to itself, 0.3 to nearest other point
+             [0.0,  0.3],   # point 1
+             [0.0,  0.5],   # point 2
+             [0.0,  0.4]]   # point 3
+    '''
+    distances, _ = tree.query(points, k=2)
 
-            distance = np.linalg.norm(np.subtract(points[i], points[j]))
-
-            if distance < result:
-                result = distance
-
-    return result
+    #distances[:, 1] takes the second column of distances, and then the method returns its minimum 
+    return np.min(distances[:, 1])

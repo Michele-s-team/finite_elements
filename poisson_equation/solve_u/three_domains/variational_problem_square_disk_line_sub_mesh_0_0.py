@@ -17,10 +17,7 @@ i, j = ufl.indices(2)
 class u_exact_sub_mesh_0_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = (1 + x[0] ** 2 + 2 * x[1] ** 2)**2
-
-        # test case 2
-        # values[0] = (np.sin(2 * (np.pi) * (x[0] + x[1])) * np.cos(2 * (np.pi) * (x[0] - x[1]) ** 2)) ** 2
+        values[0] =  - 2 * rmsh.lmsh.parameters['r'] * (x[0] - rmsh.lmsh.parameters['c_r'][0]) + rmsh.lmsh.parameters['r'] * (x[1] - rmsh.lmsh.parameters['c_r'][1])
 
     def value_shape(self):
         return (1,)
@@ -29,21 +26,8 @@ class u_exact_sub_mesh_0_0_expression(UserExpression):
 class grad_u_exact_sub_mesh_0_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 4 * x[0] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
-        values[1] = 8 * x[1] * (1 + x[0] ** 2 + 2 * x[1] ** 2)
-
-        # test case 2
-        # values[0] = (
-        #         4 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) *
-        #         (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] + x[1])) +
-        #          2 * (-x[0] + x[1]) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])))
-        # )
-
-        # values[1] = (
-        #         4 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) *
-        #         (np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.cos(2 * np.pi * (x[0] + x[1])) +
-        #          2 * (x[0] - x[1]) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])))
-        # )
+        values[0] = - 2 * rmsh.lmsh.parameters['r']
+        values[1] = rmsh.lmsh.parameters['r']
 
     def value_shape(self):
         return (2,)
@@ -52,16 +36,7 @@ class grad_u_exact_sub_mesh_0_0_expression(UserExpression):
 class laplacian_u_exact_sub_mesh_0_0_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 8 * x[0] ** 2 + 32 * x[1] ** 2 + 12 * (1 + x[0] ** 2 + 2 * x[1] ** 2)
-
-        # test case 2
-        # values[0] = (
-        #         16 * np.pi ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.cos(2 * np.pi * (x[0] + x[1])) ** 2
-        #         - 16 * np.pi ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-        #         - 64 * np.pi ** 2 * (x[0] - x[1]) ** 2 * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-        #         - 16 * np.pi * np.cos(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-        #         + 64 * np.pi ** 2 * (x[0] - x[1]) ** 2 * np.sin(2 * np.pi * (x[0] - x[1]) ** 2) ** 2 * np.sin(2 * np.pi * (x[0] + x[1])) ** 2
-        # )
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -71,10 +46,9 @@ fsp.u_exact[0][0].interpolate(u_exact_sub_mesh_0_0_expression(element=fsp.Q[0][0
 fsp.grad_u[0][0].interpolate(grad_u_exact_sub_mesh_0_0_expression(element=fsp.V[0][0].ufl_element()))
 fsp.f[0][0].interpolate(laplacian_u_exact_sub_mesh_0_0_expression(element=fsp.Q[0][0].ufl_element()))
 
-fsp.u_0_1_on_0_0.assign(project((fsp.u[0][1])**2, fsp.Q[0][0]))
 
 bcs = [ \
-    DirichletBC(fsp.Q[0][0], fsp.u_0_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+    DirichletBC(fsp.Q[0][0], fsp.u_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["circle_id"])
     ]
 
 # functional for sub_mesh[0]
