@@ -349,11 +349,11 @@ The three variational problems (VPs) are solved as follows:
     The problem has exact solution 
         a) Test case 1:  u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]),  
         b) Test case 2:  u[0][0] = (9 * r**2  * (cr[0] - x[0]) + (-cr[0] + x[0])**3 + 3 * (cr[0] - x[0]) * (cr[1] - x[1])**2 + 
-                            2 * (cr[1] - x[1])**3 + 18 * r**2 (-cr[1] + x[1]) + 6 * (cr[0] - x[0])**2 (-cr[1] + x[1]))/(12.0 * r)
+                            2 * (cr[1] - x[1])**3 + 18 * r**2  * (-cr[1] + x[1]) + 6 * (cr[0] - x[0])**2 (-cr[1] + x[1]))/(12.0 * r)
     Obtain 
         a) Test case 1): u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]) in sub_mesh[0][0]
         b) Test case 2):  u[0][0] = (9 * r**2  * (cr[0] - x[0]) + (-cr[0] + x[0])**3 + 3 * (cr[0] - x[0]) * (cr[1] - x[1])**2 + 
-                            2 * (cr[1] - x[1])**3 + 18 * r**2 (-cr[1] + x[1]) + 6 * (cr[0] - x[0])**2 (-cr[1] + x[1]))/(12.0 * r)
+                            2 * (cr[1] - x[1])**3 + 18 * r**2 * (-cr[1] + x[1]) + 6 * (cr[0] - x[0])**2 (-cr[1] + x[1]))/(12.0 * r)
 
 '''
 
