@@ -34,6 +34,7 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+'''
 ####################
 # test transfer function
 
@@ -301,12 +302,12 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 print(f'error = {error}')
 
 ####################
-
+'''
 
 '''
 here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th mesh, and similarly for problem, solver, ... 
 '''
-'''
+
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -319,6 +320,7 @@ print('Solving the problem in sub_mesh[0][1]...')
 solver[0][1].solve()
 print('...done.')
 
+'''
 # use the solution obtained for sub_mesh[0][1] to specify the BCs for sub_mesh[0][0], and solve the variational problem in sub_mesh[0][0]
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
@@ -339,7 +341,6 @@ solver[1] = NonlinearVariationalSolver(problem[1])
 print('Solving the problem in mesh[1]...')
 solver[1].solve()
 print('...done.')
-
+'''
 
 prout_bc = importlib.import_module(swi.prout_bc)
-'''
