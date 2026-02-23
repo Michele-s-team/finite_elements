@@ -16,10 +16,10 @@ class u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = (x[0] - rmsh.lmsh.parameters['c_r'][0]) + 2 * (x[1] - rmsh.lmsh.parameters['c_r'][1])
+        values[0] = (x[0] - rmsh.lmsh.parameters['c_r'][0]) + 2 * (x[1] - rmsh.lmsh.parameters['c_r'][1])
 
         # test case 2
-        values[0] = 2 * (x[0] - rmsh.lmsh.parameters['c_r'][0])**3 + 3 * (x[1] - rmsh.lmsh.parameters['c_r'][1])**3
+        # values[0] = 2 * (x[0] - rmsh.lmsh.parameters['c_r'][0])**3 + 3 * (x[1] - rmsh.lmsh.parameters['c_r'][1])**3
 
     def value_shape(self):
         return (1,)
@@ -29,12 +29,12 @@ class grad_u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
  
         # test case 1
-        # values[0] = 1
-        # values[1] = 2
+        values[0] = 1
+        values[1] = 2
 
         # test case 2
-        values[0] = 6 * (x[0] - rmsh.lmsh.parameters['c_r'][0])**2
-        values[1] = 9 * (x[1] - rmsh.lmsh.parameters['c_r'][1])**2
+        # values[0] = 6 * (x[0] - rmsh.lmsh.parameters['c_r'][0])**2
+        # values[1] = 9 * (x[1] - rmsh.lmsh.parameters['c_r'][1])**2
 
     def value_shape(self):
         return (2,)
@@ -44,10 +44,10 @@ class laplacian_u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 0
+        values[0] = 0
 
         # test case 2
-        values[0] = 12 * (x[0] - rmsh.lmsh.parameters['c_r'][0]) + 18 * (x[1] - rmsh.lmsh.parameters['c_r'][1])
+        # values[0] = 12 * (x[0] - rmsh.lmsh.parameters['c_r'][0]) + 18 * (x[1] - rmsh.lmsh.parameters['c_r'][1])
 
     def value_shape(self):
         return (1,)
