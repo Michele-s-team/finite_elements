@@ -17,6 +17,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import mesh.utils as msh
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -39,7 +40,6 @@ params = {'nonlinear_solver': 'newton',
 # test transfer function
 
 import input_output as io
-import mesh.utils as msh
 import numpy as np
 import solution_paths as solpath
 
@@ -318,7 +318,7 @@ The three variational problems (VPs) are solved as follows:
     Given that x[0] = cr[0] + r * cos(s/r), x[1] = cr[1] + r * sin(s/r), where s is the coordinate along mesh[1] and along the circle, we have 
     Obtain u_0_1_on_1(s)  = 1 + (r * cos(s/r)) + 2 * (r * sin(s/r))
 3)  Solve on mesh[1] the VP
-    u[1]'(s) = u_0_on_1(s)
+    u[1]'(s) = u_0_1_on_1(s)
     The solution is 
     u[1](s) = C[1] - 2 r^2 Cos[s/r] + r^2 Sin[s/r]
     where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
@@ -336,28 +336,32 @@ The three variational problems (VPs) are solved as follows:
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
+print('Solving the problem in sub_mesh[0][1]...')
 vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
 J[0][1] = derivative(vp[0][1].F, fsp.u[0][1], fsp.J_u[0][1])
 problem[0][1] = NonlinearVariationalProblem(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, J[0][1])
 solver[0][1] = NonlinearVariationalSolver(problem[0][1])
 
-print('Solving the problem in sub_mesh[0][1]...')
 solver[0][1].solve()
 print('...done.')
 
+print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
+msh.transfer_circle_to_line(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+print(f'... done.')
 
+
+'''
 # solve the variational problem on mesh[1]
+print('Solving the problem in mesh[1]...')
 # use the solution obtained for sub_mesh[0][1] in the variational problem on mesh[1]
 vp[1] = importlib.import_module(swi.vp_mesh_1)
 J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
 problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
 solver[1] = NonlinearVariationalSolver(problem[1])
 
-print('Solving the problem in mesh[1]...')
 solver[1].solve()
 print('...done.')
 
-'''
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
 problem[0][0] = NonlinearVariationalProblem(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, J[0][0])
