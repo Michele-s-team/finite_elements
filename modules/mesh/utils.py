@@ -2061,7 +2061,7 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
                 projection        = polygon_vertex_start + l * polygon_edge_dr / polygon_edge_dr_length
                 residual    = np.linalg.norm(projection - np.array([point_coordinate_x, point_coordinate_y]))
 
-                if 0.0 - tol <= l / polygon_edge_dr_length <= 1.0 + tol and residual < tol:
+                if (l > - tol) and (l < polygon_edge_dr_length + tol) and (residual < tol):
                     # the DOI point under consideration lies on the polygon edge under consideration (ith polygon edge)
 
                     # s is the arclength along the polygon, reckoned from polygon_vertex_start of the first edge, corresponding to the DOF point under consideration 
