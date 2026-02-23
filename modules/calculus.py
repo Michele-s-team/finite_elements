@@ -1,5 +1,7 @@
 import numpy as np
+from scipy.spatial import cKDTree
 import scipy.integrate as spi
+
 
 small_number = 1e-3
 
@@ -625,3 +627,31 @@ def line_is_radial(line_to_check, N, mesh):
             break
 
     return is_radial
+
+
+'''
+given a list of point coordinates, find the minimal distance between pairs of points in the list
+Input values: 
+    - 'points' = [[point0x, point0y, ...], [point1x, point1y, ...], ] the list containing the coordinates of the points 
+
+Return values: 
+    - 'result': the minimal distance
+'''
+
+def min_distance (points):
+
+    # query the 2 nearest neighbors among 'points' (the point itself and its closest neighbor)
+    tree = cKDTree(points)
+    
+    '''
+    distances contains, for each point, the distance from itself (0) and from its nearest neighbor. For example
+    distances = [
+    [0.0,  0.3],   # point 0: distance 0 to itself, 0.3 to nearest other point
+             [0.0,  0.3],   # point 1
+             [0.0,  0.5],   # point 2
+             [0.0,  0.4]]   # point 3
+    '''
+    distances, _ = tree.query(points, k=2)
+
+    #distances[:, 1] takes the second column of distances, and then the method returns its minimum 
+    return np.min(distances[:, 1])

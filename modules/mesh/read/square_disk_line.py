@@ -79,6 +79,8 @@ ds_mesh[1] = dict([ \
     ('ds_r', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=lmsh.mesh_parameters[1][f"vertex_r_id"]))
     ])
 
+ds_mesh[1]['ds'] = ds_mesh[1]['ds_l'] + ds_mesh[1]['ds_r']
+
 
 #2. define bulk and boundary measures for sub-meshes
 dx_sub_mesh = [[] for _ in range(lmsh.parameters['n_meshes'])]
@@ -103,6 +105,14 @@ ds_sub_mesh[0][1] = dict([
         ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["line_b_id"])),\
         ('ds_circle', Measure("ds", domain=lmsh.sub_meshes[0][1], subdomain_data=lmsh.mf_sub_meshes[0][1], subdomain_id=lmsh.mesh_parameters[0]["circle_id"]))
 ])
+
+ds_sub_mesh[0][1]['ds_lr'] = ds_sub_mesh[0][1]['ds_l'] + ds_sub_mesh[0][1]['ds_r']
+ds_sub_mesh[0][1]['ds_tb'] = ds_sub_mesh[0][1]['ds_t'] + ds_sub_mesh[0][1]['ds_b']
+
+ds_sub_mesh[0][1]['ds_lrtb'] = ds_sub_mesh[0][1]['ds_lr'] + ds_sub_mesh[0][1]['ds_tb']
+
+
+ds_sub_mesh[0][1]['ds'] = ds_sub_mesh[0][1]['ds_lrtb'] + ds_sub_mesh[0][1]['ds_circle']
 
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_disk_line')
