@@ -311,11 +311,19 @@ here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th 
 ''''
 The three variational problems (VPs) are solved as follows:
 1)  Solve Poisson VP on sub_mesh[0][1] for u[0][1] ->
-    Obtain u[0][1] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1. 
-    Given that x[0] = cr[0] + r cos(s/L1), x[1] = cr[1] + r sin(s/L1), where s is the coordinate along mesh[1], we have 
-    Obtain u_0_1_on_1(s)  = 1 + (cr[0] + r cos(s/L1)) ** 2 + 2 * (cr[1] + r sin(s/L1)) ** 2
-3) 
+    Obtain u[0][1] = 1 + (x[0] - cr[0]) + 2 * (x[1] - cr[1])
+2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1
+    r theta = s
+    L1 = 2 pi r 
+    Given that x[0] = cr[0] + r * cos(s/r), x[1] = cr[1] + r * sin(s/r), where s is the coordinate along mesh[1] and along the circle, we have 
+    Obtain u_0_1_on_1(s)  = 1 + (r * cos(s/r)) + 2 * (r * sin(s/r))
+3)  Solve on mesh[1] the VP
+    u[1]'(s) = u_0_on_1(s)
+    The solution is 
+    u[1](s) = C[1] - 2 r^2 Cos[s/r] + r^2 Sin[s/r]
+    where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
+
+
 
 '''
 
