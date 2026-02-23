@@ -207,7 +207,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
 print(f'error = {error}')
 
-'''
+
 
 # 3 transfer tensor
 
@@ -257,7 +257,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
 print(f'error = {error}')
 
-'''
+
 # 3.2 transfer from line mesh to 2d mesh 
 class t_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -328,10 +328,9 @@ The three variational problems (VPs) are solved as follows:
     The problem has exact solution u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]), and Dirichlet BC u[0][0] = u_1_on_0_0 on the circle -> 
     Obtain u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]) in sub_mesh[0][0]
 
+'''
 
 
-'''
-'''
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -366,7 +365,7 @@ solver[1] = NonlinearVariationalSolver(problem[1])
 solver[1].solve()
 print('...done.')
 
-
+'''
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
 J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
 problem[0][0] = NonlinearVariationalProblem(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, J[0][0])
