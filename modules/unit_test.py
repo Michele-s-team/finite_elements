@@ -25,7 +25,7 @@ def test_generate_mesh_and_solve(commit_a,
                                  mesh_path_b, code_path_b,
                                  mesh_solution_path_a, problem_solution_path_a,
                                  mesh_solution_path_b, problem_solution_path_b,
-                                 name_of_generate_mesh,
+                                name_of_generate_mesh_a, name_of_generate_mesh_b,
                                  mesh_parameters_path_a, mesh_parameters_path_b,
                                  problem_a, problem_b,
                                  success
@@ -36,13 +36,13 @@ def test_generate_mesh_and_solve(commit_a,
         # checkout commit_a, generate the mesh and solve the problem
         cmd.checkout(commit_a, success)
 
-        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
+        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh_a}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
         run_command(f'cd {code_path_a}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem_a} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
         # checkout commit_b, generate the mesh and solve the problem
         cmd.checkout(commit_b, success)
 
-        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_parameters_path_b} {mesh_solution_path_b}', success)
+        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh_b}.py {mesh_parameters_path_b} {mesh_solution_path_b}', success)
         run_command(f'cd {code_path_b}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem_b} {mesh_solution_path_b} {problem_solution_path_b}', success)
 
         # compare the mesh and problem solution for commit_a and commit_b
