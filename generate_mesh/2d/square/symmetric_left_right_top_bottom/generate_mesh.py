@@ -4,13 +4,13 @@ which is symmetric with respect to both left <-> right and tob <-> bottom symmet
 Symmetry is enforced by mirroring the mesh points along two symmetry axes.
 
 run with
-    python3 generate_square_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 
 ATTENTION: [mesh resolution] must be small enough for the circle to be properly resolved
 ATTENTION: c_r in mesh_parametewrs must be equal to [L/2, h/2], otherwise symmetry of the mesh would not make sense
 
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
 This mesh can be checked with ~/shared/generate_mesh/2d/square/check_mesh.py
 

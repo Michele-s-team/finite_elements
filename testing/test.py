@@ -207,7 +207,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/lines/'
@@ -226,7 +226,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_symmetric_left_right_top_bottom'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/symmetric_left_right_top_bottom/'
@@ -235,7 +235,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_ellipse'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/ellipse/'
@@ -623,7 +623,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_b'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/'
@@ -632,7 +632,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
@@ -724,7 +724,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_b'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/'
@@ -733,7 +733,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path + 'high_res_parameters/', generate_mesh_path + 'high_res_parameters/', problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path + 'high_res_parameters/', generate_mesh_path + 'high_res_parameters/', problem_name, problem_name, success)
 
 
 
@@ -772,7 +772,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'box_ball'
 generate_mesh_path =root_path + 'generate_mesh/3d/box_ball'
@@ -803,7 +803,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 problem_name = 'square_half_circle'
@@ -834,7 +834,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 # Test dynamics
 case_name = 'dynamics'
@@ -846,7 +846,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_b'
 generate_mesh_path =root_path + 'generate_mesh/2d/square'
@@ -855,7 +855,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_square_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_square_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 # Test dynamics/lagrangian_approach/one_dimension
