@@ -2,9 +2,9 @@
 This code generates a  mesh given by a slice of a ring
 
 Run with
-    clear; clear; python3 generate_mesh_ring_slice.py [path where to read the parameter file] [path where to store the solution]
+    clear; clear; python3 generate_mesh.py [path where to read the parameter file] [path where to store the solution]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh_ring_slice.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
