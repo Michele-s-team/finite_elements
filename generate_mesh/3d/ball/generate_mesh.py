@@ -2,9 +2,9 @@
 This code generates a 3d mesh given by a ball
 
 Run it with
-    python3 generate_ball_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
