@@ -153,7 +153,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh',  'generate_ring_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh',  'generate_ring_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_symmetric'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric/'
@@ -162,7 +162,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_with_circle'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/ring_with_circle/'
@@ -390,7 +390,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_constraint_grad_u_grad_v'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
@@ -399,7 +399,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
@@ -410,7 +410,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
@@ -506,7 +506,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_nitsche'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
@@ -515,7 +515,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 # Test fourth_order_pde/biharmonic_equation
 case_name = 'fourth_order_pde/biharmonic_equation'
@@ -538,7 +538,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 # Test fourth_order_pde/constraint/u_v
@@ -551,7 +551,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
@@ -565,7 +565,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
@@ -584,7 +584,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
 
@@ -596,7 +596,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_generate_mesh
                                                                                     generate_mesh_path, root_path + case_name,
                                                                                     generate_mesh_path, root_path + case_name,
                                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                                    'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                                    'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_no_circle_a'
 generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/'
@@ -688,7 +688,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_1'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric/'
@@ -697,7 +697,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_generate_mesh
                                                                                     generate_mesh_path, root_path + case_name,
                                                                                     generate_mesh_path, root_path + case_name,
                                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                                    'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                                    'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_2'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/'
@@ -706,7 +706,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'ring_2'
 generate_mesh_path = root_path + 'generate_mesh/2d/ring/symmetric/'
@@ -715,7 +715,7 @@ checks[case_name + '_' + problem_name + '_symmetric'] = utest.test_generate_mesh
                                                                                     generate_mesh_path, root_path + case_name,
                                                                                     generate_mesh_path, root_path + case_name,
                                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                                    'generate_ring_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                                    'generate_mesh', 'generate_ring_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 problem_name = 'square_a'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/'
