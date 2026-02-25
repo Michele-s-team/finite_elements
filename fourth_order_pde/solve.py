@@ -9,7 +9,7 @@ This code solves the fourth-order PDE \partial_j \partial_j \partial_i (z \parti
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
 
 Run with
-    python3 solve.py [problem name] [path where to read the mesh generated from generate_square_mesh.py or generate_ring_mesh.py] [path where to store the solution]
+    python3 solve.py [problem name] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 
 Examples:
 
