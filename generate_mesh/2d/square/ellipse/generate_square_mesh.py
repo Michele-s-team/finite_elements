@@ -2,9 +2,9 @@
 generate a mesh given by a square with a ellipse-shaped hole in it: the ellipse has the shape of an ellipse
 
 Run it with
-    python3 generate_square_ellipse_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_ellipse_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
