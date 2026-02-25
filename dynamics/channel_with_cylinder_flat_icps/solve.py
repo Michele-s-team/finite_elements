@@ -18,7 +18,7 @@ For box_ball problem one gets turbulent behavior with
     mu =  0.0001
     T =  1
     N =  10000
-    /home/fenics/shared/generate_mesh/3d/box_ball#     SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py 0.05 $SOLUTION_PATH
+    /home/fenics/shared/generate_mesh/3d/box_ball#     SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.05 $SOLUTION_PATH
     /home/fenics/shared/dynamics/channel_with_cylinder_flat_icps#     MESH_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_icps/solution"; rm -rf $SOLUTION_PATH; python3 solve.py box_ball $MESH_PATH $SOLUTION_PATH
 """
 

@@ -1,5 +1,5 @@
 '''
-This code reads the 3d mesh generated from generate_box_ball_mesh.py and it creates dvs and dss from labelled components of the mesh
+This code reads the 3d mesh generated from generate_mesh.py and it creates dvs and dss from labelled components of the mesh
 '''
 
 from fenics import *
