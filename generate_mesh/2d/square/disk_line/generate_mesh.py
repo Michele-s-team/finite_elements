@@ -47,7 +47,7 @@ os.mkdir(output_directory_mesh_1)
 mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
 '''
-the number of segments in the disk is chosen in such a way that the side of the circle polygon is (at the most) equal to the mesh resolution: 
+the number of segments of the polygon is chosen in such a way that the side of the circle polygon is (at the most) equal to the mesh resolution: 
 
 2 * r * sin(2 * pi / N / 2) = resolution
 pi / N = arcsin(resolution / (2 r))
