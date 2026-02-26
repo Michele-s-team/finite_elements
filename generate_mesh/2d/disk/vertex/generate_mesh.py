@@ -66,13 +66,11 @@ circle_lines = []
 
 print(f'Added point with coordinates {circle_coordinates[-1]}')
 
-'''
+
 print("Starting loop over circle ... ")
 for i in range(1, N):
 
-    circle_coordinates.append(
-        np.add(rpam.parameters['c_r'], cal.R(i * delta_theta).dot(np.subtract(circle_coordinates[0], rpam.parameters['c_r'])))
-        )
+    circle_coordinates.append(cal.R(i * delta_theta).dot(circle_coordinates[0]))
 
     circle_points.append(gmsh.model.geo.addPoint(circle_coordinates[-1][0], circle_coordinates[-1][1], 0))
     gmsh.model.geo.synchronize()
@@ -86,50 +84,33 @@ circle_lines.append(gmsh.model.geo.addLine(circle_points[-1], circle_points[0]))
 gmsh.model.geo.synchronize()
 
 
-
 circle_loop = gmsh.model.geo.addCurveLoop(circle_lines)
-gmsh.model.geo.synchronize()
-
-square_minus_circle_surface = gmsh.model.geo.addPlaneSurface([square_loop, circle_loop])
-gmsh.model.geo.synchronize()
-
-gmsh.model.mesh.embed(1, circle_lines, 2, square_minus_circle_surface)
 gmsh.model.geo.synchronize()
 
 circle_surface = gmsh.model.geo.addPlaneSurface([circle_loop])
 gmsh.model.geo.synchronize()
 
 
+gmsh.model.mesh.embed(1, circle_lines, 2, circle_surface)
+gmsh.model.geo.synchronize()
+
+
+
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
-# add square lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_b_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_b_id"], "square_line_b")
-
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_r_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_r_id"], "square_line_r")
-
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_t_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_t_id"], "square_line_t")
-
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_l_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_l_id"], "square_line_l")
-
 #add circle lines
-gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["circle_id"])
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(0, N)], rpam.parameters["circle_id"])
 gmsh.model.setPhysicalName(1, rpam.parameters["circle_id"], "circle_loop")
 
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_0_1_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_1_id"], "square_minus_circle_surface")
+gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["surface_id"])
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_id"], "disk_surface")
 
-gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_0_id"])
-gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_0_id"], "circle_surface")
 
 
 
@@ -144,7 +125,7 @@ gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
 gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
 gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
 gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", rpam.parameters["r"])
 
 
 minimum = gmsh.model.mesh.field.add("Min")
@@ -156,28 +137,17 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line'], mesh_0_metadata, rarg.args.output_directory, True)
-
-msh.generate_sub_mesh(rarg.args.output_directory, os.path.join(rarg.args.output_directory, 'sub_meshes', 'sub_mesh_0'), rpam.parameters["sub_mesh_0_0_id"])
-msh.generate_sub_mesh(rarg.args.output_directory, os.path.join(rarg.args.output_directory, 'sub_meshes', 'sub_mesh_1'), rpam.parameters["sub_mesh_0_1_id"])
-
-
-# print the boundary points of the boundary given by the circle
-msh.sorted_boundary_points(
-    msh.read_mesh(os.path.join(rarg.args.output_directory, 'triangle_mesh.xdmf')), 
-    rarg.args.output_directory, 
-    [rpam.parameters['circle_id']],
-    os.path.join(rarg.args.output_directory, 'boundary_points_id_' + str(rpam.parameters['circle_id']) + '.csv'))
+msh.full_write(mesh_file, ['triangle', 'line'], mesh_metadata, rarg.args.output_directory, True)
 
 
 # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
-mesh_0 = msh.read_mesh(os.path.join(rarg.args.output_directory, 'triangle_mesh.xdmf'))
-mf_mesh_0 = msh.read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(rarg.args.output_directory, 'line_mesh.xdmf'))
+read_mesh = msh.read_mesh(os.path.join(rarg.args.output_directory, 'triangle_mesh.xdmf'))
+mf_mesh_0 = msh.read_mesh_components(read_mesh, read_mesh.topology().dim() - 1, os.path.join(rarg.args.output_directory, 'line_mesh.xdmf'))
 
 # collect unique vertex indices touched by facets tagged with circle_id
 circle_vertex_ids = set()
 
-for facet in facets(mesh_0):
+for facet in facets(read_mesh):
     #run through all facets of mesh_0 
 
     if mf_mesh_0[facet] == rpam.parameters['circle_id']:
@@ -199,25 +169,7 @@ if n_vertices_on_circle != N:
     sys.exit()
 
 
-
-
-
-
-# B) mesh B (line)
-
-
-# generate the line mesh corresponding to the circle
-msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), N,
-                        rpam.parameters['circle_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
-                        x_m=None,
-                        vertex_m_id=None,
-                        output_directory=output_directory_mesh_1, 
-                        metadata=mesh_1_metadata)
-
-
-
 #print overall mesh metadata
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
 model.__exit__()
-'''
