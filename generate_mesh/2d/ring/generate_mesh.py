@@ -2,9 +2,9 @@
 generate a mesh given by a ring
 
 Run it with
-    python3 generate_ring_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import meshio

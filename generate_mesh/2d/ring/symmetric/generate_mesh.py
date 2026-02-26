@@ -3,9 +3,9 @@ This code generates a  ring  mesh with radial symmetry: symmetry is obtained by 
 The inner ring is tagged with tag 'circle_r_id', the outer ring is tagged with tag 'circle_R_id', and all radial lines (spokes) are tagged with 'radial_lines_id'
 
 Run it with
-    python3 generate_ring_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_ring_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/ring/symmetric/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 from fenics import *

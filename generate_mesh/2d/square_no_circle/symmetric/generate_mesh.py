@@ -6,9 +6,9 @@ The surface is tagged with surface_id, the lines on the boundaries with l_edge_i
 and all lines in the bulk of the mesh with internal_lines_id
 
 Run it with
-    python3 generate_square_no_circle_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/symmetric/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 
 The half mesh will be saved in [path where to store the mesh] as half_mesh.msh. The complete mesh will be saved in
 [path where to store the mesh] as mesh.xdmf, triangle_mesh.xdmf, line_mesh.xdmf and vertices.csv.

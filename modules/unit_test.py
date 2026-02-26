@@ -10,7 +10,7 @@ Input values:
 - 'mesh_path_a (b)': the path of the code which generates the mesh in commit a (b)
 - 'code_path_a (b)': the path of the code which solves the variational problem in commit a (b)
 - 'mesh_solution_path_a', 'problem_solution_path_a', 'mesh_solution_path_b', 'problem_solution_path_b': the parhs where the mesh and variational-problem solution will be stored, for commit_a and commit_b
-- 'name_of_generate_mesh': the name of the code which generates the mesh, without '.py': for example: 'generate_square_mesh', 'generate_ring_mesh'...
+- 'name_of_generate_mesh': the name of the code which generates the mesh, without '.py': for example: 'generate_mesh'...
 - 'problem_a', 'problem_b: the name of the variational problem to be solved in 'commit_a' and 'commit_b', respectively, for example, 'square_a', 'ring_2', ... 
 - 'success': A list with only one boolean enty, whose first entry will be set to True (False) if all commands in the method call have run successfully or not, respectively. If success[0] = False, this method will do nothing and return False
 Output values: 
@@ -25,7 +25,7 @@ def test_generate_mesh_and_solve(commit_a,
                                  mesh_path_b, code_path_b,
                                  mesh_solution_path_a, problem_solution_path_a,
                                  mesh_solution_path_b, problem_solution_path_b,
-                                 name_of_generate_mesh,
+                                name_of_generate_mesh_a, name_of_generate_mesh_b,
                                  mesh_parameters_path_a, mesh_parameters_path_b,
                                  problem_a, problem_b,
                                  success
@@ -36,13 +36,13 @@ def test_generate_mesh_and_solve(commit_a,
         # checkout commit_a, generate the mesh and solve the problem
         cmd.checkout(commit_a, success)
 
-        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
+        run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh_a}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
         run_command(f'cd {code_path_a}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem_a} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
         # checkout commit_b, generate the mesh and solve the problem
         cmd.checkout(commit_b, success)
 
-        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh}.py {mesh_parameters_path_b} {mesh_solution_path_b}', success)
+        run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh_b}.py {mesh_parameters_path_b} {mesh_solution_path_b}', success)
         run_command(f'cd {code_path_b}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem_b} {mesh_solution_path_b} {problem_solution_path_b}', success)
 
         # compare the mesh and problem solution for commit_a and commit_b
@@ -76,7 +76,7 @@ Input values:
 - 'mesh_check_path_a (b)': the path of the code which checks the mesh in commit a (b)
 - 'generate_mesh_solution_path_a(b)' the path where the output of the 'generate mesh' code is stored for commit_a(b)
 - 'mesh_check_solution_path_a(b)' the path where the output of the 'check mesh' code is stored for commit_a(b)
-- 'name_of_generate_mesh': the name of the code which generates the mesh, without '.py': for example: 'generate_square_mesh', 'generate_ring_mesh'...
+- 'name_of_generate_mesh': the name of the code which generates the mesh, without '.py': for example: 'generate_mesh'...
 - 'name_of_check_mesh': the name of the code which checks the mesh, without '.py': for example: 'check_square_mesh'
 - 'mesh_parameters_path_a(b)': the path of the 'mesh_parameters.csv' file for commit a(b)
 - 'success': A list with only one boolean enty, whose first entry will be set to True (False) if all commands in the method call have run successfully or not, respectively. 

@@ -4,9 +4,9 @@ The mesh is given by a box with extremal points [0,0,0] , L to which we subtract
 We imagine looking at the mesh from a point at y=z=0 and x<0 and define left, right top bottom, from and back edges accordingly
 
 Run it with
-    python3 generate_box_ball_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box_ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_box_ball_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box_ball"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box_ball/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import gmsh
