@@ -2,9 +2,9 @@
 generate a square mesh
 
 Run it with
-    python3 generate_square_no_circle_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_no_circle_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import meshio
