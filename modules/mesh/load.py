@@ -11,8 +11,6 @@ parameters = io.read_parameters_from_csv_file(io.add_trailing_slash(rarg.args.in
 if "n_meshes" not in parameters: 
     # there is only one mesh -> read it
 
-    print(f'****** There is one mesh.')
-
     # read the mesh
     mesh, sf = msh.read_from_file(rarg.args.input_directory, parameters['file_format'])
 
@@ -20,7 +18,6 @@ if "n_meshes" not in parameters:
     sub_meshes, sf_sub_meshes, mf_sub_meshes = msh.read_sub_meshes(mesh, sf, parameters, rarg.args.input_directory)
 
 else: 
-    print(f'***** There are multiple meshes.')
 
     # mesh, sf and parameters store the mesh, functions, and parameters for each mesh
     mesh = [None] * parameters["n_meshes"]
