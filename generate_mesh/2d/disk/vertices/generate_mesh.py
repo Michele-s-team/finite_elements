@@ -6,7 +6,7 @@ The vertex is tagged as a one-dimensional mesh component.
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertex/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertex/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertices/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertices/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import colorama as col
