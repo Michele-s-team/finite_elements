@@ -12,4 +12,4 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import mesh.check_tags.square_disk_line
+import mesh.check_tags.disk_vertices

@@ -9,14 +9,13 @@ import mesh.utils as msh
 import runtime_arguments as rarg
 import runtime_arguments as rarg
 
-rmsh = importlib.import_module('mesh.read.disk')
+rmsh = importlib.import_module('mesh.read.disk_vertices')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
+integral_exact_dx = cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters["r"], [0]*2)
 
-integral_exact_dx = cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"][:2])
-
-integral_exact_ds = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters["r"], rmsh.parameters["c_r"][:2])
+integral_exact_ds = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters["r"], [0]*2)
 
 test_mesh_integral_errors = dict([])
 
@@ -28,3 +27,4 @@ test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_d
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
+

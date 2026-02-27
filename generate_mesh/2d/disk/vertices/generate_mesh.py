@@ -52,6 +52,8 @@ delta_theta = 2 * np.pi / N
 
 #write metadata for ensemble mesh
 mesh_metadata = rpam.parameters.copy()
+mesh_metadata['file_format'] = 'xdmf'
+mesh_metadata['N'] = N
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
