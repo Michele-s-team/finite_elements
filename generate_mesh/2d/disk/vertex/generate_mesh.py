@@ -96,9 +96,8 @@ gmsh.model.geo.synchronize()
 vertex_list = gmsh.model.getEntities(dim=0)
 #add circle vertex_list: each vertex is added with a different ID
 for i in range(N):
-    gmsh.model.addPhysicalGroup(1, [vertex_list[i][1]], rpam.parameters["vertex_0_id"] + i)
-    gmsh.model.setPhysicalName(1, rpam.parameters["vertex_0_id"] + i, f"vertex_{i}")
-
+    gmsh.model.addPhysicalGroup(vertex_list[i][0], [vertex_list[i][1]], rpam.parameters["vertex_0_id"] + i)
+    gmsh.model.setPhysicalName(vertex_list[i][0], rpam.parameters["vertex_0_id"] + i, f"vertex_{i}")
 
 
 # add 1-dimensional objects
@@ -141,7 +140,7 @@ gmsh.model.geo.synchronize()
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.full_write(mesh_file, ['triangle', 'line'], mesh_metadata, rarg.args.output_directory, True)
+msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], mesh_metadata, rarg.args.output_directory, True)
 
 
 # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
