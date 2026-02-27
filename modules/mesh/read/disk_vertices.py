@@ -25,12 +25,12 @@ dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters[
 # define line measure
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['circle_id'])
 # define vertex measure
+dp = []
 for i in range(parameters['N']):
-    dp = Measure("ds", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_0_id'] + i)
+    dp.append(Measure("dP", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_0_id'] + i))
 
-'''
+
 import importlib
-check_mesh_module = importlib.import_module('mesh.check_tags.disk')
+check_mesh_module = importlib.import_module('mesh.check_tags.disk_vertices')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
-'''
