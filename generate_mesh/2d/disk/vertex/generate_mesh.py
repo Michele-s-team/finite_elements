@@ -57,32 +57,29 @@ model = geometry.__enter__()
 
 
 # add polygon (circle)
-
 circle_coordinates = [[rpam.parameters['r'], 0]]
-circle_points = [gmsh.model.geo.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
+circle_vertices = [gmsh.model.geo.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
 gmsh.model.geo.synchronize()
-
-circle_lines = []
 
 print(f'Added point with coordinates {circle_coordinates[-1]}')
 
+circle_lines = []
 
 print("Starting loop over circle ... ")
 for i in range(1, N):
 
     circle_coordinates.append(cal.R(i * delta_theta).dot(circle_coordinates[0]))
 
-    circle_points.append(gmsh.model.geo.addPoint(circle_coordinates[-1][0], circle_coordinates[-1][1], 0))
+    circle_vertices.append(gmsh.model.geo.addPoint(circle_coordinates[-1][0], circle_coordinates[-1][1], 0))
     gmsh.model.geo.synchronize()
 
-    circle_lines.append(gmsh.model.geo.addLine(circle_points[-2], circle_points[-1]))
+    circle_lines.append(gmsh.model.geo.addLine(circle_vertices[-2], circle_vertices[-1]))
     gmsh.model.geo.synchronize()
 
 print("... done.")
 
-circle_lines.append(gmsh.model.geo.addLine(circle_points[-1], circle_points[0]))
+circle_lines.append(gmsh.model.geo.addLine(circle_vertices[-1], circle_vertices[0]))
 gmsh.model.geo.synchronize()
-
 
 circle_loop = gmsh.model.geo.addCurveLoop(circle_lines)
 gmsh.model.geo.synchronize()
@@ -94,6 +91,13 @@ gmsh.model.geo.synchronize()
 gmsh.model.mesh.embed(1, circle_lines, 2, circle_surface)
 gmsh.model.geo.synchronize()
 
+
+# add 0-dimensional objects
+vertex_list = gmsh.model.getEntities(dim=0)
+#add circle vertex_list: each vertex is added with a different ID
+for i in range(N):
+    gmsh.model.addPhysicalGroup(1, [vertex_list[i][1]], rpam.parameters["vertex_0_id"] + i)
+    gmsh.model.setPhysicalName(1, rpam.parameters["vertex_0_id"] + i, f"vertex_{i}")
 
 
 
