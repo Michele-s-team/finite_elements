@@ -1,5 +1,7 @@
 '''
-This code generates a 2d mesh given by a disk with a vertex on the disk boundary. The vertex is tagged as a one-dimensional mesh component. 
+This code generates a 2d mesh given by a disk with. The disk boundary is given by a polygon with N vertices, where N is determined from the mesh resolution. The polygon, disk surface and vertices are all tagged as separate physical entities. Vertices are tagged with IDs rpam.parameters["vertex_0_id"], rpam.parameters["vertex_0_id"]+1, ....  starting from vertex with coordinate [rpam.parameters['r'], 0] and continuing along the polygon in the counterclockwise direction
+
+The vertex is tagged as a one-dimensional mesh component. 
 
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
