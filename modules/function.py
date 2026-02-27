@@ -355,9 +355,7 @@ Input values:
 def error_norm(f, g, measure, delta_function_space_degree=3):
     
     mesh = f.function_space().mesh()    
-    
-    print(f'number of cells in the mesh = {mesh.num_cells()}')
-    
+        
     degree_f = f.function_space().ufl_element().degree()
     degree_g = g.function_space().ufl_element().degree()
         

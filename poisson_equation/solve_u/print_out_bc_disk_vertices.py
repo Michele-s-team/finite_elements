@@ -3,6 +3,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
+import differential_geometry.boundary.geometry as bgeo
 import function as fu
 import function_spaces as fsp
 import input_output as io
@@ -18,7 +19,9 @@ i, j, k, l = ufl.indices(4)
 
 # check if the boundary conditions (BCs) are satisfied
 print("Check of BCs:")
-print(f"\t\t<<(u - phi)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(n_i \partial_i u - n_i \partial_i u_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * fsp.u.dx(i), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+
+print(f"\t\t<<|u - u_exact|>>_[vertex 0] = {col.Fore.RED}{abs(fsp.u([rmsh.parameters['r'], 0]) - fsp.u_exact([rmsh.parameters['r'], 0])):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print("Comparison with exact solution: ")
 print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
