@@ -22,7 +22,7 @@ u_output, v_output = fsp.psi.split(deepcopy=True)
 # check if the boundary conditions are satisfied
 print("BCs check: ")
 print(f"\t\t<<(u - u_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(u_output, fsp.u_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-print(f"\t\t<<(n_i j_j \partial_i \partial_j u + u - n_i j_j \partial_i \partial_j u_exact + u_exact)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * bgeo.facet_normal[j] * (fsp.v[j]).dx(i) + fsp.u, fsp.hess_u_u_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<((n_i j_j \partial_i \partial_j u + u) - (n_i j_j \partial_i \partial_j u_exact + u_exact))^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * bgeo.facet_normal[j] * (fsp.v[j]).dx(i) + fsp.u, bgeo.facet_normal[i] * bgeo.facet_normal[j] * (fsp.v_exact[j]).dx(i) + fsp.u_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 # check if the FE solution agrees with the exact one
 print("Comparison with exact solution: ")
