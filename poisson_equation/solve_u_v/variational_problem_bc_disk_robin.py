@@ -1,3 +1,13 @@
+'''
+This variational problem solves for the poisson equation 
+
+\partial_i \partial_i u = f in \Omega
+
+with BC 
+
+n_i n_j \partial_i \partial_j u + u = g on \partial \Omega
+'''
+
 from fenics import *
 import importlib
 import numpy as np
