@@ -32,6 +32,15 @@ class u_exact_expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
+class hess_u_u_exact_expression( UserExpression ):
+    def eval(self, values, x):
+
+        # test case 1
+        values[0] = 1 + 3 * x[0] ** 2 + 6 * x[1] ** 2
+
+    def value_shape(self):
+        return (1,)
+
 
 class v_exact_expression( UserExpression ):
     def eval(self, values, x):
@@ -55,6 +64,7 @@ class laplacian_u_exact_expression( UserExpression ):
 
 
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q_u.ufl_element()))
+fsp.hess_u_u_exact.interpolate(hess_u_u_exact_expression(element=fsp.Q_u.ufl_element()))
 fsp.v_exact.interpolate(v_exact_expression(element=fsp.Q_v.ufl_element()))
 fsp.laplacian_u_exact.interpolate(laplacian_u_exact_expression(element=fsp.Q_u.ufl_element()))
 fsp.f.interpolate(laplacian_u_exact_expression(element=fsp.Q_u.ufl_element()))
@@ -68,6 +78,7 @@ F_u = (fsp.v[i] * (fsp.nu_u.dx( i )) + fsp.f * fsp.nu_u) * rmsh.dx \
       - bgeo.facet_normal[i] * fsp.v[i] * fsp.nu_u * rmsh.ds
 F_v = (fsp.v[i] - fsp.u.dx(i)) * (fsp.nu_v[i] - fsp.nu_u.dx(i)) * rmsh.dx 
 
-F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (bgeo.facet_normal[i] * fsp.v[i] - bgeo.facet_normal[i] * fsp.v_exact[i]) * bgeo.facet_normal[j] * fsp.nu_v[j] * rmsh.ds
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (bgeo.facet_normal[i] * bgeo.facet_normal[j] * (fsp.v[j]).dx(i) + fsp.u - fsp.hess_u_u_exact) *\
+       (bgeo.facet_normal[k] * bgeo.facet_normal[l] * (fsp.nu_v[l]).dx(k) + fsp.nu_u) * rmsh.ds
 
 F = F_u + F_v + F_N

@@ -18,6 +18,7 @@ psi = Function(Q)
 nu_u, nu_v = TestFunctions(Q)
 
 u_exact = Function(Q_u)
+hess_u_u_exact = Function(Q_u)
 v_exact = Function(Q_v)
 laplacian_u_exact = Function(Q_u)
 
