@@ -1,3 +1,7 @@
+'''
+This module contains methods related to fluid mechanics
+'''
+
 from fenics import *
 import ufl as ufl
 
@@ -16,3 +20,16 @@ Return values:
 
 def dFdl(sigma, n):
     return as_tensor(- sigma[alpha, beta] * n[beta], (alpha))
+
+'''
+stress tensor of a fluid living on a flat manifold with dimension d
+Input values: 
+    - 'v': the fluid velocity (a d-dimensional vector)
+    - 's': the fluid negative pressure (or tension), a scalar
+    - 'eta': the fluid viscosity
+
+Return values:  
+    - sigma[i][j] = sig \delta_{ij} + eta (\partial_j v_i + \partial_i v_j)
+'''
+def sigma(v, s, eta):
+    return(as_tensor(s * ufl.Identity(len(v))[alpha, beta] + eta * (v[alpha].dx(beta) + v[beta].dx(alpha)),(alpha, beta)))

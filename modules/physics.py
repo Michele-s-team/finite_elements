@@ -2,15 +2,14 @@ from fenics import *
 import dolfin
 import ufl as ufl
 
-import elasticity as ela
 import differential_geometry.manifold.geometry as geo
 
-i, j, k, l, alpha = ufl.indices(5)
+alpha, beta, k, l, alpha = ufl.indices(5)
 
 
 # Pi(v, w, omega, sigma)[i, j] = \Pi^{ij}_notes, i.e., the momentum-flux tensor
 def Pi(v, w, omega, sigma, eta):
-    return as_tensor(- geo.g_c(omega)[i, j] * sigma - 2.0 * eta * geo.d_c(v, w, omega)[i, j], (i, j))
+    return as_tensor(- geo.g_c(omega)[alpha, beta] * sigma - 2.0 * eta * geo.d_c(v, w, omega)[alpha, beta], (alpha, beta))
 
 
 '''
@@ -28,7 +27,7 @@ Return values:
 
 
 def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
-    return as_tensor(Pi(v, w, omega, sigma, eta)[i, j] * geo.g(omega)[j, k] * nu[k], (i))
+    return as_tensor(Pi(v, w, omega, sigma, eta)[alpha, beta] * geo.g(omega)[beta, k] * nu[k], (alpha))
 
 
 '''
@@ -42,7 +41,7 @@ Return values:
 
 
 def dFdl_sigma_t(sigma, nu):
-    return as_tensor(- sigma * nu[i], (i))
+    return as_tensor(- sigma * nu[alpha], (alpha))
 
 
 '''
@@ -92,7 +91,7 @@ Return values:
 
 
 def dFdl_kappa_t(mu, kappa, nu):
-    return as_tensor(- 2 * kappa * (mu ** 2) * nu[i], (i))
+    return as_tensor(- 2 * kappa * (mu ** 2) * nu[alpha], (alpha))
 
 
 '''
@@ -107,7 +106,7 @@ Return values:
 
 
 def dFdl_kappa_n(mu, kappa, nu):
-    return (2 * kappa * nu[i] * (mu.dx(i)))
+    return (2 * kappa * nu[alpha] * (mu.dx(alpha)))
 
 
 '''
@@ -172,7 +171,7 @@ def fel_n(omega, mu, tau, kappa):
 
 # fvisc_n(v, w, omega, mu, eta) = f^{VISC}_n_notes, i.e., viscous contribution to the normal force
 def fvisc_n(v, w, omega, mu, eta):
-    return (2.0 * eta * (geo.g_c(omega)[i, k] * geo.Nabla_v(v, omega)[j, k] * geo.b(omega)[i, j] - 2.0 * w * (
+    return (2.0 * eta * (geo.g_c(omega)[alpha, k] * geo.Nabla_v(v, omega)[beta, k] * geo.b(omega)[alpha, beta] - 2.0 * w * (
             2.0 * (mu ** 2) - geo.K(omega))))
 
 
@@ -189,17 +188,17 @@ This function is called 'ma' because it is the analog of the right-hand side of 
 
 def ma_cn_t(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho, dt):
     return as_tensor(
-        rho * (v_bar[i] - v_n_1[i]) / dt + conv_cn_t(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho)[i], (i))
+        rho * (v_bar[alpha] - v_n_1[alpha]) / dt + conv_cn_t(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho)[alpha], (alpha))
 
 
 # convective term in the left-hand side of Eq. (5a) in notes: the left-hand side of Eq. (5a) is rho * (v_bar[i] - v_n_1[i]) / dt  + conv_cn_t = ma_cn_t
 def conv_cn_t(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho):
     return as_tensor(rho * ( \
-                + (3.0 / 2.0 * v_n_1[j] - 1.0 / 2.0 * v_n_2[j]) * geo.Nabla_v((v_bar + v_n_1) / 2.0, omega_n_12)[i, j] \
-                - 2.0 * (v_bar[j] + v_n_1[j]) / 2.0 * (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[i, k] *
-                geo.b(omega_n_12)[k, j] \
-                - (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[i, j] * (((w_bar + w_n_1) / 2.0).dx(j)) \
-        ), (i))
+                + (3.0 / 2.0 * v_n_1[beta] - 1.0 / 2.0 * v_n_2[beta]) * geo.Nabla_v((v_bar + v_n_1) / 2.0, omega_n_12)[alpha, beta] \
+                - 2.0 * (v_bar[beta] + v_n_1[beta]) / 2.0 * (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[alpha, k] *
+                geo.b(omega_n_12)[k, beta] \
+                - (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[alpha, beta] * (((w_bar + w_n_1) / 2.0).dx(beta)) \
+        ), (alpha))
 
 
 '''
@@ -216,20 +215,20 @@ def ma_cn_n(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho, dt):
 def conv_cn_n(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho):
     return ( \
                 rho * ( \
-                    + (v_bar[i] + v_n_1[i]) / 2.0 * (v_bar[k] + v_n_1[k]) / 2.0 * geo.b(omega_n_12)[k, i] \
-                    + (3.0 / 2.0 * v_n_1[i] - 1.0 / 2.0 * v_n_2[i]) * (((w_bar + w_n_1) / 2.0).dx(i)) \
+                    + (v_bar[alpha] + v_n_1[alpha]) / 2.0 * (v_bar[k] + v_n_1[k]) / 2.0 * geo.b(omega_n_12)[k, alpha] \
+                    + (3.0 / 2.0 * v_n_1[alpha] - 1.0 / 2.0 * v_n_2[alpha]) * (((w_bar + w_n_1) / 2.0).dx(alpha)) \
             ) \
         )
 
 
 # fsigma_t[i] = {\nabla^i \sigma}_notes
 def fsigma_t(sigma, omega):
-    return as_tensor(geo.g_c(omega)[i, j] * (sigma.dx(j)), (i))
+    return as_tensor(geo.g_c(omega)[alpha, beta] * (sigma.dx(beta)), (alpha))
 
 
 # fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
 def fvisc_t(d, omega, eta):
-    return as_tensor(2.0 * eta * geo.g_c(omega)[i, j] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[j, l, k], (i))
+    return as_tensor(2.0 * eta * geo.g_c(omega)[alpha, beta] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[beta, l, k], (alpha))
 
 
 '''
