@@ -3,20 +3,20 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
+import fluid as flu
 import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l = ufl.indices(4)
+alpha, beta, gamma, delta = ufl.indices(4)
 
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 
-# trial analytical expression for a vector
-class TangentVelocityExpression(UserExpression):
+class f_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0.0
         values[1] = 0.0
@@ -24,40 +24,36 @@ class TangentVelocityExpression(UserExpression):
     def value_shape(self):
         return (2,)
 
-
-# trial analytical expression for the  surface tension sigma(x,y)
-class SurfaceTensionExpression(UserExpression):
+class tau_Expression(UserExpression):
     def eval(self, values, x):
-        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        # values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
         values[0] = 0.0
+        values[1] = 0.0
 
     def value_shape(self):
-        return (1,)
+        return (2,)
 
-
-v__profile_l = Expression((f'{rpam.parameters["v__l_const"]} * 4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), degree=2, h=rmsh.parameters["h"])
-
-bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
-bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
-bc_v__cylinder = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_circle)
-
-bc_phi_outflow = DirichletBC(fsp.Q_sigma, Constant(0), rmsh.boundary_r)
-
-# boundary conditions for the surface_tension p
-bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
-bc_phi = [bc_phi_outflow]
+fsp.f.interpolate(f_Expression(element=fsp.Q_f.ufl_element()))
+fsp.tau.interpolate(tau_Expression(element=fsp.Q_tau.ufl_element()))
 
 # Define variational problem for step 1
 # step 1 for v
 F1 = ( \
-                 rpam.parameters['rho'] * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                        + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu[i] \
-                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
-         ) * rmsh.dx
+                rpam.parameters['rho'] * (
+                    (fsp.v_[alpha] - fsp.v_n_1[alpha]) / dt \
+                    + (3.0 / 2.0 * fsp.v_n_1[beta] - 1.0 / 2.0 * fsp.v_n_2[beta]) * (fsp.V[alpha]).dx(beta) - fsp.f[alpha]
+                    ) * fsp.nu_v_[alpha] \
+                +  flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_.dx(beta)
+      ) * rmsh.dx \
+      - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds
+# sign
 
 # step 2
-F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx
+F2_phi = ((fsp.phi.dx(alpha)) * (fsp.nu_phi.dx(alpha)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[alpha].dx(alpha)) * fsp.nu_phi) * rmsh.dx \
+- ( bgeo.facet_normal[alpha] * (fsp.phi.dx(alpha)) * fsp.nu_phi) * rmsh.ds
 
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (
+    fsp.phi - rpam.parameters['mu'] * bgeo.facet_normal[alpha] * bgeo.facet_normal[beta] * (fsp.v_[alpha] - fsp.v_n_2[alpha] - dt/rpam.parameters['rho'] * fsp.omega[alpha])
+    ) *\
+    (fsp.nu_phi + rpam.parameters['mu'] * dt / rpam.parameters['rho'] *  bgeo.facet_normal[gamma] * bgeo.facet_normal[delta] * fsp.nu_omega[gamma].dx(delta)) * rmsh.ds
 # Define variational problem for step 3
-F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.parameters['rho']) * (fsp.phi.dx(i))) * fsp.nu[i]) * rmsh.dx
+F3 = (((fsp.v_n[alpha] - fsp.v_[alpha]) + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_[alpha]) * rmsh.dx
