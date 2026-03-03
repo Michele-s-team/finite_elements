@@ -35,12 +35,12 @@ print("Output directory", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
 
 
-
 # set the initial profiles
-fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
+fsp.v_n_1.interpolate(vp.v0_Expression(element=fsp.Q_v.ufl_element()))
 fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp.SurfaceTensionExpression(element=fsp.Q_sigma.ufl_element()))
+fsp.sigma_n_12.interpolate(vp.sigma0_Expression(element=fsp.Q_sigma.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
 
 
 print("Starting time iteration ...", flush=True)
@@ -56,13 +56,13 @@ for n in range(rpam.parameters['num_steps']):
 
     # step 1
     J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
-    problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, vp.bc_v_, J1)
+    problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, [], J1)
     solver1 = NonlinearVariationalSolver(problem1)
     solver1.solve()
 
     # Step 2: surface_tension correction step
-    J2 = derivative(vp.F2, fsp.phi, fsp.J_phi)
-    problem2 = NonlinearVariationalProblem(vp.F2, fsp.phi, vp.bc_phi, J2)
+    J2 = derivative(vp.F2, fsp.phi_omega, fsp.J_phi_omega)
+    problem2 = NonlinearVariationalProblem(vp.F2, fsp.phi_omega, [], J2)
     solver2 = NonlinearVariationalSolver(problem2)
     solver2.solve()
 
@@ -72,15 +72,17 @@ for n in range(rpam.parameters['num_steps']):
     solver3 = NonlinearVariationalSolver(problem3)
     solver3.solve()
 
-    pr_bc.print_bcs()
+    phi_output, omega_output = fsp.phi_omega.split(deepcopy=True)
+
+
+    # pr_bc.print_bcs()
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
+    fsp.sigma_n_12.assign(project(fsp.sigma_n_32 - phi_output, fsp.Q_sigma))
 
     # Update previous solution
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
-
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     pr_sol.print_solution(t, step, vp.dt)

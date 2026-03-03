@@ -19,7 +19,7 @@ i, j, k, l = ufl.indices( 4 )
 # create the path for the csv file if it does not exist
 filename_bcs = rarg.args.output_directory + '/bcs.csv'
 os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
-
+'''
 csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_{l + t + b + circle}',\
@@ -50,3 +50,4 @@ def print_bcs():
         }] )
 
     csvfile.flush()
+'''
