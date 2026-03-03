@@ -4,7 +4,7 @@ import ufl as ufl
 
 import differential_geometry.manifold.geometry as geo
 
-alpha, beta, k, l, alpha = ufl.indices(5)
+alpha, beta, gamma, delta = ufl.indices(4)
 
 
 # Pi(v, w, omega, sigma)[i, j] = \Pi^{ij}_notes, i.e., the momentum-flux tensor
@@ -27,7 +27,7 @@ Return values:
 
 
 def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
-    return as_tensor(Pi(v, w, omega, sigma, eta)[alpha, beta] * geo.g(omega)[beta, k] * nu[k], (alpha))
+    return as_tensor(Pi(v, w, omega, sigma, eta)[alpha, beta] * geo.g(omega)[beta, gamma] * nu[gamma], (alpha))
 
 
 '''
@@ -171,7 +171,7 @@ def fel_n(omega, mu, tau, kappa):
 
 # fvisc_n(v, w, omega, mu, eta) = f^{VISC}_n_notes, i.e., viscous contribution to the normal force
 def fvisc_n(v, w, omega, mu, eta):
-    return (2.0 * eta * (geo.g_c(omega)[alpha, k] * geo.Nabla_v(v, omega)[beta, k] * geo.b(omega)[alpha, beta] - 2.0 * w * (
+    return (2.0 * eta * (geo.g_c(omega)[alpha, gamma] * geo.Nabla_v(v, omega)[beta, gamma] * geo.b(omega)[alpha, beta] - 2.0 * w * (
             2.0 * (mu ** 2) - geo.K(omega))))
 
 
@@ -195,8 +195,8 @@ def ma_cn_t(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho, dt):
 def conv_cn_t(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho):
     return as_tensor(rho * ( \
                 + (3.0 / 2.0 * v_n_1[beta] - 1.0 / 2.0 * v_n_2[beta]) * geo.Nabla_v((v_bar + v_n_1) / 2.0, omega_n_12)[alpha, beta] \
-                - 2.0 * (v_bar[beta] + v_n_1[beta]) / 2.0 * (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[alpha, k] *
-                geo.b(omega_n_12)[k, beta] \
+                - 2.0 * (v_bar[beta] + v_n_1[beta]) / 2.0 * (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[alpha, gamma] *
+                geo.b(omega_n_12)[gamma, beta] \
                 - (w_bar + w_n_1) / 2.0 * geo.g_c(omega_n_12)[alpha, beta] * (((w_bar + w_n_1) / 2.0).dx(beta)) \
         ), (alpha))
 
@@ -215,7 +215,7 @@ def ma_cn_n(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho, dt):
 def conv_cn_n(v_bar, v_n_1, v_n_2, w_bar, w_n_1, omega_n_12, rho):
     return ( \
                 rho * ( \
-                    + (v_bar[alpha] + v_n_1[alpha]) / 2.0 * (v_bar[k] + v_n_1[k]) / 2.0 * geo.b(omega_n_12)[k, alpha] \
+                    + (v_bar[alpha] + v_n_1[alpha]) / 2.0 * (v_bar[gamma] + v_n_1[gamma]) / 2.0 * geo.b(omega_n_12)[gamma, alpha] \
                     + (3.0 / 2.0 * v_n_1[alpha] - 1.0 / 2.0 * v_n_2[alpha]) * (((w_bar + w_n_1) / 2.0).dx(alpha)) \
             ) \
         )
@@ -228,7 +228,7 @@ def fsigma_t(sigma, omega):
 
 # fvisc_t[i] = f^{VISC i}_notes. here the argument d is defined in the same way as geo.d
 def fvisc_t(d, omega, eta):
-    return as_tensor(2.0 * eta * geo.g_c(omega)[alpha, beta] * geo.g_c(omega)[k, l] * geo.Nabla_ff(d, omega)[beta, l, k], (alpha))
+    return as_tensor(2.0 * eta * geo.g_c(omega)[alpha, beta] * geo.g_c(omega)[gamma, delta] * geo.Nabla_ff(d, omega)[beta, delta, gamma], (alpha))
 
 
 '''
