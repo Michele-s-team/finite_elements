@@ -75,7 +75,7 @@ for n in range(rpam.parameters['num_steps']):
     phi_output, omega_output = fsp.phi_omega.split(deepcopy=True)
 
 
-    # pr_bc.print_bcs()
+    pr_bc.print_bcs()
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
     fsp.sigma_n_12.assign(project(fsp.sigma_n_32 - phi_output, fsp.Q_sigma))
