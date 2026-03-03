@@ -4,7 +4,7 @@ import runtime_arguments as rarg
 
 if rarg.args.problem == 'disk':
     rmsh = 'mesh.read.disk'
-    vp = 'variational_problem_bc_disk'
+    vp = 'variational_problem'
     prout_bc = 'print_out_bc_disk'
 
 
