@@ -6,6 +6,9 @@ This variational problem solves for the poisson equation
 with BC 
 
 n_i n_j \partial_i \partial_j u + u = g on \partial \Omega
+
+Here the field v_i = \partial_i u is introduced as an intermediate field to avoid spikes in the second derivative \partial_i \partial_j u. 
+
 '''
 
 from fenics import *
@@ -27,10 +30,10 @@ class u_exact_expression( UserExpression ):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
-        values[0] = np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.parameters['r']) * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.parameters['r'])
+        # values[0] = np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.parameters['r']) * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.parameters['r'])
 
     def value_shape(self):
         return (1,)
@@ -40,12 +43,12 @@ class v_exact_expression( UserExpression ):
     def eval(self, values, x):
         
         # test case 1
-        # values[0] = 2.0 * x[0]
-        # values[1] = 4.0 * x[1]
+        values[0] = 2.0 * x[0]
+        values[1] = 4.0 * x[1]
 
         # test case 2
-        values[0] = (2 * np.pi * np.cos(4 * np.pi * x[0] / rmsh.parameters['r'])) / rmsh.parameters['r']
-        values[1] = (2 * np.pi * np.cos(4 * np.pi * x[1] / rmsh.parameters['r'])) / rmsh.parameters['r']
+        # values[0] = (2 * np.pi * np.cos(4 * np.pi * x[0] / rmsh.parameters['r'])) / rmsh.parameters['r']
+        # values[1] = (2 * np.pi * np.cos(4 * np.pi * x[1] / rmsh.parameters['r'])) / rmsh.parameters['r']
 
 
     def value_shape(self):
@@ -56,10 +59,10 @@ class laplacian_u_exact_expression( UserExpression ):
     def eval(self, values, x):
     
         # test case 1
-        # values[0] = 6.0
+        values[0] = 6.0
 
         # test case 2
-        values[0] = -(16 * np.pi**2 * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.parameters['r']) * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.parameters['r'])) / rmsh.parameters['r']**2
+        # values[0] = -(16 * np.pi**2 * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.parameters['r']) * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.parameters['r'])) / rmsh.parameters['r']**2
 
 
 
