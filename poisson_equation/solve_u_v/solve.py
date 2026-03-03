@@ -6,6 +6,7 @@ Run with
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u_v/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u_v/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u_v/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk_robin $MESH_PATH $SOLUTION_PATH
 
 '''
 
@@ -35,8 +36,8 @@ params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
                   'linear_solver': 'superlu',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
+                  'absolute_tolerance': 1e-12,
+                  'relative_tolerance': 1e-12,
                   'maximum_iterations': 1000000,
                   'relaxation_parameter': 0.95,
               }

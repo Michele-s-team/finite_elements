@@ -12,5 +12,10 @@ elif rarg.args.problem == 'disk':
     vp = 'variational_problem_bc_disk'
     prout_bc = 'print_out_bc_disk'
 
+elif rarg.args.problem == 'disk_robin':
+    rmsh = 'mesh.read.disk'
+    vp = 'variational_problem_bc_disk_robin'
+    prout_bc = 'print_out_bc_disk_robin'
+
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')
