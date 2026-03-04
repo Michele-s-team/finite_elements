@@ -1,7 +1,8 @@
 '''
 This code solves for the dynamics of a circular, one-dimensional shape embedded in two dimensions, under the influence of an advecting velocity field in the two-dimensional space. The one-dimensional shape is parameterized by means of a coordinate living on a one-dimensional, line mesh. 
 
-clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+Run with 
+    clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/circle/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 solve.py circle $MESH_PATH $SOLUTION_PATH;
