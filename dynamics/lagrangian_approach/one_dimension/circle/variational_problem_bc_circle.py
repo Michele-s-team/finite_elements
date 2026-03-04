@@ -73,5 +73,3 @@ F = (fsp.u_n[alpha] - fsp.u_n_1[alpha] - dt * (fsp.v[beta] * bgeo.n_ale(fsp.ys, 
         )
     ) * rmsh.dx
  
-# variational functional for post-processing problem (pp) to obtain the gradient of u
-# F_pp = (fsp.grad_u[alpha, beta] - (fsp.u_n[alpha]).dx(beta)) * fsp.nu_grad_u[alpha, beta] * rmsh.dx
