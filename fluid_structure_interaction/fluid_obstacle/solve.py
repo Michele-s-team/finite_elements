@@ -30,6 +30,7 @@ import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import print_out_solution as pr_sol
 import solution_paths as solpath
 import switch_problem as swi
 
@@ -111,8 +112,9 @@ for n in range(rpam.parameters['N']):
     # now that U_n_12 has been computed, compute the new normal
     fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
 
-    # transfer v_square_n_1 (defined on sub_mes[0][1]) on sub_mesh[0][0] and write the result in v_square_n_1_0_1_on_0_0
-    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_v_disk))
+    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
+    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
+    fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
 
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][0]
@@ -166,8 +168,18 @@ for n in range(rpam.parameters['N']):
 
     print('Solving disk fluid problem ...', flush=True)
 
+    vp_fl_di = importlib.reload(vp_fl_di)
+
+    # 3.1 solve for v_disk__
+    J_fl_di_v__ = derivative(vp_fl_di.F_v_disk__, fsp.v_disk__, fsp.J_v__disk)
+    problem_fl_di_v__ = NonlinearVariationalProblem(vp_fl_di.F_v_disk__, fsp.v_disk__, vp_fl_di.bc_v_disk__, J_fl_di_v__)
+    solver_fl_di_v__ = NonlinearVariationalSolver(problem_fl_di_v__)
+    solver_fl_di_v__.solve()
 
     print('... done.', flush=True)
+
+    pr_sol.print_solution(t, step)
+
 
 
 

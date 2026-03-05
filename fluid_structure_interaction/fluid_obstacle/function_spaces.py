@@ -24,6 +24,8 @@ The fields in this problem are
     - 'phi_disk' = {\phi_disk}_notes
     - 'omega' = omega_notes
 
+    - 'f_di_n' = \textrm{f}^{disk n}
+
 * square (fluid on square):
 
     - 'v_square_n' = {\textrm{v}_square^n}_notes
@@ -35,6 +37,9 @@ The fields in this problem are
     - 'sigma_square_n_32' = {\varsigma_square^{n-3/2}}_notes
 
     - 'phi_square' = {\phi_square}_notes
+
+    - 'f_sq_n' = \textrm{f}^{square n}
+
 
 * D (domain)
 
@@ -185,6 +190,10 @@ J_phi_omega_disk = TrialFunction(Q_phi_omega_disk)
 # 1.6 other fields
 V_di = 0.5 * (v_disk_n_1 + v_disk__)
 U_n_12_1_on_0_0 = Function(Q_u_di)
+f_di_n = Function(Q_v_disk)
+
+# this field stores the values of sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mes[0][0]
+sigma_square_n_32_0_1_on_0_0 = Function(Q_sigma_disk)
 
 
 # 2 square fluid
@@ -200,6 +209,8 @@ v_square_n_1.set_allow_extrapolation(True)
 # 2.2 sigma_square
 sigma_square_n_12 = Function(Q_sigma_square)
 sigma_square_n_32 = Function(Q_sigma_square)
+
+sigma_square_n_32.set_allow_extrapolation(True)
 
 # 2.3 phi
 phi_square = Function(Q_sigma_square)
@@ -218,6 +229,7 @@ J_phi_square = TrialFunction(Q_sigma_square)
 # 2.6 other fields
 V_sq = 0.5 * (v_square_n_1 + v_square__)
 U_n_12_1_on_0_1 = Function(Q_u_sq)
+f_sq_n = Function(Q_v_square)
 
 
 # 3 D
