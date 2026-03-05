@@ -65,6 +65,19 @@ io.full_print(fsp.ys, 'ys', \
 # REMEMBER TO TRANSFER FUNCTIONS DURING TIME ITERATION
 
 
+'''
+# set an initial value for v_square_n_1
+class v_sq_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 1
+
+    def value_shape(self):
+        return (2,)
+fsp.v_square_n_1.interpolate(v_sq_expression(element=fsp.Q_v_square.ufl_element()))
+'''
+
+
 print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
@@ -114,6 +127,37 @@ for n in range(rpam.parameters['N']):
     msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
     vp_D = importlib.reload(vp_D)
+
+    # 2.1) solve for D in square
+
+    J_u_sq = derivative(vp_D.F_u_sq, fsp.u_n_sq, fsp.J_u_sq)
+    problem_u_sq = NonlinearVariationalProblem(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, J_u_sq)
+    solver_u_sq = NonlinearVariationalSolver(problem_u_sq)
+
+    J_u_dot_sq = derivative(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, fsp.J_u_dot_sq)
+    problem_u_dot_sq = NonlinearVariationalProblem(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, vp_D.bcs_u_sq_dot, J_u_dot_sq)
+    solver_u_dot_sq = NonlinearVariationalSolver(problem_u_dot_sq)
+
+    solver_u_sq.parameters.update(params)
+    solver_u_dot_sq.parameters.update(params)
+
+    solver_u_sq.solve()
+    solver_u_dot_sq.solve()
+
+    # 2.2) solve for D in disk
+    J_u_di = derivative(vp_D.F_u_di, fsp.u_n_di, fsp.J_u_di)
+    problem_u_di = NonlinearVariationalProblem(vp_D.F_u_di, fsp.u_n_di, vp_D.bcs_u_di, J_u_di)
+    solver_u_di = NonlinearVariationalSolver(problem_u_di)
+
+    J_u_dot_di = derivative(vp_D.F_u_di_dot, fsp.u_n_di_dot, fsp.J_u_dot_di)
+    problem_u_dot_di = NonlinearVariationalProblem(vp_D.F_u_di_dot, fsp.u_n_di_dot, vp_D.bcs_u_di_dot, J_u_dot_di)
+    solver_u_dot_di = NonlinearVariationalSolver(problem_u_dot_di)
+
+    solver_u_di.parameters.update(params)
+    solver_u_dot_di.parameters.update(params)
+
+    solver_u_di.solve()
+    solver_u_dot_di.solve()
 
 
     print('... done.', flush=True)

@@ -236,7 +236,7 @@ u_n_2_di_dot = Function(Q_u_di_dot)
 
 # 3.1.3 test functions
 nu_u_n_di = TestFunction(Q_u_di)
-nu_u_n_di_dot = Function(Q_u_di_dot)
+nu_u_n_di_dot = TestFunction(Q_u_di_dot)
 
 # 3.1.4 jacobians
 J_u_di = TrialFunction(Q_u_di)
@@ -262,8 +262,8 @@ u_n_1_sq_dot = Function(Q_u_sq_dot)
 u_n_2_sq_dot = Function(Q_u_sq_dot)
 
 # 3.2.3 test functions
-nu_u_n_sq = Function(Q_u_sq)
-nu_u_n_sq_dot = Function(Q_u_sq_dot)
+nu_u_n_sq = TestFunction(Q_u_sq)
+nu_u_n_sq_dot = TestFunction(Q_u_sq_dot)
 
 # 3.2.4 jacobians
 J_u_sq = TrialFunction(Q_u_sq)
