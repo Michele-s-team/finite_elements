@@ -56,6 +56,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 # load all variational problems
 vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
+vp_fl_di = importlib.import_module(swi.vp_fluid_di)
 
 io.full_print(fsp.ys, 'ys', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
