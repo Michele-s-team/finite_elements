@@ -53,6 +53,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 # load all variational problems
 vp_I = importlib.import_module(swi.vp_I)
+vp_D = importlib.import_module(swi.vp_D)
 
 io.full_print(fsp.ys, 'ys', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
@@ -88,8 +89,8 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
 
 
-    # step 2): solve disk fluid problem
-    print('Solving disk fluid problem ...', flush=True)
+    # step 2): solve D problem
+    print('Solving D problem ...', flush=True)
 
     print('... done.', flush=True)
 
