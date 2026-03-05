@@ -4,7 +4,7 @@ import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_disk_line_a':
     rmsh = 'mesh.read.square_disk_line'
-    vp_I = 'variational_problem_interface_square_disk_line_a'
+    vp_I = 'variational_problem_I_square_disk_line_a'
     vp_D = 'variational_problem_domain_square_disk_line_a'
     vp_fluid_di = 'variational_problem_fluid_disk_square_disk_line_a'
     vp_fluid_sq = 'variational_problem_fluid_square_square_disk_line_a'

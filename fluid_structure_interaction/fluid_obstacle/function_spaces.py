@@ -138,7 +138,7 @@ Q_u_sq_dot = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 1)
 
 # 4 I 
 
-Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['U_function_space_degree'], constrained_domain=periodic_boundary)
+Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['U_function_space_degree'], dim=2,constrained_domain=periodic_boundary)
 
 
 # 5 M
@@ -270,6 +270,13 @@ nu_U = TestFunction(Q_U)
 
 # 4.3 jacobian
 J_U = TrialFunction(Q_U)
+
+# 4.4 other fields 
+# fluid velocity on the square at step n-1, which lives on sub-mesh[0][1], transferred on the 1d mesh (mesh[1])
+v_square_n_1_0_1_on_1 = Function(Q_U)
+# two-dimensional vector field containing the reference configuration of I as a function of its parameteric coordinate s
+ys = Function(Q_U)
+
 
 
 

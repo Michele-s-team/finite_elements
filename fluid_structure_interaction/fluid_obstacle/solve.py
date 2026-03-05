@@ -43,6 +43,14 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
+# delete this later - start
+vp_I = importlib.import_module(swi.vp_I)
+# delete this later - end
+
+# REMEMBER TO TRANSFER FUNCTIONS DURING TIME ITERATION
+
+
+
 '''
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
