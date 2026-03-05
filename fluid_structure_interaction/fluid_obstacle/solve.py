@@ -159,8 +159,16 @@ for n in range(rpam.parameters['N']):
     solver_u_di.solve()
     solver_u_dot_di.solve()
 
+    print('... done.', flush=True)
+
+    # 3) solve for disk fluid 
+
+    print('Solving disk fluid problem ...', flush=True)
+
 
     print('... done.', flush=True)
+
+
 
 
 
