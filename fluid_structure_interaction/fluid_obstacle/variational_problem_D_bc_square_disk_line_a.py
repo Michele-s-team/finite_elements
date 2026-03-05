@@ -15,8 +15,31 @@ rmsh = importlib.import_module(swi.rmsh)
 
 alpha, beta, gamma, delta = ufl.indices(4)
 
+
+bcs_u_sq = [ \
+    DirichletBC(fsp.Q_u_sq, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
+    DirichletBC(fsp.Q_u_sq, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
+    DirichletBC(fsp.Q_u_sq, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
+    DirichletBC(fsp.Q_u_sq, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
+    DirichletBC(fsp.Q_u_sq, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+    ]
+
+# sign
+
+
+bcs_u_sq_dot = [ \
+    DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
+    DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
+    DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
+    DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
+    # sign
+    DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+    ]
+
+'''
+bc_u_sq_square = DirichletBC(fsp.Q_u_sq, Constant((0, 0)), rmsh.boundary[1]['lrtb'])
+
 bc_u_msh_ellipse = DirichletBC(fsp.Q_u_msh, fsp.u_el_n_on_sub_mesh_1, rmsh.boundary[1]['ellipse'])
-bc_u_msh_square = DirichletBC(fsp.Q_u_msh, Constant((0, 0)), rmsh.boundary[1]['lrtb'])
 bcs_msh = [bc_u_msh_ellipse, bc_u_msh_square]
 
 # variational functional for the original problem
@@ -35,3 +58,4 @@ F_msh_u_dot = ( \
                                                                   ela.mu(fsp.u_msh_n, rpam.parameters['exponent']),
                                                                   ela.mu_dot(fsp.u_msh_n, fsp.u_msh_dot_n, rpam.parameters['exponent']))[beta, alpha]) \
                           * (fsp.nu_u_msh_dot[gamma].dx(alpha))) * rmsh.dx_sub_mesh[1]
+'''

@@ -65,6 +65,8 @@ The fields in this problem are
     - 'U_n_12' = {U^{n-1/2}}_notes 
     - 'U_n_32' = {U^{n-3/2}}_notes 
 
+    - 'n_n_12' = {\hat{n}^{n-1/2}}_notes
+
     
 * M: 
 
@@ -128,12 +130,12 @@ Q_sigma_square = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['phi_
 # 3. D (domain)
 
 # 3.1 D in disk
-Q_u_di = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', 1)
-Q_u_di_dot = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', 1)
+Q_u_di = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', 2)
+Q_u_di_dot = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', 2)
 
 # 3.2 D in square
-Q_u_sq = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 1)
-Q_u_sq_dot = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 1)
+Q_u_sq = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 2)
+Q_u_sq_dot = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 2)
 
 
 # 4 I 
@@ -210,9 +212,9 @@ J_v_square = TrialFunction(Q_v_square)
 J_v__square = TrialFunction(Q_v__square)
 J_phi_square = TrialFunction(Q_sigma_square)
 
-# 2.6 derived fields
+# 2.6 other fields
 V_sq = 0.5 * (v_square_n_1 + v_square__)
-
+U_n_12_1_on_0_1 = Function(Q_u_sq)
 
 
 # 3 D
@@ -258,12 +260,17 @@ nu_u_n_sq_dot = Function(Q_u_sq_dot)
 J_u_sq = TrialFunction(Q_u_sq)
 J_u_dot_sq = TrialFunction(Q_u_sq_dot)
 
+# 3.2.5 other fields
+n_n_12_1_on_0_1 = Function(Q_u_sq)
+
 
 # 4 I 
 
 # 4.1 U
 U_n_12 = Function(Q_U)
 U_n_32 = Function(Q_U)
+
+n_n_12 = Function(Q_U)
 
 # 4.2 test functions
 nu_U = TestFunction(Q_U)

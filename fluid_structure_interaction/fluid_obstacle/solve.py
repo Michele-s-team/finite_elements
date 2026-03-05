@@ -23,6 +23,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import input_output as io
 import mesh.load as lmsh
@@ -91,6 +92,16 @@ for n in range(rpam.parameters['N']):
 
     # step 2): solve D problem
     print('Solving D problem ...', flush=True)
+
+    # now that U_n_12 has been computed, compute the new normal to I and transfer it from mesh[1] to sub_mesh[0][1]
+    fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
+    msh.transfer_line_to_circle(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+
+    # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] 
+    msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+
+    vp_D = importlib.reload(vp_D)
+
 
     print('... done.', flush=True)
 
