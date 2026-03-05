@@ -182,8 +182,9 @@ J_v_disk = TrialFunction(Q_v_disk)
 J_v__disk = TrialFunction(Q_v__disk)
 J_phi_omega_disk = TrialFunction(Q_phi_omega_disk)
 
-# 1.6 derived fields
+# 1.6 other fields
 V_di = 0.5 * (v_disk_n_1 + v_disk__)
+U_n_12_1_on_0_0 = Function(Q_u_di)
 
 
 # 2 square fluid
@@ -193,6 +194,8 @@ v_square_n = Function(Q_v_square)
 v_square_n_1 = Function(Q_v_square)
 v_square_n_2 = Function(Q_v_square)
 v_square__ = Function(Q_v__square)
+
+v_square_n_1.set_allow_extrapolation(True)
 
 # 2.2 sigma_square
 sigma_square_n_12 = Function(Q_sigma_square)
@@ -239,6 +242,12 @@ nu_u_n_di_dot = Function(Q_u_di_dot)
 J_u_di = TrialFunction(Q_u_di)
 J_u_dot_di = TrialFunction(Q_u_di_dot)
 
+# 3.1.5 other fields
+n_n_12_1_on_0_0 = Function(Q_u_di)
+# this field stores the values of v_square_n_1 (defined on sub_mes[0][1]) on sub_mes[0][0]
+v_square_n_1_0_1_on_0_0 = Function(Q_u_di_dot)
+# this field stores the value [\textrm{v}_square^{n-1} . \hat{n}^{n-1/2}] \hat{n}^{n-1/2} coming from the I sector, to be used as a BC for u_n_di_dot on \partial \Omega_O
+u_n_di_dot_bc_di = Function(Q_u_di_dot)
 
 # 3.2 square
 

@@ -94,13 +94,24 @@ for n in range(rpam.parameters['N']):
     # step 2): solve D problem
     print('Solving D problem ...', flush=True)
 
-    # now that U_n_12 has been computed, compute the new normal to I and transfer it from mesh[1] to sub_mesh[0][1]
+    # now that U_n_12 has been computed, compute the new normal
     fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
+
+    # transfer v_square_n_1 (defined on sub_mes[0][1]) on sub_mesh[0][0] and write the result in v_square_n_1_0_1_on_0_0
+    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_v_disk))
+
+
+    #transfer the new normal it from mesh[1] to sub_mesh[0][0]
+    msh.transfer_line_to_circle(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    fsp.u_n_di_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_square_n_1_0_1_on_0_0, fsp.n_n_12_1_on_0_0), fsp.Q_u_di_dot))
+
+    #transfer the new normal it from mesh[1] to sub_mesh[0][1]
     msh.transfer_line_to_circle(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
     fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_square_n_1, fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
 
-    # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] 
+    # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
     msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 
     vp_D = importlib.reload(vp_D)
 
