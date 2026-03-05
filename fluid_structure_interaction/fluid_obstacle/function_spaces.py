@@ -138,7 +138,7 @@ Q_u_sq_dot = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 1)
 
 # 4 I 
 
-Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['U_function_space_degree'], dim=2,constrained_domain=periodic_boundary)
+Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', 2, dim=2, constrained_domain=periodic_boundary)
 
 
 # 5 M
