@@ -61,7 +61,6 @@ class ys_expression(UserExpression):
 fsp.ys.interpolate(ys_expression(element=fsp.Q_U.ufl_element()))
 
 
-
 # no BCs are needed here: the periodic BC is already implemented through the periodicity of the function space
 bcs=[ ]
 

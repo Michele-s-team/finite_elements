@@ -14,6 +14,7 @@ Examples:
      MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_disk_line_a $MESH_PATH $SOLUTION_PATH
  '''
 
+import dolfin
 from fenics import *
 import importlib
 import sys
@@ -24,11 +25,15 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import input_output as io
+import mesh.load as lmsh
 import mesh.utils as msh
+import parameters.read.solution as rpam
 import solution_paths as solpath
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
+
+dt = rpam.parameters['T'] / rpam.parameters['N']
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -43,9 +48,15 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
-# delete this later - start
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+
+
+# load all variational problems
 vp_I = importlib.import_module(swi.vp_I)
-# delete this later - end
+
+io.full_print(fsp.ys, 'ys', \
+              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
+              lmsh.mesh[1], 'vector')
 
 # REMEMBER TO TRANSFER FUNCTIONS DURING TIME ITERATION
 
