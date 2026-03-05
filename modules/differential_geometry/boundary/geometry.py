@@ -145,5 +145,3 @@ def delta_n_ale(ys, u, nu):
         1.0/norm_dxds * (1.0/norm_dxds**2 * dxds[gamma] * nu.dx(0)[gamma] * epsilon[alpha, beta] * dxds[beta] - \
                          epsilon[alpha, beta] * nu.dx(0)[beta]), 
         (alpha))
-
-

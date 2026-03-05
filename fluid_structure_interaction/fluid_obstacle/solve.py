@@ -23,6 +23,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import input_output as io
@@ -96,6 +97,7 @@ for n in range(rpam.parameters['N']):
     # now that U_n_12 has been computed, compute the new normal to I and transfer it from mesh[1] to sub_mesh[0][1]
     fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
     msh.transfer_line_to_circle(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_square_n_1, fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
 
     # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] 
     msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])

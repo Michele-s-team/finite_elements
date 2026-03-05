@@ -24,17 +24,17 @@ bcs_u_sq = [ \
     DirichletBC(fsp.Q_u_sq, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])
     ]
 
-# sign
-
 
 bcs_u_sq_dot = [ \
     DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
     DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
     DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
     DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
-    # sign
-    DirichletBC(fsp.Q_u_sq_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+    DirichletBC(fsp.Q_u_sq_dot, fsp.u_n_sq_dot_bc_di, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])
     ]
+
+# sign
+
 
 '''
 bc_u_sq_square = DirichletBC(fsp.Q_u_sq, Constant((0, 0)), rmsh.boundary[1]['lrtb'])
