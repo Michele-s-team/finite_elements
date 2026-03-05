@@ -24,30 +24,6 @@ alpha, beta = ufl.indices(2)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
-'''
-# the velocity profile v_expression must be a periodic function of x[0] to be consistent with the periodicity of the problem 
-class v_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 1
-        values[1] = np.sin(2.0 * np.pi * x[0] / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
-
-    def value_shape(self):
-        return (2,)
-    
-
-class u_n_1_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-
-fsp.v.interpolate(v_expression(element=fsp.Q.ufl_element()))
-'''
 
 class ys_expression(UserExpression):
     def eval(self, values, x):
