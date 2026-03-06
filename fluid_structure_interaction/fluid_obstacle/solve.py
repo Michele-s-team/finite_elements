@@ -222,8 +222,19 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
+    # 5) solve for M
+
+    print('Solving M problem ...', flush=True)
+
+    J_M = derivative(vp_M.F_c, fsp.c_n, fsp.J_c)
+    problem_M = NonlinearVariationalProblem(vp_M.F_c, fsp.c_n, vp_M.bc_M, J_M)
+    solver_M = NonlinearVariationalSolver(problem_M)
+    solver_M.solve()
+
+    print('... done.', flush=True)
 
     # sign
+
 
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     # UNCOMMENT THIS LATER

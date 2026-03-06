@@ -79,6 +79,8 @@ The fields in this problem are
     - 'c_n' = \textrm{c^n}_notes
     - 'c_n_1' = \textrm{c^{n-1}}_notes
 
+    - 'D_c' = {\cal{D}}_notes
+
 '''
 
 # This enforces periodic boundary conditions which map the l vertex into the r vertex or mesh 1
@@ -323,6 +325,8 @@ ys = Function(Q_U)
 # 5.1 c
 c_n = Function(Q_c)
 c_n_1 = Function(Q_c)
+
+D_c = Function(Q_c)
 
 # 5.2 test functions
 nu_c = TestFunction(Q_c)
