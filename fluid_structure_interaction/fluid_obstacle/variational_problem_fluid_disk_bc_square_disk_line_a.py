@@ -24,8 +24,8 @@ class f_di_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = -1
-
+        values[1] = - rpam.parameters['rho_di'] * rpam.parameters['g']
+  
     def value_shape(self):
         return (2,)
 

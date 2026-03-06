@@ -24,7 +24,7 @@ class f_sq_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = 0
+        values[1] = - rpam.parameters['rho_sq'] * rpam.parameters['g']
 
     def value_shape(self):
         return (2,)

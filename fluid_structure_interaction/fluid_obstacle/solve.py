@@ -76,11 +76,10 @@ io.full_print(fsp.ys, 'ys', \
               lmsh.mesh[1], 'vector')
 
 # FILL IN HWERE: set the initial profiles from analytical expressions
-# REMEMBER TO TRANSFER FUNCTIONS DURING TIME ITERATION
 
-
+# set initial profiles
+# 
 '''
-# set an initial value for v_square_n_1
 class v_sq_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -90,6 +89,25 @@ class v_sq_expression(UserExpression):
         return (2,)
 fsp.v_square_n_1.interpolate(v_sq_expression(element=fsp.Q_v_square.ufl_element()))
 '''
+
+class sigma_di_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['rho_di'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
+
+    def value_shape(self):
+        return (1,)
+    
+class sigma_sq_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
+
+    def value_shape(self):
+        return (1,)
+
+fsp.sigma_disk_n_32.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
+fsp.sigma_square_n_32.interpolate(sigma_sq_0_expression(element=fsp.Q_sigma_square.ufl_element()))
+# 
+
 
 
 print("Starting time iteration ...", flush=True)
