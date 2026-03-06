@@ -219,14 +219,14 @@ for n in range(rpam.parameters['N']):
     solver_fl_sq_v_n = NonlinearVariationalSolver(problem_fl_sq_v_n)
     solver_fl_sq_v_n.solve()
 
+    print('... done.', flush=True)
+
+
     # sign
 
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     # UNCOMMENT THIS LATER
     # pr_bc.print_bcs()
-
-
-    print('... done.', flush=True)
 
     pr_sol.print_solution(t, step)
 
