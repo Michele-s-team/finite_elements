@@ -226,6 +226,9 @@ for n in range(rpam.parameters['N']):
 
     print('Solving M problem ...', flush=True)
 
+    vp_M = importlib.reload(vp_M)
+
+    # solve for c_n
     J_M = derivative(vp_M.F_c, fsp.c_n, fsp.J_c)
     problem_M = NonlinearVariationalProblem(vp_M.F_c, fsp.c_n, vp_M.bc_M, J_M)
     solver_M = NonlinearVariationalSolver(problem_M)

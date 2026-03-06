@@ -89,6 +89,13 @@ def print_solution_sq_fluid(t, step):
                   lmsh.sub_meshes[0][1], 'scalar')
 
 
+# print the solution for M
+def print_solution_M(step):
+
+    io.full_print(fsp.c_n, 'c_n_' + str(step), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+            lmsh.sub_meshes[0][1], 'scalar')
+
 # print solution for all sectors
 def print_solution(t, step):
 
@@ -96,6 +103,7 @@ def print_solution(t, step):
     print_solution_D(step)
     print_solution_di_fluid(t, step)
     print_solution_sq_fluid(t, step)
+    print_solution_M(step)
 
 
 
