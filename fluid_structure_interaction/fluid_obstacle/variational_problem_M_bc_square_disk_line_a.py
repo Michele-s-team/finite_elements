@@ -20,44 +20,6 @@ alpha, beta, gamma, delta = ufl.indices(4)
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 '''
-class f_sq_n_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-fsp.f_sq_n.interpolate(f_sq_n_expression(element=fsp.Q_v_square.ufl_element()))
-
-
-class t_sq_n_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-fsp.t_sq_n.interpolate(t_sq_n_expression(element=fsp.Q_v_square.ufl_element()))
-
-
-'''
-v_square__bc_Expression =  g_notes used to enforce the BCs for v_square__ on \partial \Omega^y_{sq IN} U \partial \Omega^y_{sq OUT} U \partial \Omega^y_{sq B}
-'''
-class v_square__bc_Expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-fsp.v_square__bc.interpolate(v_square__bc_Expression(element=fsp.Q_v__square.ufl_element()))
-
-
 bc_v_square__ = [
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
