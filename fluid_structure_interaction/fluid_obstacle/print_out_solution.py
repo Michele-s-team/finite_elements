@@ -72,6 +72,13 @@ def print_solution_di_fluid(t, step):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
 
+# print the solution for square fluid 
+def print_solution_sq_fluid(t, step):
+
+    # 1 print velocities
+    io.full_print(fsp.v_square__, 'v_square__' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][1], 'vector')
 
 
 # print solution for all sectors
@@ -80,6 +87,7 @@ def print_solution(t, step):
     print_solution_I(step)
     print_solution_D(step)
     print_solution_di_fluid(t, step)
+    print_solution_sq_fluid(t, step)
 
 
 
