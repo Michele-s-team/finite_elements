@@ -192,6 +192,13 @@ for n in range(rpam.parameters['N']):
 
     # sign
 
+    # 4) solve for square fluid 
+
+    print('Solving square fluid problem ...', flush=True)
+
+
+    print('... done.', flush=True)
+
     pr_sol.print_solution(t, step)
 
 

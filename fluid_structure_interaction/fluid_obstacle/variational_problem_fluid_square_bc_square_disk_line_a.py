@@ -1,5 +1,5 @@
 '''
-this module solves for the fields, v_disk^n, sigma_disk,...  which define the state of the disk fluid
+this module solves for the fields, v_square^n, sigma_square,...  which define the state of the square fluid
 '''
 
 from fenics import *
@@ -15,39 +15,48 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-alpha, beta, gamma, delta, epsilon, mu, nu, rho, sigma, tau = ufl.indices(10)
+alpha, beta, gamma, delta = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 
-class f_di_expression(UserExpression):
+class f_sq_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = 1
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
 
-fsp.f_di_n.interpolate(f_di_expression(element=fsp.Q_v_disk.ufl_element()))
+fsp.f_sq_n.interpolate(f_sq_expression(element=fsp.Q_v_square.ufl_element()))
+
+# sign
 
 '''
-f_M = {\textrm{f}_M}_notes
-
-Input values: 
-    - 'c': concentration of M 'pulled back' to reference coordinates
-    - 'U': displacement field of I (2-dimensional vector)
-
-Return values: 
-    - f_M (2-dimensional vector)
+v_square__bc_Expression =  g_notes used to enforce the BCs for v_square__ on \partial \Omega^y_{sq IN} U \partial \Omega^y_{sq OUT} U \partial \Omega^y_{sq B}
 '''
-def f_M(c, U):
-    return as_tensor(0 * U[alpha], (alpha))
+class v_square__bc_Expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+fsp.v_square__bc.interpolate(v_square__bc_Expression(element=fsp.Q_v__square.ufl_element()))
 
 
-bc_v_disk__ = []
-bc_phi_omega_disk = []
-bc_v_disk_n = []
+bc_v_square__ = [
+    DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
+    DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
+    DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
+    DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
+    DirichletBC(fsp.Q_v__square, ?, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])\
+    ]
+
+bc_phi_square = []
+bc_v_square_n = []
 
 
 

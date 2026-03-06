@@ -230,6 +230,9 @@ J_phi_square = TrialFunction(Q_sigma_square)
 V_sq = 0.5 * (v_square_n_1 + v_square__)
 U_n_12_1_on_0_1 = Function(Q_u_sq)
 f_sq_n = Function(Q_v_square)
+# this field is used to store the Dirichlet BCs for v_square__
+v_square__bc = Function(Q_v__square)
+
 
 
 # 3 D
