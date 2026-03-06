@@ -54,8 +54,17 @@ def print_solution_D(step):
 # print the solution for disk fluid 
 def print_solution_di_fluid(t, step):
 
+    phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
+
     # 1 print velocities
     io.full_print(fsp.v_disk__, 'v_disk__' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][0], 'vector')
+
+    io.full_print(phi_disk_output, 'phi_disk_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][0], 'scalar')
+    io.full_print(omega_disk_output, 'omega_disk_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
 
