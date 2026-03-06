@@ -22,7 +22,7 @@ The fields in this problem are
     - 'sigma_disk_n_32' = {\varsigma_disk^{n-3/2}}_notes
 
     - 'phi_disk' = {\phi_disk}_notes
-    - 'omega' = omega_notes
+    - 'omega_disk' = omega_notes
 
     - 'f_di_n' = \textrm{f}^{disk n}
 

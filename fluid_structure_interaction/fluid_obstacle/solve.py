@@ -176,6 +176,12 @@ for n in range(rpam.parameters['N']):
     solver_fl_di_v__ = NonlinearVariationalSolver(problem_fl_di_v__)
     solver_fl_di_v__.solve()
 
+    # 3.2 solve for phi_disk (and omega_disk)
+    J_fl_di_phi_omega = derivative(vp_fl_di.F_phi_omega_disk, fsp.phi_omega_disk, fsp.J_phi_omega_disk)
+    problem_fl_di_phi_omega = NonlinearVariationalProblem(vp_fl_di.F_phi_omega_disk, fsp.phi_omega_disk, vp_fl_di.bc_phi_omega_disk, J_fl_di_phi_omega)
+    solver_fl_di_phi_omega = NonlinearVariationalSolver(problem_fl_di_phi_omega)
+    solver_fl_di_phi_omega.solve()
+
     print('... done.', flush=True)
 
     pr_sol.print_solution(t, step)

@@ -15,7 +15,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-alpha, beta, gamma, delta = ufl.indices(4)
+alpha, beta, gamma, delta, epsilon, mu, nu, rho, sigma, tau = ufl.indices(10)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
@@ -46,7 +46,7 @@ def f_M(c, U):
 
 
 bc_v_disk__ = []
-bc_phi_disk = []
+bc_phi_omega_disk = []
 
 
 
@@ -75,19 +75,28 @@ F_phi_disk = ( \
 
 F_omega_disk = ( fsp.omega_disk[alpha] - ela.G(fsp.u_n_1_di)[beta, alpha] * fsp.phi_disk.dx(beta) ) * ( fsp.nu_omega_disk[alpha] - ela.G(fsp.u_n_1_di)[gamma, alpha] * fsp.nu_phi_disk.dx(gamma) ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
+
+F_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
+        - fsp.phi_disk * ela.G(fsp.u_n_1_di)[beta, alpha] * bgeo.sub_mesh_facet_normal[0][0][beta] * ela.G(fsp.u_n_1_di)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 
+        ela.G(fsp.u_n_1_di)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][0][delta] * 
+            (
+                flu.sigma_ale(fsp.V_di, fsp.sigma_disk_n_32, fsp.u_n_1_di, rpam.parameters['eta_di'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma] -
+                (
+                    flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta] *  ela.G(fsp.u_n_1_di)[gamma, beta] *  bgeo.sub_mesh_facet_normal[0][0][gamma] +  
+                    1.0/ela.detF(fsp.u_n_1_di) * f_M(fsp.c_n_1, fsp.U_n_32)[alpha] 
+                ) - 
+                    rpam.parameters['eta_di'] * dt / rpam.parameters['rho_di'] * ela.G(fsp.u_n_1_di)[gamma, beta] *  bgeo.sub_mesh_facet_normal[0][0][gamma] * ela.G(fsp.u_n_1_di)[epsilon, beta] * fsp.omega_disk[alpha].dx(epsilon)
+            )
+        ) * \
+        (
+            - fsp.nu_phi_disk * ela.G(fsp.u_n_1_di)[nu, mu] *  bgeo.sub_mesh_facet_normal[0][0][nu] *  ela.G(fsp.u_n_1_di)[rho, mu] *  bgeo.sub_mesh_facet_normal[0][0][rho] - \
+            rpam.parameters['eta_di'] * dt / rpam.parameters['rho_di'] * ela.G(fsp.u_n_1_di)[sigma, mu] *  bgeo.sub_mesh_facet_normal[0][0][sigma] * ela.G(fsp.u_n_1_di)[rho, nu] *  bgeo.sub_mesh_facet_normal[0][0][rho] * ela.G(fsp.u_n_1_di)[tau, nu] * ((fsp.nu_omega_disk)[mu]).dx(tau)
+        ) * \
+    ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
+
 # sign
 
-
-F_omega_phi_disk_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
-    - fsp.phi_disk * ela.G(fsp.u_n_1_di)[beta, alpha] * bgeo.sub_mesh_facet_normal[0][0][beta] * ela.G(fsp.u_n_1_di)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 
-    ela.G(fsp.u_n_1_di)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][0][delta] * (
-    flu.sigma_ale(fsp.V_di, fsp.sigma_disk_n_32, fsp.u_n_1_di, rpam.parameters['eta_di']) * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma]
-    )
-    ) * \
-    (
-0
-
-    ) * ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
+F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N
 
 '''
 # step 3 for v_n
