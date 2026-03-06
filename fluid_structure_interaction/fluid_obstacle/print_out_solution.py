@@ -79,6 +79,9 @@ def print_solution_sq_fluid(t, step):
     io.full_print(fsp.v_square__, 'v_square__' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'vector')
+    io.full_print(fsp.v_square_n, 'v_square_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][1], 'vector')
 
     # 2 print tension 
     io.full_print(fsp.phi_square, 'phi_square_' + str(step), \

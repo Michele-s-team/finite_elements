@@ -201,17 +201,23 @@ for n in range(rpam.parameters['N']):
 
     vp_fl_sq = importlib.reload(vp_fl_sq)
 
-    # 3.1 solve for v_square__
+    # 4.1 solve for v_square__
     J_fl_sq_v__ = derivative(vp_fl_sq.F_v_square__, fsp.v_square__, fsp.J_v__square)
     problem_fl_sq_v__ = NonlinearVariationalProblem(vp_fl_sq.F_v_square__, fsp.v_square__, vp_fl_sq.bc_v_square__, J_fl_sq_v__)
     solver_fl_sq_v__ = NonlinearVariationalSolver(problem_fl_sq_v__)
     solver_fl_sq_v__.solve()
 
-    # 3.2 solve for phi_square
+    # 4.2 solve for phi_square
     J_fl_sq_phi = derivative(vp_fl_sq.F_phi_square, fsp.phi_square, fsp.J_phi_square)
     problem_fl_sq_phi = NonlinearVariationalProblem(vp_fl_sq.F_phi_square, fsp.phi_square, vp_fl_sq.bc_phi_square, J_fl_sq_phi)
     solver_fl_sq_phi = NonlinearVariationalSolver(problem_fl_sq_phi)
     solver_fl_sq_phi.solve()
+
+    # 4.3 solve for v_square_n
+    J_fl_sq_v_n = derivative(vp_fl_sq.F_v_square_n, fsp.v_square_n, fsp.J_v_square)
+    problem_fl_sq_v_n = NonlinearVariationalProblem(vp_fl_sq.F_v_square_n, fsp.v_square_n, vp_fl_sq.bc_v_square_n, J_fl_sq_v_n)
+    solver_fl_sq_v_n = NonlinearVariationalSolver(problem_fl_sq_v_n)
+    solver_fl_sq_v_n.solve()
 
     # sign
 
