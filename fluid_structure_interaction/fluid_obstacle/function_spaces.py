@@ -11,7 +11,7 @@ rmsh = importlib.import_module(swi.rmsh)
 '''
 The fields in this problem are
 
-* disk (fluid on disk):
+* disk fluid:
 
     - 'v_disk_n' = {\textrm{v}_disk^n}_notes
     - 'v_disk_n_1' = {\textrm{v}_disk^{n-1}}_notes
@@ -26,7 +26,7 @@ The fields in this problem are
 
     - 'f_di_n' = {\textrm{f}^{disk n}}_notes
 
-* square (fluid on square):
+* square fluid:
 
     - 'v_square_n' = {\textrm{v}_square^n}_notes
     - 'v_square_n_1' = {\textrm{v}_square^{n-1}}_notes
@@ -196,6 +196,8 @@ J_phi_omega_disk = TrialFunction(Q_phi_omega_disk)
 V_di = 0.5 * (v_disk_n_1 + v_disk__)
 U_n_12_1_on_0_0 = Function(Q_u_di)
 f_di_n = Function(Q_v_disk)
+# function used to project phi_disk on the function space Q_sigma_disk
+phi_disk_on_Q_sigma_disk = Function(Q_sigma_disk)
 
 # this field stores the values of sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mes[0][0]
 sigma_square_n_32_0_1_on_0_0 = Function(Q_sigma_disk)

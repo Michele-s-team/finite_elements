@@ -240,7 +240,6 @@ for n in range(rpam.parameters['N']):
     # UNCOMMENT THIS LATER
     # pr_bc.print_bcs()
 
-    # sign
 
 
     # update the fields
@@ -264,9 +263,11 @@ for n in range(rpam.parameters['N']):
     fsp.u_n_2_sq_dot.assign(fsp.u_n_1_sq_dot)
     fsp.u_n_1_sq_dot.assign(fsp.u_n_sq_dot)
 
-    # 3) disk fluid 
 
-    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - fsp.phi_disk)
+    # 3) disk fluid 
+    phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
+    fsp.phi_disk_on_Q_sigma_disk.interpolate(phi_disk_output)
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - fsp.phi_disk_on_Q_sigma_disk)
 
     fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
@@ -289,6 +290,7 @@ for n in range(rpam.parameters['N']):
 
     pr_sol.print_solution(t, step)
 
+    # sign
 
 
 
