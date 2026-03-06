@@ -288,13 +288,13 @@ for n in range(rpam.parameters['N']):
     fsp.c_n_1.assign(fsp.c_n)
 
 
-    pr_sol.print_solution(t, step)
+    # print out the solution
+    if step % rpam.parameters['print_out_stride'] == 0:
+        # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+        pr_sol.print_solution(t, step)
 
     # sign
 
-
-
-
-
+    print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
