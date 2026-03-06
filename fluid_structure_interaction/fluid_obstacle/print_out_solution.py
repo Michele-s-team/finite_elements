@@ -20,15 +20,18 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 
 
 # print the solution for I
-def print_solution_I(step):
+def print_solution_I(t, step):
 
     io.full_print(fsp.U_n_12, 'U_n_12_' + str(step), \
             solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
             lmsh.mesh[1], 'vector')
 
+    # include the snapshot in xdmf files
+    fi.xdmffile_U_n_12.write(fsp.U_n_12, t)
+
 
 # print the solution for D 
-def print_solution_D(step):
+def print_solution_D(t, step):
    
     #1 print fields for di    
     io.full_print(fsp.u_n_di, 'u_di_' + str(step), \
@@ -90,7 +93,7 @@ def print_solution_sq_fluid(t, step):
 
 
 # print the solution for M
-def print_solution_M(step):
+def print_solution_M(t, step):
 
     io.full_print(fsp.c_n, 'c_n_' + str(step), \
             solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
@@ -99,11 +102,11 @@ def print_solution_M(step):
 # print solution for all sectors
 def print_solution(t, step):
 
-    print_solution_I(step)
-    print_solution_D(step)
+    print_solution_I(t, step)
+    print_solution_D(t, step)
     print_solution_di_fluid(t, step)
     print_solution_sq_fluid(t, step)
-    print_solution_M(step)
+    print_solution_M(t, step)
 
 
 

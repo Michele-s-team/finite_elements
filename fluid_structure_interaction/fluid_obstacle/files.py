@@ -5,7 +5,7 @@ import runtime_arguments as rarg
 
 # 1) I 
 
-xdmffile_U_n_12_di = XDMFFile(os.path.join(rarg.args.output_directory, "U_n_12.xdmf"))
+xdmffile_U_n_12 = XDMFFile(os.path.join(rarg.args.output_directory, "U_n_12.xdmf"))
 
 # 2) D
 
