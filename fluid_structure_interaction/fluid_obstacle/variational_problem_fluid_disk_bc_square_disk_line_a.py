@@ -47,6 +47,7 @@ def f_M(c, U):
 
 bc_v_disk__ = []
 bc_phi_omega_disk = []
+bc_v_disk_n = []
 
 
 
@@ -94,11 +95,12 @@ F_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
         ) * \
     ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.ds_sub_mesh[0][0]['ds'] 
 
-# sign
 
 F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N
 
-'''
+
+
 # step 3 for v_n
-F_v_n = ( ( (fsp.v_n[alpha] - fsp.v_[alpha]) + (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_msh_n_1)[delta, alpha] * (fsp.phi.dx(delta)) ) * fsp.nu_v_n[alpha] ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1]
-'''
+F_v_disk_n = ( ( (fsp.v_disk_n[alpha] - fsp.v_disk__[alpha]) + (dt / rpam.parameters['rho_di']) * ela.G(fsp.u_n_1_di)[gamma, alpha] * (fsp.phi_disk.dx(gamma)) ) * fsp.nu_v_disk_n[alpha] ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
+
+# sign

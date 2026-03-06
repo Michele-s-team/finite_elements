@@ -60,13 +60,18 @@ def print_solution_di_fluid(t, step):
     io.full_print(fsp.v_disk__, 'v_disk__' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
+    io.full_print(fsp.v_disk_n, 'v_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][0], 'vector')
 
+    # 2 print tension 
     io.full_print(phi_disk_output, 'phi_disk_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'scalar')
     io.full_print(omega_disk_output, 'omega_disk_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
+
 
 
 # print solution for all sectors
