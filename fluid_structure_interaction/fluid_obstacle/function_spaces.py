@@ -119,7 +119,7 @@ P_omega = VectorElement('P', msh.element_geometry(lmsh.sub_meshes[0][0]), rpam.p
 phi_disk_omega_element = MixedElement([P_phi_disk, P_omega])
 Q_phi_omega_disk = FunctionSpace(lmsh.sub_meshes[0][0], phi_disk_omega_element)
 Q_phi_disk = Q_phi_omega_disk.sub(0).collapse()
-Q_phi_omega_disk = Q_phi_omega_disk.sub(1).collapse()
+Q_omega_disk = Q_phi_omega_disk.sub(1).collapse()
 
 
 # 2. square
