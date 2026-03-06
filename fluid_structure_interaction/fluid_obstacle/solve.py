@@ -194,7 +194,6 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
-    # sign
 
     # 4) solve for square fluid 
 
@@ -208,6 +207,13 @@ for n in range(rpam.parameters['N']):
     solver_fl_sq_v__ = NonlinearVariationalSolver(problem_fl_sq_v__)
     solver_fl_sq_v__.solve()
 
+    # 3.2 solve for phi_square
+    J_fl_sq_phi = derivative(vp_fl_sq.F_phi_square, fsp.phi_square, fsp.J_phi_square)
+    problem_fl_sq_phi = NonlinearVariationalProblem(vp_fl_sq.F_phi_square, fsp.phi_square, vp_fl_sq.bc_phi_square, J_fl_sq_phi)
+    solver_fl_sq_phi = NonlinearVariationalSolver(problem_fl_sq_phi)
+    solver_fl_sq_phi.solve()
+
+    # sign
 
     print('... done.', flush=True)
 

@@ -24,7 +24,7 @@ class f_di_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = 1
+        values[1] = -1
 
     def value_shape(self):
         return (2,)

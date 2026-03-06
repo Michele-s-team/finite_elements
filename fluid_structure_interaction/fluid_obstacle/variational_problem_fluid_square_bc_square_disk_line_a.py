@@ -65,8 +65,12 @@ bc_v_square__ = [
     DirichletBC(fsp.Q_v__square, fsp.v_disk_n_0_0_on_0_1, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])\
     ]
 
+bc_phi_square = [
+        DirichletBC(fsp.Q_sigma_square, Constant(0), rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"])\
+]
+
+
 '''
-bc_phi_square = []
 bc_v_square_n = []
 
 '''
@@ -85,18 +89,19 @@ F_v_square__ = (
             ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
        - ( 1.0/ela.detF(fsp.u_n_1_sq) * fsp.t_sq_n[alpha] ) * fsp.nu_v_square__[alpha] *  ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_t'] 
 
+
+
+
+# step 2 for phi_square
+F_phi_square = ( \
+                    - ela.G(fsp.u_n_1_sq)[beta, alpha] * (fsp.phi_square.dx(beta)) * ela.G(fsp.u_n_1_sq)[delta, alpha] * (fsp.nu_phi_square.dx(delta)) \
+                    - (rpam.parameters['rho_sq'] / dt) * ela.G(fsp.u_n_1_sq)[beta, alpha] * ((fsp.v_square__[alpha]).dx(beta)) * fsp.nu_phi_square \
+            ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
+        + (ela.G(fsp.u_n_1_sq)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][1][delta] * ela.G(fsp.u_n_1_sq)[beta, alpha] * (fsp.phi_square.dx(beta)) * fsp.nu_phi_square) * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_t'] 
+
 # sign
 
-
 '''
-# step 2 for phi_disk
-F_phi_disk = ( \
-                    - ela.G(fsp.u_n_1_di)[beta, alpha] * (fsp.phi_disk.dx(beta)) * ela.G(fsp.u_n_1_di)[delta, alpha] * (fsp.nu_phi_disk.dx(delta)) \
-                    - (rpam.parameters['rho_sq'] / dt) * ela.G(fsp.u_n_1_di)[beta, alpha] * ((fsp.v_disk__[alpha]).dx(beta)) * fsp.nu_phi_disk \
-            ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0] \
-        + (ela.G(fsp.u_n_1_di)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][0][delta] * ela.G(fsp.u_n_1_di)[beta, alpha] * (fsp.phi_disk.dx(beta)) * fsp.nu_phi_disk) * ela.detF(fsp.u_n_1_di) * rmsh.ds_sub_mesh[0][0]['ds'] 
-
-
 
 F_omega_disk = ( fsp.omega_disk[alpha] - ela.G(fsp.u_n_1_di)[beta, alpha] * fsp.phi_disk.dx(beta) ) * ( fsp.nu_omega_disk[alpha] - ela.G(fsp.u_n_1_di)[gamma, alpha] * fsp.nu_phi_disk.dx(gamma) ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 

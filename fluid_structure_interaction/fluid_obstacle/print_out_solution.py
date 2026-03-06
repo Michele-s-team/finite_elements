@@ -80,6 +80,11 @@ def print_solution_sq_fluid(t, step):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'vector')
 
+    # 2 print tension 
+    io.full_print(fsp.phi_square, 'phi_square_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][1], 'scalar')
+
 
 # print solution for all sectors
 def print_solution(t, step):
