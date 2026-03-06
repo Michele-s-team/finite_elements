@@ -232,7 +232,8 @@ U_n_12_1_on_0_1 = Function(Q_u_sq)
 f_sq_n = Function(Q_v_square)
 # this field is used to store the Dirichlet BCs for v_square__
 v_square__bc = Function(Q_v__square)
-
+# this field stores the values of v_disk_n_1 (defined on sub_mes[0][0]) on sub_mesh[0][1]
+v_disk_n_1_0_0_on_0_1 = Function(Q_v__square)
 
 
 # 3 D
