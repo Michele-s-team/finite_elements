@@ -236,23 +236,55 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
-    # sign
-
-
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     # UNCOMMENT THIS LATER
     # pr_bc.print_bcs()
 
+    # sign
+
+
     # update the fields
     # 1) I 
 
+    fsp.U_n_32.assign(fsp.U_n_12)
+
     # 2) D
+
+    # 2.1) disk
+    fsp.u_n_2_di.assign(fsp.u_n_1_di)
+    fsp.u_n_1_di.assign(fsp.u_n_di)
+
+    fsp.u_n_2_di_dot.assign(fsp.u_n_1_di_dot)
+    fsp.u_n_1_di_dot.assign(fsp.u_n_di_dot)
+
+    # 2.2) square
+    fsp.u_n_2_sq.assign(fsp.u_n_1_sq)
+    fsp.u_n_1_sq.assign(fsp.u_n_sq)
+
+    fsp.u_n_2_sq_dot.assign(fsp.u_n_1_sq_dot)
+    fsp.u_n_1_sq_dot.assign(fsp.u_n_sq_dot)
 
     # 3) disk fluid 
 
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - fsp.phi_disk)
+
+    fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
+    fsp.v_disk_n_1.assign(fsp.v_disk_n)
+
+    fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
+
     # 4) square fluid 
 
+    fsp.sigma_square_n_12.assign(fsp.sigma_square_n_32 - fsp.phi_square)
+
+    fsp.v_square_n_2.assign(fsp.v_square_n_1)
+    fsp.v_square_n_1.assign(fsp.v_square_n)
+
+    fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
+
     # 5) M
+
+    fsp.c_n_1.assign(fsp.c_n)
 
 
     pr_sol.print_solution(t, step)
