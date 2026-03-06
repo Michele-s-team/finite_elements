@@ -52,9 +52,10 @@ bc_v_square__ = [
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
-    DirichletBC(fsp.Q_v__square, ?, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])\
+    DirichletBC(fsp.Q_v__square, fsp.v_disk_n_0_0_on_0_1, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])\
     ]
 
+'''
 bc_phi_square = []
 bc_v_square_n = []
 
@@ -112,3 +113,4 @@ F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N
 # step 3 for v_n
 F_v_disk_n = ( ( (fsp.v_disk_n[alpha] - fsp.v_disk__[alpha]) + (dt / rpam.parameters['rho_di']) * ela.G(fsp.u_n_1_di)[gamma, alpha] * (fsp.phi_disk.dx(gamma)) ) * fsp.nu_v_disk_n[alpha] ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
+'''

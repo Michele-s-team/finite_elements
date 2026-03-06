@@ -58,6 +58,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
 vp_fl_di = importlib.import_module(swi.vp_fluid_di)
+vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 
 io.full_print(fsp.ys, 'ys', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
@@ -187,6 +188,9 @@ for n in range(rpam.parameters['N']):
     problem_fl_di_v_n = NonlinearVariationalProblem(vp_fl_di.F_v_disk_n, fsp.v_disk_n, vp_fl_di.bc_v_disk_n, J_fl_di_v_n)
     solver_fl_di_v_n = NonlinearVariationalSolver(problem_fl_di_v_n)
     solver_fl_di_v_n.solve()
+
+    # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
+    fsp.v_disk_n_0_0_on_0_1.assign(project(fsp.v_disk_n, fsp.Q_v__square))
 
     print('... done.', flush=True)
 

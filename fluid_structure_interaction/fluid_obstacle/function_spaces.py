@@ -168,6 +168,8 @@ v_disk_n_1 = Function(Q_v_disk)
 v_disk_n_2 = Function(Q_v_disk)
 v_disk__ = Function(Q_v__disk)
 
+v_disk_n.set_allow_extrapolation(True)
+
 # 1.2 sigma_disk
 sigma_disk_n_12 = Function(Q_sigma_disk)
 sigma_disk_n_32 = Function(Q_sigma_disk)
@@ -233,7 +235,7 @@ f_sq_n = Function(Q_v_square)
 # this field is used to store the Dirichlet BCs for v_square__
 v_square__bc = Function(Q_v__square)
 # this field stores the values of v_disk_n_1 (defined on sub_mes[0][0]) on sub_mesh[0][1]
-v_disk_n_1_0_0_on_0_1 = Function(Q_v__square)
+v_disk_n_0_0_on_0_1 = Function(Q_v__square)
 
 
 # 3 D
