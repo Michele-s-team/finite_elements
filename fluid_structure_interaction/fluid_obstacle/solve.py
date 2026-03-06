@@ -50,6 +50,16 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+params_I = {'nonlinear_solver': 'newton',
+            'newton_solver':
+                {
+                    'linear_solver': 'superlu',
+                    'absolute_tolerance': 1e-12,
+                    'relative_tolerance': 1e-12,
+                    'maximum_iterations': 1000000,
+                    'relaxation_parameter': 0.95,
+                }
+            }
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -102,7 +112,7 @@ for n in range(rpam.parameters['N']):
     J_I = derivative(vp_I.F_U, fsp.U_n_12, fsp.J_U)
     problem_I = NonlinearVariationalProblem(vp_I.F_U, fsp.U_n_12, vp_I.bcs, J_I)
     solver_I = NonlinearVariationalSolver(problem_I)
-    solver_I.parameters.update(params)
+    solver_I.parameters.update(params_I)
     solver_I.solve()
 
     print('... done.', flush=True)
