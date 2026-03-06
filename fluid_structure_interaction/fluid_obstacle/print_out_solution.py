@@ -85,6 +85,9 @@ def print_solution_di_fluid(t, step):
     io.full_print(omega_disk_output, 'omega_disk_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
+    io.full_print(fsp.sigma_disk_n_12, 'sigma_disk_n_12_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][0], 'scalar')
     
     fi.xdmffile_sigma_di_n_12.write(fsp.sigma_disk_n_12, t)
 
@@ -106,6 +109,9 @@ def print_solution_sq_fluid(t, step):
 
     # 2 print tension 
     io.full_print(fsp.phi_square, 'phi_square_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  lmsh.sub_meshes[0][1], 'scalar')
+    io.full_print(fsp.sigma_square_n_12, 'sigma_square_n_12_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'scalar')
 
