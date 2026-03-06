@@ -78,9 +78,16 @@ F_omega_disk = ( fsp.omega_disk[alpha] - ela.G(fsp.u_n_1_di)[beta, alpha] * fsp.
 # sign
 
 
-F_omega_phi_disk_N =  rpam.parameters['alpha'] / rmsh.r_mesh * () * \
-    () * \
-    rmsh.ds
+F_omega_phi_disk_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
+    - fsp.phi_disk * ela.G(fsp.u_n_1_di)[beta, alpha] * bgeo.sub_mesh_facet_normal[0][0][beta] * ela.G(fsp.u_n_1_di)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 
+    ela.G(fsp.u_n_1_di)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][0][delta] * (
+    flu.sigma_ale(fsp.V_di, fsp.sigma_disk_n_32, fsp.u_n_1_di, rpam.parameters['eta_di']) * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma]
+    )
+    ) * \
+    (
+0
+
+    ) * ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
 '''
 # step 3 for v_n
