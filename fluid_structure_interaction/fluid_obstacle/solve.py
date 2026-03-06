@@ -200,6 +200,14 @@ for n in range(rpam.parameters['N']):
 
     print('Solving square fluid problem ...', flush=True)
 
+    vp_fl_sq = importlib.reload(vp_fl_sq)
+
+    # 3.1 solve for v_square__
+    J_fl_sq_v__ = derivative(vp_fl_sq.F_v_square__, fsp.v_square__, fsp.J_v__square)
+    problem_fl_sq_v__ = NonlinearVariationalProblem(vp_fl_sq.F_v_square__, fsp.v_square__, vp_fl_sq.bc_v_square__, J_fl_sq_v__)
+    solver_fl_sq_v__ = NonlinearVariationalSolver(problem_fl_sq_v__)
+    solver_fl_sq_v__.solve()
+
 
     print('... done.', flush=True)
 

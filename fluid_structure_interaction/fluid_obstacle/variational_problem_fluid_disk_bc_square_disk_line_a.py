@@ -20,7 +20,7 @@ alpha, beta, gamma, delta, epsilon, mu, nu, rho, sigma, tau = ufl.indices(10)
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 
-class f_di_expression(UserExpression):
+class f_di_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
@@ -29,7 +29,7 @@ class f_di_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-fsp.f_di_n.interpolate(f_di_expression(element=fsp.Q_v_disk.ufl_element()))
+fsp.f_di_n.interpolate(f_di_n_expression(element=fsp.Q_v_disk.ufl_element()))
 
 '''
 f_M = {\textrm{f}_M}_notes

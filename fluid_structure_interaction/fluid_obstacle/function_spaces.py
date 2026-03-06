@@ -24,7 +24,7 @@ The fields in this problem are
     - 'phi_disk' = {\phi_disk}_notes
     - 'omega_disk' = omega_notes
 
-    - 'f_di_n' = \textrm{f}^{disk n}
+    - 'f_di_n' = {\textrm{f}^{disk n}}_notes
 
 * square (fluid on square):
 
@@ -38,7 +38,8 @@ The fields in this problem are
 
     - 'phi_square' = {\phi_square}_notes
 
-    - 'f_sq_n' = \textrm{f}^{square n}
+    - 'f_sq_n' = {\textrm{f}^{square n}}_notes
+    - 't_sq_n' = {\textrm{t}^n}_notes
 
 
 * D (domain)
@@ -232,6 +233,7 @@ J_phi_square = TrialFunction(Q_sigma_square)
 V_sq = 0.5 * (v_square_n_1 + v_square__)
 U_n_12_1_on_0_1 = Function(Q_u_sq)
 f_sq_n = Function(Q_v_square)
+t_sq_n = Function(Q_v_square)
 # this field is used to store the Dirichlet BCs for v_square__
 v_square__bc = Function(Q_v__square)
 # this field stores the values of v_disk_n_1 (defined on sub_mes[0][0]) on sub_mesh[0][1]

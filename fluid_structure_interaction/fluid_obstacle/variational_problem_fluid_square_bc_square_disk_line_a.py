@@ -20,7 +20,7 @@ alpha, beta, gamma, delta = ufl.indices(4)
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 
-class f_sq_expression(UserExpression):
+class f_sq_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
@@ -29,9 +29,20 @@ class f_sq_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-fsp.f_sq_n.interpolate(f_sq_expression(element=fsp.Q_v_square.ufl_element()))
+fsp.f_sq_n.interpolate(f_sq_n_expression(element=fsp.Q_v_square.ufl_element()))
 
-# sign
+
+class t_sq_n_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+fsp.t_sq_n.interpolate(t_sq_n_expression(element=fsp.Q_v_square.ufl_element()))
+
 
 '''
 v_square__bc_Expression =  g_notes used to enforce the BCs for v_square__ on \partial \Omega^y_{sq IN} U \partial \Omega^y_{sq OUT} U \partial \Omega^y_{sq B}
@@ -62,8 +73,8 @@ bc_v_square_n = []
 
 # Define variational problem for step 1
 # step 1 for v_
-# natural BC imposed here
-F_v_disk__ = (
+# natural BC imposed here, and I dropped the boundary terms where Dirichlet BCs are imposed because the test function vanishes on those boundaries
+F_v_square__ = (
                 ( rpam.parameters['rho_sq'] * ( 
                         (fsp.v_square__[alpha] - fsp.v_square_n_1[alpha]) / dt \
                         + ( 3.0 / 2.0 * (fsp.v_square_n_1[gamma] - fsp.u_n_1_sq_dot[gamma] ) * ela.G(fsp.u_n_1_sq)[beta, gamma] - 1.0 / 2.0 * ( fsp.v_square_n_2[gamma] - fsp.u_n_2_sq_dot[gamma] ) * ela.G(fsp.u_n_2_sq)[beta, gamma] ) * (fsp.V_sq[alpha]).dx(beta) 
@@ -72,7 +83,9 @@ F_v_disk__ = (
                 ) * fsp.nu_v_square__[alpha] + \
                 ela.G(fsp.u_n_1_sq)[gamma, beta] *  flu.sigma_ale(fsp.V_sq, fsp.sigma_square_n_32, fsp.u_n_1_sq, rpam.parameters['eta_sq'])[alpha, beta] * fsp.nu_v_square__[alpha].dx(gamma) \
             ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
-       - ( 1.0/ela.detF(fsp.u_n_1_sq) * fsp.t_sq[alpha] ) * fsp.nu_v_square__[alpha] *  ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_t'] 
+       - ( 1.0/ela.detF(fsp.u_n_1_sq) * fsp.t_sq_n[alpha] ) * fsp.nu_v_square__[alpha] *  ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_t'] 
+
+# sign
 
 
 '''
