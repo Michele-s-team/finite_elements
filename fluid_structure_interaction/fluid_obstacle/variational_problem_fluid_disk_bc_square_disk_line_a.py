@@ -92,7 +92,7 @@ F_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
             - fsp.nu_phi_disk * ela.G(fsp.u_n_1_di)[nu, mu] *  bgeo.sub_mesh_facet_normal[0][0][nu] *  ela.G(fsp.u_n_1_di)[rho, mu] *  bgeo.sub_mesh_facet_normal[0][0][rho] - \
             rpam.parameters['eta_di'] * dt / rpam.parameters['rho_di'] * ela.G(fsp.u_n_1_di)[sigma, mu] *  bgeo.sub_mesh_facet_normal[0][0][sigma] * ela.G(fsp.u_n_1_di)[rho, nu] *  bgeo.sub_mesh_facet_normal[0][0][rho] * ela.G(fsp.u_n_1_di)[tau, nu] * ((fsp.nu_omega_disk)[mu]).dx(tau)
         ) * \
-    ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
+    ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.ds_sub_mesh[0][0]['ds'] 
 
 # sign
 
