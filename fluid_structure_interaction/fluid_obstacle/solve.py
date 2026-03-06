@@ -228,6 +228,18 @@ for n in range(rpam.parameters['N']):
     # UNCOMMENT THIS LATER
     # pr_bc.print_bcs()
 
+    # update the fields
+    # 1) I 
+
+    # 2) D
+
+    # 3) disk fluid 
+
+    # 4) square fluid 
+
+    # 5) M
+
+
     pr_sol.print_solution(t, step)
 
 
