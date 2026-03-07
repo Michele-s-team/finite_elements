@@ -43,8 +43,8 @@ params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
                   'linear_solver': 'superlu',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
+                  'absolute_tolerance': 1e-12,
+                  'relative_tolerance': 1e-12,
                   'maximum_iterations': 1000000,
                   'relaxation_parameter': 0.95,
               }
