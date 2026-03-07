@@ -126,6 +126,9 @@ def print_solution_M(t, step):
             solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
             lmsh.sub_meshes[0][1], 'scalar')
 
+    fi.xdmffile_c_n.write(fsp.c_n, t)
+
+
 # print solution for all sectors
 def print_solution(t, step):
 
