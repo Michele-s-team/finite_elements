@@ -67,12 +67,17 @@ def print_solution_di_fluid(t, step):
     phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
 
     # 1 print velocities
+    # 1.1 on the reference mesh 
     io.full_print(fsp.v_disk__, 'v_disk__' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
     io.full_print(fsp.v_disk_n, 'v_disk_n_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
+
+    # on the current (deformed) mesh
+    io.full_print_deformed(fsp.v_disk__, fsp.u_n_di, 'v_disk__' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.mesh, 'vector')
 
     fi.xdmffile_v_di__.write(fsp.v_disk__, t)
     fi.xdmffile_v_di_n.write(fsp.v_disk_n, t)
