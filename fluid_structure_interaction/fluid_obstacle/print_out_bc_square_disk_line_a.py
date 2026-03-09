@@ -7,6 +7,7 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
+import fluid as flu
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
@@ -17,10 +18,21 @@ import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-# vp_mesh = importlib.import_module(swi.vp_msh)
-# vp_fluid = importlib.import_module(swi.vp_fl)
+vp_fluid_di = importlib.import_module(swi.vp_fluid_di)
 
-alpha = ufl.indices(1)
+alpha, beta, gamma = ufl.indices(3)
+
+# natural BC for the disk fluid problem 
+def natural_bc_fl_di():
+    return ufl.as_tensor(
+        (
+             flu.sigma_ale(fsp.V_di, fsp.sigma_disk_n_32, fsp.u_n_1_di, rpam.parameters['eta_di'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma]
+        ) \
+        - (
+             flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 1.0 / ela.detF(fsp.u_n_1_di) * vp_fluid_di.f_M(fsp.c_n_1, fsp.U_n_32)[alpha] 
+        ), 
+        (alpha)
+    )
 
 # create the path for the csv file if it does not exist
 filename_bcs = rarg.args.output_directory + '/bcs.csv'
@@ -43,11 +55,12 @@ fieldnames = [ \
     '<<|u_n_sq_dot - [v_square^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y circle]',\
     
     # 3 fluid disk
+    '<<|\varsigma_{\alpha \beta}^disk G^{n-1}_{\gamma \beta} \nu_gamma - [\varsigma_{\alpha \beta}^square G^{n-1}_{\gamma \beta} \nu_\gamma + 1/|F^{n-1}| F_M^\alpha]|^2>>_[partial Omega^y circle]', \
 
     # 4 fluid square
 
     # 5 M
-    
+
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
