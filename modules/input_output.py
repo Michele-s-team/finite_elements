@@ -69,6 +69,13 @@ prints a vector to csv file
 Input values: 
     - 'v': the vector
     - 'filename': path, filename and extension of the csv file
+
+Return values: 
+- the resulting csv file is of this form
+
+    f:0,f:1,....,f:[number of components of v],:0,:1,:2
+    v_0,v_1,....,v_[(number of components of v) - 1],x_0,x_1,x_2
+    ....
 '''
 
 def print_vector_to_csvfile(v, filename):
@@ -135,6 +142,14 @@ prints a tensor with any shape to csv file
 Input values: 
     - 't': the tensor
     - 'filename': path, filename and extension of the csv file
+
+
+Return values: 
+    - the resulting csv file is of this form
+    
+    f:0,f:1,....,f:[number of components of t],:0,:1,:2
+    t_0,t_1,....,t_[(number of components of t) - 1],x_0,x_1,x_2
+    ....
 '''
 def print_tensor_to_csvfile(t, filename):
     
@@ -219,6 +234,13 @@ Input values:
     - 'v': the vector
     - 'mesh': the mesh where the vector is defined
     - 'filename': the path, filename and extension of the csv file where the vector will be written 
+
+Return values: 
+    - the resulting csv file is of this form
+
+    f:0,f:1,....,f:[number of components of v],:0,:1,:2
+    v_0,v_1,....,v_[(number of components of v) - 1],x_0,x_1,x_2
+    ....
 '''
 
 
@@ -269,6 +291,14 @@ Input values:
     - 't': the tensor
     - 'mesh': the mesh where the tensor is defined
     - 'filename': the path, filename and extension of the csv file where the tensor will be written 
+
+
+Return values: 
+    - the resulting csv file is of this form
+    
+    f:0,f:1,....,f:[number of components of t],:0,:1,:2
+    t_0,t_1,....,t_[(number of components of t) - 1],x_0,x_1,x_2
+    ....
 '''
 
 def print_nodal_values_tensor_to_csvfile(t, mesh, filename):
