@@ -20,9 +20,9 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp_fluid_di = importlib.import_module(swi.vp_fluid_di)
 
-alpha, beta, gamma = ufl.indices(3)
+alpha, beta, gamma, delta = ufl.indices(4)
 
-# natural BC for the disk fluid problem 
+# residual of natural BC [Eq. (115)] for the disk fluid problem 
 def natural_bc_fl_di():
     return ufl.as_tensor(
         (
@@ -31,6 +31,13 @@ def natural_bc_fl_di():
         - (
              flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 1.0 / ela.detF(fsp.u_n_1_di) * vp_fluid_di.f_M(fsp.c_n_1, fsp.U_n_32)[alpha] 
         ), 
+        (alpha)
+    )
+
+# residual of natural BC [Eq. (118)] for the square fluid problem 
+def natural_bc_fl_sq():
+    return ufl.as_tensor(
+        ela.detF(fsp.u_n_1_sq) * flu.sigma_ale(fsp.V_sq, fsp.sigma_square_n_32, fsp.u_n_1_sq, rpam.parameters['eta_sq'])[alpha, beta] * ela.G(fsp.u_n_1_sq)[delta, beta] * (- bgeo.sub_mesh_facet_normal[0][1][delta]) + fsp.t_sq_n[alpha], 
         (alpha)
     )
 
@@ -58,7 +65,11 @@ fieldnames = [ \
     '<<|\varsigma_{\alpha \beta}^disk G^{n-1}_{\gamma \beta} \nu_gamma - [\varsigma_{\alpha \beta}^square G^{n-1}_{\gamma \beta} \nu_\gamma + 1/|F^{n-1}| F_M^\alpha]|^2>>_[partial Omega^y circle]', \
 
     # 4 fluid square
-
+    '<<|v_square__ - g^n|^2>>_[(partial Omega^y square in) U (partial Omega^y square out) U (partial Omega^y square b)]', \
+    '<<|v_square__ - v^n_circle|^2>>_[partial Omega^y circle]', \
+    '<<||F^{n-1}| \\varsigma^square_{\alpha \beta} G^{n-1}_{\delta \beta} \nu_\delta + \textrm{t}^n_\alpha|^2>>_[partial Omega^y t]', \
+    '<<|phi_square|^2>>_[partial Omega^y square t]', \
+        
     # 5 M
 
     ]
@@ -93,6 +104,21 @@ def print_bcs():
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n_sq_dot), rmsh.ds_sub_mesh[0][1]['ds_lrtb']):.{io.number_of_decimals}e}",\
         fieldnames[6]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n_sq_dot - fsp.u_n_sq_dot_bc_di), rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}",\
+
+
+        #3 fluid disk
+        fieldnames[7]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_di()), rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}",\
+            
+        # 4 fluid square
+        fieldnames[8]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_square__ - fsp.v_square__bc), rmsh.ds_sub_mesh[0][1]['ds_lr'] + rmsh.ds_sub_mesh[0][1]['ds_b']):.{io.number_of_decimals}e}",\
+        fieldnames[9]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_square__ - fsp.v_disk_n_0_0_on_0_1), rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}",\
+        fieldnames[10]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_sq()), rmsh.ds_sub_mesh[0][1]['ds_t']):.{io.number_of_decimals}e}",\
+        fieldnames[11]: \
+            f"{msh.abs_wrt_measure(fsp.phi_square, rmsh.ds_sub_mesh[0][1]['ds_t']):.{io.number_of_decimals}e}",\
         }])
 
     csvfile.flush()
