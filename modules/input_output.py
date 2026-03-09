@@ -265,17 +265,7 @@ def print_nodal_values_vector_to_csvfile(v, mesh, filename):
         # evaluate the function at the coordinate
         v_value = v(*coordinate)
 
-        if vector_shape_size <= 3:
-            # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
-
-            padded_v_value = pad(v_value, 3)
-
-        else: 
-            # the number of components of the vector is > 3: print all the components 
-
-            padded_v_value = v_value
-
-        value_string = ",".join([f'{padded_v_value[i]}' for i in range(len(padded_v_value))])
+        value_string = ",".join([f'{v_value[i]}' for i in range(vector_shape_size)])
         coordinate_string  = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
 
         print(f"{value_string},{coordinate_string}", file=csvfile)
