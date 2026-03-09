@@ -64,12 +64,14 @@ params_I = {'nonlinear_solver': 'newton',
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
-# load all variational problems
+# pre-load modules
+pr_bc = importlib.import_module(swi.prout_bc)
 vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
 vp_fl_di = importlib.import_module(swi.vp_fluid_di)
 vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 vp_M = importlib.import_module(swi.vp_M)
+
 
 io.full_print(fsp.ys, 'ys', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
@@ -265,8 +267,7 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
 
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
-    # UNCOMMENT THIS LATER
-    # pr_bc.print_bcs()
+    pr_bc.print_bcs()
 
 
 
