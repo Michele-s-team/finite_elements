@@ -73,6 +73,8 @@ fieldnames = [ \
     '<<(G^{n-1}_{\gamma \alpha} \partial \phi_square / \partial y_\gamma G^{n-1}_{\beta \alpha} \nu_\beta)^2>>_[(partial Omega^y square in) U (partial Omega^y square out) U (partial Omega^y square b) U (partial Omega^y circle)]', \
         
     # 5 M
+    '<<(G^{n-1}_{\gamma \alpha} \nu_\gamma [- \cal{D} G^{n-1}_{\beta \alpha} \partial c^n / \partial y_\beta])^2>>_[partial Omega^y sq]', \
+    '<<[|F^{n-1}| (G^{n-1}_{\gamma \alpha} \nu_\gamma [- \cal{D} G^{n-1}_{\beta \alpha} \partial c^n / \partial y_\beta]) - k]^2>>_[partial Omega^y circle]', \
 
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -125,6 +127,14 @@ def print_bcs():
             f"{msh.abs_wrt_measure(fsp.phi_square, rmsh.ds_sub_mesh[0][1]['ds_t']):.{io.number_of_decimals}e}",\
         fieldnames[13]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1_sq)[gamma, alpha] * (fsp.phi_square.dx(gamma)) * ela.G(fsp.u_n_1_sq)[beta, alpha] * (- bgeo.sub_mesh_facet_normal[0][1][beta]) , rmsh.ds_sub_mesh[0][1]['ds_lr'] + rmsh.ds_sub_mesh[0][1]['ds_b'] + rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}",\
+
+
+        # M 
+        fieldnames[14]: \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1_sq)[gamma, alpha] * (- bgeo.sub_mesh_facet_normal[0][1][gamma]) * (- fsp.D_c * ela.G(fsp.u_n_1_sq)[beta, alpha] * fsp.c_n.dx(beta)), rmsh.ds_sub_mesh[0][1]['ds_lrtb']):.{io.number_of_decimals}e}",\
+        fieldnames[15]: \
+            f"{msh.abs_wrt_measure(ela.detF(fsp.u_n_1_sq) * ela.G(fsp.u_n_1_sq)[gamma, alpha] * (- bgeo.sub_mesh_facet_normal[0][1][gamma]) * (- fsp.D_c * ela.G(fsp.u_n_1_sq)[beta, alpha] * fsp.c_n.dx(beta)) - rpam.parameters['k'], rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}"
+
         }])
 
     csvfile.flush()

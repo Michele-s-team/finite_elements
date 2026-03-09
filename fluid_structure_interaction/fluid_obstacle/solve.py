@@ -266,8 +266,10 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
+    # print out the residuals of BCs
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
-    pr_bc.print_bcs()
+    if step % rpam.parameters['print_out_stride'] == 0:
+        pr_bc.print_bcs()
 
 
 
