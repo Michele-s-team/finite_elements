@@ -140,6 +140,10 @@ def print_solution_sq_fluid(t, step):
                   lmsh.sub_meshes[0][1], 'scalar')
     
     # 2.2 on the current mesh 
+    io.full_print_deformed(fsp.phi_square, fsp.u_n_sq, 'phi_square_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][1], 'scalar')
+    io.full_print_deformed(fsp.sigma_square_n_12, fsp.u_n_sq, 'sigma_square_n_12_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][1], 'scalar')
 
     fi.xdmffile_sigma_sq_n_12.write(fsp.sigma_square_n_12, t)
 
