@@ -34,11 +34,11 @@ def print_solution_I(t, step):
 def print_solution_D(t, step):
    
     #1 print fields for di    
-    io.full_print(fsp.u_n_di, 'u_di_' + str(step), \
+    io.full_print(fsp.u_n_di, 'u_n_di_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
     
-    io.full_print(fsp.u_n_di_dot, 'u_di_dot_' + str(step), \
+    io.full_print(fsp.u_n_di_dot, 'u_n_di_dot_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
     
@@ -55,11 +55,11 @@ def print_solution_D(t, step):
 
     
     #2 print fields for sq
-    io.full_print(fsp.u_n_sq, 'u_sq_' + str(step), \
+    io.full_print(fsp.u_n_sq, 'u_n_sq_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'vector')
     
-    io.full_print(fsp.u_n_sq_dot, 'u_sq_dot_' + str(step), \
+    io.full_print(fsp.u_n_sq_dot, 'u_n_sq_dot_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'vector')
     
