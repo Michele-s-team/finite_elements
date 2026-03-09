@@ -321,7 +321,6 @@ for n in range(rpam.parameters['N']):
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
         pr_sol.print_solution(t, step)
 
-    # sign
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
