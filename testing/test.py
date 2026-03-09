@@ -982,7 +982,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 case_name = 'fluid_structure_interaction/fluid_obstacle'
 
-problem_name = 'square_disk_line'
+problem_name = 'square_disk_line_a'
 generate_mesh_path =root_path + 'generate_mesh/2d/square/disk_line'
 checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
                                                                      root_path,

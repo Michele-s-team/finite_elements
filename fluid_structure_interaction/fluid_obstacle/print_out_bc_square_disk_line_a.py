@@ -63,12 +63,14 @@ fieldnames = [ \
     
     # 3 fluid disk
     '<<|\varsigma_{\alpha \beta}^disk G^{n-1}_{\gamma \beta} \nu_gamma - [\varsigma_{\alpha \beta}^square G^{n-1}_{\gamma \beta} \nu_\gamma + 1/|F^{n-1}| F_M^\alpha]|^2>>_[partial Omega^y circle]', \
+    '<<BC_F_N^2>>_[partial Omega^y circle]', \
 
     # 4 fluid square
     '<<|v_square__ - g^n|^2>>_[(partial Omega^y square in) U (partial Omega^y square out) U (partial Omega^y square b)]', \
     '<<|v_square__ - v^n_circle|^2>>_[partial Omega^y circle]', \
     '<<||F^{n-1}| \\varsigma^square_{\alpha \beta} G^{n-1}_{\delta \beta} \nu_\delta + \textrm{t}^n_\alpha|^2>>_[partial Omega^y t]', \
     '<<|phi_square|^2>>_[partial Omega^y square t]', \
+    '<<(G^{n-1}_{\gamma \alpha} \partial \phi_square / \partial y_\gamma G^{n-1}_{\beta \alpha} \nu_\beta)^2>>_[(partial Omega^y square in) U (partial Omega^y square out) U (partial Omega^y square b) U (partial Omega^y circle)]', \
         
     # 5 M
 
@@ -109,16 +111,20 @@ def print_bcs():
         #3 fluid disk
         fieldnames[7]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_di_v__()), rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}",\
+        fieldnames[8]: \
+            f"{msh.abs_wrt_measure(vp_fluid_di.natural_bc_fl_di_phi(), rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}",\
             
         # 4 fluid square
-        fieldnames[8]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_square__ - fsp.v_square__bc), rmsh.ds_sub_mesh[0][1]['ds_lr'] + rmsh.ds_sub_mesh[0][1]['ds_b']):.{io.number_of_decimals}e}",\
         fieldnames[9]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_square__ - fsp.v_disk_n_0_0_on_0_1), rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_square__ - fsp.v_square__bc), rmsh.ds_sub_mesh[0][1]['ds_lr'] + rmsh.ds_sub_mesh[0][1]['ds_b']):.{io.number_of_decimals}e}",\
         fieldnames[10]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_sq()), rmsh.ds_sub_mesh[0][1]['ds_t']):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_square__ - fsp.v_disk_n_0_0_on_0_1), rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}",\
         fieldnames[11]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_sq()), rmsh.ds_sub_mesh[0][1]['ds_t']):.{io.number_of_decimals}e}",\
+        fieldnames[12]: \
             f"{msh.abs_wrt_measure(fsp.phi_square, rmsh.ds_sub_mesh[0][1]['ds_t']):.{io.number_of_decimals}e}",\
+        fieldnames[13]: \
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1_sq)[gamma, alpha] * (fsp.phi_square.dx(gamma)) * ela.G(fsp.u_n_1_sq)[beta, alpha] * (- bgeo.sub_mesh_facet_normal[0][1][beta]) , rmsh.ds_sub_mesh[0][1]['ds_lr'] + rmsh.ds_sub_mesh[0][1]['ds_b'] + rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}",\
         }])
 
     csvfile.flush()
