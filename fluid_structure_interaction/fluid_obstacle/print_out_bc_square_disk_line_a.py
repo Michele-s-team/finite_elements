@@ -32,6 +32,7 @@ fieldnames = [ \
     '|U_n_12_[partial Omega - l] - U_n_12_[partial Omega - r]|', \
     # 2 bcs for D
     '<<|u_sq_n|^2>>_[partial Omega^y sq]', \
+    '<<|u_sq_n - U_n_12|^2>>_[partial Omega^y circle]'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -44,7 +45,9 @@ def print_bcs():
         fieldnames[0]: \
             f"{np.sqrt((fsp.U_n_12(lmsh.mesh_parameters[1]['x_l'])[0] - fsp.U_n_12(lmsh.mesh_parameters[1]['x_r'])[0])**2 + (fsp.U_n_12(lmsh.mesh_parameters[1]['x_l'])[1] - fsp.U_n_12(lmsh.mesh_parameters[1]['x_r'])[1])**2):.{io.number_of_decimals}e}",\
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n_sq), rmsh.ds_sub_mesh[0][1]['ds_lrtb']):.{io.number_of_decimals}e}"
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n_sq), rmsh.ds_sub_mesh[0][1]['ds_lrtb']):.{io.number_of_decimals}e}",\
+        fieldnames[2]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n_sq - fsp.U_n_12_1_on_0_1), rmsh.ds_sub_mesh[0][1]['ds_circle']):.{io.number_of_decimals}e}"
         }])
 
     csvfile.flush()
