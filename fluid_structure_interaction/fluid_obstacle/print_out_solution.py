@@ -75,15 +75,18 @@ def print_solution_di_fluid(t, step):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'vector')
 
-    # on the current (deformed) mesh
+    # 1.2 on the current mesh
     io.full_print_deformed(fsp.v_disk__, fsp.u_n_di, 'v_disk__' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.mesh, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'vector')
+    io.full_print_deformed(fsp.v_disk_n, fsp.u_n_di, 'v_disk_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'vector')
 
     fi.xdmffile_v_di__.write(fsp.v_disk__, t)
     fi.xdmffile_v_di_n.write(fsp.v_disk_n, t)
 
 
     # 2 print tension 
+    # 2.1 on the reference mesh 
     io.full_print(phi_disk_output, 'phi_disk_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'scalar')
@@ -93,6 +96,14 @@ def print_solution_di_fluid(t, step):
     io.full_print(fsp.sigma_disk_n_12, 'sigma_disk_n_12_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][0], 'scalar')
+    
+    # 2.2 on the current mesh
+    io.full_print_deformed(phi_disk_output, fsp.u_n_di, 'phi_disk_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'scalar')
+    io.full_print_deformed(omega_disk_output, fsp.u_n_di, 'omega_disk_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'vector')
+    io.full_print_deformed(fsp.sigma_disk_n_12, fsp.u_n_di, 'sigma_disk_n_12_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'scalar')
     
     fi.xdmffile_sigma_di_n_12.write(fsp.sigma_disk_n_12, t)
 
