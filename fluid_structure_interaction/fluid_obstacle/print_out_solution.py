@@ -112,6 +112,7 @@ def print_solution_di_fluid(t, step):
 def print_solution_sq_fluid(t, step):
 
     # 1 print velocities
+    # 1.1 on the reference mesh
     io.full_print(fsp.v_square__, 'v_square__' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'vector')
@@ -119,17 +120,26 @@ def print_solution_sq_fluid(t, step):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'vector')
     
+    # 1.2 on the current mesh
+    io.full_print_deformed(fsp.v_square__, fsp.u_n_sq, 'v_square__' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][1], 'vector')
+    io.full_print_deformed(fsp.v_square_n, fsp.u_n_sq, 'v_square_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][1], 'vector')
+
     fi.xdmffile_v_sq__.write(fsp.v_square__, t)
     fi.xdmffile_v_sq_n.write(fsp.v_square_n, t)
 
 
     # 2 print tension 
+    # 2.1 on the reference mesh
     io.full_print(fsp.phi_square, 'phi_square_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'scalar')
     io.full_print(fsp.sigma_square_n_12, 'sigma_square_n_12_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   lmsh.sub_meshes[0][1], 'scalar')
+    
+    # 2.2 on the current mesh 
 
     fi.xdmffile_sigma_sq_n_12.write(fsp.sigma_square_n_12, t)
 
