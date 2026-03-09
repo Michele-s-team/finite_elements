@@ -110,30 +110,19 @@ def print_vector_to_csvfile(v, filename):
     # print(f'--- coordinates = {coordinates}')
 
 
-
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
 
-    component_headers = ",".join([f'"f:{i}"' for i in range(3)])
+    component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
     coord_headers     = ",".join([f'":{i}"' for i in range(3)])
-
     print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for coordinate, value in zip(coordinates, values):
 
         padded_coordinate = pad(coordinate, 3)
 
-        if value_size <= 3:
-            # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
-
-            padded_value = pad(value, 3)
-        else: 
-            # the number of components of the vector is > 3: print all the components 
-
-            padded_value = value
-
-        value_string = ",".join([f'{padded_value[i]}' for i in range(len(padded_value))])
+        value_string = ",".join([f'{value[i]}' for i in range(value_size)])
 
 
         print(f"{value_string}",f",{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}", file=csvfile)
