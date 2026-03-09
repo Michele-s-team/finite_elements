@@ -45,6 +45,14 @@ def print_solution_D(t, step):
     fi.xdmffile_u_n_di.write(fsp.u_n_di, t)
     fi.xdmffile_u_n_di_dot.write(fsp.u_n_di_dot, t)
 
+    # Write the deformed sub_mesh[0][0] to file
+    deformed_sub_mesh_0_0 = msh.deform_mesh(lmsh.sub_meshes[0][0], fsp.u_n_di)
+    with XDMFFile(solpath.snapshots_path + 'sub_mesh_0_0_msh_n_' + str(step) + '.xdmf') as xdmf:
+        xdmf.write(deformed_sub_mesh_0_0)
+    io.print_mesh_vertices_to_csv(deformed_sub_mesh_0_0, solpath.snapshots_csv_path + 'vertex_sub_mesh_0_0_msh_n_' + str(step) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_sub_mesh_0_0, solpath.snapshots_csv_path + 'line_sub_mesh_0_0_msh_n_' + str(step) + '.csv')
+
+
     
     #2 print fields for sq
     io.full_print(fsp.u_n_sq, 'u_sq_' + str(step), \
@@ -57,6 +65,13 @@ def print_solution_D(t, step):
     
     fi.xdmffile_u_n_sq.write(fsp.u_n_sq, t)
     fi.xdmffile_u_n_sq_dot.write(fsp.u_n_sq_dot, t)
+
+    # Write the deformed sub_mesh[0][1] to file
+    deformed_sub_mesh_0_1 = msh.deform_mesh(lmsh.sub_meshes[0][1], fsp.u_n_sq)
+    with XDMFFile(solpath.snapshots_path + 'sub_mesh_0_1_msh_n_' + str(step) + '.xdmf') as xdmf:
+        xdmf.write(deformed_sub_mesh_0_1)
+    io.print_mesh_vertices_to_csv(deformed_sub_mesh_0_1, solpath.snapshots_csv_path + 'vertex_sub_mesh_0_1_msh_n_' + str(step) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_sub_mesh_0_1, solpath.snapshots_csv_path + 'line_sub_mesh_0_1_msh_n_' + str(step) + '.csv')
 
     
 
