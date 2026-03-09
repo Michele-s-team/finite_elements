@@ -76,8 +76,12 @@ F_phi_disk = ( \
 
 F_omega_disk = ( fsp.omega_disk[alpha] - ela.G(fsp.u_n_1_di)[beta, alpha] * fsp.phi_disk.dx(beta) ) * ( fsp.nu_omega_disk[alpha] - ela.G(fsp.u_n_1_di)[gamma, alpha] * fsp.nu_phi_disk.dx(gamma) ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
+'''
+resudual of natural BC for the fluid on the disk, Eq. (156)
+'''
+def natural_bc_fl_di_phi():
 
-F_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
+    return (
         - fsp.phi_disk * ela.G(fsp.u_n_1_di)[beta, alpha] * bgeo.sub_mesh_facet_normal[0][0][beta] * ela.G(fsp.u_n_1_di)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 
         ela.G(fsp.u_n_1_di)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][0][delta] * 
             (
@@ -88,12 +92,16 @@ F_N =  rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * (
                 ) - 
                     rpam.parameters['eta_di'] * dt / rpam.parameters['rho_di'] * ela.G(fsp.u_n_1_di)[gamma, beta] *  bgeo.sub_mesh_facet_normal[0][0][gamma] * ela.G(fsp.u_n_1_di)[epsilon, beta] * fsp.omega_disk[alpha].dx(epsilon)
             )
-        ) * \
+        )
+
+
+F_N =   rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * \
+        natural_bc_fl_di_phi() * \
         (
             - fsp.nu_phi_disk * ela.G(fsp.u_n_1_di)[nu, mu] *  bgeo.sub_mesh_facet_normal[0][0][nu] *  ela.G(fsp.u_n_1_di)[rho, mu] *  bgeo.sub_mesh_facet_normal[0][0][rho] - \
             rpam.parameters['eta_di'] * dt / rpam.parameters['rho_di'] * ela.G(fsp.u_n_1_di)[sigma, mu] *  bgeo.sub_mesh_facet_normal[0][0][sigma] * ela.G(fsp.u_n_1_di)[rho, nu] *  bgeo.sub_mesh_facet_normal[0][0][rho] * ela.G(fsp.u_n_1_di)[tau, nu] * ((fsp.nu_omega_disk)[mu]).dx(tau)
         ) * \
-    ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.ds_sub_mesh[0][0]['ds'] 
+        ela.detF(fsp.u_n_1_di) * ela.detF(fsp.u_n_1_di) * rmsh.ds_sub_mesh[0][0]['ds'] 
 
 
 F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N

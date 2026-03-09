@@ -23,7 +23,7 @@ vp_fluid_di = importlib.import_module(swi.vp_fluid_di)
 alpha, beta, gamma, delta = ufl.indices(4)
 
 # residual of natural BC [Eq. (115)] for the disk fluid problem 
-def natural_bc_fl_di():
+def natural_bc_fl_di_v__():
     return ufl.as_tensor(
         (
              flu.sigma_ale(fsp.V_di, fsp.sigma_disk_n_32, fsp.u_n_1_di, rpam.parameters['eta_di'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma]
@@ -108,7 +108,7 @@ def print_bcs():
 
         #3 fluid disk
         fieldnames[7]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_di()), rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(geo.ufl_norm(natural_bc_fl_di_v__()), rmsh.ds_sub_mesh[0][0]['ds']):.{io.number_of_decimals}e}",\
             
         # 4 fluid square
         fieldnames[8]: \
