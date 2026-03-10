@@ -227,6 +227,9 @@ for n in range(rpam.parameters['N']):
 
     # 3) solve for disk fluid 
 
+    # check
+
+
     print('Solving disk fluid problem ...', flush=True)
 
     vp_fl_di = importlib.reload(vp_fl_di)
