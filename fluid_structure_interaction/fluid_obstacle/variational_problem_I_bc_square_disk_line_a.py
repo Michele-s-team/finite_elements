@@ -51,4 +51,3 @@ F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * (fsp.v_square_n_1_0_1_on_1[b
     ) * rmsh.dx_mesh[1]
  
 
-#  sign
