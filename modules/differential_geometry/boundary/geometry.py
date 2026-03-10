@@ -95,6 +95,7 @@ i, j, k, l = ufl.indices(4)
 
 '''
 return the normal to a mesh as a smooth field
+Note: the resulting vector field is not normalized to unity. 
 Input values: 
     - 'mesh': the mesh
 Return values: 
