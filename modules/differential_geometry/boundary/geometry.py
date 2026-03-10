@@ -93,7 +93,13 @@ else:
 
 i, j, k, l = ufl.indices(4)
 
-
+'''
+return the normal to a mesh as a smooth field
+Input values: 
+    - 'mesh': the mesh
+Return values: 
+    - the unit normal as a smooth field
+'''
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
