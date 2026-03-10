@@ -267,7 +267,6 @@ for n in range(rpam.parameters['N']):
 
     print('Solving square fluid problem ...', flush=True)
 
-    # check
 
 
     vp_fl_sq = importlib.reload(vp_fl_sq)
@@ -294,6 +293,9 @@ for n in range(rpam.parameters['N']):
     solver_fl_sq_v_n.solve()
 
     print('... done.', flush=True)
+
+    # check
+
 
     # 5) solve for M
 
