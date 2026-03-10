@@ -334,12 +334,16 @@ for n in range(rpam.parameters['N']):
     vp_M = importlib.reload(vp_M)
 
     # solve for c_n
+    '''
     J_M = derivative(vp_M.F_c, fsp.c_n, fsp.J_c)
     problem_M = NonlinearVariationalProblem(vp_M.F_c, fsp.c_n, vp_M.bc_M, J_M)
     solver_M = NonlinearVariationalSolver(problem_M)
     solver_M.parameters.update(params)
     solver_M.solve()
+    '''
 
+    var_pr.solve_vp(vp_M.F_c, fsp.c_n, vp_M.bc_M, fsp.J_c, parameters=params)
+    
     print('... done.', flush=True)
 
     # print out the residuals of BCs
