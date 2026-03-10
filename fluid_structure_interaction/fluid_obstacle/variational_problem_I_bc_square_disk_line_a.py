@@ -49,7 +49,5 @@ F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * (fsp.v_square_n_1_0_1_on_1[b
             fsp.v_square_n_1_0_1_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.U_n_12, fsp.nu_U)[alpha]
         )
     ) * rmsh.dx_mesh[1]
-
-# check
  
 

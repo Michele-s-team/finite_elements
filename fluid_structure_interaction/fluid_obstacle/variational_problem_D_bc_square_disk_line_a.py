@@ -49,6 +49,7 @@ F_u_sq = (ela.P(fsp.u_n_sq, ela.K(fsp.u_n_sq, rpam.parameters['exponent']), ela.
 
 F_u_di = (ela.P(fsp.u_n_di, ela.K(fsp.u_n_di, rpam.parameters['exponent']), ela.mu(fsp.u_n_di, rpam.parameters['exponent']))[gamma, alpha] * (fsp.nu_u_n_di[gamma].dx(alpha))) * rmsh.dx_sub_mesh[0][0]
 
+# check
 
 F_u_sq_dot = ( \
                           (ela.F_dot(fsp.u_n_sq_dot)[gamma, beta] * ela.S(fsp.u_n_sq, ela.K(fsp.u_n_sq, rpam.parameters['exponent']), ela.mu(fsp.u_n_sq, rpam.parameters['exponent']))[beta, alpha] \
