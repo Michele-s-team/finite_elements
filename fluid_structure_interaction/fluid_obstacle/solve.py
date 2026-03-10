@@ -103,7 +103,11 @@ io.full_print(fsp.ys, 'ys', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
               lmsh.mesh[1], 'vector')
 
-# FILL IN HWERE: set the initial profiles from analytical expressions
+
+bgeo.facet_normal_smooth(lmsh.sub_meshes[0][0])
+
+
+# FILL IN HERE: set the initial profiles from analytical expressions
 
 # set initial profiles
 # 
@@ -118,6 +122,7 @@ class v_sq_expression(UserExpression):
 fsp.v_square_n_1.interpolate(v_sq_expression(element=fsp.Q_v_square.ufl_element()))
 '''
 
+'''
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters['rho_di'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
@@ -367,3 +372,4 @@ for n in range(rpam.parameters['N']):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
+'''
