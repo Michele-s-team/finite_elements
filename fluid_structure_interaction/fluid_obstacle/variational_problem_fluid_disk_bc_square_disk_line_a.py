@@ -75,7 +75,6 @@ F_phi_disk = ( \
 
 F_omega_disk = ( fsp.omega_disk[alpha] - ela.G(fsp.u_n_1_di)[beta, alpha] * fsp.phi_disk.dx(beta) ) * ( fsp.nu_omega_disk[alpha] - ela.G(fsp.u_n_1_di)[gamma, alpha] * fsp.nu_phi_disk.dx(gamma) ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
-# check
 
 
 '''
@@ -108,6 +107,7 @@ F_N =   rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * \
 
 F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N
 
+# check
 
 
 # step 3 for v_disk_n
