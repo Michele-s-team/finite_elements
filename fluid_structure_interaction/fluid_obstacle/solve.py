@@ -38,6 +38,7 @@ rmsh = importlib.import_module(swi.rmsh)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
+'''
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
@@ -59,7 +60,32 @@ params_I = {'nonlinear_solver': 'newton',
                     'maximum_iterations': 1000000,
                     'relaxation_parameter': 0.95,
                 }
-            }
+'''
+
+# parameters with SNES method
+# 
+params = {
+    'nonlinear_solver': 'snes',
+    'snes_solver': {
+        'linear_solver': 'superlu',
+        'line_search': 'bt',  # backtracking line search
+        'absolute_tolerance': 1e-6,
+        'relative_tolerance': 1e-6,
+        'maximum_iterations': 1000000,
+        'report': True,
+    }
+}
+
+PETScOptions.clear()
+PETScOptions.set('snes_type', 'newtontr')
+PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+PETScOptions.set('snes_max_it', 100000)
+PETScOptions.set('snes_monitor')
+PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
+# 
+
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -132,7 +158,7 @@ for n in range(rpam.parameters['N']):
     J_I = derivative(vp_I.F_U, fsp.U_n_12, fsp.J_U)
     problem_I = NonlinearVariationalProblem(vp_I.F_U, fsp.U_n_12, vp_I.bcs, J_I)
     solver_I = NonlinearVariationalSolver(problem_I)
-    solver_I.parameters.update(params_I)
+    solver_I.parameters.update(params)
     solver_I.solve()
 
     print('... done.', flush=True)
@@ -206,18 +232,21 @@ for n in range(rpam.parameters['N']):
     J_fl_di_v__ = derivative(vp_fl_di.F_v_disk__, fsp.v_disk__, fsp.J_v__disk)
     problem_fl_di_v__ = NonlinearVariationalProblem(vp_fl_di.F_v_disk__, fsp.v_disk__, vp_fl_di.bc_v_disk__, J_fl_di_v__)
     solver_fl_di_v__ = NonlinearVariationalSolver(problem_fl_di_v__)
+    solver_fl_di_v__.parameters.update(params)
     solver_fl_di_v__.solve()
 
     # 3.2 solve for phi_disk (and omega_disk)
     J_fl_di_phi_omega = derivative(vp_fl_di.F_phi_omega_disk, fsp.phi_omega_disk, fsp.J_phi_omega_disk)
     problem_fl_di_phi_omega = NonlinearVariationalProblem(vp_fl_di.F_phi_omega_disk, fsp.phi_omega_disk, vp_fl_di.bc_phi_omega_disk, J_fl_di_phi_omega)
     solver_fl_di_phi_omega = NonlinearVariationalSolver(problem_fl_di_phi_omega)
+    solver_fl_di_phi_omega.parameters.update(params)
     solver_fl_di_phi_omega.solve()
 
     # 3.3 solve for v_disk_n
     J_fl_di_v_n = derivative(vp_fl_di.F_v_disk_n, fsp.v_disk_n, fsp.J_v_disk)
     problem_fl_di_v_n = NonlinearVariationalProblem(vp_fl_di.F_v_disk_n, fsp.v_disk_n, vp_fl_di.bc_v_disk_n, J_fl_di_v_n)
     solver_fl_di_v_n = NonlinearVariationalSolver(problem_fl_di_v_n)
+    solver_fl_di_v_n.parameters.update(params)
     solver_fl_di_v_n.solve()
 
     # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
@@ -236,18 +265,21 @@ for n in range(rpam.parameters['N']):
     J_fl_sq_v__ = derivative(vp_fl_sq.F_v_square__, fsp.v_square__, fsp.J_v__square)
     problem_fl_sq_v__ = NonlinearVariationalProblem(vp_fl_sq.F_v_square__, fsp.v_square__, vp_fl_sq.bc_v_square__, J_fl_sq_v__)
     solver_fl_sq_v__ = NonlinearVariationalSolver(problem_fl_sq_v__)
+    solver_fl_sq_v__.parameters.update(params)
     solver_fl_sq_v__.solve()
 
     # 4.2 solve for phi_square
     J_fl_sq_phi = derivative(vp_fl_sq.F_phi_square, fsp.phi_square, fsp.J_phi_square)
     problem_fl_sq_phi = NonlinearVariationalProblem(vp_fl_sq.F_phi_square, fsp.phi_square, vp_fl_sq.bc_phi_square, J_fl_sq_phi)
     solver_fl_sq_phi = NonlinearVariationalSolver(problem_fl_sq_phi)
+    solver_fl_sq_phi.parameters.update(params)
     solver_fl_sq_phi.solve()
 
     # 4.3 solve for v_square_n
     J_fl_sq_v_n = derivative(vp_fl_sq.F_v_square_n, fsp.v_square_n, fsp.J_v_square)
     problem_fl_sq_v_n = NonlinearVariationalProblem(vp_fl_sq.F_v_square_n, fsp.v_square_n, vp_fl_sq.bc_v_square_n, J_fl_sq_v_n)
     solver_fl_sq_v_n = NonlinearVariationalSolver(problem_fl_sq_v_n)
+    solver_fl_sq_v_n.parameters.update(params)
     solver_fl_sq_v_n.solve()
 
     print('... done.', flush=True)
@@ -262,6 +294,7 @@ for n in range(rpam.parameters['N']):
     J_M = derivative(vp_M.F_c, fsp.c_n, fsp.J_c)
     problem_M = NonlinearVariationalProblem(vp_M.F_c, fsp.c_n, vp_M.bc_M, J_M)
     solver_M = NonlinearVariationalSolver(problem_M)
+    solver_M.parameters.update(params)
     solver_M.solve()
 
     print('... done.', flush=True)
