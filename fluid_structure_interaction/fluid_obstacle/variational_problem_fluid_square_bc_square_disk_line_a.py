@@ -83,6 +83,7 @@ F_v_square__ = (
                     )
                     - fsp.f_sq_n[alpha]
                 ) * fsp.nu_v_square__[alpha] + \
+# check
                 ela.G(fsp.u_n_1_sq)[gamma, beta] *  flu.sigma_ale(fsp.V_sq, fsp.sigma_square_n_32, fsp.u_n_1_sq, rpam.parameters['eta_sq'])[alpha, beta] * fsp.nu_v_square__[alpha].dx(gamma) \
             ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
        - ( 1.0/ela.detF(fsp.u_n_1_sq) * fsp.t_sq_n[alpha] ) * fsp.nu_v_square__[alpha] *  ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_t'] 
