@@ -230,7 +230,6 @@ for n in range(rpam.parameters['N']):
 
     # 3) solve for disk fluid 
 
-    # check
 
 
     print('Solving disk fluid problem ...', flush=True)
@@ -267,6 +266,9 @@ for n in range(rpam.parameters['N']):
     # 4) solve for square fluid 
 
     print('Solving square fluid problem ...', flush=True)
+
+    # check
+
 
     vp_fl_sq = importlib.reload(vp_fl_sq)
 
