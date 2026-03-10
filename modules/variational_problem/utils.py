@@ -23,11 +23,11 @@ Input values:
 
 def solve_vp(F, u, bcs, J, params=None):
 
-    J_u_sq = derivative(F, u, J)
-    problem_u_sq = NonlinearVariationalProblem(F, u, bcs, J_u_sq)
-    solver_u_sq = NonlinearVariationalSolver(problem_u_sq)
+    J_der = derivative(F, u, J)
+    variational_problem = NonlinearVariationalProblem(F, u, bcs, J_der)
+    solver = NonlinearVariationalSolver(variational_problem)
 
     if params != None:
-        solver_u_sq.parameters.update(params)
+        solver.parameters.update(params)
 
-    solver_u_sq.solve()
+    solver.solve()
