@@ -200,30 +200,26 @@ for n in range(rpam.parameters['N']):
     J_u_sq = derivative(vp_D.F_u_sq, fsp.u_n_sq, fsp.J_u_sq)
     problem_u_sq = NonlinearVariationalProblem(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, J_u_sq)
     solver_u_sq = NonlinearVariationalSolver(problem_u_sq)
+    solver_u_sq.parameters.update(params)
+    solver_u_sq.solve()
 
     J_u_dot_sq = derivative(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, fsp.J_u_dot_sq)
     problem_u_dot_sq = NonlinearVariationalProblem(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, vp_D.bcs_u_sq_dot, J_u_dot_sq)
     solver_u_dot_sq = NonlinearVariationalSolver(problem_u_dot_sq)
-
-    solver_u_sq.parameters.update(params)
     solver_u_dot_sq.parameters.update(params)
-
-    solver_u_sq.solve()
     solver_u_dot_sq.solve()
 
     # 2.2) solve for D in disk
     J_u_di = derivative(vp_D.F_u_di, fsp.u_n_di, fsp.J_u_di)
     problem_u_di = NonlinearVariationalProblem(vp_D.F_u_di, fsp.u_n_di, vp_D.bcs_u_di, J_u_di)
     solver_u_di = NonlinearVariationalSolver(problem_u_di)
+    solver_u_di.parameters.update(params)
+    solver_u_di.solve()
 
     J_u_dot_di = derivative(vp_D.F_u_di_dot, fsp.u_n_di_dot, fsp.J_u_dot_di)
     problem_u_dot_di = NonlinearVariationalProblem(vp_D.F_u_di_dot, fsp.u_n_di_dot, vp_D.bcs_u_di_dot, J_u_dot_di)
     solver_u_dot_di = NonlinearVariationalSolver(problem_u_dot_di)
-
-    solver_u_di.parameters.update(params)
     solver_u_dot_di.parameters.update(params)
-
-    solver_u_di.solve()
     solver_u_dot_di.solve()
 
     print('... done.', flush=True)
