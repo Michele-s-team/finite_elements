@@ -141,8 +141,6 @@ def facet_normal_smooth(mesh,
     '''
     n_vector = n.vector().get_local()
 
-    print(f'n_vector before = {n_vector}')
-
     '''
     reshape n_vector in this way:
     Before reshape:
@@ -159,21 +157,15 @@ def facet_normal_smooth(mesh,
     '''
     n_vector = n_vector.reshape(-1, 2)  
 
-    # print(f'n_vector after = {n_vector}')
-
     '''
     compute the norm of each entry of n_vector and store it into norm_n_vector
     '''
     norm_n_vector  = np.linalg.norm(n_vector, axis=1, keepdims=True)
 
-    # print(f'norms = {norm_n_vector}')
-
     '''
     set the norm of vector values in the bulk of the mesh (which are zero), to unity to avoid dividing by zero
     '''
     norm_n_vector  = np.where(norm_n_vector < norm_threshold, 1.0, norm_n_vector)  
-
-    # print(f'norm_n_vector = {norm_n_vector}')
 
     # normalize n_vector by the norm written in norm_n_vector
     n_vector = n_vector / norm_n_vector
