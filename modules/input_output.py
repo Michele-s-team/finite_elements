@@ -274,7 +274,8 @@ def print_nodal_values_vector_to_csvfile(v, mesh, filename):
         padded_coordinate = pad(coordinate, 3)
 
         # evaluate the function at the coordinate
-        v_value = v(*coordinate)
+        # if the vector field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
+        v_value = np.atleast_1d(v(*coordinate))
 
         value_string = ",".join([f'{v_value[i]}' for i in range(vector_shape_size)])
         coordinate_string  = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
