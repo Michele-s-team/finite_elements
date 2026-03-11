@@ -332,9 +332,7 @@ def print_nodal_values_tensor_to_csvfile(t, mesh, filename):
 
         # evaluate the function at the coordinate
         # if the tensor field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
-        print(f'****** before = {t(*coordinate)}')
         t_value = np.atleast_1d(t(*coordinate))
-        print(f'****** after = {t_value}')
 
         component_str = ",".join([str(t_value[j]) for j in range(tensor_shape_size)])
         coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
