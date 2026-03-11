@@ -270,7 +270,6 @@ for n in range(rpam.parameters['N']):
     if step % rpam.parameters['print_out_stride'] == 0:
         pr_bc.print_bcs()
 
-    # check
 
 
     # update the fields
@@ -319,6 +318,7 @@ for n in range(rpam.parameters['N']):
     # 5) M
 
     fsp.c_n_1.assign(fsp.c_n)
+
 
 
     # print out the solution
