@@ -251,7 +251,6 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
-    # check
 
 
     # 5) solve for M
@@ -271,6 +270,7 @@ for n in range(rpam.parameters['N']):
     if step % rpam.parameters['print_out_stride'] == 0:
         pr_bc.print_bcs()
 
+    # check
 
 
     # update the fields
