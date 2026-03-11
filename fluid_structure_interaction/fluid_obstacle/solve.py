@@ -296,6 +296,7 @@ for n in range(rpam.parameters['N']):
 
 
     # 3) disk fluid 
+
     phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
     fsp.phi_disk_on_Q_sigma_disk.interpolate(phi_disk_output)
     fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - fsp.phi_disk_on_Q_sigma_disk)
@@ -304,6 +305,7 @@ for n in range(rpam.parameters['N']):
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
 
     fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
+
 
     # 4) square fluid 
 
