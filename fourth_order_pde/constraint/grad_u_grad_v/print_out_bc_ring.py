@@ -1,7 +1,6 @@
 import colorama as col
 from fenics import *
 import importlib
-import termcolor
 import ufl as ufl
 
 import function_spaces as fsp
