@@ -98,7 +98,10 @@ F_phi_square = ( \
         + (ela.G(fsp.u_n_1_sq)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][1][delta] * ela.G(fsp.u_n_1_sq)[beta, alpha] * (fsp.phi_square.dx(beta)) * fsp.nu_phi_square) * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_t'] 
 
 
+
+
 # step 3 for v_square_n
 F_v_square_n = ( ( (fsp.v_square_n[alpha] - fsp.v_square__[alpha]) + (dt / rpam.parameters['rho_sq']) * ela.G(fsp.u_n_1_sq)[gamma, alpha] * (fsp.phi_square.dx(gamma)) ) * fsp.nu_v_square_n[alpha] ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1]
 
 
+# check

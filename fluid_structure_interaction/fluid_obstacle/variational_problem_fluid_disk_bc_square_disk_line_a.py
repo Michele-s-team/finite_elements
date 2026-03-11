@@ -73,8 +73,9 @@ F_phi_disk = ( \
         + (ela.G(fsp.u_n_1_di)[delta, alpha] * bgeo.sub_mesh_facet_normal[0][0][delta] * ela.G(fsp.u_n_1_di)[beta, alpha] * (fsp.phi_disk.dx(beta)) * fsp.nu_phi_disk) * ela.detF(fsp.u_n_1_di) * rmsh.ds_sub_mesh[0][0]['ds'] 
 
 
-
 F_omega_disk = ( fsp.omega_disk[alpha] - ela.G(fsp.u_n_1_di)[beta, alpha] * fsp.phi_disk.dx(beta) ) * ( fsp.nu_omega_disk[alpha] - ela.G(fsp.u_n_1_di)[gamma, alpha] * fsp.nu_phi_disk.dx(gamma) ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
+
+
 
 '''
 resudual of natural BC for the fluid on the disk, Eq. (156)
@@ -111,3 +112,4 @@ F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N
 # step 3 for v_disk_n
 F_v_disk_n = ( ( (fsp.v_disk_n[alpha] - fsp.v_disk__[alpha]) + (dt / rpam.parameters['rho_di']) * ela.G(fsp.u_n_1_di)[gamma, alpha] * (fsp.phi_disk.dx(gamma)) ) * fsp.nu_v_disk_n[alpha] ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
+# check
