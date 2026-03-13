@@ -41,10 +41,14 @@ mf[1] = msh.read_mesh_components(lmsh.mesh[1], (lmsh.mesh[1]).topology().dim() -
                                  name_to_read="vf")
                                  
 
+# minimal mesh size for meshes
 r_mesh[0] = lmsh.mesh[0].hmin()
 r_mesh[1] = lmsh.mesh[1].hmin()
 
-
+# minimal mesh size for sub_meshes
+r_sub_mesh = [[None] * 2, None]
+r_sub_mesh[0][0] = lmsh.sub_meshes[0][0].hmin()
+r_sub_mesh[0][1] = lmsh.sub_meshes[0][1].hmin()
 
 
 print(f'lmsh_sub_meshes: {lmsh.sub_meshes}')

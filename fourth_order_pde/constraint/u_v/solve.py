@@ -8,9 +8,10 @@ This code solves the fourth-order PDE
 
 where the BCs for mu, rho and tau are imposed as Dirichlet BCs with respect to the exact solution, which is known in this case. 
 
-run with
+Run with
     python3 solve.py [problem name] [path where to read the mesh generated from generate_mesh.pu] [path where to store the solution]
-example:
+
+Example:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/fourth_order_pde/constraint/u_v/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
 '''
 from fenics import *

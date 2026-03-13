@@ -69,6 +69,13 @@ prints a vector to csv file
 Input values: 
     - 'v': the vector
     - 'filename': path, filename and extension of the csv file
+
+Return values: 
+- the resulting csv file is of this form
+
+    f:0,f:1,....,f:[number of components of v],:0,:1,:2
+    v_0,v_1,....,v_[(number of components of v) - 1],x_0,x_1,x_2
+    ....
 '''
 
 def print_vector_to_csvfile(v, filename):
@@ -110,30 +117,19 @@ def print_vector_to_csvfile(v, filename):
     # print(f'--- coordinates = {coordinates}')
 
 
-
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
     csvfile = open(filename, "w")
 
-    component_headers = ",".join([f'"f:{i}"' for i in range(3)])
+    component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
     coord_headers     = ",".join([f'":{i}"' for i in range(3)])
-
     print(f"{component_headers},{coord_headers}", file=csvfile)
 
     for coordinate, value in zip(coordinates, values):
 
         padded_coordinate = pad(coordinate, 3)
 
-        if value_size <= 3:
-            # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
-
-            padded_value = pad(value, 3)
-        else: 
-            # the number of components of the vector is > 3: print all the components 
-
-            padded_value = value
-
-        value_string = ",".join([f'{padded_value[i]}' for i in range(len(padded_value))])
+        value_string = ",".join([f'{value[i]}' for i in range(value_size)])
 
 
         print(f"{value_string}",f",{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}", file=csvfile)
@@ -146,6 +142,14 @@ prints a tensor with any shape to csv file
 Input values: 
     - 't': the tensor
     - 'filename': path, filename and extension of the csv file
+
+
+Return values: 
+    - the resulting csv file is of this form
+    
+    f:0,f:1,....,f:[number of components of t],:0,:1,:2
+    t_0,t_1,....,t_[(number of components of t) - 1],x_0,x_1,x_2
+    ....
 '''
 def print_tensor_to_csvfile(t, filename):
     
@@ -230,6 +234,13 @@ Input values:
     - 'v': the vector
     - 'mesh': the mesh where the vector is defined
     - 'filename': the path, filename and extension of the csv file where the vector will be written 
+
+Return values: 
+    - the resulting csv file is of this form
+
+    f:0,f:1,....,f:[number of components of v],:0,:1,:2
+    v_0,v_1,....,v_[(number of components of v) - 1],x_0,x_1,x_2
+    ....
 '''
 
 
@@ -263,19 +274,10 @@ def print_nodal_values_vector_to_csvfile(v, mesh, filename):
         padded_coordinate = pad(coordinate, 3)
 
         # evaluate the function at the coordinate
-        v_value = v(*coordinate)
+        # if the vector field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
+        v_value = np.atleast_1d(v(*coordinate))
 
-        if vector_shape_size <= 3:
-            # the number of components of the vector is <=3 -> pad it to three dimensions, filling with zeros the entries if the number of components of the vector is < 3
-
-            padded_v_value = pad(v_value, 3)
-
-        else: 
-            # the number of components of the vector is > 3: print all the components 
-
-            padded_v_value = v_value
-
-        value_string = ",".join([f'{padded_v_value[i]}' for i in range(len(padded_v_value))])
+        value_string = ",".join([f'{v_value[i]}' for i in range(vector_shape_size)])
         coordinate_string  = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
 
         print(f"{value_string},{coordinate_string}", file=csvfile)
@@ -290,6 +292,14 @@ Input values:
     - 't': the tensor
     - 'mesh': the mesh where the tensor is defined
     - 'filename': the path, filename and extension of the csv file where the tensor will be written 
+
+
+Return values: 
+    - the resulting csv file is of this form
+    
+    f:0,f:1,....,f:[number of components of t],:0,:1,:2
+    t_0,t_1,....,t_[(number of components of t) - 1],x_0,x_1,x_2
+    ....
 '''
 
 def print_nodal_values_tensor_to_csvfile(t, mesh, filename):
@@ -321,7 +331,8 @@ def print_nodal_values_tensor_to_csvfile(t, mesh, filename):
         padded_coordinate = pad(coordinate, 3)
 
         # evaluate the function at the coordinate
-        t_value = t(*coordinate)
+        # if the tensor field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
+        t_value = np.atleast_1d(t(*coordinate))
 
         component_str = ",".join([str(t_value[j]) for j in range(tensor_shape_size)])
         coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"

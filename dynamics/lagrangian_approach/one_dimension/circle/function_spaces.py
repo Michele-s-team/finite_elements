@@ -26,8 +26,8 @@ class PeriodicBoundary(SubDomain):
 
 periodic_boundary = PeriodicBoundary()
 
-Q = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], dim=2)
-V = TensorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], shape=(2, 1))
+Q = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], dim=2, constrained_domain=periodic_boundary)
+V = TensorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], shape=(2, 1), constrained_domain=periodic_boundary)
 
 
 # Define variational problem
@@ -38,8 +38,3 @@ v = Function(Q)
 #y_s_notes
 ys = Function(Q)
 J_u_n = TrialFunction(Q)
-
-# Define gradient of u for post-processing (pp) variational problem
-grad_u = Function(V)
-nu_grad_u = TestFunction(V)
-J_grad_u = TrialFunction(V)

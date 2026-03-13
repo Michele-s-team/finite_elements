@@ -1,6 +1,8 @@
 from fenics import *
+import numpy as np
 import ufl as ufl
 
+import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
 
@@ -93,7 +95,14 @@ else:
 
 i, j, k, l = ufl.indices(4)
 
-
+'''
+return the normal to a mesh as a smooth field
+Note: the resulting vector field is not normalized to unity. 
+Input values: 
+    - 'mesh': the mesh
+Return values: 
+    - the unit normal as a smooth field
+'''
 def calc_normal_cg2(mesh):
     n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
@@ -109,11 +118,83 @@ def calc_normal_cg2(mesh):
     solve(A, nh.vector(), L)
     return nh
 
+'''
+normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
+Input values: 
+    * Mandatory:
+        - 'mesh': the mesh of which the normal is to be computed
+    * Optional:
+        - 'norm_threshold': the threshold for normalization of the normal. Entries of the normal whose norm is smaller than norm_threshold will be normalized by norm unity (these entries are irrelevant, because they live in the bulk of the mesh). 
+Return values: 
+    - 'n': the facet normal as a smooth field, norma
+ '''
 
-# the normal to the manifold pointing outwards the manifold and normalized according to the Euclidean metric, which can be plotted as a field
-def facet_normal_smooth():
-    u = calc_normal_cg2(lmsh.mesh)
-    return as_tensor(u[k], (k))
+def facet_normal_smooth(mesh, 
+                        norm_threshold = const.vector_norm_threshold):
+
+    # obtain the non-normalized normal 
+    n = calc_normal_cg2(mesh)
+
+    '''
+    n_vector contains the DOFs of the vector field n :
+        n_vector = [nx_dof0, ny_dof0, nx_dof1, ny_dof1, ...]
+    '''
+    n_vector = n.vector().get_local()
+
+    '''
+    reshape n_vector in this way:
+    Before reshape:
+        n_vector = [nx_0, ny_0, nx_1, ny_1, nx_2, y_2, ...]     
+
+    After reshape:
+        n_vector = [
+            [nx_0, ny_0],
+            [nx_1, ny_1],
+            [nx_2, ny_2],
+            ...
+        ]        
+    
+    '''
+    n_vector = n_vector.reshape(-1, 2)  
+
+    '''
+    compute the norm of each entry of n_vector and store it into norm_n_vector
+    '''
+    norm_n_vector  = np.linalg.norm(n_vector, axis=1, keepdims=True)
+
+    '''
+    set the norm of vector values in the bulk of the mesh (which are zero), to unity to avoid dividing by zero
+    '''
+    norm_n_vector  = np.where(norm_n_vector < norm_threshold, 1.0, norm_n_vector)  
+
+    # normalize n_vector by the norm written in norm_n_vector
+    n_vector = n_vector / norm_n_vector
+
+    '''
+    reshape n_vector by flattenig it, so it has the correct format to be written back into n.vector()
+    Before reshape:
+        n_vector = [
+            [nx_0, ny_0],
+            [nx_1, ny_1],
+            [nx_2, ny_2],
+            ...
+        ] 
+
+    After reshape: 
+            n_vector = [nx_0, ny_0, nx_1, ny_1, nx_2, y_2, ...]     
+
+    '''
+
+    n_vector = n_vector.reshape(-1)
+
+    '''
+    write n_vector into the DOF vector of n
+    '''
+    n.vector().set_local(n_vector.reshape(-1))
+
+    n.vector().apply("insert")
+    
+    return n
 
 '''
 normal to a curve expressed n term of the reference and current configuration of a curve
@@ -145,5 +226,3 @@ def delta_n_ale(ys, u, nu):
         1.0/norm_dxds * (1.0/norm_dxds**2 * dxds[gamma] * nu.dx(0)[gamma] * epsilon[alpha, beta] * dxds[beta] - \
                          epsilon[alpha, beta] * nu.dx(0)[beta]), 
         (alpha))
-
-

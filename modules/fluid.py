@@ -5,7 +5,9 @@ This module contains methods related to fluid mechanics
 from fenics import *
 import ufl as ufl
 
-alpha, beta = ufl.indices(2)
+import elasticity as ela
+
+alpha, beta, gamma = ufl.indices(3)
 
 
 '''
@@ -29,7 +31,21 @@ Input values:
     - 'eta': the fluid viscosity
 
 Return values:  
-    - sigma[i][j] = sig \delta_{ij} + eta (\partial_j v_i + \partial_i v_j)
+    - sigma[alpha][beta] = s \delta_{alpha beta} + eta (\partial_beta v_alpha + \partial_alpha v_beta)
 '''
 def sigma(v, s, eta):
     return(as_tensor(s * ufl.Identity(len(v))[alpha, beta] + eta * (v[alpha].dx(beta) + v[beta].dx(alpha)),(alpha, beta)))
+
+'''
+stress tensor of a fluid living on a flat domain which is deformed according to the ALE (arbitrary Lagrangian Eulerian) method. Note that the coordinates given as input of this method are the reference-configuration coordinates
+Input values: 
+    - 'v': the fluid velocity (a d-dimensional vector) 'pulled back' onto reference-configuration coordinates
+    - 's': the fluid negative pressure (or tension), a scalar, 'pulled back' onto reference-configuration coordinates
+    - 'u': the ALE deformation field (a d-dimensional vector), which depends on reference-configuration coordinates
+    - 'eta': the fluid viscosity
+
+Return values:  
+    - varsigma[alpha][beta] = s \delta_{alpha beta} + eta (G(u)_{gamma beta} \partial_gamma v_alpha + G(u)_{gamma alpha} \partial_gamma v_beta)
+'''
+def sigma_ale(v, s, u, eta):
+        return(as_tensor(s * ufl.Identity(len(v))[alpha, beta] + eta * ( ela.G(u)[gamma, beta] * (v[alpha].dx(gamma)) + ela.G(u)[gamma, alpha] * v[beta].dx(gamma) ),(alpha, beta)))

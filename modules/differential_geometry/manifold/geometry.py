@@ -25,7 +25,7 @@ epsilon = ufl.PermutationSymbol(2)
 
 # definition of scalar, vectorial and tensorial quantities
 # latin indexes run on 2d curvilinear coordinates
-i, j, k, l, alpha = ufl.indices(5)
+i, j, k, l, alpha, beta = ufl.indices(6)
 
 
 # first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
@@ -111,6 +111,18 @@ def d_c(v, w, omega, nu=None):
 # given a vector and a scalar, return the vector vector^i * scalar
 def vector_times_scalar(vector, scalar):
     return as_tensor(scalar * vector[i], (i))
+
+'''
+return the euclidean projection of a vector on another
+Input values: 
+    - 'v': the vector to be projected (d-dimensional)
+    - 'n': the vector on which the projection will be made (d-dimensional)
+Return values: 
+    - '(v.n) n'
+
+'''
+def euclidean_projection(v, n):
+    return as_tensor((v[beta] * n[beta]) * n[alpha], (alpha))
 
 
 # vector living in the three-dimensional Euclidean space, which is orthogonal to the circle of radius r centered at c_r. N3d_c_r[k] = \vec{N}_{\gamma k}_notes
