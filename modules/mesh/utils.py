@@ -2182,3 +2182,31 @@ def transfer_line_to_circle(f_line, f_2d, c_r, r, N):
     # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
     for i in range(len(permutation_dof)): 
          f_2d.vector()[permutation_dof[i]] = f_line.vector()[i]
+
+'''
+tag a physical object, or a list of objects, in a mesh
+Input values: 
+    * Mandatory:    
+        - 'object': the object to be tagged, e.g. a line or a list of lines
+        - 'id': an integer, the tag that will be given to 'object'
+        - 'model': the model used to generate the mesh, e.g., gmsh.model
+    * Optional:
+        - 'label': the label to be given to the object
+
+'''
+def tag_physical_object(object, id, model, 
+                        label=''):
+
+    if isinstance(object, list):
+        # 'object' is a list -> take as dimension the dimension of its first entry
+        dim = object[0][0]
+        object_to_tag = [object[i][1] for i in range(len(object))]
+
+    else: 
+        # 'object' is not a list -> take as dimension the dimension of 'object'
+        dim = object[0]
+        object_to_tag = [object[1]]
+
+    model.addPhysicalGroup(dim, object_to_tag, id)
+    model.setPhysicalName(dim, id, label)
+

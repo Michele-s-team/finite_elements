@@ -30,8 +30,12 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 
 # add '/' to output_directory if it is missing
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
-
 mesh_file = output_directory + "mesh.msh"
+
+# write into metadata the file format wich which the mesh will be written
+mesh_metadata = rpam.parameters.copy()
+mesh_metadata['file_format'] = 'xdmf'
+
 
 print(f'output_directory = "{output_directory}"')
 
@@ -58,7 +62,7 @@ square_loop = gmsh.model.geo.addCurveLoop(square_lines)
 
 
 # add polygon
-polygon_coordinates = [[0.1, 0.4], [0.15, 0.3], [0.2, 0.3], [0.3, 0.2]]
+polygon_coordinates = [[0.1, 0.1], [0.7, 0.3], [0.8, 0.4], [0.5, 0.5], [0.3, 0.4]]
 polygon_points = [gmsh.model.geo.addPoint(polygon_coordinates[0][0], polygon_coordinates[0][1], 0)]
 gmsh.model.geo.synchronize()
 
@@ -84,50 +88,47 @@ gmsh.model.geo.synchronize()
 
 # tag physical objects
 
-# add 1-dimensional objects
+# tag 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
 # square lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_l_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_l_id"], "line_l")
+msh.tag_physical_object(lines[0], rpam.parameters['line_b_id'], gmsh.model, 'line_b')
+msh.tag_physical_object(lines[1], rpam.parameters['line_r_id'], gmsh.model, 'line_r')
+msh.tag_physical_object(lines[2], rpam.parameters['line_t_id'], gmsh.model, 'line_t')
+msh.tag_physical_object(lines[3], rpam.parameters['line_l_id'], gmsh.model, 'line_l')
 
-'''
-model.add_physical([plane_surface], "Volume")
-model.add_physical([square_lines[0]], "i")
-model.add_physical([square_lines[2]], "o")
-model.add_physical([square_lines[3]], "t")
-model.add_physical([square_lines[1]], "b")
-model.add_physical(polygon_loop.curves, "c")
+# polygon lines
+msh.tag_physical_object([lines[i] for i in range(4, len(lines))], rpam.parameters['polygon_id'], gmsh.model, 'polygon_line')
+
+
+# tag 2-dimensional objects
+surfaces = gmsh.model.getEntities(dim=2)
+
+msh.tag_physical_object(surfaces[0], rpam.parameters['surface_id'], gmsh.model, 'surface')
+
+
+
+
+
+# set the mesh resolution
+distance = gmsh.model.mesh.field.add("Distance")
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [polygon_loop])
+
+threshold = gmsh.model.mesh.field.add("Threshold")
+gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+
+minimum = gmsh.model.mesh.field.add("Min")
+gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
+gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+gmsh.model.geo.synchronize()
+
 
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.full_write(mesh_file, ['triangle', 'line'], mesh_metadata, output_directory, True)
 
-
-mesh_from_file = meshio.read(mesh_file)
-#
-# line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)
-# meshio.write(output_directory + "line_mesh.xdmf", line_mesh)
-#
-# triangle_mesh = msh.create_mesh(mesh_from_file, "triangle", prune_z=True)
-# meshio.write(output_directory + "triangle_mesh.xdmf", triangle_mesh)
-#
-# # print the mesh vertices to file
-# mesh = msh.read_mesh(output_directory + "triangle_mesh.xdmf")
-# io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
-msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
-
-# print the boundary points of the boundaries given by the ellipse, where the ellipse id is 6
-ellipse_id = 6
-msh.sorted_boundary_points(
-    msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
-    output_directory, 
-    [ellipse_id],
-    os.path.join(output_directory, 'boundary_points_id_' + str(ellipse_id) + '.csv'))
-
-
-gmsh.clear()
-geometry.__exit__()
-'''
