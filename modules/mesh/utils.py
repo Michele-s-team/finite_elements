@@ -12,6 +12,8 @@ import pygmsh
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
+import runtime_arguments_generate_mesh as rarg
+
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -1780,6 +1782,106 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
             io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
 
     return mesh, cell_function, vertex_function
+
+
+def generate_square_polygon_mesh(polygon_coordinates, input_directory, output_directory):
+
+    geometry = pygmsh.occ.Geometry()
+    model = geometry.__enter__()
+
+    parameters_file_path = os.path.join(input_directory, 'mesh_parameters.csv')
+    parameters = io.read_parameters_from_csv_file(parameters_file_path)
+
+    mesh_file = os.path.join(rarg.args.output_directory,  "mesh.msh")
+  
+    # write into metadata the file format wich which the mesh will be written
+    metadata = parameters.copy()
+    metadata['file_format'] = 'xdmf'
+
+
+
+    # generate the mesh
+
+    # add square
+    square_points = [gmsh.model.geo.addPoint(0, 0, 0),
+                    gmsh.model.geo.addPoint(parameters["L"], 0, 0),
+                    gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0),
+                    gmsh.model.geo.addPoint(0, parameters["h"], 0)]
+
+    square_lines = [gmsh.model.geo.addLine(square_points[i], square_points[i + 1])
+                    for i in range(-1, len(square_points) - 1)]
+
+    square_loop = gmsh.model.geo.addCurveLoop(square_lines)
+
+
+    # add polygon
+    polygon_points = [gmsh.model.geo.addPoint(polygon_coordinates[0][0], polygon_coordinates[0][1], 0)]
+    gmsh.model.geo.synchronize()
+
+    polygon_lines = []
+
+    for i in range(1, len(polygon_coordinates)):
+
+        polygon_points.append(gmsh.model.geo.addPoint(polygon_coordinates[i][0], polygon_coordinates[i][1], 0))
+        gmsh.model.geo.synchronize()
+
+        polygon_lines.append(gmsh.model.geo.addLine(polygon_points[i-1], polygon_points[i]))
+        gmsh.model.geo.synchronize()
+
+    polygon_lines.append(gmsh.model.geo.addLine(polygon_points[-1], polygon_points[0]))
+    gmsh.model.geo.synchronize()
+
+    polygon_loop = gmsh.model.geo.addCurveLoop(polygon_lines)
+    gmsh.model.geo.synchronize()
+
+    gmsh.model.geo.addPlaneSurface([square_loop, polygon_loop])
+    gmsh.model.geo.synchronize()
+
+
+
+    # tag physical objects
+
+    # tag 1-dimensional objects
+    lines = gmsh.model.getEntities(dim=1)
+
+    # square lines
+    tag_physical_object(lines[0], parameters['line_b_id'], gmsh.model, 'line_b')
+    tag_physical_object(lines[1], parameters['line_r_id'], gmsh.model, 'line_r')
+    tag_physical_object(lines[2], parameters['line_t_id'], gmsh.model, 'line_t')
+    tag_physical_object(lines[3], parameters['line_l_id'], gmsh.model, 'line_l')
+
+    # polygon lines
+    tag_physical_object([lines[i] for i in range(4, len(lines))], parameters['polygon_id'], gmsh.model, 'polygon_line')
+
+
+    # tag 2-dimensional objects
+    surfaces = gmsh.model.getEntities(dim=2)
+
+    tag_physical_object(surfaces[0], parameters['surface_id'], gmsh.model, 'surface')
+
+
+    # set the mesh resolution
+    distance = gmsh.model.mesh.field.add("Distance")
+    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [polygon_loop])
+
+    threshold = gmsh.model.mesh.field.add("Threshold")
+    gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+    gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(parameters["L"], parameters["h"]))
+
+    minimum = gmsh.model.mesh.field.add("Min")
+    gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
+    gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+    gmsh.model.geo.synchronize()
+
+
+    geometry.generate_mesh(dim=2)
+    gmsh.write(mesh_file)
+
+    full_write(mesh_file, ['triangle', 'line'], metadata, rarg.args.output_directory, True)
+
 
 
 '''
