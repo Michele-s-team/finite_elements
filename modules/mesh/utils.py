@@ -1815,8 +1815,11 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
                     gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0),
                     gmsh.model.geo.addPoint(0, parameters["h"], 0)]
 
-    square_lines = [gmsh.model.geo.addLine(square_points[i], square_points[i + 1])
-                    for i in range(-1, len(square_points) - 1)]
+    square_lines = [gmsh.model.geo.addLine(square_points[0], square_points[1]),
+                    gmsh.model.geo.addLine(square_points[1], square_points[2]),
+                    gmsh.model.geo.addLine(square_points[2], square_points[3]),
+                    gmsh.model.geo.addLine(square_points[3], square_points[0]),
+                    ]
 
     square_loop = gmsh.model.geo.addCurveLoop(square_lines)
 
@@ -1888,6 +1891,16 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     gmsh.write(mesh_file)
 
     full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+
+    # print the boundary points of the boundary given by the polygon
+    sorted_boundary_points(
+        read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+        output_directory, 
+        [parameters['polygon_id']],
+        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+
+
+    model.__exit__()
 
 
 
