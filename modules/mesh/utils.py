@@ -12,7 +12,6 @@ import pygmsh
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
 import input_output as io
-import runtime_arguments_generate_mesh as rarg
 
 
 
@@ -1784,15 +1783,23 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
     return mesh, cell_function, vertex_function
 
 
-def generate_square_polygon_mesh(polygon_coordinates, input_directory, output_directory):
+'''
+generate a mesh given by a square with a polygon hole
+Input values: 
+    - 'polygon coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the polygon
+    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+    - 'output_directory': the path where the mesh will be stored 
+'''
+
+def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory):
 
     geometry = pygmsh.occ.Geometry()
     model = geometry.__enter__()
 
-    parameters_file_path = os.path.join(input_directory, 'mesh_parameters.csv')
+    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
-    mesh_file = os.path.join(rarg.args.output_directory,  "mesh.msh")
+    mesh_file = os.path.join(output_directory,  "mesh.msh")
   
     # write into metadata the file format wich which the mesh will be written
     metadata = parameters.copy()
@@ -1880,7 +1887,7 @@ def generate_square_polygon_mesh(polygon_coordinates, input_directory, output_di
     geometry.generate_mesh(dim=2)
     gmsh.write(mesh_file)
 
-    full_write(mesh_file, ['triangle', 'line'], metadata, rarg.args.output_directory, True)
+    full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 
 
