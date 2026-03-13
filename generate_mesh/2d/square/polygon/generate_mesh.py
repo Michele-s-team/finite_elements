@@ -41,45 +41,55 @@ metadata['file_format'] = 'xdmf'
 
 
 
-# Initialize empty geometry using the build in kernel in GMSH
-geometry = pygmsh.geo.Geometry()
-# Fetch model we would like to add data to
+geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
-square_points = [model.add_point((0, 0, 0), mesh_size=rpam.parameters["resolution"]),
-                model.add_point((rpam.parameters["L"], 0, 0), mesh_size=rpam.parameters["resolution"]),
-                model.add_point((rpam.parameters["L"], rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"]),
-                model.add_point((0, rpam.parameters["h"], 0), mesh_size=rpam.parameters["resolution"])]
 
-# Add lines between all points creating the rectangle
-square_lines = [model.add_line(square_points[i], square_points[i + 1])
+# add square
+square_points = [gmsh.model.geo.addPoint(0, 0, 0),
+                gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0),
+                gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0),
+                gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)]
+
+square_lines = [gmsh.model.geo.addLine(square_points[i], square_points[i + 1])
                  for i in range(-1, len(square_points) - 1)]
 
-square_loop = model.add_curve_loop(square_lines)
+square_loop = gmsh.model.geo.addCurveLoop(square_lines)
 
 
+# add polygon
 polygon_coordinates = [[0.1, 0.4], [0.15, 0.3], [0.2, 0.3], [0.3, 0.2]]
-polygon_points = [model.add_point((polygon_coordinates[0][0], polygon_coordinates[0][1], 0), mesh_size=rpam.parameters["resolution"])]
-model.synchronize()
+polygon_points = [gmsh.model.geo.addPoint(polygon_coordinates[0][0], polygon_coordinates[0][1], 0)]
+gmsh.model.geo.synchronize()
 
 polygon_lines = []
 
 for i in range(1, len(polygon_coordinates)):
 
-    polygon_points.append(model.add_point((polygon_coordinates[i][0], polygon_coordinates[i][1], 0), mesh_size=rpam.parameters["resolution"]))
-    model.synchronize()
+    polygon_points.append(gmsh.model.geo.addPoint(polygon_coordinates[i][0], polygon_coordinates[i][1], 0))
+    gmsh.model.geo.synchronize()
 
-    polygon_lines.append(model.add_line(polygon_points[i-1], polygon_points[i]))
-    model.synchronize()
+    polygon_lines.append(gmsh.model.geo.addLine(polygon_points[i-1], polygon_points[i]))
+    gmsh.model.geo.synchronize()
 
-polygon_lines.append(model.add_line(polygon_points[-1], polygon_points[0]))
-model.synchronize()
+polygon_lines.append(gmsh.model.geo.addLine(polygon_points[-1], polygon_points[0]))
+gmsh.model.geo.synchronize()
 
-polygon_loop = model.add_curve_loop(polygon_lines)
-model.synchronize()
+polygon_loop = gmsh.model.geo.addCurveLoop(polygon_lines)
+gmsh.model.geo.synchronize()
 
-plane_surface = model.add_plane_surface(square_loop, holes=[polygon_loop])
-model.synchronize()
+plane_surface = gmsh.model.geo.addPlaneSurface([square_loop, polygon_loop])
+gmsh.model.geo.synchronize()
+
+
+# tag physical objects
+
+# add 1-dimensional objects
+lines = gmsh.model.getEntities(dim=1)
+
+# square lines
+gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_l_id"])
+gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_l_id"], "line_l")
 
 '''
 model.add_physical([plane_surface], "Volume")
