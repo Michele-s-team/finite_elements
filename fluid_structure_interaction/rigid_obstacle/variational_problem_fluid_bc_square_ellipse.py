@@ -50,6 +50,7 @@ bc_phi_r = DirichletBC(fsp.Q_phi, Constant(0), rmsh.boundary_r)
 # boundary conditions for the surface_tension p
 bc_v_ = [bc_v__l, bc_v__tb, bc_v__ellipse]
 bc_phi = [bc_phi_r]
+bc_v_n = []
 
 # Define variational problem for step 1
 # step 1 for v_
