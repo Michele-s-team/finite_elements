@@ -11,6 +11,14 @@ import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.square_polygon')
 
+# 
+import calculus as cal
+
+cal.surface_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates  '])
+
+
+# 
+
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 

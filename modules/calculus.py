@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.spatial import cKDTree
 import scipy.integrate as spi
+from shapely.geometry import Polygon
+from shapely.ops import triangulate
 
 
 small_number = 1e-3
@@ -357,6 +359,33 @@ def surface_integral_ellipse(f, a, b, c, phi):
 
     return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + (r(rho, theta))[1], c[0] + (r(rho, theta))[0]), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
 
+
+
+def surface_integral_polygon(f, polygon_coordinates):
+
+    polygon = Polygon(polygon_coordinates)
+
+    triangles = [
+        tri for tri in triangulate(polygon)
+        if polygon.contains(tri.centroid)
+    ]
+
+    total = 0.0
+    for tri in triangles:
+        p1, p2, p3 = [np.array(p) for p in tri.exterior.coords[:3]]
+
+        # Jacobian of the affine map from reference triangle
+        J = abs((p2[0]-p1[0])*(p3[1]-p1[1]) - (p3[0]-p1[0])*(p2[1]-p1[1]))
+
+        def integrand(v, u, p1=p1, p2=p2, p3=p3):
+            x = p1[0] + (p2[0]-p1[0])*u + (p3[0]-p1[0])*v
+            y = p1[1] + (p2[1]-p1[1])*u + (p3[1]-p1[1])*v
+            return f(x, y) * J
+
+        result, _ = dblquad(integrand, 0, 1, 0, lambda u: 1-u)
+        total += result
+
+    return total
 
 
 '''
