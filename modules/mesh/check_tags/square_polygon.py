@@ -23,7 +23,7 @@ integral_exact_ds_r = cal.curve_integral_line(tf.function_test_integrals, [rmsh.
 integral_exact_ds_t = cal.curve_integral_line(tf.function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]])
 integral_exact_ds_b = cal.curve_integral_line(tf.function_test_integrals, [0, 0], [rmsh.parameters["L"], 0])
 
-integral_exact_ds_polygon = 1.0
+integral_exact_ds_polygon = cal.curve_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates'])
 
 integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b

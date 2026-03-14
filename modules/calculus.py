@@ -170,6 +170,27 @@ def curve_integral_line(f, x_a, x_b):
 
 
 '''
+compute the integral over the lines of a polygonal chain (a sequence of joint segments) of a function of two variables
+Input values: 
+    - 'f': the function, f([x, y])
+    - 'polygon_coordinates': the list of vertices of the polygonal chain [[v0x, v0y], [v1x, v1y], ... ]
+
+Return values: 
+    - \int_{polygonal chain} dl f
+'''
+def curve_integral_polygon(f, polygon_coordinates):
+
+    # add the integral over the segment that closes the polygon loop
+    result = curve_integral_line(f, polygon_coordinates[-1], polygon_coordinates[0])
+
+    # add the integrals over the other segments
+    for i in range(len(polygon_coordinates)-1):
+        result += curve_integral_line(f, polygon_coordinates[i], polygon_coordinates[i+1])
+
+    return result
+
+
+'''
 return the curve integral of a function  along a circle 
 Input values:
 - 'f': the function f(x[0], x[1])
@@ -360,7 +381,15 @@ def surface_integral_ellipse(f, a, b, c, phi):
     return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + (r(rho, theta))[1], c[0] + (r(rho, theta))[0]), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
 
 
+'''
+compute the integral of a function of two variables over the region delimited by a polygon
+Input values: 
+    - 'f': the function f([x,y])
+    - 'polygon_coordinates': the list of vertices of the polygon [[v0x, v0y], [v1x, v1y], ... ]
 
+Return values: 
+    - \int_polygon dx f
+'''
 def surface_integral_polygon(f, polygon_coordinates):
 
     import csv
@@ -368,48 +397,42 @@ def surface_integral_polygon(f, polygon_coordinates):
 
     polygon = Polygon(polygon_coordinates)
 
+    # triangulate the polygon by dividing it into triangles
     triangles = [
         tri for tri in triangulate(polygon)
         if polygon.contains(tri.centroid)
     ]
-
-    csvfile = open('triangles_delaunay.csv', 'w', newline='')
-    fieldnames = [ \
-        "p1:0", "p1:1", "p2:0",  "p2:1", "p3:0", "p3:1"
-        ]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-
-    for triangle in triangles: 
-        writer.writerows([{ \
-        fieldnames[0]:  triangle.exterior.coords[:3][0][0], \
-        fieldnames[1]:  triangle.exterior.coords[:3][0][1], \
-        fieldnames[2]:  triangle.exterior.coords[:3][1][0], \
-        fieldnames[3]:  triangle.exterior.coords[:3][1][1], \
-        fieldnames[4]:  triangle.exterior.coords[:3][2][0], \
-        fieldnames[5]:  triangle.exterior.coords[:3][2][1]
-        }])
-    csvfile.flush()
-
-
     
     total = 0.0
     for triangle in triangles:
-        vertex_1, vertex_2, vertex_3 = [np.array(p) for p in triangle.exterior.coords[:3]]
+        # run over all triangles of the triangulation 
 
-        # Jacobian of the affine map from reference triangle
-        J = abs((vertex_2[0]-vertex_1[0])*(vertex_3[1]-vertex_1[1]) - (vertex_3[0]-vertex_1[0])*(vertex_2[1]-vertex_1[1]))
+        # store the three triangle vertices into vertices
+        vertices = [np.array(p) for p in triangle.exterior.coords[:3]]
 
-        def integrand(v, u, 
-                        p1=vertex_1, p2=vertex_2, p3=vertex_3):
+        '''
+        one makes a change of variable from the xy plane to the uv plane. The triangle in the xy plane corresponds to the region 0 <= u <= 1, 0 <= v <= 1, u+v<=1 in the uv plane. 
+        The transformation is 
 
-            x = p1[0] + (p2[0]-p1[0])*u + (p3[0]-p1[0])*v
-            y = p1[1] + (p2[1]-p1[1])*u + (p3[1]-p1[1])*v
+        (x, y) =vertices[0] + u (vertices[1] - vertices[0]) + v (vertices[2] - vertices[0])
+        and the jacobian J is the jacobian of this transformation 
+        '''
+        J = abs((vertices[1][0]-vertices[0][0])*(vertices[2][1]-vertices[0][1]) - (vertices[2][0]-vertices[0][0])*(vertices[1][1]-vertices[0][1]))
+
+        '''
+        integrand re-expressed as a function of u and v
+        '''
+        def integrand(v, u):
+
+            x = vertices[0][0] + (vertices[1][0]-vertices[0][0])*u + (vertices[2][0]-vertices[0][0])*v
+            y = vertices[0][1] + (vertices[1][1]-vertices[0][1])*u + (vertices[2][1]-vertices[0][1])*v
 
             return f([x, y]) * J
 
+        # store the integral over the triangle in result
         result, _ = spi.dblquad(integrand, 0, 1, lambda u: 0, lambda u: 1-u)
 
+        # add the integral to the total integral
         total += result
 
     
