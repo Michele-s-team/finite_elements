@@ -49,6 +49,7 @@ fsp.omega_n = rpam.parameters["omega_0"]
 fsp.theta_n_1 = rpam.parameters["theta_0"]
 fsp.omega_n_1 = rpam.parameters["omega_0"]
 
+'''
 rmsh = importlib.import_module(swi.rmsh)
 ap_ellipse = importlib.import_module(swi.ap_ellipse)
 vp_fluid = importlib.import_module(swi.vp_fluid)
@@ -139,3 +140,4 @@ for n in range(rpam.parameters["num_steps"]):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
 print("... done.", flush=True)
+'''
