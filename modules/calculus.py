@@ -363,6 +363,9 @@ def surface_integral_ellipse(f, a, b, c, phi):
 
 def surface_integral_polygon(f, polygon_coordinates):
 
+    import csv
+
+
     polygon = Polygon(polygon_coordinates)
 
     triangles = [
@@ -370,25 +373,48 @@ def surface_integral_polygon(f, polygon_coordinates):
         if polygon.contains(tri.centroid)
     ]
 
-    '''
+    csvfile = open('triangles_delaunay.csv', 'w', newline='')
+    fieldnames = [ \
+        "p1:0", "p1:1", "p2:0",  "p2:1", "p3:0", "p3:1"
+        ]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for triangle in triangles: 
+        writer.writerows([{ \
+        fieldnames[0]:  triangle.exterior.coords[:3][0][0], \
+        fieldnames[1]:  triangle.exterior.coords[:3][0][1], \
+        fieldnames[2]:  triangle.exterior.coords[:3][1][0], \
+        fieldnames[3]:  triangle.exterior.coords[:3][1][1], \
+        fieldnames[4]:  triangle.exterior.coords[:3][2][0], \
+        fieldnames[5]:  triangle.exterior.coords[:3][2][1]
+        }])
+    csvfile.flush()
+
+
+    
     total = 0.0
-    for tri in triangles:
-        p1, p2, p3 = [np.array(p) for p in tri.exterior.coords[:3]]
+    for triangle in triangles:
+        vertex_1, vertex_2, vertex_3 = [np.array(p) for p in triangle.exterior.coords[:3]]
 
         # Jacobian of the affine map from reference triangle
-        J = abs((p2[0]-p1[0])*(p3[1]-p1[1]) - (p3[0]-p1[0])*(p2[1]-p1[1]))
+        J = abs((vertex_2[0]-vertex_1[0])*(vertex_3[1]-vertex_1[1]) - (vertex_3[0]-vertex_1[0])*(vertex_2[1]-vertex_1[1]))
 
-        def integrand(v, u, p1=p1, p2=p2, p3=p3):
+        def integrand(v, u, 
+                        p1=vertex_1, p2=vertex_2, p3=vertex_3):
+
             x = p1[0] + (p2[0]-p1[0])*u + (p3[0]-p1[0])*v
             y = p1[1] + (p2[1]-p1[1])*u + (p3[1]-p1[1])*v
-            return f(x, y) * J
 
-        result, _ = dblquad(integrand, 0, 1, 0, lambda u: 1-u)
+            return f([x, y]) * J
+
+        result, _ = spi.dblquad(integrand, 0, 1, lambda u: 0, lambda u: 1-u)
+
         total += result
 
     
     return total
-    '''
+    
 
 
 '''

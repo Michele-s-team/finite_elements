@@ -11,17 +11,12 @@ import runtime_arguments as rarg
 
 rmsh = importlib.import_module('mesh.read.square_polygon')
 
-# 
-import calculus as cal
-
-cal.surface_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates'])
-
-# 
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 
-integral_exact_dx = cal.surface_integral_rectangle(tf.function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]]) 
+integral_exact_dx = cal.surface_integral_rectangle(tf.function_test_integrals, [0, 0], [rmsh.parameters["L"], rmsh.parameters["h"]])  - cal.surface_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates'])
+
 
 integral_exact_ds_l = cal.curve_integral_line(tf.function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
 integral_exact_ds_r = cal.curve_integral_line(tf.function_test_integrals, [rmsh.parameters["L"], 0], [rmsh.parameters["L"], rmsh.parameters["h"]])
