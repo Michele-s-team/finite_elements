@@ -14,13 +14,11 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-
-
 # check if the boundary conditions (BCs) are satisfied
 print("Check of BCs:")
-print(f"\t\t<<(u - phi)^2>>_[partial Omega arc] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds_arc):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(u - phi)^2>>_[partial Omega tb + polygon] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds_tb + rmsh.ds_poly):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(
-    f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega line] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * (fsp.u.dx(i)), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds_line):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+    f"\t\t<<|n^i partial_i u  - n^i grad_u_i|^2>>_[partial Omega lr] = {col.Fore.RED}{msh.difference_wrt_measure(bgeo.facet_normal[i] * (fsp.u.dx(i)), bgeo.facet_normal[i] * fsp.grad_u[i], rmsh.ds_lr):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print("Comparison with exact solution: ")
 print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")

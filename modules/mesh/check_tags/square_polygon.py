@@ -23,14 +23,14 @@ integral_exact_ds_r = cal.curve_integral_line(tf.function_test_integrals, [rmsh.
 integral_exact_ds_t = cal.curve_integral_line(tf.function_test_integrals, [0, rmsh.parameters["h"]], [rmsh.parameters["L"], rmsh.parameters["h"]])
 integral_exact_ds_b = cal.curve_integral_line(tf.function_test_integrals, [0, 0], [rmsh.parameters["L"], 0])
 
-integral_exact_ds_polygon = cal.curve_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates'])
+integral_exact_ds_poly = cal.curve_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates'])
 
 integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b
 
 integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
 
-integral_exact_ds = integral_exact_ds_square + integral_exact_ds_polygon
+integral_exact_ds = integral_exact_ds_square + integral_exact_ds_poly
 
 test_mesh_integral_errors = dict([])
 
@@ -45,9 +45,9 @@ test_mesh_integral_errors['\int f ds_lr'] = msh.test_mesh_integral(integral_exac
 test_mesh_integral_errors['\int f ds_tb'] = msh.test_mesh_integral(integral_exact_ds_tb, tf.function_test_integrals_fenics, rmsh.ds_tb, '\int f ds_tb')
 
 test_mesh_integral_errors['\int f ds_square'] = msh.test_mesh_integral(integral_exact_ds_square, tf.function_test_integrals_fenics, rmsh.ds_square, '\int f ds_square')
-test_mesh_integral_errors['\int f ds_polygon'] = msh.test_mesh_integral(integral_exact_ds_polygon, tf.function_test_integrals_fenics, rmsh.ds_poly, '\int f ds_polygon')
+test_mesh_integral_errors['\int f ds_poly'] = msh.test_mesh_integral(integral_exact_ds_poly, tf.function_test_integrals_fenics, rmsh.ds_poly, '\int f ds_poly')
 
-test_mesh_integral_errors['\int f ds_{l + tb + polygon}'] = msh.test_mesh_integral(integral_exact_ds_l + integral_exact_ds_tb + integral_exact_ds_polygon, tf.function_test_integrals_fenics, rmsh.ds_l_tb_poly, '\int f ds_{l + tb + poly}')
+test_mesh_integral_errors['\int f ds_{l + tb + polygon}'] = msh.test_mesh_integral(integral_exact_ds_l + integral_exact_ds_tb + integral_exact_ds_poly, tf.function_test_integrals_fenics, rmsh.ds_l_tb_poly, '\int f ds_{l + tb + poly}')
 
 test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, tf.function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
