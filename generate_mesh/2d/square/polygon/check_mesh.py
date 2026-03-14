@@ -15,8 +15,6 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import mesh.load as lmsh
-import mesh.utils as msh
 rmsh = importlib.import_module('mesh.read.square_polygon')
 
 import mesh.check_tags.square_polygon
