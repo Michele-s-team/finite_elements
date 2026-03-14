@@ -14,6 +14,7 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 
 
+
 def create_mesh(mesh, cell_type, prune_z=False):
     cells = mesh.get_cells_type(cell_type)
     cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
@@ -1783,6 +1784,127 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
 
 '''
+generate a mesh given by a square with a polygon hole
+Input values: 
+    - 'polygon coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the polygon
+    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+    - 'output_directory': the path where the mesh will be stored 
+'''
+
+def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory):
+
+    geometry = pygmsh.occ.Geometry()
+    model = geometry.__enter__()
+
+    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
+    parameters = io.read_parameters_from_csv_file(parameters_file_path)
+
+    mesh_file = os.path.join(output_directory,  "mesh.msh")
+  
+    # write into metadata the file format wich which the mesh will be written
+    metadata = parameters.copy()
+    metadata['file_format'] = 'xdmf'
+
+
+
+    # generate the mesh
+
+    # add square
+    square_points = [gmsh.model.geo.addPoint(0, 0, 0),
+                    gmsh.model.geo.addPoint(parameters["L"], 0, 0),
+                    gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0),
+                    gmsh.model.geo.addPoint(0, parameters["h"], 0)]
+
+    square_lines = [gmsh.model.geo.addLine(square_points[0], square_points[1]),
+                    gmsh.model.geo.addLine(square_points[1], square_points[2]),
+                    gmsh.model.geo.addLine(square_points[2], square_points[3]),
+                    gmsh.model.geo.addLine(square_points[3], square_points[0]),
+                    ]
+
+    square_loop = gmsh.model.geo.addCurveLoop(square_lines)
+
+
+    # add polygon
+    polygon_points = [gmsh.model.geo.addPoint(polygon_coordinates[0][0], polygon_coordinates[0][1], 0)]
+    gmsh.model.geo.synchronize()
+
+    polygon_lines = []
+
+    for i in range(1, len(polygon_coordinates)):
+
+        polygon_points.append(gmsh.model.geo.addPoint(polygon_coordinates[i][0], polygon_coordinates[i][1], 0))
+        gmsh.model.geo.synchronize()
+
+        polygon_lines.append(gmsh.model.geo.addLine(polygon_points[i-1], polygon_points[i]))
+        gmsh.model.geo.synchronize()
+
+    polygon_lines.append(gmsh.model.geo.addLine(polygon_points[-1], polygon_points[0]))
+    gmsh.model.geo.synchronize()
+
+    polygon_loop = gmsh.model.geo.addCurveLoop(polygon_lines)
+    gmsh.model.geo.synchronize()
+
+    gmsh.model.geo.addPlaneSurface([square_loop, polygon_loop])
+    gmsh.model.geo.synchronize()
+
+
+
+    # tag physical objects
+
+    # tag 1-dimensional objects
+    lines = gmsh.model.getEntities(dim=1)
+
+    # square lines
+    tag_physical_object(lines[0], parameters['line_b_id'], gmsh.model, 'line_b')
+    tag_physical_object(lines[1], parameters['line_r_id'], gmsh.model, 'line_r')
+    tag_physical_object(lines[2], parameters['line_t_id'], gmsh.model, 'line_t')
+    tag_physical_object(lines[3], parameters['line_l_id'], gmsh.model, 'line_l')
+
+    # polygon lines
+    tag_physical_object([lines[i] for i in range(4, len(lines))], parameters['polygon_id'], gmsh.model, 'polygon_line')
+
+
+    # tag 2-dimensional objects
+    surfaces = gmsh.model.getEntities(dim=2)
+
+    tag_physical_object(surfaces[0], parameters['surface_id'], gmsh.model, 'surface')
+
+
+    # set the mesh resolution
+    distance = gmsh.model.mesh.field.add("Distance")
+    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [polygon_loop])
+
+    threshold = gmsh.model.mesh.field.add("Threshold")
+    gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+    gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(parameters["L"], parameters["h"]))
+
+    minimum = gmsh.model.mesh.field.add("Min")
+    gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
+    gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+    gmsh.model.geo.synchronize()
+
+
+    geometry.generate_mesh(dim=2)
+    gmsh.write(mesh_file)
+
+    full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+
+    # print the boundary points of the boundary given by the polygon
+    sorted_boundary_points(
+        read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+        output_directory, 
+        [parameters['polygon_id']],
+        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+
+
+    model.__exit__()
+
+
+
+'''
 return the geometrical shape of an element for a mesh with different dimensions
 Input values: 
 - 'mesh': the mesh
@@ -2182,3 +2304,31 @@ def transfer_line_to_circle(f_line, f_2d, c_r, r, N):
     # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
     for i in range(len(permutation_dof)): 
          f_2d.vector()[permutation_dof[i]] = f_line.vector()[i]
+
+'''
+tag a physical object, or a list of objects, in a mesh
+Input values: 
+    * Mandatory:    
+        - 'object': the object to be tagged, e.g. a line or a list of lines
+        - 'id': an integer, the tag that will be given to 'object'
+        - 'model': the model used to generate the mesh, e.g., gmsh.model
+    * Optional:
+        - 'label': the label to be given to the object
+
+'''
+def tag_physical_object(object, id, model, 
+                        label=''):
+
+    if isinstance(object, list):
+        # 'object' is a list -> take as dimension the dimension of its first entry
+        dim = object[0][0]
+        object_to_tag = [object[i][1] for i in range(len(object))]
+
+    else: 
+        # 'object' is not a list -> take as dimension the dimension of 'object'
+        dim = object[0]
+        object_to_tag = [object[1]]
+
+    model.addPhysicalGroup(dim, object_to_tag, id)
+    model.setPhysicalName(dim, id, label)
+

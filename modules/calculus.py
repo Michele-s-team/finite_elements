@@ -1,6 +1,8 @@
 import numpy as np
 from scipy.spatial import cKDTree
 import scipy.integrate as spi
+from shapely.geometry import Polygon
+from shapely.ops import triangulate
 
 
 small_number = 1e-3
@@ -165,6 +167,27 @@ Example of usage:
 def curve_integral_line(f, x_a, x_b):
     line_curve = lambda t: line(x_a, x_b, t)
     return curve_integral(f, line_curve)
+
+
+'''
+compute the integral over the lines of a polygonal chain (a sequence of joint segments) of a function of two variables
+Input values: 
+    - 'f': the function, f([x, y])
+    - 'polygon_coordinates': the list of vertices of the polygonal chain [[v0x, v0y], [v1x, v1y], ... ]
+
+Return values: 
+    - \int_{polygonal chain} dl f
+'''
+def curve_integral_polygon(f, polygon_coordinates):
+
+    # add the integral over the segment that closes the polygon loop
+    result = curve_integral_line(f, polygon_coordinates[-1], polygon_coordinates[0])
+
+    # add the integrals over the other segments
+    for i in range(len(polygon_coordinates)-1):
+        result += curve_integral_line(f, polygon_coordinates[i], polygon_coordinates[i+1])
+
+    return result
 
 
 '''
@@ -357,6 +380,64 @@ def surface_integral_ellipse(f, a, b, c, phi):
 
     return spi.dblquad(lambda rho, theta: a * b * rho * f_swapped(c[1] + (r(rho, theta))[1], c[0] + (r(rho, theta))[0]), 0, 2 * np.pi, lambda rho: 0, lambda rho: 1)[0]
 
+
+'''
+compute the integral of a function of two variables over the region delimited by a polygon
+Input values: 
+    - 'f': the function f([x,y])
+    - 'polygon_coordinates': the list of vertices of the polygon [[v0x, v0y], [v1x, v1y], ... ]
+
+Return values: 
+    - \int_polygon dx f
+'''
+def surface_integral_polygon(f, polygon_coordinates):
+
+    import csv
+
+
+    polygon = Polygon(polygon_coordinates)
+
+    # triangulate the polygon by dividing it into triangles
+    triangles = [
+        tri for tri in triangulate(polygon)
+        if polygon.contains(tri.centroid)
+    ]
+    
+    total = 0.0
+    for triangle in triangles:
+        # run over all triangles of the triangulation 
+
+        # store the three triangle vertices into vertices
+        vertices = [np.array(p) for p in triangle.exterior.coords[:3]]
+
+        '''
+        one makes a change of variable from the xy plane to the uv plane. The triangle in the xy plane corresponds to the region 0 <= u <= 1, 0 <= v <= 1, u+v<=1 in the uv plane. 
+        The transformation is 
+
+        (x, y) =vertices[0] + u (vertices[1] - vertices[0]) + v (vertices[2] - vertices[0])
+        and the jacobian J is the jacobian of this transformation 
+        '''
+        J = abs((vertices[1][0]-vertices[0][0])*(vertices[2][1]-vertices[0][1]) - (vertices[2][0]-vertices[0][0])*(vertices[1][1]-vertices[0][1]))
+
+        '''
+        integrand re-expressed as a function of u and v
+        '''
+        def integrand(v, u):
+
+            x = vertices[0][0] + (vertices[1][0]-vertices[0][0])*u + (vertices[2][0]-vertices[0][0])*v
+            y = vertices[0][1] + (vertices[1][1]-vertices[0][1])*u + (vertices[2][1]-vertices[0][1])*v
+
+            return f([x, y]) * J
+
+        # store the integral over the triangle in result
+        result, _ = spi.dblquad(integrand, 0, 1, lambda u: 0, lambda u: 1-u)
+
+        # add the integral to the total integral
+        total += result
+
+    
+    return total
+    
 
 
 '''

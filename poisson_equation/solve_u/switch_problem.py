@@ -91,6 +91,11 @@ elif rarg.args.problem == 'square_ellipse':
     vp = 'variational_problem_bc_square_ellipse'
     prout_bc = 'print_out_bc_square_ellipse'
 
+elif rarg.args.problem == 'square_polygon':
+    rmsh = 'mesh.read.square_polygon'
+    vp = 'variational_problem_bc_square_polygon'
+    prout_bc = 'print_out_bc_square_polygon'
+
 elif rarg.args.problem == 'ball':
     rmsh = 'mesh.read.ball'
     vp = 'variational_problem_bc_ball'
