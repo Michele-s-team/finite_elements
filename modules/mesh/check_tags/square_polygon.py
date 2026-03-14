@@ -14,8 +14,7 @@ rmsh = importlib.import_module('mesh.read.square_polygon')
 # 
 import calculus as cal
 
-cal.surface_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates  '])
-
+cal.surface_integral_polygon(tf.function_test_integrals, rmsh.lmsh.parameters['polygon_coordinates'])
 
 # 
 

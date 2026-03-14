@@ -370,6 +370,7 @@ def surface_integral_polygon(f, polygon_coordinates):
         if polygon.contains(tri.centroid)
     ]
 
+    '''
     total = 0.0
     for tri in triangles:
         p1, p2, p3 = [np.array(p) for p in tri.exterior.coords[:3]]
@@ -385,7 +386,9 @@ def surface_integral_polygon(f, polygon_coordinates):
         result, _ = dblquad(integrand, 0, 1, 0, lambda u: 1-u)
         total += result
 
+    
     return total
+    '''
 
 
 '''
