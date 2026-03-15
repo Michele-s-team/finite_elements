@@ -1,5 +1,5 @@
 '''
-generate a mesh given by a square with a ellipse-shaped hole in it: the ellipse has the shape of an ellipse
+generate a mesh given by a square with a ellipse-shaped hole in it: the hole has the shape of an ellipse. The ellipse may be rotated by an angle with respect to the x axis, about its left focal point
 
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
