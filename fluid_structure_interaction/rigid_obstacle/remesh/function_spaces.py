@@ -50,9 +50,9 @@ u_dot_n_1 = Function(Q_u_dot)
 u_n_2 = Function(Q_u)
 u_dot_n_2 = Function(Q_u_dot)
 
-u_ellipse = Function(Q_u)
+u_polygon = Function(Q_u)
 u_square = Function(Q_u)
-u_dot_ellipse = Function(Q_u_dot)
+u_dot_polygon = Function(Q_u_dot)
 u_dot_square = Function(Q_u_dot)
 
 # y_ellipse = {y^s}_notes

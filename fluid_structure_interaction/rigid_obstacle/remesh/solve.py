@@ -31,7 +31,7 @@ import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
-# import print_out_solution as pr_sol
+import print_out_solution as pr_sol
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
