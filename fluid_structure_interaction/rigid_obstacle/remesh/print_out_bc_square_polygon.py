@@ -26,15 +26,15 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
-    '<<(u^n_i - u_ellipse_i)(u^n_i - u_ellipse_i)>>_ellipse', \
+    '<<(u^n_i - u_polygon_i)(u^n_i - u_polygon_i)>>_polygon', \
     '<<(u^n_i - u_square_i)(u^n_i - u_square_i)>>_square', \
-    '<<(u_dot^n_i - u_dot_ellipse_i)(u_dot^n_i - u_dot_ellipse_i)>>_ellipse', \
+    '<<(u_dot^n_i - u_dot_polygon_i)(u_dot^n_i - u_dot_polygon_i)>>_polygon', \
     '<<(u_dot^n_i - u_dot_square_i)(u_dot^n_i - u_dot_square_i)>>_square', \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
     '<<v_bar^i v_bar_i>>_{tb}', \
-    '<<(ellipse_profile_v_bar^i - v_bar^i)(v__profile_ellipse - v_bar_i)>>_ellipse', \
+    '<<(polygon_profile_v_bar^i - v_bar^i)(v__profile_polygon - v_bar_i)>>_polygon', \
     '<<\mu G^{n-1}_{j1} \partial_j V_i>>_r', \
-    '<<(G^{n-1}_{ji} nu_j G^{n-1}_{li} \partial_l phi)^2>>_{l + tb + ellipse}' ,\
+    '<<(G^{n-1}_{ji} nu_j G^{n-1}_{li} \partial_l phi)^2>>_{l + tb + polygon}' ,\
     '<<phi^2>>_r'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
