@@ -1786,12 +1786,16 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 '''
 generate a mesh given by a square with a polygon hole
 Input values: 
-    - 'polygon coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the polygon
-    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
-    - 'output_directory': the path where the mesh will be stored 
+    * Mandatory:
+        - 'polygon coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the polygon
+        - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+        - 'output_directory': the path where the mesh will be stored 
+    * Optional: 
+        - 'additional_metadata': some additional data that will be written appended to mesh_metadata.csv. It is None by default. 
 '''
 
-def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory):
+def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory,
+                                additional_metadata=None):
 
     geometry = pygmsh.occ.Geometry()
     model = geometry.__enter__()
@@ -1805,7 +1809,8 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
 
-
+    if additional_metadata is not None:
+        metadata.update(additional_metadata)
 
     # generate the mesh
 
