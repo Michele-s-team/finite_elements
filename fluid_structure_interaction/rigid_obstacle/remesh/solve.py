@@ -6,7 +6,7 @@ run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -80,10 +80,10 @@ fsp.omega_n = rpam.parameters["omega_0"]
 fsp.theta_n_1 = rpam.parameters["theta_0"]
 fsp.omega_n_1 = rpam.parameters["omega_0"]
 
-'''
+
 
 rmsh = importlib.import_module(swi.rmsh)
-ap_ellipse = importlib.import_module(swi.ap_ellipse)
+ap_polygon = importlib.import_module(swi.ap_polygon)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -110,10 +110,10 @@ for n in range(rpam.parameters["num_steps"]):
 
     # step 1): update theta and omega
     print('Solving theta problem ...', flush=True)
-    ap_ellipse = importlib.reload(ap_ellipse)
+    ap_polygon = importlib.reload(ap_polygon)
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
-    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_ellipse.M_ellipse
+    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_polygon.M_ellipse
     print('... done.', flush=True)
 
     # step 2): update u and u_dot (mesh problem)
@@ -172,4 +172,3 @@ for n in range(rpam.parameters["num_steps"]):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
 print("... done.", flush=True)
-'''
