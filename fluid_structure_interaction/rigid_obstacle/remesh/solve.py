@@ -51,6 +51,8 @@ params = {'nonlinear_solver': 'newton',
 
 
 
+# block with the same mesh - start
+
 
 # trace the coordinates of flat polygon vertices
 focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
@@ -157,3 +159,5 @@ for n in range(rpam.parameters["num_steps"]):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
 print("... done.", flush=True)
+
+# block with the same mesh - end
