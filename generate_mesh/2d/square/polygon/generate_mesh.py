@@ -26,6 +26,8 @@ polygon_coordinates = None
 if rpam.parameters['polygon_format'] == 'coordinates':
     # the polygon shape is provided directly as a sequence of coordinates of the polygon points -> set polygon_coordinates to these coordinates
 
+    print('The polygon shape is provided as a set of coordinates.')
+
     polygon_coordinates = rpam.parameters['polygon_coordinates']
 
 else:
@@ -33,6 +35,8 @@ else:
 
     if rpam.parameters['polygon_format'] == 'ellipse':
     # the polygon shape is an ellipse -> obtain polygon_cordinates from the ellipse parameters
+
+        print('The polygon shape is an ellipse.')
 
         polygon_coordinates = cal.points_ellipse(rpam.parameters['a'], rpam.parameters['b'], rpam.parameters['c'], rpam.parameters['N'])
 
