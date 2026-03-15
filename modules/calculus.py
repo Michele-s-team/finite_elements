@@ -104,8 +104,12 @@ Return values:
 def ellipse_arc(a, b, c, theta_min, theta_max, t, phi=0):
     theta_t = theta_min + (theta_max - theta_min) * t
 
-    return [np.add(c, np.dot(R(phi), [a * np.cos(theta_t), b * np.sin(theta_t)])).tolist(),
-            ((theta_max - theta_min) * np.dot(R(phi), [- a * np.sin(theta_t), b * np.cos(theta_t)])).tolist() ]
+    f = ellipse_left_focal_point(a, b, c)
+
+    return [
+        np.add(f, np.dot(R(phi), np.subtract(np.add(c, [a * np.cos(theta_t), b * np.sin(theta_t)]), f) ) ).tolist(),
+        ((theta_max - theta_min) * np.dot(R(phi), np.subtract(np.add(c, [- a * np.sin(theta_t), b * np.cos(theta_t)]), f ) )).tolist() 
+            ]
 
 
 '''
