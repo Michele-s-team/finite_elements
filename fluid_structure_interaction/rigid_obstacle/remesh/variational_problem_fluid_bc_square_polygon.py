@@ -22,6 +22,26 @@ dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
 print(f'list(focus) = {list(focus)}')
 
+
+# trial analytical expression for a vector
+class v_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+
+# trial analytical expression for the  surface tension sigma(x,y)
+class sigma_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+
+
 v__profile_l = Expression((f'{rpam.parameters["v_l"]}* 4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.parameters["h"])
 bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.mf, rmsh.parameters['line_l_id'])
 
