@@ -85,8 +85,9 @@ fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-print("Starting time iteration ...", flush=True)
 # Time-stepping
+print("Starting time iteration ...", flush=True)
+
 t = 0
 step = 0
 for n in range(rpam.parameters["num_steps"]):
