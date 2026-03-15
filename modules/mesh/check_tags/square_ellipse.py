@@ -28,9 +28,8 @@ integral_exact_ds_b = cal.curve_integral_line(tf.function_test_integrals, [0, 0]
 
 integral_exact_ds_ellipse = cal.curve_integral_ellipse(tf.function_test_integrals,
                                                        rmsh.parameters["a"], rmsh.parameters["b"],
-                                                       # the ellipse here is rotated about its focal point by phi, thus its center is the following
-                                                       np.add(rmsh.focus, np.dot(cal.R_z(rmsh.parameters["phi"]), np.subtract(rmsh.parameters["c"], rmsh.focus)))[:2],
-                                                       rmsh.parameters["phi"])
+                                                       rmsh.parameters["c"][:2],
+                                                       phi=rmsh.parameters["phi"])
 
 integral_exact_ds_lr = integral_exact_ds_l + integral_exact_ds_r
 integral_exact_ds_tb = integral_exact_ds_t + integral_exact_ds_b

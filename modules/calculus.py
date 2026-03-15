@@ -108,7 +108,7 @@ def ellipse_arc(a, b, c, theta_min, theta_max, t, phi=0):
 
     return [
         np.add(f, np.dot(R(phi), np.subtract(np.add(c, [a * np.cos(theta_t), b * np.sin(theta_t)]), f) ) ).tolist(),
-        ((theta_max - theta_min) * np.dot(R(phi), np.subtract(np.add(c, [- a * np.sin(theta_t), b * np.cos(theta_t)]), f ) )).tolist() 
+        ((theta_max - theta_min) * np.dot(R(phi), [- a * np.sin(theta_t), b * np.cos(theta_t)] )).tolist() 
             ]
 
 
@@ -224,15 +224,16 @@ def curve_integral_circle(f, r, c):
 return the curve integral of a function  along an ellipse rotated with respect to the x axis about its left focal point
 Input values:
     * Mandatory:
-    - 'f': the function f(x[0], x[1])
-    - 'a', 'b': the ellipse minor and major axes
-    - 'c': the circle center (an array of two points)
+        - 'f': the function f(x[0], x[1])
+        - 'a', 'b': the ellipse minor and major axes
+        - 'c': the ellipse center (an array of two points)
     * Optional:
         - 'phi': the angle by which the major axis is rotated with respect to the x axis about the left focal point of the ellipse, it is 0 by default
 Return values: 
     - \int_ellipse f dl
 '''
 def curve_integral_ellipse(f, a, b, c, phi=0):
+
     ellipse_curve = lambda t: ellipse(a, b, c, t, phi)
     return curve_integral(f, ellipse_curve)
 
