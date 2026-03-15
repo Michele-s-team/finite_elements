@@ -50,13 +50,21 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
-
-# block with the same mesh - start
-
-
-# trace the coordinates of flat polygon vertices
+# focal point of the ellipse
 focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
-polygon_coordinates = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
+# coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
+polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
+
+
+
+
+# theta_ref is the rotation angle of the polygon in the reference configuration 
+theta_ref = rpam.parameters["theta_0"]
+
+# trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
+polygon_coordinates = []
+for coordinate in polygon_coordinates_flat:
+    polygon_coordinates.append(cal.R(theta_ref).dot(coordinate))
 
 # generate the mesh with the polygon
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
@@ -64,28 +72,51 @@ msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.inp
 import function_spaces as fsp
 import print_out_solution as pr_sol
 
+# trial analytical expression for a vector
+class v_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
 
-# initialize values
+    def value_shape(self):
+        return (2,)
+
+
+# trial analytical expression for the  surface tension sigma(x,y)
+class sigma_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+
+#set initial profiles and values
 fsp.theta_n = rpam.parameters["theta_0"]
 fsp.omega_n = rpam.parameters["omega_0"]
 fsp.theta_n_1 = rpam.parameters["theta_0"]
 fsp.omega_n_1 = rpam.parameters["omega_0"]
 
+fsp.v_n_1.interpolate(v_0_expression(element=fsp.Q_v.ufl_element()))
+fsp.v_n_2.assign(fsp.v_n_1)
+fsp.sigma_n_12.interpolate(sigma_0_expression(element=fsp.Q_phi.ufl_element()))
+fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
 
 
 rmsh = importlib.import_module(swi.rmsh)
-
 ap_polygon = importlib.import_module(swi.ap_polygon)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 
-# set the initial profiles
-fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
-fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
-fsp.sigma_n_32.assign(fsp.sigma_n_12)
+# block with the same mesh - start
+
+fsp = importlib.reload(fsp)
+rmsh = importlib.reload(rmsh)
+pr_bc = importlib.reload(pr_bc)
+
+'''
 
 # Time-stepping
 print("Starting time iteration ...", flush=True)
@@ -161,3 +192,4 @@ for n in range(rpam.parameters["num_steps"]):
 print("... done.", flush=True)
 
 # block with the same mesh - end
+'''
