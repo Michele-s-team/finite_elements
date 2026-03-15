@@ -19,16 +19,6 @@ i, j, k, l = ufl.indices(4)
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
 
-# trial analytical expression for a vector
-class v_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-
 # trial analytical expression for the  surface tension sigma(x,y)
 class sigma_expression(UserExpression):
     def eval(self, values, x):
