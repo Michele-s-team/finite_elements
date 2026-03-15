@@ -23,6 +23,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import calculus as cal
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -30,6 +31,9 @@ import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
@@ -46,27 +50,14 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
-######
-mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
-focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
 
 # trace the coordinates of flat polygon vertices
-polygon_coordinates = []
-for i in range(mesh_parameters['N']-1):
-    polygon_coordinates.append(
-        list(np.add(
-            mesh_parameters['c'],
-            [mesh_parameters['a'] * np.cos(2.0*np.pi*i/(mesh_parameters['N']-1)),
-            mesh_parameters['b'] * np.sin(2.0*np.pi*i/(mesh_parameters['N']-1))] 
-            ))
-    )
-print(f'flat polygon_coordinates = {polygon_coordinates}')
+focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
+polygon_coordinates = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
 # generate the mesh with the polygon
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
-
-###### 
 
 import function_spaces as fsp
 import print_out_solution as pr_sol
@@ -81,16 +72,12 @@ fsp.omega_n_1 = rpam.parameters["omega_0"]
 
 
 rmsh = importlib.import_module(swi.rmsh)
-'''
+
 ap_polygon = importlib.import_module(swi.ap_polygon)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
-
-print("Input directory", rarg.args.input_directory)
-print("Output directory", rarg.args.output_directory)
 
 # set the initial profiles
 fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
@@ -133,10 +120,8 @@ for n in range(rpam.parameters["num_steps"]):
 
     # step 3.1: approximate velocity step
     var_pr.solve_vp(vp_fluid.F_v_, fsp.v_, vp_fluid.bc_v_, fsp.J_v_)
-
     # step 3.2: surface_tension correction step
     var_pr.solve_vp(vp_fluid.F_phi, fsp.phi, vp_fluid.bc_phi, fsp.J_phi)
-
     # step 3.3: velocity step
     var_pr.solve_vp(vp_fluid.F_v_n, fsp.v_n, vp_fluid.bc_v_n, fsp.J_v_n)
 
@@ -171,4 +156,3 @@ for n in range(rpam.parameters["num_steps"]):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
 print("... done.", flush=True)
-'''
