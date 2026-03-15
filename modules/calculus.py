@@ -87,18 +87,21 @@ def circle_arc(r, cr, theta_min, theta_max, t):
             (r * (theta_max - theta_min) * np.array([- np.sin(theta_t), np.cos(theta_t)])).tolist()]
 
 '''
-the arc of an ellipse rotated about the x axis about its center
+the arc of an ellipse rotated with respect to the x axis about its left focal point
 Input values:
-    - 'a', 'b': the ellipse major and minor axes
-    - 'c': the ellipse center (an array of two points)
-    - 'phi': the angle by which the major axis is rotated with respect to the x axis
-    - 'theta_min', 'theta_max': the minimal and maxmimal values of the polar angles of the arg, respectively
-    - 't' : the parametric coordinate of the ellipse arc, 0<=t<1
+    * Mandatory:
+        - 'a', 'b': the ellipse major and minor axes
+        - 'c': the ellipse center (an array of two points)
+        - 'theta_min', 'theta_max': the minimal and maxmimal values of the polar angles of the arg, respectively
+        - 't' : the parametric coordinate of the ellipse arc, 0<=t<1
+    * Optional:
+        - 'phi': the angle by which the major axis is rotated with respect to the x axis, about the left focal points
+
 Return values:
     - the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
 '''
 
-def ellipse_arc(a, b, c, phi, theta_min, theta_max, t):
+def ellipse_arc(a, b, c, theta_min, theta_max, t, phi=0):
     theta_t = theta_min + (theta_max - theta_min) * t
 
     return [np.add(c, np.dot(R(phi), [a * np.cos(theta_t), b * np.sin(theta_t)])).tolist(),
@@ -776,3 +779,15 @@ def parameteric_coordinate_ellipse(x, a, b, c, theta=0):
     r = np.add(np.subtract(f, c), R(-theta).dot(np.subtract(x, f)))
 
     return 1.0/(2.0*np.pi) * atan_quad(r[1]/r[0])
+
+'''
+return the left focal point of an ellipse
+Input values: 
+    - 'a', 'b': the semi-major and minor axes of the ellipse
+    - 'c': the ellipse center [c_x, c_y]
+Return values: 
+    - 'f': [f_x, f_y], the left focal point
+
+'''
+def ellipse_left_focal_point(a, b, c):
+    return np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0])
