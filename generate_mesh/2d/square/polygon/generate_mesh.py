@@ -21,14 +21,22 @@ import parameters.read.mesh as rpam
 print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: {rarg.args.output_directory}')
 print(f'output_directory = "{rarg.args.output_directory}"')
 
+polygon_coordinates = None
+
 if rpam.parameters['polygon_format'] == 'coordinates':
+    # the polygon shape is provided directly as a sequence of coordinates of the polygon points -> set polygon_coordinates to these coordinates
 
-    polygon_coordinates = rpam.parameters['coordinates']
+    polygon_coordinates = rpam.parameters['polygon_coordinates']
 
-elif rpam.parameters['polygon_format'] == 'ellipse':
+else:
+    #  the polygon shape is a given, parameteric geometrical shape, and it is provided in terms of the parameters of this shape
 
-    polygon_coordinates = 
+    if rpam.parameters['polygon_format'] == 'ellipse':
+    # the polygon shape is an ellipse -> obtain polygon_cordinates from the ellipse parameters
 
+        polygon_coordinates = cal.points_ellipse(rpam.parameters['a'], rpam.parameters['b'], rpam.parameters['c'], rpam.parameters['N'])
+
+    # here you can have other cases corresponding to other geometrical shapes (circle, etc... )
 
 
 msh.generate_square_polygon_mesh(polygon_coordinates, rarg.args.parameter_directory, rarg.args.output_directory)
