@@ -6,7 +6,7 @@ run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -17,7 +17,6 @@ from fenics import *
 import importlib
 import numpy as np
 import os
-import shutil
 import sys
 
 # add the path where to find the shared modules
@@ -31,7 +30,6 @@ import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
-import print_out_solution as pr_sol
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
@@ -71,6 +69,7 @@ msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.inp
 ###### 
 
 import function_spaces as fsp
+import print_out_solution as pr_sol
 
 
 # initialize values
@@ -82,6 +81,7 @@ fsp.omega_n_1 = rpam.parameters["omega_0"]
 
 
 rmsh = importlib.import_module(swi.rmsh)
+'''
 ap_polygon = importlib.import_module(swi.ap_polygon)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
@@ -171,3 +171,4 @@ for n in range(rpam.parameters["num_steps"]):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
 print("... done.", flush=True)
+'''
