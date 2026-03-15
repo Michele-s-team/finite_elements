@@ -6,7 +6,7 @@ run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    clear; clear; MESH_PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse $MESH_PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse $MESH_PATH $SOLUTION_PATH
 
 Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the rectangle, etc...) is changed are bracketed by
 #CHANGE PARAMETERS HERE
@@ -24,7 +24,6 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-# import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -50,8 +49,7 @@ params = {'nonlinear_solver': 'newton',
 
 
 ######
-mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, 'mesh_parameters.csv')) 
-mesh_path = os.path.join(rarg.args.input_directory, 'solution')
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
 print(f'list(focus) = {list(focus)}')
@@ -69,21 +67,20 @@ for i in range(mesh_parameters['N']-1):
 print(f'polygon_coordinates = {polygon_coordinates}')
 
 # generate the mesh with the polygon
-if os.path.exists(mesh_path):
-    shutil.rmtree(mesh_path)
-os.mkdir(mesh_path)
-msh.generate_square_polygon_mesh(polygon_coordinates, rarg.args.input_directory, mesh_path)
+msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 ###### 
 
+import function_spaces as fsp
 
-'''
+
 # initialize values
 fsp.theta_n = rpam.parameters["theta_0"]
 fsp.omega_n = rpam.parameters["omega_0"]
 fsp.theta_n_1 = rpam.parameters["theta_0"]
 fsp.omega_n_1 = rpam.parameters["omega_0"]
 
+'''
 
 rmsh = importlib.import_module(swi.rmsh)
 ap_ellipse = importlib.import_module(swi.ap_ellipse)
