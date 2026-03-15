@@ -4,7 +4,7 @@ generate a mesh given by a square with a polygon-shaped hole in it
 Here the polygon may be provided in two ways
     1. if 'polygon_format' == 'coordinates' in mesh_parameters.csv, the polygon is provided as a set of raw coordinates
     2. if 'polygon_format' == [name of a geometrical shape] in mesh_parameters.csv, the polygon is provided implicitly in terms of the parameters of that shape, which are provided into mesh_parameters.csv, for example:"
-        2.1: 'polygon_format' == 'ellipse': then mesh_parameters.csv contains the ellipse semi-axes 'a', 'b', the center 'c', and the number of segments'N' in which the ellipse boundary is divided. 
+        2.1: 'polygon_format' == 'ellipse': then mesh_parameters.csv contains the ellipse semi-axes 'a', 'b', the center 'c', and the number of vertices 'N' which divide the ellipse boundary into segments. 
         2.2 ... other geometrical shapes are possible ... 
 
 Run it with

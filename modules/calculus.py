@@ -742,7 +742,7 @@ returns the coordinates of the points on an ellipse, obtained by dividing its bo
 Input values: 
     - 'a', 'b': semi-major and semi-minor axes of the ellipse, respectively
     - 'c': center of the ellipse, [c_x, c_y]
-    - 'N': number of parts in which the ellipse boundary will be divided
+    - 'N': number of vertices which divide the ellipse boundary into N-1 segments
 
 Return values: 
     - 'coordiantes', the coordinates of the points along the ellipse boundary, in the format [[p0_x, p0_y], [p1_x, p1_y], ...]
