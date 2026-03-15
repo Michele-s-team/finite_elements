@@ -757,3 +757,22 @@ def points_ellipse(a, b, c, N):
         )
 
     return coordinates
+
+'''
+return the parametric coordinate 0 <= t <= 1 as defined in the 'ellipse' method corresponding to a point in the plane lying on the boundary of an ellipse
+Input values: 
+    * Mandatory: 
+        - 'x': a two-dimensional list, given by the coordinates of the point lyiung on the ellipse boundary. If the point does not lie on the ellipse boundary, this method still returns a result, but it is no longer 't'
+        - 'a', 'b': semi-major axes of the ellipse
+        - 'c': center of the ellipse, [c_x, c_y]
+    * Optional:
+        - 'theta': the rotation angle of the ellipse with respect to its left focal point
+'''
+def parameteric_coordinate_ellipse(x, a, b, c, theta=0):
+
+    # coordinates of left focal point
+    f = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0])
+
+    r = np.add(np.subtract(f, c), R(-theta).dot(np.subtract(x, f)))
+
+    return 1.0/(2.0*np.pi) * atan_quad(r[1]/r[0])
