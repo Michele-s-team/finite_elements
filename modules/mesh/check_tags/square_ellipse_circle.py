@@ -43,7 +43,7 @@ integral_exact[1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integr
 # exact line integrals
 # form mesh #0
 integral_exact[0]['ds_circle'] = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'][:2])
-integral_exact[0]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2], 0)
+integral_exact[0]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2])
 
 # for mesh #1
 integral_exact[1]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
@@ -55,7 +55,7 @@ integral_exact[1]['ds_lr'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r
 integral_exact[1]['ds_tb'] = integral_exact[1]['ds_t'] + integral_exact[1]['ds_b']
 
 integral_exact[1]['ds_lrtb'] = integral_exact[1]['ds_lr'] + integral_exact[1]['ds_tb']
-integral_exact[1]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2], 0)
+integral_exact[1]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2])
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_ellipse']
 

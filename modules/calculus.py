@@ -221,16 +221,18 @@ def curve_integral_circle(f, r, c):
     return curve_integral(f, circle_curve)
 
 '''
-return the curve integral of a function  along an ellipse 
+return the curve integral of a function  along an ellipse rotated with respect to the x axis about its left focal point
 Input values:
-- 'f': the function f(x[0], x[1])
-- 'a', 'b': the ellipse minor and major axes
-- 'c': the circle center (an array of two points)
-- 'phi': the angle by which the major axis is rotated with respect to the x axis
+    * Mandatory:
+    - 'f': the function f(x[0], x[1])
+    - 'a', 'b': the ellipse minor and major axes
+    - 'c': the circle center (an array of two points)
+    * Optional:
+        - 'phi': the angle by which the major axis is rotated with respect to the x axis about the left focal point of the ellipse, it is 0 by default
 Return values: 
-    \int_ellipse f dl
+    - \int_ellipse f dl
 '''
-def curve_integral_ellipse(f, a, b, c, phi):
+def curve_integral_ellipse(f, a, b, c, phi=0):
     ellipse_curve = lambda t: ellipse(a, b, c, t, phi)
     return curve_integral(f, ellipse_curve)
 
