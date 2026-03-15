@@ -52,9 +52,8 @@ params = {'nonlinear_solver': 'newton',
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
-print(f'list(focus) = {list(focus)}')
 
-# trace the coordinates of polygon vertices
+# trace the coordinates of flat polygon vertices
 polygon_coordinates = []
 for i in range(mesh_parameters['N']-1):
     polygon_coordinates.append(
@@ -64,7 +63,7 @@ for i in range(mesh_parameters['N']-1):
             mesh_parameters['b'] * np.sin(2.0*np.pi*i/(mesh_parameters['N']-1))] 
             ))
     )
-print(f'polygon_coordinates = {polygon_coordinates}')
+print(f'flat polygon_coordinates = {polygon_coordinates}')
 
 # generate the mesh with the polygon
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)

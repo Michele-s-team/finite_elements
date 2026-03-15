@@ -20,7 +20,6 @@ i, j, k, l = ufl.indices(4)
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
 focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
-print(f'list(focus) = {list(focus)}')
 
 
 # trial analytical expression for a vector
