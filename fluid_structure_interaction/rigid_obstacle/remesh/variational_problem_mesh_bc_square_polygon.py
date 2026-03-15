@@ -15,12 +15,15 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
+focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
+
+
 i, j, k, l = ufl.indices(4)
 
 
 class u_ellipse_expression(UserExpression):
     def eval(self, values, x):
-        x_minus_focus = np.subtract(x, rmsh.focus[:2])
+        x_minus_focus = np.subtract(x, focus)
         displacement = np.subtract(np.dot(cal.R(fsp.theta_n), x_minus_focus), x_minus_focus)
 
         values[0] = displacement[0]
@@ -41,7 +44,7 @@ class u_square_expression(UserExpression):
 
 class u_dot_ellipse_expression(UserExpression):
     def eval(self, values, x):
-        x_minus_focus = np.subtract(x, rmsh.focus[:2])
+        x_minus_focus = np.subtract(x, focus)
         displacement_dot = fsp.omega_n * np.dot(cal.dRddtheta(fsp.theta_n), x_minus_focus)
 
         values[0] = displacement_dot[0]

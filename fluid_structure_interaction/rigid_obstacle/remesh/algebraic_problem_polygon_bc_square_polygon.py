@@ -23,6 +23,8 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
+focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
+
 i, j, k, l, m, n = ufl.indices(6)
 
 
@@ -77,8 +79,8 @@ by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellips
 
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
-    / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
+    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(focus))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
+    / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_poly)
 
 
 
