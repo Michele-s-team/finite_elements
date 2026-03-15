@@ -736,3 +736,24 @@ def min_distance (points):
 
     #distances[:, 1] takes the second column of distances, and then the method returns its minimum 
     return np.min(distances[:, 1])
+
+'''
+returns the coordinates of the points on an ellipse, obtained by dividing its boundary into a finite number of parts
+Input values: 
+    - 'a', 'b': semi-major and semi-minor axes of the ellipse, respectively
+    - 'c': center of the ellipse, [c_x, c_y]
+    - 'N': number of parts in which the ellipse boundary will be divided
+
+Return values: 
+    - 'coordiantes', the coordinates of the points along the ellipse boundary, in the format [[p0_x, p0_y], [p1_x, p1_y], ...]
+'''
+def points_ellipse(a, b, c, N):
+
+    coordinates = []
+    for i in range(N-1):
+
+        coordinates.append(
+            list(np.add(c, [a * np.cos(2.0*np.pi*i/(N-1)), b * np.sin(2.0*np.pi*i/(N-1))]))
+        )
+
+    return coordinates
