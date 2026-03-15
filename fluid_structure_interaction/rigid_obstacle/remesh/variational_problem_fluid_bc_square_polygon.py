@@ -49,7 +49,7 @@ F_v_ = ( \
        - ( \
                    rpam.parameters["mu"] * ela.G(fsp.u_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_l \
                    + rpam.parameters["mu"] * ela.G(fsp.u_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_tb \
-                   + rpam.parameters["mu"] * ela.G(fsp.u_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_ellipse \
+                   + rpam.parameters["mu"] * ela.G(fsp.u_n_1)[l, j] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[k, j] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_poly \
                    + rpam.parameters["mu"] * ela.G(fsp.u_n_1)[l, 1] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[k, 1] * (fsp.V[i].dx(k)) * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_r \
            )
 

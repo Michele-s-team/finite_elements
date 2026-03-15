@@ -63,9 +63,12 @@ class u_dot_square_expression(UserExpression):
 fsp.u_ellipse.interpolate(u_ellipse_expression(element=fsp.Q_u.ufl_element()))
 fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u.ufl_element()))
 
-bc_u_ellipse = DirichletBC(fsp.Q_u, fsp.u_ellipse, rmsh.boundary_ellipse)
-bc_u_square = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.boundary_square)
-bcs = [bc_u_ellipse, bc_u_square]
+bc_u_ellipse = DirichletBC(fsp.Q_u, fsp.u_ellipse, rmsh.mf, rmsh.parameters['polygon_id'])
+bc_u_square_l = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_l_id'])
+bc_u_square_r = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_r_id'])
+bc_u_square_t = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_t_id'])
+bc_u_square_b = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_b_id'])
+bcs = [bc_u_ellipse, bc_u_square_l, bc_u_square_r, bc_u_square_t, bc_u_square_b]
 
 # variational functional for the original problem
 F_u = (ela.F(fsp.u_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
@@ -73,9 +76,13 @@ F_u = (ela.F(fsp.u_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exp
 fsp.u_dot_ellipse.interpolate(u_dot_ellipse_expression(element=fsp.Q_u_dot.ufl_element()))
 fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
 
-bc_u_dot_ellipse = DirichletBC(fsp.Q_u_dot, fsp.u_dot_ellipse, rmsh.boundary_ellipse)
-bc_u_dot_square = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.boundary_square)
-bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square]
+bc_u_dot_ellipse = DirichletBC(fsp.Q_u_dot, fsp.u_dot_ellipse, rmsh.mf, rmsh.parameters['polygon_id'])
+bc_u_dot_square_l = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_l_id'])
+bc_u_dot_square_r = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_r_id'])
+bc_u_dot_square_t = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_t_id'])
+bc_u_dot_square_b = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_b_id'])
+
+bcs_dot = [bc_u_dot_ellipse, bc_u_dot_square_l, bc_u_dot_square_r, bc_u_dot_square_t, bc_u_dot_square_b]
 
 F_u_dot = ( \
                       (ela.F_dot(fsp.u_dot_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[j, i] \
