@@ -113,18 +113,20 @@ def ellipse_arc(a, b, c, theta_min, theta_max, t, phi=0):
 
 
 '''
-an ellipse rotated about the x axis about its center
+an ellipse rotated about the x axis about its left focal point
 Input values:
-    - 'a', 'b': the ellipse major and minor axes
-    - 'c': the ellipse center (an array of two points)
-    - 'phi': the angle by which the major axis is rotated with respect to the x axis
-    - 't' : the parametric coordinate of the ellipse, 0<=t<1
+    * Mandatory: 
+        - 'a', 'b': the ellipse major and minor axes
+        - 'c': the ellipse center (an array of two points)
+        - 't' : the parametric coordinate of the ellipse, 0<=t<1
+    * Optional:
+        - 'phi': the angle by which the major axis is rotated with respect to the x axis
 Return values:
     - the curve position and derivative: [x[0](t), x[1](t)], [x[0]'(t), x[1]'(t)]
 '''
 
-def ellipse(a, b, c, phi, t):
-    return ellipse_arc(a, b, c, phi, 0, 2 * np.pi, t)
+def ellipse(a, b, c, t, phi=0):
+    return ellipse_arc(a, b, c, 0, 2 * np.pi, t, phi)
 
 
 '''
