@@ -35,7 +35,7 @@ class ys_ellipse_expression(UserExpression):
     def eval(self, values, x):
         s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
 
-        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], 0, s)[0]
+        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[0]
 
         values[0] = t[0]
         values[1] = t[1]
@@ -48,7 +48,7 @@ class dyds_ellipse_expression(UserExpression):
     def eval(self, values, x):
         s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
 
-        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], 0, s)[1]
+        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[1]
 
         values[0] = t[0]
         values[1] = t[1]

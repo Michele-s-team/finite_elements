@@ -231,7 +231,7 @@ Return values:
     \int_ellipse f dl
 '''
 def curve_integral_ellipse(f, a, b, c, phi):
-    ellipse_curve = lambda t: ellipse(a, b, c, phi, t)
+    ellipse_curve = lambda t: ellipse(a, b, c, t, phi)
     return curve_integral(f, ellipse_curve)
 
 '''
