@@ -28,6 +28,7 @@ import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
+import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
@@ -216,12 +217,32 @@ polygon_coordinates = []
 for coordinate in polygon_coordinates_flat:
     polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
+mesh_old = rmsh.lmsh.mesh
+
+sigma_n_12_old = Function(fsp.Q_phi)
+u_n_old = Function(fsp.Q_u)
+
+sigma_n_12_old.assign(fsp.sigma_n_12)
+u_n_old.assign(fsp.u_n)
+
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
+fsp = importlib.reload(fsp)
+rmsh = importlib.reload(rmsh)
 
-msh.transfer(fsp.sigma_n_12)
 
+msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
+
+io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  rmsh.lmsh.mesh, 'scalar')
+
+io.full_print(sigma_n_12_old, 'sigma_n_12_old', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
+                  rmsh.lmsh.mesh, 'scalar')
+
+print(f'... done. ')
 print(f'... done. ')
 
 # block with the same mesh - end
