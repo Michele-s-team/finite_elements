@@ -56,30 +56,11 @@ class dyds_ellipse_expression(UserExpression):
 fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_y.ufl_element()))
 fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
 
-
-io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.mesh, 'vector')
-
-io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.mesh, 'vector')
-
 '''
 by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellipse gives \int ds f(s)
 '''
-
-# fsp.v_n_1.interpolate(vp_fluid.v_expression(element=fsp.Q_v.ufl_element()))
-# fsp.sigma_n_32.interpolate(vp_fluid.sigma_expression(element=fsp.Q_phi.ufl_element()))
-# io.full_print(fsp.v_n_1, 'v_n_1', \
-#               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-#               lmsh.mesh, 'vector')
 
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
     (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(rmsh.focus[:2]))[i]) * ela.var_sigma_tensor(fsp.sigma_n_32, fsp.v_n_1, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
     / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_ellipse)
-
-
-
-# print(f'int_ellipse = {M_ellipse}')
