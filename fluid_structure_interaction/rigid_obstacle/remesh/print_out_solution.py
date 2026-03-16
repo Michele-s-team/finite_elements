@@ -3,15 +3,24 @@ from fenics import *
 
 import csv
 import files as fi
+import importlib
+import os
+import sys
+
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
 import function_spaces as fsp
-import function as fu
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
-import os
-import solution_paths as solpath
-
 import runtime_arguments as rarg
+import solution_paths as solpath
+import switch_problem as swi
+
+rmsh = importlib.import_module(swi.rmsh)
+
 
 # create the path for the csv file if it does not exist
 filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
@@ -21,6 +30,7 @@ csvfile = open(filename_theta_omega, 'a', newline='')
 fieldnames = [ \
     "theta", \
     "omega", \
+    "theta_ref"
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -32,7 +42,10 @@ def print_solution(t, step, dt):
         fieldnames[0]: \
             fsp.theta_n, \
         fieldnames[1]: \
-            fsp.omega_n
+            fsp.omega_n,\
+        fieldnames[2]: \
+            rmsh.parameters['phi']
+
     }])
     csvfile.flush()
 
