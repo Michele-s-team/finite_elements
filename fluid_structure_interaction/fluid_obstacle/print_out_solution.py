@@ -93,9 +93,9 @@ def print_solution_di_fluid(t, step):
 
     # 1.2 on the current mesh
     io.full_print_deformed(fsp.v_disk__, fsp.u_n_di, 'v_disk__' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'vector')
     io.full_print_deformed(fsp.v_disk_n, fsp.u_n_di, 'v_disk_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0][0], 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'vector')
 
 
     fi.xdmffile_v_di__.write(fsp.v_disk__, t)
