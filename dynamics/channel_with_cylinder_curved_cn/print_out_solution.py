@@ -6,8 +6,8 @@ import solution_paths as solpath
 
 
 def print_z_omega():
-    io.full_print(fsp.z, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, 'scalar')
-    io.full_print(fsp.omega, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, 'vector')
+    io.full_print(fsp.z, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
+    io.full_print(fsp.omega, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 
 def print_solution(t, step, dt):

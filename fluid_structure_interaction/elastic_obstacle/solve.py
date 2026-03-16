@@ -58,11 +58,11 @@ print("Output directory", rarg.args.output_directory)
 
 io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.sub_meshes[0], 'vector')
+              lmsh.sub_meshes[0])
 
 io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.sub_meshes[0], 'vector')
+              lmsh.sub_meshes[0])
 
 # fork:
 # a) read initial profiles from file
@@ -131,7 +131,7 @@ for n in range(rpam.parameters['num_steps']):
     f.assign(project(as_tensor((ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])), (i)), fsp.Q_u_el))
     io.full_print(f, 'F_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path,
-                  lmsh.sub_meshes[0], 'vector')
+                  lmsh.sub_meshes[0])
     #
 
     vp_el = importlib.reload(vp_el)

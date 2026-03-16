@@ -79,13 +79,13 @@ def print_solution(t, step, dt):
 
 
     io.full_print_deformed(fsp.v_, fsp.u_n, 'v_bar_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print_deformed(fsp.v_n, fsp.u_n, 'v_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print_deformed(fsp.sigma_n_12, fsp.u_n, 'sigma_n_12_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'scalar')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print_deformed(fsp.phi, fsp.u_n, 'phi_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'scalar')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
 
 

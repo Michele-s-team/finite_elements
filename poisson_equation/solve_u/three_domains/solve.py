@@ -67,11 +67,11 @@ msh.transfer_circle_to_line(fsp.f_sub_mesh_0_1, fsp.f_mesh_1, rmsh.lmsh.mesh_par
 
 io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][1], 'scalar')
+                  rmsh.lmsh.sub_meshes[0][1])
 
 io.full_print(fsp.f_mesh_1, f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'scalar')
+                  rmsh.lmsh.mesh[1])
     
 print(f'Comparing the two functions on polygon vertices: ')
 error = 0
@@ -107,11 +107,11 @@ msh.transfer_line_to_circle(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, rmsh.lmsh.mesh_par
 
 io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][1], 'scalar')
+                  rmsh.lmsh.sub_meshes[0][1])
 
 io.full_print(fsp.f_mesh_1, f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'scalar')
+                  rmsh.lmsh.mesh[1])
     
 print(f'Comparing the two functions on polygon vertices: ')
 error = 0
@@ -147,11 +147,11 @@ msh.transfer_circle_to_line(fsp.v_sub_mesh_0_1, fsp.v_mesh_1, rmsh.lmsh.mesh_par
 
 io.full_print(fsp.v_sub_mesh_0_1, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][1], 'vector')
+                  rmsh.lmsh.sub_meshes[0][1])
 
 io.full_print(fsp.v_mesh_1, f'v_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'vector')
+                  rmsh.lmsh.mesh[1])
     
 print(f'Comparing the two functions on polygon vertices: ')
 error = 0
@@ -186,11 +186,11 @@ msh.transfer_line_to_circle(fsp.v_mesh_1, fsp.v_sub_mesh_0_1, rmsh.lmsh.mesh_par
 
 io.full_print(fsp.v_sub_mesh_0_1, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][1], 'vector')
+                  rmsh.lmsh.sub_meshes[0][1])
 
 io.full_print(fsp.v_mesh_1, f'v_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'vector')
+                  rmsh.lmsh.mesh[1])
     
 print(f'Comparing the two functions on polygon vertices: ')
 error = 0
@@ -237,11 +237,11 @@ msh.transfer_circle_to_line(fsp.t_sub_mesh_0_1, fsp.t_mesh_1, rmsh.lmsh.mesh_par
 
 io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][1], 'tensor')
+                  rmsh.lmsh.sub_meshes[0][1])
 
 io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'tensor')
+                  rmsh.lmsh.mesh[1])
     
 print(f'Comparing the two functions on polygon vertices: ')
 error = 0
@@ -279,11 +279,11 @@ msh.transfer_line_to_circle(fsp.t_mesh_1, fsp.t_sub_mesh_0_1, rmsh.lmsh.mesh_par
 
 io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.sub_meshes[0][1], 'tensor')
+                  rmsh.lmsh.sub_meshes[0][1])
 
 io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'tensor')
+                  rmsh.lmsh.mesh[1])
     
 print(f'Comparing the two functions on polygon vertices: ')
 error = 0
@@ -377,7 +377,7 @@ print(f'... done.')
 
 io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path,
-                  rmsh.lmsh.mesh[1], 'scalar')
+                  rmsh.lmsh.mesh[1])
 
 
 

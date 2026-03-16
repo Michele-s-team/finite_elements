@@ -67,7 +67,7 @@ def print_solution(psi, step, t):
     # print the determinant of the gradient of the deformation field
     io.full_print_deformed(
         project(ela.detF(u_n_output), fsp.U_det_F), 
-        u_n_output, 'det_F_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'scalar')
+        u_n_output, 'det_F_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
      
 
     fi.xdmffile_u.write( u_n_output, t )
