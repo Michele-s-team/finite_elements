@@ -74,7 +74,9 @@ f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_pa
 # coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
 polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
-
+# generate the mesh with theta_ref = 0 and store it into solution_0
+msh.generate_square_polygon_mesh(polygon_coordinates_flat, os.path.join(rarg.args.input_directory, '../'), os.path.join(rarg.args.input_directory, '../', 'solution_0'),
+additional_metadata={'phi': 0})
 
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
@@ -88,10 +90,6 @@ for coordinate in polygon_coordinates_flat:
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
-
-
-
-
 
 import function_spaces as fsp
 import print_out_solution as pr_sol

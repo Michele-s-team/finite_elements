@@ -1800,7 +1800,7 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
                                 additional_metadata=None):
     
     # remove the output directory it it already exists, and create it from scratch
-    shutil.rmtree(output_directory)
+    shutil.rmtree(output_directory, ignore_errors=True)
     os.mkdir(output_directory)
 
     geometry = pygmsh.occ.Geometry()
