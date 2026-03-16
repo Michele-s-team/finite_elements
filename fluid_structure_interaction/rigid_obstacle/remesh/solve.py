@@ -220,6 +220,8 @@ for coordinate in polygon_coordinates_flat:
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
 
+msh.transfer(fsp.sigma_n_12)
+
 print(f'... done. ')
 
 # block with the same mesh - end

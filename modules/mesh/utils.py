@@ -2337,3 +2337,16 @@ def tag_physical_object(object, id, model,
     model.addPhysicalGroup(dim, object_to_tag, id)
     model.setPhysicalName(dim, id, label)
 
+
+
+def transfer(f):
+
+    Q_f = f.function_space()
+
+    f_value_shape = Q_f.ufl_element().value_shape()
+    f_value_size = int(np.prod(f_value_shape))
+    f_dim        = Q_f.mesh().geometry().dim()
+
+    f_coords = Q_f.tabulate_dof_coordinates().reshape(-1, f_dim)
+
+    print(f'DOF coordinates = {f_coords}')
