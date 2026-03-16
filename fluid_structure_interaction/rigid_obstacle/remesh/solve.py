@@ -49,6 +49,24 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+# trial analytical expression for a vector
+class v_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+
+# trial analytical expression for the  surface tension sigma(x,y)
+class sigma_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+    
 
 # focal point of the ellipse
 focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
@@ -70,26 +88,10 @@ for coordinate in polygon_coordinates_flat:
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'theta': theta_ref})
 
+'''
+
 import function_spaces as fsp
 import print_out_solution as pr_sol
-
-# trial analytical expression for a vector
-class v_0_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-
-# trial analytical expression for the  surface tension sigma(x,y)
-class sigma_0_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-
-    def value_shape(self):
-        return (1,)
 
 #set initial profiles and values
 fsp.theta_n = rpam.parameters["theta_0"]
@@ -102,8 +104,7 @@ fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_n_12.interpolate(sigma_0_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-
-
+# fist load of modules
 rmsh = importlib.import_module(swi.rmsh)
 ap_polygon = importlib.import_module(swi.ap_polygon)
 vp_fluid = importlib.import_module(swi.vp_fluid)
@@ -117,7 +118,6 @@ fsp = importlib.reload(fsp)
 rmsh = importlib.reload(rmsh)
 pr_bc = importlib.reload(pr_bc)
 
-'''
 
 # Time-stepping
 print("Starting time iteration ...", flush=True)
