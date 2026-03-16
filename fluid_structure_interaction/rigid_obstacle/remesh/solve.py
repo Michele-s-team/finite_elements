@@ -86,7 +86,7 @@ for coordinate in polygon_coordinates_flat:
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
-additional_metadata={'theta': theta_ref})
+additional_metadata={'phi': theta_ref})
 
 '''
 
