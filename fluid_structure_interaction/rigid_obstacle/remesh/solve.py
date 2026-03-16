@@ -228,7 +228,10 @@ u_n_old.assign(fsp.u_n)
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
-fsp = importlib.reload(fsp)
+
+rmsh = importlib.reload(rmsh)
+
+'''fsp = importlib.reload(fsp)
 rmsh = importlib.reload(rmsh)
 
 
@@ -242,7 +245,9 @@ io.full_print(sigma_n_12_old, 'sigma_n_12_old', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'scalar')
 
-print(f'... done. ')
+'''
+
+
 print(f'... done. ')
 
 # block with the same mesh - end

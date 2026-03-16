@@ -1,13 +1,14 @@
 import colorama as col
 import command as cmd
 from fenics import *
-import numpy as np
 import colorama as col
 import gmsh
 import math
 import meshio
+import numpy as np
 import os
 import pygmsh
+import shutil
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
@@ -1797,9 +1798,17 @@ Input values:
 
 def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory,
                                 additional_metadata=None):
+    
+    # remove the output directory it it already exists, and create it from scratch
+    shutil.rmtree(output_directory)
+    os.mkdir(output_directory)
 
     geometry = pygmsh.occ.Geometry()
     model = geometry.__enter__()
+
+    # reset gmsh state from any previous call, AFTER pygmsh has initialized it
+    gmsh.clear()
+    gmsh.model.add("model")  # need a model after clear()
 
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
