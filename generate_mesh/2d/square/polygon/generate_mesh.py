@@ -42,7 +42,8 @@ else:
     # the polygon shape is an ellipse -> obtain polygon_cordinates from the ellipse parameters
 
         print('The polygon shape is an ellipse.')
-        polygon_coordinates = cal.points_ellipse(rpam.parameters['a'], rpam.parameters['b'], rpam.parameters['c'], rpam.parameters['N'])
+        polygon_coordinates = cal.points_ellipse(rpam.parameters['a'], rpam.parameters['b'], rpam.parameters['c'], rpam.parameters['N'],
+                                                 phi=rpam.parameters['phi'])
 
     # here you can have other cases corresponding to other geometrical shapes (circle, etc... )
 
