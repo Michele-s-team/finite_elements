@@ -204,4 +204,8 @@ for n in range(rpam.parameters["num_steps"]):
 
 print("... done.", flush=True)
 
+
+print(f'Transferring fields to new mesh ... ')
+print(f'... done. ')
+
 # block with the same mesh - end
