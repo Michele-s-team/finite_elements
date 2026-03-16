@@ -51,7 +51,7 @@ params = {'nonlinear_solver': 'newton',
 # print the reference configuration 
 sys_io.full_print(fsp.ys, 'ys', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              lmsh.mesh, 'vector')
+              'vector')
 
 # Time-stepping
 t = 0

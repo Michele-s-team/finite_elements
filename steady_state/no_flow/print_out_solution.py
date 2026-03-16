@@ -22,13 +22,13 @@ z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
 io.full_print(fsp.sigma, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              lmsh.mesh, 'scalar')
+              'scalar')
 io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'scalar')
 io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              lmsh.mesh, 'vector')
+              'vector')
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path, lmsh.mesh,
               'scalar')

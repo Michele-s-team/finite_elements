@@ -44,33 +44,33 @@ def print_solution(psi, step, t):
  
     io.full_print(v_bar_dummy, 'v_bar_' + str(step+1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  'vector')
     io.full_print(w_bar_dummy, 'w_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  'scalar')
     io.full_print(v_n_dummy, 'v_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  'vector')
     io.full_print(w_n_dummy, 'w_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  'scalar')
     io.full_print(fsp.sigma_n_12, 'sigma_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  'scalar')
     io.full_print(u_n_12_dummy, 'u_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  'vector')
     io.full_print(nu_n_12_dummy, 'nu_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  'scalar')
     io.full_print(psi_n_12_dummy, 'psi_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  'scalar')
     io.full_print(mu_n_12_dummy, 'mu_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  'scalar')
     
     
     io.full_print(project(fsp.X_ref + u_n_12_dummy, fsp.Q_X), 'X_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  'vector')
