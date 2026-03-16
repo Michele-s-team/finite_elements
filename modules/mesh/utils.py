@@ -11,6 +11,7 @@ import pygmsh
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
+import function as fu
 import input_output as io
 
 
@@ -2338,15 +2339,24 @@ def tag_physical_object(object, id, model,
     model.setPhysicalName(dim, id, label)
 
 
+'''
+given a function f on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a function g on mesh B, set g equal to f
+Input values: 
+    - 'f': function on mesh A
+    - 'g': function on mesh B
+    - 'u': displacement field, defined on mesh A
+'''
+def transfer(f, g, u):
 
-def transfer(f):
+    f_def = fu.deform_function(f, u)
 
-    Q_f = f.function_space()
+    Q_g = g.function_space()
 
-    f_value_shape = Q_f.ufl_element().value_shape()
-    f_value_size = int(np.prod(f_value_shape))
-    f_dim        = Q_f.mesh().geometry().dim()
+    g_value_shape = Q_g.ufl_element().value_shape()
+    g_value_size = int(np.prod(g_value_shape))
+    g_dim        = Q_g.mesh().geometry().dim()
 
-    f_coords = Q_f.tabulate_dof_coordinates().reshape(-1, f_dim)
+    g_dof_coordinates = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
 
-    print(f'DOF coordinates = {f_coords}')
+    for i in range(len(g_dof_coordinates)):
+       g.vector()[i] = f_def(g_dof_coordinates[i])
