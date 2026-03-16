@@ -4,7 +4,6 @@ this module solves for the variables theta, omega whic define the state of the e
 
 from fenics import *
 import importlib
-import numpy as np
 import ufl as ufl
 
 import calculus as cal
@@ -14,7 +13,6 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
 import parameters.read.solution as rpam
-import solution_paths as solpath
 import switch_problem as swi
 from calculus import atan_quad
 

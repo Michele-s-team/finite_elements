@@ -10,7 +10,6 @@ import calculus as cal
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
-import numpy as np
 import parameters.read.solution as rpam
 import switch_problem as swi
 

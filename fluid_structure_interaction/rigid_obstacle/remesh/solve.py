@@ -24,7 +24,6 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import calculus as cal
-import elasticity as ela
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -109,6 +108,8 @@ fsp.sigma_n_12.interpolate(sigma_0_expression(element=fsp.Q_phi.ufl_element()))
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
 # fist load of modules
+import differential_geometry.boundary.geometry as bgeo
+import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module(swi.rmsh)
 ap_polygon = importlib.import_module(swi.ap_polygon)
 vp_fluid = importlib.import_module(swi.vp_fluid)
@@ -116,8 +117,9 @@ vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 
-# block with the same mesh - start
-
+importlib.reload(geo)
+importlib.reload(rmsh.lmsh)
+importlib.reload(bgeo)
 fsp = importlib.reload(fsp)
 rmsh = importlib.reload(rmsh)
 pr_bc = importlib.reload(pr_bc)
@@ -235,9 +237,13 @@ for n in range(rpam.parameters["num_steps"]):
         additional_metadata={'phi': theta_ref})
 
         # 4. reload modules so everything is updated to the new mesh
+        importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
-        rmsh = importlib.reload(rmsh)
+        importlib.reload(bgeo)
         fsp = importlib.reload(fsp)
+        rmsh = importlib.reload(rmsh)
+        pr_bc = importlib.reload(pr_bc)
+
 
         # 5. transfer the values stored in the _old fields to the fields defined on the new mesh
 
