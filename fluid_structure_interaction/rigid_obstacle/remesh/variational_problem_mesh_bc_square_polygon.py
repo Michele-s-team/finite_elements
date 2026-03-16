@@ -15,7 +15,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
+focus = cal.ellipse_focal_points(rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'])[0]
 
 
 i, j, k, l = ufl.indices(4)
