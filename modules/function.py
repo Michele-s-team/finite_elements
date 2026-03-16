@@ -188,7 +188,6 @@ def copy_function_values(f_in, f_out):
 
 def deform_function(f, u):
     Q = deform_function_space(f.function_space(), u)
-    # print(f'type of Q = {type(Q)}')  # should be <class 'dolfin.cpp.function.FunctionSpace'>
 
     g = Function(Q)
     copy_function_values(f, g)
