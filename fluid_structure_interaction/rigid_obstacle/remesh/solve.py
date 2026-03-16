@@ -217,11 +217,11 @@ polygon_coordinates = []
 for coordinate in polygon_coordinates_flat:
     polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
+v_n_old = Function(fsp.Q_v)
 sigma_n_12_old = Function(fsp.Q_phi)
 u_n_old = Function(fsp.Q_u)
 
-
-
+v_n_old.assign(fsp.v_n)
 sigma_n_12_old.assign(fsp.sigma_n_12)
 u_n_old.assign(fsp.u_n)
 
@@ -234,11 +234,16 @@ rmsh = importlib.reload(rmsh)
 fsp = importlib.reload(fsp)
 
 
+msh.transfer(v_n_old, fsp.v_n, u_n_old)
 msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
+
+io.full_print(fsp.v_n, 'v_n_new', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+io.full_print_deformed(v_n_old, u_n_old, 'v_n_old', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
 io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
 io.full_print_deformed(sigma_n_12_old, u_n_old, 'sigma_n_12_old', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
  
