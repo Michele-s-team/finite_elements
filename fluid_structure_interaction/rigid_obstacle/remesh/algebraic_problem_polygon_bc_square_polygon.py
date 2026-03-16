@@ -23,7 +23,7 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
-focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
+focus = cal.ellipse_focal_points(rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'])[0]
 
 
 
