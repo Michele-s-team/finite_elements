@@ -4,7 +4,6 @@ import ufl as ufl
 
 import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
