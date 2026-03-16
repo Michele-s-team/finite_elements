@@ -551,13 +551,11 @@ Input values:
     - 'path_h5_file' the path of the h5 file
     - 'path_csv_file' the path of the csv file
     - 'path_csv_nodal_value_file' the path of the csv file where the nodal values of the field will be written 
-    - 'type': the type of 'f', which may be 'scalar', 'vector' or 'tensor'
-
 '''
-def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, type):
+def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
 
     f_def = fu.deform_function(f, u)
-    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, type)
+    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file)
 
 
 '''
