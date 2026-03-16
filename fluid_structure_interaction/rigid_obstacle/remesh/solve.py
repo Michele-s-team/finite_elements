@@ -173,7 +173,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     pr_bc.print_bcs()
 
-    if step % rpam.parameters['remesh_stride']:
+    if step % rpam.parameters['remesh_stride'] == 0:
 
         # remesh 
 
@@ -258,13 +258,14 @@ for n in range(rpam.parameters["num_steps"]):
 
         msh.transfer(phi_old, fsp.phi, u_n_old)
 
-        msh.transfer(u_n_old, fsp.u_n, u_n_old)
-        msh.transfer(u_n_1_old, fsp.u_n_1, u_n_old)
-        msh.transfer(u_n_2_old, fsp.u_n_2, u_n_old)
+        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+        fsp.u_n.assign(Constant((0, 0)))
+        fsp.u_n_1.assign(Constant((0, 0)))
+        fsp.u_n_2.assign(Constant((0, 0)))
 
-        msh.transfer(u_dot_n_old, fsp.u_n, u_dot_n_old)
-        msh.transfer(u_dot_n_1_old, fsp.u_n_1, u_dot_n_old)
-        msh.transfer(u_dot_n_2_old, fsp.u_n_2, u_dot_n_old)
+        msh.transfer(u_dot_n_old, fsp.u_n, u_n_old)
+        msh.transfer(u_dot_n_1_old, fsp.u_n_1, u_n_old)
+        msh.transfer(u_dot_n_2_old, fsp.u_n_2, u_n_old)
 
 
         '''   
