@@ -36,14 +36,17 @@ def print_scalar_to_csvfile(f, filename):
 
 '''
 print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+
 Input values: 
-- 'f': the field
-- 'mesh' the mesh 
-- 'filename': the output filename
+    - 'f': the field
+    - 'filename': the output filename
 '''
 
+def print_nodal_values_scalar_to_csvfile(f, filename):
 
-def print_nodal_values_scalar_to_csvfile(f, mesh, filename):
+    # extract the mesh on which f is defined
+    mesh = f.function_space().mesh()
+
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q.tabulate_dof_coordinates()
@@ -232,22 +235,22 @@ def print_tensor_to_csvfile(t, filename):
 print the nodal values of a vector to csv file
 Input values: 
     - 'v': the vector
-    - 'mesh': the mesh where the vector is defined
     - 'filename': the path, filename and extension of the csv file where the vector will be written 
 
-Return values: 
-    - the resulting csv file is of this form
-
+The resulting csv file is of this form
     f:0,f:1,....,f:[number of components of v],:0,:1,:2
     v_0,v_1,....,v_[(number of components of v) - 1],x_0,x_1,x_2
     ....
 '''
 
 
-def print_nodal_values_vector_to_csvfile(v, mesh, filename):
+def print_nodal_values_vector_to_csvfile(v, filename):
+
+    V = v.function_space()
+    mesh = V.mesh()
 
     # value_shape is the shape of the vector, for example (2,) for a vector with two components
-    vector_shape = v.function_space().ufl_element().value_shape()
+    vector_shape = V.ufl_element().value_shape()
 
     # value_size is the number of components of the vector
     vector_shape_size = int(vector_shape[0])
@@ -290,22 +293,22 @@ def print_nodal_values_vector_to_csvfile(v, mesh, filename):
 print the nodal values of a tensor to csv file
 Input values: 
     - 't': the tensor
-    - 'mesh': the mesh where the tensor is defined
     - 'filename': the path, filename and extension of the csv file where the tensor will be written 
 
-
-Return values: 
-    - the resulting csv file is of this form
+ The resulting csv file is of this form
     
     f:0,f:1,....,f:[number of components of t],:0,:1,:2
     t_0,t_1,....,t_[(number of components of t) - 1],x_0,x_1,x_2
     ....
 '''
 
-def print_nodal_values_tensor_to_csvfile(t, mesh, filename):
+def print_nodal_values_tensor_to_csvfile(t, filename):
+
+    T = t.function_space()
+    mesh = T.mesh()
     
     # the shape of the tensor, for example (2, 3)
-    tensor_shape = t.function_space().ufl_element().value_shape()
+    tensor_shape = T.ufl_element().value_shape()
     # value_size is the total number of components of the tensor, for example for a (2, 3) tensor shape_size = 2 * 3 
     tensor_shape_size  = int(np.prod(tensor_shape))
 
@@ -476,6 +479,26 @@ def xdmf_print(f, path):
     xdmffile.write(f, 0)
     xdmffile.close()
 
+
+'''
+return the type of a field (scalar, vector or tensor) as a string
+Input values: 
+    - 'f': the field
+Return values: 
+    - 'type': 'scalar', 'vector' or 'tensor', if f is a scalar, vector or tensor field, respectively
+'''
+def field_type(f):
+
+    shape = f.function_space().ufl_element().value_shape()
+
+    if len(shape) == 0:
+        return 'scalar'
+    elif len(shape) == 1:
+        return 'vector'
+    else:
+        return 'tensor'
+
+
 '''
 print a field as xdmf, h5, csv file and its nodal values on a csv file
 Input values:
@@ -484,12 +507,13 @@ Input values:
     - 'path_csv_file' the path of the csv file
     - 'path_h5_file' the path of the h5 file
     - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
-    - 'mesh': the mesh where 'f' is defined
-    - 'type': the type of 'f', which may be 'scalar', 'vector'
 '''
 
 
-def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
+
+    type = field_type(f)
+
     # add / to file paths, in case it is missing
     path_xdmf_file_with_slash = add_trailing_slash(path_xdmf_file)
     path_h5_file_with_slash = add_trailing_slash(path_h5_file)
@@ -507,20 +531,31 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     # write to csv file and the nodal values to csv file
     if type == 'scalar':
         print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        print_nodal_values_scalar_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+        print_nodal_values_scalar_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
     elif type == 'vector':
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        print_nodal_values_vector_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+        print_nodal_values_vector_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
     elif type == 'tensor':
         print_tensor_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        print_nodal_values_tensor_to_csvfile(f, mesh, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+        print_nodal_values_tensor_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 
-def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+'''
+print on a target mesh a field (scalar, vector or tensor) defined on a source mesh, where the source and target mesh are related by a deformation field
+Input values: 
+    - 'f': the field
+    - 'u': the deformation field, defined on the source mesh
+    - 'path_xdmf_file' the path of the xdmf file
+    - 'path_h5_file' the path of the h5 file
+    - 'path_csv_file' the path of the csv file
+    - 'path_csv_nodal_value_file' the path of the csv file where the nodal values of the field will be written 
+'''
+def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
+
     f_def = fu.deform_function(f, u)
-    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, f_def.function_space().mesh(), type)
+    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file)
 
 
 '''

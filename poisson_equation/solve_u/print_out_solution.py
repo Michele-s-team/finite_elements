@@ -4,7 +4,6 @@ import ufl as ufl
 
 import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
@@ -24,5 +23,4 @@ xdmffile_check.write(project(fsp.hess_u[i, i] - fsp.f, fsp.Q), 0)
 xdmffile_check.close()
 
 io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'scalar')
+              solpath.nodal_values_path)
