@@ -91,7 +91,6 @@ additional_metadata={'phi': theta_ref})
 
 
 
-'''
 
 import function_spaces as fsp
 import print_out_solution as pr_sol
@@ -114,6 +113,7 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
+'''
 
 # block with the same mesh - start
 
