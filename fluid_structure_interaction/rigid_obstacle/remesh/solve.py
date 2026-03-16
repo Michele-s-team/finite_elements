@@ -206,6 +206,20 @@ print("... done.", flush=True)
 
 
 print(f'Transferring fields to new mesh ... ')
+
+
+# theta_ref is the rotation angle of the polygon in the reference configuration 
+theta_ref = fsp.theta_n_1
+
+# trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
+polygon_coordinates = []
+for coordinate in polygon_coordinates_flat:
+    polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
+
+# generate the mesh with the polygon and write theta_ref into its mesh_metadata
+msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
+additional_metadata={'phi': theta_ref})
+
 print(f'... done. ')
 
 # block with the same mesh - end
