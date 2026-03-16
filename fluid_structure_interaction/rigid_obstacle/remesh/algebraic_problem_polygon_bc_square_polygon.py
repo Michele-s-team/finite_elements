@@ -39,7 +39,7 @@ class ys_ellipse_expression(UserExpression):
         s = cal.parameteric_coordinate_ellipse(x, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 
                                                phi=rmsh.parameters['phi'])
 
-        # compute the ellipse point corresponding to 's'
+        # compute the ellipse curve y_s at 's'
         t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s, 
                         phi=rmsh.parameters['phi'])[0]
 
@@ -52,9 +52,15 @@ class ys_ellipse_expression(UserExpression):
 
 class dyds_ellipse_expression(UserExpression):
     def eval(self, values, x):
-        s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
+        # s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
 
-        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[1]
+        # compute the ellipse parameteric coordinate 's' corresdponding to the point 'x'
+        s = cal.parameteric_coordinate_ellipse(x, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 
+                                               phi=rmsh.parameters['phi'])
+        
+        # compute the derivative of the ellipse curve, d y_s / ds, at 's'
+        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s,
+                        phi=rmsh.parameters['phi'])[1]
 
         values[0] = t[0]
         values[1] = t[1]
@@ -74,10 +80,6 @@ io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
 io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
               solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
               lmsh.mesh, 'vector')
-
-'''
-by replacing '1' in the integrant with a function of 0 =< s < 1, integral_ellipse gives \int ds f(s)
-'''
 
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \

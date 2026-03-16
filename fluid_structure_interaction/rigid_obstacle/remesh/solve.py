@@ -113,7 +113,6 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 
-'''
 
 # block with the same mesh - start
 
@@ -151,6 +150,9 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
+    '''
+   
+
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
 
@@ -186,6 +188,8 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.v_n_1.assign(fsp.v_n)
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
+    '''
     
     if step % rpam.parameters['print_out_stride'] == 0:
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
@@ -193,7 +197,8 @@ for n in range(rpam.parameters["num_steps"]):
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
 
+    
+
 print("... done.", flush=True)
 
 # block with the same mesh - end
-'''
