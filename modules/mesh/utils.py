@@ -2358,6 +2358,7 @@ Input values:
 def transfer(f, g, u):
 
     f_def = fu.deform_function(f, u)
+    f_def.set_allow_extrapolation(True)
 
     Q_g = g.function_space()
 

@@ -222,6 +222,8 @@ mesh_old = rmsh.lmsh.mesh
 sigma_n_12_old = Function(fsp.Q_phi)
 u_n_old = Function(fsp.Q_u)
 
+
+
 sigma_n_12_old.assign(fsp.sigma_n_12)
 u_n_old.assign(fsp.u_n)
 
@@ -233,18 +235,18 @@ importlib.reload(rmsh.lmsh)
 rmsh = importlib.reload(rmsh)
 fsp = importlib.reload(fsp)
 
-'''
+
 msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
 
 io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
                   rmsh.lmsh.mesh, 'scalar')
 
-io.full_print(sigma_n_12_old, 'sigma_n_12_old', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  rmsh.lmsh.mesh, 'scalar')
+io.full_print_deformed(sigma_n_12_old, u_n_old, 'sigma_n_12_old', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, mesh_old, 'scalar')
+ 
 
-'''
+
 
 
 print(f'... done. ')
