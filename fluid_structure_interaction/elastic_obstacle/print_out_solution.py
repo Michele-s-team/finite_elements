@@ -42,7 +42,7 @@ def print_solution_el(t, step):
     # print the determinant of the gradient of the deformation field
     io.full_print_deformed(
         project(ela.detF(u_el_n_output), fsp.Q_det_F_u_el),
-        u_el_n_output, 'det_F_u_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, lmsh.sub_meshes[0], 'scalar')
+        u_el_n_output, 'det_F_u_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, 'scalar')
 
 
     # include the snapshot in xdmf files
