@@ -69,7 +69,7 @@ class sigma_0_expression(UserExpression):
     
 
 # focal point of the ellipse
-focus = np.subtract(mesh_parameters["c"], [np.sqrt(mesh_parameters["a"] ** 2 - mesh_parameters["b"] ** 2), 0])
+f = cal.ellipse_left_focal_point(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])
 # coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
 polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
@@ -82,7 +82,7 @@ theta_ref = rpam.parameters["theta_0"]
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
 polygon_coordinates = []
 for coordinate in polygon_coordinates_flat:
-    polygon_coordinates.append(np.add(focus, cal.R(theta_ref).dot(np.subtract(coordinate, focus))))
+    polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
