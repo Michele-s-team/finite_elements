@@ -229,12 +229,11 @@ u_n_old.assign(fsp.u_n)
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
 
+importlib.reload(rmsh.lmsh)
 rmsh = importlib.reload(rmsh)
+fsp = importlib.reload(fsp)
 
-'''fsp = importlib.reload(fsp)
-rmsh = importlib.reload(rmsh)
-
-
+'''
 msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
 
 io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
