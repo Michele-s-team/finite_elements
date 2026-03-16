@@ -33,9 +33,10 @@ else:
     #  the polygon shape is a given, parameteric geometrical shape, and it is provided in terms of the parameters of this shape
 
     if parameters['polygon_format'] == 'ellipse':
-    # the polygon shape is an ellipse -> obtain polygon_cordinates from the ellipse parameters
+    # the polygon shape is an ellipse -> obtain polygon_coordinates from the ellipse parameters
         print('The polygon shape is an ellipse.')
-        polygon_coordinates = cal.points_ellipse(parameters['a'], parameters['b'], parameters['c'], parameters['N'])
+        polygon_coordinates = cal.points_ellipse(parameters['a'], parameters['b'], parameters['c'], parameters['N'],
+                                                 phi=parameters['phi'])
 
     # here you can have other cases corresponding to other geometrical shapes (circle, etc... )
 
