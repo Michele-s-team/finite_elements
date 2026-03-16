@@ -33,9 +33,15 @@ i, j, k, l, m, n = ufl.indices(6)
 
 class ys_ellipse_expression(UserExpression):
     def eval(self, values, x):
-        s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
+        # s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
 
-        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[0]
+        # compute the ellipse parameteric coordinate 's' corresdponding to the point 'x'
+        s = cal.parameteric_coordinate_ellipse(x, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'], 
+                                               phi=rmsh.parameters['phi'])
+
+        # compute the ellipse point corresponding to 's'
+        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s, 
+                        phi=rmsh.parameters['phi'])[0]
 
         values[0] = t[0]
         values[1] = t[1]

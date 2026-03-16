@@ -779,16 +779,16 @@ Input values:
         - 'a', 'b': semi-major axes of the ellipse
         - 'c': center of the ellipse, [c_x, c_y]
     * Optional:
-        - 'theta': the rotation angle of the ellipse with respect to its left focal point
+        - 'phi': the rotation angle of the ellipse about its left focal point, with respect to the x axis
 '''
-def parameteric_coordinate_ellipse(x, a, b, c, theta=0):
+def parameteric_coordinate_ellipse(x, a, b, c, phi=0):
 
     # coordinates of left focal point
-    f = np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0])
+    f = ellipse_focal_points(a, b, c)[0]
 
-    r = np.add(np.subtract(f, c), R(-theta).dot(np.subtract(x, f)))
+    r = np.add(np.subtract(f, c), R(-phi).dot(np.subtract(x, f)))
 
-    return 1.0/(2.0*np.pi) * atan_quad(r[1]/r[0])
+    return (1.0/(2.0*np.pi) * atan_quad([b * r[0], a * r[1]]))
 
 '''
 return the focal points of an ellipse
