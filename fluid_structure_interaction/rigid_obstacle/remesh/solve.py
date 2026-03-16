@@ -74,11 +74,6 @@ f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_pa
 # coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
 polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
-# generate the mesh with theta_ref = 0 and store it into solution_0
-msh.generate_square_polygon_mesh(polygon_coordinates_flat, os.path.join(rarg.args.input_directory, '../'), os.path.join(rarg.args.input_directory, '../', 'solution_0'),
-additional_metadata={'phi': 0})
-
-
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
@@ -310,6 +305,11 @@ for n in range(rpam.parameters["num_steps"]):
     if step % rpam.parameters['print_out_stride'] == 0:
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
         pr_sol.print_solution(t, step, dt)
+
+        # generate the mesh with the current theta_ref and store it into rarg.args.input_directory/n_[step]/
+        msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), os.path.join(solpath.snapshots_path, 'mesh', f'n_{step}'),
+        additional_metadata={'phi': theta_ref})
+
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters["T"])), flush=True)
  
