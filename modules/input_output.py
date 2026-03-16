@@ -520,9 +520,22 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
         print_nodal_values_tensor_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 
-def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+'''
+print on a target mesh a field (scalar, vector or tensor) defined on a source mesh, where the source and target mesh are related by a deformation field
+Input values: 
+    - 'f': the field
+    - 'u': the deformation field, defined on the source mesh
+    - 'path_xdmf_file' the path of the xdmf file
+    - 'path_h5_file' the path of the h5 file
+    - 'path_csv_file' the path of the csv file
+    - 'path_csv_nodal_value_file' the path of the csv file where the nodal values of the field will be written 
+    - 'type': the type of 'f', which may be 'scalar', 'vector' or 'tensor'
+
+'''
+def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, type):
+
     f_def = fu.deform_function(f, u)
-    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, f_def.function_space().mesh(), type)
+    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, type)
 
 
 '''
