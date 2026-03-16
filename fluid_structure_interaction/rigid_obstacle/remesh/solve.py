@@ -171,7 +171,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     pr_bc.print_bcs()
 
-    if step % rmsh.parameters['remesh_stride']:
+    if step % rpam.parameters['remesh_stride']:
 
         # remesh 
 
@@ -245,7 +245,7 @@ for n in range(rpam.parameters["num_steps"]):
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
-        msh.transfer(v__old, fsp.v__, u_n_old)
+        msh.transfer(v__old, fsp.v_, u_n_old)
 
         msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
         msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
