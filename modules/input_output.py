@@ -479,6 +479,26 @@ def xdmf_print(f, path):
     xdmffile.write(f, 0)
     xdmffile.close()
 
+
+'''
+return the type of a field (scalar, vector or tensor) as a string
+Input values: 
+    - 'f': the field
+Return values: 
+    - 'type': 'scalar', 'vector' or 'tensor', if f is a scalar, vector or tensor field, respectively
+'''
+def field_type(f):
+
+    shape = f.function_space().ufl_element().value_shape()
+
+    if len(shape) == 0:
+        return 'scalar'
+    elif len(shape) == 1:
+        return 'vector'
+    else:
+        return 'tensor'
+
+
 '''
 print a field as xdmf, h5, csv file and its nodal values on a csv file
 Input values:
@@ -487,11 +507,13 @@ Input values:
     - 'path_csv_file' the path of the csv file
     - 'path_h5_file' the path of the h5 file
     - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
-    - 'type': the type of 'f', which may be 'scalar', 'vector'
 '''
 
 
-def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, type):
+def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
+
+    type = field_type(f)
+
     # add / to file paths, in case it is missing
     path_xdmf_file_with_slash = add_trailing_slash(path_xdmf_file)
     path_h5_file_with_slash = add_trailing_slash(path_h5_file)
