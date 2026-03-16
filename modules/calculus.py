@@ -104,7 +104,7 @@ Return values:
 def ellipse_arc(a, b, c, theta_min, theta_max, t, phi=0):
     theta_t = theta_min + (theta_max - theta_min) * t
 
-    f = ellipse_left_focal_point(a, b, c)
+    f = ellipse_focal_points(a, b, c)[0]
 
     return [
         np.add(f, np.dot(R(phi), np.subtract(np.add(c, [a * np.cos(theta_t), b * np.sin(theta_t)]), f) ) ).tolist(),
@@ -791,13 +791,13 @@ def parameteric_coordinate_ellipse(x, a, b, c, theta=0):
     return 1.0/(2.0*np.pi) * atan_quad(r[1]/r[0])
 
 '''
-return the left focal point of an ellipse
+return the focal points of an ellipse
 Input values: 
     - 'a', 'b': the semi-major and minor axes of the ellipse
     - 'c': the ellipse center [c_x, c_y]
 Return values: 
-    - 'f': [f_x, f_y], the left focal point
+    - 'f': [[f_left_x, f_left_y], [f_right_x, f_right_y]], the left and right focal points
 
 '''
-def ellipse_left_focal_point(a, b, c):
-    return np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0])
+def ellipse_focal_points(a, b, c):
+    return [np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0]), np.add(c, [np.sqrt(a ** 2 - b ** 2), 0])]

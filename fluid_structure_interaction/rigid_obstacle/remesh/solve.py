@@ -69,7 +69,7 @@ class sigma_0_expression(UserExpression):
     
 
 # focal point of the ellipse
-f = cal.ellipse_left_focal_point(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])
+f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])[0]
 # coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
 polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
