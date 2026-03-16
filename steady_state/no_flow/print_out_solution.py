@@ -23,14 +23,14 @@ z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 io.full_print(fsp.sigma, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 
 io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 
 xdmffile_f = XDMFFile((rarg.args.output_directory) + '/f.xdmf')
 xdmffile_f.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})

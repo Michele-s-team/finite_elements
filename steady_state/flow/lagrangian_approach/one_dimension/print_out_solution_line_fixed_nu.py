@@ -20,17 +20,17 @@ i, j, k, l = ufl.indices(4)
 v_output, w_output, sigma_output, psi_output, mu_output, u_output = fsp.phi.split(deepcopy=True)
 
 io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(psi_output, 'psi', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(u_output, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 
 io.full_print(fsp.nu, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)

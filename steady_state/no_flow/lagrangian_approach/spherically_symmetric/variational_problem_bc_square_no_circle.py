@@ -117,12 +117,13 @@ fsp.zeta_0.interpolate(zeta_0_Expression(element=fsp.Q_zeta.ufl_element()))
 
 # print out the read fields to file
 io.full_print(fsp.psi_0, 'psi_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(fsp.omega_0, 'omega_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(fsp.rho_0, 'rho_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh))0, 'zeta_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
+io.full_print(fsp.zeta_0, 'zeta_0', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
 
 fsp.assigner.assign(fsp.phi, [fsp.psi_0_read, fsp.omega_0_read, fsp.rho_0_read, fsp.zeta_0_read])
 ######

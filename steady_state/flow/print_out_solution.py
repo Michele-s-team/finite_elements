@@ -28,20 +28,20 @@ xdmffile_d.parameters.update({"functions_share_mesh": True, "rewrite_function_me
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
 io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 
 io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 
 # print to file the forces which appear in the RHS of the equations
 # tangential forces
@@ -127,7 +127,7 @@ io.full_print(
     project(phys.dFdl_eta_sigma_3d(v_output, w_output, omega_output, sigma_output, rpam.parameters['eta'],
                                    geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
     'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-    solpath.nodal_values_path, lmsh.mesh)
+    solpath.nodal_values_path)
 
 io.full_print(
     project(

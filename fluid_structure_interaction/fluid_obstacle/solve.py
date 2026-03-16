@@ -101,8 +101,7 @@ vp_M = importlib.import_module(swi.vp_M)
 
 
 io.full_print(fsp.ys, 'ys', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, \
-              lmsh.mesh[1])
+              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 
 

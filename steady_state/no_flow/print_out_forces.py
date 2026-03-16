@@ -30,7 +30,7 @@ io.full_print(
     project(phys.dFdl_sigma_3d(prout.omega_output, fsp.sigma, geo.n_c_r(lmsh.mesh, prout.rmsh.parameters["c_r"][:2], prout.omega_output)),
             fsp.Q_3d),
     'dFdl_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-    solpath.nodal_values_path, lmsh.mesh)
+    solpath.nodal_values_path)
 
 io.full_print(
     project(

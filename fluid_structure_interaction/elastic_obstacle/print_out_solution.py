@@ -32,12 +32,8 @@ def print_solution_el(t, step):
     
     u_el_n_output, u_el_dot_n_output = fsp.psi_el.split(deepcopy=True)
 
-    io.full_print(u_el_n_output, 'u_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
-                  solpath.snapshots_csv_nodal_values_path,
-                  lmsh.sub_meshes[0])
-    io.full_print(u_el_dot_n_output, 'u_el_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
-                  solpath.snapshots_csv_nodal_values_path,
-                  lmsh.sub_meshes[0])
+    io.full_print(u_el_n_output, 'u_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(u_el_dot_n_output, 'u_el_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     
     # print the determinant of the gradient of the deformation field
     io.full_print_deformed(
@@ -60,12 +56,8 @@ def print_solution_el(t, step):
 
 # print the solution for the mesh problem
 def print_solution_msh(t, step):
-    io.full_print(fsp.u_msh_n, 'u_msh_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
-                  solpath.snapshots_csv_nodal_values_path,
-                  lmsh.sub_meshes[1])
-    io.full_print(fsp.u_msh_dot_n, 'u_msh_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
-                  solpath.snapshots_csv_nodal_values_path,
-                  lmsh.sub_meshes[1])
+    io.full_print(fsp.u_msh_n, 'u_msh_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(fsp.u_msh_dot_n, 'u_msh_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
     # include the snapshot in xdmf files
     fi.xdmffile_u_msh_n.write(fsp.u_msh_n, t)
@@ -82,17 +74,13 @@ def print_solution_msh(t, step):
 # print the solution of the fluid problem
 def print_solution_fl(t, step, dt):
     io.full_print(fsp.v_, 'v_bar_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.sub_meshes[1])
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.v_n, 'v_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.sub_meshes[1])
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.sigma_n_12, 'sigma_n_12_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.sub_meshes[1])
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.phi, 'phi_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.sub_meshes[1])
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
     # include the snapshot in xdmf files
     fi.xdmffile_v_n.write(fsp.v_n, t)

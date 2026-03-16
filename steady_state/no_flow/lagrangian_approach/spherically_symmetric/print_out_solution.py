@@ -19,7 +19,7 @@ i, j, k, l = ufl.indices(4)
 psi_output, omega_output, rho_output, zeta_output = fsp.phi.split(deepcopy=True)
 
 io.full_print(psi_output, 'psi', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh)
+              solpath.nodal_values_path)
 io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 io.full_print(rho_output, 'rho', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
