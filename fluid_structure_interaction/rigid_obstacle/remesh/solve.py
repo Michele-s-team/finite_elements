@@ -150,7 +150,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
-    '''
+    
    
 
     # step 3) update v_n and sigma_n_12 (fluid problem)
@@ -168,6 +168,9 @@ for n in range(rpam.parameters["num_steps"]):
     print('... done.', flush=True)
 
     pr_bc.print_bcs()
+
+    
+    
 
     # update the fields
     # 1)
@@ -189,7 +192,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
-    '''
+    
     
     if step % rpam.parameters['print_out_stride'] == 0:
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
