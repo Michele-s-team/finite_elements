@@ -32,13 +32,11 @@ io.full_print(fsp.u, 'u',
               rarg.args.output_directory,
               rarg.args.output_directory,
               rarg.args.output_directory,
-              rarg.args.output_directory,
-              lmsh.mesh, 'scalar')
+              rarg.args.output_directory)
 io.full_print(fsp.v, 'v',
               rarg.args.output_directory,
               rarg.args.output_directory,
               rarg.args.output_directory,
-              rarg.args.output_directory,
-              lmsh.mesh, 'vector')
+              rarg.args.output_directory)
 
 print('... done.')

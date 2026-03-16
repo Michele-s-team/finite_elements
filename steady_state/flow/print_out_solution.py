@@ -28,27 +28,20 @@ xdmffile_d.parameters.update({"functions_share_mesh": True, "rewrite_function_me
 v_output, w_output, sigma_output, z_output, omega_output, mu_output = fsp.psi.split(deepcopy=True)
 
 io.full_print(v_output, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'vector')
+              solpath.nodal_values_path)
 io.full_print(w_output, 'w', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path)
 io.full_print(sigma_output, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'scalar')
+              solpath.nodal_values_path)
 io.full_print(z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path)
 io.full_print(omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'vector')
+              solpath.nodal_values_path)
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path)
 
 io.full_print(fsp.tau, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path)
 
 # print to file the forces which appear in the RHS of the equations
 # tangential forces
@@ -120,38 +113,32 @@ xdmffile_check.write(project(project((geo.d(v_output, w_output, omega_output)[i,
 io.full_print(
     project(phys.dFdl_eta_sigma_t(v_output, w_output, omega_output, sigma_output, rpam.parameters['eta'],
                                   geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_dFfl_t),
-    'dFdl_eta_sigma_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector')
+    'dFdl_eta_sigma_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 io.full_print(
     project(phys.dFdl_kappa_t(fsp.mu, rpam.parameters['kappa'], geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_dFfl_t),
-    'dFdl_kappa_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector')
+    'dFdl_kappa_t', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 io.full_print(
     project(phys.dFdl_kappa_n(fsp.mu, rpam.parameters['kappa'], geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_dFfl_n),
-    'dFdl_kappa_n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'scalar')
+    'dFdl_kappa_n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 io.full_print(
     project(phys.dFdl_eta_sigma_3d(v_output, w_output, omega_output, sigma_output, rpam.parameters['eta'],
                                    geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
     'dFdl_eta_sigma_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-    solpath.nodal_values_path, lmsh.mesh,
-    'vector')
+    solpath.nodal_values_path)
 
 io.full_print(
     project(
         phys.dFdl_kappa_3d(omega_output, mu_output, rpam.parameters['kappa'], geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
-    'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector')
+    'dFdl_kappa_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 io.full_print(
     project( \
         phys.dFdl_tot_3d(v_output, w_output, omega_output, mu_output, sigma_output, rpam.parameters['eta'], rpam.parameters['kappa'],
                          geo.n_c_r(lmsh.mesh, rmsh.parameters["c_r"][:2], omega_output)), fsp.Q_3d),
-    'dFdl_tot_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,
-    lmsh.mesh, 'vector')
+    'dFdl_tot_3d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \

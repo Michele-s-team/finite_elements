@@ -24,8 +24,12 @@ omega_n_1 : float
 Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_v_ = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_phi = FunctionSpace(lmsh.mesh, 'P', 1)
+
 Q_u = VectorFunctionSpace(lmsh.mesh, 'P', 1)
 Q_u_dot = VectorFunctionSpace(lmsh.mesh, 'P', 1)
+
+# function space for stress tensor \varsigma
+Q_sigma_stress = TensorFunctionSpace(lmsh.mesh, 'P', 2, shape=(2, 2))
 
 # function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
 Q_y = VectorFunctionSpace(lmsh.mesh, 'P', 2)
@@ -43,6 +47,7 @@ sigma_n_12 = Function(Q_phi)
 # sigma^{n-3/2}
 sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
+sigma_stress_n = Function(Q_sigma_stress)
 u_n = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
 u_n_1 = Function(Q_u)
