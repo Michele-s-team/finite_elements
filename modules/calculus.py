@@ -750,24 +750,25 @@ def min_distance (points):
     return np.min(distances[:, 1])
 
 '''
-returns the coordinates of the points on an ellipse, obtained by dividing its boundary into a finite number of parts
+returns the coordinates of the points on an ellipse, obtained by dividing its boundary into a finite number of parts. The ellipse may be rotated about its left focal point
 Input values: 
-    - 'a', 'b': semi-major and semi-minor axes of the ellipse, respectively
-    - 'c': center of the ellipse, [c_x, c_y]
-    - 'N': number of vertices which divide the ellipse boundary into N-1 segments
+    * Mandatory:
+        - 'a', 'b': semi-major and semi-minor axes of the ellipse, respectively
+        - 'c': center of the ellipse, [c_x, c_y]
+        - 'N': number of vertices which divide the ellipse boundary into N-1 segments
+    * Optional:
+        - 'phi': the rotation angle with respect to the x axis, about the left focal point . phi = 0 by default
 
 Return values: 
     - 'coordiantes', the coordinates of the points along the ellipse boundary, in the format [[p0_x, p0_y], [p1_x, p1_y], ...]
 '''
-def points_ellipse(a, b, c, N):
+def points_ellipse(a, b, c, N, 
+                   phi=0):
 
     coordinates = []
     for i in range(N-1):
-
-        coordinates.append(
-            list(np.add(c, [a * np.cos(2.0*np.pi*i/(N-1)), b * np.sin(2.0*np.pi*i/(N-1))]))
-        )
-
+        coordinates.append(ellipse(a, b, c, i/(N-1), phi)[0])
+        
     return coordinates
 
 '''
