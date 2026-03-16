@@ -217,8 +217,6 @@ polygon_coordinates = []
 for coordinate in polygon_coordinates_flat:
     polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
-mesh_old = rmsh.lmsh.mesh
-
 sigma_n_12_old = Function(fsp.Q_phi)
 u_n_old = Function(fsp.Q_u)
 
