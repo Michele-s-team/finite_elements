@@ -487,12 +487,11 @@ Input values:
     - 'path_csv_file' the path of the csv file
     - 'path_h5_file' the path of the h5 file
     - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
-    - 'mesh': the mesh where 'f' is defined
     - 'type': the type of 'f', which may be 'scalar', 'vector'
 '''
 
 
-def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh, type):
+def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, type):
     # add / to file paths, in case it is missing
     path_xdmf_file_with_slash = add_trailing_slash(path_xdmf_file)
     path_h5_file_with_slash = add_trailing_slash(path_h5_file)
