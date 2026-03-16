@@ -58,11 +58,9 @@ def print_solution(psi, step, t):
 
 
     io.full_print(u_n_output, 'u_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(v_n_output, 'v_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     
     # print the determinant of the gradient of the deformation field
     io.full_print_deformed(
