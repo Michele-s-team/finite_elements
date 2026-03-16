@@ -2364,9 +2364,24 @@ def transfer(f, g, u):
 
     g_value_shape = Q_g.ufl_element().value_shape()
     g_value_size = int(np.prod(g_value_shape))
-    g_dim        = Q_g.mesh().geometry().dim()
 
-    g_dof_coordinates = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
+    print(f'value size = {g_value_size}')
 
+    g_dim = Q_g.mesh().geometry().dim()
+
+    g_dof_coordinates_all = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
+
+    '''
+    subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    Run through g_dof_coordinates_all by taking every g_value_size entry in it, and writes the result into g_dof_coordinates
+    '''
+    g_dof_coordinates = g_dof_coordinates_all[::g_value_size]
+
+    # write the values of f into g
     for i in range(len(g_dof_coordinates)):
-       g.vector()[i] = f_def(g_dof_coordinates[i])
+        # run through all unique DOF coordinates 
+       
+       for j in range(g_value_size):
+        # run through all components of the field f and write them into g
+
+        g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
