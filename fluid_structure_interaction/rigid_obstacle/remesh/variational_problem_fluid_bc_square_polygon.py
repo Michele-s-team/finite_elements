@@ -6,6 +6,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
+import calculus as cal
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
 import function_spaces as fsp
@@ -19,7 +20,7 @@ i, j, k, l = ufl.indices(4)
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
-focus = np.subtract(rmsh.parameters["c"], [np.sqrt(rmsh.parameters["a"] ** 2 - rmsh.parameters["b"] ** 2), 0])
+focus = cal.ellipse_focal_points(rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'])[0]
 
 
 
