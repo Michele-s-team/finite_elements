@@ -82,11 +82,14 @@ theta_ref = rpam.parameters["theta_0"]
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
 polygon_coordinates = []
 for coordinate in polygon_coordinates_flat:
-    polygon_coordinates.append(cal.R(theta_ref).dot(coordinate))
+    polygon_coordinates.append(np.add(focus, cal.R(theta_ref).dot(np.subtract(coordinate, focus))))
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
+
+
+
 
 '''
 
