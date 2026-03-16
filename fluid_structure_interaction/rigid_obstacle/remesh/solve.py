@@ -24,6 +24,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import calculus as cal
+import elasticity as ela
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -220,10 +221,12 @@ for coordinate in polygon_coordinates_flat:
 v_n_old = Function(fsp.Q_v)
 sigma_n_12_old = Function(fsp.Q_phi)
 u_n_old = Function(fsp.Q_u)
+sigma_stress_n_old = Function(fsp.Q_sigma_stress)
 
 v_n_old.assign(fsp.v_n)
 sigma_n_12_old.assign(fsp.sigma_n_12)
 u_n_old.assign(fsp.u_n)
+sigma_stress_n_old.assign(project(ela.var_sigma_tensor(fsp.sigma_n_12, fsp.v_n, fsp.u_n, rpam.parameters["mu"]), fsp.Q_sigma_stress))
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
@@ -236,15 +239,22 @@ fsp = importlib.reload(fsp)
 
 msh.transfer(v_n_old, fsp.v_n, u_n_old)
 msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
+msh.transfer(sigma_stress_n_old, fsp.sigma_stress_n, u_n_old)
+
+
+io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+io.full_print_deformed(sigma_n_12_old, u_n_old, 'sigma_n_12_old', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
 io.full_print(fsp.v_n, 'v_n_new', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 io.full_print_deformed(v_n_old, u_n_old, 'v_n_old', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
-io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
+io.full_print(fsp.sigma_stress_n, 'sigma_stress_n_new', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-io.full_print_deformed(sigma_n_12_old, u_n_old, 'sigma_n_12_old', \
+io.full_print_deformed(sigma_stress_n_old, u_n_old, 'sigma_stress_n_old', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
  
 

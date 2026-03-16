@@ -2365,8 +2365,6 @@ def transfer(f, g, u):
     g_value_shape = Q_g.ufl_element().value_shape()
     g_value_size = int(np.prod(g_value_shape))
 
-    print(f'value size = {g_value_size}')
-
     g_dim = Q_g.mesh().geometry().dim()
 
     g_dof_coordinates_all = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
