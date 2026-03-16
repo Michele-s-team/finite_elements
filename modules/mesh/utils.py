@@ -2349,7 +2349,7 @@ def tag_physical_object(object, id, model,
 
 
 '''
-given a function f on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a function g on mesh B, set g equal to f
+given a field f (scalar, vector, or tensor) on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a field g (same type as f) on mesh B, set g equal to f
 Input values: 
     - 'f': function on mesh A
     - 'g': function on mesh B
