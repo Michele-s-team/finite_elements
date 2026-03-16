@@ -19,11 +19,9 @@ xdmffile_check = XDMFFile(rarg.args.output_directory + "/check.xdmf")
 xdmffile_check.parameters.update({"functions_share_mesh": True, "rewrite_function_mesh": False})
 
 io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              'vector')
+              solpath.nodal_values_path)
 io.full_print(fsp.u_dot, 'u_dot', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              'vector')
+              solpath.nodal_values_path)
 
 # Write the deformed mesh to XDMF
 deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u)

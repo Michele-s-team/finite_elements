@@ -21,30 +21,23 @@ psi_output, mu_output, u_output, nu_output = fsp.phi.split(deepcopy=True)
 
 # print out the solution
 io.full_print(psi_output, 'psi', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path, lmsh.mesh)
 io.full_print(mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              'scalar')
+              solpath.nodal_values_path)
 io.full_print(u_output, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'vector')
+              solpath.nodal_values_path, lmsh.mesh)
 
 # print out the given fields of the surface tension and arc-length gauge
 io.full_print(fsp.sigma, 'sigma', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              'scalar')
+              solpath.nodal_values_path)
 io.full_print(nu_output, 'nu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              'scalar')
+              solpath.nodal_values_path)
 
 
 io.full_print(project(((fsp.X_ref[0] + fsp.u[0]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, 0]), fsp.Q_psi), 'err_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path, lmsh.mesh)
 io.full_print(project(((fsp.X_ref[1] + fsp.u[1]).dx(0) - geo.e(fsp.psi, fsp.nu)[0, 1]), fsp.Q_psi), 'err_2', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path, lmsh.mesh,
-              'scalar')
+              solpath.nodal_values_path, lmsh.mesh)
 
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + "metadata.csv", \
                                 io.merge_dictionaries(rmsh.parameters, rpam.parameters))
