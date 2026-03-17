@@ -40,7 +40,7 @@ remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
 os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
 
 remesh_csvfile = open(remesh_filename, 'a', newline='')
-remesh_fieldnames = [ "step", "phi", "mesh_quality_before_remesh"]
+remesh_fieldnames = [ "remesh_step", "phi", "mesh_quality_before_remesh"]
 remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
 remesh_writer.writeheader()
 
