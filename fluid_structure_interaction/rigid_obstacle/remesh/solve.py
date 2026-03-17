@@ -234,8 +234,7 @@ for n in range(rpam.parameters["num_steps"]):
         pr_bc = importlib.reload(pr_bc)
 
 
-        # 5. transfer the values stored in the _old fields to the fields defined on the new mesh
-
+        #6. transfer the values stored in the _old fields to the fields defined on the new mesh
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
@@ -252,27 +251,9 @@ for n in range(rpam.parameters["num_steps"]):
         fsp.u_n_1.assign(Constant((0, 0)))
         fsp.u_n_2.assign(Constant((0, 0)))
 
-        msh.transfer(u_dot_n_old, fsp.u_n, u_n_old)
-        msh.transfer(u_dot_n_1_old, fsp.u_n_1, u_n_old)
-        msh.transfer(u_dot_n_2_old, fsp.u_n_2, u_n_old)
-
-
-        '''   
-        io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print_deformed(sigma_n_12_old, u_n_old, 'sigma_n_12_old', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
-        io.full_print(fsp.v_n, 'v_n_new', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print_deformed(v_n_old, u_n_old, 'v_n_old', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
-        io.full_print(fsp.sigma_stress_n, 'sigma_stress_n_new', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print_deformed(sigma_stress_n_old, u_n_old, 'sigma_stress_n_old', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        '''        
+        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+        msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
 
         print(f'**** ... done. ')
     
