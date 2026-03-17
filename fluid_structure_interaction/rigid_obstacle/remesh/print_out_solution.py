@@ -25,34 +25,53 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 
 
-# create the path for the csv file if it does not exist
+# create the path for the data csv file if it does not exist
 data_filename = rarg.args.output_directory + '/data.csv'
 os.makedirs(os.path.dirname(data_filename), exist_ok=True)
 
-csvfile = open(data_filename, 'a', newline='')
-fieldnames = [ \
+data_csvfile = open(data_filename, 'a', newline='')
+data_fieldnames = [ \
     "theta", \
     "omega", \
     "theta_ref",\
     "mesh_quality"
     ]
-data_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+data_writer = csv.DictWriter(data_csvfile, fieldnames=data_fieldnames)
 data_writer.writeheader()
 
+
+# create the path for the mesh csv file if it does not exist
+mesh_filename = rarg.args.output_directory + '/mesh.csv'
+os.makedirs(os.path.dirname(mesh_filename), exist_ok=True)
+
+mesh_csvfile = open(mesh_filename, 'a', newline='')
+mesh_fieldnames = [ \
+    "theta", \
+    "omega", \
+    "theta_ref",\
+    "mesh_quality"
+    ]
+mesh_writer = csv.DictWriter(mesh_csvfile, fieldnames=mesh_fieldnames)
+mesh_writer.writeheader()
+
+
+def print_mesh(step):
+
+    pass
 
 def print_solution(step):
     # 1) print theta and omega
     data_writer.writerows([{ \
-        fieldnames[0]: \
+        data_fieldnames[0]: \
             fsp.theta_n, \
-        fieldnames[1]: \
+        data_fieldnames[1]: \
             fsp.omega_n,\
-        fieldnames[2]: \
+        data_fieldnames[2]: \
             rmsh.parameters['phi'],\
-        fieldnames[3]:
+        data_fieldnames[3]:
             msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
     }])
-    csvfile.flush()
+    data_csvfile.flush()
 
 
     # 2) print the solution for the mesh problem

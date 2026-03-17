@@ -294,4 +294,6 @@ for n in range(rpam.parameters["num_steps"]):
 print("... done.", flush=True)
 
 
-# block with the same mesh - end
+
+pr_sol.data_csvfile.close()
+pr_sol.mesh_csvfile.close()
