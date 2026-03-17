@@ -1,2 +1,2 @@
-rho,mu,v_l,T,num_steps,exponent,I_ellipse,theta_0,omega_0,remesh_stride,print_out_stride,code,problem
-1.0,1e-5,1e-2,1e2,100,3,1e-3,0.55,0,25,1,~/Documents/finite_elements/fluid_structure_interaction/rigid_obstacle/,square_ellipse
+rho,mu,v_l,T,num_steps,exponent,I_ellipse,theta_0,omega_0,mesh_quality_threshold,print_out_stride,code,problem
+1.0,1e-5,1e-2,1e2,1000,3,1e-3,2.0,0,0.5,1,~/Documents/finite_elements/fluid_structure_interaction/rigid_obstacle/,square_ellipse

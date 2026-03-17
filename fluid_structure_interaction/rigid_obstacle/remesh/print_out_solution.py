@@ -2,7 +2,6 @@ from fenics import *
 
 
 import csv
-import files as fi
 import importlib
 import os
 import sys
@@ -23,14 +22,15 @@ rmsh = importlib.import_module(swi.rmsh)
 
 
 # create the path for the csv file if it does not exist
-filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
-os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
+data_filename = rarg.args.output_directory + '/data.csv'
+os.makedirs(os.path.dirname(data_filename), exist_ok=True)
 
-csvfile = open(filename_theta_omega, 'a', newline='')
+csvfile = open(data_filename, 'a', newline='')
 fieldnames = [ \
     "theta", \
     "omega", \
-    "theta_ref"
+    "theta_ref",\
+    "mesh_quality"
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -44,8 +44,9 @@ def print_solution(t, step, dt):
         fieldnames[1]: \
             fsp.omega_n,\
         fieldnames[2]: \
-            rmsh.parameters['phi']
-
+            rmsh.parameters['phi'],\
+        fieldnames[3]:
+            msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
     }])
     csvfile.flush()
 
@@ -55,10 +56,6 @@ def print_solution(t, step, dt):
                   solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.u_dot_n, 'u_dot_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path)
-
-    # include the snapshot in xdmf files
-    fi.xdmffile_u_n.write(fsp.u_n, t)
-    fi.xdmffile_u_dot_n.write(fsp.u_dot_n, t)
 
     # Write the deformed mesh to file
     deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u_n)
@@ -77,12 +74,6 @@ def print_solution(t, step, dt):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.phi, 'phi_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
-    # include the snapshot in xdmf files
-    fi.xdmffile_v_n.write(fsp.v_n, t)
-    fi.xdmffile_v_.write(fsp.v_, t)
-    fi.xdmffile_sigma.write(fsp.sigma_n_12, t - dt / 2.0)
-    fi.xdmffile_phi.write(fsp.phi, t)
 
 
     io.full_print_deformed(fsp.v_, fsp.u_n, 'v_bar_' + str(step), \

@@ -1,15 +1,11 @@
 """
-This code solves for the dynamics of the Navier Stokes equations with a rigid obstacle which can rotate about a fixed point, by allowing for remeshing,
- on a flat manifold Crank Nicholson discretization scheme
+This code solves for the dynamics of the Navier Stokes equations with a rigid obstacle which can rotate about a fixed point, on a flat manifold Crank Nicholson discretization scheme. When the mesh quality gets below a chosen threshold, remeshing is done. 
 
-run with:
+Run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
     clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
-
-Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the rectangle, etc...) is changed are bracketed by
-#CHANGE PARAMETERS HERE
 """
 
 import dolfin
@@ -72,14 +68,14 @@ class sigma_0_expression(UserExpression):
 # focal point of the ellipse
 f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])[0]
 # coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
-polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
+polygon_coordinates_0 = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
 polygon_coordinates = []
-for coordinate in polygon_coordinates_flat:
+for coordinate in polygon_coordinates_0:
     polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
@@ -134,7 +130,9 @@ for n in range(rpam.parameters["num_steps"]):
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
     fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_polygon.M_ellipse
+
     print('... done.', flush=True)
+
 
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
@@ -148,8 +146,6 @@ for n in range(rpam.parameters["num_steps"]):
     print('... done.', flush=True)
 
     
-   
-
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
 
@@ -166,15 +162,15 @@ for n in range(rpam.parameters["num_steps"]):
 
     pr_bc.print_bcs()
 
-    if step % rpam.parameters['remesh_stride'] == 0:
 
-        # remesh 
+    if msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n)) < rpam.parameters['mesh_quality_threshold']:
+        # the mesh quality got below the threshold -> remesh 
 
         print(f'**** Remeshing ... ')
 
-        # 1. Define fields that store the last configurations from the iteration with the previous mesh, and store in to them these configurations
+        # 1.transfer fields
 
-        # 1.1
+        # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
         v_n_old = Function(fsp.Q_v)
         v_n_1_old = Function(fsp.Q_v)
         v_n_2_old = Function(fsp.Q_v)
@@ -195,14 +191,14 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
 
-        # 1.2
+        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
         v_n_old.assign(fsp.v_n)
         v_n_1_old.assign(fsp.v_n_1)
         v_n_2_old.assign(fsp.v_n_2)
 
         v__old.assign(fsp.v_)
 
-        sigma_n_12_old.assign(fsp.sigma_n_12)
+        sigma_n_12_old.assign(fsp.sigma_n_32 - fsp.phi)
         sigma_n_32_old.assign(fsp.sigma_n_32)
 
         phi_old.assign(fsp.phi)
@@ -218,18 +214,18 @@ for n in range(rpam.parameters["num_steps"]):
         #2. set the new rotation angle of the polygon for the reference configuration 
         theta_ref = fsp.theta_n
 
-        #2. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
+
+        #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
         polygon_coordinates = []
-        for coordinate in polygon_coordinates_flat:
+        for coordinate in polygon_coordinates_0:
             polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
 
-
-        # 3. generate the mesh with the polygon and write theta_ref into its mesh_metadata
+        #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
         msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
         additional_metadata={'phi': theta_ref})
 
-        # 4. reload modules so everything is updated to the new mesh
+        #5. reload modules so everything is updated according to the mesh change
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
         importlib.reload(bgeo)
@@ -238,8 +234,7 @@ for n in range(rpam.parameters["num_steps"]):
         pr_bc = importlib.reload(pr_bc)
 
 
-        # 5. transfer the values stored in the _old fields to the fields defined on the new mesh
-
+        #6. transfer the values stored in the _old fields to the fields defined on the new mesh
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
@@ -256,27 +251,9 @@ for n in range(rpam.parameters["num_steps"]):
         fsp.u_n_1.assign(Constant((0, 0)))
         fsp.u_n_2.assign(Constant((0, 0)))
 
-        msh.transfer(u_dot_n_old, fsp.u_n, u_n_old)
-        msh.transfer(u_dot_n_1_old, fsp.u_n_1, u_n_old)
-        msh.transfer(u_dot_n_2_old, fsp.u_n_2, u_n_old)
-
-
-        '''   
-        io.full_print(fsp.sigma_n_12, 'sigma_n_12_new', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print_deformed(sigma_n_12_old, u_n_old, 'sigma_n_12_old', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
-        io.full_print(fsp.v_n, 'v_n_new', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print_deformed(v_n_old, u_n_old, 'v_n_old', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
-        io.full_print(fsp.sigma_stress_n, 'sigma_stress_n_new', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print_deformed(sigma_stress_n_old, u_n_old, 'sigma_stress_n_old', \
-                        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        '''        
+        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+        msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
 
         print(f'**** ... done. ')
     
