@@ -17,6 +17,9 @@ mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.ar
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
+mesh_quality, _ = MeshQuality.radius_ratio_min_max(lmsh.mesh)
+print(f'Mesh quality = {mesh_quality}')
+
 parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, "mesh_metadata.csv"))
 
 print(f"Radius of mesh cell = {col.Fore.BLUE}{r_mesh}{col.Style.RESET_ALL}")
