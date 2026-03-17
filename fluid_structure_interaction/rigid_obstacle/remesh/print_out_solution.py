@@ -30,7 +30,8 @@ csvfile = open(filename_theta_omega, 'a', newline='')
 fieldnames = [ \
     "theta", \
     "omega", \
-    "theta_ref"
+    "theta_ref",\
+    "mesh_quality"
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -44,8 +45,9 @@ def print_solution(t, step, dt):
         fieldnames[1]: \
             fsp.omega_n,\
         fieldnames[2]: \
-            rmsh.parameters['phi']
-
+            rmsh.parameters['phi'],\
+        fieldnames[3]:
+            msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
     }])
     csvfile.flush()
 

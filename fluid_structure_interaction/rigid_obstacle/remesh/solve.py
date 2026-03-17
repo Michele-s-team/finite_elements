@@ -167,12 +167,10 @@ for n in range(rpam.parameters["num_steps"]):
     pr_bc.print_bcs()
 
     # check mesh quality
-    print(f'*** mesh_quality = {msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))}')
 
 
-    if step % rpam.parameters['remesh_stride'] == 0:
-
-        # remesh 
+    if msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n)) < rpam.parameters['mesh_quality_threshold']:
+        # the mesh quality got below the threshold -> remesh 
 
         print(f'**** Remeshing ... ')
 
