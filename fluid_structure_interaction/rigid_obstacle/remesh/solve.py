@@ -68,14 +68,14 @@ class sigma_0_expression(UserExpression):
 # focal point of the ellipse
 f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])[0]
 # coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
-polygon_coordinates_flat = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
+polygon_coordinates_0 = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
 polygon_coordinates = []
-for coordinate in polygon_coordinates_flat:
+for coordinate in polygon_coordinates_0:
     polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
@@ -216,7 +216,7 @@ for n in range(rpam.parameters["num_steps"]):
 
         #2. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
         polygon_coordinates = []
-        for coordinate in polygon_coordinates_flat:
+        for coordinate in polygon_coordinates_0:
             polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
 
