@@ -22,10 +22,10 @@ rmsh = importlib.import_module(swi.rmsh)
 
 
 # create the path for the csv file if it does not exist
-filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
-os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
+data_filename = rarg.args.output_directory + '/data.csv'
+os.makedirs(os.path.dirname(data_filename), exist_ok=True)
 
-csvfile = open(filename_theta_omega, 'a', newline='')
+csvfile = open(data_filename, 'a', newline='')
 fieldnames = [ \
     "theta", \
     "omega", \
