@@ -36,6 +36,7 @@ rsync -av \
   --exclude '*.csv' \
   "$3" "$OUT:$2/mesh"
 rsync -av  $1/parameters*.csv $OUT:$2
+rsync -av $3/../mesh_parameters.csv "$OUT:$2/mesh"
 
 # submit the job
 ssh $OUT "cd "$2"; sbatch script_slurm_abacus.slurm"
