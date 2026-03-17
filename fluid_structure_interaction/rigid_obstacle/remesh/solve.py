@@ -214,18 +214,18 @@ for n in range(rpam.parameters["num_steps"]):
         #2. set the new rotation angle of the polygon for the reference configuration 
         theta_ref = fsp.theta_n
 
-        #2. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
+
+        #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
         polygon_coordinates = []
         for coordinate in polygon_coordinates_0:
             polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
 
 
-
-        # 3. generate the mesh with the polygon and write theta_ref into its mesh_metadata
+        #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
         msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
         additional_metadata={'phi': theta_ref})
 
-        # 4. reload modules so everything is updated to the new mesh
+        #5. reload modules so everything is updated according to the mesh change
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
         importlib.reload(bgeo)
