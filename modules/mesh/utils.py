@@ -2383,3 +2383,17 @@ def transfer(f, g, u):
         # run through all components of the field f and write them into g
 
         g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
+
+
+'''
+compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells
+Input values; 
+    - 'mesh': the mesh
+Return values; 
+    - 'result': the mesh quality
+'''
+def custom_mesh_quality(mesh):
+
+    result, _ = MeshQuality.radius_ratio_min_max(mesh)
+
+    return result

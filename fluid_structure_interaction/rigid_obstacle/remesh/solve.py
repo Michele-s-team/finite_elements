@@ -166,6 +166,10 @@ for n in range(rpam.parameters["num_steps"]):
 
     pr_bc.print_bcs()
 
+    # check mesh quality
+    deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n)
+    
+
     if step % rpam.parameters['remesh_stride'] == 0:
 
         # remesh 
