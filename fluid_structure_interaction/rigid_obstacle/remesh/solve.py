@@ -198,7 +198,7 @@ for n in range(rpam.parameters["num_steps"]):
 
         v__old.assign(fsp.v_)
 
-        sigma_n_12_old.assign(fsp.sigma_n_12)
+        sigma_n_12_old.assign(fsp.sigma_n_32 - fsp.phi)
         sigma_n_32_old.assign(fsp.sigma_n_32)
 
         phi_old.assign(fsp.phi)
