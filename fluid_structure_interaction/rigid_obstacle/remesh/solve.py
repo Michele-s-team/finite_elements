@@ -311,5 +311,5 @@ print("... done.", flush=True)
 
 
 
-pr_sol.theta_omega.close()
+pr_sol.theta_omega_csvfile.close()
 pr_sol.remesh_csvfile.close()
