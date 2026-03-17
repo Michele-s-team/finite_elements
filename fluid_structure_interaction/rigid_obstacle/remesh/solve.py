@@ -130,8 +130,9 @@ for n in range(rpam.parameters["num_steps"]):
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
     fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_polygon.M_ellipse
-    
+
     print('... done.', flush=True)
+
 
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
@@ -145,8 +146,6 @@ for n in range(rpam.parameters["num_steps"]):
     print('... done.', flush=True)
 
     
-   
-
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
 
@@ -162,8 +161,6 @@ for n in range(rpam.parameters["num_steps"]):
     print('... done.', flush=True)
 
     pr_bc.print_bcs()
-
-    # check mesh quality
 
 
     if msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n)) < rpam.parameters['mesh_quality_threshold']:
