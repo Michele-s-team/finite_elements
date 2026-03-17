@@ -10,6 +10,7 @@ Examples:
 
 import dolfin
 from fenics import *
+import gc
 import importlib
 import numpy as np
 import os
@@ -257,6 +258,18 @@ for n in range(rpam.parameters["num_steps"]):
         #7. call print_remesh to print out the remeshing info
 
         pr_sol.print_remesh(step, theta_ref, mesh_quality)
+
+        # 8 clean up
+    
+        # delete the _old functions
+        del v_n_old, v_n_1_old, v_n_2_old
+        del v__old
+        del sigma_n_12_old, sigma_n_32_old
+        del phi_old
+        del u_n_old, u_n_1_old, u_n_2_old
+        del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
+
+        gc.collect()
 
         print(f'**** ... done. ')
     
