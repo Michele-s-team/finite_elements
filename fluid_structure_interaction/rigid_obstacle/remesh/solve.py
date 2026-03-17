@@ -281,7 +281,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     if step % rpam.parameters['print_out_stride'] == 0:
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
-        pr_sol.print_solution(t, step, dt)
+        pr_sol.print_solution(step)
 
         # generate the mesh with the current theta_ref and store it into rarg.args.input_directory/n_[step]/
         msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), os.path.join(solpath.snapshots_path, 'mesh', f'n_{step}'),

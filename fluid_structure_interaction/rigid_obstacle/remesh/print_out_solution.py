@@ -40,7 +40,7 @@ data_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 data_writer.writeheader()
 
 
-def print_solution(t, step, dt):
+def print_solution(step):
     # 1) print theta and omega
     data_writer.writerows([{ \
         fieldnames[0]: \
