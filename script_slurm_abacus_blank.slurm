@@ -18,4 +18,4 @@ rm -rf $SOLUTION
 mkdir $SOLUTION
 
 cd $RUN
-time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 solve.py $PROBLEM $MESH $SOLUTION 
+time apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS_all.sif python3 solve.py $PROBLEM $MESH $SOLUTION 
