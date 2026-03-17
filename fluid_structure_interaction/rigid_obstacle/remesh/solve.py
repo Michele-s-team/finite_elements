@@ -130,6 +130,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
     fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_polygon.M_ellipse
+    
     print('... done.', flush=True)
 
     # step 2): update u and u_dot (mesh problem)
