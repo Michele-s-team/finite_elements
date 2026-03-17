@@ -168,9 +168,9 @@ for n in range(rpam.parameters["num_steps"]):
 
         print(f'**** Remeshing ... ')
 
-        # 1. Define fields that store the last configurations from the iteration with the previous mesh, and store in to them these configurations
+        # 1.transfer fields
 
-        # 1.1
+        # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
         v_n_old = Function(fsp.Q_v)
         v_n_1_old = Function(fsp.Q_v)
         v_n_2_old = Function(fsp.Q_v)
@@ -191,7 +191,7 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
 
-        # 1.2
+        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
         v_n_old.assign(fsp.v_n)
         v_n_1_old.assign(fsp.v_n_1)
         v_n_2_old.assign(fsp.v_n_2)
