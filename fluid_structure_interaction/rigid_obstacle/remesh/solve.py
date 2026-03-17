@@ -1,15 +1,11 @@
 """
-This code solves for the dynamics of the Navier Stokes equations with a rigid obstacle which can rotate about a fixed point, by allowing for remeshing,
- on a flat manifold Crank Nicholson discretization scheme
+This code solves for the dynamics of the Navier Stokes equations with a rigid obstacle which can rotate about a fixed point, on a flat manifold Crank Nicholson discretization scheme. When the mesh quality gets below a chosen threshold, remeshing is done. 
 
-run with:
+Run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
     clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
-
-Note that all sections of the code which need to be changed when an external parameter (e.g., the inflow velocity, the length of the rectangle, etc...) is changed are bracketed by
-#CHANGE PARAMETERS HERE
 """
 
 import dolfin
