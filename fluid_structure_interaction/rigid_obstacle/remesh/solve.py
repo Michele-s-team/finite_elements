@@ -159,6 +159,9 @@ for n in range(rpam.parameters["num_steps"]):
     # step 3.3: velocity step
     var_pr.solve_vp(vp_fluid.F_v_n, fsp.v_n, vp_fluid.bc_v_n, fsp.J_v_n)
 
+    # write into sigma_n_12
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
+
     print('... done.', flush=True)
 
     pr_bc.print_bcs()
@@ -198,7 +201,7 @@ for n in range(rpam.parameters["num_steps"]):
 
         v__old.assign(fsp.v_)
 
-        sigma_n_12_old.assign(fsp.sigma_n_32 - fsp.phi)
+        sigma_n_12_old.assign(fsp.sigma_n_12)
         sigma_n_32_old.assign(fsp.sigma_n_32)
 
         phi_old.assign(fsp.phi)
@@ -288,8 +291,6 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
 
     # 3)
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
-
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
