@@ -167,10 +167,6 @@ for n in range(rpam.parameters["num_steps"]):
     if  mesh_quality < rpam.parameters['mesh_quality_threshold']:
         # the mesh quality got below the threshold -> remesh 
 
-        pr_sol.print_remesh(step, mesh_quality)
-
-        print(f'**** Remeshing ... ')
-
         # 1.transfer fields
 
         # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
@@ -217,7 +213,6 @@ for n in range(rpam.parameters["num_steps"]):
         #2. set the new rotation angle of the polygon for the reference configuration 
         theta_ref = fsp.theta_n
 
-
         #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
         polygon_coordinates = []
         for coordinate in polygon_coordinates_0:
@@ -257,6 +252,11 @@ for n in range(rpam.parameters["num_steps"]):
         msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
         msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
+
+
+        #7. call print_remesh to print out the remeshing info
+
+        pr_sol.print_remesh(step, theta_ref, mesh_quality)
 
         print(f'**** ... done. ')
     
@@ -298,5 +298,5 @@ print("... done.", flush=True)
 
 
 
-pr_sol.data_csvfile.close()
+pr_sol.theta_omega.close()
 pr_sol.remesh_csvfile.close()

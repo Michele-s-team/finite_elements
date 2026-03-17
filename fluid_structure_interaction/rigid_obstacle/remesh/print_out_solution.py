@@ -26,18 +26,13 @@ rmsh = importlib.import_module(swi.rmsh)
 
 
 # create the path for the data csv file if it does not exist
-data_filename = os.path.join(rarg.args.output_directory, 'data.csv')
-os.makedirs(os.path.dirname(data_filename), exist_ok=True)
+theta_omega_filename = os.path.join(rarg.args.output_directory, 'theta_omega.csv')
+os.makedirs(os.path.dirname(theta_omega_filename), exist_ok=True)
 
-data_csvfile = open(data_filename, 'a', newline='')
-data_fieldnames = [ \
-    "theta", \
-    "omega", \
-    "theta_ref",\
-    "mesh_quality"
-    ]
-data_writer = csv.DictWriter(data_csvfile, fieldnames=data_fieldnames)
-data_writer.writeheader()
+theta_omega_csvfile = open(theta_omega_filename, 'a', newline='')
+theta_omega_fieldnames = [ "theta", "omega" ]
+theta_omega_writer = csv.DictWriter(theta_omega_csvfile, fieldnames=theta_omega_fieldnames)
+theta_omega_writer.writeheader()
 
 
 # create the path for the mesh csv file if it does not exist
@@ -45,23 +40,20 @@ remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
 os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
 
 remesh_csvfile = open(remesh_filename, 'a', newline='')
-remesh_fieldnames = [ \
-    "step", \
-    "mesh_quality"
-    ]
+remesh_fieldnames = [ "step", "phi", "mesh_quality_before_remesh"]
 remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
 remesh_writer.writeheader()
 
 
-def print_remesh(step, mesh_quality):
-
-    print(f'******** remeshing')
+def print_remesh(step, phi, mesh_quality_before_remesh):
 
     remesh_writer.writerows([{ \
         remesh_fieldnames[0]: \
             step, 
         remesh_fieldnames[1]: \
-            mesh_quality, 
+            phi, 
+        remesh_fieldnames[2]: \
+            mesh_quality_before_remesh, 
     }])
     remesh_csvfile.flush()
     
@@ -69,17 +61,13 @@ def print_remesh(step, mesh_quality):
 def print_solution(step):
 
     # 1) print theta and omega
-    data_writer.writerows([{ \
-        data_fieldnames[0]: \
+    theta_omega_writer.writerows([{ \
+        theta_omega_fieldnames[0]: \
             fsp.theta_n, \
-        data_fieldnames[1]: \
-            fsp.omega_n,\
-        data_fieldnames[2]: \
-            rmsh.parameters['phi'],\
-        data_fieldnames[3]:
-            msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
+        theta_omega_fieldnames[1]: \
+            fsp.omega_n
     }])
-    data_csvfile.flush()
+    theta_omega_csvfile.flush()
 
 
     # 2) print the solution for the mesh problem
