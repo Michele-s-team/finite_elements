@@ -162,9 +162,12 @@ for n in range(rpam.parameters["num_steps"]):
 
     pr_bc.print_bcs()
 
+    mesh_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
 
-    if msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n)) < rpam.parameters['mesh_quality_threshold']:
+    if  mesh_quality < rpam.parameters['mesh_quality_threshold']:
         # the mesh quality got below the threshold -> remesh 
+
+        pr_sol.print_remesh(step, mesh_quality)
 
         print(f'**** Remeshing ... ')
 
@@ -296,4 +299,4 @@ print("... done.", flush=True)
 
 
 pr_sol.data_csvfile.close()
-pr_sol.mesh_csvfile.close()
+pr_sol.remesh_csvfile.close()

@@ -26,7 +26,7 @@ rmsh = importlib.import_module(swi.rmsh)
 
 
 # create the path for the data csv file if it does not exist
-data_filename = rarg.args.output_directory + '/data.csv'
+data_filename = os.path.join(rarg.args.output_directory, 'data.csv')
 os.makedirs(os.path.dirname(data_filename), exist_ok=True)
 
 data_csvfile = open(data_filename, 'a', newline='')
@@ -41,25 +41,33 @@ data_writer.writeheader()
 
 
 # create the path for the mesh csv file if it does not exist
-mesh_filename = rarg.args.output_directory + '/mesh.csv'
-os.makedirs(os.path.dirname(mesh_filename), exist_ok=True)
+remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
+os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
 
-mesh_csvfile = open(mesh_filename, 'a', newline='')
-mesh_fieldnames = [ \
-    "theta", \
-    "omega", \
-    "theta_ref",\
+remesh_csvfile = open(remesh_filename, 'a', newline='')
+remesh_fieldnames = [ \
+    "step", \
     "mesh_quality"
     ]
-mesh_writer = csv.DictWriter(mesh_csvfile, fieldnames=mesh_fieldnames)
-mesh_writer.writeheader()
+remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
+remesh_writer.writeheader()
 
 
-def print_mesh(step):
+def print_remesh(step, mesh_quality):
 
-    pass
+    print(f'******** remeshing')
+
+    remesh_writer.writerows([{ \
+        remesh_fieldnames[0]: \
+            step, 
+        remesh_fieldnames[1]: \
+            mesh_quality, 
+    }])
+    remesh_csvfile.flush()
+    
 
 def print_solution(step):
+
     # 1) print theta and omega
     data_writer.writerows([{ \
         data_fieldnames[0]: \
