@@ -35,6 +35,11 @@ mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
+# create the solution metadata and write it into the output directory 
+metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
+
+
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
