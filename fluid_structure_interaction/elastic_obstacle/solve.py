@@ -18,6 +18,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import fluid as flu
 import function_spaces as fsp
 import input_output as io
 import mesh.load as lmsh
@@ -126,7 +127,7 @@ for n in range(rpam.parameters['num_steps']):
 
     i, j, k, l, m = ufl.indices(5)
     f = Function(fsp.Q_u_el)
-    f.assign(project(as_tensor((ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])), (i)), fsp.Q_u_el))
+    f.assign(project(as_tensor((flu.sigma_ale(fsp.v_n_1_on_sub_mesh_0, fsp.sigma_n_32_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])), (i)), fsp.Q_u_el))
     io.full_print(f, 'F_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path)
     #
