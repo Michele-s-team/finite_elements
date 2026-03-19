@@ -81,12 +81,12 @@ def print_solution(step):
     io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
     io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
 
-    # print the boundary points of the boundary given by the polygon
+    # print the boundary points of the mesh boundary given by the polygon
     msh.sorted_boundary_points(
         lmsh.mesh, 
         rarg.args.input_directory, 
         [rmsh.parameters['polygon_id']],
-        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + '_{step}.csv'))
+        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + f'_n_{step}.csv'))
 
 
 
