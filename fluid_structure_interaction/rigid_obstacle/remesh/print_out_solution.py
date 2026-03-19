@@ -83,10 +83,10 @@ def print_solution(step):
 
     # print the boundary points of the boundary given by the polygon
     msh.sorted_boundary_points(
-        read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
-        output_directory, 
-        [parameters['polygon_id']],
-        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+        lmsh.mesh, 
+        rarg.args.input_directory, 
+        [rmsh.parameters['polygon_id']],
+        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + '_{}.csv'))
 
 
 
