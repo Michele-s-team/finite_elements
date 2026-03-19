@@ -17,7 +17,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
-import elasticity as ela
+import fluid as flu
 import function as fu
 import function_spaces as fsp
 import parameters.read.solution as rpam

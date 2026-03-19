@@ -6,6 +6,7 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
+import fluid as flu
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io

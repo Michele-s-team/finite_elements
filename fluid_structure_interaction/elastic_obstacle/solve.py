@@ -18,6 +18,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import fluid as flu
 import function_spaces as fsp
 import input_output as io
 import mesh.load as lmsh
