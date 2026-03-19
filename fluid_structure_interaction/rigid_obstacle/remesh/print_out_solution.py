@@ -86,7 +86,7 @@ def print_solution(step):
         lmsh.mesh, 
         rarg.args.input_directory, 
         [rmsh.parameters['polygon_id']],
-        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + '_{}.csv'))
+        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + '_{step}.csv'))
 
 
 
