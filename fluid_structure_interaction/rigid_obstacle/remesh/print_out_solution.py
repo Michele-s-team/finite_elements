@@ -81,6 +81,14 @@ def print_solution(step):
     io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
     io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
 
+    # print the boundary points of the boundary given by the polygon
+    msh.sorted_boundary_points(
+        read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
+        output_directory, 
+        [parameters['polygon_id']],
+        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+
+
 
     # 3) print the solution of the fluid problem
     io.full_print(fsp.v_n, 'v_n_' + str(step), \
