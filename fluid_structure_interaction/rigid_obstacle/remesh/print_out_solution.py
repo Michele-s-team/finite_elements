@@ -76,8 +76,8 @@ def print_solution(step):
     
     # Write the deformed mesh to file
     deformed_mesh = msh.deform_mesh(lmsh.mesh, fsp.u_n)
-    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
-        xdmf.write(deformed_mesh)
+    # with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
+    #     xdmf.write(deformed_mesh)
     io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
     io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
 
