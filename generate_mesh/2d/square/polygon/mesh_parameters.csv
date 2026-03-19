@@ -1,2 +1,2 @@
-L,h,polygon_coordinates,surface_id,line_l_id,line_r_id,line_t_id,line_b_id,polygon_id,resolution
-1.0,1.0,"[[0.1, 0.1], [0.7, 0.3], [0.8, 0.4], [0.5, 0.5], [0.3, 0.4]]",1,2,3,4,5,6,0.1
+L,h,resolution,polygon_format,polygon_coordinates,a,b,c,phi,N,surface_id,line_l_id,line_r_id,line_t_id,line_b_id,polygon_id
+2.2,0.5,0.1,ellipse,"[[0.1, 0.1], [0.7, 0.3], [0.8, 0.35], [0.2, 0.3], [0.3, 0.2]]",0.1,0.075,"[0.4,0.25]",4.7,12,1,2,3,4,5,6

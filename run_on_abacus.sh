@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # run with
-# ./run-on-abacus.sh [path where the execution code is located] [name of the folder and job on abacus] [path of mesh solution] [name of problem to solve]
-# ./run-on-abacus.sh dynamics/lagrangian_approach/one_dimension/line line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution line_a
+# ./run_on_abacus.sh [path where the execution code is located] [name of the folder and job on abacus] [path of mesh solution] [name of problem to solve]
+# ./run_on_abacus.sh dynamics/lagrangian_approach/one_dimension/line line_1 ~/Documents/finite_elements/generate_mesh/1d/line/solution line_a
 
 clear
 clear
@@ -36,6 +36,7 @@ rsync -av \
   --exclude '*.csv' \
   "$3" "$OUT:$2/mesh"
 rsync -av  $1/parameters*.csv $OUT:$2
+rsync -av $3/../mesh_parameters.csv "$OUT:$2/mesh"
 
 # submit the job
 ssh $OUT "cd "$2"; sbatch script_slurm_abacus.slurm"

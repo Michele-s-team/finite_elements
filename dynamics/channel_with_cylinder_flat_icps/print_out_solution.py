@@ -12,11 +12,8 @@ def print_solution(t, step, dt):
 
     # print the snapshot in a separate file
     io.full_print(fsp.u_bar, 'u_bar_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.u_n, 'u_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.p_n, 'p_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)

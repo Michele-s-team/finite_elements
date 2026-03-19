@@ -185,10 +185,15 @@ Input values:
 def copy_function_values(f_in, f_out):
     f_out.vector()[:] = f_in.vector()[:]
 
+'''
+given a field defined on a mesh and a deformation field of the mesh, return the field defined and interpolated on the deformed mesh
+Input values: 
+    - 'f': the field (scalar, vector or tensor)
+    - 'u': the deformation field, defined on the mesh of f
 
+'''
 def deform_function(f, u):
     Q = deform_function_space(f.function_space(), u)
-    # print(f'type of Q = {type(Q)}')  # should be <class 'dolfin.cpp.function.FunctionSpace'>
 
     g = Function(Q)
     copy_function_values(f, g)

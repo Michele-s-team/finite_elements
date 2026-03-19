@@ -1,16 +1,18 @@
 import colorama as col
 import command as cmd
 from fenics import *
-import numpy as np
 import colorama as col
 import gmsh
 import math
 import meshio
+import numpy as np
 import os
 import pygmsh
+import shutil
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
+import function as fu
 import input_output as io
 
 
@@ -1786,15 +1788,27 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 '''
 generate a mesh given by a square with a polygon hole
 Input values: 
-    - 'polygon coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the polygon
-    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
-    - 'output_directory': the path where the mesh will be stored 
+    * Mandatory:
+        - 'polygon coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the polygon
+        - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+        - 'output_directory': the path where the mesh will be stored 
+    * Optional: 
+        - 'additional_metadata': some additional data that will be written appended to mesh_metadata.csv. It is None by default. 
 '''
 
-def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory):
+def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory,
+                                additional_metadata=None):
+    
+    # remove the output directory it it already exists, and create it from scratch
+    shutil.rmtree(output_directory, ignore_errors=True)
+    os.makedirs(output_directory)
 
     geometry = pygmsh.occ.Geometry()
     model = geometry.__enter__()
+
+    # reset gmsh state from any previous call, AFTER pygmsh has initialized it
+    gmsh.clear()
+    gmsh.model.add("model")  # need a model after clear()
 
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
@@ -1805,7 +1819,8 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
 
-
+    if additional_metadata is not None:
+        metadata.update(additional_metadata)
 
     # generate the mesh
 
@@ -2332,3 +2347,53 @@ def tag_physical_object(object, id, model,
     model.addPhysicalGroup(dim, object_to_tag, id)
     model.setPhysicalName(dim, id, label)
 
+
+'''
+given a field f (scalar, vector, or tensor) on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a field g (same type as f) on mesh B, set g equal to f
+Input values: 
+    - 'f': function on mesh A
+    - 'g': function on mesh B
+    - 'u': displacement field, defined on mesh A
+'''
+def transfer(f, g, u):
+
+    f_def = fu.deform_function(f, u)
+    f_def.set_allow_extrapolation(True)
+
+    Q_g = g.function_space()
+
+    g_value_shape = Q_g.ufl_element().value_shape()
+    g_value_size = int(np.prod(g_value_shape))
+
+    g_dim = Q_g.mesh().geometry().dim()
+
+    g_dof_coordinates_all = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
+
+    '''
+    subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    Run through g_dof_coordinates_all by taking every g_value_size entry in it, and writes the result into g_dof_coordinates
+    '''
+    g_dof_coordinates = g_dof_coordinates_all[::g_value_size]
+
+    # write the values of f into g
+    for i in range(len(g_dof_coordinates)):
+        # run through all unique DOF coordinates 
+       
+       for j in range(g_value_size):
+        # run through all components of the field f and write them into g
+
+        g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
+
+
+'''
+compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells
+Input values; 
+    - 'mesh': the mesh
+Return values; 
+    - 'result': the mesh quality
+'''
+def custom_mesh_quality(mesh):
+
+    result, _ = MeshQuality.radius_ratio_min_max(mesh)
+
+    return result

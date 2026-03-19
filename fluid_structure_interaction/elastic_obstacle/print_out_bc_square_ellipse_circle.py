@@ -6,6 +6,7 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import elasticity as ela
+import fluid as flu
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
@@ -49,7 +50,7 @@ writer.writeheader()
 def natural_bc_el():
     return ufl.as_tensor( \
         bgeo.sub_mesh_facet_normal[0][k] * ela.N(fsp.u_el_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] \
-        - ela.var_sigma_tensor(fsp.sigma_n_32_on_sub_mesh_0, fsp.v_n_1_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), \
+        - flu.sigma_ale(fsp.v_n_1_on_sub_mesh_0, fsp.sigma_n_32_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m]), \
         (i))
 
 # natural BC for the fluid problem (zero traction at ds_r of sub_mesh[1])

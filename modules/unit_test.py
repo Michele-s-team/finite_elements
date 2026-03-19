@@ -33,19 +33,33 @@ def test_generate_mesh_and_solve(commit_a,
     if (success[0]):
         # this method has been called with a success variable previously set to True -> The previous checks have been performed with no errors -> Proceed with this check
 
-        # checkout commit_a, generate the mesh and solve the problem
+        # 1 checkout commit_a, generate the mesh and solve the problem
         cmd.checkout(commit_a, success)
 
+        # 1.1 generate the mesh
+        # 1.1.1 copy mesh_parameters.csv
+        run_command(f'cp {mesh_path_a}/mesh_parameters.csv {mesh_solution_path_a}/../', success)
+        # 1.1.2 run mesh-generation code
         run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh_a}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
+
+        # 1.2 solve the variational problem
         run_command(f'cd {code_path_a}; rm -rf {problem_solution_path_a}; mkdir -p {problem_solution_path_a}; python3 solve.py {problem_a} {mesh_solution_path_a} {problem_solution_path_a}', success)
 
-        # checkout commit_b, generate the mesh and solve the problem
+
+        # 2 checkout commit_b, generate the mesh and solve the problem
         cmd.checkout(commit_b, success)
 
+        # 2.1 generate the mesh
+        # 2.1.1 copy mesh_parameters.csv
+        run_command(f'cp {mesh_path_b}/mesh_parameters.csv {mesh_solution_path_b}/../', success)
+        # 2.1.2 run mesh-generation code
         run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh_b}.py {mesh_parameters_path_b} {mesh_solution_path_b}', success)
+
+        # 2.2 solve the variational problem
         run_command(f'cd {code_path_b}; rm -rf {problem_solution_path_b}; mkdir -p {problem_solution_path_b}; python3 solve.py {problem_b} {mesh_solution_path_b} {problem_solution_path_b}', success)
 
-        # compare the mesh and problem solution for commit_a and commit_b
+
+        # 3 compare the mesh and problem solution for commit_a and commit_b
         output_mesh, error_mesh = run_command(f'cd {root_path}; ./compare-csv-files.sh {mesh_solution_path_a} {mesh_solution_path_b}', success)
         mesh_check = (((output_mesh.strip() == "")) and ((error_mesh.strip() == "")))
 

@@ -21,20 +21,15 @@ xdmffile_check.parameters.update({"functions_share_mesh": True, "rewrite_functio
 
 
 io.full_print(fsp.z_output, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'scalar')
+              solpath.nodal_values_path)
 io.full_print(fsp.omega_output, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'vector')
+              solpath.nodal_values_path)
 io.full_print(fsp.mu_output, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'scalar')
+              solpath.nodal_values_path)
 io.full_print(fsp.rho_output, 'rho', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'vector')
+              solpath.nodal_values_path)
 io.full_print(fsp.tau_output, 'tau', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              lmsh.mesh, 'scalar')
+              solpath.nodal_values_path)
 
 xdmffile_check.write(project(fsp.mu_output - fsp.mu_exact, fsp.Q_z), 0)
 xdmffile_check.write(project(sqrt((fsp.rho_output[i] - fsp.rho_exact[i]) * (fsp.rho_output[i] - fsp.rho_exact[i])), fsp.Q_z), 0)

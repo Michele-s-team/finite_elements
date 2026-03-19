@@ -25,6 +25,7 @@ import function_spaces as fsp
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 import print_out_solution as pr_sol
 
@@ -87,20 +88,9 @@ for n in range(rpam.parameters["num_steps"]):
 
     vp_mesh = importlib.reload(vp_mesh)
 
-    J_u = derivative(vp_mesh.F_u, fsp.u_n, fsp.J_u)
-    problem_u = NonlinearVariationalProblem(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs, J_u)
-    solver_u = NonlinearVariationalSolver(problem_u)
-
-    J_u_dot = derivative(vp_mesh.F_u_dot, fsp.u_dot_n, fsp.J_u_dot)
-    problem_u_dot = NonlinearVariationalProblem(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_dot, J_u_dot)
-    solver_u_dot = NonlinearVariationalSolver(problem_u_dot)
-
-    solver_u.parameters.update(params)
-    solver_u_dot.parameters.update(params)
-
     # solve for u and u_dot
-    solver_u.solve()
-    solver_u_dot.solve()
+    var_pr.solve_vp(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs, fsp.J_u, params)
+    var_pr.solve_vp(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_dot, fsp.J_u_dot, params)
 
     print('... done.', flush=True)
 
@@ -109,23 +99,14 @@ for n in range(rpam.parameters["num_steps"]):
 
     vp_fluid = importlib.reload(vp_fluid)
 
-    # step 3.1
-    J_fluid_1 = derivative(vp_fluid.F_v_, fsp.v_, fsp.J_v_)
-    problem_fluid_1 = NonlinearVariationalProblem(vp_fluid.F_v_, fsp.v_, vp_fluid.bc_v_, J_fluid_1)
-    solver_fluid_1 = NonlinearVariationalSolver(problem_fluid_1)
-    solver_fluid_1.solve()
+    # step 3.1: approximate velocity step
+    var_pr.solve_vp(vp_fluid.F_v_, fsp.v_, vp_fluid.bc_v_, fsp.J_v_)
 
-    # Step 3.2: surface_tension correction step
-    J_fluid_2 = derivative(vp_fluid.F_phi, fsp.phi, fsp.J_phi)
-    problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi, fsp.phi, vp_fluid.bc_phi, J_fluid_2)
-    solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
-    solver_fluid_2.solve()
+    # step 3.2: surface_tension correction step
+    var_pr.solve_vp(vp_fluid.F_phi, fsp.phi, vp_fluid.bc_phi, fsp.J_phi)
 
-    # step 3.3
-    J_fluid_3 = derivative(vp_fluid.F_v_n, fsp.v_n, fsp.J_v_n)
-    problem_fluid_3 = NonlinearVariationalProblem(vp_fluid.F_v_n, fsp.v_n, [], J_fluid_3)
-    solver_fluid_3 = NonlinearVariationalSolver(problem_fluid_3)
-    solver_fluid_3.solve()
+    # step 3.3: velocity step
+    var_pr.solve_vp(vp_fluid.F_v_n, fsp.v_n, vp_fluid.bc_v_n, fsp.J_v_n)
 
     print('... done.', flush=True)
 

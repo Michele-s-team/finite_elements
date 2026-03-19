@@ -6,8 +6,8 @@ import solution_paths as solpath
 
 
 def print_z_omega():
-    io.full_print(fsp.z, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, lmsh.mesh, 'scalar')
-    io.full_print(fsp.omega, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path, lmsh.mesh, 'vector')
+    io.full_print(fsp.z, 'z', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
+    io.full_print(fsp.omega, 'omega', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 
 def print_solution(t, step, dt):
@@ -19,14 +19,10 @@ def print_solution(t, step, dt):
 
     # print the snapshot in a separate file
     io.full_print(fsp.v_, 'v_bar_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.v_n, 'v_n_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'vector')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.sigma_n_12, 'sigma_n_12_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.phi, 'phi_' + str(step), \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, \
-                  lmsh.mesh, 'scalar')
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)

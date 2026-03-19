@@ -109,9 +109,7 @@ bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_s
 #BCs
 bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
 
-'''
-                                                             - ela.var_sigma_tensor(fsp.sigma_fl_n_32, fsp.v_fl_n_1, fsp.u_n_1, rpam.parameters['eta_fl'])[alpha, beta] * geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)[beta]
-                                                             '''
+
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
 
