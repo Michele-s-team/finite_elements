@@ -362,6 +362,7 @@ solver[0][1] = NonlinearVariationalSolver(problem[0][1])
 solver[0][1].solve()
 print('...done.')
 
+'''
 print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
 msh.transfer_circle_to_line(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 print(f'... done.')
@@ -399,3 +400,4 @@ print('...done.')
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
+'''
