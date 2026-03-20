@@ -9,6 +9,7 @@ import numpy as np
 import os
 import pygmsh
 import shutil
+import sys
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
@@ -2474,6 +2475,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
         if found == False:
 
             print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
+
+            sys.exit(1)
+
 
     print(f'... done.')
 
