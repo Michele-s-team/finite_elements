@@ -2298,6 +2298,15 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
     mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
 
+    Q_1d = f_1d.function_space()
+    value_shape_1d = Q_1d.ufl_element().value_shape()
+    value_size_1d = int(np.prod(value_shape_1d))
+    dim_1d = Q_1d.mesh().geometry().dim()
+
+    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
+    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
+
+
     # read the parametric form of the shape
     shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
 
@@ -2371,7 +2380,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
                     break
 
 
-            
+    # 
     print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
     import csv
@@ -2396,27 +2405,26 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
         csvfile.flush()
 
     csvfile.close()
-    '''
 
-    # collect unique vertex indices touched by facets tagged with shape_id
-    shape_vertex_ids = set()
+    # print(f'DOF coordinates 1d = {dof_coordinates_1d}')
+    # 
 
-    for facet in facets(mesh_0):
-        #run through all facets of mesh_0 
+    # write the values of f_2d into f_1d
+    print(f'Running over 1d mesh ...')
+    for i in range(len(dof_coordinates_1d)):
+        # run through all unique DOF coordinates 
 
-        if mf_mesh_0[facet] == rpam.parameters['shape_id']:
-            # the facet under consideration belongs to the shape
+        print(f'considering vertex {dof_coordinates_1d[i]}')
+       
+        for j in range(value_size_1d):
+        # run through all components of the field f and write them into g
 
-            for v in vertices(facet):
-                # run through the vertices of the facet under consideration, and ad them to shape_vertex_ids
+        # f_1d.vector()[value_size_1d * i + j] = np.atleast_1d(f_2d(arc_length(dof_coordinates_1d[i])))[j]
 
-                shape_vertex_ids.add(v.index())
+            pass
 
-    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
-    for i in range(len(permutation_dof)): 
-        f_line.vector()[i] = f_2d.vector()[permutation_dof[i]]
+    print(f'... done.')
 
-    '''
 
 
 
