@@ -2430,7 +2430,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
         found = False
 
-        for j in range(len(indices_vertices_on_shape)):
+        for j in range(len(indices_vertices_on_shape) - 1):
             # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
 
             if (cumulative_arc_length[j] <= dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] <= cumulative_arc_length[j+1]):
@@ -2459,7 +2459,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
                 found = True
 
             if found:
-                
+
                 break
 
         if found == False:
