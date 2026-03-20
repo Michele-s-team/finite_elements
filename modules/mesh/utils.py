@@ -2373,10 +2373,29 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
             
     print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
+
+    import csv
+    csvfile = open('check.csv', 'w', newline='')
+    fieldnames = [ \
+        ":0", \
+        ":1", \
+        ]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+
     coords = mesh_2d.coordinates()
     for idx in indices_vertices_on_shape:
         print(f'vertex {idx}: {coords[idx]}')
 
+        writer.writerows([{ \
+            fieldnames[0]: \
+                coords[idx][0], \
+            fieldnames[1]: \
+                coords[idx][1]
+        }])
+        csvfile.flush()
+
+    csvfile.close()
     '''
 
     # collect unique vertex indices touched by facets tagged with shape_id
