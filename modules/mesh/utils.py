@@ -2429,6 +2429,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
         found = False
         for j in range(len(indices_vertices_on_shape)):
+            # run through all vertices on shape
 
             if (cumulative_arc_length[j] <= dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] <= cumulative_arc_length[j+1]):
 
