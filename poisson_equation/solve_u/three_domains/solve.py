@@ -12,6 +12,7 @@ Examples:
 
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -21,6 +22,7 @@ sys.path.append(module_path)
 import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
+import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
@@ -350,7 +352,9 @@ The three variational problems (VPs) are solved as follows:
    2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
 '''
 
+msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
+'''
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -362,7 +366,7 @@ var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
 
 print('...done.')
 
-'''
+
 print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
 msh.transfer_circle_to_line(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 print(f'... done.')

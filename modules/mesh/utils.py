@@ -2289,9 +2289,110 @@ Input values:
     - 'f_line': the field on the line mesh
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
+
+    print(f'shape id = {shape_id}')
+
+    # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
+    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+
+    # read the parametric form of the shape
+    shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
+
+
+    # facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
+    facets_on_shape = []
+
+    for facet in facets(mesh_2d):
+        #run through all facets of mesh_0 
+
+        if mf_mesh_2d[facet] == shape_id:
+            # the facet under consideration belongs to the shape
+
+            facets_on_shape.append(facet)
+
+
+    # initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
+    coordinates_vertices_on_shape = [shape_parametric_form(0)]
+    indices_vertices_on_shape = []
+
+    # 1. Add the first vertex
+    found = False
+    for facet in facets_on_shape:
+        #run through all facets_on_shape
+
+        for v in vertices(facet):
+            # run through the vertices of 'facet'
+
+            if np.isclose(v.point().array()[:2], coordinates_vertices_on_shape).all():
+                # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+
+                indices_vertices_on_shape.append(v.index())
+                found = True
+
+                break
+            
+        if found:
+
+            break
+
+    print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
+
+    # 2. Add subsequent vertices
+    used_facet_indices = set()
+
+    while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
+        # stop when you addedd N vertices
+
+        for facet in facets_on_shape:
+            # run through all facets on shape
+
+            if facet.index() not in used_facet_indices:
+                # if the facet under consideration has not been used already, proceed
+
+                # build a list of vertices on the facet under consideration
+                v_list = list(vertices(facet))
+
+                # if the facet under consideration has one of its endpoints equal to the last added vertex to indices_vertices_on_shape, add it to indices_vertices_on_shape, update indices_vertices_on_shape and break
+                if (v_list[0].index() == indices_vertices_on_shape[-1]):
+                
+                    used_facet_indices.add(facet.index())
+                    indices_vertices_on_shape.append(v_list[1].index())
+
+                    break
+
+                if (v_list[1].index() == indices_vertices_on_shape[-1]):
+                
+                    used_facet_indices.add(facet.index())
+                    indices_vertices_on_shape.append(v_list[0].index())
+
+                    break
+
+
+            
+    print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
+    coords = mesh_2d.coordinates()
+    for idx in indices_vertices_on_shape:
+        print(f'vertex {idx}: {coords[idx]}')
 
     '''
+
+    # collect unique vertex indices touched by facets tagged with shape_id
+    shape_vertex_ids = set()
+
+    for facet in facets(mesh_0):
+        #run through all facets of mesh_0 
+
+        if mf_mesh_0[facet] == rpam.parameters['shape_id']:
+            # the facet under consideration belongs to the shape
+
+            for v in vertices(facet):
+                # run through the vertices of the facet under consideration, and ad them to shape_vertex_ids
+
+                shape_vertex_ids.add(v.index())
+
     # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
     for i in range(len(permutation_dof)): 
         f_line.vector()[i] = f_2d.vector()[permutation_dof[i]]
