@@ -792,3 +792,42 @@ def max_dictionary(dictionary):
             max = value
 
     return max
+
+
+'''
+read a function expression provided as a string and return a function, that can be evaluated, corresponding to it
+Input values:
+    - 'function_string': the string corresponding to the function, such as 'function_string' = [cos(t), 2*sin(t), ...]    
+Return values: 
+    - the corresponding function [2*np.cos(t), 2*np.sin(t), ... ]
+'''
+def read_function_expresssion(function_string):
+
+    # remove whitespaces
+    function_string = function_string.strip()
+
+    # expect format [expr_0, expr_1, ...]
+    if not (function_string.startswith('[') and function_string.endswith(']')):
+        raise ValueError(f"shape_parametric_form must be of the form [expr_0, expr_1, ...], got: {function_string!r}")
+    
+    function_string = function_string[1:-1]  # remove [ and ]
+
+
+    parts = [p.strip() for p in function_string.split(',')]
+    if any(p == '' for p in parts):
+        raise ValueError(f"shape_parametric_form could not be parsed: {function_string!r}")
+
+    # numpy_names are all the names defined in numpy, such as 'cos', 'log', ... 
+    numpy_names = dir(np)
+
+    # run through all numpy names, e.g., 'cos' and get the function associated with that numpy name, and store it into numpy_functions
+    numpy_functions = {k: getattr(np, k) for k in numpy_names if not k.startswith('_')}
+    numpy_functions['__builtins__'] = {}
+
+
+    # define a function from the string expr_string that associates with 'cos' in the string the function np.cos, etc...
+    def f(t):
+        env = {**numpy_functions, 't': np.asarray(t, dtype=float)}
+        return [eval(expr, env) for expr in parts]
+
+    return f

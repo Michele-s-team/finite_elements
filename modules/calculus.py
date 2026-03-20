@@ -824,3 +824,21 @@ def polygon_length(coordinates):
         result += np.linalg.norm(np.subtract(coordinates[i], coordinates[i-1]))
 
     return result
+
+
+'''
+check if a point lies in a box 
+Input values:
+    - 'point': the coordinates of the point [x, y, ...]
+    - 'box': [[x_min, x_max], [y_min, y_max], ...], 
+Return values: 
+    - True if 'point' is in the box, False otherwise
+'''
+def point_in_box(point, box):
+
+    result = True
+
+    for i in range(len(box)):
+        result = result and ((point[i] > box[i][0]) and (point[0] < box[i][1]))
+
+    return result

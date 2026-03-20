@@ -35,7 +35,25 @@ import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
 import parameters.read.mesh as rpam
 
+shape_parametric_form = io.read_function_expresssion(rpam.parameters['shape_parametric_form'])
 
+polygon_coordinates = []
+for i in range(rpam.parameters['N']):
+
+    coordinate = shape_parametric_form(i/rpam.parameters['N'])
+
+    if cal.point_in_box(coordinate, [[0, rpam.parameters['L']], [0, rpam.parameters['h']]]):
+
+        polygon_coordinates.append(shape_parametric_form(i/rpam.parameters['N']))
+
+    else: 
+
+        print(f"{col.Fore.RED}{'Error: the shape is not included into the square!'}{col.Style.RESET_ALL}")
+        sys.exit()
+
+
+
+print(f'polygon_coordinates = {polygon_coordinates}')
 
 # mesh A will be stored in output_directory_square_mesh
 output_directory_mesh_0 = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'mesh_0'))
@@ -46,10 +64,8 @@ os.mkdir(output_directory_mesh_1)
 
 mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
-# number of vertices of the polygon boundary
-N = len(rpam.parameters['polygon_coordinates'])
 # total length of the polygon boundary
-polygon_length = cal.polygon_length(rpam.parameters['polygon_coordinates'])
+polygon_length = cal.polygon_length(polygon_coordinates)
 
 #write metadata for ensemble mesh
 mesh_metadata = rpam.parameters.copy()
@@ -60,7 +76,7 @@ mesh_0_metadata['L'] = rpam.parameters['L']
 mesh_0_metadata['h'] = rpam.parameters['h']
 mesh_0_metadata['resolution'] = rpam.parameters['resolution']
 mesh_0_metadata['n_sub_meshes'] = rpam.parameters['n_sub_meshes_0']
-mesh_0_metadata['polygon_coordinates'] = rpam.parameters['polygon_coordinates']
+mesh_0_metadata['polygon_coordinates'] = polygon_coordinates
 
 mesh_0_metadata['sub_mesh_0_dim'] = rpam.parameters['sub_mesh_0_0_dim']
 mesh_0_metadata['sub_mesh_1_dim'] = rpam.parameters['sub_mesh_0_1_dim']
@@ -83,8 +99,8 @@ mesh_1_metadata = {}
 mesh_1_metadata['L'] = polygon_length
 mesh_1_metadata['x_l'] = 0
 mesh_1_metadata['x_r'] = mesh_1_metadata['L']
-mesh_1_metadata['N'] = N
-mesh_1_metadata['polygon_coordinates'] = rpam.parameters['polygon_coordinates']
+mesh_1_metadata['N'] = rpam.parameters['N']
+mesh_1_metadata['polygon_coordinates'] = polygon_coordinates
 
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_l_id']
@@ -121,18 +137,18 @@ gmsh.model.geo.synchronize()
 #2. add polygon
 
 
-polygon_points = [gmsh.model.geo.addPoint(rpam.parameters['polygon_coordinates'][0][0], rpam.parameters['polygon_coordinates'][0][1], 0)]
+polygon_points = [gmsh.model.geo.addPoint(polygon_coordinates[0][0], polygon_coordinates[0][1], 0)]
 gmsh.model.geo.synchronize()
 
 polygon_lines = []
 
-print(f'Added point with coordinates {rpam.parameters["polygon_coordinates"][-1]}')
+print(f'Added point with coordinates {polygon_coordinates[-1]}')
 
 print("Starting loop over polygon ... ")
 
-for i in range(1, N):
+for i in range(1, rpam.parameters['N']):
 
-    polygon_points.append(gmsh.model.geo.addPoint(rpam.parameters['polygon_coordinates'][i][0], rpam.parameters['polygon_coordinates'][i][1], 0))
+    polygon_points.append(gmsh.model.geo.addPoint(polygon_coordinates[i][0], polygon_coordinates[i][1], 0))
     gmsh.model.geo.synchronize()
 
     polygon_lines.append(gmsh.model.geo.addLine(polygon_points[-2], polygon_points[-1]))
@@ -169,7 +185,7 @@ msh.tag_physical_object(lines[2], rpam.parameters['line_t_id'], gmsh.model, 'lin
 msh.tag_physical_object(lines[3], rpam.parameters['line_l_id'], gmsh.model, 'line_l')
 
 #add polygon lines
-msh.tag_physical_object([lines[i] for i in range(4, 4 + N)], rpam.parameters['polygon_id'], gmsh.model, 'polygon_loop')
+msh.tag_physical_object([lines[i] for i in range(4, 4 + rpam.parameters['N'])], rpam.parameters['polygon_id'], gmsh.model, 'polygon_loop')
 
 
 
@@ -228,7 +244,7 @@ for facet in facets(mesh_0):
     #run through all facets of mesh_0 
 
     if mf_mesh_0[facet] == rpam.parameters['polygon_id']:
-        # the facet under consideration belongs to the circle
+        # the facet under consideration belongs to the polygon
 
         for v in vertices(facet):
             # run through the vertices of the facet under consideration, and ad them to polygon_vertex_ids
@@ -243,7 +259,7 @@ print(f'Number of vertices on polygon = {n_vertices_on_polygon}')
 
 
 # generate the line mesh corresponding to the polygon
-msh.genereate_line_mesh(0, polygon_length, N,
+msh.genereate_line_mesh(0, polygon_length, rpam.parameters['N'],
                         rpam.parameters['polygon_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
                         x_m=None,
                         vertex_m_id=None,
