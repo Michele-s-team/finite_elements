@@ -2386,10 +2386,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # 
     print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
-    p_0 = coordinates_mesh_2d[indices_vertices_on_shape[0]]
-    p_1 = coordinates_mesh_2d[indices_vertices_on_shape[1]]
 
-    print(f'p_0 = {p_0}, p_1 = {p_1}')
 
     import csv
     csvfile = open('check.csv', 'w', newline='')
