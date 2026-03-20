@@ -2425,14 +2425,26 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
     for i in range(len(dof_coordinates_1d)):
-        # run through all unique DOF coordinates 
+        # run through all unique DOF coordinates of 1d mesh
 
         found = False
         for j in range(len(indices_vertices_on_shape)):
-            # run through all vertices on shape
+            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
 
             if (cumulative_arc_length[j] <= dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] <= cumulative_arc_length[j+1]):
+                # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
 
+                p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
+                p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+
+                # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+                p = np.add(p_start, 
+                            np.multiply(
+                                    np.subtract(p_end, p_start), 
+                                    (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                            )
+                           )
+                    
                 print(f'vertex {dof_coordinates_1d[i]} lies between {i} and {i+1}')
                 found = True
 
