@@ -801,3 +801,26 @@ Return values:
 '''
 def ellipse_focal_points(a, b, c):
     return [np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0]), np.add(c, [np.sqrt(a ** 2 - b ** 2), 0])]
+
+'''
+compute the totatl length of a polygon
+Input values:
+    - 'coordinates': the coordinates of the polygon vertices
+            coordinates = [
+            [p0_x, p0_y, p0_z],
+            [p1_x, p1_y, p1_z],
+            ...
+            ]
+
+Return values: 
+    - 'result' :the total length of the polygon
+'''
+def polygon_length(coordinates):
+
+    result = np.linalg.norm(np.subtract(coordinates[-1], coordinates[0]))
+
+    for i in range(1, len(coordinates)):
+
+        result += np.linalg.norm(np.subtract(coordinates[i], coordinates[i-1]))
+
+    return result

@@ -14,7 +14,7 @@ and B has no sub_meshes
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import colorama as col
@@ -48,7 +48,8 @@ mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
 # number of vertices of the polygon boundary
 N = len(rpam.parameters['polygon_coordinates'])
-
+# total length of the polygon boundary
+polygon_length = cal.polygon_length(rpam.parameters['polygon_coordinates'])
 
 #write metadata for ensemble mesh
 mesh_metadata = rpam.parameters.copy()
@@ -75,14 +76,16 @@ mesh_0_metadata['polygon_id'] = rpam.parameters['polygon_id']
 
 mesh_0_metadata['file_format'] = 'xdmf'
 
-'''
+
 # write metadata for mesh 1
 mesh_1_metadata = {}
 
-mesh_1_metadata['L'] = N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0)
+mesh_1_metadata['L'] = polygon_length
 mesh_1_metadata['x_l'] = 0
 mesh_1_metadata['x_r'] = mesh_1_metadata['L']
 mesh_1_metadata['N'] = N
+mesh_1_metadata['polygon_coordinates'] = rpam.parameters['polygon_coordinates']
+
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_l_id']
 mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_r_id']
@@ -90,11 +93,9 @@ mesh_1_metadata['line_id'] = rpam.parameters['polygon_id']
 
 mesh_1_metadata['file_format'] = 'h5'
 
-
-print("output_directory = ", rarg.args.output_directory)
-
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
+
 
 # A) generate mesh A (square with circle)
 
@@ -117,48 +118,43 @@ square_loop = gmsh.model.geo.addCurveLoop([square_line_b, square_line_r, square_
 gmsh.model.geo.synchronize()
 
 
-#2. add circle
+#2. add polygon
 
 
-circle_coordinates = [np.array([rpam.parameters["c_r"][0] + rpam.parameters['r'], rpam.parameters['c_r'][1]])]
-circle_points = [gmsh.model.geo.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
+polygon_points = [gmsh.model.geo.addPoint(rpam.parameters['polygon_coordinates'][0][0], rpam.parameters['polygon_coordinates'][0][1], 0)]
 gmsh.model.geo.synchronize()
 
-circle_lines = []
+polygon_lines = []
 
-print(f'Added point with coordinates {circle_coordinates[-1]}')
+print(f'Added point with coordinates {rpam.parameters["polygon_coordinates"][-1]}')
 
+print("Starting loop over polygon ... ")
 
-print("Starting loop over circle ... ")
 for i in range(1, N):
 
-    circle_coordinates.append(
-        np.add(rpam.parameters['c_r'], cal.R(i * delta_theta).dot(np.subtract(circle_coordinates[0], rpam.parameters['c_r'])))
-        )
-
-    circle_points.append(gmsh.model.geo.addPoint(circle_coordinates[-1][0], circle_coordinates[-1][1], 0))
+    polygon_points.append(gmsh.model.geo.addPoint(rpam.parameters['polygon_coordinates'][i][0], rpam.parameters['polygon_coordinates'][i][1], 0))
     gmsh.model.geo.synchronize()
 
-    circle_lines.append(gmsh.model.geo.addLine(circle_points[-2], circle_points[-1]))
+    polygon_lines.append(gmsh.model.geo.addLine(polygon_points[-2], polygon_points[-1]))
     gmsh.model.geo.synchronize()
 
 print("... done.")
 
-circle_lines.append(gmsh.model.geo.addLine(circle_points[-1], circle_points[0]))
+polygon_lines.append(gmsh.model.geo.addLine(polygon_points[-1], polygon_points[0]))
 gmsh.model.geo.synchronize()
 
 
 
-circle_loop = gmsh.model.geo.addCurveLoop(circle_lines)
+polygon_loop = gmsh.model.geo.addCurveLoop(polygon_lines)
 gmsh.model.geo.synchronize()
 
-square_minus_circle_surface = gmsh.model.geo.addPlaneSurface([square_loop, circle_loop])
+square_minus_polygon_surface = gmsh.model.geo.addPlaneSurface([square_loop, polygon_loop])
 gmsh.model.geo.synchronize()
 
-gmsh.model.mesh.embed(1, circle_lines, 2, square_minus_circle_surface)
+gmsh.model.mesh.embed(1, polygon_lines, 2, square_minus_polygon_surface)
 gmsh.model.geo.synchronize()
 
-circle_surface = gmsh.model.geo.addPlaneSurface([circle_loop])
+polygon_surface = gmsh.model.geo.addPlaneSurface([polygon_loop])
 gmsh.model.geo.synchronize()
 
 
@@ -179,19 +175,19 @@ gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_t_id"], "square_li
 gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_l_id"])
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_l_id"], "square_line_l")
 
-#add circle lines
+#add polygon lines
 gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["polygon_id"])
-gmsh.model.setPhysicalName(1, rpam.parameters["polygon_id"], "circle_loop")
+gmsh.model.setPhysicalName(1, rpam.parameters["polygon_id"], "polygon_loop")
 
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
 gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_0_1_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_1_id"], "square_minus_circle_surface")
+gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_1_id"], "square_minus_polygon_surface")
 
 gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_0_id"])
-gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_0_id"], "circle_surface")
+gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_0_id"], "polygon_surface")
 
 
 
@@ -199,7 +195,7 @@ gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_0_id"], "
 # se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_0_1_id
 distance = gmsh.model.mesh.field.add("Distance")
 
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [circle_loop])
+gmsh.model.mesh.field.setNumbers(distance, "FacesList", [polygon_loop])
 
 threshold = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
@@ -224,7 +220,7 @@ msh.generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mes
 msh.generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), rpam.parameters["sub_mesh_0_1_id"])
 
 
-# print the boundary points of the boundary given by the circle
+# print the boundary points of the boundary given by the polygon
 msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
     output_directory_mesh_0, 
@@ -237,7 +233,7 @@ mesh_0 = msh.read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf
 mf_mesh_0 = msh.read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
 
 # collect unique vertex indices touched by facets tagged with polygon_id
-circle_vertex_ids = set()
+polygon_vertex_ids = set()
 
 for facet in facets(mesh_0):
     #run through all facets of mesh_0 
@@ -246,30 +242,19 @@ for facet in facets(mesh_0):
         # the facet under consideration belongs to the circle
 
         for v in vertices(facet):
-            # run through the vertices of the facet under consideration, and ad them to circel_vertex_ids
+            # run through the vertices of the facet under consideration, and ad them to polygon_vertex_ids
 
-            circle_vertex_ids.add(v.index())
+            polygon_vertex_ids.add(v.index())
 
-n_vertices_on_circle = len(circle_vertex_ids)
-print(f'Number of vertices on circle = {n_vertices_on_circle}')
-
-if n_vertices_on_circle != N:
-    # the meshing algorithm has added additional vertices on the circle, while I want the number of vertices on the circle to match N, and thus the number of vertices in the line mesh -> print an error message
-
-    print(f"{col.Fore.RED}{'Error: the number of vertices on circle does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
-
-    sys.exit()
-
-
-
-
+n_vertices_on_polygon = len(polygon_vertex_ids)
+print(f'Number of vertices on polygon = {n_vertices_on_polygon}')
 
 
 # B) mesh B (line)
 
 
-# generate the line mesh corresponding to the circle
-msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), N,
+# generate the line mesh corresponding to the polygon
+msh.genereate_line_mesh(0, polygon_length, N,
                         rpam.parameters['polygon_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
                         x_m=None,
                         vertex_m_id=None,
@@ -282,5 +267,3 @@ msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
 model.__exit__()
-
-'''
