@@ -2415,13 +2415,25 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # 
 
     l = 0.0
+    delta_l_min = np.inf
     cumulative_arc_length = [l]
+
     for i in range(1, len(indices_vertices_on_shape)):
 
-        l += np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+        delta_l =  np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+
+        if delta_l < delta_l_min:
+            delta_l_min = delta_l
+
+        l += delta_l
         cumulative_arc_length.append(l)
 
-    l += np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+    delta_l = np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+
+    if delta_l < delta_l_min:
+        delta_l_min = delta_l
+
+    l += delta_l
     cumulative_arc_length.append(l)
 
     # append last vertex index to account for periodicity of the shape
@@ -2438,7 +2450,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
         for j in range(len(indices_vertices_on_shape) - 1):
             # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
 
-            if (cumulative_arc_length[j] <= dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] <= cumulative_arc_length[j+1]):
+            if (cumulative_arc_length[j] - delta_l_min/2.0 < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + delta_l_min/2.0):
                 # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
 
                 
