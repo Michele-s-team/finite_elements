@@ -354,8 +354,15 @@ The three variational problems (VPs) are solved as follows:
 
 
 
+class u_0_1_expression(UserExpression):
+    def eval(self, values, x):
 
+        values[0] = x[0] + 2 * x[1]
 
+    def value_shape(self):
+        return (1,)
+
+fsp.u[0][1].interpolate(u_0_1_expression(element=fsp.Q[0][1].ufl_element()))
 
 msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,

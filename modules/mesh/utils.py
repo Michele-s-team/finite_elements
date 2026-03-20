@@ -2386,6 +2386,11 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # 
     print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
+    p_0 = coordinates_mesh_2d[indices_vertices_on_shape[0]]
+    p_1 = coordinates_mesh_2d[indices_vertices_on_shape[1]]
+
+    print(f'p_0 = {p_0}, p_1 = {p_1}')
+
     import csv
     csvfile = open('check.csv', 'w', newline='')
     fieldnames = [ \
@@ -2451,6 +2456,8 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
                            )
             
                 print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+                print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
+                print(f'  expected  = {p[0] + 2*p[1]}')
 
                 # set the DOF of f_1d according to the value of f_2d computed on p
                 for k in range(value_size_1d):
@@ -2459,6 +2466,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
                     f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
                     
                 found = True
+
+                print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
+
 
             if found:
 
