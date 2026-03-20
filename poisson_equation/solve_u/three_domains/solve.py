@@ -23,6 +23,7 @@ import input_output as io
 import mesh.utils as msh
 import solution_paths as solpath
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 rmsh = importlib.import_module(swi.rmsh)
 vp_mesh_0 = ['','']
@@ -354,12 +355,11 @@ J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
 print('Solving the problem in sub_mesh[0][1]...')
-vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
-J[0][1] = derivative(vp[0][1].F, fsp.u[0][1], fsp.J_u[0][1])
-problem[0][1] = NonlinearVariationalProblem(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, J[0][1])
-solver[0][1] = NonlinearVariationalSolver(problem[0][1])
 
-solver[0][1].solve()
+vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
+
+var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
+
 print('...done.')
 
 '''
