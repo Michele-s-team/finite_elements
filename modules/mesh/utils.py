@@ -2289,7 +2289,7 @@ Input values:
     - 'f_line': the field on the line mesh
 '''
 
-def transfer_shapr_to_line(f_2d, f_line, c_r, r, N):
+def transfer_square_to_line(f_2d, f_line, c_r, r, N):
 
     '''
     # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
