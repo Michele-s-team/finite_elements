@@ -2296,6 +2296,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
     parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+    coordinates_mesh_2d = mesh_2d.coordinates()
     mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
 
     Q_1d = f_1d.function_space()
@@ -2392,15 +2393,14 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
 
-    coords = mesh_2d.coordinates()
     for idx in indices_vertices_on_shape:
-        print(f'vertex {idx}: {coords[idx]}')
+        print(f'vertex {idx}: {coordinates_mesh_2d[idx]}')
 
         writer.writerows([{ \
             fieldnames[0]: \
-                coords[idx][0], \
+                coordinates_mesh_2d[idx][0], \
             fieldnames[1]: \
-                coords[idx][1]
+                coordinates_mesh_2d[idx][1]
         }])
         csvfile.flush()
 
@@ -2409,12 +2409,41 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # print(f'DOF coordinates 1d = {dof_coordinates_1d}')
     # 
 
+    l = 0.0
+    cumulative_arc_length = [l]
+    for i in range(1, len(indices_vertices_on_shape)):
+
+        l += np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+        cumulative_arc_length.append(l)
+
+    l += np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+    cumulative_arc_length.append(l)
+
+    print(f'cumulative arc length = {cumulative_arc_length}')
+
+
     # write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates 
 
-        print(f'considering vertex {dof_coordinates_1d[i]}')
+        found = False
+        for j in range(len(indices_vertices_on_shape)):
+
+            if (cumulative_arc_length[j] <= dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] <= cumulative_arc_length[j+1]):
+
+                print(f'vertex {dof_coordinates_1d[i]} lies between {i} and {i+1}')
+                found = True
+
+            if found:
+                break
+
+        if found == False:
+
+            print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
+        else: 
+            print(f"{col.Fore.GREEN}{'Mapping 1d -> 2d OK'}{col.Style.RESET_ALL}")
+
        
         for j in range(value_size_1d):
         # run through all components of the field f and write them into g
