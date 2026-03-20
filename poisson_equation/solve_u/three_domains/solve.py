@@ -4,8 +4,10 @@ The problem is first solved in sub_mesh[1], and the solution u[1] is then used t
 
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
+
 Examples:
      MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/three_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_disk_line $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/three_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line $MESH_PATH $SOLUTION_PATH
  '''
 
 from fenics import *
@@ -38,6 +40,9 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
+
+
+'''
 ####################
 # test transfer function
 
@@ -48,7 +53,6 @@ alpha = (np.pi - delta_theta)/2.0
 delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
 
 
-'''
 # 1 transfer scalar
 # 1.1 transfer from 2d to line 
 
@@ -286,9 +290,9 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a[j]-b[j])
 
 print(f'error = {error}')
+####################
 '''
 
-####################
 
 
 '''
