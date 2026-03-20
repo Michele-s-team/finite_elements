@@ -404,9 +404,6 @@ Return values:
 '''
 def surface_integral_polygon(f, polygon_coordinates):
 
-    import csv
-
-
     polygon = Polygon(polygon_coordinates)
 
     # triangulate the polygon by dividing it into triangles

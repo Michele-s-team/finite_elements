@@ -53,7 +53,6 @@ for i in range(rpam.parameters['N']):
 
 
 
-print(f'shape_coordinates = {shape_coordinates}')
 
 # mesh A will be stored in output_directory_square_mesh
 output_directory_mesh_0 = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'mesh_0'))

@@ -18,7 +18,7 @@ import mesh.test_function as tf
 import mesh.utils as msh
 import runtime_arguments as rarg
 
-rmsh = importlib.import_module('mesh.read.square_disk_line')
+rmsh = importlib.import_module('mesh.read.square_shape_line')
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 integral_exact = [''] * lmsh.parameters['n_meshes']
@@ -51,7 +51,8 @@ For example, the exact integral over the circular boundary of sub_mesh 1 of mesh
 #1.1 exact bulk integrals for mesh 0
 
 #1.1.1 exact bulk integrals for sub_mesh 0 of mesh 0 
-integral_exact[0][0]['dx'] = cal.surface_integral_polygon(tf.function_test_integrals, rmsh.mesh_parameters[0]['shape_coordinates'])
+print(f'***** shape_coordinates = {lmsh.mesh_parameters[0]["shape_coordinates"]}')
+integral_exact[0][0]['dx'] = cal.surface_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'])
 
 #1.1.2 exact bulk integrals for sub_mesh 1 of mesh 0 
 integral_exact[0][1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']]) - integral_exact[0][0]['dx']
@@ -60,7 +61,7 @@ integral_exact[0][1]['dx'] = cal.surface_integral_rectangle(tf.function_test_int
 #1.2 exact boundary integrals for mesh 0
 
 #1.2.1 exact boundary integrals for sub mesh 0 of mesh 0 
-integral_exact[0][0]['ds'] = cal.curve_integral_polygon(tf.function_test_integrals, rmsh.mesh_parameters[0]['shape_coordinates'])
+integral_exact[0][0]['ds'] = cal.curve_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'])
 
 #1.2.2 exact boundary integrals for sub mesh 1 of mesh 0 
 integral_exact[0][1]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], [0, lmsh.mesh_parameters[0]['h']])

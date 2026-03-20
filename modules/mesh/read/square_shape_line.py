@@ -116,7 +116,7 @@ ds_sub_mesh[0][1]['ds_tb'] = ds_sub_mesh[0][1]['ds_t'] + ds_sub_mesh[0][1]['ds_b
 ds_sub_mesh[0][1]['ds_lrtb'] = ds_sub_mesh[0][1]['ds_lr'] + ds_sub_mesh[0][1]['ds_tb']
 
 
-ds_sub_mesh[0][1]['ds'] = ds_sub_mesh[0][1]['ds_lrtb'] + ds_sub_mesh[0][1]['ds_shape]
+ds_sub_mesh[0][1]['ds'] = ds_sub_mesh[0][1]['ds_lrtb'] + ds_sub_mesh[0][1]['ds_shape']
 
 import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_shape_line')
