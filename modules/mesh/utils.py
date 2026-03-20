@@ -2419,21 +2419,24 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     l += np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
     cumulative_arc_length.append(l)
 
-    print(f'cumulative arc length = {cumulative_arc_length}')
-
+    # append last vertex index to account for periodicity of the shape
+    indices_vertices_on_shape.append(indices_vertices_on_shape[0])
 
     # write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
+
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
 
         found = False
+
         for j in range(len(indices_vertices_on_shape)):
             # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
 
             if (cumulative_arc_length[j] <= dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] <= cumulative_arc_length[j+1]):
                 # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
 
+                
                 p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
                 p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
 
@@ -2444,26 +2447,24 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
                                     (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
                             )
                            )
+            
+                print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+
+                # set the DOF of f_1d according to the value of f_2d computed on p
+                for k in range(value_size_1d):
+                    # run through all components of the field and write them into f_1d
+
+                    f_1d.vector()[value_size_1d * i + k] = np.atleast_1d(f_2d(p))[k]
                     
-                print(f'vertex {dof_coordinates_1d[i]} lies between {i} and {i+1}')
                 found = True
 
             if found:
+                
                 break
 
         if found == False:
 
             print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
-        else: 
-            print(f"{col.Fore.GREEN}{'Mapping 1d -> 2d OK'}{col.Style.RESET_ALL}")
-
-       
-        for j in range(value_size_1d):
-        # run through all components of the field f and write them into g
-
-        # f_1d.vector()[value_size_1d * i + j] = np.atleast_1d(f_2d(arc_length(dof_coordinates_1d[i])))[j]
-
-            pass
 
     print(f'... done.')
 
