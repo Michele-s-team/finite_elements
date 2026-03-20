@@ -2303,6 +2303,8 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     value_shape_1d = Q_1d.ufl_element().value_shape()
     value_size_1d = int(np.prod(value_shape_1d))
     dim_1d = Q_1d.mesh().geometry().dim()
+    dof_indices_1d = Q_1d.dofmap().dofs()
+
 
     coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
     dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
@@ -2454,7 +2456,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
                 for k in range(value_size_1d):
                     # run through all components of the field and write them into f_1d
 
-                    f_1d.vector()[value_size_1d * i + k] = np.atleast_1d(f_2d(p))[k]
+                    f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
                     
                 found = True
 
