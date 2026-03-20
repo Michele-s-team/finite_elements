@@ -14,7 +14,7 @@ and B has no sub_meshes
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon_line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import colorama as col
@@ -46,22 +46,8 @@ os.mkdir(output_directory_mesh_1)
 
 mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
-'''
-the number of segments of the polygon is chosen in such a way that the side of the circle polygon is (at the most) equal to the mesh resolution: 
-
-2 * r * sin(2 * pi / N / 2) = resolution
-pi / N = arcsin(resolution / (2 r))
-N = pi / arcsin(resolution / (2 r))
-
-thus I set
-'''
-
-N = int(np.ceil(np.pi / np.arcsin(rpam.parameters['resolution']/ (2.0 * rpam.parameters['r']))))
-
-print(f'N = {N}')
-
-# angular fraction corresponding to each segment of the circle
-delta_theta = 2 * np.pi / N
+# number of vertices of the polygon boundary
+N = len(rpam.parameters['polygon_coordinates'])
 
 
 #write metadata for ensemble mesh
@@ -71,11 +57,9 @@ mesh_metadata = rpam.parameters.copy()
 mesh_0_metadata = {}
 mesh_0_metadata['L'] = rpam.parameters['L']
 mesh_0_metadata['h'] = rpam.parameters['h']
-mesh_0_metadata['r'] = rpam.parameters['r']
-mesh_0_metadata['c_r'] = rpam.parameters['c_r']
-mesh_0_metadata['N'] = N
 mesh_0_metadata['resolution'] = rpam.parameters['resolution']
 mesh_0_metadata['n_sub_meshes'] = rpam.parameters['n_sub_meshes_0']
+mesh_0_metadata['polygon_coordinates'] = rpam.parameters['polygon_coordinates']
 
 mesh_0_metadata['sub_mesh_0_dim'] = rpam.parameters['sub_mesh_0_0_dim']
 mesh_0_metadata['sub_mesh_1_dim'] = rpam.parameters['sub_mesh_0_1_dim']
@@ -87,10 +71,11 @@ mesh_0_metadata['line_l_id'] = rpam.parameters['line_l_id']
 mesh_0_metadata['line_r_id'] = rpam.parameters['line_r_id']
 mesh_0_metadata['line_t_id'] = rpam.parameters['line_t_id']
 mesh_0_metadata['line_b_id'] = rpam.parameters['line_b_id']
-mesh_0_metadata['circle_id'] = rpam.parameters['circle_id']
+mesh_0_metadata['polygon_id'] = rpam.parameters['polygon_id']
 
 mesh_0_metadata['file_format'] = 'xdmf'
 
+'''
 # write metadata for mesh 1
 mesh_1_metadata = {}
 
@@ -101,7 +86,7 @@ mesh_1_metadata['N'] = N
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_l_id']
 mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_r_id']
-mesh_1_metadata['line_id'] = rpam.parameters['circle_id']
+mesh_1_metadata['line_id'] = rpam.parameters['polygon_id']
 
 mesh_1_metadata['file_format'] = 'h5'
 
@@ -195,8 +180,8 @@ gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_l_
 gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_l_id"], "square_line_l")
 
 #add circle lines
-gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["circle_id"])
-gmsh.model.setPhysicalName(1, rpam.parameters["circle_id"], "circle_loop")
+gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["polygon_id"])
+gmsh.model.setPhysicalName(1, rpam.parameters["polygon_id"], "circle_loop")
 
 
 # add 2-dimensional objects
@@ -243,21 +228,21 @@ msh.generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mes
 msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
     output_directory_mesh_0, 
-    [rpam.parameters['circle_id']],
-    os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(rpam.parameters['circle_id']) + '.csv'))
+    [rpam.parameters['polygon_id']],
+    os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(rpam.parameters['polygon_id']) + '.csv'))
 
 
 # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
 mesh_0 = msh.read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf'))
 mf_mesh_0 = msh.read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
 
-# collect unique vertex indices touched by facets tagged with circle_id
+# collect unique vertex indices touched by facets tagged with polygon_id
 circle_vertex_ids = set()
 
 for facet in facets(mesh_0):
     #run through all facets of mesh_0 
 
-    if mf_mesh_0[facet] == rpam.parameters['circle_id']:
+    if mf_mesh_0[facet] == rpam.parameters['polygon_id']:
         # the facet under consideration belongs to the circle
 
         for v in vertices(facet):
@@ -285,7 +270,7 @@ if n_vertices_on_circle != N:
 
 # generate the line mesh corresponding to the circle
 msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2.0), N,
-                        rpam.parameters['circle_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
+                        rpam.parameters['polygon_id'], rpam.parameters['vertex_l_id'], rpam.parameters['vertex_r_id'],
                         x_m=None,
                         vertex_m_id=None,
                         output_directory=output_directory_mesh_1, 
@@ -297,3 +282,5 @@ msh.genereate_line_mesh(0, N * rpam.parameters['r'] * 2.0 * np.sin(delta_theta/2
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
 model.__exit__()
+
+'''
