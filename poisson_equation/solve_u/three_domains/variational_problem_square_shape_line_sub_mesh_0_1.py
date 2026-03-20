@@ -63,7 +63,7 @@ bcs = [ \
     DirichletBC(fsp.Q[0][1], fsp.u_exact[0][1], rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
     DirichletBC(fsp.Q[0][1], fsp.u_exact[0][1], rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
     DirichletBC(fsp.Q[0][1], fsp.u_exact[0][1], rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
-    DirichletBC(fsp.Q[0][1], fsp.u_exact[0][1], rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+    DirichletBC(fsp.Q[0][1], fsp.u_exact[0][1], rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["shape_id"])
     ]
 
 # variational functional for sub_mesh[1]
