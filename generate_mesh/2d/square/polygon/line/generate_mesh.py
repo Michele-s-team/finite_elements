@@ -163,32 +163,21 @@ gmsh.model.geo.synchronize()
 lines = gmsh.model.getEntities(dim=1)
 
 # add square lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_b_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_b_id"], "square_line_b")
-
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_r_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_r_id"], "square_line_r")
-
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_t_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_t_id"], "square_line_t")
-
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_l_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_l_id"], "square_line_l")
+msh.tag_physical_object(lines[0], rpam.parameters['line_b_id'], gmsh.model, 'line_b')
+msh.tag_physical_object(lines[1], rpam.parameters['line_r_id'], gmsh.model, 'line_r')
+msh.tag_physical_object(lines[2], rpam.parameters['line_t_id'], gmsh.model, 'line_t')
+msh.tag_physical_object(lines[3], rpam.parameters['line_l_id'], gmsh.model, 'line_l')
 
 #add polygon lines
-gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(4, 4 + N)], rpam.parameters["polygon_id"])
-gmsh.model.setPhysicalName(1, rpam.parameters["polygon_id"], "polygon_loop")
+msh.tag_physical_object([lines[i] for i in range(4, 4 + N)], rpam.parameters['polygon_id'], gmsh.model, 'polygon_loop')
+
 
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_0_1_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_1_id"], "square_minus_polygon_surface")
-
-gmsh.model.addPhysicalGroup(surfaces[1][0], [surfaces[1][1]], rpam.parameters["sub_mesh_0_0_id"])
-gmsh.model.setPhysicalName(surfaces[1][0], rpam.parameters["sub_mesh_0_0_id"], "polygon_surface")
-
+msh.tag_physical_object(surfaces[0], rpam.parameters['sub_mesh_0_1_id'], gmsh.model, 'square_minus_polygon_surface')
+msh.tag_physical_object(surfaces[1], rpam.parameters['sub_mesh_0_0_id'], gmsh.model, 'polygon_surface')
 
 
 # set the resolution
