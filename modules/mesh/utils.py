@@ -2351,7 +2351,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
             break
 
-    print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
+    # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
 
     # 4.2 Add subsequent vertices by running on the edges in a sequential way
     used_facet_indices = set()
@@ -2385,7 +2385,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
 
     # 
-    print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
+    # print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
 
     '''
@@ -2478,9 +2478,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
                             )
                            )
             
-                print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
-                print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
-                print(f'  expected  = {p[0] + 2*p[1]}')
+                # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+                # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
+                # print(f'  expected  = {p[0] + 2*p[1]}')
 
                 # set the DOF of f_1d according to the value of f_2d computed on p
                 for k in range(value_size_1d):
@@ -2490,7 +2490,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
                     
                 found = True
 
-                print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
+                # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
 
 
             if found:
