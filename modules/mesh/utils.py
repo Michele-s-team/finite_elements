@@ -12,6 +12,7 @@ import shutil
 import sys
 
 import calculus as cal
+import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import function as fu
 import input_output as io
@@ -2290,7 +2291,8 @@ Input values:
     - 'f_line': the field on the line mesh
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
+                      epsilon = const.epsilon):
 
     print(f'shape id = {shape_id}')
 
@@ -2415,29 +2417,41 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     # 
 
     l = 0.0
-    delta_l_min = np.inf
     cumulative_arc_length = [l]
 
     for i in range(1, len(indices_vertices_on_shape)):
 
         delta_l =  np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
 
-        if delta_l < delta_l_min:
-            delta_l_min = delta_l
-
         l += delta_l
         cumulative_arc_length.append(l)
 
     delta_l = np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
-
-    if delta_l < delta_l_min:
-        delta_l_min = delta_l
 
     l += delta_l
     cumulative_arc_length.append(l)
 
     # append last vertex index to account for periodicity of the shape
     indices_vertices_on_shape.append(indices_vertices_on_shape[0])
+
+
+    # check that each 1d coordinates belongs to only one 1d segment in 2d
+    belongs = [0] * len(dof_coordinates_1d)
+    for i in range(len(dof_coordinates_1d)):
+        # run through all unique DOF coordinates of 1d mesh
+
+        for j in range(len(indices_vertices_on_shape) - 1):
+            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+
+            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
+
+                belongs[i] += 1
+
+    if (np.any(np.array(belongs) != 1)):
+
+        print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
+        sys.exit(1)
+
 
     # write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
@@ -2450,7 +2464,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
         for j in range(len(indices_vertices_on_shape) - 1):
             # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
 
-            if (cumulative_arc_length[j] - delta_l_min/2.0 < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + delta_l_min/2.0):
+            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
                 # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
 
                 
