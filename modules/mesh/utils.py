@@ -2294,9 +2294,7 @@ Input values:
 def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
                       epsilon = const.epsilon):
 
-    print(f'shape id = {shape_id}')
-
-    # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
+    # 1. initialize 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
     parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
     coordinates_mesh_2d = mesh_2d.coordinates()
@@ -2308,16 +2306,15 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     dim_1d = Q_1d.mesh().geometry().dim()
     dof_indices_1d = Q_1d.dofmap().dofs()
 
-
     coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
     dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
 
 
-    # read the parametric form of the shape
+    # 2. read the parametric form of the shape in the 2d mesh
     shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
 
 
-    # facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
+    # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
     facets_on_shape = []
 
     for facet in facets(mesh_2d):
@@ -2329,7 +2326,8 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
             facets_on_shape.append(facet)
 
 
-    # initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
+    # 4. compute the vertices of the 2d mesh that lie on the shape
+    # 4.1 initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
     coordinates_vertices_on_shape = [shape_parametric_form(0)]
     indices_vertices_on_shape = []
 
@@ -2355,7 +2353,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
     print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
 
-    # 2. Add subsequent vertices
+    # 4.2 Add subsequent vertices by running on the edges in a sequential way
     used_facet_indices = set()
 
     while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
@@ -2390,7 +2388,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
 
-
+    '''
     import csv
     csvfile = open('check.csv', 'w', newline='')
     fieldnames = [ \
@@ -2414,8 +2412,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     csvfile.close()
 
     # print(f'DOF coordinates 1d = {dof_coordinates_1d}')
-    # 
+    '''
 
+    # 5. compute the arc length along the shape in the 2d mesh
     l = 0.0
     cumulative_arc_length = [l]
 
@@ -2435,7 +2434,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     indices_vertices_on_shape.append(indices_vertices_on_shape[0])
 
 
-    # check that each 1d coordinates belongs to only one 1d segment in 2d
+    # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
     belongs = [0] * len(dof_coordinates_1d)
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
@@ -2453,7 +2452,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
         sys.exit(1)
 
 
-    # write the values of f_2d into f_1d
+    #7. write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
 
     for i in range(len(dof_coordinates_1d)):
