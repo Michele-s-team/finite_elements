@@ -2316,6 +2316,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     # 2. read the parametric form of the shape in the 2d mesh
     indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon)
 
+    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
+
+
     #7. write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
 
@@ -2376,20 +2379,19 @@ Input values:
     * Mandatory: 
         - 'mesh_2d_path': the path of the 2d mesh
         - 'shape_id': the ID withi which the shape is tagged in the 2d mesh
+
+Return values: 
+    - 'indices_vertices_on_shape': the indices (defined as in facet_vertex.index()) of the vertices on the 2d mesh, ordered in increasing order of the parameter t by which the shape is parameterized
+        indices_vertices_on_shape = [index_v_t_0, index_v_t_1, ... ]
+    - 'cumulative_arc_length': cumulative_arc_length[i] is the cumulated arc length from the beginning of the curve up to vertex with index indices_vertices_on_shape[i] included
 '''
-def shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon=const.epsilon):
+def shape_tool(mesh_2d_path, shape_id):
 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
     parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
     mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
     coordinates_mesh_2d = mesh_2d.coordinates()
 
-    value_shape_1d = Q_1d.ufl_element().value_shape()
-    value_size_1d = int(np.prod(value_shape_1d))
-    dim_1d = Q_1d.mesh().geometry().dim()
-
-    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
-    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
 
 
     # 2. read the parametric form of the shape in the 2d mesh
@@ -2492,7 +2494,26 @@ def shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon=const.epsilon):
     indices_vertices_on_shape.append(indices_vertices_on_shape[0])
 
 
-    # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
+    return indices_vertices_on_shape, cumulative_arc_length
+
+'''
+check the mapping of fields (scalars, vectors, tensors) between a shape in a 2d mesh and a 1d mesh. If there is no one-to-one correspondence between DOF coordinates on the 1d mesh and segemnts in the shape to which the DOF corresponds, throws an error and stops the program
+Input values: 
+    * Mandatory: 
+        - 'Q_1d': the function space on which the field on the 1d mesh is defined
+        - 'indices_vertices_on_shape', 'cumulative_arc_length': return values of shape_tool for the arc length on the shape
+
+'''
+def check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon=const.epsilon):
+
+    value_shape_1d = Q_1d.ufl_element().value_shape()
+    value_size_1d = int(np.prod(value_shape_1d))
+    dim_1d = Q_1d.mesh().geometry().dim()
+    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
+    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
+
+
+   # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
     belongs = [0] * len(dof_coordinates_1d)
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
@@ -2508,9 +2529,6 @@ def shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon=const.epsilon):
 
         print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
         sys.exit(1)
-
-
-    return indices_vertices_on_shape, cumulative_arc_length
 
 
 '''
@@ -2545,6 +2563,8 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
     dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
 
     indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon)
+
+    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
     #7. write the values of f_1d into f_2d
     print(f'Running over 2d mesh ...')
