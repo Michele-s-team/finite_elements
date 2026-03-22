@@ -52,9 +52,9 @@ params = {'nonlinear_solver': 'newton',
 import numpy as np
 
 # 1 transfer scalar
-# 1.1 transfer from 2d to line 
+# 1.1 transfer from 2d to 1d 
 
-class f_0_1_Expression(UserExpression):
+class f_0__Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1 + 3 * x[0] ** 2 + 2 * x[1] ** 2
@@ -62,7 +62,7 @@ class f_0_1_Expression(UserExpression):
     def value_shape(self):
         return (1,)
     
-fsp.f_sub_mesh_0_1.interpolate(f_0_1_Expression(element=fsp.Q[0][1].ufl_element()))
+fsp.f_sub_mesh_0_1.interpolate(f_0__Expression(element=fsp.Q[0][1].ufl_element()))
 
 msh.transfer_2d_to_1d(fsp.f_sub_mesh_0_1, fsp.f_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
@@ -113,8 +113,8 @@ print(f'error = {error}')
 
 # 2 transfer vector
 
-# 2.1 transfer from 2d mesh to line mesh 
-class v_sub_mesh_0_1_Expression(UserExpression):
+# 2.1 transfer from 2d mesh to 1d mesh 
+class v_sub_mesh_0__Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1 - x[0] + 2 * x[1] ** 2
@@ -123,12 +123,13 @@ class v_sub_mesh_0_1_Expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-fsp.v_sub_mesh_0_1.interpolate(v_sub_mesh_0_1_Expression(element=fsp.V_sub_mesh_0_1.ufl_element()))
+fsp.v_sub_mesh_0_0.interpolate(v_sub_mesh_0__Expression(element=fsp.V_sub_mesh_0_0.ufl_element()))
+fsp.v_sub_mesh_0_1.interpolate(v_sub_mesh_0__Expression(element=fsp.V_sub_mesh_0_1.ufl_element()))
 
 
-msh.transfer_2d_to_1d(fsp.v_sub_mesh_0_1, fsp.v_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_2d_to_1d(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
-io.full_print(fsp.v_sub_mesh_0_1, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 io.full_print(fsp.v_mesh_1, f'v_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)    
@@ -172,7 +173,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 print(f'error = {error}')
 
 
-
+'''
 # 3 transfer tensor
 
 # 3.1 transfer from 2d to line mesh
@@ -219,7 +220,7 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
 print(f'error = {error}')
 
-
+'''
 # 3.2 transfer from line mesh to 2d mesh 
 class t_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
