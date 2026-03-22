@@ -352,21 +352,24 @@ io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_
 
 print(f'... done.')
 
-'''
+
 
 
 
 
 # solve the variational problem on mesh[1]
 print('Solving the problem in mesh[1]...')
+
 # use the solution obtained for sub_mesh[0][1] in the variational problem on mesh[1]
 vp[1] = importlib.import_module(swi.vp_mesh_1)
-J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
-problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
-solver[1] = NonlinearVariationalSolver(problem[1])
 
-solver[1].solve()
+var_pr.solve_vp(vp[1].F, fsp.u[1], vp[1].bcs, fsp.J_u[1])
+
+io.full_print(fsp.u[1], f'u_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
 print('...done.')
+'''
 
 print(f'Transferring solution on mesh[1] to sub_mesh[0][0] ...')
 msh.transfer_line_to_circle(fsp.u[1], fsp.u_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
