@@ -2516,13 +2516,13 @@ def transfer_1d_to_2d(f_2d, f_1d, mesh_2d_path, shape_id,
     value_shape_1d = Q_1d.ufl_element().value_shape()
     value_size_1d = int(np.prod(value_shape_1d))
     dim_1d = Q_1d.mesh().geometry().dim()
-    dof_indices_1d = Q_1d.dofmap().dofs()
 
     Q_2d = f_2d.function_space()
     value_shape_2d = Q_2d.ufl_element().value_shape()
     value_size_2d = int(np.prod(value_shape_2d))
     dim_2d = Q_2d.mesh().geometry().dim()
     dof_indices_2d = Q_2d.dofmap().dofs()
+
 
     coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
     dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
@@ -2648,44 +2648,42 @@ def transfer_1d_to_2d(f_2d, f_1d, mesh_2d_path, shape_id,
         print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
         sys.exit(1)
 
-
-    # check
-
     #7. write the values of f_1d into f_2d
     print(f'Running over 2d mesh ...')
 
-    f_2d_vec = f_2d.vector()
 
     for i in range(len(dof_coordinates_2d)):
         # coordinates of the i-th node in the 2d mesh
+
         coordinate_2d = dof_coordinates_2d[i][:2]
 
         for j in range(len(indices_vertices_on_shape) - 1):
-            # segment j: from vertex j to vertex j+1 on the shape
-            A = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
-            B = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
 
-            AB = B - A
-            len_AB = np.linalg.norm(AB)
-            AP = coordinate_2d - A
+            # segment j: from vertex j to vertex j+1 on the shape
+            vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
+            vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
+
+            start_end = vertex_end - vertex_start
+            len_start_end = np.linalg.norm(start_end)
+            delta = coordinate_2d - vertex_start
 
             # local parameter t in [0, 1] along the segment
-            t = np.dot(AP, AB) / (len_AB ** 2)
+            t = np.dot(delta, start_end) / (len_start_end ** 2)
 
             # distance from pt to the closest point on the segment
-            dist = np.linalg.norm(AP - t * AB)
+            dist = np.linalg.norm(delta - t * start_end)
 
             if dist < epsilon and -epsilon < t < 1.0 + epsilon:
                 # DOF lies on segment j — compute its arc length
-                arc_length = cumulative_arc_length[j] + t * len_AB
+                arc_length = cumulative_arc_length[j] + t * len_start_end
 
                 # evaluate f_1d at that arc length (works for any value_size)
-                val = f_1d(arc_length)
+                value_1d = f_1d(arc_length)
 
                 # write into f_2d for each component
-                for comp in range(value_size_2d):
-                    dof_idx = dof_indices_2d[i * value_size_2d + comp]
-                    f_2d_vec[dof_idx] = val if value_size_2d == 1 else val[comp]
+                for component in range(value_size_2d):
+
+                    (f_2d.vector())[dof_indices_2d[i * value_size_2d + component]] = (np.atleast_1d(value_1d))[component]
 
                 break  # no need to check other segments in the j loop
 
