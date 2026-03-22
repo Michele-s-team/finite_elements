@@ -274,15 +274,13 @@ The three variational problems (VPs) are solved as follows:
     Substract to u[0][1] the constant assemble(fsp.u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_shape']) / assemble(Constant(1) * rmsh.ds_sub_mesh[0][1]['ds_shape']), in such a way that \int dS_shape u[0][1] = 0
 
 2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1
-    r theta = s
-    L1 = 2 pi r 
+ 
     Given that 
-        x[0] = cr[0] + r * cos(s/r), 
-        x[1] = cr[1] + r * sin(s/r), 
-        where s is the coordinate along mesh[1] and along the circle, we have 
+        x[0] =  f[s][0]
+        x[1] =  f[1][1]
+        where s is the coordinate along mesh[1] and along the shape, we have 
 
-        a) For test case 1: u_0_1_on_1(s)  = (r * cos(s/r)) + 2 * (r * sin(s/r))
-        b) For test case 2: u_0_1_on_1(s)  = 2 * (r * cos(s/r))**3 + (r * sin(s/r))**3
+        u_0_1_on_1(s)  = f(s)[0] + 2 * f(s)[1]
 
 3)  Solve on mesh[1] the VP
 
