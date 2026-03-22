@@ -2503,7 +2503,7 @@ Input values:
         - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
 '''
 
-def transfer_1d_to_2d(f_2d, f_1d, mesh_2d_path, shape_id,
+def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
                       epsilon = const.epsilon):
 
     # 1. initialize 

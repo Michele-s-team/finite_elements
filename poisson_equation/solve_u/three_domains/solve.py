@@ -91,10 +91,11 @@ fsp.f_mesh_1.interpolate(f_1_Expression(element=fsp.Q[1].ufl_element()))
 
 msh.transfer_1d_to_2d(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
-io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
 io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
+io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
     
 
 '''
