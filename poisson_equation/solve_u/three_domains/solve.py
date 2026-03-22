@@ -122,7 +122,7 @@ io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_fi
 io.full_print(fsp.v_mesh_1, f'v_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)    
 
- '''
+ 
 
 # 2.2 transfer from 1d  to 2d  
 class v_mesh_1_Expression(UserExpression):
@@ -143,7 +143,7 @@ io.full_print(fsp.v_mesh_1, f'v_1d', solpath.xdmf_file_path, solpath.h5_file_pat
 io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 
-    
+'''
 
 '''
 # 3 transfer tensor
