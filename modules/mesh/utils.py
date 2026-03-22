@@ -2339,7 +2339,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
         for v in vertices(facet):
             # run through the vertices of 'facet'
 
-            if np.isclose(v.point().array()[:2], coordinates_vertices_on_shape).all():
+            if np.isclose(v.point().array()[:2], coordinates_vertices_on_shape[0]).all():
                 # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
                 indices_vertices_on_shape.append(v.index())
