@@ -2370,7 +2370,13 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
     print(f'... done.')
 
-
+'''
+compute quantities related a to a shape (a one-dimensional manifold, a curve) embedded in a 2d mesh
+Input values: 
+    * Mandatory: 
+        - 'mesh_2d_path': the path of the 2d mesh
+        - 'shape_id': the ID withi which the shape is tagged in the 2d mesh
+'''
 def shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon=const.epsilon):
 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
