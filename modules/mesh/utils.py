@@ -2287,8 +2287,13 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
 Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 2d mesh, on the line mesh. 
 
 Input values: 
-    - 'f_2d': the field on the 2d mesh
-    - 'f_line': the field on the line mesh
+    * Mandatory:
+        - 'f_2d': the field on the 2d mesh
+        - 'f_1d': the field on the 2d mesh
+        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
+    * Optional:
+        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
 '''
 
 def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
