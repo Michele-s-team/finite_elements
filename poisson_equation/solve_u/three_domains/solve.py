@@ -264,7 +264,7 @@ The three variational problems (VPs) are solved as follows:
 
 
 
-'''
+
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -277,7 +277,7 @@ var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
 print('...done.')
 
 
-
+'''
 print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
 msh.transfer_circle_to_line(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 print(f'... done.')
