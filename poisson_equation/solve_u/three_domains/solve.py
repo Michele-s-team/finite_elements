@@ -72,10 +72,10 @@ io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_fi
 io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
     
+
 '''
 
-
-# 1.2 transfer from line  to 2d
+# 1.2 transfer from 1d  to 2d
 
 # here one needs to choose a periodic analytical expression, because f_mesh_1 is defined on a periodic space Q[1]
 class f_1_Expression(UserExpression):
@@ -97,7 +97,6 @@ io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_fi
                   solpath.nodal_values_path)
 
     
-
 '''
 # 2 transfer vector
 

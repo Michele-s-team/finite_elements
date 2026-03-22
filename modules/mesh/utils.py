@@ -2318,7 +2318,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     # 2. read the parametric form of the shape in the 2d mesh
     shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
 
-
+    '''
     # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
     facets_on_shape = []
 
@@ -2432,6 +2432,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
         print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
         sys.exit(1)
 
+    '''
+
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon)
 
     #7. write the values of f_2d into f_1d
     print(f'Running over 1d mesh ...')
@@ -2488,47 +2491,19 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     print(f'... done.')
 
 
+def shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon=const.epsilon):
 
-
-'''
-Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 1d mesh, on the 2d mesh. 
-
-Input values: 
-    * Mandatory:
-        - 'f_1d': the field on the 2d mesh
-        - 'f_2d': the field on the 2d mesh
-        - 'mesh_2d_path': the path where the 2d mesh is stored
-        - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
-    * Optional:
-        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
-'''
-
-def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
-                      epsilon = const.epsilon):
-
-    # 1. initialize 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
     parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
-    coordinates_mesh_2d = mesh_2d.coordinates()
     mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    coordinates_mesh_2d = mesh_2d.coordinates()
 
-    Q_1d = f_1d.function_space()
     value_shape_1d = Q_1d.ufl_element().value_shape()
     value_size_1d = int(np.prod(value_shape_1d))
     dim_1d = Q_1d.mesh().geometry().dim()
 
-    Q_2d = f_2d.function_space()
-    value_shape_2d = Q_2d.ufl_element().value_shape()
-    value_size_2d = int(np.prod(value_shape_2d))
-    dim_2d = Q_2d.mesh().geometry().dim()
-    dof_indices_2d = Q_2d.dofmap().dofs()
-
-
     coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
     dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
-
-    coordinates_all_2d = Q_2d.tabulate_dof_coordinates().reshape(-1, dim_2d)
-    dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
 
 
     # 2. read the parametric form of the shape in the 2d mesh
@@ -2647,6 +2622,171 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
 
         print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
         sys.exit(1)
+
+
+    return indices_vertices_on_shape, cumulative_arc_length
+
+
+'''
+Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 1d mesh, on the 2d mesh. 
+
+Input values: 
+    * Mandatory:
+        - 'f_1d': the field on the 2d mesh
+        - 'f_2d': the field on the 2d mesh
+        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
+    * Optional:
+        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
+'''
+
+def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
+                      epsilon = const.epsilon):
+
+    # 1. initialize 
+    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+    coordinates_mesh_2d = mesh_2d.coordinates()
+    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+
+    Q_1d = f_1d.function_space()
+    value_shape_1d = Q_1d.ufl_element().value_shape()
+    value_size_1d = int(np.prod(value_shape_1d))
+    dim_1d = Q_1d.mesh().geometry().dim()
+
+    Q_2d = f_2d.function_space()
+    value_shape_2d = Q_2d.ufl_element().value_shape()
+    value_size_2d = int(np.prod(value_shape_2d))
+    dim_2d = Q_2d.mesh().geometry().dim()
+    dof_indices_2d = Q_2d.dofmap().dofs()
+
+
+    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
+    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
+
+    coordinates_all_2d = Q_2d.tabulate_dof_coordinates().reshape(-1, dim_2d)
+    dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
+
+
+    # 2. read the parametric form of the shape in the 2d mesh
+    shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
+
+    '''
+    # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
+    facets_on_shape = []
+
+    for facet in facets(mesh_2d):
+        #run through all facets of mesh_0 
+
+        if mf_mesh_2d[facet] == shape_id:
+            # the facet under consideration belongs to the shape
+
+            facets_on_shape.append(facet)
+
+
+    # 4. compute the vertices of the 2d mesh that lie on the shape
+    # 4.1 initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
+    indices_vertices_on_shape = []
+
+    # 1. Add the first vertex
+    for facet in facets_on_shape:
+        #run through all facets_on_shape
+
+        # find the facet that contains the first two vertices of the parametric curve of shape
+
+        v_list = list(vertices(facet))
+    
+        if (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+            # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+
+            indices_vertices_on_shape.append(v_list[0].index())
+
+            break
+
+        if (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+            # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+
+            indices_vertices_on_shape.append(v_list[1].index())
+
+            break
+
+
+    # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
+
+    # 4.2 Add subsequent vertices by running on the edges in a sequential way
+    used_facet_indices = set()
+
+    while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
+        # stop when you addedd N vertices
+
+        for facet in facets_on_shape:
+            # run through all facets on shape
+
+            if facet.index() not in used_facet_indices:
+                # if the facet under consideration has not been used already, proceed
+
+                # build a list of vertices on the facet under consideration
+                v_list = list(vertices(facet))
+
+                # if the facet under consideration has one of its endpoints equal to the last added vertex to indices_vertices_on_shape, add it to indices_vertices_on_shape, update indices_vertices_on_shape and break
+                if (v_list[0].index() == indices_vertices_on_shape[-1]):
+                
+                    used_facet_indices.add(facet.index())
+                    indices_vertices_on_shape.append(v_list[1].index())
+
+                    break
+
+                if (v_list[1].index() == indices_vertices_on_shape[-1]):
+                
+                    used_facet_indices.add(facet.index())
+                    indices_vertices_on_shape.append(v_list[0].index())
+
+                    break
+
+
+    # 
+    # print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
+
+
+    # 5. compute the arc length along the shape in the 2d mesh
+    l = 0.0
+    cumulative_arc_length = [l]
+
+    for i in range(1, len(indices_vertices_on_shape)):
+
+        delta_l =  np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+
+        l += delta_l
+        cumulative_arc_length.append(l)
+
+    delta_l = np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+
+    l += delta_l
+    cumulative_arc_length.append(l)
+
+    # append last vertex index to account for periodicity of the shape
+    indices_vertices_on_shape.append(indices_vertices_on_shape[0])
+
+
+    # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
+    belongs = [0] * len(dof_coordinates_1d)
+    for i in range(len(dof_coordinates_1d)):
+        # run through all unique DOF coordinates of 1d mesh
+
+        for j in range(len(indices_vertices_on_shape) - 1):
+            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+
+            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
+
+                belongs[i] += 1
+
+    if (np.any(np.array(belongs) != 1)):
+
+        print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
+        sys.exit(1)
+    '''
+
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon)
 
     #7. write the values of f_1d into f_2d
     print(f'Running over 2d mesh ...')
