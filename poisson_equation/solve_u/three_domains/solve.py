@@ -52,7 +52,7 @@ params = {'nonlinear_solver': 'newton',
 import numpy as np
 
 # 1 transfer scalar
-'''
+
 # 1.1 transfer from 2d to 1d 
 
 class f_0__Expression(UserExpression):
@@ -73,8 +73,8 @@ io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_pat
                   solpath.nodal_values_path)
     
 
-'''
 
+'''
 # 1.2 transfer from 1d  to 2d
 
 # here one needs to choose a periodic analytical expression, because f_mesh_1 is defined on a periodic space Q[1]
@@ -97,7 +97,7 @@ io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_fi
                   solpath.nodal_values_path)
 
     
-'''
+
 # 2 transfer vector
 
 # 2.1 transfer from 2d mesh to 1d mesh 
