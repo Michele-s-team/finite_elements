@@ -73,9 +73,11 @@ mesh_metadata = rpam.parameters.copy()
 mesh_0_metadata = {}
 mesh_0_metadata['L'] = rpam.parameters['L']
 mesh_0_metadata['h'] = rpam.parameters['h']
+mesh_0_metadata['N'] = rpam.parameters['N']
 mesh_0_metadata['resolution'] = rpam.parameters['resolution']
 mesh_0_metadata['n_sub_meshes'] = rpam.parameters['n_sub_meshes_0']
 mesh_0_metadata['shape_coordinates'] = shape_coordinates
+mesh_0_metadata['shape_parametric_form'] = rpam.parameters['shape_parametric_form']
 
 mesh_0_metadata['sub_mesh_0_dim'] = rpam.parameters['sub_mesh_0_0_dim']
 mesh_0_metadata['sub_mesh_1_dim'] = rpam.parameters['sub_mesh_0_1_dim']
@@ -99,7 +101,6 @@ mesh_1_metadata['L'] = shape_length
 mesh_1_metadata['x_l'] = 0
 mesh_1_metadata['x_r'] = mesh_1_metadata['L']
 mesh_1_metadata['N'] = rpam.parameters['N']
-mesh_1_metadata['shape_coordinates'] = shape_coordinates
 
 
 mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_l_id']

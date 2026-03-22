@@ -12,6 +12,7 @@ Examples:
 
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -21,6 +22,7 @@ sys.path.append(module_path)
 import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
+import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
@@ -43,55 +45,35 @@ params = {'nonlinear_solver': 'newton',
 
 
 
-'''
+
 ####################
 # test transfer function
 
 import numpy as np
 
-delta_theta = 2 * np.pi / rmsh.lmsh.mesh_parameters[0]['N']
-alpha = (np.pi - delta_theta)/2.0
-delta_l = rmsh.lmsh.mesh_parameters[0]['r'] * 2.0 * np.sin(delta_theta/2.0)
-
-
 # 1 transfer scalar
-# 1.1 transfer from 2d to line 
+# 1.1 transfer from 2d to 1d 
 
-class f_0_1_Expression(UserExpression):
+class f_0__Expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 1 + 3 * x[0] ** 2 + 2 * x[1] ** 2
 
     def value_shape(self):
         return (1,)
     
-fsp.f_sub_mesh_0_1.interpolate(f_0_1_Expression(element=fsp.Q[0][1].ufl_element()))
+fsp.f_sub_mesh_0_1.interpolate(f_0__Expression(element=fsp.Q[0][1].ufl_element()))
 
-
-msh.transfer_circle_to_line(fsp.f_sub_mesh_0_1, fsp.f_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+msh.transfer_2d_to_1d(fsp.f_sub_mesh_0_1, fsp.f_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-
-io.full_print(fsp.f_mesh_1, f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
     
-print(f'Comparing the two functions on polygon vertices: ')
-error = 0
-
-for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f'u_line = {fsp.f_mesh_1(i*delta_l)}\t u_2d = {fsp.f_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
-
-    a = fsp.f_mesh_1(i*delta_l)
-    b = fsp.f_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
-
-    if abs(a-b) > error:
-            error = abs(a-b)
-
-print(f'error = {error}')
 
 
-
+'''
 # 1.2 transfer from line  to 2d
 
 # here one needs to choose a periodic analytical expression, because f_mesh_1 is defined on a periodic space Q[1]
@@ -127,12 +109,12 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
             error = abs(a-b)
 
 print(f'error = {error}')
-
+'''
 
 # 2 transfer vector
 
-# 2.1 transfer from 2d mesh to line mesh 
-class v_sub_mesh_0_1_Expression(UserExpression):
+# 2.1 transfer from 2d mesh to 1d mesh 
+class v_sub_mesh_0__Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1 - x[0] + 2 * x[1] ** 2
@@ -141,33 +123,19 @@ class v_sub_mesh_0_1_Expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-fsp.v_sub_mesh_0_1.interpolate(v_sub_mesh_0_1_Expression(element=fsp.V_sub_mesh_0_1.ufl_element()))
+fsp.v_sub_mesh_0_0.interpolate(v_sub_mesh_0__Expression(element=fsp.V_sub_mesh_0_0.ufl_element()))
+fsp.v_sub_mesh_0_1.interpolate(v_sub_mesh_0__Expression(element=fsp.V_sub_mesh_0_1.ufl_element()))
 
 
-msh.transfer_circle_to_line(fsp.v_sub_mesh_0_1, fsp.v_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+msh.transfer_2d_to_1d(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
-io.full_print(fsp.v_sub_mesh_0_1, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-
-io.full_print(fsp.v_mesh_1, f'v_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
-    
-print(f'Comparing the two functions on polygon vertices: ')
-error = 0
-
-for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f'v_line = {fsp.v_mesh_1(i*delta_l)}\t v_2d = {fsp.v_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
-
-    a = fsp.v_mesh_1(i*delta_l)
-    b = fsp.v_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
-
-    for j in range(len(a)):
-        if abs(a[j]-b[j]) > error:
-            error = abs(a[j]-b[j])
-
-print(f'error = {error}')
+io.full_print(fsp.v_mesh_1, f'v_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)    
 
 
+'''
 # 2.2 transfer from line mesh to 2d mesh 
 class v_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -205,12 +173,12 @@ for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 print(f'error = {error}')
 
 
-
+'''
 # 3 transfer tensor
 
 # 3.1 transfer from 2d to line mesh
 
-class t_sub_mesh_0_1_Expression(UserExpression):
+class t_sub_mesh_0__Expression(UserExpression):
     def init(self, **kwargs):
         super().init(**kwargs)
 
@@ -227,32 +195,17 @@ class t_sub_mesh_0_1_Expression(UserExpression):
         return (2, 3)
     
 
-fsp.t_sub_mesh_0_1.interpolate(t_sub_mesh_0_1_Expression(element=fsp.T_sub_mesh_0_1.ufl_element()))
+fsp.t_sub_mesh_0_1.interpolate(t_sub_mesh_0__Expression(element=fsp.T_sub_mesh_0_1.ufl_element()))
 
 
-msh.transfer_circle_to_line(fsp.t_sub_mesh_0_1, fsp.t_mesh_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+msh.transfer_2d_to_1d(fsp.t_sub_mesh_0_1, fsp.t_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
+io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)  
 
-io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
-    
-print(f'Comparing the two functions on polygon vertices: ')
-error = 0
-for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f't_line = {fsp.t_mesh_1(i*delta_l)}\t t_2d = {fsp.t_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
-
-    a = fsp.t_mesh_1(i*delta_l)
-    b = fsp.t_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
-
-    for j in range(len(a)):
-        if abs(a[j]-b[j]) > error:
-            error = abs(a[j]-b[j])
-
-print(f'error = {error}')
-
-
+'''
 # 3.2 transfer from line mesh to 2d mesh 
 class t_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -351,6 +304,23 @@ The three variational problems (VPs) are solved as follows:
 '''
 
 
+'''
+class u_0_1_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0] + 2 * x[1]
+
+    def value_shape(self):
+        return (1,)
+
+fsp.u[0][1].interpolate(u_0_1_expression(element=fsp.Q[0][1].ufl_element()))
+
+msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+'''
+
+'''
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -362,7 +332,8 @@ var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
 
 print('...done.')
 
-'''
+
+
 print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
 msh.transfer_circle_to_line(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
 print(f'... done.')

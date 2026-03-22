@@ -9,8 +9,10 @@ import numpy as np
 import os
 import pygmsh
 import shutil
+import sys
 
 import calculus as cal
+import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import function as fu
 import input_output as io
@@ -2282,23 +2284,231 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
     return permutation_dof
 
 '''
-Given 2d mesh given by a recangle with a circle in it, and a line mesh obtained by lying the circle on a line, this method transfers a field (scalar, vector or tensor) defined on the 2d mesh, on the  line mesh. 
+Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 2d mesh, on the line mesh. 
 
 Input values: 
     - 'f_2d': the field on the 2d mesh
     - 'f_line': the field on the line mesh
-    - 'c_r': [cr_x, cr_y], the coordinates of the circle (polygon) center 
-    - 'r': the circle radius
-    - 'N': the number of polygon segments 
 '''
 
-def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
+                      epsilon = const.epsilon):
 
-    permutation_dof = map_circle_line(f_2d, f_line, c_r, r, N)
+    # 1. initialize 
+    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+    coordinates_mesh_2d = mesh_2d.coordinates()
+    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
 
-    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
-    for i in range(len(permutation_dof)): 
-        f_line.vector()[i] = f_2d.vector()[permutation_dof[i]]
+    Q_1d = f_1d.function_space()
+    value_shape_1d = Q_1d.ufl_element().value_shape()
+    value_size_1d = int(np.prod(value_shape_1d))
+    dim_1d = Q_1d.mesh().geometry().dim()
+    dof_indices_1d = Q_1d.dofmap().dofs()
+
+    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
+    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
+
+
+    # 2. read the parametric form of the shape in the 2d mesh
+    shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
+
+
+    # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
+    facets_on_shape = []
+
+    for facet in facets(mesh_2d):
+        #run through all facets of mesh_0 
+
+        if mf_mesh_2d[facet] == shape_id:
+            # the facet under consideration belongs to the shape
+
+            facets_on_shape.append(facet)
+
+
+    # 4. compute the vertices of the 2d mesh that lie on the shape
+    # 4.1 initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
+    coordinates_vertices_on_shape = [shape_parametric_form(0)]
+    indices_vertices_on_shape = []
+
+    # 1. Add the first vertex
+    for facet in facets_on_shape:
+        #run through all facets_on_shape
+
+        # find the facet that contains the first two vertices of the parametric curve of shape
+
+        v_list = list(vertices(facet))
+    
+        if (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+            # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+
+            indices_vertices_on_shape.append(v_list[0].index())
+
+            break
+
+        if (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+            # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+
+            indices_vertices_on_shape.append(v_list[1].index())
+
+            break
+
+
+    # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
+
+    # 4.2 Add subsequent vertices by running on the edges in a sequential way
+    used_facet_indices = set()
+
+    while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
+        # stop when you addedd N vertices
+
+        for facet in facets_on_shape:
+            # run through all facets on shape
+
+            if facet.index() not in used_facet_indices:
+                # if the facet under consideration has not been used already, proceed
+
+                # build a list of vertices on the facet under consideration
+                v_list = list(vertices(facet))
+
+                # if the facet under consideration has one of its endpoints equal to the last added vertex to indices_vertices_on_shape, add it to indices_vertices_on_shape, update indices_vertices_on_shape and break
+                if (v_list[0].index() == indices_vertices_on_shape[-1]):
+                
+                    used_facet_indices.add(facet.index())
+                    indices_vertices_on_shape.append(v_list[1].index())
+
+                    break
+
+                if (v_list[1].index() == indices_vertices_on_shape[-1]):
+                
+                    used_facet_indices.add(facet.index())
+                    indices_vertices_on_shape.append(v_list[0].index())
+
+                    break
+
+
+    # 
+    # print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
+
+
+    '''
+    import csv
+    csvfile = open('check.csv', 'w', newline='')
+    fieldnames = [ \
+        ":0", \
+        ":1", \
+        ]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for idx in indices_vertices_on_shape:
+        print(f'vertex {idx}: {coordinates_mesh_2d[idx]}')
+
+        writer.writerows([{ \
+            fieldnames[0]: \
+                coordinates_mesh_2d[idx][0], \
+            fieldnames[1]: \
+                coordinates_mesh_2d[idx][1]
+        }])
+        csvfile.flush()
+
+    csvfile.close()
+
+    # print(f'DOF coordinates 1d = {dof_coordinates_1d}')
+    '''
+
+    # 5. compute the arc length along the shape in the 2d mesh
+    l = 0.0
+    cumulative_arc_length = [l]
+
+    for i in range(1, len(indices_vertices_on_shape)):
+
+        delta_l =  np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+
+        l += delta_l
+        cumulative_arc_length.append(l)
+
+    delta_l = np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+
+    l += delta_l
+    cumulative_arc_length.append(l)
+
+    # append last vertex index to account for periodicity of the shape
+    indices_vertices_on_shape.append(indices_vertices_on_shape[0])
+
+
+    # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
+    belongs = [0] * len(dof_coordinates_1d)
+    for i in range(len(dof_coordinates_1d)):
+        # run through all unique DOF coordinates of 1d mesh
+
+        for j in range(len(indices_vertices_on_shape) - 1):
+            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+
+            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
+
+                belongs[i] += 1
+
+    if (np.any(np.array(belongs) != 1)):
+
+        print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
+        sys.exit(1)
+
+
+    #7. write the values of f_2d into f_1d
+    print(f'Running over 1d mesh ...')
+
+    for i in range(len(dof_coordinates_1d)):
+        # run through all unique DOF coordinates of 1d mesh
+
+        found = False
+
+        for j in range(len(indices_vertices_on_shape) - 1):
+            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+
+            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
+                # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
+
+                
+                p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
+                p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+
+                # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+                p = np.add(p_start, 
+                            np.multiply(
+                                    np.subtract(p_end, p_start), 
+                                    (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                            )
+                           )
+            
+                # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+                # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
+                # print(f'  expected  = {p[0] + 2*p[1]}')
+
+                # set the DOF of f_1d according to the value of f_2d computed on p
+                for k in range(value_size_1d):
+                    # run through all components of the field and write them into f_1d
+
+                    f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
+                    
+                found = True
+
+                # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
+
+
+            if found:
+
+                break
+
+        if found == False:
+
+            print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
+
+            sys.exit(1)
+
+
+    print(f'... done.')
+
 
 
 
