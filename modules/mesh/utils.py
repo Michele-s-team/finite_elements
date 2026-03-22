@@ -2287,8 +2287,13 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
 Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 2d mesh, on the line mesh. 
 
 Input values: 
-    - 'f_2d': the field on the 2d mesh
-    - 'f_line': the field on the line mesh
+    * Mandatory:
+        - 'f_2d': the field on the 2d mesh
+        - 'f_1d': the field on the 2d mesh
+        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
+    * Optional:
+        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
 '''
 
 def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
@@ -2296,9 +2301,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
     # 1. initialize 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
-    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
     coordinates_mesh_2d = mesh_2d.coordinates()
-    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
 
     Q_1d = f_1d.function_space()
     value_shape_1d = Q_1d.ufl_element().value_shape()
@@ -2308,6 +2311,87 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
     coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
     dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
+
+
+    # 2. read the parametric form of the shape in the 2d mesh
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
+
+    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
+
+
+    #7. write the values of f_2d into f_1d
+    print(f'Running over 1d mesh ...')
+
+    for i in range(len(dof_coordinates_1d)):
+        # run through all unique DOF coordinates of 1d mesh
+
+        found = False
+
+        for j in range(len(indices_vertices_on_shape) - 1):
+            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+
+            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
+                # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
+
+                
+                p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
+                p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+
+                # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+                p = np.add(p_start, 
+                            np.multiply(
+                                    np.subtract(p_end, p_start), 
+                                    (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                            )
+                           )
+            
+                # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+                # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
+                # print(f'  expected  = {p[0] + 2*p[1]}')
+
+                # set the DOF of f_1d according to the value of f_2d computed on p
+                for k in range(value_size_1d):
+                    # run through all components of the field and write them into f_1d
+
+                    f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
+                    
+                found = True
+
+                # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
+
+
+            if found:
+
+                break
+
+        if found == False:
+
+            print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
+
+            sys.exit(1)
+
+
+    print(f'... done.')
+
+'''
+compute quantities related a to a shape (a one-dimensional manifold, a curve) embedded in a 2d mesh
+Input values: 
+    * Mandatory: 
+        - 'mesh_2d_path': the path of the 2d mesh
+        - 'shape_id': the ID withi which the shape is tagged in the 2d mesh
+
+Return values: 
+    - 'indices_vertices_on_shape': the indices (defined as in facet_vertex.index()) of the vertices on the 2d mesh, ordered in increasing order of the parameter t by which the shape is parameterized
+        indices_vertices_on_shape = [index_v_t_0, index_v_t_1, ... ]
+    - 'cumulative_arc_length': cumulative_arc_length[i] is the cumulated arc length from the beginning of the curve up to vertex with index indices_vertices_on_shape[i] included
+'''
+def shape_tool(mesh_2d_path, shape_id):
+
+    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    coordinates_mesh_2d = mesh_2d.coordinates()
+
 
 
     # 2. read the parametric form of the shape in the 2d mesh
@@ -2328,7 +2412,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
     # 4. compute the vertices of the 2d mesh that lie on the shape
     # 4.1 initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
-    coordinates_vertices_on_shape = [shape_parametric_form(0)]
     indices_vertices_on_shape = []
 
     # 1. Add the first vertex
@@ -2391,32 +2474,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     # print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
 
-    '''
-    import csv
-    csvfile = open('check.csv', 'w', newline='')
-    fieldnames = [ \
-        ":0", \
-        ":1", \
-        ]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-
-    for idx in indices_vertices_on_shape:
-        print(f'vertex {idx}: {coordinates_mesh_2d[idx]}')
-
-        writer.writerows([{ \
-            fieldnames[0]: \
-                coordinates_mesh_2d[idx][0], \
-            fieldnames[1]: \
-                coordinates_mesh_2d[idx][1]
-        }])
-        csvfile.flush()
-
-    csvfile.close()
-
-    # print(f'DOF coordinates 1d = {dof_coordinates_1d}')
-    '''
-
     # 5. compute the arc length along the shape in the 2d mesh
     l = 0.0
     cumulative_arc_length = [l]
@@ -2437,7 +2494,26 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     indices_vertices_on_shape.append(indices_vertices_on_shape[0])
 
 
-    # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
+    return indices_vertices_on_shape, cumulative_arc_length
+
+'''
+check the mapping of fields (scalars, vectors, tensors) between a shape in a 2d mesh and a 1d mesh. If there is no one-to-one correspondence between DOF coordinates on the 1d mesh and segemnts in the shape to which the DOF corresponds, throws an error and stops the program
+Input values: 
+    * Mandatory: 
+        - 'Q_1d': the function space on which the field on the 1d mesh is defined
+        - 'indices_vertices_on_shape', 'cumulative_arc_length': return values of shape_tool for the arc length on the shape
+
+'''
+def check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon=const.epsilon):
+
+    value_shape_1d = Q_1d.ufl_element().value_shape()
+    value_size_1d = int(np.prod(value_shape_1d))
+    dim_1d = Q_1d.mesh().geometry().dim()
+    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
+    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
+
+
+   # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
     belongs = [0] * len(dof_coordinates_1d)
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
@@ -2455,59 +2531,81 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
         sys.exit(1)
 
 
-    #7. write the values of f_2d into f_1d
-    print(f'Running over 1d mesh ...')
+'''
+Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 1d mesh, on the 2d mesh. 
 
-    for i in range(len(dof_coordinates_1d)):
-        # run through all unique DOF coordinates of 1d mesh
+Input values: 
+    * Mandatory:
+        - 'f_1d': the field on the 2d mesh
+        - 'f_2d': the field on the 2d mesh
+        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
+    * Optional:
+        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
+'''
 
-        found = False
+def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
+                      epsilon = const.epsilon):
+
+    # 1. initialize 
+    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    coordinates_mesh_2d = mesh_2d.coordinates()
+
+    Q_1d = f_1d.function_space()
+
+    Q_2d = f_2d.function_space()
+    value_shape_2d = Q_2d.ufl_element().value_shape()
+    value_size_2d = int(np.prod(value_shape_2d))
+    dim_2d = Q_2d.mesh().geometry().dim()
+    dof_indices_2d = Q_2d.dofmap().dofs()
+
+    coordinates_all_2d = Q_2d.tabulate_dof_coordinates().reshape(-1, dim_2d)
+    dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
+
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
+
+    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
+
+    #7. write the values of f_1d into f_2d
+    print(f'Running over 2d mesh ...')
+
+
+    for i in range(len(dof_coordinates_2d)):
+        # coordinates of the i-th node in the 2d mesh
+
+        coordinate_2d = dof_coordinates_2d[i][:2]
 
         for j in range(len(indices_vertices_on_shape) - 1):
-            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
 
-            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
-                # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
+            # segment j: from vertex j to vertex j+1 on the shape
+            vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
+            vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
 
-                
-                p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
-                p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+            start_end = vertex_end - vertex_start
+            len_start_end = np.linalg.norm(start_end)
+            delta = coordinate_2d - vertex_start
 
-                # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
-                p = np.add(p_start, 
-                            np.multiply(
-                                    np.subtract(p_end, p_start), 
-                                    (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
-                            )
-                           )
-            
-                # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
-                # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
-                # print(f'  expected  = {p[0] + 2*p[1]}')
+            # local parameter t in [0, 1] along the segment
+            t = np.dot(delta, start_end) / (len_start_end ** 2)
 
-                # set the DOF of f_1d according to the value of f_2d computed on p
-                for k in range(value_size_1d):
-                    # run through all components of the field and write them into f_1d
+            # distance from pt to the closest point on the segment
+            distance = np.linalg.norm(delta - t * start_end)
 
-                    f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
-                    
-                found = True
+            if distance < epsilon and -epsilon < t < 1.0 + epsilon:
+                # DOF lies on segment j — compute its arc length
 
-                # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
+                arc_length = cumulative_arc_length[j] + t * len_start_end
 
+                # write into f_2d for each component
+                for component in range(value_size_2d):
 
-            if found:
+                    (f_2d.vector())[dof_indices_2d[i * value_size_2d + component]] = (np.atleast_1d(f_1d(arc_length)))[component]
 
-                break
-
-        if found == False:
-
-            print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
-
-            sys.exit(1)
-
+                break  # no need to check other segments in the j loop
 
     print(f'... done.')
+
+
 
 
 
