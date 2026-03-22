@@ -2332,24 +2332,27 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     indices_vertices_on_shape = []
 
     # 1. Add the first vertex
-    found = False
     for facet in facets_on_shape:
         #run through all facets_on_shape
 
-        for v in vertices(facet):
-            # run through the vertices of 'facet'
+        # find the facet that contains the first two vertices of the parametric curve of shape
 
-            if np.isclose(v.point().array()[:2], coordinates_vertices_on_shape[0]).all():
-                # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+        v_list = list(vertices(facet))
+    
+        if (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+            # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
-                indices_vertices_on_shape.append(v.index())
-                found = True
-
-                break
-            
-        if found:
+            indices_vertices_on_shape.append(v_list[0].index())
 
             break
+
+        if (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+            # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
+
+            indices_vertices_on_shape.append(v_list[1].index())
+
+            break
+
 
     # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
 
