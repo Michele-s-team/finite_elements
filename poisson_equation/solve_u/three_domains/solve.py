@@ -145,10 +145,9 @@ io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_fi
 
 '''
 
-'''
 # 3 transfer tensor
-
-# 3.1 transfer from 2d to line mesh
+'''
+# 3.1 transfer from 2d to 1d
 
 class t_sub_mesh_0__Expression(UserExpression):
     def init(self, **kwargs):
@@ -175,9 +174,10 @@ msh.transfer_2d_to_1d(fsp.t_sub_mesh_0_1, fsp.t_mesh_1, os.path.join(rarg.args.i
 io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)  
+                  solpath.nodal_values_path) 
+
 '''
-'''
+
 # 3.2 transfer from line mesh to 2d mesh 
 class t_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -195,29 +195,14 @@ class t_mesh_1_Expression(UserExpression):
 fsp.t_mesh_1.interpolate(t_mesh_1_Expression(element=fsp.T_mesh_1.ufl_element()))
 
 
-msh.transfer_line_to_circle(fsp.t_mesh_1, fsp.t_sub_mesh_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+msh.transfer_1d_to_2d(fsp.t_mesh_1, fsp.t_sub_mesh_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
-io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-
-io.full_print(fsp.t_mesh_1, f't_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.t_sub_mesh_0_0, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-    
-print(f'Comparing the two functions on polygon vertices: ')
-error = 0
-for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f't_line = {fsp.t_mesh_1(i*delta_l)}\t t_2d = {fsp.t_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
-
-    a = fsp.t_mesh_1(i*delta_l)
-    b = fsp.t_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
-
-    for j in range(len(a)):
-        if abs(a[j]-b[j]) > error:
-            error = abs(a[j]-b[j])
-
-print(f'error = {error}')
 ####################
-'''
+
 
 
 
