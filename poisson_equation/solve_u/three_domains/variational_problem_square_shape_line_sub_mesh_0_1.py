@@ -15,7 +15,7 @@ i, j = ufl.indices(2)
 class u_exact_sub_mesh_0_1_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = x[0] + 2 * x[1] - 1.7602337357879514
+        values[0] = x[0] + 2 * x[1]
 
     def value_shape(self):
         return (1,)
@@ -55,5 +55,5 @@ bcs = [ \
 
 # variational functional for sub_mesh[1]
 F = (fsp.u[0][1].dx(i) * fsp.nu_u[0][1].dx(i) + fsp.f[0][1] * fsp.nu_u[0][1]) * rmsh.dx_sub_mesh[0][1] \
-    - bgeo.sub_mesh_facet_normal[0][1][i] * (fsp.u[0][1].dx(i)) * fsp.nu_u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_lrtb']
+    - bgeo.sub_mesh_facet_normal[0][1][i] * (fsp.u[0][1].dx(i)) * fsp.nu_u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_lrtb']\
     - bgeo.sub_mesh_facet_normal[0][1][i] * (fsp.u[0][1].dx(i)) * fsp.nu_u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_shape']
