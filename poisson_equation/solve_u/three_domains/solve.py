@@ -52,6 +52,7 @@ params = {'nonlinear_solver': 'newton',
 import numpy as np
 
 # 1 transfer scalar
+'''
 # 1.1 transfer from 2d to 1d 
 
 class f_0__Expression(UserExpression):
@@ -71,9 +72,9 @@ io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_fi
 io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
     
-
-
 '''
+
+
 # 1.2 transfer from line  to 2d
 
 # here one needs to choose a periodic analytical expression, because f_mesh_1 is defined on a periodic space Q[1]
@@ -88,29 +89,15 @@ class f_1_Expression(UserExpression):
 fsp.f_mesh_1.interpolate(f_1_Expression(element=fsp.Q[1].ufl_element()))
 
 
-msh.transfer_line_to_circle(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+msh.transfer_1d_to_2d(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-
-io.full_print(fsp.f_mesh_1, f'u_line', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
     
-print(f'Comparing the two functions on polygon vertices: ')
-error = 0
 
-for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-    print(f'u_line = {fsp.f_mesh_1(i*delta_l)}\t u_2d = {fsp.f_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))}')
-
-    a = fsp.f_mesh_1(i*delta_l)
-    b = fsp.f_sub_mesh_0_1(np.add(rmsh.lmsh.parameters["c_r"], [rmsh.lmsh.parameters["r"] * np.cos(i * delta_theta), rmsh.lmsh.parameters["r"] * np.sin(i * delta_theta)]))
-
-    if abs(a-b) > error:
-            error = abs(a-b)
-
-print(f'error = {error}')
 '''
-
 # 2 transfer vector
 
 # 2.1 transfer from 2d mesh to 1d mesh 
@@ -135,7 +122,7 @@ io.full_print(fsp.v_mesh_1, f'v_1d', solpath.xdmf_file_path, solpath.h5_file_pat
                   solpath.nodal_values_path)    
 
 
-'''
+
 # 2.2 transfer from line mesh to 2d mesh 
 class v_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -174,6 +161,7 @@ print(f'error = {error}')
 
 
 '''
+'''
 # 3 transfer tensor
 
 # 3.1 transfer from 2d to line mesh
@@ -204,7 +192,7 @@ io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_fi
                   solpath.nodal_values_path)
 io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)  
-
+'''
 '''
 # 3.2 transfer from line mesh to 2d mesh 
 class t_mesh_1_Expression(UserExpression):

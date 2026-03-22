@@ -2671,19 +2671,17 @@ def transfer_1d_to_2d(f_2d, f_1d, mesh_2d_path, shape_id,
             t = np.dot(delta, start_end) / (len_start_end ** 2)
 
             # distance from pt to the closest point on the segment
-            dist = np.linalg.norm(delta - t * start_end)
+            distance = np.linalg.norm(delta - t * start_end)
 
-            if dist < epsilon and -epsilon < t < 1.0 + epsilon:
+            if distance < epsilon and -epsilon < t < 1.0 + epsilon:
                 # DOF lies on segment j — compute its arc length
-                arc_length = cumulative_arc_length[j] + t * len_start_end
 
-                # evaluate f_1d at that arc length (works for any value_size)
-                value_1d = f_1d(arc_length)
+                arc_length = cumulative_arc_length[j] + t * len_start_end
 
                 # write into f_2d for each component
                 for component in range(value_size_2d):
 
-                    (f_2d.vector())[dof_indices_2d[i * value_size_2d + component]] = (np.atleast_1d(value_1d))[component]
+                    (f_2d.vector())[dof_indices_2d[i * value_size_2d + component]] = (np.atleast_1d(f_1d(arc_length)))[component]
 
                 break  # no need to check other segments in the j loop
 
