@@ -2314,7 +2314,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
 
     check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
@@ -2562,7 +2562,7 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
     coordinates_all_2d = Q_2d.tabulate_dof_coordinates().reshape(-1, dim_2d)
     dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
 
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id, Q_1d, epsilon)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
 
     check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
