@@ -2333,7 +2333,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
     # 4. compute the vertices of the 2d mesh that lie on the shape
     # 4.1 initialize vertices_on_shape = [[v_0_x, v_0_y]] with the coordinates of the vertex on shape corresponding to the curvilinear coordinate t = 0
-    coordinates_vertices_on_shape = [shape_parametric_form(0)]
     indices_vertices_on_shape = []
 
     # 1. Add the first vertex
@@ -2395,32 +2394,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     # 
     # print(f'finished, indices_vertices_on_shape = {indices_vertices_on_shape}')
 
-
-    '''
-    import csv
-    csvfile = open('check.csv', 'w', newline='')
-    fieldnames = [ \
-        ":0", \
-        ":1", \
-        ]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-
-    for idx in indices_vertices_on_shape:
-        print(f'vertex {idx}: {coordinates_mesh_2d[idx]}')
-
-        writer.writerows([{ \
-            fieldnames[0]: \
-                coordinates_mesh_2d[idx][0], \
-            fieldnames[1]: \
-                coordinates_mesh_2d[idx][1]
-        }])
-        csvfile.flush()
-
-    csvfile.close()
-
-    # print(f'DOF coordinates 1d = {dof_coordinates_1d}')
-    '''
 
     # 5. compute the arc length along the shape in the 2d mesh
     l = 0.0
