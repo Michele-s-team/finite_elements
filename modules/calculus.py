@@ -404,9 +404,6 @@ Return values:
 '''
 def surface_integral_polygon(f, polygon_coordinates):
 
-    import csv
-
-
     polygon = Polygon(polygon_coordinates)
 
     # triangulate the polygon by dividing it into triangles
@@ -801,3 +798,44 @@ Return values:
 '''
 def ellipse_focal_points(a, b, c):
     return [np.subtract(c, [np.sqrt(a ** 2 - b ** 2), 0]), np.add(c, [np.sqrt(a ** 2 - b ** 2), 0])]
+
+'''
+compute the totatl length of a polygon
+Input values:
+    - 'coordinates': the coordinates of the polygon vertices
+            coordinates = [
+            [p0_x, p0_y, p0_z],
+            [p1_x, p1_y, p1_z],
+            ...
+            ]
+
+Return values: 
+    - 'result' :the total length of the polygon
+'''
+def polygon_length(coordinates):
+
+    result = np.linalg.norm(np.subtract(coordinates[-1], coordinates[0]))
+
+    for i in range(1, len(coordinates)):
+
+        result += np.linalg.norm(np.subtract(coordinates[i], coordinates[i-1]))
+
+    return result
+
+
+'''
+check if a point lies in a box 
+Input values:
+    - 'point': the coordinates of the point [x, y, ...]
+    - 'box': [[x_min, x_max], [y_min, y_max], ...], 
+Return values: 
+    - True if 'point' is in the box, False otherwise
+'''
+def point_in_box(point, box):
+
+    result = True
+
+    for i in range(len(box)):
+        result = result and ((point[i] > box[i][0]) and (point[0] < box[i][1]))
+
+    return result

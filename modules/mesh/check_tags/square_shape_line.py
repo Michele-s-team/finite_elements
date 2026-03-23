@@ -18,7 +18,7 @@ import mesh.test_function as tf
 import mesh.utils as msh
 import runtime_arguments as rarg
 
-rmsh = importlib.import_module('mesh.read.square_disk_line')
+rmsh = importlib.import_module('mesh.read.square_shape_line')
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 integral_exact = [''] * lmsh.parameters['n_meshes']
@@ -36,7 +36,7 @@ integral_exact[0] = [
     ('ds_r', 0),\
     ('ds_t', 0),\
     ('ds_b', 0),\
-    ('ds_circle', 0)
+    ('ds_shape', 0)
     ])]
 
 integral_exact[1] = dict([ \
@@ -51,17 +51,17 @@ For example, the exact integral over the circular boundary of sub_mesh 1 of mesh
 #1.1 exact bulk integrals for mesh 0
 
 #1.1.1 exact bulk integrals for sub_mesh 0 of mesh 0 
-integral_exact[0][0]['dx'] = cal.surface_integral_disk(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
+print(f'***** shape_coordinates = {lmsh.mesh_parameters[0]["shape_coordinates"]}')
+integral_exact[0][0]['dx'] = cal.surface_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'])
 
 #1.1.2 exact bulk integrals for sub_mesh 1 of mesh 0 
-integral_exact[0][1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']]) - \
-                                        cal.surface_integral_disk(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
+integral_exact[0][1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], lmsh.mesh_parameters[0]['h']]) - integral_exact[0][0]['dx']
 
 
 #1.2 exact boundary integrals for mesh 0
 
 #1.2.1 exact boundary integrals for sub mesh 0 of mesh 0 
-integral_exact[0][0]['ds'] = cal.curve_integral_circle(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['c_r'])
+integral_exact[0][0]['ds'] = cal.curve_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'])
 
 #1.2.2 exact boundary integrals for sub mesh 1 of mesh 0 
 integral_exact[0][1]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], [0, lmsh.mesh_parameters[0]['h']])
@@ -100,7 +100,7 @@ test_mesh_integral_errors[f'\int_mesh_{0} f ds_l'] = msh.test_mesh_integral(inte
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_r'] = msh.test_mesh_integral(integral_exact[0][1]['ds_r'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_r'], f'\int_mesh_{0} f ds_r')
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_t'] = msh.test_mesh_integral(integral_exact[0][1]['ds_t'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_t'], f'\int_mesh_{0} f ds_t')
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_b'] = msh.test_mesh_integral(integral_exact[0][1]['ds_b'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_b'], f'\int_mesh_{0} f ds_b')
-test_mesh_integral_errors[f'\int_mesh_{0} f ds_circle'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_circle'], f'\int_mesh_{0} f ds_circle')
+test_mesh_integral_errors[f'\int_mesh_{0} f ds_shape'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_shape'], f'\int_mesh_{0} f ds_shape')
 
 # 1.2.2 boundary integrals on mesh 1
 test_mesh_integral_errors[f'\int_mesh_{1} f ds_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], tf.function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_l'], f'\int_mesh_{1} f ds_l')
@@ -132,7 +132,7 @@ test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_l'] = msh.test_mesh_integral(
 test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_r'] = msh.test_mesh_integral(integral_exact[0][1]['ds_r'], tf.function_test_integrals_fenics[0], rmsh.ds_sub_mesh[0][1]['ds_r'], f'\int_mesh_{0}_{1} f ds_r')
 test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_t'] = msh.test_mesh_integral(integral_exact[0][1]['ds_t'], tf.function_test_integrals_fenics[0], rmsh.ds_sub_mesh[0][1]['ds_t'], f'\int_mesh_{0}_{1} f ds_t')
 test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_b'] = msh.test_mesh_integral(integral_exact[0][1]['ds_b'], tf.function_test_integrals_fenics[0], rmsh.ds_sub_mesh[0][1]['ds_b'], f'\int_mesh_{0}_{1} f ds_b')
-test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_circle'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_sub_mesh[0][1]['ds_circle'], f'\int_mesh_{0}_{1} f ds_circle')
+test_mesh_integral_errors[f'\int_mesh_{0}_{1} f ds_shape'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_sub_mesh[0][1]['ds_shape'], f'\int_mesh_{0}_{1} f ds_shape')
 
 
 
