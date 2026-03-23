@@ -1,7 +1,6 @@
 import colorama as col
 import command as cmd
 from fenics import *
-import colorama as col
 import gmsh
 import math
 import meshio
@@ -1716,19 +1715,24 @@ Input values:
 Return values: 
     - 'mesh': the mesh
 '''
-def IntervalMeshCoordinates(coords):
+def IntervalMeshCoordinates(coordinates):
 
-    n_vertices = len(coords)
+    n_vertices = len(coordinates)
     n_cells = n_vertices - 1
-
+  
     mesh = Mesh()
     editor = MeshEditor()
+  
+    print(f'coordinates before: {coordinates}')
+    sorted_coordinates = coordinates.sort()
+    print(f'coordinates after: {sorted_coordinates}')
+        
     editor.open(mesh, 'interval', 1, 1)  # cell type, topological dim, geometric dim
 
     editor.init_vertices(n_vertices)
     editor.init_cells(n_cells)
 
-    for i, x in enumerate(coords):
+    for i, x in enumerate(sorted_coordinates):
         editor.add_vertex(i, np.array([x]))
 
     for i in range(n_cells):
