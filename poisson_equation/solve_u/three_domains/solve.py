@@ -369,22 +369,23 @@ io.full_print(fsp.u[1], f'u_1', solpath.xdmf_file_path, solpath.h5_file_path, so
                   solpath.nodal_values_path)
 
 print('...done.')
-'''
+
 
 print(f'Transferring solution on mesh[1] to sub_mesh[0][0] ...')
-msh.transfer_line_to_circle(fsp.u[1], fsp.u_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+
+msh.transfer_1d_to_2d(fsp.u[1], fsp.u_1_on_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+
 print(f'... done.')
 
 
-vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
-J[0][0] = derivative(vp[0][0].F, fsp.u[0][0], fsp.J_u[0][0])
-problem[0][0] = NonlinearVariationalProblem(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, J[0][0])
-solver[0][0] = NonlinearVariationalSolver(problem[0][0])
 
 print('Solving the problem in sub_mesh[0][0]...')
-solver[0][0].solve()
+
+vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
+
+var_pr.solve_vp(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, fsp.J_u[0][0])
+
 print('...done.')
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
-'''
