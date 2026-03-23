@@ -1774,6 +1774,9 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
        mesh = IntervalMesh(n_intervals, x_l, x_r)
 
     else:
+        # this method has been called with 'coordinates' != Null -> build a mesh with those specific coordinates
+        
+        mesh = IntervalMeshCoordinates(coordinates)
 
 
     # create a function for the lines
