@@ -30,10 +30,8 @@ print(f'\t\t\t|u[1](x_l) - u[1](x_r)| = {col.Fore.RED}{abs(fsp.u[1](rmsh.lmsh.me
 
 
 print(f"\t- Comparison with exact solution: ")
-for i in range(2):
-    print(f"\t\t<<(u[{0}][{i}] - u[{0}][{i}]_exact)^2>>_[Omega {0} {i}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0][i], fsp.u_exact[0][i], rmsh.dx_sub_mesh[0][i]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(u[{0}][{1}] - u[{0}][{1}]_exact)^2>>_[Omega {0} {1}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[0][1], fsp.u_exact[0][1], rmsh.dx_sub_mesh[0][1]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-print(f"\t\t<<(u[1] - u[1]_exact)^2>>_[Omega {1}] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u[1], fsp.u_exact[1], rmsh.dx_mesh[1]):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 import print_out_solution

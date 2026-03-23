@@ -327,35 +327,14 @@ vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
 
 var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
 
-io.full_print(fsp.u[0][1], f'u_0_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
-
-
 print('...done.')
-
-
-print(f'intergral before = {assemble(fsp.u[0][1] * rmsh.ds_sub_mesh[0][1]["ds_shape"])}')
-
-mean = assemble(fsp.u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_shape']) / assemble(Constant(1) * rmsh.ds_sub_mesh[0][1]['ds_shape'])
-fsp.u[0][1].assign(project(fsp.u[0][1] - mean, fsp.Q[0][1]))
-
-print(f'integral after = {assemble(fsp.u[0][1] * rmsh.ds_sub_mesh[0][1]["ds_shape"])}')
-# sign
 
 
 print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
 
 msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
-io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
-
 print(f'... done.')
-
-
-
-
-
 
 # solve the variational problem on mesh[1]
 print('Solving the problem in mesh[1]...')
@@ -364,9 +343,6 @@ print('Solving the problem in mesh[1]...')
 vp[1] = importlib.import_module(swi.vp_mesh_1)
 
 var_pr.solve_vp(vp[1].F, fsp.u[1], vp[1].bcs, fsp.J_u[1])
-
-io.full_print(fsp.u[1], f'u_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
 
 print('...done.')
 

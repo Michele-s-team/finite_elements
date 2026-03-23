@@ -57,3 +57,5 @@ bcs = [ \
 F = (fsp.u[0][1].dx(i) * fsp.nu_u[0][1].dx(i) + fsp.f[0][1] * fsp.nu_u[0][1]) * rmsh.dx_sub_mesh[0][1] \
     - bgeo.sub_mesh_facet_normal[0][1][i] * (fsp.u[0][1].dx(i)) * fsp.nu_u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_lrtb']\
     - bgeo.sub_mesh_facet_normal[0][1][i] * (fsp.u[0][1].dx(i)) * fsp.nu_u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_shape']
+
+
