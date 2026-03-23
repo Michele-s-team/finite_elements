@@ -1724,7 +1724,7 @@ def IntervalMeshCoordinates(coordinates):
     editor = MeshEditor()
   
     print(f'coordinates before: {coordinates}')
-    sorted_coordinates = coordinates.sort()
+    sorted_coordinates = sorted(coordinates)
     print(f'coordinates after: {sorted_coordinates}')
         
     editor.open(mesh, 'interval', 1, 1)  # cell type, topological dim, geometric dim
@@ -1775,7 +1775,7 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
     else:
         # this method has been called with 'coordinates' != Null -> build a mesh with those specific coordinates
-        
+
         mesh = IntervalMeshCoordinates(coordinates)
 
 
@@ -2202,12 +2202,16 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
     # generate the line mesh corresponding to the shape
-    genereate_line_mesh(0, shape_length, parameters['N'],
+
+    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
+
+    genereate_line_mesh(0, shape_length, None,
                             parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
                             x_m=None,
                             vertex_m_id=None,
                             output_directory=output_directory_mesh_1, 
-                            metadata=mesh_1_metadata)
+                            metadata=mesh_1_metadata,
+                            coordinates=cumulative_arc_length)
 
 
 
