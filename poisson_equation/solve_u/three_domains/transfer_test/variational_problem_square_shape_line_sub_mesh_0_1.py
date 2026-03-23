@@ -11,26 +11,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-
-class u_exact_sub_mesh_0_1_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = x[0]+2*x[1]
-
-    def value_shape(self):
-        return (1,)
-
-class laplacian_u_exact_sub_mesh_0_1_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-
-    def value_shape(self):
-        return (1,)
-
-
-fsp.u_exact[0][1].interpolate(u_exact_sub_mesh_0_1_expression(element=fsp.Q[0][1].ufl_element()))
-fsp.f[0][1].interpolate(laplacian_u_exact_sub_mesh_0_1_expression(element=fsp.Q[0][1].ufl_element()))
+fsp.u_exact[0][1].interpolate(fsp.u_exact_expression(element=fsp.Q[0][1].ufl_element()))
+fsp.f[0][1].interpolate(fsp.laplacian_u_exact_expression(element=fsp.Q[0][1].ufl_element()))
 
 # boundary conditions for sub_mesh[0][1]
 bcs = [ \

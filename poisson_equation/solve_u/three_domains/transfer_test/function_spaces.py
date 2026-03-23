@@ -1,5 +1,6 @@
 from fenics import *
 import importlib
+import numpy as np
 
 import mesh.load as lmsh
 import parameters.read.solution as rpam
@@ -49,13 +50,6 @@ for i in range(len(lmsh.mesh)):
         J_u.append(TrialFunction(Q[i]))
         u_exact.append(Function(Q[i]))
 
-        # Define post-processing (pp) variational problem
-        # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
-        hess_u.append(Function(T[i]))
-        nu_hess_u.append(TestFunction(T[i]))
-        hess_u_exact.append(Function(T[i]))
-        J_hess_u.append(TrialFunction(T[i]))
-
 
     else:
         # mesh i has sub-meshes -> run through all sub-meshes and define function spaces and fields
@@ -70,10 +64,6 @@ for i in range(len(lmsh.mesh)):
         grad_u.append([])
         J_u.append([])
         u_exact.append([])
-        hess_u.append([])
-        nu_hess_u.append([])
-        hess_u_exact.append([])
-        J_hess_u.append([])
 
         for j in range(len(lmsh.sub_meshes[i])):
 
@@ -89,12 +79,6 @@ for i in range(len(lmsh.mesh)):
             J_u[i].append(TrialFunction(Q[i][j]))
             u_exact[i].append(Function(Q[i][j]))
 
-            # Define post-processing (pp) variational problem
-            # hess_u is a tensor which is the Hessian matrix of u: hess_u[i, j] = \partial_i \partial_j u
-            hess_u[i].append(Function(T[i][j]))
-            nu_hess_u[i].append(TestFunction(T[i][j]))
-            hess_u_exact[i].append(Function(T[i][j]))
-            J_hess_u[i].append(TrialFunction(T[i][j]))
 
 
 u[0][1].set_allow_extrapolation(True)
@@ -105,12 +89,32 @@ u_0_1_on_1 = Function(Q[1])
 # a function which allows to bridge between mesh[1] and sub_mesh[0][0], and thus to impose the BCs for problem on sub_mesh[0][0] in terms of the solution of the problem on mesh[1]
 u_1_on_0_0 = Function(Q[0][0])
 
+# expressions for the exact solution 
+class u_exact_expression(UserExpression):
+    def eval(self, values, x):
 
+        values[0] = x[0]**2 + np.cos(2.0*np.pi*x[1]/rmsh.lmsh.parameters['h'])
+
+    
+    def value_shape(self):
+        return (1,)
+    
+class laplacian_u_exact_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 2 - (2.0*np.pi/rmsh.lmsh.parameters['h'])**2 * np.cos(2.0*np.pi*x[1]/rmsh.lmsh.parameters['h'])
+
+    def value_shape(self):
+        return (1,)
+
+
+'''
 #  for testing trasnfer - start
 # scalar
 Q_sub_mesh_0_0 = FunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'])
 Q_sub_mesh_0_1 = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'])
 Q_mesh_1 = FunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary)
+
 
 f_sub_mesh_0_0 = Function(Q_sub_mesh_0_0)
 f_sub_mesh_0_1 = Function(Q_sub_mesh_0_1)
@@ -135,7 +139,7 @@ T_mesh_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_spac
 t_sub_mesh_0_0 = Function(T_sub_mesh_0_0)
 t_sub_mesh_0_1 = Function(T_sub_mesh_0_1)
 t_mesh_1 = Function(T_mesh_1)
-
+'''
 #  for testing trasnfer - end
 
 
