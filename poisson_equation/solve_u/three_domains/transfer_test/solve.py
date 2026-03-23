@@ -274,32 +274,15 @@ J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [
 print('Solving the problem in sub_mesh[0][1]...')
 
 vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
-
 var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
 
 print('...done.')
 
 
-print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
+print(f'Transferring solution ...')
 
 msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
-
-print(f'... done.')
-
-# solve the variational problem on mesh[1]
-print('Solving the problem in mesh[1]...')
-
-# use the solution obtained for sub_mesh[0][1] in the variational problem on mesh[1]
-vp[1] = importlib.import_module(swi.vp_mesh_1)
-
-var_pr.solve_vp(vp[1].F, fsp.u[1], vp[1].bcs, fsp.J_u[1])
-
-print('...done.')
-
-
-print(f'Transferring solution on mesh[1] to sub_mesh[0][0] ...')
-
-msh.transfer_1d_to_2d(fsp.u[1], fsp.u_1_on_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_1d_to_2d(fsp.u_0_1_on_1, fsp.u_1_on_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
 print(f'... done.')
 
@@ -308,7 +291,6 @@ print(f'... done.')
 print('Solving the problem in sub_mesh[0][0]...')
 
 vp[0][0] = importlib.import_module(swi.vp_sub_mesh_0_0)
-
 var_pr.solve_vp(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, fsp.J_u[0][0])
 
 print('...done.')
