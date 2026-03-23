@@ -1709,6 +1709,34 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
     return sub_mesh, sub_mesh_boundary
 
+'''
+generate a line mesh whose vertex coordinates are provided as input
+Input values: 
+    - 'coordinates': the coordinates of the vertices [v_0_x, v_1_x, ...]
+Return values: 
+    - 'mesh': the mesh
+'''
+def IntervalMeshCoordinates(coords):
+
+    n_vertices = len(coords)
+    n_cells = n_vertices - 1
+
+    mesh = Mesh()
+    editor = MeshEditor()
+    editor.open(mesh, 'interval', 1, 1)  # cell type, topological dim, geometric dim
+
+    editor.init_vertices(n_vertices)
+    editor.init_cells(n_cells)
+
+    for i, x in enumerate(coords):
+        editor.add_vertex(i, np.array([x]))
+
+    for i in range(n_cells):
+        editor.add_cell(i, np.array([i, i + 1], dtype=np.uintp))
+
+    editor.close()
+
+    return mesh
 
 '''
 generate a one-dimensional mesh as an IntervalMesh given its geometric parameters and tags
@@ -1734,9 +1762,15 @@ Example of usage:
 '''
 
 
-def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, x_m=None, vertex_m_id=None, output_directory=None, metadata=None):
+def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, x_m=None, vertex_m_id=None, output_directory=None, metadata=None, coordinates=None):
     
-    mesh = IntervalMesh(n_intervals, x_l, x_r)
+    if coordinates == None:
+        # this method has been called with out coordinates, only with n_intervals -> generate a line mesh with uniform spacing 
+
+       mesh = IntervalMesh(n_intervals, x_l, x_r)
+
+    else:
+
 
     # create a function for the lines
     cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
