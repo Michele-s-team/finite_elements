@@ -12,7 +12,7 @@ A has 2 sub_meshes
 and B has no sub_meshes
 
 Run it with
-    python3 generate_mesh.py [path where to read parameters] [output directory]
+    python3 generate_mesh.py [path where to read rpam.parameters] [output directory]
 Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
@@ -34,4 +34,10 @@ import input_output as io
 import mesh.utils as msh
 import runtime_arguments_generate_mesh as rarg
 import parameters.read.mesh as rpam
+
+
+shape_parametric_form = io.read_function_expresssion(rpam.parameters['shape_parametric_form'])
+shape_coordinates = [shape_parametric_form(i/rpam.parameters['N']) for i in range(rpam.parameters['N'])]
+
+msh.generate_square_shape_line_mesh(shape_coordinates, rarg.args.parameter_directory, rarg.args.output_directory)
 

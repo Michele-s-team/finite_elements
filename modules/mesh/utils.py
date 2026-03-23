@@ -1943,30 +1943,18 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
-    shape_parametric_form = io.read_function_expresssion(parameters['shape_parametric_form'])
-
-    shape_coordinates = []
-    for i in range(parameters['N']):
-
-        coordinate = shape_parametric_form(i/parameters['N'])
-
-        if cal.point_in_box(coordinate, [[0, parameters['L']], [0, parameters['h']]]):
-
-            shape_coordinates.append(shape_parametric_form(i/parameters['N']))
-
-        else: 
+    for coordinate in shape_coordinates:
+        if cal.point_in_box(coordinate, [[0, parameters['L']], [0, parameters['h']]]) == False:
 
             print(f"{col.Fore.RED}{'Error: the shape is not included into the square!'}{col.Style.RESET_ALL}")
             sys.exit()
 
 
-
-
     # mesh A will be stored in output_directory_square_mesh
-    output_directory_mesh_0 = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'mesh_0'))
+    output_directory_mesh_0 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_0'))
     os.mkdir(output_directory_mesh_0)
     # mesh B will be stored in output_directory_line_mesh
-    output_directory_mesh_1 = io.add_trailing_slash(os.path.join(rarg.args.output_directory, 'mesh_1'))
+    output_directory_mesh_1 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_1'))
     os.mkdir(output_directory_mesh_1)
 
     mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
@@ -2183,7 +2171,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
     #print overall mesh metadata
-    io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
+    io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
     model.__exit__()
 
