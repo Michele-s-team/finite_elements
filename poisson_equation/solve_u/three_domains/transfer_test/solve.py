@@ -45,11 +45,11 @@ params = {'nonlinear_solver': 'newton',
 
 
 
+'''
 ####################
 # test transfer function
 
 import numpy as np
-'''
 # 1 transfer scalar
 
 # 1.1 transfer from 2d to 1d 
