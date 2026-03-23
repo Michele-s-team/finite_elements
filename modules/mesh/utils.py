@@ -1778,6 +1778,18 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         mesh = IntervalMeshCoordinates(coordinates)
 
+    '''
+    # check - start
+ 
+    # get all vertex coordinates, sorted by x position
+    coords = mesh.coordinates()  # shape (N, 1)
+    coords_sorted = coords[np.argsort(coords[:, 0])]
+
+    for i in range(len(coords_sorted)-1):
+        print(f'delta {i}: x = {np.linalg.norm(np.subtract(coords[i+1],coords[i]))}')
+
+    # check - end
+    '''
 
     # create a function for the lines
     cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
@@ -2213,7 +2225,15 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
                             metadata=mesh_1_metadata,
                             coordinates=cumulative_arc_length)
 
+    '''
+    # check - start
 
+    for i in range(len(shape_coordinates)-1):
+        print(f'{i} \t {np.linalg.norm(np.subtract(shape_coordinates[i+1], shape_coordinates[i]))}')
+    print(f'{len(shape_coordinates)-1} \t {np.linalg.norm(np.subtract(shape_coordinates[-1], shape_coordinates[0]))}')
+    
+    # check - end
+    '''
 
     #print overall mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
