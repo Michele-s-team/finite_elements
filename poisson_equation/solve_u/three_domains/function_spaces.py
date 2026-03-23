@@ -108,31 +108,25 @@ u_1_on_0_0 = Function(Q[0][0])
 
 #  for testing trasnfer - start
 # scalar
-Q_sub_mesh_0_0 = FunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'])
 Q_sub_mesh_0_1 = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'])
 Q_mesh_1 = FunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary)
 
-f_sub_mesh_0_0 = Function(Q_sub_mesh_0_0)
 f_sub_mesh_0_1 = Function(Q_sub_mesh_0_1)
 f_mesh_1 = Function(Q_mesh_1)
 
 
 # vector
-V_sub_mesh_0_0 = VectorFunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'])
 V_sub_mesh_0_1 = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'])
 V_mesh_1 = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, dim=2)
 
-v_sub_mesh_0_0 = Function(V_sub_mesh_0_0)
 v_sub_mesh_0_1 = Function(V_sub_mesh_0_1)
 v_mesh_1 = Function(V_mesh_1)
 
 
 # tensor
-T_sub_mesh_0_0 = TensorFunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'], shape=(2,3))
 T_sub_mesh_0_1 = TensorFunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['function_space_degree'], shape=(2,3))
 T_mesh_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary, shape=(2,3))
 
-t_sub_mesh_0_0 = Function(T_sub_mesh_0_0)
 t_sub_mesh_0_1 = Function(T_sub_mesh_0_1)
 t_mesh_1 = Function(T_mesh_1)
 
