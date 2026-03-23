@@ -2883,6 +2883,28 @@ def transfer_line_to_circle(f_line, f_2d, c_r, r, N):
     for i in range(len(permutation_dof)): 
          f_2d.vector()[permutation_dof[i]] = f_line.vector()[i]
 
+
+
+'''
+Given 2d mesh given by a recangle with a circle in it, and a line mesh obtained by lying the circle on a line, this method transfers a field (scalar, vector or tensor) defined on the 2d mesh, on the  line mesh. 
+
+Input values: 
+    - 'f_2d': the field on the 2d mesh
+    - 'f_line': the field on the line mesh
+    - 'c_r': [cr_x, cr_y], the coordinates of the circle (polygon) center 
+    - 'r': the circle radius
+    - 'N': the number of polygon segments 
+'''
+
+def transfer_circle_to_line(f_2d, f_line, c_r, r, N):
+
+    permutation_dof = map_circle_line(f_2d, f_line, c_r, r, N)
+
+    # set the DOFs on the line in such a way that they are equal to the corresponding DOFs on the 2d mesh
+    for i in range(len(permutation_dof)): 
+        f_line.vector()[i] = f_2d.vector()[permutation_dof[i]]
+
+
 '''
 tag a physical object, or a list of objects, in a mesh
 Input values: 
