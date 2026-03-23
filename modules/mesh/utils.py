@@ -1920,6 +1920,261 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     model.__exit__()
 
 
+'''
+generate a mesh given by a square with a shape inside, where the shape is meshed inside. The shape is laid flat to obtain a 1d mesh, which is also generated. 
+Input values: 
+    - 'shape coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the shape
+    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+    - 'output_directory': the path where the mesh will be stored 
+'''
+def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory):
+
+    # remove the output directory it it already exists, and create it from scratch
+    shutil.rmtree(output_directory, ignore_errors=True)
+    os.makedirs(output_directory)
+
+    geometry = pygmsh.occ.Geometry()
+    model = geometry.__enter__()
+
+    # reset gmsh state from any previous call, AFTER pygmsh has initialized it
+    gmsh.clear()
+    gmsh.model.add("model")  # need a model after clear()
+
+    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
+    parameters = io.read_parameters_from_csv_file(parameters_file_path)
+
+    for coordinate in shape_coordinates:
+        if cal.point_in_box(coordinate, [[0, parameters['L']], [0, parameters['h']]]) == False:
+
+            print(f"{col.Fore.RED}{'Error: the shape is not included into the square!'}{col.Style.RESET_ALL}")
+            sys.exit()
+
+
+    # mesh A will be stored in output_directory_square_mesh
+    output_directory_mesh_0 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_0'))
+    os.mkdir(output_directory_mesh_0)
+    # mesh B will be stored in output_directory_line_mesh
+    output_directory_mesh_1 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_1'))
+    os.mkdir(output_directory_mesh_1)
+
+    mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
+
+    # total length of the shape boundary
+    shape_length = cal.polygon_length(shape_coordinates)
+
+    #write metadata for ensemble mesh
+    mesh_metadata = parameters.copy()
+
+    # write metadata for mesh 0
+    mesh_0_metadata = {}
+    mesh_0_metadata['L'] = parameters['L']
+    mesh_0_metadata['h'] = parameters['h']
+    mesh_0_metadata['N'] = parameters['N']
+    mesh_0_metadata['resolution'] = parameters['resolution']
+    mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
+    mesh_0_metadata['shape_coordinates'] = shape_coordinates
+    mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
+
+    mesh_0_metadata['sub_mesh_0_dim'] = parameters['sub_mesh_0_0_dim']
+    mesh_0_metadata['sub_mesh_1_dim'] = parameters['sub_mesh_0_1_dim']
+
+    mesh_0_metadata['sub_mesh_0_id'] = parameters['sub_mesh_0_0_id']
+    mesh_0_metadata['sub_mesh_1_id'] = parameters['sub_mesh_0_1_id']
+
+    mesh_0_metadata['line_l_id'] = parameters['line_l_id']
+    mesh_0_metadata['line_r_id'] = parameters['line_r_id']
+    mesh_0_metadata['line_t_id'] = parameters['line_t_id']
+    mesh_0_metadata['line_b_id'] = parameters['line_b_id']
+    mesh_0_metadata['shape_id'] = parameters['shape_id']
+
+    mesh_0_metadata['file_format'] = 'xdmf'
+
+
+    # write metadata for mesh 1
+    mesh_1_metadata = {}
+
+    mesh_1_metadata['L'] = shape_length
+    mesh_1_metadata['x_l'] = 0
+    mesh_1_metadata['x_r'] = mesh_1_metadata['L']
+    mesh_1_metadata['N'] = parameters['N']
+
+
+    mesh_1_metadata['vertex_l_id'] = parameters['vertex_l_id']
+    mesh_1_metadata['vertex_r_id'] = parameters['vertex_r_id']
+    mesh_1_metadata['line_id'] = parameters['shape_id']
+
+    mesh_1_metadata['file_format'] = 'h5'
+
+
+
+
+    # A) generate mesh A (square with circle)
+
+    #1. add  square
+
+
+    square_p_bl = gmsh.model.geo.addPoint(0, 0, 0)
+    square_p_br = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
+    square_p_tr = gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0)
+    square_p_tl = gmsh.model.geo.addPoint(0, parameters["h"], 0)
+    gmsh.model.geo.synchronize()
+
+    square_line_b = gmsh.model.geo.addLine(square_p_bl, square_p_br)
+    square_line_r = gmsh.model.geo.addLine(square_p_br, square_p_tr)
+    square_line_t = gmsh.model.geo.addLine(square_p_tr, square_p_tl)
+    square_line_l = gmsh.model.geo.addLine(square_p_tl, square_p_bl)
+    gmsh.model.geo.synchronize()
+
+    square_loop = gmsh.model.geo.addCurveLoop([square_line_b, square_line_r, square_line_t, square_line_l])
+    gmsh.model.geo.synchronize()
+
+
+    #2. add shape
+
+
+    shape_points = [gmsh.model.geo.addPoint(shape_coordinates[0][0], shape_coordinates[0][1], 0)]
+    gmsh.model.geo.synchronize()
+
+    shape_lines = []
+
+    print(f'Added point with coordinates {shape_coordinates[-1]}')
+
+    print("Starting loop over shape ... ")
+
+    for i in range(1, parameters['N']):
+
+        shape_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
+        gmsh.model.geo.synchronize()
+
+        shape_lines.append(gmsh.model.geo.addLine(shape_points[-2], shape_points[-1]))
+        gmsh.model.geo.synchronize()
+
+    print("... done.")
+
+    shape_lines.append(gmsh.model.geo.addLine(shape_points[-1], shape_points[0]))
+    gmsh.model.geo.synchronize()
+
+
+
+    shape_loop = gmsh.model.geo.addCurveLoop(shape_lines)
+    gmsh.model.geo.synchronize()
+
+    square_minus_shape_surface = gmsh.model.geo.addPlaneSurface([square_loop, shape_loop])
+    gmsh.model.geo.synchronize()
+
+    gmsh.model.mesh.embed(1, shape_lines, 2, square_minus_shape_surface)
+    gmsh.model.geo.synchronize()
+
+    shape_surface = gmsh.model.geo.addPlaneSurface([shape_loop])
+    gmsh.model.geo.synchronize()
+
+
+
+    # add 1-dimensional objects
+    lines = gmsh.model.getEntities(dim=1)
+
+    # add square lines
+    tag_physical_object(lines[0], parameters['line_b_id'], gmsh.model, 'line_b')
+    tag_physical_object(lines[1], parameters['line_r_id'], gmsh.model, 'line_r')
+    tag_physical_object(lines[2], parameters['line_t_id'], gmsh.model, 'line_t')
+    tag_physical_object(lines[3], parameters['line_l_id'], gmsh.model, 'line_l')
+
+    #add shape lines
+    tag_physical_object([lines[i] for i in range(4, 4 + parameters['N'])], parameters['shape_id'], gmsh.model, 'shape_loop')
+
+
+
+    # add 2-dimensional objects
+    surfaces = gmsh.model.getEntities(dim=2)
+
+    tag_physical_object(surfaces[0], parameters['sub_mesh_0_1_id'], gmsh.model, 'square_minus_shape_surface')
+    tag_physical_object(surfaces[1], parameters['sub_mesh_0_0_id'], gmsh.model, 'shape_surface')
+
+
+    # set the resolution
+    # se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(parameters["L"],parameters["h"]) from sub_mesh_0_1_id
+    distance = gmsh.model.mesh.field.add("Distance")
+
+    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [shape_loop])
+
+    threshold = gmsh.model.mesh.field.add("Threshold")
+    gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+    gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(parameters["L"], parameters["h"]))
+
+
+    minimum = gmsh.model.mesh.field.add("Min")
+    gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
+    gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+
+    gmsh.model.geo.synchronize()
+
+    geometry.generate_mesh(dim=2)
+    gmsh.write(mesh_0_file)
+
+    full_write(mesh_0_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
+
+    generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_0'), parameters["sub_mesh_0_0_id"])
+    generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), parameters["sub_mesh_0_1_id"])
+
+
+    # print the boundary points of the boundary given by the shape
+    sorted_boundary_points(
+        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+        output_directory_mesh_0, 
+        [parameters['shape_id']],
+        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+
+
+    # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
+    mesh_0 = read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf'))
+    mf_mesh_0 = read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
+
+    # collect unique vertex indices touched by facets tagged with shape_id
+    shape_vertex_ids = set()
+
+    for facet in facets(mesh_0):
+        #run through all facets of mesh_0 
+
+        if mf_mesh_0[facet] == parameters['shape_id']:
+            # the facet under consideration belongs to the shape
+
+            for v in vertices(facet):
+                # run through the vertices of the facet under consideration, and ad them to shape_vertex_ids
+
+                shape_vertex_ids.add(v.index())
+
+    n_vertices_on_shape = len(shape_vertex_ids)
+
+    if n_vertices_on_shape != parameters['N']:
+        # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
+
+        print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
+        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {parameters["N"]}')
+
+        sys.exit()
+
+
+    # B) mesh B (line)
+
+
+    # generate the line mesh corresponding to the shape
+    genereate_line_mesh(0, shape_length, parameters['N'],
+                            parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
+                            x_m=None,
+                            vertex_m_id=None,
+                            output_directory=output_directory_mesh_1, 
+                            metadata=mesh_1_metadata)
+
+
+
+    #print overall mesh metadata
+    io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
+
+    model.__exit__()
+
 
 '''
 return the geometrical shape of an element for a mesh with different dimensions
