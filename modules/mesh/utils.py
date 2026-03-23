@@ -1745,24 +1745,26 @@ def IntervalMeshCoordinates(coordinates):
 '''
 generate a one-dimensional mesh as an IntervalMesh given its geometric parameters and tags
 Input values: 
-- 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
-- 'n_intervals': the number of intervals into which the line mesh is divided
-- 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
-- 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
-- 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
-- 'vertex_m_id': the id of the middle vertex in the mesh
-- 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
-- 'metadata' [optional]: the mesh metadata to write in the output directory
+    * Mandatory:
+        - 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
+        - 'n_intervals': the number of intervals into which the line mesh is divided
+        - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
+        - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
+        - 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
+        - 'vertex_m_id': the id of the middle vertex in the mesh
+        - 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
+    * Optional:
+        - 'metadata': the mesh metadata to write in the output directory
+        - 'coordinates': a set of coordinates [x_0, x_1, ...]. If provided, the line mesh will have vertices sitting at these coordinates only
 
 Return values: 
-- 'mesh': the one-dimensional mesh
-- 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
-- 'vertex_function_temp': the mesh function tagging vertices in the mesh
+    - 'mesh': the one-dimensional mesh
+    - 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
+    - 'vertex_function_temp': the mesh function tagging vertices in the mesh
 
 
 Example of usage: 
-          mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
-                                                                                          parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
+          mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,  parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
 '''
 
 
@@ -2231,7 +2233,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     for i in range(len(shape_coordinates)-1):
         print(f'{i} \t {np.linalg.norm(np.subtract(shape_coordinates[i+1], shape_coordinates[i]))}')
     print(f'{len(shape_coordinates)-1} \t {np.linalg.norm(np.subtract(shape_coordinates[-1], shape_coordinates[0]))}')
-    
+
     # check - end
     '''
 
