@@ -7,7 +7,6 @@ Run with
 
 Examples:
      MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/three_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_disk_line $MESH_PATH $SOLUTION_PATH
-     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/three_domains/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line $MESH_PATH $SOLUTION_PATH
  '''
 
 from fenics import *
@@ -262,56 +261,7 @@ The three variational problems (VPs) are solved as follows:
         b) Test case 2):  u[0][0] = 1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
    2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
 
-   
 
-
-B) For square_shape_line problem
-The three variational problems (VPs) are solved as follows:
-1)  Solve Poisson VP on sub_mesh[0][1] for u[0][1] ->
-    Obtain 
-       u[0][1] = x[0] + 2 * x[1]
-    
-    Substract to u[0][1] the constant assemble(fsp.u[0][1] * rmsh.ds_sub_mesh[0][1]['ds_shape']) / assemble(Constant(1) * rmsh.ds_sub_mesh[0][1]['ds_shape']), in such a way that \int dS_shape u[0][1] = 0
-
-2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1
- 
-    Given that 
-        x[0] =  f[s][0]
-        x[1] =  f[1][1]
-        where s is the coordinate along mesh[1] and along the shape, we have 
-
-        u_0_1_on_1(s)  = f(s)[0] + 2 * f(s)[1]
-
-3)  Solve on mesh[1] the VP
-
-        u[1]'(s) = u_0_1_on_1(s)
-
-    The solution is 
-
-      a) For test case 1: u[1](s) = C[1] + r^2 (-2 Cos[s/r] + Sin[s/r])
-      b) For test case 2: u[1](s) = C[1] + 1/12 r^4 (-9 Cos[s/r] + Cos[(3 s)/r] + 4 (5 + Cos[(2 s)/r]) Sin[s/r])
-    
-    where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
-
-
-4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u_1_on_0_0. 
-    On the circle 
-
-        a) Test case 1: u_1_on_0_0 = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1])
-        b) Test case 2: u_1_on_0_0 =  1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
-   2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
-
-5)  Solve a Poisson problem on sub_mesh[0][0]  with BC on the circle u[0][0] = u_1_on_0_0
-
-    The problem has exact solution 
-        a) Test case 1:  u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]),  
-        b) Test case 2:  u[0][0] = 1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
-   2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
-
-    Obtain 
-        a) Test case 1): u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]) in sub_mesh[0][0]
-        b) Test case 2):  u[0][0] = 1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
-   2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
    '''
 
 
