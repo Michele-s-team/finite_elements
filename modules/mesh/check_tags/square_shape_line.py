@@ -75,6 +75,8 @@ integral_exact[0][1]['ds_b'] = cal.curve_integral_line(tf.function_test_integral
 integral_exact[1]['dx'] = cal.curve_integral_line(tf.function_test_integrals[1], lmsh.mesh_parameters[1]['x_l'], lmsh.mesh_parameters[1]['x_r'])
 
 #2.2 exact boundary integrals of mesh 1
+tf.function_test_integrals_fenics[1].set_allow_extrapolation(True)
+
 integral_exact[1]['ds_l'] = (tf.function_test_integrals_fenics[1])(lmsh.mesh_parameters[1]['x_l'])
 integral_exact[1]['ds_r'] = (tf.function_test_integrals_fenics[1])(lmsh.mesh_parameters[1]['x_r'])
 
