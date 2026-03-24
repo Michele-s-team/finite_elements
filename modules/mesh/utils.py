@@ -2889,12 +2889,12 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
         for j in range(len(indices_vertices_on_shape) - 1):
 
             # segment j: from vertex j to vertex j+1 on the shape
-            vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
-            vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
+            shape_vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
+            shape_vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
 
-            shape_edge_dr = vertex_end - vertex_start
+            shape_edge_dr = shape_vertex_end - shape_vertex_start
             shape_edge_dr_length = np.linalg.norm(shape_edge_dr)
-            delta = coordinate_2d - vertex_start
+            delta = coordinate_2d - shape_vertex_start
 
             # local parameter t in [0, 1] along the segment
             t = np.dot(delta, shape_edge_dr) / (shape_edge_dr_length ** 2)
