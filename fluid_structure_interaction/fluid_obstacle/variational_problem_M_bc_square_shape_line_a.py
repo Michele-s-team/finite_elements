@@ -39,5 +39,5 @@ F_c = ( \
         ela.G(fsp.u_n_1_sq)[gamma, alpha] * (fsp.D_c * ela.G(fsp.u_n_1_sq)[beta, alpha] * fsp.c_n.dx(beta) - fsp.v_square_n[alpha] * fsp.c_n) * fsp.nu_c.dx(gamma)              
     ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
     + ( ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n * fsp.nu_c ) * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_lrtb'] \
-    + ( - rpam.parameters['k'] / ela.detF(fsp.u_n_1_sq) +  ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n ) * fsp.nu_c * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_circle'] 
+    + ( - rpam.parameters['k'] / ela.detF(fsp.u_n_1_sq) +  ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n ) * fsp.nu_c * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_shape'] 
 
