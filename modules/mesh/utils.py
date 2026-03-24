@@ -2302,11 +2302,12 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
             #  'mesh' contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
             
             print('Generating sub_meshes ... ')
+            
             for p in range(mesh_medatada["n_sub_meshes"]):
 
                 if mesh_medatada[f'sub_mesh_{p}_dim'] > 1:
-
                     # the sub_mesh under consideration has dimension > 1: generate it in the ordinary way  with 'SubMesh'
+
                     sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
 
                     # the functions that tag cells and vertices on the sub-mesh are obtained by transferring the respective functiosn on the parent mesh 
@@ -2331,9 +2332,9 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     x_coordinates = sorted(list(set(x_coordinates)))  
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
-                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
+                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], None,
                                                                                         mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],
-                                                                                        None, None)
+                                                                                        coordinates=x_coordinates)
                     
                     sub_meshes.append(sub_mesh_1d)
                     sf_sub_meshes.append(cf_sub_mesh_1d)

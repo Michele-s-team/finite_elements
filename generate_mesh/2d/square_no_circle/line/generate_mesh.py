@@ -150,10 +150,10 @@ for vertex in vertices(mesh_temp):
 top_edge_vertices = sorted(list(set(top_edge_vertices)))
 
 print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
-# print(f"X-coordinates: {top_edge_vertices}")
 
 # Create a proper 1D IntervalMesh using the actual vertex positions
 if len(top_edge_vertices) >= 2:
+
     num_intervals = len(top_edge_vertices) - 1
 
     # Create output directory for submesh
@@ -163,20 +163,21 @@ if len(top_edge_vertices) >= 2:
     sub_mesh_1_metadata = dict([])
     sub_mesh_1_metadata['x_l'] = 0.0
     sub_mesh_1_metadata['x_r'] = rpam.parameters['L']
-    sub_mesh_1_metadata['N'] = len(top_edge_vertices)
+    sub_mesh_1_metadata['coordinates'] = top_edge_vertices
     sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
     sub_mesh_1_metadata['line_id'] = rpam.parameters['sub_mesh_1_id']
     sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']
     sub_mesh_1_metadata['vertex_r_id'] = rpam.parameters['vertex_sub_mesh_1_r_id']
     sub_mesh_1_metadata['file_format'] = 'h5'
 
-
+    # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
     msh.genereate_line_mesh(0.0, rpam.parameters['L'], num_intervals,
                             rpam.parameters['sub_mesh_1_id'], rpam.parameters['vertex_sub_mesh_1_l_id'], rpam.parameters['vertex_sub_mesh_1_r_id'],
-                            None, None,
-                            sub_mesh_1_output_directory, sub_mesh_1_metadata)
+                            output_directory=sub_mesh_1_output_directory, metadata=sub_mesh_1_metadata,
+                            coordinates=top_edge_vertices)
 
 
     print("...done!")
+    
 else:
     print("Error: Not enough vertices found on top edge")
