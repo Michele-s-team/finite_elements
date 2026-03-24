@@ -2892,20 +2892,20 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
             vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
             vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
 
-            start_end = vertex_end - vertex_start
-            len_start_end = np.linalg.norm(start_end)
+            shape_edge_dr = vertex_end - vertex_start
+            shape_edge_dr_length = np.linalg.norm(shape_edge_dr)
             delta = coordinate_2d - vertex_start
 
             # local parameter t in [0, 1] along the segment
-            t = np.dot(delta, start_end) / (len_start_end ** 2)
+            t = np.dot(delta, shape_edge_dr) / (shape_edge_dr_length ** 2)
 
             # distance from pt to the closest point on the segment
-            distance = np.linalg.norm(delta - t * start_end)
+            distance = np.linalg.norm(delta - t * shape_edge_dr)
 
             if distance < epsilon and -epsilon < t < 1.0 + epsilon:
                 # DOF lies on segment j — compute its arc length
 
-                arc_length = cumulative_arc_length[j] + t * len_start_end
+                arc_length = cumulative_arc_length[j] + t * shape_edge_dr_length
 
                 # write into f_2d for each component
                 for component in range(value_size_2d):
