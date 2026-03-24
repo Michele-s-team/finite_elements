@@ -17,6 +17,7 @@ Examples:
 import dolfin
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -31,6 +32,7 @@ import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import print_out_solution as pr_sol
+import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
@@ -154,7 +156,8 @@ for n in range(rpam.parameters['N']):
     print('Solving I problem ...', flush=True)
 
     # project v_square_n_1 of the fluid in the square onto (mesh[1])
-    msh.transfer_circle_to_line(fsp.v_square_n_1, fsp.v_square_n_1_0_1_on_1, lmsh.mesh_parameters[0]['c_r'], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['N'])
+    msh.transfer_2d_to_1d(fsp.v_square_n_1, fsp.v_square_n_1_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+
     
     vp_I = importlib.reload(vp_I)
 
