@@ -47,7 +47,6 @@ J[1] = derivative(vp[1].F, fsp.u[1], fsp.J_u[1])
 problem[1] = NonlinearVariationalProblem(vp[1].F, fsp.u[1], vp[1].bcs, J[1])
 solver[1] = NonlinearVariationalSolver(problem[1])
 solver[1].parameters.update(params)
-
 solver[1].solve()
 
 
@@ -58,7 +57,6 @@ J[0] = derivative(vp[0].F, fsp.u[0], fsp.J_u[0])
 problem[0] = NonlinearVariationalProblem(vp[0].F, fsp.u[0], vp[0].bcs, J[0])
 solver[0] = NonlinearVariationalSolver(problem[0])
 solver[0].parameters.update(params)
-
 solver[0].solve()
 
 
