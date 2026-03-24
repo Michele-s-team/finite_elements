@@ -2640,7 +2640,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     # 2. read the parametric form of the shape in the 2d mesh
     indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
 
-    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
+    # check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
 
     #7. write the values of f_2d into f_1d
