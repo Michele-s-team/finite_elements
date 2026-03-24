@@ -13,7 +13,6 @@ Notation:
 from fenics import *
 import os
 
-import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg

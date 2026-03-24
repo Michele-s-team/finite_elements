@@ -1,7 +1,6 @@
 import colorama as col
 import command as cmd
 from fenics import *
-import colorama as col
 import gmsh
 import math
 import meshio
@@ -1605,10 +1604,10 @@ def read_from_xdmf_file(mesh_path):
 '''
 read a 1d mesh stored into an h5 file
 Input values: 
-- 'mesh_path': the path where 'line_mesh.h5' is located
+    - 'mesh_path': the path where 'line_mesh.h5' is located
 Return values: 
-- 'mesh': the mesh, or [] if the mesh could not be read
-- 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
+    - 'mesh': the mesh, or [] if the mesh could not be read
+    - 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
 '''
 
 
@@ -1709,34 +1708,90 @@ def generate_sub_mesh(parent_mesh_path, sub_mesh_path, sub_mesh_id):
 
     return sub_mesh, sub_mesh_boundary
 
+'''
+generate a line mesh whose vertex coordinates are provided as input
+Input values: 
+    - 'coordinates': the coordinates of the vertices [v_0_x, v_1_x, ...]
+Return values: 
+    - 'mesh': the mesh
+'''
+def IntervalMeshCoordinates(coordinates):
+
+    n_vertices = len(coordinates)
+    n_cells = n_vertices - 1
+  
+    mesh = Mesh()
+    editor = MeshEditor()
+  
+    print(f'coordinates before: {coordinates}')
+    sorted_coordinates = sorted(coordinates)
+    print(f'coordinates after: {sorted_coordinates}')
+        
+    editor.open(mesh, 'interval', 1, 1)  # cell type, topological dim, geometric dim
+
+    editor.init_vertices(n_vertices)
+    editor.init_cells(n_cells)
+
+    for i, x in enumerate(sorted_coordinates):
+        editor.add_vertex(i, np.array([x]))
+
+    for i in range(n_cells):
+        editor.add_cell(i, np.array([i, i + 1], dtype=np.uintp))
+
+    editor.close()
+
+    return mesh
 
 '''
 generate a one-dimensional mesh as an IntervalMesh given its geometric parameters and tags
 Input values: 
-- 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
-- 'n_intervals': the number of intervals into which the line mesh is divided
-- 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
-- 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
-- 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
-- 'vertex_m_id': the id of the middle vertex in the mesh
-- 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
-- 'metadata' [optional]: the mesh metadata to write in the output directory
+    * Mandatory:
+        - 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
+        - 'n_intervals': the number of intervals into which the line mesh is divided
+        - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
+        - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
+        - 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
+        - 'vertex_m_id': the id of the middle vertex in the mesh
+        - 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
+    * Optional:
+        - 'metadata': the mesh metadata to write in the output directory
+        - 'coordinates': a set of coordinates [x_0, x_1, ...]. If provided, the line mesh will have vertices sitting at these coordinates only
 
 Return values: 
-- 'mesh': the one-dimensional mesh
-- 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
-- 'vertex_function_temp': the mesh function tagging vertices in the mesh
+    - 'mesh': the one-dimensional mesh
+    - 'cell_function_temp': the mesh funciton tagging cells (line intervals) in the mesh
+    - 'vertex_function_temp': the mesh function tagging vertices in the mesh
 
 
 Example of usage: 
-          mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,
-                                                                                          parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
+          mesh_1d, cf_mesh_1d, vf_mesh_1d = msh.genereate_line_mesh(0, parameters['L'], len(x_coordinates) - 1,  parameters[f'sub_mesh_{p}_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'])
 '''
 
 
-def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, x_m=None, vertex_m_id=None, output_directory=None, metadata=None):
+def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id, x_m=None, vertex_m_id=None, output_directory=None, metadata=None, coordinates=None):
     
-    mesh = IntervalMesh(n_intervals, x_l, x_r)
+    if coordinates == None:
+        # this method has been called with out coordinates, only with n_intervals -> generate a line mesh with uniform spacing 
+
+       mesh = IntervalMesh(n_intervals, x_l, x_r)
+
+    else:
+        # this method has been called with 'coordinates' != Null -> build a mesh with those specific coordinates
+
+        mesh = IntervalMeshCoordinates(coordinates)
+
+    '''
+    # check - start
+ 
+    # get all vertex coordinates, sorted by x position
+    coords = mesh.coordinates()  # shape (N, 1)
+    coords_sorted = coords[np.argsort(coords[:, 0])]
+
+    for i in range(len(coords_sorted)-1):
+        print(f'delta {i}: x = {np.linalg.norm(np.subtract(coords[i+1],coords[i]))}')
+
+    # check - end
+    '''
 
     # create a function for the lines
     cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
@@ -1962,6 +2017,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     # total length of the shape boundary
     shape_length = cal.polygon_length(shape_coordinates)
 
+
     #write metadata for ensemble mesh
     mesh_metadata = parameters.copy()
 
@@ -1996,8 +2052,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_1_metadata['L'] = shape_length
     mesh_1_metadata['x_l'] = 0
     mesh_1_metadata['x_r'] = mesh_1_metadata['L']
-    mesh_1_metadata['N'] = parameters['N']
-
 
     mesh_1_metadata['vertex_l_id'] = parameters['vertex_l_id']
     mesh_1_metadata['vertex_r_id'] = parameters['vertex_r_id']
@@ -2119,6 +2173,9 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_0'), parameters["sub_mesh_0_0_id"])
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), parameters["sub_mesh_0_1_id"])
 
+    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
+    mesh_1_metadata['coordinates'] = cumulative_arc_length
+
 
     # print the boundary points of the boundary given by the shape
     sorted_boundary_points(
@@ -2161,14 +2218,24 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
     # generate the line mesh corresponding to the shape
-    genereate_line_mesh(0, shape_length, parameters['N'],
+
+    genereate_line_mesh(0, shape_length, None,
                             parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
                             x_m=None,
                             vertex_m_id=None,
                             output_directory=output_directory_mesh_1, 
-                            metadata=mesh_1_metadata)
+                            metadata=mesh_1_metadata,
+                            coordinates=cumulative_arc_length)
 
+    '''
+    # check - start
 
+    for i in range(len(shape_coordinates)-1):
+        print(f'{i} \t {np.linalg.norm(np.subtract(shape_coordinates[i+1], shape_coordinates[i]))}')
+    print(f'{len(shape_coordinates)-1} \t {np.linalg.norm(np.subtract(shape_coordinates[-1], shape_coordinates[0]))}')
+
+    # check - end
+    '''
 
     #print overall mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
@@ -2213,6 +2280,7 @@ Return values:
 def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     if "n_sub_meshes" in mesh_medatada:
+        # found sub-meshes
 
         print(f'Found sub_meshes')
 
@@ -2234,11 +2302,12 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
             #  'mesh' contains multiple sub_meshes: run through them and generate each sub_mesh from the parent mesh
             
             print('Generating sub_meshes ... ')
+            
             for p in range(mesh_medatada["n_sub_meshes"]):
 
                 if mesh_medatada[f'sub_mesh_{p}_dim'] > 1:
-
                     # the sub_mesh under consideration has dimension > 1: generate it in the ordinary way  with 'SubMesh'
+
                     sub_meshes.append(SubMesh(mesh, sf, mesh_medatada[f'sub_mesh_{p}_id']))
 
                     # the functions that tag cells and vertices on the sub-mesh are obtained by transferring the respective functiosn on the parent mesh 
@@ -2263,9 +2332,9 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     x_coordinates = sorted(list(set(x_coordinates)))  
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
-                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], len(x_coordinates) - 1,
+                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], None,
                                                                                         mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],
-                                                                                        None, None)
+                                                                                        coordinates=x_coordinates)
                     
                     sub_meshes.append(sub_mesh_1d)
                     sf_sub_meshes.append(cf_sub_mesh_1d)
@@ -2349,7 +2418,6 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_2d is different
     coords_2d     = coords_2d_all[::f_2d_value_size]   # unique physical points
 
-    # this is a bottleneck
     tol = cal.min_distance(coords_2d)/2.0
 
 
@@ -2547,12 +2615,9 @@ Input values:
         - 'f_1d': the field on the 2d mesh
         - 'mesh_2d_path': the path where the 2d mesh is stored
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
-    * Optional:
-        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
-                      epsilon = const.epsilon):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
     # 1. initialize 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
@@ -2571,7 +2636,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     # 2. read the parametric form of the shape in the 2d mesh
     indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
 
-    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
 
     #7. write the values of f_2d into f_1d
@@ -2580,51 +2644,33 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
 
-        found = False
+        # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
+        j = np.searchsorted(cumulative_arc_length, dof_coordinates_1d[i][0], side='right') - 1
+        j = np.clip(j, 0, len(indices_vertices_on_shape) - 2)
 
-        for j in range(len(indices_vertices_on_shape) - 1):
-            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+        p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
+        p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
 
-            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
-                # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
+        # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+        p = np.add(p_start, 
+                    np.multiply(
+                            np.subtract(p_end, p_start), 
+                            (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                    )
+                    )
+    
+        # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+        # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
+        # print(f'  expected  = {p[0] + 2*p[1]}')
 
-                
-                p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
-                p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+        # set the DOF of f_1d according to the value of f_2d computed on p
+        for k in range(value_size_1d):
+            # run through all components of the field and write them into f_1d
 
-                # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
-                p = np.add(p_start, 
-                            np.multiply(
-                                    np.subtract(p_end, p_start), 
-                                    (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
-                            )
-                           )
+            f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
             
-                # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
-                # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
-                # print(f'  expected  = {p[0] + 2*p[1]}')
 
-                # set the DOF of f_1d according to the value of f_2d computed on p
-                for k in range(value_size_1d):
-                    # run through all components of the field and write them into f_1d
-
-                    f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
-                    
-                found = True
-
-                # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
-
-
-            if found:
-
-                break
-
-        if found == False:
-
-            print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
-
-            sys.exit(1)
-
+        # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
 
     print(f'... done.')
 
@@ -2751,40 +2797,6 @@ def shape_tool(mesh_2d_path, shape_id):
 
     return indices_vertices_on_shape, cumulative_arc_length
 
-'''
-check the mapping of fields (scalars, vectors, tensors) between a shape in a 2d mesh and a 1d mesh. If there is no one-to-one correspondence between DOF coordinates on the 1d mesh and segemnts in the shape to which the DOF corresponds, throws an error and stops the program
-Input values: 
-    * Mandatory: 
-        - 'Q_1d': the function space on which the field on the 1d mesh is defined
-        - 'indices_vertices_on_shape', 'cumulative_arc_length': return values of shape_tool for the arc length on the shape
-
-'''
-def check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon=const.epsilon):
-
-    value_shape_1d = Q_1d.ufl_element().value_shape()
-    value_size_1d = int(np.prod(value_shape_1d))
-    dim_1d = Q_1d.mesh().geometry().dim()
-    coordinates_all_1d = Q_1d.tabulate_dof_coordinates().reshape(-1, dim_1d)
-    dof_coordinates_1d = coordinates_all_1d[::value_size_1d]
-
-
-   # 6. check that each 1d coordinates belongs to only one 1d segment in 2d
-    belongs = [0] * len(dof_coordinates_1d)
-    for i in range(len(dof_coordinates_1d)):
-        # run through all unique DOF coordinates of 1d mesh
-
-        for j in range(len(indices_vertices_on_shape) - 1):
-            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
-
-            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
-
-                belongs[i] += 1
-
-    if (np.any(np.array(belongs) != 1)):
-
-        print(f"{col.Fore.RED}{'Error: a coordinate on the 1d mesh belongs to multiple segments on the shape of the 2d mesh!!'}{col.Style.RESET_ALL}")
-        sys.exit(1)
-
 
 '''
 Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obtained by lying the shape boundary on a line, this method transfers a field (scalar, vector or tensor) defined on the 1d mesh, on the 2d mesh. 
@@ -2806,8 +2818,6 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
     coordinates_mesh_2d = mesh_2d.coordinates()
 
-    Q_1d = f_1d.function_space()
-
     Q_2d = f_2d.function_space()
     value_shape_2d = Q_2d.ufl_element().value_shape()
     value_size_2d = int(np.prod(value_shape_2d))
@@ -2819,7 +2829,6 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
 
     indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
 
-    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
     #7. write the values of f_1d into f_2d
     print(f'Running over 2d mesh ...')
@@ -2833,23 +2842,25 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
         for j in range(len(indices_vertices_on_shape) - 1):
 
             # segment j: from vertex j to vertex j+1 on the shape
-            vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
-            vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
+            shape_vertex_start = coordinates_mesh_2d[indices_vertices_on_shape[j]][:2]
+            shape_vertex_end = coordinates_mesh_2d[indices_vertices_on_shape[j + 1]][:2]
 
-            start_end = vertex_end - vertex_start
-            len_start_end = np.linalg.norm(start_end)
-            delta = coordinate_2d - vertex_start
+            shape_edge_dr = shape_vertex_end - shape_vertex_start
+            shape_edge_dr_length = np.linalg.norm(shape_edge_dr)
+            delta = coordinate_2d - shape_vertex_start
 
-            # local parameter t in [0, 1] along the segment
-            t = np.dot(delta, start_end) / (len_start_end ** 2)
+            # l is the length of the projection of delta along the line going through shape_vertex_start to and shape_vertex_end        
+            l = np.dot(delta, shape_edge_dr) / shape_edge_dr_length
 
-            # distance from pt to the closest point on the segment
-            distance = np.linalg.norm(delta - t * start_end)
+            # projection is the orthogonal projection of the DOF coordinate under consideration on the line going through shape_vertex_start and shape_vertex_end
+            projection = shape_vertex_start + l * shape_edge_dr / shape_edge_dr_length
+            residual = np.linalg.norm(projection - np.array(coordinate_2d))
 
-            if distance < epsilon and -epsilon < t < 1.0 + epsilon:
+
+            if residual < epsilon and (- epsilon < l < shape_edge_dr_length + epsilon):
                 # DOF lies on segment j — compute its arc length
 
-                arc_length = cumulative_arc_length[j] + t * len_start_end
+                arc_length = cumulative_arc_length[j] + np.clip(l, 0.0, shape_edge_dr_length)
 
                 # write into f_2d for each component
                 for component in range(value_size_2d):

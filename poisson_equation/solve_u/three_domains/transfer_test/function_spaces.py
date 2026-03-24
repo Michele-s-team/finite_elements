@@ -108,7 +108,7 @@ class laplacian_u_exact_expression(UserExpression):
         return (1,)
 
 
-'''
+
 #  for testing trasnfer - start
 # scalar
 Q_sub_mesh_0_0 = FunctionSpace(lmsh.sub_meshes[0][0], 'P', rpam.parameters['function_space_degree'])
@@ -139,7 +139,7 @@ T_mesh_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_spac
 t_sub_mesh_0_0 = Function(T_sub_mesh_0_0)
 t_sub_mesh_0_1 = Function(T_sub_mesh_0_1)
 t_mesh_1 = Function(T_mesh_1)
-'''
+
 #  for testing trasnfer - end
 
 

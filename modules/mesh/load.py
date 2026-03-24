@@ -18,6 +18,7 @@ if "n_meshes" not in parameters:
     sub_meshes, sf_sub_meshes, mf_sub_meshes = msh.read_sub_meshes(mesh, sf, parameters, rarg.args.input_directory)
 
 else: 
+    # there are multiple meshes -> read all of them 
 
     # mesh, sf and parameters store the mesh, functions, and parameters for each mesh
     mesh = [None] * parameters["n_meshes"]
