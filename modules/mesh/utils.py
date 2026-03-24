@@ -2016,6 +2016,8 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     # total length of the shape boundary
     shape_length = cal.polygon_length(shape_coordinates)
+    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
+
 
     #write metadata for ensemble mesh
     mesh_metadata = parameters.copy()
@@ -2051,7 +2053,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_1_metadata['L'] = shape_length
     mesh_1_metadata['x_l'] = 0
     mesh_1_metadata['x_r'] = mesh_1_metadata['L']
-    mesh_1_metadata['N'] = parameters['N']
+    mesh_1_metadata['coordinates'] = cumulative_arc_length
 
 
     mesh_1_metadata['vertex_l_id'] = parameters['vertex_l_id']
@@ -2216,8 +2218,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
     # generate the line mesh corresponding to the shape
-
-    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
 
     genereate_line_mesh(0, shape_length, None,
                             parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
