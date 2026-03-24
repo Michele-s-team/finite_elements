@@ -2907,7 +2907,7 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
             if residual < epsilon and (- epsilon < l < shape_edge_dr_length + epsilon):
                 # DOF lies on segment j — compute its arc length
 
-                arc_length = cumulative_arc_length[j] + l
+                arc_length = cumulative_arc_length[j] + np.clip(l, 0.0, shape_edge_dr_length)
 
                 # write into f_2d for each component
                 for component in range(value_size_2d):
