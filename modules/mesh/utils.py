@@ -1604,10 +1604,10 @@ def read_from_xdmf_file(mesh_path):
 '''
 read a 1d mesh stored into an h5 file
 Input values: 
-- 'mesh_path': the path where 'line_mesh.h5' is located
+    - 'mesh_path': the path where 'line_mesh.h5' is located
 Return values: 
-- 'mesh': the mesh, or [] if the mesh could not be read
-- 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
+    - 'mesh': the mesh, or [] if the mesh could not be read
+    - 'cf': the mesh function for the components of the mesh with the largest dimension (lines)
 '''
 
 
