@@ -2899,13 +2899,15 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
             # l is the length of the projection of delta along the line going through shape_vertex_start to and shape_vertex_end        
             l = np.dot(delta, shape_edge_dr) / shape_edge_dr_length
 
-            # distance from pt to the closest point on the segment
-            distance = np.linalg.norm(delta - l * shape_edge_dr)
+            # projection is the orthogonal projection of the DOF coordinate under consideration on the line going through shape_vertex_start and shape_vertex_end
+            projection = shape_vertex_start + l * shape_edge_dr / shape_edge_dr_length
+            residual = np.linalg.norm(projection - np.array(coordinate_2d))
 
-            if distance < epsilon and -epsilon < l < 1.0 + epsilon:
+
+            if residual < epsilon and (- epsilon < l < shape_edge_dr_length + epsilon):
                 # DOF lies on segment j — compute its arc length
 
-                arc_length = cumulative_arc_length[j] + l * shape_edge_dr_length
+                arc_length = cumulative_arc_length[j] + l
 
                 # write into f_2d for each component
                 for component in range(value_size_2d):
