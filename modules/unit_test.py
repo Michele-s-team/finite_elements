@@ -25,7 +25,7 @@ def test_generate_mesh_and_solve(commit_a,
                                  mesh_path_b, code_path_b,
                                  mesh_solution_path_a, problem_solution_path_a,
                                  mesh_solution_path_b, problem_solution_path_b,
-                                name_of_generate_mesh_a, name_of_generate_mesh_b,
+                                 name_of_generate_mesh_a, name_of_generate_mesh_b,
                                  mesh_parameters_path_a, mesh_parameters_path_b,
                                  problem_a, problem_b,
                                  success
