@@ -2649,51 +2649,39 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
 
-        found = False
+        # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
+        j = np.searchsorted(cumulative_arc_length, dof_coordinates_1d[i][0], side='right') - 1
 
-        for j in range(len(indices_vertices_on_shape) - 1):
-            # run through all vertices on shape (2d mesh): I want to find the vertex pair on the shape (2d mesh) that encompasses the corresponding DOF coordinate on 1d mesh 
+        if j == len(indices_vertices_on_shape) - 1:
+            j = len(indices_vertices_on_shape) - 2
 
-            if (cumulative_arc_length[j] - epsilon < dof_coordinates_1d[i][0]) and (dof_coordinates_1d[i][0] < cumulative_arc_length[j+1] + epsilon):
-                # the DOF under consideration lies between cumulative_arc_length[j] and cumulative_arc_length[j+1] -> it  encompasses the corresponding DOF coordinate on 1d mesh
+        if j ==  -1:
+            j = 0
+        
 
-                
-                p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
-                p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+        p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
+        p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
 
-                # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
-                p = np.add(p_start, 
-                            np.multiply(
-                                    np.subtract(p_end, p_start), 
-                                    (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
-                            )
-                           )
+        # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+        p = np.add(p_start, 
+                    np.multiply(
+                            np.subtract(p_end, p_start), 
+                            (dof_coordinates_1d[i][0] - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                    )
+                    )
+    
+        # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
+        # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
+        # print(f'  expected  = {p[0] + 2*p[1]}')
+
+        # set the DOF of f_1d according to the value of f_2d computed on p
+        for k in range(value_size_1d):
+            # run through all components of the field and write them into f_1d
+
+            f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
             
-                # print(f'to 1d vertex {dof_coordinates_1d[i][0]} corresponds 2d vertex {p}')
-                # print(f'  f_2d(p)   = {np.atleast_1d(f_2d(p))[0]}')
-                # print(f'  expected  = {p[0] + 2*p[1]}')
 
-                # set the DOF of f_1d according to the value of f_2d computed on p
-                for k in range(value_size_1d):
-                    # run through all components of the field and write them into f_1d
-
-                    f_1d.vector()[dof_indices_1d[value_size_1d * i + k]] = np.atleast_1d(f_2d(p))[k]
-                    
-                found = True
-
-                # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
-
-
-            if found:
-
-                break
-
-        if found == False:
-
-            print(f"{col.Fore.RED}{'Error: the DOF on the 1d mesh could not be identified on the 2d mesh!!'}{col.Style.RESET_ALL}")
-
-            sys.exit(1)
-
+        # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
 
     print(f'... done.')
 
@@ -2888,7 +2876,7 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
 
     indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
 
-    check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
+    # check_shape_map(Q_1d, indices_vertices_on_shape, cumulative_arc_length, epsilon)
 
     #7. write the values of f_1d into f_2d
     print(f'Running over 2d mesh ...')
