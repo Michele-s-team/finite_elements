@@ -2280,6 +2280,7 @@ Return values:
 def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     if "n_sub_meshes" in mesh_medatada:
+        # found sub-meshes
 
         print(f'Found sub_meshes')
 
