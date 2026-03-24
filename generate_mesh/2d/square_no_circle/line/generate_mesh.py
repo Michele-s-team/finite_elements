@@ -163,6 +163,7 @@ if len(top_edge_vertices) >= 2:
     sub_mesh_1_metadata = dict([])
     sub_mesh_1_metadata['x_l'] = 0.0
     sub_mesh_1_metadata['x_r'] = rpam.parameters['L']
+    sub_mesh_1_metadata['N'] = len(top_edge_vertices)
     sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
     sub_mesh_1_metadata['line_id'] = rpam.parameters['sub_mesh_1_id']
     sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']
