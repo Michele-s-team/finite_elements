@@ -144,7 +144,7 @@ io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_fi
                   solpath.nodal_values_path)
 
 '''
-
+'''
 # 3 transfer tensor
 
 # 3.1 transfer from 2d to 1d
@@ -177,7 +177,7 @@ io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_pat
                   solpath.nodal_values_path) 
 
 
-'''
+
 # 3.2 transfer from line 1d to 2d
 class t_mesh_1_Expression(UserExpression):
     def eval(self, values, x):
@@ -211,62 +211,7 @@ io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_fi
 here J[i][j] is the Jacobian of the functional for the j-th submesh of the i-th mesh, and similarly for problem, solver, ... 
 '''
 
-''''
-A) For square_disk_line problem
 
-The three variational problems (VPs) are solved as follows:
-1)  Solve Poisson VP on sub_mesh[0][1] for u[0][1] ->
-    Obtain 
-        a) For test case 1: u[0][1] = (x[0] - cr[0]) + 2 * (x[1] - cr[1])
-        b) For test case 2: u[0][1] = 2 * (x[0] - cr[0])**3 + (x[1] - cr[1])**3
-
-2)  Transfer u[0][1] on mesh[1] -> u_0_1_on_1
-    r theta = s
-    L1 = 2 pi r 
-    Given that 
-        x[0] = cr[0] + r * cos(s/r), 
-        x[1] = cr[1] + r * sin(s/r), 
-        where s is the coordinate along mesh[1] and along the circle, we have 
-
-        a) For test case 1: u_0_1_on_1(s)  = (r * cos(s/r)) + 2 * (r * sin(s/r))
-        b) For test case 2: u_0_1_on_1(s)  = 2 * (r * cos(s/r))**3 + (r * sin(s/r))**3
-
-3)  Solve on mesh[1] the VP
-
-        u[1]'(s) = u_0_1_on_1(s)
-
-    The solution is 
-
-      a) For test case 1: u[1](s) = C[1] + r^2 (-2 Cos[s/r] + Sin[s/r])
-      b) For test case 2: u[1](s) = C[1] + 1/12 r^4 (-9 Cos[s/r] + Cos[(3 s)/r] + 4 (5 + Cos[(2 s)/r]) Sin[s/r])
-    
-    where I set C[1] -> 0 by adding a Dirichlet BC on the VP on mesh[1]
-
-
-4)  Transfer u[1](s) to sub_mesh[0][0] and write it in u_1_on_0_0. 
-    On the circle 
-
-        a) Test case 1: u_1_on_0_0 = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1])
-        b) Test case 2: u_1_on_0_0 =  1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
-   2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
-
-5)  Solve a Poisson problem on sub_mesh[0][0]  with BC on the circle u[0][0] = u_1_on_0_0
-
-    The problem has exact solution 
-        a) Test case 1:  u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]),  
-        b) Test case 2:  u[0][0] = 1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
-   2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
-
-    Obtain 
-        a) Test case 1): u[0][0] = - 2 r * (x[0] - cr[0]) + r * (x[1] - cr[1]) in sub_mesh[0][0]
-        b) Test case 2):  u[0][0] = 1/12 r (9 r^2 (crx - x) + (-crx + x)^3 + 3 (crx - x) (cry - y)^2 + 
-   2 (cry - y)^3 + 18 r^2 (-cry + y) + 6 (crx - x)^2 (-cry + y))
-
-
-   '''
-
-
-'''
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -296,4 +241,3 @@ print('...done.')
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
-'''
