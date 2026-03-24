@@ -2418,7 +2418,6 @@ def map_circle_line(f_2d, f_line, c_r, r, N):
     # We take every value_size-th row to get unique physical coordinates -> every point in coords_2d is different
     coords_2d     = coords_2d_all[::f_2d_value_size]   # unique physical points
 
-    # this is a bottleneck
     tol = cal.min_distance(coords_2d)/2.0
 
 
