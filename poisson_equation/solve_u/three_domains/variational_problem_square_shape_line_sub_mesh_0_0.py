@@ -64,7 +64,7 @@ fsp.f[0][0].interpolate(laplacian_u_exact_sub_mesh_0_0_expression(element=fsp.Q[
 
 
 bcs = [ \
-    DirichletBC(fsp.Q[0][0], fsp.u_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["circle_id"])
+    DirichletBC(fsp.Q[0][0], fsp.u_1_on_0_0, rmsh.lmsh.mf_sub_meshes[0][0], rmsh.lmsh.mesh_parameters[0]["shape_id"])
     ]
 
 # functional for sub_mesh[0]

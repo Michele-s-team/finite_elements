@@ -2,16 +2,16 @@
 This code solves the dynamics of a fluid in a box (A) with a fluid obstacle (B) in the box. 
 
 The problem has three meshes:
-- mesh[0]: a 2d mesh given by the box, including the disk in it. This is divided into 
-    * sub_mesh[0]: the disk
-    * sub_mesh[1]: the surface between the disk boundary and the box. 
-- mesh[1]: a 1d mesh given by a line (the boundary of the circular obstacle laid flat on a line)
+- mesh[0]: a 2d mesh given by the box, including the shape in it. This is divided into 
+    * sub_mesh[0]: the shape
+    * sub_mesh[1]: the surface between the shape boundary and the box. 
+- mesh[1]: a 1d mesh given by a line (the boundary of the shape obstacle laid flat on a line)
 
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
     
 Examples:
-     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_disk_line_a $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
  '''
 
 import dolfin
