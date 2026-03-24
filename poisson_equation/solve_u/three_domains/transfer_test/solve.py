@@ -11,6 +11,7 @@ Examples:
 
 from fenics import *
 import importlib
+import numpy as np
 import os
 import sys
 
@@ -145,7 +146,7 @@ io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_fi
 '''
 
 # 3 transfer tensor
-'''
+
 # 3.1 transfer from 2d to 1d
 
 class t_sub_mesh_0__Expression(UserExpression):
@@ -175,7 +176,7 @@ io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_fi
 io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path) 
 
-'''
+
 '''
 # 3.2 transfer from line 1d to 2d
 class t_mesh_1_Expression(UserExpression):
@@ -267,7 +268,7 @@ The three variational problems (VPs) are solved as follows:
 
 
 
-
+'''
 J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
 
 # solve the variational problem in sub_mesh[0][1], and obtain the solution 
@@ -297,3 +298,4 @@ print('...done.')
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
+'''
