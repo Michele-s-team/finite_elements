@@ -191,8 +191,8 @@ for n in range(rpam.parameters['N']):
     fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_square_n_1, fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
 
     # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
-    msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
-    msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+    msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_0,  os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
     vp_D = importlib.reload(vp_D)
 
