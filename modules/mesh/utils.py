@@ -2615,12 +2615,9 @@ Input values:
         - 'f_1d': the field on the 2d mesh
         - 'mesh_2d_path': the path where the 2d mesh is stored
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
-    * Optional:
-        - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
-                      epsilon = const.epsilon):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
     # 1. initialize 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
@@ -2650,13 +2647,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id,
 
         # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
         j = np.searchsorted(cumulative_arc_length, dof_coordinates_1d[i][0], side='right') - 1
-
-        if j == len(indices_vertices_on_shape) - 1:
-            j = len(indices_vertices_on_shape) - 2
-
-        if j ==  -1:
-            j = 0
-        
+        j = np.clip(j, 0, len(indices_vertices_on_shape) - 2)
 
         p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
         p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
