@@ -88,18 +88,17 @@ fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()
 
 
 '''
-this method returns True of x is close to point [0, 0]  and False otherwise
+this method returns True of x is close to point [r, 0] (vertex_0) and False otherwise
 '''
 def vertex_0(x, on_boundary):
     tol = DOLFIN_EPS
-    return near(x[0], 0, tol) and near(x[1], 0, tol)
+    return near(x[0], rmsh.parameters['r'], tol) and near(x[1], 0, tol)
 
 '''
-this BC removes the degeneracy of the variational problem, by imposing that the solution is equal to u_exact on [0, 0]
+this BC removes the degeneracy of the variational problem, by imposing that the solution is equal to u_exact on vertex_0
 '''
 bc_remove_degeneracy = DirichletBC(fsp.Q, fsp.u_exact, vertex_0, method="pointwise")
-bcs = [bc_remove_degeneracy]
-
+bcs=[bc_remove_degeneracy]
 
 
 # variational functional for the original problem (poisson equation)
