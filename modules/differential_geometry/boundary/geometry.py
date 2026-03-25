@@ -117,7 +117,7 @@ def calc_normal_cg2(mesh):
     A.ident_zeros()
     nh = Function(V)
     solve(A, nh.vector(), L)
-    
+
     return nh
 
 '''
@@ -237,8 +237,37 @@ Return values:
     - 't': [-n[1], n[0]] where n = FacetNormal(mesh)
 '''
 
-def facet_tangent(mesh):
+def FacetTangent(mesh):
 
     n = FacetNormal(mesh)
 
     return as_vector([-n[1], n[0]])
+
+'''
+return the tangent to mesh boundaries as a smooth field
+Input values: 
+    - 'mesh': the mesh
+Return values: 
+    - the tangent as a smooth field
+'''
+def calc_tangent_cg2(mesh):
+
+    t = FacetTangent(mesh)
+
+    V = VectorFunctionSpace(mesh, "CG", 2)
+
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    
+    a = inner(u, v) * ds
+    l = inner(t, v) * ds
+    
+    A = assemble(a, keep_diagonal=True)
+    L = assemble(l)
+
+    A.ident_zeros()
+
+    nh = Function(V)
+    solve(A, nh.vector(), L)
+    
+    return nh
