@@ -226,3 +226,17 @@ def delta_n_ale(ys, u, nu):
         1.0/norm_dxds * (1.0/norm_dxds**2 * dxds[gamma] * nu.dx(0)[gamma] * epsilon[alpha, beta] * dxds[beta] - \
                          epsilon[alpha, beta] * nu.dx(0)[beta]), 
         (alpha))
+
+'''
+tangent to boundary facets of a mesh
+Input values: 
+    - 'mesh': the mesh
+Return values:
+    - 't': [-n[1], n[0]] where n = FacetNormal(mesh)
+'''
+
+def facet_tangent(mesh):
+
+    n = FacetNormal(mesh)
+
+    return as_vector([-n[1], n[0]])
