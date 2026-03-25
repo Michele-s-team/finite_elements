@@ -245,6 +245,7 @@ def FacetTangent(mesh):
 
 '''
 return the tangent to mesh boundaries as a smooth field
+Note: the resulting vector field is not normalized to unity. 
 Input values: 
     - 'mesh': the mesh
 Return values: 

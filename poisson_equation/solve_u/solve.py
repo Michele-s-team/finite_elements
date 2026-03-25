@@ -63,6 +63,17 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+'''
+# test FacetTangent - start
+import differential_geometry.boundary.geometry as bgeo
+import input_output as io
+import solution_paths as solpath
+
+t = bgeo.calc_tangent_cg2(rmsh.lmsh.mesh)
+io.full_print(t, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+# test FacetTangent - end
+'''
 
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 
