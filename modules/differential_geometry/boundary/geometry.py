@@ -27,7 +27,9 @@ n_lr = None
 n_tb = None
 
 '''
-tangent to boundary facets of a mesh
+tangent to boundary facets of a mesh, normalized to unity. 
+Note: be careful about the direction of this tangent, which is obtained by rotating FacetNormal by \pi/2 counterclockwise as seen by lookng at the xy plane from above (positive z)
+
 Input values: 
     - 'mesh': the mesh
 Return values:
