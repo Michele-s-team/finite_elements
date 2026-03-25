@@ -4,6 +4,7 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -84,12 +85,30 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-bc_u_circle = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary)
-bcs = [bc_u_circle]
+
+
+'''
+this method returns True of x is close to point [0, 0]  and False otherwise
+'''
+def vertex_0(x, on_boundary):
+    tol = DOLFIN_EPS
+    return near(x[0], 0, tol) and near(x[1], 0, tol)
+
+'''
+this BC removes the degeneracy of the variational problem, by imposing that the solution is equal to u_exact on [0, 0]
+'''
+bc_remove_degeneracy = DirichletBC(fsp.Q, fsp.u_exact, vertex_0, method="pointwise")
+bcs = [bc_remove_degeneracy]
+
+
 
 # variational functional for the original problem (poisson equation)
-F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx \
+F_0 = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
+
+F_N = rpam.parameters['alpha'] / rmsh.r_mesh * (fsp.u.dx(i) * bgeo.facet_tangent[i] - fsp.u_exact.dx(i) * bgeo.facet_tangent[i]) * (fsp.nu_u.dx(j) * bgeo.facet_tangent[j]) * rmsh.ds
+
+F = F_0 + F_N
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \

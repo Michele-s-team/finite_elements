@@ -27,6 +27,20 @@ n_lr = None
 n_tb = None
 
 '''
+tangent to boundary facets of a mesh
+Input values: 
+    - 'mesh': the mesh
+Return values:
+    - 't': [-n[1], n[0]] where n = FacetNormal(mesh)
+'''
+
+def FacetTangent(mesh):
+
+    n = FacetNormal(mesh)
+
+    return as_vector([-n[1], n[0]])
+
+'''
 build the facet normals to all sub-meshes of a parent mesh
 Input values: 
     - 'sub_meshes': the list of sub_meshes of the parent mesh
@@ -56,6 +70,7 @@ if "n_meshes" not in lmsh.parameters:
     # 1 There is only one mesh
 
     facet_normal = FacetNormal(lmsh.mesh)
+    facet_tangent = FacetTangent(lmsh.mesh)
 
     sub_mesh_facet_normal = facet_normal_sub_meshes(lmsh.sub_meshes, lmsh.parameters)
 
@@ -229,19 +244,7 @@ def delta_n_ale(ys, u, nu):
                          epsilon[alpha, beta] * nu.dx(0)[beta]), 
         (alpha))
 
-'''
-tangent to boundary facets of a mesh
-Input values: 
-    - 'mesh': the mesh
-Return values:
-    - 't': [-n[1], n[0]] where n = FacetNormal(mesh)
-'''
 
-def FacetTangent(mesh):
-
-    n = FacetNormal(mesh)
-
-    return as_vector([-n[1], n[0]])
 
 '''
 return the tangent to mesh boundaries as a smooth field
