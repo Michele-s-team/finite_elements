@@ -70,24 +70,27 @@ class sigma_0_expression(UserExpression):
     def value_shape(self):
         return (1,)
     
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv'))
 
-# focal point of the ellipse
-f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])[0]
-# coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
-polygon_coordinates_0 = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+polygon_coordinates_0 = mesh_parameters['polygon_coordinates']
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
+
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
 polygon_coordinates = []
 for coordinate in polygon_coordinates_0:
-    polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
+    polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+
+
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
 
+'''
 import function_spaces as fsp
 import print_out_solution as pr_sol
 
@@ -319,3 +322,4 @@ print("... done.", flush=True)
 
 pr_sol.theta_omega_csvfile.close()
 pr_sol.remesh_csvfile.close()
+'''
