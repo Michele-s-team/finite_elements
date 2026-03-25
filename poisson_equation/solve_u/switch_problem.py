@@ -22,6 +22,11 @@ elif rarg.args.problem == 'disk_vertices':
     vp = 'variational_problem_bc_disk_vertices'
     prout_bc = 'print_out_bc_disk_vertices'
 
+elif rarg.args.problem == 'disk_vertices_tangent':
+    rmsh = 'mesh.read.disk_vertices'
+    vp = 'variational_problem_bc_disk_vertices_tangent'
+    prout_bc = 'print_out_bc_disk_vertices_tangent'
+
 elif rarg.args.problem == 'ring_slice':
     rmsh = 'mesh.read.ring_slice'
     vp = 'variational_problem_bc_ring_slice'
