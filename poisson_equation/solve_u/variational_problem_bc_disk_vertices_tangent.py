@@ -1,3 +1,7 @@
+'''
+this variational problem solves for the poisson equation for u, with the BC that fixes (\partial_i u) t_i  on \partial \Omega. The boundary value problem is degenerate, thus I fix the solution by pinning the solution on a vertex. 
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
