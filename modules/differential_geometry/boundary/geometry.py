@@ -104,6 +104,7 @@ Return values:
     - the unit normal as a smooth field
 '''
 def calc_normal_cg2(mesh):
+
     n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
     u = TrialFunction(V)
@@ -116,6 +117,7 @@ def calc_normal_cg2(mesh):
     A.ident_zeros()
     nh = Function(V)
     solve(A, nh.vector(), L)
+    
     return nh
 
 '''
