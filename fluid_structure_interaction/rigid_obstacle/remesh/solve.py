@@ -109,7 +109,8 @@ fsp.sigma_n_32.assign(fsp.sigma_n_12)
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module(swi.rmsh)
-ap_polygon = importlib.import_module(swi.ap_polygon)
+'''
+ap_shape = importlib.import_module(swi.ap_shape)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -135,10 +136,10 @@ for n in range(rpam.parameters["num_steps"]):
 
     # step 1): update theta and omega
     print('Solving theta problem ...', flush=True)
-    ap_polygon = importlib.reload(ap_polygon)
+    ap_shape = importlib.reload(ap_shape)
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
-    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_polygon.M_ellipse
+    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_shape.M_ellipse
 
     print('... done.', flush=True)
 
