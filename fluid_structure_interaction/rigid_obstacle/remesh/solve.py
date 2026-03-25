@@ -90,7 +90,7 @@ for coordinate in polygon_coordinates_0:
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
 
-'''
+
 import function_spaces as fsp
 import print_out_solution as pr_sol
 

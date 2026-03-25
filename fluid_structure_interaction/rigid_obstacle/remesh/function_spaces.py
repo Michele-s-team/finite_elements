@@ -60,10 +60,10 @@ u_square = Function(Q_u)
 u_dot_polygon = Function(Q_u_dot)
 u_dot_square = Function(Q_u_dot)
 
-# y_ellipse = {y^s}_notes
-ys_ellipse = Function(Q_y)
-# dyds_ellipse = {dy^s/ds}_notes
-dyds_ellipse = Function(Q_dyds)
+# y_shape = {y^s}_notes
+ys_shape = Function(Q_y)
+# dyds_shape = {dy^s/ds}_notes
+dyds_shape = Function(Q_dyds)
 
 # Define test functions
 nu_v_n = TestFunction(Q_v)

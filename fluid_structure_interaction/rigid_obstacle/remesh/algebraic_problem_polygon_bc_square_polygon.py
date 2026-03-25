@@ -30,7 +30,7 @@ i, j, k, l, m, n = ufl.indices(6)
 
 
 
-class ys_ellipse_expression(UserExpression):
+class ys_shape_expression(UserExpression):
     def eval(self, values, x):
         # s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
 
@@ -49,7 +49,7 @@ class ys_ellipse_expression(UserExpression):
         return (2,)
 
 
-class dyds_ellipse_expression(UserExpression):
+class dyds_shape_expression(UserExpression):
     def eval(self, values, x):
         # s = 1 / (2 * np.pi) * atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
 
@@ -68,11 +68,11 @@ class dyds_ellipse_expression(UserExpression):
         return (2,)
 
 
-fsp.ys_ellipse.interpolate(ys_ellipse_expression(element=fsp.Q_y.ufl_element()))
-fsp.dyds_ellipse.interpolate(dyds_ellipse_expression(element=fsp.Q_dyds.ufl_element()))
+fsp.ys_shape.interpolate(ys_shape_expression(element=fsp.Q_y.ufl_element()))
+fsp.dyds_shape.interpolate(dyds_shape_expression(element=fsp.Q_dyds.ufl_element()))
 
 
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_ellipse[i] + fsp.u_n_1[i] - (Constant(focus))[i]) * flu.sigma_ale(fsp.v_n_1, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_ellipse[l]) \
-    / sqrt(fsp.dyds_ellipse[n] * fsp.dyds_ellipse[n]) * rmsh.ds_poly)
+    (geo.epsilon[i, j] * (fsp.ys_shape[i] + fsp.u_n_1[i] - (Constant(focus))[i]) * flu.sigma_ale(fsp.v_n_1, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_shape[l]) \
+    / sqrt(fsp.dyds_shape[n] * fsp.dyds_shape[n]) * rmsh.ds_poly)
