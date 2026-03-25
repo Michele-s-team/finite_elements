@@ -60,5 +60,5 @@ fsp.dyds_shape.interpolate(dyds_shape_expression(element=fsp.Q_dyds.ufl_element(
 
 # momentum of forces exerted by the fluid on the ellipse
 M_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_shape[i] + fsp.u_n_1[i] - (Constant(rmsh.parameters['c']))[i]) * flu.sigma_ale(fsp.v_n_1, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * fsp.dyds_shape[l]) \
-    / sqrt(fsp.dyds_shape[n] * fsp.dyds_shape[n]) * rmsh.ds_poly)
+    (geo.epsilon[i, j] * (fsp.ys_shape[i] + fsp.u_n_1[i] - (Constant(rmsh.parameters['c']))[i]) * flu.sigma_ale(fsp.v_n_1, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * bgeo.facet_tangent[l]) \
+    / sqrt(bgeo.facet_tangent[n] * bgeo.facet_tangent[n]) * rmsh.ds_poly)
