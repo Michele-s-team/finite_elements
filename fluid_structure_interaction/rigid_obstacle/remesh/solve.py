@@ -109,12 +109,11 @@ fsp.sigma_n_32.assign(fsp.sigma_n_12)
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module(swi.rmsh)
-'''
+
 ap_shape = importlib.import_module(swi.ap_shape)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
-
 
 importlib.reload(geo)
 importlib.reload(rmsh.lmsh)
@@ -229,7 +228,7 @@ for n in range(rpam.parameters["num_steps"]):
         #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
         polygon_coordinates = []
         for coordinate in polygon_coordinates_0:
-            polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
+            polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
 
 
         #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
@@ -306,6 +305,7 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     if step % rpam.parameters['print_out_stride'] == 0:
+        '''
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
         pr_sol.print_solution(step)
 

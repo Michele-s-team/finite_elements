@@ -55,15 +55,13 @@ u_dot_n_1 = Function(Q_u_dot)
 u_n_2 = Function(Q_u)
 u_dot_n_2 = Function(Q_u_dot)
 
-u_polygon = Function(Q_u)
+u_shape = Function(Q_u)
 u_square = Function(Q_u)
-u_dot_polygon = Function(Q_u_dot)
+u_dot_shape = Function(Q_u_dot)
 u_dot_square = Function(Q_u_dot)
 
 # y_shape = {y^s}_notes
 ys_shape = Function(Q_y)
-# dyds_shape = {dy^s/ds}_notes
-dyds_shape = Function(Q_dyds)
 
 # Define test functions
 nu_v_n = TestFunction(Q_v)
