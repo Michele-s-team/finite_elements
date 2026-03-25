@@ -62,7 +62,7 @@ bc_v_square__ = [
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
     DirichletBC(fsp.Q_v__square, fsp.v_square__bc, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["line_b_id"]),\
-    DirichletBC(fsp.Q_v__square, fsp.v_disk_n_0_0_on_0_1, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["circle_id"])\
+    DirichletBC(fsp.Q_v__square, fsp.v_disk_n_0_0_on_0_1, rmsh.lmsh.mf_sub_meshes[0][1], rmsh.lmsh.mesh_parameters[0]["shape_id"])\
     ]
 
 bc_phi_square = [

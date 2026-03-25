@@ -2,21 +2,22 @@
 This code solves the dynamics of a fluid in a box (A) with a fluid obstacle (B) in the box. 
 
 The problem has three meshes:
-- mesh[0]: a 2d mesh given by the box, including the disk in it. This is divided into 
-    * sub_mesh[0]: the disk
-    * sub_mesh[1]: the surface between the disk boundary and the box. 
-- mesh[1]: a 1d mesh given by a line (the boundary of the circular obstacle laid flat on a line)
+- mesh[0]: a 2d mesh given by the box, including the shape in it. This is divided into 
+    * sub_mesh[0]: the shape
+    * sub_mesh[1]: the surface between the shape boundary and the box. 
+- mesh[1]: a 1d mesh given by a line (the boundary of the shape obstacle laid flat on a line)
 
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
     
 Examples:
-     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/disk_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_disk_line_a $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
  '''
 
 import dolfin
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -31,6 +32,7 @@ import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import print_out_solution as pr_sol
+import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
@@ -154,7 +156,8 @@ for n in range(rpam.parameters['N']):
     print('Solving I problem ...', flush=True)
 
     # project v_square_n_1 of the fluid in the square onto (mesh[1])
-    msh.transfer_circle_to_line(fsp.v_square_n_1, fsp.v_square_n_1_0_1_on_1, lmsh.mesh_parameters[0]['c_r'], lmsh.mesh_parameters[0]['r'], lmsh.mesh_parameters[0]['N'])
+    msh.transfer_2d_to_1d(fsp.v_square_n_1, fsp.v_square_n_1_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+
     
     vp_I = importlib.reload(vp_I)
 
@@ -177,17 +180,19 @@ for n in range(rpam.parameters['N']):
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][0]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    msh.transfer_line_to_circle(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+
     fsp.u_n_di_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_square_n_1_0_1_on_0_0, fsp.n_n_12_1_on_0_0), fsp.Q_u_di_dot))
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][1]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    msh.transfer_line_to_circle(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1,  os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+
     fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_square_n_1, fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
 
     # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
-    msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_1, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
-    msh.transfer_line_to_circle(fsp.U_n_12, fsp.U_n_12_1_on_0_0, rmsh.lmsh.mesh_parameters[0]['c_r'], rmsh.lmsh.mesh_parameters[0]['r'], rmsh.lmsh.mesh_parameters[0]['N'])
+    msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+    msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_0,  os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
     vp_D = importlib.reload(vp_D)
 
