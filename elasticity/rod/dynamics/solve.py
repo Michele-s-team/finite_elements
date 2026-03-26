@@ -20,6 +20,7 @@ import input_output as io
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 prout = importlib.import_module(swi.prout)
 rmsh = importlib.import_module(swi.rmsh)
@@ -80,11 +81,7 @@ for n in range(rpam.parameters['num_steps']):
 
     vp = importlib.import_module(swi.vp)
 
-    J = derivative(vp.F, fsp.psi, fsp.J_psi)
-    problem = NonlinearVariationalProblem(vp.F, fsp.psi, vp.bcs, J)
-    solver = NonlinearVariationalSolver(problem)
-    solver.parameters.update(params)
-    solver.solve()
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
     u_n_output, v_n_output = fsp.psi.split( deepcopy=True)
     fsp.u_n_1.assign(u_n_output)

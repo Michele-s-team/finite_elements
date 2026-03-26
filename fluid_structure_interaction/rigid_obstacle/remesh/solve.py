@@ -70,23 +70,26 @@ class sigma_0_expression(UserExpression):
     def value_shape(self):
         return (1,)
     
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv'))
 
-# focal point of the ellipse
-f = cal.ellipse_focal_points(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'])[0]
-# coordinates of the ellipse when the ellipse lies flat (theta_ref = 0)
-polygon_coordinates_0 = cal.points_ellipse(mesh_parameters['a'], mesh_parameters['b'], mesh_parameters['c'], mesh_parameters['N'])
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+polygon_coordinates_0 = mesh_parameters['polygon_coordinates']
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
+
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
 polygon_coordinates = []
 for coordinate in polygon_coordinates_0:
-    polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
+    polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+
+
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
 msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
+
 
 import function_spaces as fsp
 import print_out_solution as pr_sol
@@ -106,11 +109,11 @@ fsp.sigma_n_32.assign(fsp.sigma_n_12)
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module(swi.rmsh)
-ap_polygon = importlib.import_module(swi.ap_polygon)
+
+ap_shape = importlib.import_module(swi.ap_shape)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
-
 
 importlib.reload(geo)
 importlib.reload(rmsh.lmsh)
@@ -132,10 +135,10 @@ for n in range(rpam.parameters["num_steps"]):
 
     # step 1): update theta and omega
     print('Solving theta problem ...', flush=True)
-    ap_polygon = importlib.reload(ap_polygon)
+    ap_shape = importlib.reload(ap_shape)
 
     fsp.theta_n = fsp.theta_n_1 + dt * fsp.omega_n_1
-    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_polygon.M_ellipse
+    fsp.omega_n = fsp.omega_n_1 + dt / rpam.parameters["I_ellipse"] * ap_shape.M_ellipse
 
     print('... done.', flush=True)
 
@@ -225,7 +228,7 @@ for n in range(rpam.parameters["num_steps"]):
         #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
         polygon_coordinates = []
         for coordinate in polygon_coordinates_0:
-            polygon_coordinates.append(np.add(f, cal.R(theta_ref).dot(np.subtract(coordinate, f))))
+            polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
 
 
         #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
@@ -302,6 +305,7 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     if step % rpam.parameters['print_out_stride'] == 0:
+        
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
         pr_sol.print_solution(step)
 

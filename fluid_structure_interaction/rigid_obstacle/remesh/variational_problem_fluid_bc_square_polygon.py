@@ -19,10 +19,6 @@ i, j, k, l = ufl.indices(4)
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
-focus = cal.ellipse_focal_points(rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'])[0]
-
-
-
 
 
 v__profile_l = Expression((f'{rpam.parameters["v_l"]}* 4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), element=fsp.Q_v_.ufl_element(), h=rmsh.parameters["h"])
@@ -31,7 +27,7 @@ bc_v__l = DirichletBC(fsp.Q_v_, v__profile_l, rmsh.mf, rmsh.parameters['line_l_i
 bc_v__t = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.mf, rmsh.parameters['line_t_id'])
 bc_v__b = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.mf, rmsh.parameters['line_b_id'])
 
-v__profile_ellipse = Expression((f'{fsp.omega_n} * (-sin({fsp.theta_n}) * (x[0] - {focus[0]}) - cos({fsp.theta_n}) * (x[1] - {focus[1]}))', f'{fsp.omega_n} * (cos({fsp.theta_n}) * (x[0] - {focus[0]}) - sin({fsp.theta_n}) * (x[1] - {focus[1]}))'), element=fsp.Q_v_.ufl_element())
+v__profile_ellipse = Expression((f'{fsp.omega_n} * (-sin({fsp.theta_n}) * (x[0] - {rmsh.parameters["c"][0]}) - cos({fsp.theta_n}) * (x[1] - {rmsh.parameters["c"][1]}))', f'{fsp.omega_n} * (cos({fsp.theta_n}) * (x[0] - {rmsh.parameters["c"][0]}) - sin({fsp.theta_n}) * (x[1] - {rmsh.parameters["c"][1]}))'), element=fsp.Q_v_.ufl_element())
 bc_v__ellipse = DirichletBC(fsp.Q_v_, v__profile_ellipse, rmsh.mf, rmsh.parameters['polygon_id'])
 
 bc_phi_r = DirichletBC(fsp.Q_phi, Constant(0), rmsh.mf, rmsh.parameters['line_r_id'])

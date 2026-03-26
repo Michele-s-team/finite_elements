@@ -836,6 +836,6 @@ def point_in_box(point, box):
     result = True
 
     for i in range(len(box)):
-        result = result and ((point[i] > box[i][0]) and (point[0] < box[i][1]))
+        result = result and ((point[i] > box[i][0]) and (point[i] < box[i][1]))
 
     return result

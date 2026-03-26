@@ -6,7 +6,7 @@ import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
 
-alpha, beta, gamma = ufl.indices(3)
+alpha, beta, gamma, i, j, k, l = ufl.indices(7)
 
 epsilon = ufl.PermutationSymbol(2)
 
@@ -25,6 +25,27 @@ Nt_tb = None
 n_circle = None
 n_lr = None
 n_tb = None
+
+'''
+tangent to boundary facets of a two-dimensional mesh, normalized to unity. 
+Note: be careful about the direction of this tangent, which is obtained by rotating FacetNormal by \pi/2 counterclockwise as seen by lookng at the xy plane from above (positive z)
+
+Input values: 
+    - 'mesh': the mesh
+Return values:
+    - 't': If the mesh is two-dimensional, [-n[1], n[0]] where n = FacetNormal(mesh). Otherwise [0] *[mesh dimension]
+'''
+
+def FacetTangent(mesh):
+
+    n = FacetNormal(mesh)
+
+    if mesh.topology().dim() == 2:
+        return as_vector([-n[1], n[0]])
+    else: 
+        return as_vector([0] * mesh.topology().dim())
+
+
 
 '''
 build the facet normals to all sub-meshes of a parent mesh
@@ -50,50 +71,60 @@ def facet_normal_sub_meshes(sub_meshes, mesh_parameters):
 
     return sub_mesh_facet_normal
 
+
+'''
+build the facet tangents to all sub-meshes of a parent mesh
+Input values: 
+    - 'sub_meshes': the list of sub_meshes of the parent mesh
+    - 'mesh_parameters': the dictionary of parameters of the parent mesh
+
+Return values: 
+    - 'sub_mesh_facet_tangent': list of tangents to each sub_mesh of the parent mesh
+'''
+
+def facet_tangent_sub_meshes(sub_meshes, mesh_parameters):
+
+    sub_mesh_facet_tangent = []
+
+    if ("n_sub_meshes" in mesh_parameters) and (mesh_parameters["n_sub_meshes"] > 1):
+
+        # there are multiple sub-meshes in the parent mesh -> define the facet normal for each sub-mesh
+
+        for p in range(mesh_parameters["n_sub_meshes"]):
+
+            sub_mesh_facet_tangent.append(FacetTangent(sub_meshes[p]))
+
+    return sub_mesh_facet_tangent
+
 # here I define the facet normal vector, which cannot be plotted as a field. It is not a vector in the tangent bundle of \Omega
 
 if "n_meshes" not in lmsh.parameters: 
     # 1 There is only one mesh
 
     facet_normal = FacetNormal(lmsh.mesh)
+    facet_tangent = FacetTangent(lmsh.mesh)
 
     sub_mesh_facet_normal = facet_normal_sub_meshes(lmsh.sub_meshes, lmsh.parameters)
-
-    '''
-    if ("n_sub_meshes" in lmsh.parameters) and (lmsh.parameters["n_sub_meshes"] > 1):
-
-        # 1.1 there are multiple sub-meshes of the parent mesh -> define the facet normal for each sub mesh
-        sub_mesh_facet_normal = []
-
-        for p in range(lmsh.parameters["n_sub_meshes"]):
-            sub_mesh_facet_normal.append(FacetNormal(lmsh.sub_meshes[p]))
-    '''
+    sub_mesh_facet_tangent = facet_tangent_sub_meshes(lmsh.sub_meshes, lmsh.parameters)
 
 else:
     # 2 There are multiple meshes
 
     facet_normal = [None] * lmsh.parameters['n_meshes']
+    facet_tangent = [None] * lmsh.parameters['n_meshes']
+
     sub_mesh_facet_normal = [None] * lmsh.parameters['n_meshes']
+    sub_mesh_facet_tangent = [None] * lmsh.parameters['n_meshes']
 
     for i in range(lmsh.parameters["n_meshes"]):
 
         facet_normal[i] = FacetNormal(lmsh.mesh[i])
+        facet_tangent[i] = FacetTangent(lmsh.mesh[i])
 
         sub_mesh_facet_normal[i] = facet_normal_sub_meshes(lmsh.sub_meshes[i], lmsh.mesh_parameters[i])
-
-        '''
-        sub_mesh_facet_normal[i] = []
-
-        if ("n_sub_meshes" in lmsh.mesh_parameters[i]) and (lmsh.mesh_parameters[i]["n_sub_meshes"] > 1):
-
-            # 2.1 there are multiple sub-meshes in the parent mesh[i] -> define the facet normal for each sub mesh
-
-            for p in range(lmsh.mesh_parameters[i]["n_sub_meshes"]):
-                sub_mesh_facet_normal[i].append(FacetNormal(lmsh.sub_meshes[i][p]))
-        '''
+        sub_mesh_facet_tangent[i] = facet_tangent_sub_meshes(lmsh.sub_meshes[i], lmsh.mesh_parameters[i])
 
 
-i, j, k, l = ufl.indices(4)
 
 '''
 return the normal to a mesh as a smooth field
@@ -104,6 +135,7 @@ Return values:
     - the unit normal as a smooth field
 '''
 def calc_normal_cg2(mesh):
+
     n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
     u = TrialFunction(V)
@@ -116,6 +148,7 @@ def calc_normal_cg2(mesh):
     A.ident_zeros()
     nh = Function(V)
     solve(A, nh.vector(), L)
+
     return nh
 
 '''
@@ -226,3 +259,35 @@ def delta_n_ale(ys, u, nu):
         1.0/norm_dxds * (1.0/norm_dxds**2 * dxds[gamma] * nu.dx(0)[gamma] * epsilon[alpha, beta] * dxds[beta] - \
                          epsilon[alpha, beta] * nu.dx(0)[beta]), 
         (alpha))
+
+
+
+'''
+return the tangent to mesh boundaries as a smooth field
+Note: the resulting vector field is not normalized to unity. 
+Input values: 
+    - 'mesh': the mesh
+Return values: 
+    - the tangent as a smooth field
+'''
+def calc_tangent_cg2(mesh):
+
+    t = FacetTangent(mesh)
+
+    V = VectorFunctionSpace(mesh, "CG", 2)
+
+    u = TrialFunction(V)
+    v = TestFunction(V)
+    
+    a = inner(u, v) * ds
+    l = inner(t, v) * ds
+    
+    A = assemble(a, keep_diagonal=True)
+    L = assemble(l)
+
+    A.ident_zeros()
+
+    nh = Function(V)
+    solve(A, nh.vector(), L)
+    
+    return nh

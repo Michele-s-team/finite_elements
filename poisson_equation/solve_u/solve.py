@@ -12,6 +12,7 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/vertex/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_vertex $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertices/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk_vertices $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertices/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk_vertices_tangent $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/ring_slice/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring_slice $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/half_circle_with_line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py half_circle_with_line $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/ring/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/solution"; rm -rf $SOLUTION_PATH; python3 solve.py ring $MESH_PATH $SOLUTION_PATH
@@ -46,15 +47,10 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
-
-
-
-J = derivative(vp.F, fsp.u, fsp.J_u)
-problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
-solver = NonlinearVariationalSolver(problem)
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -67,18 +63,21 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
-solver.parameters.update(params)
 
+'''
+# test FacetTangent - start
+import differential_geometry.boundary.geometry as bgeo
+import input_output as io
+import solution_paths as solpath
 
-J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
-problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
-solver_pp = NonlinearVariationalSolver(problem_pp)
+t = bgeo.calc_tangent_cg2(rmsh.lmsh.mesh)
+io.full_print(t, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+# test FacetTangent - end
+'''
 
-# solve original problem
-solver.solve()
+var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 
-
-# solve pp problem
-solver_pp.solve()
+var_pr.solve_vp(vp.F_pp, fsp.hess_u, [], fsp.J_hess_u)
 
 prout_bc = importlib.import_module(swi.prout_bc)

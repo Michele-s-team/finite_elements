@@ -26,9 +26,9 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
-    '<<(u^n_i - u_polygon_i)(u^n_i - u_polygon_i)>>_polygon', \
+    '<<(u^n_i - u_shape_i)(u^n_i - u_shape_i)>>_polygon', \
     '<<(u^n_i - u_square_i)(u^n_i - u_square_i)>>_square', \
-    '<<(u_dot^n_i - u_dot_polygon_i)(u_dot^n_i - u_dot_polygon_i)>>_polygon', \
+    '<<(u_dot^n_i - u_dot_shape_i)(u_dot^n_i - u_dot_shape_i)>>_polygon', \
     '<<(u_dot^n_i - u_dot_square_i)(u_dot^n_i - u_dot_square_i)>>_square', \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
     '<<v_bar^i v_bar_i>>_{tb}', \
@@ -46,11 +46,11 @@ def print_bcs():
     # write the residual of natural BCs  to file
     writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_polygon - fsp.u_n), rmsh.ds_poly):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_shape - fsp.u_n), rmsh.ds_poly):.{io.number_of_decimals}e}", \
         fieldnames[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_square - fsp.u_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_polygon - fsp.u_dot_n), rmsh.ds_poly):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_shape - fsp.u_dot_n), rmsh.ds_poly):.{io.number_of_decimals}e}", \
         fieldnames[3]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_square - fsp.u_dot_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
         fieldnames[4]: \
