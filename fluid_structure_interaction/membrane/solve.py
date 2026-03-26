@@ -179,29 +179,13 @@ for n in range(rpam.parameters['N']):
     vp_fluid = importlib.reload(vp_fluid)
 
     # step 3.1
-    J_fluid_1 = derivative(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, fsp.J_v_fl_bar)
-    problem_fluid_1 = NonlinearVariationalProblem(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, J_fluid_1)
-    solver_fluid_1 = NonlinearVariationalSolver(problem_fluid_1)
-    solver_fluid_1.parameters.update(params)
-    solver_fluid_1.solve()
-
+    var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
 
     # Step 3.2: surface_tension correction step
-    J_fluid_2 = derivative(vp_fluid.F_phi_fl, fsp.phi_fl, fsp.J_phi_fl)
-    problem_fluid_2 = NonlinearVariationalProblem(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, J_fluid_2)
-    solver_fluid_2 = NonlinearVariationalSolver(problem_fluid_2)
-    solver_fluid_2.parameters.update(params)
-    solver_fluid_2.solve()
-
+    var_pr.solve_vp(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, fsp.J_phi_fl, parameters=params)
 
     # step 3.3
-    J_fluid_3 = derivative(vp_fluid.F_v_fl_n, fsp.v_fl_n, fsp.J_v_fl_n)
-    problem_fluid_3 = NonlinearVariationalProblem(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], J_fluid_3)
-    solver_fluid_3 = NonlinearVariationalSolver(problem_fluid_3)
-    solver_fluid_3.parameters.update(params)
-    solver_fluid_3.solve()
-
-    
+    var_pr.solve_vp(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], fsp.J_v_fl_n, parameters=params)
 
     print('... done.', flush=True)
     
