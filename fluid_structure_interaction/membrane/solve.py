@@ -24,6 +24,7 @@ import parameters.read.solution as rpam
 import physics as phys
 import runtime_arguments as rarg
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 import print_out_solution as pr_sol
 
@@ -144,12 +145,8 @@ for n in range(rpam.parameters['N']):
     
 
     vp_membrane = importlib.import_module(swi.vp_membrane)
-    
-    J_mem = derivative(vp_membrane.F_mem, fsp.psi_mem, fsp.J_psi_mem)
-    problem_mem = NonlinearVariationalProblem(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, J_mem)
-    solver_mem = NonlinearVariationalSolver(problem_mem)
-    solver_mem.parameters.update(params)
-    solver_mem.solve()
+
+    var_pr.solve_vp(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, fsp.J_psi_mem, parameters=params)
 
     print('... done.', flush=True)
 
@@ -168,20 +165,9 @@ for n in range(rpam.parameters['N']):
 
     vp_mesh = importlib.reload(vp_mesh)
 
-    J_msh = derivative(vp_mesh.F_msh, fsp.u_n, fsp.J_u)
-    problem_msh = NonlinearVariationalProblem(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_msh, J_msh)
-    solver_msh = NonlinearVariationalSolver(problem_msh)
-
-    J_msh_dot = derivative(vp_mesh.F_msh_dot, fsp.u_dot_n, fsp.J_u_dot)
-    problem_msh_dot = NonlinearVariationalProblem(vp_mesh.F_msh_dot, fsp.u_dot_n, vp_mesh.bcs_msh_dot, J_msh_dot)
-    solver_msh_dot = NonlinearVariationalSolver(problem_msh_dot)
-
-    solver_msh.parameters.update(params)
-    solver_msh_dot.parameters.update(params)
-
     # solve for u_n and u_dot_n
-    solver_msh.solve()
-    solver_msh_dot.solve()
+    var_pr.solve_vp(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_msh, fsp.J_u, parameters=params)
+    var_pr.solve_vp(vp_mesh.F_msh_dot, fsp.u_dot_n, vp_mesh.bcs_msh_dot, fsp.J_u_dot, parameters=params)
 
     print('... done.', flush=True)
 
