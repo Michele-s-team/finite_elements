@@ -17,13 +17,10 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
-
-J = derivative(vp.F, fsp.u, fsp.J_u)
-problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
-solver = NonlinearVariationalSolver(problem)
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -36,9 +33,8 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
-solver.parameters.update(params)
 
-# solve  problem for u
-solver.solve()
+
+var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 
 prout_bc = importlib.import_module(swi.prout_bc)
