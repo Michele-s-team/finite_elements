@@ -27,6 +27,7 @@ import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
@@ -134,11 +135,7 @@ for n in range(rpam.parameters['num_steps']):
 
     vp_el = importlib.reload(vp_el)
 
-    J_el = derivative(vp_el.F_el, fsp.psi_el, fsp.J_psi_el)
-    problem_el = NonlinearVariationalProblem(vp_el.F_el, fsp.psi_el, vp_el.bcs_el, J_el)
-    solver_el = NonlinearVariationalSolver(problem_el)
-    solver_el.parameters.update(params)
-    solver_el.solve()
+    var_pr.solve_vp(vp_el.F_el, fsp.psi_el, vp_el.bcs_el, fsp.J_psi_el, parameters=params)
 
     # pr_sol.print_solution_el(t, step)
 
@@ -157,19 +154,8 @@ for n in range(rpam.parameters['num_steps']):
 
     vp_msh = importlib.reload(vp_msh)
 
-    J_msh_u = derivative(vp_msh.F_msh_u, fsp.u_msh_n, fsp.J_msh_u)
-    problem_msh_u = NonlinearVariationalProblem(vp_msh.F_msh_u, fsp.u_msh_n, vp_msh.bcs_msh, J_msh_u)
-    solver_msh_u = NonlinearVariationalSolver(problem_msh_u)
-
-    J_msh_u_dot = derivative(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, fsp.J_msh_u_dot)
-    problem_msh_u_dot = NonlinearVariationalProblem(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, vp_msh.bcs_msh_dot, J_msh_u_dot)
-    solver_msh_u_dot = NonlinearVariationalSolver(problem_msh_u_dot)
-
-    solver_msh_u.parameters.update(params)
-    solver_msh_u_dot.parameters.update(params)
-
-    solver_msh_u.solve()
-    solver_msh_u_dot.solve()
+    var_pr.solve_vp(vp_msh.F_msh_u, fsp.u_msh_n, vp_msh.bcs_msh, fsp.J_msh_u, parameters=params)
+    var_pr.solve_vp(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, vp_msh.bcs_msh_dot, fsp.J_msh_u_dot, parameters=params)
 
     print('... done.', flush=True)
 
