@@ -14,6 +14,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import input_output as io
 import mesh.load as lmsh
@@ -87,6 +88,10 @@ def print_solution(step):
         rarg.args.input_directory, 
         [rmsh.parameters['polygon_id']],
         os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + f'_n_{step}.csv'))
+
+    
+    io.full_print(bgeo.calc_tangent_cg2(rmsh.lmsh.mesh), 't_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
 
 
