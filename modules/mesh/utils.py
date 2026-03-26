@@ -2025,10 +2025,10 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_0_metadata = {}
     mesh_0_metadata['L'] = parameters['L']
     mesh_0_metadata['h'] = parameters['h']
-    mesh_0_metadata['N'] = len(shape_coordinates)
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
     mesh_0_metadata['shape_coordinates'] = shape_coordinates
+    mesh_0_metadata['shape_format'] = parameters['shape_format']
     mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
 
     mesh_0_metadata['sub_mesh_0_dim'] = parameters['sub_mesh_0_0_dim']
@@ -2451,10 +2451,11 @@ def shape_tool(mesh_2d_path, shape_id):
     mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
     coordinates_mesh_2d = mesh_2d.coordinates()
 
+    shape_coordinates = parameters_mesh_2d['shape_coordinates']
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
+    # shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
 
 
     # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
@@ -2481,14 +2482,14 @@ def shape_tool(mesh_2d_path, shape_id):
 
         v_list = list(vertices(facet))
     
-        if (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+        if (np.isclose(v_list[0].point().array()[:2], shape_coordinates[0]).all()) and (np.isclose(v_list[1].point().array()[:2], shape_coordinates[1]).all()):
             # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
             indices_vertices_on_shape.append(v_list[0].index())
 
             break
 
-        if (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+        if (np.isclose(v_list[1].point().array()[:2], shape_coordinates[0]).all()) and (np.isclose(v_list[0].point().array()[:2], shape_coordinates[1]).all()):
             # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
             indices_vertices_on_shape.append(v_list[1].index())
@@ -2501,7 +2502,7 @@ def shape_tool(mesh_2d_path, shape_id):
     # 4.2 Add subsequent vertices by running on the edges in a sequential way
     used_facet_indices = set()
 
-    while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
+    while len(indices_vertices_on_shape) < len(shape_coordinates):
         # stop when you addedd N vertices
 
         for facet in facets_on_shape:
