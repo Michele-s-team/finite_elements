@@ -2025,7 +2025,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_0_metadata = {}
     mesh_0_metadata['L'] = parameters['L']
     mesh_0_metadata['h'] = parameters['h']
-    mesh_0_metadata['N'] = parameters['N']
+    mesh_0_metadata['N'] = len(shape_coordinates)
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
     mesh_0_metadata['shape_coordinates'] = shape_coordinates
@@ -2095,7 +2095,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     print("Starting loop over shape ... ")
 
-    for i in range(1, parameters['N']):
+    for i in range(1, len(shape_coordinates)):
 
         shape_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
         gmsh.model.geo.synchronize()
@@ -2134,7 +2134,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     tag_physical_object(lines[3], parameters['line_l_id'], gmsh.model, 'line_l')
 
     #add shape lines
-    tag_physical_object([lines[i] for i in range(4, 4 + parameters['N'])], parameters['shape_id'], gmsh.model, 'shape_loop')
+    tag_physical_object([lines[i] for i in range(4, 4 + len(shape_coordinates))], parameters['shape_id'], gmsh.model, 'shape_loop')
 
 
 
@@ -2205,7 +2205,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     n_vertices_on_shape = len(shape_vertex_ids)
 
-    if n_vertices_on_shape != parameters['N']:
+    if n_vertices_on_shape != len(shape_coordinates):
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
         print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
