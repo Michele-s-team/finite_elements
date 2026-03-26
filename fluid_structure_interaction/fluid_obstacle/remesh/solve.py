@@ -11,7 +11,7 @@ Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
     
 Examples:
-     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/remesh/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
+     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
  '''
 
 import dolfin
@@ -24,46 +24,31 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import differential_geometry.manifold.geometry as geo
-import differential_geometry.boundary.geometry as bgeo
-import function_spaces as fsp
+# import differential_geometry.manifold.geometry as geo
+# import differential_geometry.boundary.geometry as bgeo
+# import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
+# import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
-import print_out_solution as pr_sol
+# import print_out_solution as pr_sol
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
-rmsh = importlib.import_module(swi.rmsh)
+# rmsh = importlib.import_module(swi.rmsh)
+
+
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
-'''
-# set the solver parameters here
-params = {'nonlinear_solver': 'newton',
-          'newton_solver':
-              {
-                  'linear_solver': 'superlu',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
-              }
-          }
-
-params_I = {'nonlinear_solver': 'newton',
-            'newton_solver':
-                {
-                    'linear_solver': 'superlu',
-                    'absolute_tolerance': 1e-8,
-                    'relative_tolerance': 1e-8,
-                    'maximum_iterations': 1000000,
-                    'relaxation_parameter': 0.95,
-                }
-'''
+# create the solution metadata and write it into the output directory 
+metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
 # parameters with SNES method
 # 
@@ -89,10 +74,29 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
 # 
 
+class v_sq_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 1
 
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+    def value_shape(self):
+        return (2,)
+    
+class sigma_di_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['rho_di'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
 
+    def value_shape(self):
+        return (1,)
+    
+class sigma_sq_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
 
+    def value_shape(self):
+        return (1,)
+
+'''
 # pre-load modules
 pr_bc = importlib.import_module(swi.prout_bc)
 vp_I = importlib.import_module(swi.vp_I)
@@ -111,31 +115,13 @@ io.full_print(fsp.ys, 'ys', \
 
 # set initial profiles
 # 
-'''
-class v_sq_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 1
 
-    def value_shape(self):
-        return (2,)
+
 fsp.v_square_n_1.interpolate(v_sq_expression(element=fsp.Q_v_square.ufl_element()))
-'''
 
 
-class sigma_di_0_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['rho_di'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
 
-    def value_shape(self):
-        return (1,)
-    
-class sigma_sq_0_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
 
-    def value_shape(self):
-        return (1,)
 
 fsp.sigma_disk_n_32.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
 fsp.sigma_square_n_32.interpolate(sigma_sq_0_expression(element=fsp.Q_sigma_square.ufl_element()))
@@ -334,3 +320,4 @@ for n in range(rpam.parameters['N']):
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
+'''
