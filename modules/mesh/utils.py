@@ -2173,16 +2173,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_0'), parameters["sub_mesh_0_0_id"])
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), parameters["sub_mesh_0_1_id"])
 
-    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
-    mesh_1_metadata['coordinates'] = cumulative_arc_length
-
-
-    # print the boundary points of the boundary given by the shape
-    sorted_boundary_points(
-        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
-        output_directory_mesh_0, 
-        [parameters['shape_id']],
-        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
 
 
     # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
@@ -2209,10 +2199,26 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
         print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
-        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {parameters["N"]}')
+        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {len(shape_coordinates)}')
 
         sys.exit()
 
+
+
+
+    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
+    mesh_1_metadata['coordinates'] = cumulative_arc_length
+
+
+    # print the boundary points of the boundary given by the shape
+    sorted_boundary_points(
+        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+        output_directory_mesh_0, 
+        [parameters['shape_id']],
+        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+
+
+  
 
     # B) mesh B (line)
 
@@ -2495,7 +2501,6 @@ def shape_tool(mesh_2d_path, shape_id):
             indices_vertices_on_shape.append(v_list[1].index())
 
             break
-
 
     # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
 
