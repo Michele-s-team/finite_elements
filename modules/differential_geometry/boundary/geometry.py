@@ -27,20 +27,25 @@ n_lr = None
 n_tb = None
 
 '''
-tangent to boundary facets of a mesh, normalized to unity. 
+tangent to boundary facets of a two-dimensional mesh, normalized to unity. 
 Note: be careful about the direction of this tangent, which is obtained by rotating FacetNormal by \pi/2 counterclockwise as seen by lookng at the xy plane from above (positive z)
 
 Input values: 
     - 'mesh': the mesh
 Return values:
-    - 't': [-n[1], n[0]] where n = FacetNormal(mesh)
+    - 't': If the mesh is two-dimensional, [-n[1], n[0]] where n = FacetNormal(mesh). Otherwise [0] *[mesh dimension]
 '''
 
 def FacetTangent(mesh):
 
     n = FacetNormal(mesh)
 
-    return as_vector([-n[1], n[0]])
+    if mesh.topology().dim() == 2:
+        return as_vector([-n[1], n[0]])
+    else: 
+        return as_vector([0] * mesh.topology().dim())
+
+
 
 '''
 build the facet normals to all sub-meshes of a parent mesh
