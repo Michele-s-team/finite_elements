@@ -165,22 +165,13 @@ for n in range(rpam.parameters['num_steps']):
     vp_fl = importlib.reload(vp_fl)
 
     # step 3.1
-    J_fl_1 = derivative(vp_fl.F_v_, fsp.v_, fsp.J_v_)
-    problem_fl_1 = NonlinearVariationalProblem(vp_fl.F_v_, fsp.v_, vp_fl.bc_v_, J_fl_1)
-    solver_fl_1 = NonlinearVariationalSolver(problem_fl_1)
-    solver_fl_1.solve()
+    var_pr.solve_vp(vp_fl.F_v_, fsp.v_, vp_fl.bc_v_, fsp.J_v_)
 
     # Step 3.2: surface_tension correction step
-    J_fl_2 = derivative(vp_fl.F_phi, fsp.phi, fsp.J_phi)
-    problem_fl_2 = NonlinearVariationalProblem(vp_fl.F_phi, fsp.phi, vp_fl.bc_phi, J_fl_2)
-    solver_fl_2 = NonlinearVariationalSolver(problem_fl_2)
-    solver_fl_2.solve()
+    var_pr.solve_vp(vp_fl.F_phi, fsp.phi, vp_fl.bc_phi, fsp.J_phi)
 
     # step 3.3
-    J_fl_3 = derivative(vp_fl.F_v_n, fsp.v_n, fsp.J_v_n)
-    problem_fl_3 = NonlinearVariationalProblem(vp_fl.F_v_n, fsp.v_n, [], J_fl_3)
-    solver_fl_3 = NonlinearVariationalSolver(problem_fl_3)
-    solver_fl_3.solve()
+    var_pr.solve_vp(vp_fl.F_v_n, fsp.v_n, [], fsp.J_v_n)
 
     print('... done.', flush=True)
 
