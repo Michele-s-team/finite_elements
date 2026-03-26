@@ -2027,9 +2027,14 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_0_metadata['h'] = parameters['h']
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
-    mesh_0_metadata['shape_coordinates'] = shape_coordinates
     mesh_0_metadata['shape_format'] = parameters['shape_format']
-    mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
+
+    if parameters['shape_format'] == 'parametric':
+        mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
+        mesh_0_metadata['N'] = parameters['N']
+    
+    elif parameters['shape_format'] == 'coordinates':
+        mesh_0_metadata['shape_coordinates'] = shape_coordinates
 
     mesh_0_metadata['sub_mesh_0_dim'] = parameters['sub_mesh_0_0_dim']
     mesh_0_metadata['sub_mesh_1_dim'] = parameters['sub_mesh_0_1_dim']
