@@ -271,7 +271,7 @@ for n in range(rpam.parameters['N']):
 
     # write into sigma_disk_n_12
     phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
-    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - phi_disk_output)
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(phi_disk_output, fsp.Q_sigma_disk))
 
 
     # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
@@ -321,11 +321,155 @@ for n in range(rpam.parameters['N']):
     # print out the residuals of BCs
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     if step % rpam.parameters['print_out_stride'] == 0:
+
         pr_bc.print_bcs()
 
-    #sign
+
+    mesh_0_0_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0][0], fsp.u_n_di))
+    mesh_0_1_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0][1], fsp.u_n_sq))
+    mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
+    if True:
+        # the mesh quality got below the threshold -> remesh 
+        
+        # 1.transfer fields
+
+        # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
+
+        # 1.1.1 disk fluid
+        v_di_n_old = Function(fsp.Q_v_disk)
+        v_di_n_1_old = Function(fsp.Q_v_disk)
+        v_di_n_2_old = Function(fsp.Q_v_disk)
+
+        v_di__old = Function(fsp.Q_v__disk)
+
+        sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
+        sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
+
+        phi_omega_disk_old = Function(fsp.Q_phi_omega_disk)
+
+
+        # 1.1.2 square fluid
+        v_sq_n_old = Function(fsp.Q_v_square)
+        v_sq_n_1_old = Function(fsp.Q_v_square)
+        v_sq_n_2_old = Function(fsp.Q_v_square)
+
+        v_sq__old = Function(fsp.Q_v__square)
+
+        sigma_sq_n_12_old = Function(fsp.Q_sigma_square)
+        sigma_sq_n_32_old = Function(fsp.Q_sigma_square)
+
+        phi_sq_old = Function(fsp.Q_sigma_square)
+
+
+        # 1.1.3 domain
+
+        # 1.1.3.1 disk
+        u_n_di_old = Function(fsp.Q_u_di)
+        u_n_1_di_old = Function(fsp.Q_u_di)
+        u_n_2_di_old = Function(fsp.Q_u_di)
+
+        u_dot_n_di_old = Function(fsp.Q_u_di_dot)
+        u_dot_n_1_di_old = Function(fsp.Q_u_di_dot)
+        u_dot_n_2_di_old = Function(fsp.Q_u_di_dot)
+
+        # 1.1.3.2 square
+        u_n_sq_old = Function(fsp.Q_u_sq)
+        u_n_1_sq_old = Function(fsp.Q_u_sq)
+        u_n_2_sq_old = Function(fsp.Q_u_sq)
+
+        u_dot_n_sq_old = Function(fsp.Q_u_sq_dot)
+        u_dot_n_1_sq_old = Function(fsp.Q_u_sq_dot)
+        u_dot_n_2_sq_old = Function(fsp.Q_u_sq_dot)
+
+        # sign
+
+        '''
+        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+        v_n_old.assign(fsp.v_n)
+        v_n_1_old.assign(fsp.v_n_1)
+        v_n_2_old.assign(fsp.v_n_2)
+
+        v__old.assign(fsp.v_)
+
+        sigma_n_12_old.assign(fsp.sigma_n_12)
+        sigma_n_32_old.assign(fsp.sigma_n_32)
+
+        phi_old.assign(fsp.phi)
+
+        u_n_old.assign(fsp.u_n)
+        u_n_1_old.assign(fsp.u_n_1)
+        u_n_2_old.assign(fsp.u_n_2)
+
+        u_dot_n_old.assign(fsp.u_dot_n)
+        u_dot_n_1_old.assign(fsp.u_dot_n_1)
+        u_dot_n_2_old.assign(fsp.u_dot_n_2)
+
+        
+        #2. set the new rotation angle of the polygon for the reference configuration 
+        theta_ref = fsp.theta_n
+
+        #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
+        polygon_coordinates = []
+        for coordinate in polygon_coordinates_0:
+            polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+
+
+        #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
+        msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
+        additional_metadata={'phi': theta_ref})
+
+        #5. reload modules so everything is updated according to the mesh change
+        importlib.reload(geo)
+        importlib.reload(rmsh.lmsh)
+        importlib.reload(bgeo)
+        fsp = importlib.reload(fsp)
+        rmsh = importlib.reload(rmsh)
+        pr_bc = importlib.reload(pr_bc)
+
+
+        #6. transfer the values stored in the _old fields to the fields defined on the new mesh
+        msh.transfer(v_n_old, fsp.v_n, u_n_old)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
+        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
+
+        msh.transfer(v__old, fsp.v_, u_n_old)
+
+        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
+        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
+
+        msh.transfer(phi_old, fsp.phi, u_n_old)
+
+        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+        fsp.u_n.assign(Constant((0, 0)))
+        fsp.u_n_1.assign(Constant((0, 0)))
+        fsp.u_n_2.assign(Constant((0, 0)))
+
+        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+        msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
+
+
+        #7. call print_remesh to print out the remeshing info
+
+        pr_sol.print_remesh(step, theta_ref, mesh_quality)
+
+        # 8 clean up
+    
+        # delete the _old functions
+        del v_n_old, v_n_1_old, v_n_2_old
+        del v__old
+        del sigma_n_12_old, sigma_n_32_old
+        del phi_old
+        del u_n_old, u_n_1_old, u_n_2_old
+        del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
+
+        gc.collect()
+        '''
+        print(f'**** ... done. ')
+
+    '''
     # update the fields
     # 1) I 
 
