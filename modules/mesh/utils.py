@@ -2025,11 +2025,17 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_0_metadata = {}
     mesh_0_metadata['L'] = parameters['L']
     mesh_0_metadata['h'] = parameters['h']
-    mesh_0_metadata['N'] = parameters['N']
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
+    mesh_0_metadata['shape_format'] = parameters['shape_format']
+
+    # if the shape derives from a parametric form, write N and the parametric function
+    if parameters['shape_format'] == 'parametric':
+        mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
+        mesh_0_metadata['N'] = parameters['N']
+    
+    # if the shape comes both from a parametric form or from raw coordinates, write the raw coordinates of the shape
     mesh_0_metadata['shape_coordinates'] = shape_coordinates
-    mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
 
     mesh_0_metadata['sub_mesh_0_dim'] = parameters['sub_mesh_0_0_dim']
     mesh_0_metadata['sub_mesh_1_dim'] = parameters['sub_mesh_0_1_dim']
@@ -2095,7 +2101,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     print("Starting loop over shape ... ")
 
-    for i in range(1, parameters['N']):
+    for i in range(1, len(shape_coordinates)):
 
         shape_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
         gmsh.model.geo.synchronize()
@@ -2134,7 +2140,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     tag_physical_object(lines[3], parameters['line_l_id'], gmsh.model, 'line_l')
 
     #add shape lines
-    tag_physical_object([lines[i] for i in range(4, 4 + parameters['N'])], parameters['shape_id'], gmsh.model, 'shape_loop')
+    tag_physical_object([lines[i] for i in range(4, 4 + len(shape_coordinates))], parameters['shape_id'], gmsh.model, 'shape_loop')
 
 
 
@@ -2173,16 +2179,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_0'), parameters["sub_mesh_0_0_id"])
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), parameters["sub_mesh_0_1_id"])
 
-    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
-    mesh_1_metadata['coordinates'] = cumulative_arc_length
-
-
-    # print the boundary points of the boundary given by the shape
-    sorted_boundary_points(
-        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
-        output_directory_mesh_0, 
-        [parameters['shape_id']],
-        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
 
 
     # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
@@ -2205,14 +2201,30 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     n_vertices_on_shape = len(shape_vertex_ids)
 
-    if n_vertices_on_shape != parameters['N']:
+    if n_vertices_on_shape != len(shape_coordinates):
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
         print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
-        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {parameters["N"]}')
+        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {len(shape_coordinates)}')
 
         sys.exit()
 
+
+
+
+    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
+    mesh_1_metadata['coordinates'] = cumulative_arc_length
+
+
+    # print the boundary points of the boundary given by the shape
+    sorted_boundary_points(
+        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+        output_directory_mesh_0, 
+        [parameters['shape_id']],
+        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+
+
+  
 
     # B) mesh B (line)
 
@@ -2451,10 +2463,11 @@ def shape_tool(mesh_2d_path, shape_id):
     mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
     coordinates_mesh_2d = mesh_2d.coordinates()
 
+    shape_coordinates = parameters_mesh_2d['shape_coordinates']
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
+    # shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
 
 
     # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
@@ -2481,27 +2494,26 @@ def shape_tool(mesh_2d_path, shape_id):
 
         v_list = list(vertices(facet))
     
-        if (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+        if (np.isclose(v_list[0].point().array()[:2], shape_coordinates[0]).all()) and (np.isclose(v_list[1].point().array()[:2], shape_coordinates[1]).all()):
             # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
             indices_vertices_on_shape.append(v_list[0].index())
 
             break
 
-        if (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+        if (np.isclose(v_list[1].point().array()[:2], shape_coordinates[0]).all()) and (np.isclose(v_list[0].point().array()[:2], shape_coordinates[1]).all()):
             # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
             indices_vertices_on_shape.append(v_list[1].index())
 
             break
 
-
     # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
 
     # 4.2 Add subsequent vertices by running on the edges in a sequential way
     used_facet_indices = set()
 
-    while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
+    while len(indices_vertices_on_shape) < len(shape_coordinates):
         # stop when you addedd N vertices
 
         for facet in facets_on_shape:

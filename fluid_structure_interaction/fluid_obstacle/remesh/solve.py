@@ -26,12 +26,10 @@ sys.path.append(module_path)
 
 # import differential_geometry.manifold.geometry as geo
 # import differential_geometry.boundary.geometry as bgeo
-# import function_spaces as fsp
 import input_output as io
 # import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
-# import print_out_solution as pr_sol
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
@@ -103,6 +101,12 @@ shape_coordinates = shape_coordinates_0
 
 # generate the mesh with the shape and write theta_ref into its mesh_metadata
 msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+
+# sign
+
+import function_spaces as fsp
+import print_out_solution as pr_sol
 
 '''
 # pre-load modules
