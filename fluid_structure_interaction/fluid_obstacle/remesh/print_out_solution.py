@@ -28,6 +28,15 @@ remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
 remesh_writer.writeheader()
 
 
+data_filename = os.path.join(rarg.args.output_directory, 'data.csv')
+os.makedirs(os.path.dirname(data_filename), exist_ok=True)
+
+data_csvfile = open(data_filename, 'a', newline='')
+data_fieldnames = [ "step",  "mesh_quality"]
+data_writer = csv.DictWriter(data_csvfile, fieldnames=data_fieldnames)
+remesh_writer.writeheader()
+
+
 def print_remesh(step,  mesh_quality_before_remesh):
 
     remesh_writer.writerows([{ \
@@ -37,6 +46,16 @@ def print_remesh(step,  mesh_quality_before_remesh):
             mesh_quality_before_remesh, 
     }])
     remesh_csvfile.flush()
+
+def print_data(step,  mesh_quality):
+
+    data_writer.writerows([{ \
+        data_fieldnames[0]: \
+            step, 
+        data_fieldnames[1]: \
+            mesh_quality, 
+    }])
+    data_csvfile.flush()
 
 
 # print the solution for I

@@ -640,9 +640,12 @@ for n in range(rpam.parameters['N']):
         # generate the mesh with the current shape_coordinates and store it into rarg.args.input_directory/n_[step]/
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), os.path.join(solpath.snapshots_path, 'mesh', f'n_{step}'))
 
+    # print mesh quality at each step
+    pr_sol.print_data(step, mesh_quality)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
 
 pr_sol.remesh_csvfile.close()
+pr_sol.data_csvfile.close()
