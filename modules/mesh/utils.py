@@ -2515,14 +2515,14 @@ Return values:
         indices_vertices_on_shape = [index_v_t_0, index_v_t_1, ... ]
     - 'cumulative_arc_length': cumulative_arc_length[i] is the cumulated arc length from the beginning of the curve up to vertex with index indices_vertices_on_shape[i] included
 '''
-def shape_tool(mesh_2d_path, shape_id):
+def shape_tool(mesh_path, shape_id):
 
-    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
-    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
-    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    mesh_2d = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
+    mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
+    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
     coordinates_mesh_2d = mesh_2d.coordinates()
 
-    shape_coordinates = parameters_mesh_2d['shape_coordinates']
+    shape_coordinates = mesh_parameters['shape_coordinates']
 
 
     # 2. read the parametric form of the shape in the 2d mesh
