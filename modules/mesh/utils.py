@@ -2517,10 +2517,10 @@ Return values:
 '''
 def shape_tool(mesh_path, shape_id):
 
-    mesh_2d = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
+    mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
     mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
-    mf_mesh = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
-    mesh_coordinates = mesh_2d.coordinates()
+    mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
+    mesh_coordinates = mesh.coordinates()
 
     shape_coordinates = mesh_parameters['shape_coordinates']
 
@@ -2532,7 +2532,7 @@ def shape_tool(mesh_path, shape_id):
     # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
     facets_on_shape = []
 
-    for facet in facets(mesh_2d):
+    for facet in facets(mesh):
         #run through all facets of mesh_0 
 
         if mf_mesh[facet] == shape_id:
