@@ -2029,11 +2029,14 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             
     elif parameters['shape_format'] == 'coordinates':
 
+        mesh_metadata['shape_coordinates'] = shape_coordinates
+
         if 'shape_parametric_form' in parameters:
             del mesh_metadata['shape_parametric_form']
             
         if 'N' in parameters:
             del mesh_metadata['N']
+
 
 
     # write metadata for mesh 0
