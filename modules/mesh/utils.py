@@ -2231,7 +2231,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
 
-    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
+    _, cumulative_arc_length = shape_tool(mesh_0, mf_mesh_0, mesh_0_metadata['shape_coordinates'], parameters['shape_id'])
     mesh_1_metadata['coordinates'] = cumulative_arc_length
 
 
