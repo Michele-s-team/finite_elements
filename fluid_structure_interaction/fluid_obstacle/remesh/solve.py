@@ -136,7 +136,9 @@ fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 # test map_1d_to_2d - start
 
 import csv
-N=200
+rmsh = importlib.import_module(swi.rmsh)
+
+N=400
 
 mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
 print(f'L = {mesh_1_parameters["L"]}')
@@ -157,7 +159,8 @@ writer.writeheader()
 for i in range(N):
 
     x = mesh_1_parameters['L'] * i/(N-1)
-    f = msh.map_1d_to_2d(x, os.path.join(rarg.args.input_directory, f'mesh_{0}'), mesh_parameters['shape_id'])
+
+    f = msh.map_1d_to_2d(x, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.mesh_parameters[0]['shape_id'])
 
     writer.writerows([{ \
         fieldnames[0]: \
@@ -478,7 +481,7 @@ for n in range(rpam.parameters['N']):
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
             shape_coordinates.append(np.add(
-                                        msh.map_1d_to_2d(coordinate, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id']),
+                                        msh.map_1d_to_2d(coordinate,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.mesh_parameters[0]['shape_id']),
                                         fsp.U_n_12(coordinate)
                                         ).tolist()
                                 )   
