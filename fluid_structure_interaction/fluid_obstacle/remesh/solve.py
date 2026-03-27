@@ -17,6 +17,7 @@ Examples:
 import dolfin
 from fenics import *
 import importlib
+import numpy as np
 import os
 import sys
 
@@ -39,6 +40,7 @@ import variational_problem.utils as var_pr
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
+
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
@@ -330,7 +332,12 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
+    # if  mesh_quality < rpam.parameters['mesh_quality_threshold']:
     if True:
+
+        mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
+
+
         # the mesh quality got below the threshold -> remesh 
         
         # 1.transfer fields
@@ -363,62 +370,127 @@ for n in range(rpam.parameters['N']):
         phi_sq_old = Function(fsp.Q_sigma_square)
 
 
-        # 1.1.3 domain
+        # 1.1.3 D
 
         # 1.1.3.1 disk
         u_n_di_old = Function(fsp.Q_u_di)
         u_n_1_di_old = Function(fsp.Q_u_di)
         u_n_2_di_old = Function(fsp.Q_u_di)
 
-        u_dot_n_di_old = Function(fsp.Q_u_di_dot)
-        u_dot_n_1_di_old = Function(fsp.Q_u_di_dot)
-        u_dot_n_2_di_old = Function(fsp.Q_u_di_dot)
+        u_n_di_dot_old = Function(fsp.Q_u_di_dot)
+        u_n_1_di_dot_old = Function(fsp.Q_u_di_dot)
+        u_n_2_di_dot_old = Function(fsp.Q_u_di_dot)
 
         # 1.1.3.2 square
         u_n_sq_old = Function(fsp.Q_u_sq)
         u_n_1_sq_old = Function(fsp.Q_u_sq)
         u_n_2_sq_old = Function(fsp.Q_u_sq)
 
-        u_dot_n_sq_old = Function(fsp.Q_u_sq_dot)
-        u_dot_n_1_sq_old = Function(fsp.Q_u_sq_dot)
-        u_dot_n_2_sq_old = Function(fsp.Q_u_sq_dot)
+        u_n_sq_dot_old = Function(fsp.Q_u_sq_dot)
+        u_n_1_sq_dot_old = Function(fsp.Q_u_sq_dot)
+        u_n_2_sq_dot_old = Function(fsp.Q_u_sq_dot)
+
+
+        # 1.1.4 I
+
+        U_n_12_old = Function(fsp.Q_U)
+        U_n_32_old = Function(fsp.Q_U)
+
+
+        # 1.1.5 M
+
+        c_n_old = Function(fsp.Q_c)
+        c_n_1_old = Function(fsp.Q_c)
+
+
+        
+        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+
+        # 1.2.1 disk fluid
+
+        v_di_n_old.assign(fsp.v_disk_n)
+        v_di_n_1_old.assign(fsp.v_disk_n_1)
+        v_di_n_2_old.assign(fsp.v_disk_n_2)
+
+        v_di__old.assign(fsp.v_disk__)
+
+        sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
+        sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
+
+        phi_omega_disk_old.assign(fsp.phi_omega_disk)
+
+
+        # 1.2.2 square fluid
+
+        v_sq_n_old.assign(fsp.v_square_n)
+        v_sq_n_1_old.assign(fsp.v_square_n_1)
+        v_sq_n_2_old.assign(fsp.v_square_n_2)
+
+        v_sq__old.assign(fsp.v_square__)
+
+        sigma_sq_n_12_old.assign(fsp.sigma_square_n_12)
+        sigma_sq_n_32_old.assign(fsp.sigma_square_n_32)
+
+        phi_sq_old.assign(fsp.phi_square)
+        
+        # 1.2.3 D
+
+        # 1.2.3.1 disk
+
+        u_n_di_old.assign(fsp.u_n_di)
+        u_n_1_di_old.assign(fsp.u_n_1_di)
+        u_n_2_di_old.assign(fsp.u_n_2_di)
+
+        u_n_di_dot_old.assign(fsp.u_n_di_dot)
+        u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
+        u_n_2_di_dot_old.assign(fsp.u_n_2_di_dot)
+
+        # 1.2.3.2 square
+
+        u_n_sq_old.assign(fsp.u_n_sq)
+        u_n_1_sq_old.assign(fsp.u_n_1_sq)
+        u_n_2_sq_old.assign(fsp.u_n_2_sq)
+
+        u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
+        u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
+        u_n_2_sq_dot_old.assign(fsp.u_n_2_sq_dot)
+
+        # 1.2.4 D
+
+        U_n_12_old.assign(fsp.U_n_12)
+        U_n_32_old.assign(fsp.U_n_32)
+
+        # 1.2.5 M
+
+        c_n_old.assign(fsp.c_n)
+        c_n_1_old.assign(fsp.c_n_1)
+
+
+        #3. trace the coordinates of shape vertices according to the deformation field U_n_12: these will be the coordinates of the new reference configuration of the shape
+        shape_coordinates = []
+        for i in range(len(mesh_1_parameters["coordinates"])-1):
+            # run through all coordinates of the nodes of mesh[1]
+
+            coordinate = mesh_1_parameters["coordinates"][i]
+
+            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
+            shape_coordinates.append(np.add(
+                                        msh.map_1d_to_2d(coordinate, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id']),
+                                        fsp.U_n_12(coordinate)
+                                        ).tolist()
+                                )   
+
+        #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
+        msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
         # sign
 
-        '''
-        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
-        v_n_old.assign(fsp.v_n)
-        v_n_1_old.assign(fsp.v_n_1)
-        v_n_2_old.assign(fsp.v_n_2)
-
-        v__old.assign(fsp.v_)
-
-        sigma_n_12_old.assign(fsp.sigma_n_12)
-        sigma_n_32_old.assign(fsp.sigma_n_32)
-
-        phi_old.assign(fsp.phi)
-
-        u_n_old.assign(fsp.u_n)
-        u_n_1_old.assign(fsp.u_n_1)
-        u_n_2_old.assign(fsp.u_n_2)
-
-        u_dot_n_old.assign(fsp.u_dot_n)
-        u_dot_n_1_old.assign(fsp.u_dot_n_1)
-        u_dot_n_2_old.assign(fsp.u_dot_n_2)
-
-        
-        #2. set the new rotation angle of the polygon for the reference configuration 
-        theta_ref = fsp.theta_n
-
-        #3. trace the coordinates of polygon vertices with the new theta_ref polygon_coordinates_flat 
-        polygon_coordinates = []
-        for coordinate in polygon_coordinates_0:
-            polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+        '''        
 
 
-        #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
-        msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
-        additional_metadata={'phi': theta_ref})
+
+
+
 
         #5. reload modules so everything is updated according to the mesh change
         importlib.reload(geo)
