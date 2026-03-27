@@ -2460,6 +2460,38 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
     print(f'... done.')
 
+
+
+def map_1d_to_2d(x, mesh_path, shape_id):
+
+    # 1. initialize 
+    mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
+    coordinates_mesh_2d = mesh.coordinates()
+
+    # 2. read the parametric form of the shape in the 2d mesh
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_path, shape_id)
+  
+    # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
+    j = np.searchsorted(cumulative_arc_length, x, side='right') - 1
+    j = np.clip(j, 0, len(indices_vertices_on_shape) - 2)
+
+    p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
+    p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+
+    # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+    p = np.add(p_start, 
+                    np.multiply(
+                            np.subtract(p_end, p_start), 
+                            (x - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                    )
+            )
+
+    return p
+
+
+ 
+
+
 '''
 compute quantities related a to a shape (a one-dimensional manifold, a curve) embedded in a 2d mesh
 Input values: 
