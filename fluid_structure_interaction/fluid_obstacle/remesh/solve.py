@@ -136,7 +136,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 
 # test map_1d_to_2d - start
-p = msh.map_1d_to_2d(0.0, os.path.join(rarg.args.input_directory, 'mesh_0'), mesh_parameters['shape_id'])
+mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_parameters.csv')) 
+p = msh.map_1d_to_2d(0.0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), mesh_parameters['shape_id'])
 # test map_1d_to_2d - end
 
 
