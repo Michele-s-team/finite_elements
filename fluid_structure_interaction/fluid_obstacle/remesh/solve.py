@@ -16,6 +16,7 @@ Examples:
 
 import dolfin
 from fenics import *
+import gc
 import importlib
 import numpy as np
 import os
@@ -354,7 +355,8 @@ for n in range(rpam.parameters['N']):
         sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
         sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
 
-        phi_omega_disk_old = Function(fsp.Q_phi_omega_disk)
+        phi_disk_old = Function(fsp.Q_phi_disk)
+        omega_disk_old = Function(fsp.Q_omega_disk)
 
 
         # 1.1.2 square fluid
@@ -417,8 +419,9 @@ for n in range(rpam.parameters['N']):
         sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
         sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
-        phi_omega_disk_old.assign(fsp.phi_omega_disk)
-
+        phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
+        phi_disk_old.assign(phi_disk_output)
+        omega_disk_old.assign(omega_disk_output)
 
         # 1.2.2 square fluid
 
@@ -480,16 +483,8 @@ for n in range(rpam.parameters['N']):
                                         ).tolist()
                                 )   
 
-        #4. generate the mesh with the new polygon_coordinates and write theta_ref into its mesh_metadata
+        #4. generate the mesh with the new shape_coordinates
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
-
-        # sign
-
-        '''        
-
-
-
-
 
 
         #5. reload modules so everything is updated according to the mesh change
@@ -502,46 +497,97 @@ for n in range(rpam.parameters['N']):
 
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
-        msh.transfer(v_n_old, fsp.v_n, u_n_old)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
-        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
-        msh.transfer(v__old, fsp.v_, u_n_old)
+        # 6.1 fluid in disk
+        msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
+        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_di_old)
+        msh.transfer(v_di_n_2_old, fsp.v_disk_n_2, u_n_di_old)
 
-        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
-        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
+        msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
 
-        msh.transfer(phi_old, fsp.phi, u_n_old)
+        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_di_old)
+        msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_di_old)
+
+        msh.transfer(phi_disk_old, fsp.phi_disk_aux, u_n_di_old)
+        msh.transfer(omega_disk_old, fsp.omega_disk_aux, u_n_di_old)
+        fsp.assigner_phi_omega_disk.assign(fsp.phi_omega_disk, [fsp.phi_disk_aux, fsp.omega_disk_aux])
+
+        # 6.2 fluid in square
+        msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
+        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_sq_old)
+        msh.transfer(v_sq_n_2_old, fsp.v_square_n_2, u_n_sq_old)
+
+        msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
+
+        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_sq_old)
+        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
+
+        msh.transfer(phi_sq_old, fsp.phi_square, u_n_sq_old)
+
+        # 6.3 D
+
+        # 6.3.1 disk
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
-        fsp.u_n.assign(Constant((0, 0)))
-        fsp.u_n_1.assign(Constant((0, 0)))
-        fsp.u_n_2.assign(Constant((0, 0)))
+        fsp.u_n_di.assign(Constant((0, 0)))
+        fsp.u_n_1_di.assign(Constant((0, 0)))
+        fsp.u_n_2_di.assign(Constant((0, 0)))
 
-        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
-        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
-        msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
+        msh.transfer(u_n_di_dot_old, fsp.u_n_di_dot, u_n_di_old)
+        msh.transfer(u_n_1_di_dot_old, fsp.u_n_1_di_dot, u_n_di_old)
+        msh.transfer(u_n_2_di_dot_old, fsp.u_n_2_di_dot, u_n_di_old)   
+
+        # 6.3.2 square
+
+        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+        fsp.u_n_sq.assign(Constant((0, 0)))
+        fsp.u_n_1_sq.assign(Constant((0, 0)))
+        fsp.u_n_2_sq.assign(Constant((0, 0)))
+
+        msh.transfer(u_n_sq_dot_old, fsp.u_n_sq_dot, u_n_sq_old)
+        msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
+        msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
+
+        # 6.4 I
+        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+        fsp.U_n_12.assign(Constant((0, 0)))
+        fsp.U_n_32.assign(Constant((0, 0)))
+
+        # 6.5 M
+        msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
+        msh.transfer(c_n_1_old, fsp.c_n_1, u_n_sq_old)
 
 
         #7. call print_remesh to print out the remeshing info
 
-        pr_sol.print_remesh(step, theta_ref, mesh_quality)
+        pr_sol.print_remesh(step, mesh_quality)
 
-        # 8 clean up
     
-        # delete the _old functions
-        del v_n_old, v_n_1_old, v_n_2_old
-        del v__old
-        del sigma_n_12_old, sigma_n_32_old
-        del phi_old
-        del u_n_old, u_n_1_old, u_n_2_old
-        del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
+        # 8 clean up
+
+        # 8.1 disk and square fluid
+        del v_di_n_old, v_di_n_1_old, v_di_n_2_old, v_sq_n_old, v_sq_n_1_old, v_sq_n_2_old
+        del v_di__old, v_sq__old
+        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
+        del phi_disk_old, omega_disk_old
+
+        # 8.2 D
+        del u_n_di_old, u_n_1_di_old, u_n_2_di_old, u_n_sq_old, u_n_1_sq_old, u_n_2_sq_old
+        del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
+
+        # 8.3 I
+        del U_n_12_old, U_n_32_old
+
+        # 8.4 M
+        del c_n_old, c_n_1_old
 
         gc.collect()
-        '''
+        
         print(f'**** ... done. ')
 
-    '''
+    # sign
+
+    
     # update the fields
     # 1) I 
 
@@ -565,11 +611,6 @@ for n in range(rpam.parameters['N']):
 
 
     # 3) disk fluid 
-
-    phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
-    fsp.phi_disk_on_Q_sigma_disk.interpolate(phi_disk_output)
-    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - fsp.phi_disk_on_Q_sigma_disk)
-
     fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
 
@@ -577,9 +618,6 @@ for n in range(rpam.parameters['N']):
 
 
     # 4) square fluid 
-
-    fsp.sigma_square_n_12.assign(fsp.sigma_square_n_32 - fsp.phi_square)
-
     fsp.v_square_n_2.assign(fsp.v_square_n_1)
     fsp.v_square_n_1.assign(fsp.v_square_n)
 
@@ -594,10 +632,15 @@ for n in range(rpam.parameters['N']):
     # print out the solution
     if step % rpam.parameters['print_out_stride'] == 0:
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+
         pr_sol.print_solution(t, step)
+
+        # generate the mesh with the current shape_coordinates and store it into rarg.args.input_directory/n_[step]/
+        msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), os.path.join(solpath.snapshots_path, 'mesh', f'n_{step}'))
 
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
 print("... done.", flush=True)
-'''
+
+pr_sol.remesh_csvfile.close()

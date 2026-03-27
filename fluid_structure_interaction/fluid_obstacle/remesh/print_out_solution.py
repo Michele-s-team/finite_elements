@@ -18,6 +18,26 @@ import runtime_arguments as rarg
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
 
+# create the path for the mesh csv file if it does not exist
+remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
+os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
+
+remesh_csvfile = open(remesh_filename, 'a', newline='')
+remesh_fieldnames = [ "remesh_step",  "mesh_quality_before_remesh"]
+remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
+remesh_writer.writeheader()
+
+
+def print_remesh(step,  mesh_quality_before_remesh):
+
+    remesh_writer.writerows([{ \
+        remesh_fieldnames[0]: \
+            step, 
+        remesh_fieldnames[1]: \
+            mesh_quality_before_remesh, 
+    }])
+    remesh_csvfile.flush()
+
 
 # print the solution for I
 def print_solution_I(t, step):

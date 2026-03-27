@@ -50,9 +50,9 @@ The fields in this problem are
         x 'u_n_1_di' = {u^{n-1}}_notes in \Omega_disk
         x 'u_n_2_di' = {u^{n-2}}_notes in \Omega_disk
 
-        x 'u_dot_n_di' = {\dot{u}^n}_notes in \Omega_disk
-        x 'u_dot_n_1_di' = {\dot{u}^{n-1}}_notes in \Omega_disk
-        x 'u_dot_n_2_di' = {\dot{u}^{n-2}}_notes in \Omega_disk
+        x 'u_n_di_dot' = {\dot{u}^n}_notes in \Omega_disk
+        x 'u_n_1_di_dot' = {\dot{u}^{n-1}}_notes in \Omega_disk
+        x 'u_n_2_di_dot' = {\dot{u}^{n-2}}_notes in \Omega_disk
 
     - square: 
 
@@ -60,9 +60,9 @@ The fields in this problem are
         x 'u_n_1_sq' = {u^{n-1}}_notes in \Omega_square
         x 'u_n_2_sq' = {u^{n-2}}_notes in \Omega_square
 
-        x 'u_dot_n_sq' = {\dot{u}^n}_notes in \Omega_square
-        x 'u_dot_n_1_sq' = {\dot{u}^{n-1}}_notes in \Omega_square
-        x 'u_dot_n_2_sq' = {\dot{u}^{n-2}}_notes in \Omega_square
+        x 'u_n_sq_dot' = {\dot{u}^n}_notes in \Omega_square
+        x 'u_n_1_sq_dot' = {\dot{u}^{n-1}}_notes in \Omega_square
+        x 'u_n_2_sq_dot' = {\dot{u}^{n-2}}_notes in \Omega_square
         
 
 
@@ -124,6 +124,8 @@ Q_phi_omega_disk = FunctionSpace(lmsh.sub_meshes[0][0], phi_disk_omega_element)
 Q_phi_disk = Q_phi_omega_disk.sub(0).collapse()
 Q_omega_disk = Q_phi_omega_disk.sub(1).collapse()
 
+# this assigner is used to write values into phi_omega_disk (mixed field)
+assigner_phi_omega_disk = FunctionAssigner(Q_phi_omega_disk, [Q_phi_disk, Q_omega_disk])
 
 # 2. square
 
@@ -181,6 +183,7 @@ sigma_disk_n_32 = Function(Q_sigma_disk)
 phi_omega_disk = Function(Q_phi_omega_disk)
 phi_disk, omega_disk = split(phi_omega_disk)
 
+
 # 1.4 test functions
 nu_v_disk_n = TestFunction(Q_v_disk)
 nu_v_disk__ = TestFunction(Q_v__disk)
@@ -201,6 +204,10 @@ phi_disk_on_Q_sigma_disk = Function(Q_sigma_disk)
 
 # this field stores the values of sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mes[0][0]
 sigma_square_n_32_0_1_on_0_0 = Function(Q_sigma_disk)
+
+# two auxiliary fields for remeshing
+phi_disk_aux = Function(Q_phi_disk)
+omega_disk_aux = Function(Q_omega_disk) 
 
 
 # 2 square fluid
