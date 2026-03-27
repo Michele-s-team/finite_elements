@@ -184,10 +184,7 @@ vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 vp_M = importlib.import_module(swi.vp_M)
 pr_bc = importlib.import_module(swi.prout_bc)
 
-# sign
 
-
-'''
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping
@@ -204,7 +201,6 @@ for n in range(rpam.parameters['N']):
     # project v_square_n_1 of the fluid in the square onto (mesh[1])
     msh.transfer_2d_to_1d(fsp.v_square_n_1, fsp.v_square_n_1_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
-    
     vp_I = importlib.reload(vp_I)
 
     var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs, fsp.J_U, parameters=params)
@@ -273,6 +269,10 @@ for n in range(rpam.parameters['N']):
 
     var_pr.solve_vp(vp_fl_di.F_v_disk_n, fsp.v_disk_n, vp_fl_di.bc_v_disk_n, fsp.J_v_disk, parameters=params)
 
+    # write into sigma_disk_n_12
+    phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - phi_disk_output)
+
 
     # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
     fsp.v_disk_n_0_0_on_0_1.assign(project(fsp.v_disk_n, fsp.Q_v__square))
@@ -283,7 +283,6 @@ for n in range(rpam.parameters['N']):
     # 4) solve for square fluid 
 
     print('Solving square fluid problem ...', flush=True)
-
 
     vp_fl_sq = importlib.reload(vp_fl_sq)
 
@@ -298,6 +297,9 @@ for n in range(rpam.parameters['N']):
     # 4.3 solve for v_square_n
 
     var_pr.solve_vp(vp_fl_sq.F_v_square_n, fsp.v_square_n, vp_fl_sq.bc_v_square_n, fsp.J_v_square, parameters=params)
+
+    # write into sigma_square_n_12
+    fsp.sigma_square_n_12.assign(fsp.sigma_square_n_32 - fsp.phi_square)
 
     print('... done.', flush=True)
 
@@ -315,11 +317,13 @@ for n in range(rpam.parameters['N']):
     
     print('... done.', flush=True)
 
+
     # print out the residuals of BCs
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     if step % rpam.parameters['print_out_stride'] == 0:
         pr_bc.print_bcs()
 
+    #sign
 
 
     # update the fields
