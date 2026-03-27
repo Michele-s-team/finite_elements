@@ -314,6 +314,8 @@ U_n_32 = Function(Q_U)
 
 n_n_12 = Function(Q_U)
 
+U_n_12.set_allow_extrapolation(True)
+
 # 4.2 test functions
 nu_U = TestFunction(Q_U)
 
