@@ -2470,22 +2470,24 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 '''
 given a 2d mesh with a shape boundary which is laid flat on a 1d mesh, it maps a point on the 1d mesh onto the 2d mesh
 Input values: 
-    - 'x': the coordinate of the point on the 1d meshj
-    - 'mesh_path': the path of the 2d mesh
+    - 'x': the coordinate of the point on the 1d mesh
+    - 'mesh': the 2d mesh
+    - 'mf_mesh': a function on the 2d mesh that tags mesh facets
+    - 'shape_coordinates': [[p_0_x, p_0_y], [p_1_x, p_1_y], ...], the list of coordinates of the mesh vertices lying on the shape
     - 'shape_id': the id with which the shape is tagged on the 2d mesh
 Return values: 
     - 'p': [p_x, p_y] the coordinates of the point corresponding to 'x' on the 2d mesh
 '''
-def map_1d_to_2d(x, mesh_path, shape_id):
+def map_1d_to_2d(x, mesh, mf_mesh, shape_coordinates, shape_id):
 
     # 1. initialize 
-    mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
-    mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
-    mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
+    # mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
+    # mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
+    # mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
     mesh_coordinates = mesh.coordinates()
 
     # 2. read the parametric form of the shape in the 2d mesh
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh, mf_mesh,  mesh_parameters['shape_coordinates'], shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh, mf_mesh,  shape_coordinates, shape_id)
   
     # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
     j = np.searchsorted(cumulative_arc_length, x, side='right') - 1
