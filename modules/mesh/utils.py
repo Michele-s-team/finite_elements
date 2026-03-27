@@ -2410,6 +2410,9 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
     # 1. initialize 
     mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    mesh_2d_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+
     coordinates_mesh_2d = mesh_2d.coordinates()
 
     Q_1d = f_1d.function_space()
@@ -2423,7 +2426,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, mesh_2d_parameters['shape_coordinates'], shape_id)
 
 
 
@@ -2477,17 +2480,19 @@ def map_1d_to_2d(x, mesh_path, shape_id):
 
     # 1. initialize 
     mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
-    coordinates_mesh_2d = mesh.coordinates()
+    mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
+    mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
+    mesh_coordinates = mesh.coordinates()
 
     # 2. read the parametric form of the shape in the 2d mesh
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_path, shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh, mf_mesh,  mesh_parameters['shape_coordinates'], shape_id)
   
     # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
     j = np.searchsorted(cumulative_arc_length, x, side='right') - 1
     j = np.clip(j, 0, len(indices_vertices_on_shape) - 2)
 
-    p_start = coordinates_mesh_2d[indices_vertices_on_shape[j]]
-    p_end = coordinates_mesh_2d[indices_vertices_on_shape[j+1]]
+    p_start = mesh_coordinates[indices_vertices_on_shape[j]]
+    p_end = mesh_coordinates[indices_vertices_on_shape[j+1]]
 
     # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
     p = np.add(p_start, 
@@ -2660,7 +2665,7 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
     coordinates_all_2d = Q_2d.tabulate_dof_coordinates().reshape(-1, dim_2d)
     dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
 
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, mesh_2d_parameters, shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, mesh_2d_parameters['shape_coordinates'], shape_id)
 
 
     #7. write the values of f_1d into f_2d
