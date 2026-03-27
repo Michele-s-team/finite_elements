@@ -72,4 +72,3 @@ F_u_di_dot = ( \
                                                                   ela.mu_dot(fsp.u_n_di, fsp.u_n_di_dot, rpam.parameters['exponent']))[beta, alpha]) \
                           * (fsp.nu_u_n_di_dot[gamma].dx(alpha))) * rmsh.dx_sub_mesh[0][0]
 
-# check

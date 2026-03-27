@@ -128,13 +128,54 @@ fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
 fsp.sigma_disk_n_12.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
 fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 
-# sign
+
+'''
+# test map_1d_to_2d - start
+
+import csv
+N=200
+
+mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
+print(f'L = {mesh_1_parameters["L"]}')
+
+
+filename = rarg.args.output_directory + '/test.csv'
+os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+csvfile = open(filename, 'a', newline='')
+fieldnames = [ \
+    "x", \
+    "p:0", \
+    "p:1"
+    ]
+writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+writer.writeheader()
+
+for i in range(N):
+
+    x = mesh_1_parameters['L'] * i/(N-1)
+    f = msh.map_1d_to_2d(x, os.path.join(rarg.args.input_directory, f'mesh_{0}'), mesh_parameters['shape_id'])
+
+    writer.writerows([{ \
+        fieldnames[0]: \
+            x, \
+        fieldnames[1]: \
+            f[0],\
+        fieldnames[2]: \
+            f[1]
+    }])
+    csvfile.flush()
+
+csvfile.close()
+
+# test map_1d_to_2d - end
+'''
+
+
 # fist load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 rmsh = importlib.import_module(swi.rmsh)
-
-'''
 
 vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
@@ -143,24 +184,10 @@ vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 vp_M = importlib.import_module(swi.vp_M)
 pr_bc = importlib.import_module(swi.prout_bc)
 
+# sign
 
 
-
-io.full_print(fsp.ys, 'ys', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
-
-
-
-# FILL IN HERE: set the initial profiles from analytical expressions
-
-# set initial profiles
-# 
-
-
-
-# 
-
-
+'''
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping

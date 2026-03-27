@@ -10,10 +10,13 @@
 from fenics import *
 import importlib
 import numpy as np
+import os
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
+import mesh.utils as msh
+import runtime_arguments as rarg
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -28,8 +31,10 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 class ys_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rmsh.lmsh.parameters['c_r'][0] + rmsh.lmsh.parameters['r'] * np.cos(2.0 * np.pi * (x[0] - rmsh.lmsh.mesh_parameters[1]['x_l']) / (rmsh.lmsh.mesh_parameters[1]['x_r'] - rmsh.lmsh.mesh_parameters[1]['x_l']))
-        values[1] = rmsh.lmsh.parameters['c_r'][1] + rmsh.lmsh.parameters['r'] * np.sin(2.0 * np.pi * (x[0] - rmsh.lmsh.mesh_parameters[1]['x_l']) / (rmsh.lmsh.mesh_parameters[1]['x_r'] - rmsh.lmsh.mesh_parameters[1]['x_l']))
+        p = msh.map_1d_to_2d(x[0], os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+
+        values[0] = p[0]
+        values[1] = p[1]
 
     def value_shape(self):
         return (2,)
