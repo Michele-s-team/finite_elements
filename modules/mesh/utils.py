@@ -2021,6 +2021,21 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     #write metadata for ensemble mesh
     mesh_metadata = parameters.copy()
 
+    # remove spurious entities in mesh_metadata
+    if parameters['shape_format'] == 'parametric':
+
+        if 'shape_coordinates' in parameters:
+            del mesh_metadata['shape_coordinates']
+            
+    elif parameters['shape_format'] == 'coordinates':
+
+        if 'shape_parametric_form' in parameters:
+            del mesh_metadata['shape_parametric_form']
+            
+        if 'N' in parameters:
+            del mesh_metadata['N']
+
+
     # write metadata for mesh 0
     mesh_0_metadata = {}
     mesh_0_metadata['L'] = parameters['L']
@@ -2033,6 +2048,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     if parameters['shape_format'] == 'parametric':
         mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
         mesh_0_metadata['N'] = parameters['N']
+        
     
     # if the shape comes both from a parametric form or from raw coordinates, write the raw coordinates of the shape
     mesh_0_metadata['shape_coordinates'] = shape_coordinates
