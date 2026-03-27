@@ -743,12 +743,12 @@ Input values:
     * Mandatory:
         - 'file_path': the path of the file, including file name and extension
     * Optional:
-        - 'print': if 'True' the read parameters are printed out. They will not be printed out otherwise. 
+        - 'print_out': if 'True' the read parameters are printed out. They will not be printed out otherwise. 
 
 Return values:
     - the list of parameter names and values, e.g., [('L', 0.4334), ('x_p', 2.23), ('resolution', 0.01)]
 '''
-def read_parameters_from_csv_file(file_path, print=False):
+def read_parameters_from_csv_file(file_path, print_out=False):
 
     print(f'Reading parameters from {file_path}...',flush=True)
 
@@ -766,7 +766,7 @@ def read_parameters_from_csv_file(file_path, print=False):
     print('... close.',flush=True)
 
     result = dict([(parameter_name, string_to_value(parameter_value)) for parameter_name, parameter_value in zip(parameter_names, parameter_values)])
-    if print:
+    if print_out:
         print(f'Read parameters : {result}.',flush=True)
 
     return result
