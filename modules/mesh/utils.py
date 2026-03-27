@@ -2519,8 +2519,8 @@ def shape_tool(mesh_path, shape_id):
 
     mesh_2d = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
     mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
-    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
-    coordinates_mesh_2d = mesh_2d.coordinates()
+    mf_mesh = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
+    mesh_coordinates = mesh_2d.coordinates()
 
     shape_coordinates = mesh_parameters['shape_coordinates']
 
@@ -2535,7 +2535,7 @@ def shape_tool(mesh_path, shape_id):
     for facet in facets(mesh_2d):
         #run through all facets of mesh_0 
 
-        if mf_mesh_2d[facet] == shape_id:
+        if mf_mesh[facet] == shape_id:
             # the facet under consideration belongs to the shape
 
             facets_on_shape.append(facet)
@@ -2610,12 +2610,12 @@ def shape_tool(mesh_path, shape_id):
 
     for i in range(1, len(indices_vertices_on_shape)):
 
-        delta_l =  np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+        delta_l =  np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[i]], mesh_coordinates[indices_vertices_on_shape[i-1]]))
 
         l += delta_l
         cumulative_arc_length.append(l)
 
-    delta_l = np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+    delta_l = np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[-1]], mesh_coordinates[indices_vertices_on_shape[0]]))
 
     l += delta_l
     cumulative_arc_length.append(l)
