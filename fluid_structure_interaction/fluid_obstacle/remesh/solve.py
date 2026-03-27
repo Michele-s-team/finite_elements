@@ -136,8 +136,42 @@ rmsh = importlib.import_module(swi.rmsh)
 
 
 # test map_1d_to_2d - start
-mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_parameters.csv')) 
-p = msh.map_1d_to_2d(0.0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), mesh_parameters['shape_id'])
+import csv
+N=100
+
+mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
+print(f'L = {mesh_1_parameters["L"]}')
+
+
+filename = rarg.args.output_directory + '/test.csv'
+os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+csvfile = open(filename, 'a', newline='')
+fieldnames = [ \
+    "x", \
+    "p:0", \
+    "p:1"
+    ]
+writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+writer.writeheader()
+
+for i in range(N):
+
+    x = mesh_1_parameters['L'] * i/(N-1)
+    f = msh.map_1d_to_2d(x, os.path.join(rarg.args.input_directory, f'mesh_{0}'), mesh_parameters['shape_id'])
+
+    writer.writerows([{ \
+        fieldnames[0]: \
+            x, \
+        fieldnames[1]: \
+            f[0],\
+        fieldnames[2]: \
+            f[1]
+    }])
+    csvfile.flush()
+
+csvfile.close()
+
 # test map_1d_to_2d - end
 
 
