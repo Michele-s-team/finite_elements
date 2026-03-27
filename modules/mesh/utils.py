@@ -2461,7 +2461,15 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
     print(f'... done.')
 
 
-
+'''
+given a 2d mesh with a shape boundary which is laid flat on a 1d mesh, it maps a point on the 1d mesh onto the 2d mesh
+Input values: 
+    - 'x': the coordinate of the point on the 1d meshj
+    - 'mesh_path': the path of the 2d mesh
+    - 'shape_id': the id with which the shape is tagged on the 2d mesh
+Return values: 
+    - 'p': [p_x, p_y] the coordinates of the point corresponding to 'x' on the 2d mesh
+'''
 def map_1d_to_2d(x, mesh_path, shape_id):
 
     # 1. initialize 
