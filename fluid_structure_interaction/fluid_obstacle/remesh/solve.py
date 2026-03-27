@@ -128,16 +128,17 @@ fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
 fsp.sigma_disk_n_12.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
 fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 
-# sign
 # fist load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 rmsh = importlib.import_module(swi.rmsh)
+# sign
 
-
+'''
 # test map_1d_to_2d - start
+
 import csv
-N=100
+N=200
 
 mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
 print(f'L = {mesh_1_parameters["L"]}')
@@ -173,10 +174,12 @@ for i in range(N):
 csvfile.close()
 
 # test map_1d_to_2d - end
+'''
 
+
+vp_I = importlib.import_module(swi.vp_I)
 
 '''
-vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
 vp_fl_di = importlib.import_module(swi.vp_fluid_di)
 vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
