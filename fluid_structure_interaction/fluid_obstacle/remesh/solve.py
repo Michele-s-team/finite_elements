@@ -134,8 +134,13 @@ import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 rmsh = importlib.import_module(swi.rmsh)
 
-'''
 
+# test map_1d_to_2d - start
+p = msh.map_1d_to_2d(0.0, os.path.join(rarg.args.input_directory, 'mesh_0'), mesh_parameters['shape_id'])
+# test map_1d_to_2d - end
+
+
+'''
 vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
 vp_fl_di = importlib.import_module(swi.vp_fluid_di)
