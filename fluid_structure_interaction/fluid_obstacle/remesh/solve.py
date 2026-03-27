@@ -24,8 +24,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-# import differential_geometry.manifold.geometry as geo
-# import differential_geometry.boundary.geometry as bgeo
+
 import input_output as io
 # import mesh.load as lmsh
 import mesh.utils as msh
@@ -35,7 +34,6 @@ import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
-# rmsh = importlib.import_module(swi.rmsh)
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -72,30 +70,38 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
 # 
 
-class v_sq_expression(UserExpression):
+class v_sq_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
-        values[1] = 1
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+    
+class v_di_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
     
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters['rho_di'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
     
 class sigma_sq_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - lmsh.parameters['h'])
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
-shape_coordinates_0 = mesh_parameters['shape_coordinates']
+shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
 
 shape_coordinates = shape_coordinates_0
 
@@ -103,19 +109,41 @@ shape_coordinates = shape_coordinates_0
 msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 
-# sign
 
 import function_spaces as fsp
 import print_out_solution as pr_sol
 
+# 1 set initial profiles
+# 1.1 set for square
+fsp.v_square_n_1.interpolate(v_sq_0_expression(element=fsp.Q_v_square.ufl_element()))
+fsp.v_square_n_2.assign(fsp.v_square_n_1)
+
+fsp.sigma_square_n_12.interpolate(sigma_sq_0_expression(element=fsp.Q_sigma_square.ufl_element()))
+fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
+
+# 1.2 set for disk
+fsp.v_disk_n_1.interpolate(v_di_0_expression(element=fsp.Q_v_disk.ufl_element()))
+fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
+
+fsp.sigma_disk_n_12.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
+fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
+
+# sign
+# fist load of modules
+import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
+rmsh = importlib.import_module(swi.rmsh)
+
 '''
-# pre-load modules
-pr_bc = importlib.import_module(swi.prout_bc)
+
 vp_I = importlib.import_module(swi.vp_I)
 vp_D = importlib.import_module(swi.vp_D)
 vp_fl_di = importlib.import_module(swi.vp_fluid_di)
 vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 vp_M = importlib.import_module(swi.vp_M)
+pr_bc = importlib.import_module(swi.prout_bc)
+
+
 
 
 io.full_print(fsp.ys, 'ys', \
@@ -129,14 +157,7 @@ io.full_print(fsp.ys, 'ys', \
 # 
 
 
-fsp.v_square_n_1.interpolate(v_sq_expression(element=fsp.Q_v_square.ufl_element()))
 
-
-
-
-
-fsp.sigma_disk_n_32.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
-fsp.sigma_square_n_32.interpolate(sigma_sq_0_expression(element=fsp.Q_sigma_square.ufl_element()))
 # 
 
 
