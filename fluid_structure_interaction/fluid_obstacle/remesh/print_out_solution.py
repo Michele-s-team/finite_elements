@@ -1,6 +1,7 @@
 from fenics import *
 
 import csv
+import importlib
 
 import elasticity as ela
 import files as fi
@@ -10,10 +11,11 @@ import mesh.load as lmsh
 import mesh.utils as msh
 import os
 import parameters.read.solution as rpam
-import solution_paths as solpath
-
 import runtime_arguments as rarg
+import solution_paths as solpath
+import switch_problem as swi
 
+rmsh = importlib.import_module(swi.rmsh)
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
@@ -87,6 +89,13 @@ def print_solution_D(t, step):
         xdmf.write(deformed_sub_mesh_0_0)
     io.print_mesh_vertices_to_csv(deformed_sub_mesh_0_0, solpath.snapshots_csv_path + 'vertex_sub_mesh_0_0_msh_n_' + str(step) + '.csv')
     io.print_mesh_lines_to_csv(deformed_sub_mesh_0_0, solpath.snapshots_csv_path + 'line_sub_mesh_0_0_msh_n_' + str(step) + '.csv')
+
+    # print the boundary points of the mesh boundary given by the shape
+    msh.sorted_boundary_points(
+        rmsh.lmsh.mesh[0], 
+        os.path.join(rarg.args.input_directory, f'mesh_{0}'), 
+        [rmsh.lmsh.mesh_parameters[0]['shape_id']],
+        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.lmsh.mesh_parameters[0]['shape_id']) + f'_n_{step}.csv'))
 
 
     
