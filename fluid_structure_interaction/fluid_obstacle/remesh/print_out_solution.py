@@ -25,7 +25,7 @@ remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
 os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
 
 remesh_csvfile = open(remesh_filename, 'a', newline='')
-remesh_fieldnames = [ "remesh_step",  "mesh_quality_before_remesh"]
+remesh_fieldnames = ["remesh_step",  "mesh_quality_before_remesh"]
 remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
 remesh_writer.writeheader()
 
@@ -34,9 +34,9 @@ data_filename = os.path.join(rarg.args.output_directory, 'data.csv')
 os.makedirs(os.path.dirname(data_filename), exist_ok=True)
 
 data_csvfile = open(data_filename, 'a', newline='')
-data_fieldnames = [ "step",  "mesh_quality"]
+data_fieldnames = ["step",  "mesh_quality"]
 data_writer = csv.DictWriter(data_csvfile, fieldnames=data_fieldnames)
-remesh_writer.writeheader()
+data_writer.writeheader()
 
 
 def print_remesh(step,  mesh_quality_before_remesh):
