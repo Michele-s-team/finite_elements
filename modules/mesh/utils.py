@@ -2117,7 +2117,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     shape_lines = []
 
 
-    print("Starting loop over shape ... ")
 
     for i in range(1, len(shape_coordinates)):
 
@@ -2127,7 +2126,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         shape_lines.append(gmsh.model.geo.addLine(shape_points[-2], shape_points[-1]))
         gmsh.model.geo.synchronize()
 
-    print("... done.")
 
     shape_lines.append(gmsh.model.geo.addLine(shape_points[-1], shape_points[0]))
     gmsh.model.geo.synchronize()
@@ -2670,8 +2668,6 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
 
 
     #7. write the values of f_1d into f_2d
-    print(f'Running over 2d mesh ...')
-
 
     for i in range(len(dof_coordinates_2d)):
         # coordinates of the i-th node in the 2d mesh
@@ -2708,7 +2704,6 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
 
                 break  # no need to check other segments in the j loop
 
-    print(f'... done.')
 
 
 '''
