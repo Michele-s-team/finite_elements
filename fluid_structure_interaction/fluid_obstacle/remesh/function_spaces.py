@@ -174,6 +174,7 @@ v_disk_n_2 = Function(Q_v_disk)
 v_disk__ = Function(Q_v__disk)
 
 v_disk_n.set_allow_extrapolation(True)
+v_disk_n_1.set_allow_extrapolation(True)
 
 # 1.2 sigma_disk
 sigma_disk_n_12 = Function(Q_sigma_disk)
