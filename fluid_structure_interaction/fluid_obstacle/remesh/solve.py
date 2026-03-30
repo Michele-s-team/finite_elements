@@ -587,7 +587,6 @@ for n in range(rpam.parameters['N']):
         
         print(f'**** ... done. ')
 
-    # sign
 
     
     # update the fields
