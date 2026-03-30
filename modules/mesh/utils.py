@@ -1723,9 +1723,7 @@ def IntervalMeshCoordinates(coordinates):
     mesh = Mesh()
     editor = MeshEditor()
   
-    print(f'coordinates before: {coordinates}')
     sorted_coordinates = sorted(coordinates)
-    print(f'coordinates after: {sorted_coordinates}')
         
     editor.open(mesh, 'interval', 1, 1)  # cell type, topological dim, geometric dim
 
