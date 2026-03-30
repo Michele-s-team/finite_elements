@@ -323,8 +323,8 @@ nu_U = TestFunction(Q_U)
 J_U = TrialFunction(Q_U)
 
 # 4.4 other fields 
-# fluid velocity on the square at step n-1, which lives on sub-mesh[0][1], transferred on the 1d mesh (mesh[1])
-v_square_n_1_0_1_on_1 = Function(Q_U)
+# fluid velocity on the disk fluid at step n-1, which lives on sub-mesh[0][0], transferred on the 1d mesh (mesh[1])
+v_disk_n_1_0_0_on_1 = Function(Q_U)
 # two-dimensional vector field containing the reference configuration of I as a function of its parameteric coordinate s
 ys = Function(Q_U)
 

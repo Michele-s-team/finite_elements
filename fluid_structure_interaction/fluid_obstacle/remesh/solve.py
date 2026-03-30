@@ -205,7 +205,7 @@ for n in range(rpam.parameters['N']):
     print('Solving I problem ...', flush=True)
 
     # project v_square_n_1 of the fluid in the square onto (mesh[1])
-    msh.transfer_2d_to_1d(fsp.v_square_n_1, fsp.v_square_n_1_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+    msh.transfer_2d_to_1d(fsp.v_disk_n_1, fsp.v_disk_n_1_0_0_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
 
     vp_I = importlib.reload(vp_I)
 
