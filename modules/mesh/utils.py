@@ -2428,7 +2428,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
 
     #7. write the values of f_2d into f_1d
-    print(f'Running over 1d mesh ...')
 
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
@@ -2461,7 +2460,6 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
         # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
 
-    print(f'... done.')
 
 
 '''
