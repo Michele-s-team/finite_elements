@@ -2116,7 +2116,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     shape_lines = []
 
-    print(f'Added point with coordinates {shape_coordinates[-1]}')
 
     print("Starting loop over shape ... ")
 
