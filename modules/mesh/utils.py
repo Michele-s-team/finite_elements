@@ -2399,16 +2399,18 @@ Input values:
     * Mandatory:
         - 'f_2d': the field on the 2d mesh
         - 'f_1d': the field on the 2d mesh
-        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'mesh_2d': the 2d mesh is stored
+        - 'mf_mesh_2d': a function on 'mesh_2d' that tags its facets
+        - 'shape_coordinates' : [[p_0_x, p_0_y], [p_1_x, p_1_y], ... ] the coordinates of the vertices of the shape in 'mesh_2d'
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
 
     # 1. initialize 
-    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
-    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
-    mesh_2d_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+    # mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    # mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    # mesh_2d_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
 
     coordinates_mesh_2d = mesh_2d.coordinates()
 
@@ -2423,7 +2425,7 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, mesh_2d_parameters['shape_coordinates'], shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, shape_coordinates, shape_id)
 
 
 
