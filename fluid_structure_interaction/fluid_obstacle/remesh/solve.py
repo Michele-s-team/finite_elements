@@ -219,7 +219,7 @@ for n in range(rpam.parameters['N']):
 
     # now that U_n_12 has been computed, compute the new normal
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
+    # fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
 
     # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
     fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
@@ -228,15 +228,15 @@ for n in range(rpam.parameters['N']):
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][0]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    # msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
-    fsp.u_n_di_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_disk_n_1, fsp.n_n_12_1_on_0_0), fsp.Q_u_di_dot))
+    fsp.u_n_di_dot_bc_di.assign(fsp.v_disk_n_1)
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][1]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    # msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
-    fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(project(fsp.v_disk_n_1, fsp.Q_u_sq), fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
+    fsp.u_n_sq_dot_bc_di.assign(project(fsp.v_disk_n_1, fsp.Q_u_sq_dot))
 
     # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
     msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
