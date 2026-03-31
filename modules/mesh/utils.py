@@ -2199,8 +2199,9 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_0 = read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf'))
     mf_mesh_0 = read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
 
-    # collect unique vertex indices touched by facets tagged with shape_id
-    shape_vertex_ids = set()
+    # collect unique vertex indices and coordinates touched by facets tagged with shape_id
+    shape_vertex_ids = []
+    shape_vertex_coordinates = []
 
     for facet in facets(mesh_0):
         #run through all facets of mesh_0 
@@ -2211,15 +2212,19 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             for v in vertices(facet):
                 # run through the vertices of the facet under consideration, and ad them to shape_vertex_ids
 
-                shape_vertex_ids.add(v.index())
+                if v.index() not in shape_vertex_ids:
+
+                    shape_vertex_ids.append(v.index())
+                    shape_vertex_coordinates.append(v.point().array().tolist())
 
     n_vertices_on_shape = len(shape_vertex_ids)
+    n_vertices_on_line = len(shape_coordinates) 
 
-    if n_vertices_on_shape != len(shape_coordinates):
+    if n_vertices_on_shape != n_vertices_on_line:
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
         print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
-        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {len(shape_coordinates)}')
+        print(f'Number of vertices on shape = {n_vertices_on_shape}\nCoordinates vertices on shape = {shape_vertex_coordinates}\nNumber of vertices on line = {n_vertices_on_line}')
 
         sys.exit()
 
