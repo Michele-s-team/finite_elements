@@ -174,10 +174,6 @@ for n in range(rpam.parameters['N']):
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
     # fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
 
-    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
-    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
-    fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
-
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][0]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
@@ -213,6 +209,10 @@ for n in range(rpam.parameters['N']):
     # 3) solve for disk fluid 
 
     print('Solving disk fluid problem ...', flush=True)
+
+    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
+    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
+    fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
 
     vp_fl_di = importlib.reload(vp_fl_di)
 
