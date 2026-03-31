@@ -49,29 +49,43 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
-# parameters with SNES method
-# 
+
+PETScOptions.clear()
+
+# Use newtonls first — more robust than newtontr unless you specifically need trust region
+PETScOptions.set('snes_type', 'newtonls')
+PETScOptions.set('snes_linesearch_type', 'bt')       # backtracking
+
+# Tolerances — only function-norm and relative, disable step-norm
+PETScOptions.set('snes_atol', 1e-10)
+PETScOptions.set('snes_rtol', 1e-10)
+PETScOptions.set('snes_stol', 0.0)          # ← disable step-tolerance convergence
+PETScOptions.set('snes_max_it', 200)
+PETScOptions.set('snes_max_funcs', 100000)
+
+# Diagnostics
+PETScOptions.set('snes_monitor')
+PETScOptions.set('snes_converged_reason')   # ← tells you WHY it converged/diverged
+PETScOptions.set('snes_linesearch_monitor') # ← shows line search steps
+
+# Linear solver inside SNES
+PETScOptions.set('ksp_type', 'preonly')
+PETScOptions.set('pc_type', 'lu')
+PETScOptions.set('pc_factor_mat_solver_type', 'superlu')
+
+# Use a minimal FEniCS params dict — let PETSc options take over
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
         'linear_solver': 'superlu',
-        'line_search': 'bt',  # backtracking line search
-        'absolute_tolerance': 1e-6,
-        'relative_tolerance': 1e-6,
-        'maximum_iterations': 1000000,
+        'absolute_tolerance': 1e-50,   # ← set absurdly tight so FEniCS never declares early convergence
+        'relative_tolerance': 1e-50,
+        'maximum_iterations': 200,
         'report': True,
+        'error_on_nonconvergence': False,
     }
 }
 
-PETScOptions.clear()
-PETScOptions.set('snes_type', 'newtontr')
-PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
-PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
-PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
-PETScOptions.set('snes_max_it', 100000)
-PETScOptions.set('snes_monitor')
-PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
-# 
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
