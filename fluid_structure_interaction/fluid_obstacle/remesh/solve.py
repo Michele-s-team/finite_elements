@@ -73,6 +73,32 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
 # 
 
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
+
+shape_coordinates = shape_coordinates_0
+
+# generate the mesh with the shape and write theta_ref into its mesh_metadata
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+
+
+
+# fist load of modules
+import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
+import function_spaces as fsp
+import print_out_solution as pr_sol
+rmsh = importlib.import_module(swi.rmsh)
+
+vp_I = importlib.import_module(swi.vp_I)
+vp_D = importlib.import_module(swi.vp_D)
+vp_fl_di = importlib.import_module(swi.vp_fluid_di)
+vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
+vp_M = importlib.import_module(swi.vp_M)
+pr_bc = importlib.import_module(swi.prout_bc)
+
+
 class v_sq_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -91,30 +117,18 @@ class v_di_0_expression(UserExpression):
     
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = rpam.parameters['sigma_di_0']
 
     def value_shape(self):
         return (1,)
     
 class sigma_sq_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = rpam.parameters['sigma_sq_t'] + rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - rmsh.lmsh.mesh_parameters[0]['h'])
 
     def value_shape(self):
         return (1,)
 
-# coordinates of the shape when the shape lies flat (theta_ref = 0)
-shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
-
-shape_coordinates = shape_coordinates_0
-
-# generate the mesh with the shape and write theta_ref into its mesh_metadata
-msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
-
-
-
-import function_spaces as fsp
-import print_out_solution as pr_sol
 
 # 1 set initial profiles
 # 1.1 set for square
@@ -130,66 +144,6 @@ fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
 
 fsp.sigma_disk_n_12.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
 fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
-
-
-'''
-# test map_1d_to_2d - start
-
-import csv
-rmsh = importlib.import_module(swi.rmsh)
-
-N=400
-
-mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
-print(f'L = {mesh_1_parameters["L"]}')
-
-
-filename = rarg.args.output_directory + '/test.csv'
-os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-csvfile = open(filename, 'a', newline='')
-fieldnames = [ \
-    "x", \
-    "p:0", \
-    "p:1"
-    ]
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
-
-for i in range(N):
-
-    x = mesh_1_parameters['L'] * i/(N-1)
-
-    f = msh.map_1d_to_2d(x, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.mesh_parameters[0]['shape_id'])
-
-    writer.writerows([{ \
-        fieldnames[0]: \
-            x, \
-        fieldnames[1]: \
-            f[0],\
-        fieldnames[2]: \
-            f[1]
-    }])
-    csvfile.flush()
-
-csvfile.close()
-
-# test map_1d_to_2d - end
-'''
-
-
-# fist load of modules
-import differential_geometry.manifold.geometry as geo
-import differential_geometry.boundary.geometry as bgeo
-rmsh = importlib.import_module(swi.rmsh)
-
-vp_I = importlib.import_module(swi.vp_I)
-vp_D = importlib.import_module(swi.vp_D)
-vp_fl_di = importlib.import_module(swi.vp_fluid_di)
-vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
-vp_M = importlib.import_module(swi.vp_M)
-pr_bc = importlib.import_module(swi.prout_bc)
-
 
 
 print("Starting time iteration ...", flush=True)
@@ -219,24 +173,20 @@ for n in range(rpam.parameters['N']):
 
     # now that U_n_12 has been computed, compute the new normal
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
-
-    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
-    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
-    fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
+    # fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
 
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][0]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    # msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
-    fsp.u_n_di_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_disk_n_1, fsp.n_n_12_1_on_0_0), fsp.Q_u_di_dot))
+    fsp.u_n_di_dot_bc_di.assign(fsp.v_disk_n_1)
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][1]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    # msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
-    fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(project(fsp.v_disk_n_1, fsp.Q_u_sq), fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
+    fsp.u_n_sq_dot_bc_di.assign(project(fsp.v_disk_n_1, fsp.Q_u_sq_dot))
 
     # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
     msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
@@ -260,6 +210,10 @@ for n in range(rpam.parameters['N']):
     # 3) solve for disk fluid 
 
     print('Solving disk fluid problem ...', flush=True)
+
+    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
+    fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
+    fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
 
     vp_fl_di = importlib.reload(vp_fl_di)
 

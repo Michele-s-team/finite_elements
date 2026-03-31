@@ -275,7 +275,7 @@ J_u_di = TrialFunction(Q_u_di)
 J_u_dot_di = TrialFunction(Q_u_di_dot)
 
 # 3.1.5 other fields
-n_n_12_1_on_0_0 = Function(Q_u_di)
+# n_n_12_1_on_0_0 = Function(Q_u_di)
 # this field stores the values of v_square_n_1 (defined on sub_mes[0][1]) on sub_mes[0][0]
 v_square_n_1_0_1_on_0_0 = Function(Q_u_di_dot)
 # this field stores the value [\textrm{v}_square^{n-1} . \hat{n}^{n-1/2}] \hat{n}^{n-1/2} coming from the I sector, to be used as a BC for u_n_di_dot on \partial \Omega_O
@@ -302,7 +302,7 @@ J_u_sq = TrialFunction(Q_u_sq)
 J_u_dot_sq = TrialFunction(Q_u_sq_dot)
 
 # 3.2.5 other fields
-n_n_12_1_on_0_1 = Function(Q_u_sq)
+# n_n_12_1_on_0_1 = Function(Q_u_sq)
 # this field stores the value [\textrm{v}_square^{n-1} . \hat{n}^{n-1/2}] \hat{n}^{n-1/2} coming from the I sector, to be used as a BC for u_n_sq_dot on \partial \Omega_O
 u_n_sq_dot_bc_di = Function(Q_u_sq_dot)
 
@@ -313,7 +313,7 @@ u_n_sq_dot_bc_di = Function(Q_u_sq_dot)
 U_n_12 = Function(Q_U)
 U_n_32 = Function(Q_U)
 
-n_n_12 = Function(Q_U)
+# n_n_12 = Function(Q_U)
 
 U_n_12.set_allow_extrapolation(True)
 
