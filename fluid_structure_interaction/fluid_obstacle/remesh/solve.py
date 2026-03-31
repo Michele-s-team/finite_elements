@@ -73,6 +73,32 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
 # 
 
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
+
+shape_coordinates = shape_coordinates_0
+
+# generate the mesh with the shape and write theta_ref into its mesh_metadata
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+
+
+
+# fist load of modules
+import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
+import function_spaces as fsp
+import print_out_solution as pr_sol
+rmsh = importlib.import_module(swi.rmsh)
+
+vp_I = importlib.import_module(swi.vp_I)
+vp_D = importlib.import_module(swi.vp_D)
+vp_fl_di = importlib.import_module(swi.vp_fluid_di)
+vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
+vp_M = importlib.import_module(swi.vp_M)
+pr_bc = importlib.import_module(swi.prout_bc)
+
+
 class v_sq_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -91,30 +117,18 @@ class v_di_0_expression(UserExpression):
     
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = rpam.parameters['sigma_di_0']
 
     def value_shape(self):
         return (1,)
     
 class sigma_sq_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0
+        values[0] = rpam.parameters['sigma_sq_t'] + rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - rmsh.lmsh.mesh_parameters[0]['h'])
 
     def value_shape(self):
         return (1,)
 
-# coordinates of the shape when the shape lies flat (theta_ref = 0)
-shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
-
-shape_coordinates = shape_coordinates_0
-
-# generate the mesh with the shape and write theta_ref into its mesh_metadata
-msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
-
-
-
-import function_spaces as fsp
-import print_out_solution as pr_sol
 
 # 1 set initial profiles
 # 1.1 set for square
@@ -130,19 +144,6 @@ fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
 
 fsp.sigma_disk_n_12.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
 fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
-
-# fist load of modules
-import differential_geometry.manifold.geometry as geo
-import differential_geometry.boundary.geometry as bgeo
-rmsh = importlib.import_module(swi.rmsh)
-
-vp_I = importlib.import_module(swi.vp_I)
-vp_D = importlib.import_module(swi.vp_D)
-vp_fl_di = importlib.import_module(swi.vp_fluid_di)
-vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
-vp_M = importlib.import_module(swi.vp_M)
-pr_bc = importlib.import_module(swi.prout_bc)
-
 
 
 print("Starting time iteration ...", flush=True)

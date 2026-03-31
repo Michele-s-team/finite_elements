@@ -36,7 +36,7 @@ class t_sq_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = 0
+        values[1] =  rpam.parameters['sigma_sq_t']
 
     def value_shape(self):
         return (2,)
