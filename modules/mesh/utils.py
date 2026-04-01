@@ -1979,6 +1979,7 @@ generate a mesh given by a square with a shape inside, where the shape is meshed
 Input values: 
     * Mandatory:
         - 'shape coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the shape
+            Note: if the meshing algorithm inserts additional vertices in between 'shape_coordinates', this method will insert these vertices into 'shape_coordinates' and call again itself to generate a mesh with these vertices
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional: 
