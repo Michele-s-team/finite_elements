@@ -1977,9 +1977,12 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
 '''
 generate a mesh given by a square with a shape inside, where the shape is meshed inside. The shape is laid flat to obtain a 1d mesh, which is also generated. 
 Input values: 
-    - 'shape coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the shape
-    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
-    - 'output_directory': the path where the mesh will be stored 
+    * Mandatory:
+        - 'shape coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the shape
+        - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+        - 'output_directory': the path where the mesh will be stored 
+    * Optional: 
+        - 'epsilon': the tolerance with which distances are evaluated
 '''
 def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory,
                                     epsilon = const.epsilon):
