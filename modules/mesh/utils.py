@@ -2230,7 +2230,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     if n_vertices_on_shape != n_vertices_on_line:
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
-        print(f"{col.Fore.YELLOW}{'Info: The number of vertices on shape does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
+        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on shape does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
         print(f'\tNumber of vertices on shape = {n_vertices_on_shape}\n\tNumber of vertices on line = {n_vertices_on_line}')
 
         for i in range(len(shape_vertex_coordinates)):
