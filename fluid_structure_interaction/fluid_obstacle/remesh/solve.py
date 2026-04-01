@@ -63,25 +63,10 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
-def reset_petsc_options():
-    PETScOptions.clear()
-    PETScOptions.set('snes_type', 'newtonls')
-    PETScOptions.set('snes_linesearch_type', 'bt')
-    PETScOptions.set('snes_atol', 1e-10)
-    PETScOptions.set('snes_rtol', 1e-10)
-    PETScOptions.set('snes_stol', 1e-50)   # avoid exact 0.0
-    PETScOptions.set('snes_max_it', 200)
-    PETScOptions.set('snes_max_funcs', 100000)
-    PETScOptions.set('snes_monitor')
-    PETScOptions.set('snes_converged_reason')
-    # snes_linesearch_monitor removed — causes error 77
-    PETScOptions.set('ksp_type', 'preonly')
-    PETScOptions.set('pc_type', 'lu')
-    PETScOptions.set('pc_factor_mat_solver_type', 'superlu')
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
-    'nonlinear_solver': 'snes',
+    'nonlinear_solver': 'newton',
     'snes_solver': {
         'linear_solver': 'superlu',
         'method': 'newtonls',
@@ -94,7 +79,6 @@ params = {
         'error_on_nonconvergence': False,
     }
 }
-reset_petsc_options()
 
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
@@ -179,7 +163,6 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
-    reset_petsc_options()
 
 
     # step 1): solve I problem
@@ -222,16 +205,9 @@ for n in range(rpam.parameters['N']):
     vp_D = importlib.reload(vp_D)
 
     # 2.1) solve for D in square
-    try:
-        var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
+    var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
         
-    except RuntimeError as e:
-        if 'SNESSetFromOptions' in str(e):
-            print('WARNING: SNESSetFromOptions failed, resetting PETSc and retrying...', flush=True)
-            reset_petsc_options()
-            var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
-        else:
-            raise
+
 
     # 2.2) solve for D in disk
 
@@ -486,7 +462,6 @@ for n in range(rpam.parameters['N']):
         pr_bc = importlib.reload(pr_bc)
 
         #6. reset cleanly solver parameters 
-        reset_petsc_options()
 
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
