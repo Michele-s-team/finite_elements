@@ -1983,6 +1983,7 @@ Input values:
 '''
 def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory,
                                     epsilon = const.epsilon):
+    
 
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
@@ -2225,10 +2226,12 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     if n_vertices_on_shape != n_vertices_on_line:
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
-        print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
+        print(f"{col.Fore.YELLOW}{'The number of vertices on shape does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
         print(f'Number of vertices on shape = {n_vertices_on_shape}\nCoordinates vertices on shape = {shape_vertex_coordinates}\nNumber of vertices on line = {n_vertices_on_line}')
 
         print(f'shape_coordinates before = {shape_coordinates}')
+
+        changed = False
 
         for i in range(len(shape_vertex_coordinates)):
 
@@ -2247,9 +2250,17 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
                     print(f'\tvertex {shape_vertex_coordinates[i]} lies between { p_start} and {p_end}')
 
                     shape_coordinates.insert(j+1, p)
+                    changed = True
+
                     break
 
         print(f'shape_coordinates after = {shape_coordinates}')
+
+        print(f"{col.Fore.YELLOW}{' ... done.'}{col.Style.RESET_ALL}")
+
+        if changed:
+
+            generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
 
 
         sys.exit()
