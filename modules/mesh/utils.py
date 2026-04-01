@@ -2227,11 +2227,13 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
         print(f"{col.Fore.YELLOW}{'The number of vertices on shape does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
-        print(f'Number of vertices on shape = {n_vertices_on_shape}\nCoordinates vertices on shape = {shape_vertex_coordinates}\nNumber of vertices on line = {n_vertices_on_line}')
+        print(f'\tNumber of vertices on shape = {n_vertices_on_shape}\n\tNumber of vertices on line = {n_vertices_on_line}')
 
         for i in range(len(shape_vertex_coordinates)):
+            # run through the mesh vertices which belong to a facet on the shape
 
             for j in range(len(shape_coordinates)):
+                # find two subsequent vertices in shape_coordinates, such that shape_vertex_coordinates[i] lies on the line between them
 
                 p = shape_vertex_coordinates[i][:2]
                 p_start = shape_coordinates[j]
@@ -2242,6 +2244,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
                 (np.linalg.norm(np.subtract(p, p_end)) > epsilon)
 
                 if lies_in_between:
+                    # shape_vertex_coordinates[i] lies between two subsequent vertices in shape_coordinates, and it is not one of the vertices in shape_coordinates -> insert it into shape_coordinates and break the inner loop
 
                     shape_coordinates.insert(j+1, p)
 
@@ -2253,9 +2256,13 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
      
         model.__exit__()
 
+
+        # now shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
+
         generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
 
     else:
+        # the meshing algorithm introduced no additional vertices in between the vertices of shape_coordinates -> proceed
 
         _, cumulative_arc_length = shape_tool(mesh_0, mf_mesh_0, mesh_0_metadata['shape_coordinates'], parameters['shape_id'])
         mesh_1_metadata['coordinates'] = cumulative_arc_length
