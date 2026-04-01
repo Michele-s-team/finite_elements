@@ -2147,7 +2147,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
 
-    # add 1-dimensional objects
+    #3. add 1-dimensional objects
     lines = gmsh.model.getEntities(dim=1)
 
     # add square lines
@@ -2161,14 +2161,14 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
 
-    # add 2-dimensional objects
+    #4. add 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
     tag_physical_object(surfaces[0], parameters['sub_mesh_0_1_id'], gmsh.model, 'square_minus_shape_surface')
     tag_physical_object(surfaces[1], parameters['sub_mesh_0_0_id'], gmsh.model, 'shape_surface')
 
 
-    # set the resolution
+    #5. set the resolution
     # se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(parameters["L"],parameters["h"]) from sub_mesh_0_1_id
     distance = gmsh.model.mesh.field.add("Distance")
 
@@ -2198,7 +2198,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
 
-    # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
+    #6. check that the number of mesh vertices on the circle matches N and if it does not, insert these poitns into shape_coordinates and call again generate_square_shape_line_mesh. 
     mesh_0 = read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf'))
     mf_mesh_0 = read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
 
@@ -2229,10 +2229,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         print(f"{col.Fore.YELLOW}{'The number of vertices on shape does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
         print(f'Number of vertices on shape = {n_vertices_on_shape}\nCoordinates vertices on shape = {shape_vertex_coordinates}\nNumber of vertices on line = {n_vertices_on_line}')
 
-        print(f'shape_coordinates before = {shape_coordinates}')
-
-        changed = False
-
         for i in range(len(shape_vertex_coordinates)):
 
             for j in range(len(shape_coordinates)):
@@ -2247,68 +2243,49 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
                 if lies_in_between:
 
-                    print(f'\tvertex {shape_vertex_coordinates[i]} lies between { p_start} and {p_end}')
-
                     shape_coordinates.insert(j+1, p)
-                    changed = True
 
                     break
 
-        print(f'shape_coordinates after = {shape_coordinates}')
 
         print(f"{col.Fore.YELLOW}{' ... done.'}{col.Style.RESET_ALL}")
 
-        if changed:
+     
+        model.__exit__()
 
-            generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
+        generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
 
+    else:
 
-        sys.exit()
+        _, cumulative_arc_length = shape_tool(mesh_0, mf_mesh_0, mesh_0_metadata['shape_coordinates'], parameters['shape_id'])
+        mesh_1_metadata['coordinates'] = cumulative_arc_length
 
-
-
-
-    _, cumulative_arc_length = shape_tool(mesh_0, mf_mesh_0, mesh_0_metadata['shape_coordinates'], parameters['shape_id'])
-    mesh_1_metadata['coordinates'] = cumulative_arc_length
-
-
-    # print the boundary points of the boundary given by the shape
-    sorted_boundary_points(
-        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
-        output_directory_mesh_0, 
-        [parameters['shape_id']],
-        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+        # print the boundary points of the boundary given by the shape
+        sorted_boundary_points(
+            read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+            output_directory_mesh_0, 
+            [parameters['shape_id']],
+            os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
 
 
-  
-
-    # B) mesh B (line)
+        # B) mesh B (line)
 
 
-    # generate the line mesh corresponding to the shape
+        # generate the line mesh corresponding to the shape
 
-    genereate_line_mesh(0, shape_length, None,
-                            parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
-                            x_m=None,
-                            vertex_m_id=None,
-                            output_directory=output_directory_mesh_1, 
-                            metadata=mesh_1_metadata,
-                            coordinates=cumulative_arc_length)
+        genereate_line_mesh(0, shape_length, None,
+                                parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
+                                x_m=None,
+                                vertex_m_id=None,
+                                output_directory=output_directory_mesh_1, 
+                                metadata=mesh_1_metadata,
+                                coordinates=cumulative_arc_length)
 
-    '''
-    # check - start
 
-    for i in range(len(shape_coordinates)-1):
-        print(f'{i} \t {np.linalg.norm(np.subtract(shape_coordinates[i+1], shape_coordinates[i]))}')
-    print(f'{len(shape_coordinates)-1} \t {np.linalg.norm(np.subtract(shape_coordinates[-1], shape_coordinates[0]))}')
+        #print overall mesh metadata
+        io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-    # check - end
-    '''
-
-    #print overall mesh metadata
-    io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
-
-    model.__exit__()
+        model.__exit__()
 
 
 '''
