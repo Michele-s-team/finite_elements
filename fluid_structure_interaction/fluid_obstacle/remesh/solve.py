@@ -28,7 +28,6 @@ sys.path.append(module_path)
 
 
 import input_output as io
-# import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -36,6 +35,21 @@ import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
+
+
+'''
+# test geo_u.between_points 
+
+import geometry.utils as geo_u
+
+p =[1.2 + 0.1  ,2.4 + 0.2]
+a = [1.2,2.4]
+b = [1.5,3]
+
+geo_u.between_points(p, a, b)
+
+sys.exit(1)
+'''
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
