@@ -14,6 +14,7 @@ import calculus as cal
 import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import function as fu
+import geometry.utils as geo_u
 import input_output as io
 
 
@@ -1980,7 +1981,8 @@ Input values:
     - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
     - 'output_directory': the path where the mesh will be stored 
 '''
-def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory):
+def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory,
+                                    epsilon = const.epsilon):
 
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
@@ -2225,6 +2227,30 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
         print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
         print(f'Number of vertices on shape = {n_vertices_on_shape}\nCoordinates vertices on shape = {shape_vertex_coordinates}\nNumber of vertices on line = {n_vertices_on_line}')
+
+        print(f'shape_coordinates before = {shape_coordinates}')
+
+        for i in range(len(shape_vertex_coordinates)):
+
+            for j in range(len(shape_coordinates)):
+
+                p = shape_vertex_coordinates[i][:2]
+                p_start = shape_coordinates[j]
+                p_end = shape_coordinates[(j+1) % len(shape_coordinates)]
+
+                lies_in_between = geo_u.between_points(p, p_start, p_end) and \
+                (np.linalg.norm(np.subtract(p, p_start)) > epsilon) and \
+                (np.linalg.norm(np.subtract(p, p_end)) > epsilon)
+
+                if lies_in_between:
+
+                    print(f'\tvertex {shape_vertex_coordinates[i]} lies between { p_start} and {p_end}')
+
+                    shape_coordinates.insert(j+1, p)
+                    break
+
+        print(f'shape_coordinates after = {shape_coordinates}')
+
 
         sys.exit()
 

@@ -27,9 +27,10 @@ def between_points(p, a, b,
     p_minus_a = np.subtract(p, a)
 
     # check that p lies on the inifinite line that goes through a and b, and that, on that it lies on the portion of that line that is between a and b
-    if (np.linalg.norm(np.subtract(p_minus_a, np.dot(p_minus_a, dr_normalized) * dr_normalized)) < epsilon) and (0 <= np.dot(p_minus_a, dr_normalized) <= 1):
+    if (np.linalg.norm(np.subtract(p_minus_a, np.dot(p_minus_a, dr_normalized) * dr_normalized)) < epsilon) and (0 <= np.dot(p_minus_a, dr_normalized) <= dr_norm):
 
-        print(f'p lies on the line between a and b')
-
+        return True
+    
     else: 
-        print(f'p does not lie on the line between a and b')
+       
+        return False
