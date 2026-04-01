@@ -63,42 +63,38 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
-
-PETScOptions.clear()
-
-# Use newtonls first — more robust than newtontr unless you specifically need trust region
-PETScOptions.set('snes_type', 'newtonls')
-PETScOptions.set('snes_linesearch_type', 'bt')       # backtracking
-
-# Tolerances — only function-norm and relative, disable step-norm
-PETScOptions.set('snes_atol', 1e-10)
-PETScOptions.set('snes_rtol', 1e-10)
-PETScOptions.set('snes_stol', 0.0)          # ← disable step-tolerance convergence
-PETScOptions.set('snes_max_it', 200)
-PETScOptions.set('snes_max_funcs', 100000)
-
-# Diagnostics
-PETScOptions.set('snes_monitor')
-PETScOptions.set('snes_converged_reason')   # ← tells you WHY it converged/diverged
-PETScOptions.set('snes_linesearch_monitor') # ← shows line search steps
-
-# Linear solver inside SNES
-PETScOptions.set('ksp_type', 'preonly')
-PETScOptions.set('pc_type', 'lu')
-PETScOptions.set('pc_factor_mat_solver_type', 'superlu')
+def reset_petsc_options():
+    PETScOptions.clear()
+    PETScOptions.set('snes_type', 'newtonls')
+    PETScOptions.set('snes_linesearch_type', 'bt')
+    PETScOptions.set('snes_atol', 1e-10)
+    PETScOptions.set('snes_rtol', 1e-10)
+    PETScOptions.set('snes_stol', 1e-50)   # avoid exact 0.0
+    PETScOptions.set('snes_max_it', 200)
+    PETScOptions.set('snes_max_funcs', 100000)
+    PETScOptions.set('snes_monitor')
+    PETScOptions.set('snes_converged_reason')
+    # snes_linesearch_monitor removed — causes error 77
+    PETScOptions.set('ksp_type', 'preonly')
+    PETScOptions.set('pc_type', 'lu')
+    PETScOptions.set('pc_factor_mat_solver_type', 'superlu')
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
         'linear_solver': 'superlu',
-        'absolute_tolerance': 1e-50,   # ← set absurdly tight so FEniCS never declares early convergence
-        'relative_tolerance': 1e-50,
+        'method': 'newtonls',
+        'line_search': 'bt',
+        'absolute_tolerance': 1e-10,
+        'relative_tolerance': 1e-10,
+        'solution_tolerance': 0.0,
         'maximum_iterations': 200,
         'report': True,
         'error_on_nonconvergence': False,
     }
 }
+reset_petsc_options()
 
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
@@ -183,6 +179,9 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
+    reset_petsc_options()
+
+
     # step 1): solve I problem
     print('Solving I problem ...', flush=True)
 
@@ -223,9 +222,16 @@ for n in range(rpam.parameters['N']):
     vp_D = importlib.reload(vp_D)
 
     # 2.1) solve for D in square
-
-    var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
-    var_pr.solve_vp(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, vp_D.bcs_u_sq_dot, fsp.J_u_dot_sq, parameters=params)
+    try:
+        var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
+        
+    except RuntimeError as e:
+        if 'SNESSetFromOptions' in str(e):
+            print('WARNING: SNESSetFromOptions failed, resetting PETSc and retrying...', flush=True)
+            reset_petsc_options()
+            var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
+        else:
+            raise
 
     # 2.2) solve for D in disk
 
@@ -479,10 +485,13 @@ for n in range(rpam.parameters['N']):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
 
+        #6. reset cleanly solver parameters 
+        reset_petsc_options()
 
-        #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        # 6.1 fluid in disk
+        #7. transfer the values stored in the _old fields to the fields defined on the new mesh
+
+        # 7.1 fluid in disk
         msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
         msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_di_old)
         msh.transfer(v_di_n_2_old, fsp.v_disk_n_2, u_n_di_old)
@@ -496,7 +505,7 @@ for n in range(rpam.parameters['N']):
         msh.transfer(omega_disk_old, fsp.omega_disk_aux, u_n_di_old)
         fsp.assigner_phi_omega_disk.assign(fsp.phi_omega_disk, [fsp.phi_disk_aux, fsp.omega_disk_aux])
 
-        # 6.2 fluid in square
+        # 7.2 fluid in square
         msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
         msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_sq_old)
         msh.transfer(v_sq_n_2_old, fsp.v_square_n_2, u_n_sq_old)
@@ -508,9 +517,9 @@ for n in range(rpam.parameters['N']):
 
         msh.transfer(phi_sq_old, fsp.phi_square, u_n_sq_old)
 
-        # 6.3 D
+        # 7.3 D
 
-        # 6.3.1 disk
+        # 7.3.1 disk
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
@@ -521,7 +530,7 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_1_di_dot_old, fsp.u_n_1_di_dot, u_n_di_old)
         msh.transfer(u_n_2_di_dot_old, fsp.u_n_2_di_dot, u_n_di_old)   
 
-        # 6.3.2 square
+        # 7.3.2 square
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_sq.assign(Constant((0, 0)))
@@ -532,37 +541,37 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
         msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
 
-        # 6.4 I
+        # 7.4 I
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
         fsp.U_n_32.assign(Constant((0, 0)))
 
-        # 6.5 M
+        # 7.5 M
         msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
         msh.transfer(c_n_1_old, fsp.c_n_1, u_n_sq_old)
 
 
-        #7. call print_remesh to print out the remeshing info
+        #8. call print_remesh to print out the remeshing info
 
         pr_sol.print_remesh(step, mesh_quality)
 
     
-        # 8 clean up
+        #9 clean up
 
-        # 8.1 disk and square fluid
+        # 9.1 disk and square fluid
         del v_di_n_old, v_di_n_1_old, v_di_n_2_old, v_sq_n_old, v_sq_n_1_old, v_sq_n_2_old
         del v_di__old, v_sq__old
         del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
         del phi_disk_old, omega_disk_old
 
-        # 8.2 D
+        # 9.2 D
         del u_n_di_old, u_n_1_di_old, u_n_2_di_old, u_n_sq_old, u_n_1_sq_old, u_n_2_sq_old
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
 
-        # 8.3 I
+        # 9.3 I
         del U_n_12_old, U_n_32_old
 
-        # 8.4 M
+        # 9.4 M
         del c_n_old, c_n_1_old
 
         gc.collect()
