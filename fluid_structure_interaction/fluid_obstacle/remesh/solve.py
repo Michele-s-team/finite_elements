@@ -153,7 +153,7 @@ for n in range(rpam.parameters['N']):
 
     vp_I = importlib.reload(vp_I)
 
-    var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs, fsp.J_U, parameters=params)
+    var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs_U, fsp.J_U, parameters=params)
     
     print('... done.', flush=True)
 
