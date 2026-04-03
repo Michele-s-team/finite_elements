@@ -74,8 +74,8 @@ The fields in this problem are
     - 'nu_n_12': the stretching field of I 
     - 'psi_n_12': tangent angle of the I. 
         psi_n_12 is decomposed into two parts
-            * 'psi_n_12_0 =  -2*np.pi*x[0]/rmsh.lmsh.mesh_parameters[1]['L'] is a reference, non-periodic par of psi_n_12, which takes account of the winding of the tangent angle on a closed curve. Note that psi_n_12_0 is *not* periodic
-            * 'dpsi_n_12': 'psi_n_12'-'psi_n_12_0': the deviation of the tangent angle from psi_n_12_0. Note that dpsi_n_12 is periodic
+            * 'psi_0 =  -2*np.pi*x[0]/rmsh.lmsh.mesh_parameters[1]['L'] is a reference, non-periodic par of psi_n_12, which takes account of the winding of the tangent angle on a closed curve. Note that psi_0 is *not* periodic
+            * 'dpsi_n_12': 'psi_n_12'-'psi_0': the deviation of the tangent angle from 'psi_0'. Note that dpsi_n_12 is periodic
 
     - 'mu_n_12': mean curvature of I 
 
@@ -158,7 +158,25 @@ Q_u_sq_dot = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 2)
 
 # 4 I 
 
+# 4.1 displacement field
 Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', 2, dim=2, constrained_domain=periodic_boundary)
+
+# 4.2 nu and psi
+# note that the function space on which psi_0 is defined is not periodic
+Q_psi_0 = FunctionSpace(lmsh.mesh[1], 'P', 2)
+
+
+P_nu = FiniteElement('P', interval, 2)
+P_dpsi = FiniteElement('P', interval, 2)
+element_nu_and_dpsi = MixedElement( [P_nu, P_dpsi] )
+
+Q_nu_and_dpsi = FunctionSpace(lmsh.mesh[1], element_nu_and_dpsi, constrained_domain=periodic_boundary)
+
+Q_nu = Q_nu_and_dpsi.sub(0).collapse()
+Q_dpsi = Q_nu_and_dpsi.sub(1).collapse()
+
+# 4.3 curvature
+Q_mu = FunctionSpace(lmsh.mesh[1], 'P', 2, constrained_domain=periodic_boundary)
 
 
 # 5 M
@@ -321,15 +339,28 @@ u_n_sq_dot_bc_di = Function(Q_u_sq_dot)
 U_n_12 = Function(Q_U)
 U_n_32 = Function(Q_U)
 
+nu_and_dpsi = Function(Q_nu_and_dpsi)
+nu, dpsi = split( nu_and_dpsi )
+
+psi_0 = Function(Q_psi_0)
+
+mu = Function(Q_mu)
+
 # n_n_12 = Function(Q_U)
 
 U_n_12.set_allow_extrapolation(True)
 
 # 4.2 test functions
 nu_U = TestFunction(Q_U)
+nu_nu, nu_dpsi = TestFunctions( Q_nu_and_dpsi )
+nu_mu = TestFunction(Q_mu)
+
 
 # 4.3 jacobian
 J_U = TrialFunction(Q_U)
+J_nu_and_dpsi = TrialFunction(Q_nu_and_dpsi)
+J_mu = TrialFunction(Q_mu)
+
 
 # 4.4 other fields 
 # fluid velocity on the disk fluid at step n-1, which lives on sub-mesh[0][0], transferred on the 1d mesh (mesh[1])
