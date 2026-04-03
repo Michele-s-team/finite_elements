@@ -98,6 +98,24 @@ class U_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
+class ys_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rmsh.lmsh.parameters['c'][0] + rmsh.lmsh.parameters['r'] * np.cos(2 * np.pi * x[0] / rmsh.lmsh.mesh_parameters[1]['L'])
+        values[1] = rmsh.lmsh.parameters['c'][1] + rmsh.lmsh.parameters['r'] * np.sin(2 * np.pi * x[0] / rmsh.lmsh.mesh_parameters[1]['L'])
+    
+    def value_shape(self):
+        return (2,)
+
+
+class psi_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = -2*np.pi*x[0]/rmsh.lmsh.mesh_parameters[1]['L']
+    
+    def value_shape(self):
+        return (1,)
+    
 class nu_dpsi_expression(UserExpression):
     def eval(self, values, x):
 
@@ -144,6 +162,9 @@ class sigma_sq_0_expression(UserExpression):
 # 1 set initial profiles
 # 1.1 I
 fsp.U_n_12.interpolate(U_expression(element=fsp.Q_U.ufl_element()))
+fsp.ys.interpolate(ys_expression(element=fsp.Q_U.ufl_element()))
+
+fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
 fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
 
 
