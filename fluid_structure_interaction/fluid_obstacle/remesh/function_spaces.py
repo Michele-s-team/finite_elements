@@ -159,7 +159,7 @@ Q_u_sq_dot = VectorFunctionSpace(lmsh.sub_meshes[0][1], 'P', 2)
 # 4 I 
 
 # 4.1 displacement field
-Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', 2, dim=2, constrained_domain=periodic_boundary)
+Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', 4, dim=2, constrained_domain=periodic_boundary)
 
 # 4.2 nu and psi
 # note that the function space on which psi_0 is defined is not periodic
