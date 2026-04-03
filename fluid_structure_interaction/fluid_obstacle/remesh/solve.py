@@ -36,22 +36,6 @@ import switch_problem as swi
 import variational_problem.utils as var_pr
 
 
-
-'''
-# test geo_u.between_points 
-
-import geometry.utils as geo_u
-
-p =[1.2 + 0.1  ,2.4 + 0.2]
-a = [1.2,2.4]
-b = [1.5,3]
-
-geo_u.between_points(p, a, b)
-
-sys.exit(1)
-'''
-
-
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
