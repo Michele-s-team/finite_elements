@@ -67,14 +67,10 @@ params = {
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_coordinates_0 = rpam.parameters['shape_coordinates_0']
-
 shape_coordinates = shape_coordinates_0
 
 # generate the mesh with the shape and write theta_ref into its mesh_metadata
 msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
-
-
-
 
 # fist load of modules
 import differential_geometry.manifold.geometry as geo
