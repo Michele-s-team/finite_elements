@@ -1,3 +1,14 @@
+'''
+Field definitions
+ 
+- 'U': the displacement field of the curve with respect to the reference configuration y
+- 'nu': the stretching of the current configuraiton curve, X
+- 'psi': tangent angle of the current configuration curve, X. psi is decomposed into two parts
+    * 'psi0(s) =  -2*np.pi*x[0]/rmsh.lmsh.mesh_parameters[1]['L'] is a reference, non-periodic par of psi, which takes account of the winding of the tangent angle on a closed curve. Note that psi0 is *not* periodic
+    * 'dpsi': 'psi'-'psi0': the deviation of the tangent angle from psi0. Note that dpsi is periodic
+- 'H': mean curvature of the currenct configuation curve, X
+'''
+
 from fenics import *
 import importlib
 
@@ -29,6 +40,7 @@ periodic_boundary = PeriodicBoundary()
 
 # 1. function spaces
 Q_U = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'], dim=2, constrained_domain=periodic_boundary)
+# note that the function space on which psi0 is defined is not periodic
 Q_psi0 = FunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree'])
 
 P_nu = FiniteElement('P', interval, rpam.parameters['function_space_degree'])
