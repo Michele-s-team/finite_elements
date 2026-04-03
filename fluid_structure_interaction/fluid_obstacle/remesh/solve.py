@@ -87,6 +87,8 @@ vp_M = importlib.import_module(swi.vp_M)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 
+#0 define classes for initial profiles
+# 0.1 I
 class U_expression(UserExpression):
     def eval(self, values, x):
         
@@ -105,7 +107,7 @@ class nu_dpsi_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-
+# 0.2 fluid square
 class v_sq_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -123,7 +125,7 @@ class v_di_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-
+# 0.3 fluid disk
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters['sigma_di_0']
