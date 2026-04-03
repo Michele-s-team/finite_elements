@@ -64,3 +64,12 @@ F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * fsp.v_disk_n_1_0_0_on_1[alph
     ) * rmsh.dx_mesh[1]
  
 
+F_nu_psi = (
+    ((fsp.ys[0] + fsp.U_n_12[0]).dx(0) - geo.e(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12)[0, 0])
+    * (-cos(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_nu + fsp.nu_n_12 * sin(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_dpsi)
+    + ((fsp.ys[1] + fsp.U_n_12[1]).dx(0) - geo.e(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12)[0, 1])
+    * (sin(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_nu + fsp.nu_n_12 * cos(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_dpsi)
+) * geo.sqrt_detg(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12) * rmsh.dx_mesh[1]
+
+F_mu = ((geo.H(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu) \
+       * geo.sqrt_detg(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12) * rmsh.dx_mesh[1]

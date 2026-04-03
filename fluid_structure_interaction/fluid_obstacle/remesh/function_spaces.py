@@ -339,12 +339,12 @@ u_n_sq_dot_bc_di = Function(Q_u_sq_dot)
 U_n_12 = Function(Q_U)
 U_n_32 = Function(Q_U)
 
-nu_and_dpsi = Function(Q_nu_and_dpsi)
-nu, dpsi = split( nu_and_dpsi )
+nu_and_dpsi_n_12 = Function(Q_nu_and_dpsi)
+nu_n_12, dpsi_n_12 = split( nu_and_dpsi_n_12 )
 
 psi_0 = Function(Q_psi_0)
 
-mu = Function(Q_mu)
+mu_n_12 = Function(Q_mu)
 
 # n_n_12 = Function(Q_U)
 
