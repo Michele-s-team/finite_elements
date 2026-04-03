@@ -71,6 +71,14 @@ The fields in this problem are
     - 'U_n_12' = {U^{n-1/2}}_notes 
     - 'U_n_32' = {U^{n-3/2}}_notes 
 
+    - 'nu_n_12': the stretching field of I 
+    - 'psi_n_12': tangent angle of the I. 
+        psi_n_12 is decomposed into two parts
+            * 'psi_n_12_0 =  -2*np.pi*x[0]/rmsh.lmsh.mesh_parameters[1]['L'] is a reference, non-periodic par of psi_n_12, which takes account of the winding of the tangent angle on a closed curve. Note that psi_n_12_0 is *not* periodic
+            * 'dpsi_n_12': 'psi_n_12'-'psi_n_12_0': the deviation of the tangent angle from psi_n_12_0. Note that dpsi_n_12 is periodic
+
+    - 'mu_n_12': mean curvature of I 
+
     - 'n_n_12' = {\hat{n}^{n-1/2}}_notes
 
     
