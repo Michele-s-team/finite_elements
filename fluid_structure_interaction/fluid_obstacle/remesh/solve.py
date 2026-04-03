@@ -87,6 +87,25 @@ vp_M = importlib.import_module(swi.vp_M)
 pr_bc = importlib.import_module(swi.prout_bc)
 
 
+class U_expression(UserExpression):
+    def eval(self, values, x):
+        
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+    
+class nu_dpsi_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1.0                       
+        values[1] = -np.pi/2   
+
+    def value_shape(self):
+        return (2,)
+
+
 class v_sq_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -95,6 +114,7 @@ class v_sq_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
+
 class v_di_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 0
@@ -102,7 +122,8 @@ class v_di_0_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
-    
+
+
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
         values[0] = rpam.parameters['sigma_di_0']
@@ -119,19 +140,25 @@ class sigma_sq_0_expression(UserExpression):
 
 
 # 1 set initial profiles
-# 1.1 set for square
+# 1.1 I
+fsp.U_n_12.interpolate(U_expression(element=fsp.Q_U.ufl_element()))
+fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
+
+
+# 1.2  square
 fsp.v_square_n_1.interpolate(v_sq_0_expression(element=fsp.Q_v_square.ufl_element()))
 fsp.v_square_n_2.assign(fsp.v_square_n_1)
 
 fsp.sigma_square_n_12.interpolate(sigma_sq_0_expression(element=fsp.Q_sigma_square.ufl_element()))
 fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
 
-# 1.2 set for disk
+# 1.3  disk
 fsp.v_disk_n_1.interpolate(v_di_0_expression(element=fsp.Q_v_disk.ufl_element()))
 fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
 
 fsp.sigma_disk_n_12.interpolate(sigma_di_0_expression(element=fsp.Q_sigma_disk.ufl_element()))
 fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
+
 
 
 print("Starting time iteration ...", flush=True)
@@ -153,8 +180,16 @@ for n in range(rpam.parameters['N']):
 
     vp_I = importlib.reload(vp_I)
 
+    # 1.1 solve for U_n_12
     var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs_U, fsp.J_U, parameters=params)
-    
+
+    # 1.2 solve for nu_n_12 and dpsi_n_12
+    var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
+
+    # 1.3 solve for mu_n_12
+    var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
+
+
     print('... done.', flush=True)
 
 
