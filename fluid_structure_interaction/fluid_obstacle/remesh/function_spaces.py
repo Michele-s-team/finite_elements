@@ -368,6 +368,9 @@ v_disk_n_1_0_0_on_1 = Function(Q_U)
 # two-dimensional vector field containing the reference configuration of I as a function of its parameteric coordinate s
 ys = Function(Q_U)
 
+U_n_12_smooth = Function(Q_U)
+
+
 
 
 
