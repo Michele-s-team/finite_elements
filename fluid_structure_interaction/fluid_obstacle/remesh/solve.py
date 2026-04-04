@@ -253,11 +253,10 @@ for n in range(rpam.parameters['N']):
 
     # 2.1) solve for D in square
     var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
-        
+    var_pr.solve_vp(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, vp_D.bcs_u_sq_dot, fsp.J_u_dot_sq, parameters=params)
 
 
     # 2.2) solve for D in disk
-
     var_pr.solve_vp(vp_D.F_u_di, fsp.u_n_di, vp_D.bcs_u_di, fsp.J_u_di, parameters=params)
     var_pr.solve_vp(vp_D.F_u_di_dot, fsp.u_n_di_dot, vp_D.bcs_u_di_dot, fsp.J_u_dot_di, parameters=params)
 
