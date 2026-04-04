@@ -295,7 +295,7 @@ for n in range(rpam.parameters['N']):
 
     print('Solving square fluid problem ...', flush=True)
 
-    # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
+    # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1: v_disk_n_0_0_on_0_1 will be used as a BC in vp_fl_sq
     fsp.v_disk_n_0_0_on_0_1.assign(project(fsp.v_disk_n, fsp.Q_v__square))
 
     vp_fl_sq = importlib.reload(vp_fl_sq)
