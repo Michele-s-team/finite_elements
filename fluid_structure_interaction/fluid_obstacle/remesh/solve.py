@@ -160,6 +160,7 @@ class sigma_sq_0_expression(UserExpression):
 
 
 # 1 set initial profiles
+
 # 1.1 I
 fsp.U_n_12.interpolate(U_expression(element=fsp.Q_U.ufl_element()))
 fsp.ys.interpolate(ys_expression(element=fsp.Q_U.ufl_element()))
@@ -167,15 +168,14 @@ fsp.ys.interpolate(ys_expression(element=fsp.Q_U.ufl_element()))
 fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
 fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
 
-
-# 1.2  square
+# 1.2 fluid square
 fsp.v_square_n_1.interpolate(v_sq_0_expression(element=fsp.Q_v_square.ufl_element()))
 fsp.v_square_n_2.assign(fsp.v_square_n_1)
 
 fsp.sigma_square_n_12.interpolate(sigma_sq_0_expression(element=fsp.Q_sigma_square.ufl_element()))
 fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
 
-# 1.3  disk
+# 1.3 fluid disk
 fsp.v_disk_n_1.interpolate(v_di_0_expression(element=fsp.Q_v_disk.ufl_element()))
 fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
 
@@ -188,6 +188,7 @@ print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
+
 for n in range(rpam.parameters['N']):
     # Update current time
     t += dt
@@ -197,7 +198,7 @@ for n in range(rpam.parameters['N']):
     # step 1): solve I problem
     print('Solving I problem ...', flush=True)
 
-    # project v_square_n_1 of the fluid in the square onto (mesh[1])
+    # project v_square_n_1 of the fluid in the square onto (mesh[1]): this velocity will be used in vp_I to make I move
     msh.transfer_2d_to_1d(fsp.v_disk_n_1, fsp.v_disk_n_1_0_0_on_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
     vp_I = importlib.reload(vp_I)
@@ -231,24 +232,24 @@ for n in range(rpam.parameters['N']):
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
     fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
 
-    #transfer the new normal it from mesh[1] to sub_mesh[0][0]
+    #transfer the new normal it from mesh[1] to sub_mesh[0][0] and write it into n_n_12_1_on_0_0
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
     msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
+    # specify the BC for u_n_di_dot
     fsp.u_n_di_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_disk_n_1, fsp.n_n_12_1_on_0_0), fsp.Q_u_di_dot))
 
-
-    #transfer the new normal from mesh[1] to sub_mesh[0][1] and v_disk_n_1 form mesh 0 0 to mesh 0 1
+    #transfer the new normal from mesh[1] to sub_mesh[0][1] and write it into n_n_12_1_on_0_1
     msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    #transfer v_disk_n_1 form mesh 0 0 to mesh 0 1
     fsp.v_disk_n_1_0_0_on_0_1.assign(project(fsp.v_disk_n_1, fsp.Q_v__square))
 
-
+    # specify the BC for u_n_sq_dot
     fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_disk_n_1_0_0_on_0_1, fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
 
-
-    # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
-    msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    # transfer U_n_12 from mesh[1] to sub_mesh[0][0] and from mesh[1] to sub_mesh[0][1] and write the result in U_n_12_1_on_0_0 and U_n_12_1_on_0_1, respectively: these will be used to set the BCs for u_n_di and u_n_sq in vp_D, respectively
     msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_0,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
     vp_D = importlib.reload(vp_D)
 
