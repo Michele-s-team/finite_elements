@@ -78,9 +78,9 @@ L          = rmsh.lmsh.mesh_parameters[1]['L']
 
 
 F_nu_psi = (
-    ((fsp.ys[0] + fsp.U_n_12[0]).dx(0) - geo.e(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12)[0, 0])
+    ((fsp.ys[0] + fsp.U_n_12_smooth[0]).dx(0) - geo.e(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12)[0, 0])
     * (-cos(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_nu + fsp.nu_n_12 * sin(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_dpsi)
-    + ((fsp.ys[1] + fsp.U_n_12[1]).dx(0) - geo.e(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12)[0, 1])
+    + ((fsp.ys[1] + fsp.U_n_12_smooth[1]).dx(0) - geo.e(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12)[0, 1])
     * (sin(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_nu + fsp.nu_n_12 * cos(fsp.psi_0 + fsp.dpsi_n_12) * fsp.nu_dpsi)
 ) * geo.sqrt_detg(fsp.psi_0 + fsp.dpsi_n_12, fsp.nu_n_12) * rmsh.dx_mesh[1]
 
