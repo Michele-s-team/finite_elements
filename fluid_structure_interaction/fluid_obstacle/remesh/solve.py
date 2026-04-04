@@ -208,7 +208,7 @@ for n in range(rpam.parameters['N']):
 
     #  build a smooth U_n_12 - start
     vp_I.smooth_field_fourier(
-        fsp.U_n_12,          # <- was fsp.ys
+        fsp.U_n_12,          
         vp_I.dof_coords, vp_I.dofmap_x, vp_I.dofmap_y,
         rmsh.lmsh.mesh_parameters[1]['L'], n_harmonics=1, target_field=fsp.U_n_12_smooth
     )
@@ -216,10 +216,10 @@ for n in range(rpam.parameters['N']):
 
 
     # 1.2 solve for nu_n_12 and dpsi_n_12
-    var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
+    # var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
 
     # 1.3 solve for mu_n_12
-    var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
+    # var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
 
 
     print('... done.', flush=True)
@@ -347,8 +347,9 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    # if mesh_quality < rpam.parameters['mesh_quality_threshold']:
-    if False:
+    if mesh_quality < rpam.parameters['mesh_quality_threshold']:
+    # if False:
+    # if True:
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
 
@@ -411,6 +412,11 @@ for n in range(rpam.parameters['N']):
 
         U_n_12_old = Function(fsp.Q_U)
         U_n_32_old = Function(fsp.Q_U)
+
+        ys_old = Function(fsp.Q_U)
+
+        U_n_12_old.set_allow_extrapolation(True)
+        ys_old.set_allow_extrapolation(True)
 
 
         # 1.1.5 M
@@ -476,6 +482,8 @@ for n in range(rpam.parameters['N']):
 
         U_n_12_old.assign(fsp.U_n_12)
         U_n_32_old.assign(fsp.U_n_32)
+
+        ys_old.assign(fsp.ys)
 
         # 1.2.5 M
 
@@ -569,6 +577,37 @@ for n in range(rpam.parameters['N']):
         fsp.U_n_12.assign(Constant((0, 0)))
         fsp.U_n_32.assign(Constant((0, 0)))
 
+        # write the nes ys after remeshing - start
+        # set new ys = ys_old + U_n_12_old evaluated at new DOF locations
+
+        dof_coords_new = fsp.Q_U.tabulate_dof_coordinates()
+        dofmap_x_new   = fsp.Q_U.sub(0).dofmap().dofs()
+        dofmap_y_new   = fsp.Q_U.sub(1).dofmap().dofs()
+
+        dof_values_ys = fsp.ys.vector().get_local()
+
+        for i in range(len(dofmap_x_new)):
+
+            s   = dof_coords_new[dofmap_x_new[i]][0]
+
+            value = np.array(ys_old(s)) + np.array(U_n_12_old(s))
+
+            dof_values_ys[dofmap_x_new[i]] = value[0]
+            dof_values_ys[dofmap_y_new[i]] = value[1]
+
+        fsp.ys.vector().set_local(dof_values_ys)
+        fsp.ys.vector().apply("insert")
+
+        print(f'*** Test: ')
+        for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+
+            coord = rmsh.lmsh.mesh_parameters[1]["L"] * i/(rmsh.lmsh.mesh_parameters[0]['N']-1)
+
+            print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.ys(coord)} \t {ys_old(coord) + U_n_12_old(coord)}')
+
+        
+        # write the new ys after remeshing - end
+
         # 7.5 M
         msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
         msh.transfer(c_n_1_old, fsp.c_n_1, u_n_sq_old)
@@ -592,7 +631,7 @@ for n in range(rpam.parameters['N']):
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
 
         # 9.3 I
-        del U_n_12_old, U_n_32_old
+        del U_n_12_old, U_n_32_old, ys_old
 
         # 9.4 M
         del c_n_old, c_n_1_old
