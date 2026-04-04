@@ -206,6 +206,7 @@ for n in range(rpam.parameters['N']):
     # 1.1 solve for U_n_12
     var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs_U, fsp.J_U, parameters=params)
 
+    '''
     #  build a smooth U_n_12 - start
     vp_I.smooth_field_fourier(
         fsp.U_n_12,          
@@ -213,13 +214,13 @@ for n in range(rpam.parameters['N']):
         rmsh.lmsh.mesh_parameters[1]['L'], n_harmonics=1, target_field=fsp.U_n_12_smooth
     )
     #  build a smooth U_n_12 - end
-
+    '''
 
     # 1.2 solve for nu_n_12 and dpsi_n_12
-    # var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
+    var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
 
     # 1.3 solve for mu_n_12
-    # var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
+    var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
 
 
     print('... done.', flush=True)
