@@ -274,8 +274,10 @@ f_sq_n = Function(Q_v_square)
 t_sq_n = Function(Q_v_square)
 # this field is used to store the Dirichlet BCs for v_square__
 v_square__bc = Function(Q_v__square)
-# this field stores the values of v_disk_n_1 (defined on sub_mes[0][0]) on sub_mesh[0][1]
+# this field stores the values of v_disk_n (defined on sub_mes[0][0]) on sub_mesh[0][1]
 v_disk_n_0_0_on_0_1 = Function(Q_v__square)
+# this field stores the values of v_disk_n_1 (defined on sub_mes[0][0]) on sub_mesh[0][1]
+v_disk_n_1_0_0_on_0_1 = Function(Q_v__square)
 
 
 # 3 D
@@ -301,7 +303,7 @@ J_u_di = TrialFunction(Q_u_di)
 J_u_dot_di = TrialFunction(Q_u_di_dot)
 
 # 3.1.5 other fields
-# n_n_12_1_on_0_0 = Function(Q_u_di)
+n_n_12_1_on_0_0 = Function(Q_u_di)
 # this field stores the values of v_square_n_1 (defined on sub_mes[0][1]) on sub_mes[0][0]
 v_square_n_1_0_1_on_0_0 = Function(Q_u_di_dot)
 # this field stores the value [\textrm{v}_square^{n-1} . \hat{n}^{n-1/2}] \hat{n}^{n-1/2} coming from the I sector, to be used as a BC for u_n_di_dot on \partial \Omega_O
@@ -328,7 +330,7 @@ J_u_sq = TrialFunction(Q_u_sq)
 J_u_dot_sq = TrialFunction(Q_u_sq_dot)
 
 # 3.2.5 other fields
-# n_n_12_1_on_0_1 = Function(Q_u_sq)
+n_n_12_1_on_0_1 = Function(Q_u_sq)
 # this field stores the value [\textrm{v}_square^{n-1} . \hat{n}^{n-1/2}] \hat{n}^{n-1/2} coming from the I sector, to be used as a BC for u_n_sq_dot on \partial \Omega_O
 u_n_sq_dot_bc_di = Function(Q_u_sq_dot)
 
@@ -346,7 +348,7 @@ psi_0 = Function(Q_psi_0)
 
 mu_n_12 = Function(Q_mu)
 
-# n_n_12 = Function(Q_U)
+n_n_12 = Function(Q_U)
 
 U_n_12.set_allow_extrapolation(True)
 
@@ -365,6 +367,9 @@ J_mu = TrialFunction(Q_mu)
 # 4.4 other fields 
 # fluid velocity on the disk fluid at step n-1, which lives on sub-mesh[0][0], transferred on the 1d mesh (mesh[1])
 v_disk_n_1_0_0_on_1 = Function(Q_U)
+# fluid velocity on the square at step n-1, which lives on sub-mesh[0][1], transferred on the 1d mesh (mesh[1])
+v_square_n_1_0_1_on_1 = Function(Q_U)
+
 # two-dimensional vector field containing the reference configuration of I as a function of its parameteric coordinate s
 ys = Function(Q_U)
 

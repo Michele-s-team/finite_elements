@@ -14,6 +14,7 @@ from scipy.interpolate import CubicSpline
 import ufl as ufl
 
 import command as cmd
+import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import function_spaces as fsp
 import parameters.read.solution as rpam
@@ -35,10 +36,15 @@ bcs_U = [ ]
 bcs_nu_and_dpsi = [ ]
 bcs_mu = [ ]
 
+
 # variational functional for the original problem (first-order equation equation)
-F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * fsp.v_disk_n_1_0_0_on_1[alpha]) * \
+F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * (fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[beta]) * bgeo.n_ale(fsp.ys, fsp.U_n_12)[alpha]) * \
     (
-        fsp.nu_U[alpha]
+        fsp.nu_U[alpha] - \
+        dt * (
+            fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.delta_n_ale(fsp.ys, fsp.U_n_12, fsp.nu_U)[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[alpha] + \
+            fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.U_n_12, fsp.nu_U)[alpha]
+        )
     ) * rmsh.dx_mesh[1]
  
 

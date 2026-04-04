@@ -194,7 +194,6 @@ for n in range(rpam.parameters['N']):
     step += 1
 
 
-
     # step 1): solve I problem
     print('Solving I problem ...', flush=True)
 
@@ -230,20 +229,22 @@ for n in range(rpam.parameters['N']):
 
     # now that U_n_12 has been computed, compute the new normal
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    # fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
-
+    fsp.n_n_12.assign(project(bgeo.n_ale(fsp.ys, fsp.U_n_12), fsp.Q_U))
 
     #transfer the new normal it from mesh[1] to sub_mesh[0][0]
     # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    # msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
-    fsp.u_n_di_dot_bc_di.assign(fsp.v_disk_n_1)
+    fsp.u_n_di_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_disk_n_1, fsp.n_n_12_1_on_0_0), fsp.Q_u_di_dot))
 
-    #transfer the new normal it from mesh[1] to sub_mesh[0][1]
-    # POTENTIAL PROBLEM HERE: YOU MAY NEED TO USE A DISCRETE VERSION OF n_ale, using the relation between n and nu
-    # msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
-    fsp.u_n_sq_dot_bc_di.assign(project(fsp.v_disk_n_1, fsp.Q_u_sq_dot))
+    #transfer the new normal from mesh[1] to sub_mesh[0][1] and v_disk_n_1 form mesh 0 0 to mesh 0 1
+    msh.transfer_1d_to_2d(fsp.n_n_12, fsp.n_n_12_1_on_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
+    fsp.v_disk_n_1_0_0_on_0_1.assign(project(fsp.v_disk_n_1, fsp.Q_v__square))
+
+
+    fsp.u_n_sq_dot_bc_di.assign(project(geo.euclidean_projection(fsp.v_disk_n_1_0_0_on_0_1, fsp.n_n_12_1_on_0_1), fsp.Q_u_sq_dot))
+
 
     # now that U_n_12 has been computed, transfer it from mesh[1] to sub_mesh[0][1] and from mesh[1] to sub_mesh[0][0]
     msh.transfer_1d_to_2d(fsp.U_n_12, fsp.U_n_12_1_on_0_1,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
@@ -254,7 +255,6 @@ for n in range(rpam.parameters['N']):
     # 2.1) solve for D in square
     var_pr.solve_vp(vp_D.F_u_sq, fsp.u_n_sq, vp_D.bcs_u_sq, fsp.J_u_sq, parameters=params)
     var_pr.solve_vp(vp_D.F_u_sq_dot, fsp.u_n_sq_dot, vp_D.bcs_u_sq_dot, fsp.J_u_dot_sq, parameters=params)
-
 
     # 2.2) solve for D in disk
     var_pr.solve_vp(vp_D.F_u_di, fsp.u_n_di, vp_D.bcs_u_di, fsp.J_u_di, parameters=params)
@@ -271,27 +271,21 @@ for n in range(rpam.parameters['N']):
     fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
     fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
 
+
     vp_fl_di = importlib.reload(vp_fl_di)
 
     # 3.1 solve for v_disk__
-
     var_pr.solve_vp(vp_fl_di.F_v_disk__, fsp.v_disk__, vp_fl_di.bc_v_disk__, fsp.J_v__disk, parameters=params)
 
     # 3.2 solve for phi_disk (and omega_disk)
-
     var_pr.solve_vp(vp_fl_di.F_phi_omega_disk, fsp.phi_omega_disk, vp_fl_di.bc_phi_omega_disk, fsp.J_phi_omega_disk, parameters=params)
 
     # 3.3 solve for v_disk_n
-
     var_pr.solve_vp(vp_fl_di.F_v_disk_n, fsp.v_disk_n, vp_fl_di.bc_v_disk_n, fsp.J_v_disk, parameters=params)
 
     # write into sigma_disk_n_12
     phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
     fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(phi_disk_output, fsp.Q_sigma_disk))
-
-
-    # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
-    fsp.v_disk_n_0_0_on_0_1.assign(project(fsp.v_disk_n, fsp.Q_v__square))
 
     print('... done.', flush=True)
 
@@ -300,25 +294,24 @@ for n in range(rpam.parameters['N']):
 
     print('Solving square fluid problem ...', flush=True)
 
+    # transfer v_disk_n (defined on sub_mesh[0][0]) on sub_mesh[0][1], and write the result in v_disk_n_0_0_on_0_1
+    fsp.v_disk_n_0_0_on_0_1.assign(project(fsp.v_disk_n, fsp.Q_v__square))
+
     vp_fl_sq = importlib.reload(vp_fl_sq)
 
     # 4.1 solve for v_square__
-
     var_pr.solve_vp(vp_fl_sq.F_v_square__, fsp.v_square__, vp_fl_sq.bc_v_square__, fsp.J_v__square, parameters=params)
 
     # 4.2 solve for phi_square
-
     var_pr.solve_vp(vp_fl_sq.F_phi_square, fsp.phi_square, vp_fl_sq.bc_phi_square, fsp.J_phi_square, parameters=params)
 
     # 4.3 solve for v_square_n
-
     var_pr.solve_vp(vp_fl_sq.F_v_square_n, fsp.v_square_n, vp_fl_sq.bc_v_square_n, fsp.J_v_square, parameters=params)
 
     # write into sigma_square_n_12
     fsp.sigma_square_n_12.assign(fsp.sigma_square_n_32 - fsp.phi_square)
 
     print('... done.', flush=True)
-
 
 
     # 5) solve for M
@@ -328,7 +321,6 @@ for n in range(rpam.parameters['N']):
     vp_M = importlib.reload(vp_M)
 
     # solve for c_n
-
     var_pr.solve_vp(vp_M.F_c, fsp.c_n, vp_M.bc_M, fsp.J_c, parameters=params)
     
     print('... done.', flush=True)
@@ -597,13 +589,14 @@ for n in range(rpam.parameters['N']):
         fsp.ys.vector().set_local(dof_values_ys)
         fsp.ys.vector().apply("insert")
 
+        '''
         print(f'*** Test: ')
         for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
             coord = rmsh.lmsh.mesh_parameters[1]["L"] * i/(rmsh.lmsh.mesh_parameters[0]['N']-1)
 
             print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.ys(coord)} \t {ys_old(coord) + U_n_12_old(coord)}')
-
+        '''
         
         # write the new ys after remeshing - end
 
