@@ -2804,6 +2804,8 @@ def transfer(f, g, u):
 
 def transfer_1d(f, g):
 
+    f.set_allow_extrapolation(True)
+
     Q_g = g.function_space()
 
     value_shape = Q_g.ufl_element().value_shape()
@@ -2815,17 +2817,22 @@ def transfer_1d(f, g):
     dof_coords  = (Q_g.tabulate_dof_coordinates())[::value_size]
 
     dof_map = Q_g.dofmap().dofs()
+    dof_values = g.vector().get_local()
 
 
     for i in range(len(dof_coords)):
+        # run through all coordinates in the 1d mesh
 
-        s     = dof_coords[i][0]
+        s  = dof_coords[i][0]
 
         value = np.atleast_1d(np.array(f(s)))
 
         for k in range(value_size):
-            
-            g.vector()[dof_map[value_size * i + k]] = value[k]
+
+            dof_values[dof_map[value_size * i + k]] = value[k]
+
+    g.vector().set_local(dof_values)
+    g.vector().apply("insert")
 
 '''
 compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells
