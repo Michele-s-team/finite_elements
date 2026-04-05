@@ -206,15 +206,15 @@ for n in range(rpam.parameters['N']):
     # 1.1 solve for U_n_12
     var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs_U, fsp.J_U, parameters=params)
 
-    '''
+    
     #  build a smooth U_n_12 - start
     vp_I.smooth_field_fourier(
         fsp.U_n_12,          
         vp_I.dof_coords, vp_I.dofmap_x, vp_I.dofmap_y,
-        rmsh.lmsh.mesh_parameters[1]['L'], n_harmonics=1, target_field=fsp.U_n_12_smooth
+        rmsh.lmsh.mesh_parameters[1]['L'], n_harmonics=2, target_field=fsp.U_n_12_smooth
     )
     #  build a smooth U_n_12 - end
-    '''
+    
 
     # 1.2 solve for nu_n_12 and dpsi_n_12
     var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
