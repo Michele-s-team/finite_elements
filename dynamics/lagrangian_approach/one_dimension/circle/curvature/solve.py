@@ -39,7 +39,6 @@ import variational_problem.utils as var_pr
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 
 # create the solution metadata and write it into the output directory 
@@ -81,8 +80,8 @@ vp_I = importlib.import_module(swi.vp_I)
 class U_expression(UserExpression):
     def eval(self, values, x):
         
-        values[0] = mesh_parameters['d'] * np.cos(2*np.pi * 3 * x[0]/rmsh.lmsh.mesh_parameters[1]["L"]) * np.cos(2*np.pi * x[0]/rmsh.lmsh.mesh_parameters[1]["L"])
-        values[1] = mesh_parameters['d'] * np.cos(2*np.pi * 3 * x[0]/rmsh.lmsh.mesh_parameters[1]["L"]) * np.sin(2*np.pi * x[0]/rmsh.lmsh.mesh_parameters[1]["L"])
+        values[0] = rmsh.lmsh.parameters['d'] * np.cos(2*np.pi * 3 * x[0]/rmsh.lmsh.mesh_parameters[1]["L"]) * np.cos(2*np.pi * x[0]/rmsh.lmsh.mesh_parameters[1]["L"])
+        values[1] = rmsh.lmsh.parameters['d'] * np.cos(2*np.pi * 3 * x[0]/rmsh.lmsh.mesh_parameters[1]["L"]) * np.sin(2*np.pi * x[0]/rmsh.lmsh.mesh_parameters[1]["L"])
 
     def value_shape(self):
         return (2,)
