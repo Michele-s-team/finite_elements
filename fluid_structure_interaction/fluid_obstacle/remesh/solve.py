@@ -614,7 +614,7 @@ for n in range(rpam.parameters['N']):
         '''
         
         
-        # 7.4.2 write the new mu_n_12 after remeshing
+        # 7.4.3 write the new mu_n_12 after remeshing
 
         dof_coords_new = fsp.Q_mu.tabulate_dof_coordinates()
         dofmap_new   = fsp.Q_mu.dofmap().dofs()
