@@ -2801,7 +2801,11 @@ def transfer(f, g, u):
         g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
 
 
+'''
+given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
 
+
+'''
 def transfer_1d(f, g):
 
     f.set_allow_extrapolation(True)
