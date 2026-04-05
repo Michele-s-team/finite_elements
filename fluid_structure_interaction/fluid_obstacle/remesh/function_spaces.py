@@ -132,6 +132,9 @@ Q_phi_omega_disk = FunctionSpace(lmsh.sub_meshes[0][0], phi_disk_omega_element)
 Q_phi_disk = Q_phi_omega_disk.sub(0).collapse()
 Q_omega_disk = Q_phi_omega_disk.sub(1).collapse()
 
+# function space for the shape curvature projected on sub_mesh[0][0] 
+Q_mu_di = FunctionSpace(lmsh.sub_meshes[0][0], 'P', 1)
+
 # this assigner is used to write values into phi_omega_disk (mixed field)
 assigner_phi_omega_disk = FunctionAssigner(Q_phi_omega_disk, [Q_phi_disk, Q_omega_disk])
 
@@ -225,6 +228,7 @@ J_phi_omega_disk = TrialFunction(Q_phi_omega_disk)
 # 1.6 other fields
 V_di = 0.5 * (v_disk_n_1 + v_disk__)
 U_n_12_1_on_0_0 = Function(Q_u_di)
+mu_n_12_1_on_0_0 = Function(Q_mu_di)
 f_di_n = Function(Q_v_disk)
 # function used to project phi_disk on the function space Q_sigma_disk
 phi_disk_on_Q_sigma_disk = Function(Q_sigma_disk)

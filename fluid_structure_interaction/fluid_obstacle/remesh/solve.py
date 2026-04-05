@@ -273,9 +273,12 @@ for n in range(rpam.parameters['N']):
 
     print('Solving disk fluid problem ...', flush=True)
 
-    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mes[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
+    # transfer v_square_n_1 and sigma_square_n_32 (defined on sub_mesh[0][1]) on sub_mesh[0][0], and write the result in v_square_n_1_0_1_on_0_0 and sigma_square_n_32_0_1_on_0_0, respectively
     fsp.v_square_n_1_0_1_on_0_0.assign(project(fsp.v_square_n_1, fsp.Q_u_di_dot))
     fsp.sigma_square_n_32_0_1_on_0_0.assign(project(fsp.sigma_square_n_32, fsp.Q_sigma_disk))
+
+    # transfer mu_n_12 (defined on mesh[1]) on sub_mesh[0][0], in order to compute the Laplace force
+    msh.transfer_1d_to_2d(fsp.mu_n_12, fsp.mu_n_12_1_on_0_0,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'],  rmsh.lmsh.parameters['shape_id'])
 
 
     vp_fl_di = importlib.reload(vp_fl_di)
