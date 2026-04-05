@@ -50,7 +50,7 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "soluti
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
-    'nonlinear_solver': 'newton',
+    'nonlinear_solver': 'snes',
     'snes_solver': {
         'linear_solver': 'superlu',
         'method': 'newtonls',
@@ -58,7 +58,7 @@ params = {
         'absolute_tolerance': 1e-10,
         'relative_tolerance': 1e-10,
         'solution_tolerance': 0.0,
-        'maximum_iterations': 200,
+        'maximum_iterations': 10000,
         'report': True,
         'error_on_nonconvergence': False,
     }
