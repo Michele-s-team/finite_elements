@@ -573,11 +573,11 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
 
         # 7.4 I
-        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+        # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
         fsp.U_n_32.assign(Constant((0, 0)))
 
-        # write the nes ys after remeshing - start
+        # 7.4.2 write the nes ys after remeshing
         # set new ys = ys_old + U_n_12_old evaluated at new DOF locations
 
         dof_coords_new = fsp.Q_U.tabulate_dof_coordinates()
