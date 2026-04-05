@@ -349,7 +349,7 @@ for n in range(rpam.parameters['N']):
 
     if mesh_quality < rpam.parameters['mesh_quality_threshold']:
     # if False:
-    # if True:
+    # if step % 5 == True:
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
 
@@ -608,6 +608,13 @@ for n in range(rpam.parameters['N']):
         '''
         
         # write the new ys after remeshing - end
+
+        # given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
+        fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
+
+        #given that nu_and_psi_n_12 has been recreated from scratch, is it set to 0, 0 ->  set a reasonable initial guess into nu_and_dpsi_n_12
+        fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
+
 
         # 7.5 M
         msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
