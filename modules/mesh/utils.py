@@ -2804,8 +2804,12 @@ def transfer(f, g, u):
 '''
 given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
 
+Input values: 
+    - 'f': the field to be read. Note that this method will do f.set_allow_extrapolation(True)
+    - 'g': the field to be written in
 
 '''
+
 def transfer_1d(f, g):
 
     f.set_allow_extrapolation(True)
