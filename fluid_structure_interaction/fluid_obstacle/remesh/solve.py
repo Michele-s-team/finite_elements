@@ -415,8 +415,12 @@ for n in range(rpam.parameters['N']):
 
         ys_old = Function(fsp.Q_U)
 
+        mu_n_12_old = Function(fsp.Q_mu)
+
+
         U_n_12_old.set_allow_extrapolation(True)
         ys_old.set_allow_extrapolation(True)
+        mu_n_12_old.set_allow_extrapolation(True)
 
 
         # 1.1.5 M
@@ -484,6 +488,8 @@ for n in range(rpam.parameters['N']):
         U_n_32_old.assign(fsp.U_n_32)
 
         ys_old.assign(fsp.ys)
+
+        mu_n_12_old.assign(fsp.mu_n_12)
 
         # 1.2.5 M
 
@@ -607,7 +613,35 @@ for n in range(rpam.parameters['N']):
             print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.ys(coord)} \t {ys_old(coord) + U_n_12_old(coord)}')
         '''
         
-        # write the new ys after remeshing - end
+        
+        # 7.4.2 write the new mu_n_12 after remeshing
+
+        dof_coords_new = fsp.Q_mu.tabulate_dof_coordinates()
+        dofmap_new   = fsp.Q_mu.dofmap().dofs()
+
+        dof_values_mu = fsp.mu_n_12.vector().get_local()
+
+        for i in range(len(dofmap_new)):
+
+            s  = dof_coords_new[dofmap_new[i]][0]
+
+            value = mu_n_12_old(s)
+
+            dof_values_mu[dofmap_new[i]] = value
+
+        fsp.mu_n_12.vector().set_local(dof_values_mu)
+        fsp.mu_n_12.vector().apply("insert")
+
+        '''
+        print(f'*** Test: ')
+        for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
+
+            coord = rmsh.lmsh.mesh_parameters[1]["L"] * i/(rmsh.lmsh.mesh_parameters[0]['N']-1)
+
+            print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.mu_n_12(coord)} \t {mu_n_12_old(coord)}')
+        '''
+        
+
 
         # given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
@@ -639,7 +673,7 @@ for n in range(rpam.parameters['N']):
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
 
         # 9.3 I
-        del U_n_12_old, U_n_32_old, ys_old
+        del U_n_12_old, U_n_32_old, ys_old, mu_n_12_old
 
         # 9.4 M
         del c_n_old, c_n_1_old
