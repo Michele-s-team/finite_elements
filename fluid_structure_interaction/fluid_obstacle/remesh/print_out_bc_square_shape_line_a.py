@@ -54,12 +54,12 @@ fieldnames = [ \
     # 2 bcs for D
     # 2.1 disk
     '<<|u_n_di - U_n_12|^2>>_[partial Omega^y shape]', \
-    '<<|u_n_di_dot - [v_square^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]', \
+    '<<|u_n_di_dot - [v_di^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]', \
     # 2.2 square
     '<<|u_n_sq|^2>>_[partial Omega^y sq]', \
     '<<|u_n_sq - U_n_12|^2>>_[partial Omega^y shape]',\
     '<<|u_n_sq_dot|^2>>_[partial Omega^y sq]', \
-    '<<|u_n_sq_dot - [v_square^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]',\
+    '<<|u_n_sq_dot - [v_di^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]',\
     
     # 3 fluid disk
     '<<|\varsigma_{\alpha \beta}^disk G^{n-1}_{\gamma \beta} \nu_gamma - [\varsigma_{\alpha \beta}^square G^{n-1}_{\gamma \beta} \nu_\gamma + 1/|F^{n-1}| F_M^\alpha]|^2>>_[partial Omega^y shape]', \

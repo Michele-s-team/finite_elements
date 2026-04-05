@@ -63,8 +63,25 @@ def print_data(step,  mesh_quality):
 # print the solution for I
 def print_solution_I(t, step):
 
+    nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
+
     io.full_print(fsp.U_n_12, 'U_n_12_' + str(step), \
             solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(project(fsp.ys + fsp.U_n_12, fsp.Q_U), 'X_n_12_' + str(step), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+    io.full_print(fsp.U_n_12_smooth, 'U_n_12_sm_' + str(step), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+
+    io.full_print(nu_n_12_output, 'nu_n_12_' + str(step), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(dpsi_n_12_output, 'dpsi_n_12_' + str(step), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+    io.full_print(fsp.mu_n_12, 'mu_n_12_' + str(step), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
 
     # include the snapshot in xdmf files
     # fi.xdmffile_U_n_12.write(fsp.U_n_12, t)
