@@ -2801,6 +2801,32 @@ def transfer(f, g, u):
         g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
 
 
+
+def transfer_1d(f, g):
+
+    Q_g = g.function_space()
+
+    value_shape = Q_g.ufl_element().value_shape()
+    value_size  = int(np.prod(value_shape)) if value_shape else 1
+
+
+    # unique DOF coordinates: tabulate_dof_coordinates repeats each position
+    # value_size times, so stride by value_size to get unique positions
+    dof_coords  = (Q_g.tabulate_dof_coordinates())[::value_size]
+
+    dof_map = Q_g.dofmap().dofs()
+
+
+    for i in range(len(dof_coords)):
+
+        s     = dof_coords[i][0]
+
+        value = np.atleast_1d(np.array(f(s)))
+
+        for k in range(value_size):
+            
+            g.vector()[dof_map[value_size * i + k]] = value[k]
+
 '''
 compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells
 Input values; 
