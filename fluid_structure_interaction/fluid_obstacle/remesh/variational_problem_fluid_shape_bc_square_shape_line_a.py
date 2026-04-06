@@ -42,7 +42,7 @@ Return values:
     - f_M (2-dimensional vector)
 '''
 def f_M(c, U, mu):
-    return as_tensor( 2 * rpam.parameters['sigma_di_sq'] * mu * bgeo.sub_mesh_facet_normal[0][0][alpha], (alpha))
+    return as_tensor( - 2 * rpam.parameters['sigma_di_sq'] * mu * bgeo.sub_mesh_facet_normal[0][0][alpha], (alpha))
 
 
 bc_v_disk__ = []
