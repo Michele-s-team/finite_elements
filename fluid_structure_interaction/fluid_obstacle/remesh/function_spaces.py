@@ -185,6 +185,8 @@ Q_mu = FunctionSpace(lmsh.mesh[1], 'P', 1, constrained_domain=periodic_boundary)
 
 Q_c = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['c_function_space_degree'])
 
+# this assigner is used to write values into nu_and_dpsi_n_12 (mixed field)
+assigner_nu_dpsi = FunctionAssigner(Q_nu_and_dpsi, [Q_nu, Q_dpsi])
 
 
 

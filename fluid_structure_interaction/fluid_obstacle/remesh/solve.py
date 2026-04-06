@@ -600,17 +600,15 @@ for n in range(rpam.parameters['N']):
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
         msh.transfer_1d(ys_U_n_12_old, fsp.ys)
 
-        #7.4.4 given that nu_and_psi_n_12 has been recreated from scratch, is it set to 0, 0 ->  set a reasonable initial guess into nu_and_dpsi_n_12
-        fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
-
-        # 7.4.5 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
-
-    
+      
+        # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
 
         msh.transfer_1d(nu_n_12_old, fsp.nu_n_12_input)
         msh.transfer_1d(dpsi_n_12_old, fsp.dpsi_n_12_input)
 
-        # 7.4.6 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
+        fsp.assigner_nu_and_dpsi.assign(fsp.nu_and_dpsi, [fsp.nu_n_12_input, fsp.dpsi_n_12_input])
+
+        # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
         msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
 
 
@@ -638,7 +636,7 @@ for n in range(rpam.parameters['N']):
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
 
         # 9.3 I
-        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old
+        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
 
         # 9.4 M
         del c_n_old, c_n_1_old
