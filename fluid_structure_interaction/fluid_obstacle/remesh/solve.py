@@ -617,35 +617,9 @@ for n in range(rpam.parameters['N']):
         '''
 
         
-        
-        
         # 7.4.3 write the new mu_n_12 after remeshing
 
-        dof_coords_new = fsp.Q_mu.tabulate_dof_coordinates()
-        dofmap_new   = fsp.Q_mu.dofmap().dofs()
-
-        dof_values_mu = fsp.mu_n_12.vector().get_local()
-
-        for i in range(len(dofmap_new)):
-
-            s  = dof_coords_new[dofmap_new[i]][0]
-
-            value = mu_n_12_old(s)
-
-            dof_values_mu[dofmap_new[i]] = value
-
-        fsp.mu_n_12.vector().set_local(dof_values_mu)
-        fsp.mu_n_12.vector().apply("insert")
-
-        '''
-        print(f'*** Test: ')
-        for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-
-            coord = rmsh.lmsh.mesh_parameters[1]["L"] * i/(rmsh.lmsh.mesh_parameters[0]['N']-1)
-
-            print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.mu_n_12(coord)} \t {mu_n_12_old(coord)}')
-        '''
-        
+        msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
 
 
         # given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
