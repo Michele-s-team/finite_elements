@@ -347,8 +347,8 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    if mesh_quality < rpam.parameters['mesh_quality_threshold']:
-    # if True:
+    # if mesh_quality < rpam.parameters['mesh_quality_threshold']:
+    if True:
     # if step % 5 == True:
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
@@ -413,12 +413,10 @@ for n in range(rpam.parameters['N']):
         U_n_12_old = Function(fsp.Q_U)
         U_n_32_old = Function(fsp.Q_U)
 
-        ys_old = Function(fsp.Q_U)
+        ys_U_n_12_old = Function(fsp.Q_U)
 
         mu_n_12_old = Function(fsp.Q_mu)
 
-        ys_old.set_allow_extrapolation(True)
-        mu_n_12_old.set_allow_extrapolation(True)
 
 
         # 1.1.5 M
@@ -485,7 +483,7 @@ for n in range(rpam.parameters['N']):
         U_n_12_old.assign(fsp.U_n_12)
         U_n_32_old.assign(fsp.U_n_32)
 
-        ys_old.assign(fsp.ys)
+        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
 
         mu_n_12_old.assign(fsp.mu_n_12)
 
@@ -577,53 +575,23 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
 
         # 7.4 I
+
         # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
         fsp.U_n_32.assign(Constant((0, 0)))
 
-        # 7.4.2 write the nes ys after remeshing
+        #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
+        fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
+     
+        # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
+        msh.transfer_1d(ys_U_n_12_old, fsp.ys)
 
-        # set new ys = ys_old + U_n_12_old evaluated at new DOF locations
+        #7.4.4 given that nu_and_psi_n_12 has been recreated from scratch, is it set to 0, 0 ->  set a reasonable initial guess into nu_and_dpsi_n_12
+        fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
 
-        dof_coords_new = fsp.Q_U.tabulate_dof_coordinates()
-        dofmap_x_new   = fsp.Q_U.sub(0).dofmap().dofs()
-        dofmap_y_new   = fsp.Q_U.sub(1).dofmap().dofs()
-
-        dof_values_ys = fsp.ys.vector().get_local()
-
-        for i in range(len(dofmap_x_new)):
-
-            s   = dof_coords_new[dofmap_x_new[i]][0]
-
-            value = np.array(ys_old(s)) + np.array(U_n_12_old(s))
-
-            dof_values_ys[dofmap_x_new[i]] = value[0]
-            dof_values_ys[dofmap_y_new[i]] = value[1]
-
-        fsp.ys.vector().set_local(dof_values_ys)
-        fsp.ys.vector().apply("insert")
-
-        '''
-        print(f'*** Test: ')
-        for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
-
-            coord = rmsh.lmsh.mesh_parameters[1]["L"] * i/(rmsh.lmsh.mesh_parameters[0]['N']-1)
-
-            print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.ys(coord)} \t {ys_old(coord) + U_n_12_old(coord)}')
-        '''
-
-        
-        
-        # 7.4.3 write the new mu_n_12 after remeshing
-
+        # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
         msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
 
-
-        # given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
-        fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
-
-        #given that nu_and_psi_n_12 has been recreated from scratch, is it set to 0, 0 ->  set a reasonable initial guess into nu_and_dpsi_n_12
-        fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
 
 
         # 7.5 M
@@ -649,7 +617,7 @@ for n in range(rpam.parameters['N']):
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
 
         # 9.3 I
-        del U_n_12_old, U_n_32_old, ys_old, mu_n_12_old
+        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old
 
         # 9.4 M
         del c_n_old, c_n_1_old
