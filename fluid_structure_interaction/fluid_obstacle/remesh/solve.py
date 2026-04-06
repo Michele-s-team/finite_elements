@@ -417,7 +417,6 @@ for n in range(rpam.parameters['N']):
 
         mu_n_12_old = Function(fsp.Q_mu)
 
-
         ys_old.set_allow_extrapolation(True)
         mu_n_12_old.set_allow_extrapolation(True)
 
