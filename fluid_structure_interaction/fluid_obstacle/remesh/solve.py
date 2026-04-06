@@ -606,7 +606,7 @@ for n in range(rpam.parameters['N']):
         msh.transfer_1d(nu_n_12_old, fsp.nu_n_12_input)
         msh.transfer_1d(dpsi_n_12_old, fsp.dpsi_n_12_input)
 
-        fsp.assigner_nu_and_dpsi.assign(fsp.nu_and_dpsi, [fsp.nu_n_12_input, fsp.dpsi_n_12_input])
+        fsp.assigner_nu_and_dpsi.assign(fsp.nu_and_dpsi_n_12, [fsp.nu_n_12_input, fsp.dpsi_n_12_input])
 
         # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
         msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
