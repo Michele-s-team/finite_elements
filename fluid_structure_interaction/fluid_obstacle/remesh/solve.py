@@ -354,8 +354,8 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    # if mesh_quality < rpam.parameters['mesh_quality_threshold']:
-    if False:
+    if mesh_quality < rpam.parameters['mesh_quality_threshold']:
+    # if False:
     # if step % 5 == True:
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
