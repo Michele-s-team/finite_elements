@@ -348,7 +348,7 @@ for n in range(rpam.parameters['N']):
 
 
     if mesh_quality < rpam.parameters['mesh_quality_threshold']:
-    # if False:
+    # if True:
     # if step % 5 == True:
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
@@ -418,7 +418,6 @@ for n in range(rpam.parameters['N']):
         mu_n_12_old = Function(fsp.Q_mu)
 
 
-        U_n_12_old.set_allow_extrapolation(True)
         ys_old.set_allow_extrapolation(True)
         mu_n_12_old.set_allow_extrapolation(True)
 
@@ -584,34 +583,40 @@ for n in range(rpam.parameters['N']):
         fsp.U_n_32.assign(Constant((0, 0)))
 
         # 7.4.2 write the nes ys after remeshing
-        # set new ys = ys_old + U_n_12_old evaluated at new DOF locations
 
-        dof_coords_new = fsp.Q_U.tabulate_dof_coordinates()
-        dofmap_x_new   = fsp.Q_U.sub(0).dofmap().dofs()
-        dofmap_y_new   = fsp.Q_U.sub(1).dofmap().dofs()
+        
+        '''
+        class U_test_expression(UserExpression):
+            def eval(self, values, x):
 
-        dof_values_ys = fsp.ys.vector().get_local()
+                values[0] = np.cos(2 * np.pi * x[0] / rmsh.lmsh.mesh_parameters[1]['L'])**3
+                values[1] =  np.sin(8 * np.pi * x[0] / rmsh.lmsh.mesh_parameters[1]['L'])
+            
+            def value_shape(self):
+                return (2,)
 
-        for i in range(len(dofmap_x_new)):
-
-            s   = dof_coords_new[dofmap_x_new[i]][0]
-
-            value = np.array(ys_old(s)) + np.array(U_n_12_old(s))
-
-            dof_values_ys[dofmap_x_new[i]] = value[0]
-            dof_values_ys[dofmap_y_new[i]] = value[1]
-
-        fsp.ys.vector().set_local(dof_values_ys)
-        fsp.ys.vector().apply("insert")
+        U_n_12_old.interpolate(U_test_expression(element=U_n_12_old.function_space().ufl_element()))
+        '''
+        msh.transfer_1d(U_n_12_old, fsp.U_n_12)
 
         '''
         print(f'*** Test: ')
+        err = 0
         for i in range(rmsh.lmsh.mesh_parameters[0]['N']):
 
             coord = rmsh.lmsh.mesh_parameters[1]["L"] * i/(rmsh.lmsh.mesh_parameters[0]['N']-1)
 
-            print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.ys(coord)} \t {ys_old(coord) + U_n_12_old(coord)}')
+            print(f'{rmsh.lmsh.mesh_parameters[1]["L"]} \t {fsp.U_n_12(coord)} \t {U_n_12_old(coord)}')
+
+
+            diff = np.linalg.norm(np.subtract(fsp.U_n_12(coord), U_n_12_old(coord)))
+            if diff > err: 
+                err = diff
+
+        print(f'*** err = {err}')
         '''
+
+        
         
         
         # 7.4.3 write the new mu_n_12 after remeshing
