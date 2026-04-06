@@ -38,11 +38,20 @@ bcs_mu = [ ]
 
 
 # variational functional for the original problem (first-order equation equation)
-F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * (fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_32)[beta]) * bgeo.n_ale(fsp.ys, fsp.U_n_32)[alpha]) * \
-    (
-        fsp.nu_U[alpha]
-    ) * rmsh.dx_mesh[1]
+# F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * (fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_32)[beta]) * bgeo.n_ale(fsp.ys, fsp.U_n_32)[alpha]) * \
+#     (
+#         fsp.nu_U[alpha]
+#     ) * rmsh.dx_mesh[1]
  
+F_U = (fsp.U_n_12[alpha] - fsp.U_n_32[alpha] - dt * (fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[beta]) * bgeo.n_ale(fsp.ys, fsp.U_n_12)[alpha]) * \
+    (
+        fsp.nu_U[alpha] - \
+        dt * (
+            fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.delta_n_ale(fsp.ys, fsp.U_n_12, fsp.nu_U)[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[alpha] + \
+            fsp.v_disk_n_1_0_0_on_1[beta] * bgeo.n_ale(fsp.ys, fsp.U_n_12)[beta] * bgeo.delta_n_ale(fsp.ys, fsp.U_n_12, fsp.nu_U)[alpha]
+        )
+    ) * rmsh.dx_mesh[1]
+
 
 #  build a smooth U_n_12 - start
 def smooth_field_fourier(U, dof_coords, dofmap_x, dofmap_y, L, n_harmonics, target_field):
