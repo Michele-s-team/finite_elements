@@ -94,6 +94,17 @@ def natural_bc_fl_di_phi():
                     rpam.parameters['eta_di'] * dt / rpam.parameters['rho_di'] * ela.G(fsp.u_n_1_di)[gamma, beta] *  bgeo.sub_mesh_facet_normal[0][0][gamma] * ela.G(fsp.u_n_1_di)[epsilon, beta] * fsp.omega_disk[alpha].dx(epsilon)
             )
         )
+'''
+f_sq = assemble(
+    sqrt(flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma] * 
+    flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta2] * ela.G(fsp.u_n_1_di)[gamma2, beta2] * bgeo.sub_mesh_facet_normal[0][0][gamma2])
+     * rmsh.ds_sub_mesh[0][0]['ds'] )
+
+f_lap = assemble(sqrt(1.0 / ela.detF(fsp.u_n_1_di) * f_M(fsp.c_n_1, fsp.U_n_32, fsp.mu_n_12_1_on_0_0)[alpha] * 1.0 / ela.detF(fsp.u_n_1_di) * f_M(fsp.c_n_1, fsp.U_n_32, fsp.mu_n_12_1_on_0_0)[alpha]) * rmsh.ds_sub_mesh[0][0]['ds'])
+
+print(f'force square = {f_sq}')
+print(f'force lap = {f_lap}')
+'''
 
 
 F_N =   rpam.parameters['alpha'] / rmsh.r_sub_mesh[0][0] * \
