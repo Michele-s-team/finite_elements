@@ -181,7 +181,6 @@ Q_dpsi = Q_nu_and_dpsi.sub(1).collapse()
 # 4.3 curvature
 Q_mu = FunctionSpace(lmsh.mesh[1], 'P', 1, constrained_domain=periodic_boundary)
 
-
 # 5 M
 
 Q_c = FunctionSpace(lmsh.sub_meshes[0][1], 'P', rpam.parameters['c_function_space_degree'])

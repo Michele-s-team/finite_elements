@@ -2802,6 +2802,47 @@ def transfer(f, g, u):
 
 
 '''
+given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
+
+Input values: 
+    - 'f': the field to be read. Note that this method will do f.set_allow_extrapolation(True)
+    - 'g': the field to be written in
+
+'''
+
+def transfer_1d(f, g):
+
+    f.set_allow_extrapolation(True)
+
+    Q_g = g.function_space()
+
+    value_shape = Q_g.ufl_element().value_shape()
+    value_size  = int(np.prod(value_shape)) if value_shape else 1
+
+
+    # unique DOF coordinates: tabulate_dof_coordinates repeats each position
+    # value_size times, so stride by value_size to get unique positions
+    dof_coords  = (Q_g.tabulate_dof_coordinates())[::value_size]
+
+    dof_map = Q_g.dofmap().dofs()
+    dof_values = g.vector().get_local()
+
+
+    for i in range(len(dof_coords)):
+        # run through all coordinates in the 1d mesh
+
+        s  = dof_coords[i][0]
+
+        value = np.atleast_1d(np.array(f(s)))
+
+        for k in range(value_size):
+
+            dof_values[dof_map[value_size * i + k]] = value[k]
+
+    g.vector().set_local(dof_values)
+    g.vector().apply("insert")
+
+'''
 compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells
 Input values; 
     - 'mesh': the mesh
