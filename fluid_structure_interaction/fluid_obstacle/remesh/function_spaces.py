@@ -378,6 +378,10 @@ ys = Function(Q_U)
 
 U_n_12_smooth = Function(Q_U)
 
+# fields used to set nu_and_dpsi_n_12 after remeshing 
+nu_n_12_input = Function(Q_nu)
+dpsi_n_12_input = Function(Q_dpsi)
+
 
 
 

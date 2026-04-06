@@ -422,6 +422,9 @@ for n in range(rpam.parameters['N']):
 
         ys_U_n_12_old = Function(fsp.Q_U)
 
+        nu_n_12_old = Function(fsp.Q_nu)
+        dpsi_n_12_old = Function(fsp.Q_dpsi)
+
         mu_n_12_old = Function(fsp.Q_mu)
 
 
@@ -491,6 +494,10 @@ for n in range(rpam.parameters['N']):
         U_n_32_old.assign(fsp.U_n_32)
 
         ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
+
+        nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
+        nu_n_12_old.assign(nu_n_12_output)
+        dpsi_n_12_old.assign(dpsi_n_12_output)
 
         mu_n_12_old.assign(fsp.mu_n_12)
 
@@ -596,7 +603,14 @@ for n in range(rpam.parameters['N']):
         #7.4.4 given that nu_and_psi_n_12 has been recreated from scratch, is it set to 0, 0 ->  set a reasonable initial guess into nu_and_dpsi_n_12
         fsp.nu_and_dpsi_n_12.interpolate(nu_dpsi_expression(element=fsp.Q_nu_and_dpsi.ufl_element()))
 
-        # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
+        # 7.4.5 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
+
+    
+
+        msh.transfer_1d(nu_n_12_old, fsp.nu_n_12_input)
+        msh.transfer_1d(dpsi_n_12_old, fsp.dpsi_n_12_input)
+
+        # 7.4.6 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
         msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
 
 
