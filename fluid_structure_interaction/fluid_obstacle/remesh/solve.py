@@ -129,15 +129,8 @@ class nu_dpsi_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-# 0.2 fluid square
-class v_sq_0_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
 
-    def value_shape(self):
-        return (2,)
-    
+# 0.2 fluid disk
 
 class v_di_0_expression(UserExpression):
     def eval(self, values, x):
@@ -146,14 +139,24 @@ class v_di_0_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
-
-# 0.3 fluid disk
+    
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_di_0']
-
+        values[0] = rpam.parameters['sigma_sq_t'] + rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - rmsh.lmsh.mesh_parameters[0]['h'])
+        
     def value_shape(self):
         return (1,)
+
+
+# 0.3 fluid square
+
+class v_sq_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
     
 class sigma_sq_0_expression(UserExpression):
     def eval(self, values, x):
@@ -161,6 +164,8 @@ class sigma_sq_0_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+
+
 
 
 # 1 set initial profiles
