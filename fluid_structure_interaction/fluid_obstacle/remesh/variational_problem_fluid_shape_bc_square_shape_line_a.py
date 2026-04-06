@@ -112,4 +112,3 @@ F_phi_omega_disk = (F_phi_disk + F_omega_disk) + F_N
 # step 3 for v_disk_n
 F_v_disk_n = ( ( (fsp.v_disk_n[alpha] - fsp.v_disk__[alpha]) + (dt / rpam.parameters['rho_di']) * ela.G(fsp.u_n_1_di)[gamma, alpha] * (fsp.phi_disk.dx(gamma)) ) * fsp.nu_v_disk_n[alpha] ) * ela.detF(fsp.u_n_1_di) * rmsh.dx_sub_mesh[0][0]
 
-# check
