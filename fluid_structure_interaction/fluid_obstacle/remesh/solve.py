@@ -140,10 +140,12 @@ class v_di_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
+# I set the initial value of sigma_di equal to sigma_square - 2 H sigma_di_sq, according to Laplace's law
 class sigma_di_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_sq_t'] + rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - rmsh.lmsh.mesh_parameters[0]['h'])
-        
+        values[0] = rpam.parameters['sigma_sq_t'] + rpam.parameters['rho_sq'] * rpam.parameters['g'] * (x[1] - rmsh.lmsh.mesh_parameters[0]['h']) \
+        - rpam.parameters['sigma_di_sq'] / mesh_parameters['r']
+
     def value_shape(self):
         return (1,)
 
