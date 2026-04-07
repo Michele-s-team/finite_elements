@@ -243,7 +243,7 @@ for n in range(rpam.parameters['N']):
     print(f'norm_U = {norm_U}')
     
     if norm_U < const.epsilon:
-        print(f'\n\n{col.Fore.RED}ERROR: Norm of U_n_12 is 0!!{col.Style.RESET_ALL}')
+        print(f'\n\n{col.Fore.YELLOW}Warning: Norm of U_n_12 is < epsilon!!{col.Style.RESET_ALL}')
 
 
     #  build a smooth U_n_12 - start
