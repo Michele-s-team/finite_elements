@@ -71,22 +71,19 @@ print(f'Generating initial mesh ...')
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
+#1. uniform shape_coordinates
+shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+
+'''
+#2.  non-uniform shape_coordinates
 N_bottom = int(np.ceil(mesh_parameters['N'] * rpam.parameters['parameter_vertex_density']))
 N_top = mesh_parameters['N'] - N_bottom
-# print(f'N = {mesh_parameters["N"]}')
-# print(f'N_bottom = {N_bottom}')
 t_list_top = np.linspace(0, 0.5, N_top)
 t_list_bottom = np.linspace(0.5 + (1.0-0.5)/N_bottom, 1.0 - (1.0-0.5)/N_bottom, N_bottom)
 t_list_top_bottom = np.concatenate((t_list_top, t_list_bottom))
-# print(f't_top = {t_list_top}')
-# print(f't_bottom = {t_list_bottom}')
-# print(f't = {t_list_top_bottom}')
 
-# uniform shape_coordinates
-# shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
-
-# non-uniform shape_coordinates
 shape_coordinates = [shape_parametric_form(tau) for tau in t_list_top_bottom]
+'''
 
 # generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
 msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
