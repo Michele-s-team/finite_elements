@@ -22,12 +22,13 @@ import importlib
 import numpy as np
 import os
 import sys
+import ufl
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
+import constants.utils as const
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -70,22 +71,19 @@ print(f'Generating initial mesh ...')
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
+#1. uniform shape_coordinates
+shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+
+'''
+#2.  non-uniform shape_coordinates
 N_bottom = int(np.ceil(mesh_parameters['N'] * rpam.parameters['parameter_vertex_density']))
 N_top = mesh_parameters['N'] - N_bottom
-# print(f'N = {mesh_parameters["N"]}')
-# print(f'N_bottom = {N_bottom}')
 t_list_top = np.linspace(0, 0.5, N_top)
 t_list_bottom = np.linspace(0.5 + (1.0-0.5)/N_bottom, 1.0 - (1.0-0.5)/N_bottom, N_bottom)
 t_list_top_bottom = np.concatenate((t_list_top, t_list_bottom))
-# print(f't_top = {t_list_top}')
-# print(f't_bottom = {t_list_bottom}')
-# print(f't = {t_list_top_bottom}')
 
-# uniform shape_coordinates
-# shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
-
-# non-uniform shape_coordinates
 shape_coordinates = [shape_parametric_form(tau) for tau in t_list_top_bottom]
+'''
 
 # generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
 msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
@@ -237,7 +235,14 @@ for n in range(rpam.parameters['N']):
     # 1.1 solve for U_n_12
     var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs_U, fsp.J_U, parameters=params)
 
+    alpha = ufl.indices(1)
+    norm_U = assemble(sqrt(fsp.U_n_12[alpha]*fsp.U_n_12[alpha])*rmsh.dx_mesh[1]) / assemble(Constant(1) * rmsh.dx_mesh[1])
+    print(f'norm_U = {norm_U}')
     
+    if norm_U < const.epsilon:
+        print(f'\n\n{col.Fore.YELLOW}Warning: Norm of U_n_12 is < epsilon!!{col.Style.RESET_ALL}')
+
+
     #  build a smooth U_n_12 - start
     vp_I.smooth_field_fourier(
         fsp.U_n_12,          
@@ -249,6 +254,22 @@ for n in range(rpam.parameters['N']):
 
     # 1.2 solve for nu_n_12 and dpsi_n_12
     var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
+
+    nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
+
+    '''
+    if step > 120:
+        io.full_print(fsp.ys, 'ys_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(fsp.U_n_12_smooth, 'U_n_12_smooth_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(fsp.U_n_12, 'U_n_12_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(nu_n_12_output, 'nu_n_12_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(dpsi_n_12_output, 'dpsi_n_12_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    '''
 
     # 1.3 solve for mu_n_12
     var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
@@ -513,7 +534,7 @@ for n in range(rpam.parameters['N']):
         U_n_12_old.assign(fsp.U_n_12)
         U_n_32_old.assign(fsp.U_n_32)
 
-        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
+        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12_smooth)
 
         nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
         nu_n_12_old.assign(nu_n_12_output)
@@ -537,7 +558,7 @@ for n in range(rpam.parameters['N']):
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
             shape_coordinates.append(np.add(
                                         msh.map_1d_to_2d(coordinate,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.mesh_parameters[0]['shape_id']),
-                                        fsp.U_n_12(coordinate)
+                                        fsp.U_n_12_smooth(coordinate)
                                         ).tolist()
                                 )   
 
@@ -709,7 +730,7 @@ for n in range(rpam.parameters['N']):
 
 
     # print out the solution
-    if step % rpam.parameters['print_out_stride'] == 0:
+    if (step % rpam.parameters['print_out_stride'] == 0):
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
 
         pr_sol.print_solution(t, step)
