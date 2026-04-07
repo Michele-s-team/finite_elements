@@ -14,6 +14,7 @@ Examples:
      clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
  '''
 
+import colorama as col
 import dolfin
 from fenics import *
 import gc
@@ -220,6 +221,10 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
+    msg = f'step = {step}'
+    width = len(msg) + 4
+    border = '*' * width
+    print(f'\n\n{col.Fore.CYAN}{border}\n* {msg} *\n{border}\n{col.Style.RESET_ALL}')
 
     # step 1): solve I problem
     print('Solving I problem ...', flush=True)
