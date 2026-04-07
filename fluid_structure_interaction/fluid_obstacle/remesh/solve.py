@@ -22,12 +22,13 @@ import importlib
 import numpy as np
 import os
 import sys
+import ufl
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
+import constants.utils as const
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -237,7 +238,14 @@ for n in range(rpam.parameters['N']):
     # 1.1 solve for U_n_12
     var_pr.solve_vp(vp_I.F_U, fsp.U_n_12, vp_I.bcs_U, fsp.J_U, parameters=params)
 
+    alpha = ufl.indices(1)
+    norm_U = assemble(sqrt(fsp.U_n_12[alpha]*fsp.U_n_12[alpha])*rmsh.dx_mesh[1]) / assemble(Constant(1) * rmsh.dx_mesh[1])
+    print(f'norm_U = {norm_U}')
     
+    if norm_U < const.epsilon:
+        print(f'\n\n{col.Fore.RED}ERROR: Norm of U_n_12 is 0!!{col.Style.RESET_ALL}')
+
+
     #  build a smooth U_n_12 - start
     vp_I.smooth_field_fourier(
         fsp.U_n_12,          
@@ -254,6 +262,8 @@ for n in range(rpam.parameters['N']):
 
     if step > 120:
         io.full_print(fsp.ys, 'ys_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(fsp.U_n_12_smooth, 'U_n_12_smooth_test_' + str(step), \
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
         io.full_print(fsp.U_n_12, 'U_n_12_test_' + str(step), \
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
@@ -525,7 +535,7 @@ for n in range(rpam.parameters['N']):
         U_n_12_old.assign(fsp.U_n_12)
         U_n_32_old.assign(fsp.U_n_32)
 
-        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
+        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12_smooth)
 
         nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
         nu_n_12_old.assign(nu_n_12_output)
@@ -549,7 +559,7 @@ for n in range(rpam.parameters['N']):
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
             shape_coordinates.append(np.add(
                                         msh.map_1d_to_2d(coordinate,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.mesh_parameters[0]['shape_id']),
-                                        fsp.U_n_12(coordinate)
+                                        fsp.U_n_12_smooth(coordinate)
                                         ).tolist()
                                 )   
 
