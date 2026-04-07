@@ -255,6 +255,8 @@ for n in range(rpam.parameters['N']):
     if step > 120:
         io.full_print(fsp.ys, 'ys_test_' + str(step), \
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(fsp.U_n_12, 'U_n_12_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
         io.full_print(nu_n_12_output, 'nu_n_12_test_' + str(step), \
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
         io.full_print(dpsi_n_12_output, 'dpsi_n_12_test_' + str(step), \
