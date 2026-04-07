@@ -709,7 +709,7 @@ for n in range(rpam.parameters['N']):
 
 
     # print out the solution
-    if step % rpam.parameters['print_out_stride'] == 0:
+    if (step % rpam.parameters['print_out_stride'] == 0) and (step > 120):
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
 
         pr_sol.print_solution(t, step)
