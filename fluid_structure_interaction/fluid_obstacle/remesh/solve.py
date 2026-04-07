@@ -250,6 +250,16 @@ for n in range(rpam.parameters['N']):
     # 1.2 solve for nu_n_12 and dpsi_n_12
     var_pr.solve_vp(vp_I.F_nu_psi, fsp.nu_and_dpsi_n_12, vp_I.bcs_nu_and_dpsi, fsp.J_nu_and_dpsi, parameters=params)
 
+    nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
+
+    if step > 120:
+        io.full_print(fsp.ys, 'ys_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(nu_n_12_output, 'nu_n_12_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+        io.full_print(dpsi_n_12_output, 'dpsi_n_12_test_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
     # 1.3 solve for mu_n_12
     var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
 
