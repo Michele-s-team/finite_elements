@@ -257,6 +257,7 @@ for n in range(rpam.parameters['N']):
 
     nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
 
+    '''
     if step > 120:
         io.full_print(fsp.ys, 'ys_test_' + str(step), \
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
@@ -268,6 +269,7 @@ for n in range(rpam.parameters['N']):
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
         io.full_print(dpsi_n_12_output, 'dpsi_n_12_test_' + str(step), \
                     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    '''
 
     # 1.3 solve for mu_n_12
     var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
@@ -728,7 +730,7 @@ for n in range(rpam.parameters['N']):
 
 
     # print out the solution
-    if (step % rpam.parameters['print_out_stride'] == 0) and (step > 120):
+    if (step % rpam.parameters['print_out_stride'] == 0):
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
 
         pr_sol.print_solution(t, step)
