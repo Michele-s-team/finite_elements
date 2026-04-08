@@ -378,7 +378,7 @@ v_square_n_1_0_1_on_1 = Function(Q_U)
 # two-dimensional vector field containing the reference configuration of I as a function of its parameteric coordinate s
 ys = Function(Q_U)
 
-U_n_12_smooth = Function(Q_U)
+# U_n_12_smooth = Function(Q_U)
 
 # fields used to set nu_and_dpsi_n_12 after remeshing 
 nu_n_12_input = Function(Q_nu)

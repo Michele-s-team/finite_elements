@@ -242,7 +242,7 @@ for n in range(rpam.parameters['N']):
     if norm_U < const.epsilon:
         print(f'\n\n{col.Fore.YELLOW}Warning: Norm of U_n_12 is < epsilon!!{col.Style.RESET_ALL}')
 
-
+    '''
     #  build a smooth U_n_12 - start
     vp_I.smooth_field_fourier(
         fsp.U_n_12,          
@@ -250,6 +250,7 @@ for n in range(rpam.parameters['N']):
         rmsh.lmsh.mesh_parameters[1]['L'], n_harmonics=2, target_field=fsp.U_n_12_smooth
     )
     #  build a smooth U_n_12 - end
+    '''
     
 
     # 1.2 solve for nu_n_12 and dpsi_n_12
@@ -534,7 +535,7 @@ for n in range(rpam.parameters['N']):
         U_n_12_old.assign(fsp.U_n_12)
         U_n_32_old.assign(fsp.U_n_32)
 
-        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12_smooth)
+        ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
 
         nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
         nu_n_12_old.assign(nu_n_12_output)
@@ -558,7 +559,7 @@ for n in range(rpam.parameters['N']):
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
             shape_coordinates.append(np.add(
                                         msh.map_1d_to_2d(coordinate,  rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.mesh_parameters[0]['shape_id']),
-                                        fsp.U_n_12_smooth(coordinate)
+                                        fsp.U_n_12(coordinate)
                                         ).tolist()
                                 )   
 
