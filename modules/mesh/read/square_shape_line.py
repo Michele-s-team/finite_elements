@@ -61,7 +61,11 @@ ds_mesh = [None] * lmsh.parameters['n_meshes']
 
 # 1.1 mesh 0
 # 1.1.1 bulk measures
-dx_mesh[0] = Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0])
+dx_mesh[0] = dict([
+    ('dx', Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0])),\
+    ('dx_shape', Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0], subdomain_id=lmsh.parameters[f"sub_mesh_{0}_{0}_id"])),\
+    ('dx_square', Measure("dx", domain=lmsh.mesh[0], subdomain_data=lmsh.sf[0], subdomain_id=lmsh.parameters[f"sub_mesh_{0}_{1}_id"]))
+])
 
 # 1.1.2 boundary measures
 ds_mesh[0] = dict([ \
