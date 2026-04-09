@@ -134,7 +134,7 @@ print('...done.')
 
 print(f'Transferring solution on mesh[1] to sub_mesh[0][0] ...')
 
-msh.transfer_1d_to_2d(fsp.u[1], fsp.u_1_on_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_1d_to_2d(fsp.u[1], fsp.u_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 print(f'... done.')
 
