@@ -14,6 +14,7 @@ import calculus as cal
 import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import function as fu
+import geometry.utils as geo_u
 import input_output as io
 
 
@@ -1723,9 +1724,7 @@ def IntervalMeshCoordinates(coordinates):
     mesh = Mesh()
     editor = MeshEditor()
   
-    print(f'coordinates before: {coordinates}')
     sorted_coordinates = sorted(coordinates)
-    print(f'coordinates after: {sorted_coordinates}')
         
     editor.open(mesh, 'interval', 1, 1)  # cell type, topological dim, geometric dim
 
@@ -1978,11 +1977,17 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
 '''
 generate a mesh given by a square with a shape inside, where the shape is meshed inside. The shape is laid flat to obtain a 1d mesh, which is also generated. 
 Input values: 
-    - 'shape coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the shape
-    - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
-    - 'output_directory': the path where the mesh will be stored 
+    * Mandatory:
+        - 'shape coordinates': a list of coordinates [[p0_x, p0_y], [p1_x, p1_y], ...] of the points defining the shape
+            Note: if the meshing algorithm inserts additional vertices in between 'shape_coordinates', this method will insert these vertices into 'shape_coordinates' and call again itself to generate a mesh with these vertices
+        - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+        - 'output_directory': the path where the mesh will be stored 
+    * Optional: 
+        - 'epsilon': the tolerance with which distances are evaluated
 '''
-def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory):
+def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory,
+                                    epsilon = const.epsilon):
+    
 
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
@@ -2021,15 +2026,40 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     #write metadata for ensemble mesh
     mesh_metadata = parameters.copy()
 
+    # remove spurious entities in mesh_metadata
+    if parameters['shape_format'] == 'parametric':
+
+        if 'shape_coordinates' in parameters:
+            del mesh_metadata['shape_coordinates']
+            
+    elif parameters['shape_format'] == 'coordinates':
+
+        mesh_metadata['shape_coordinates'] = shape_coordinates
+
+        if 'shape_parametric_form' in parameters:
+            del mesh_metadata['shape_parametric_form']
+            
+        if 'N' in parameters:
+            del mesh_metadata['N']
+
+
+
     # write metadata for mesh 0
     mesh_0_metadata = {}
     mesh_0_metadata['L'] = parameters['L']
     mesh_0_metadata['h'] = parameters['h']
-    mesh_0_metadata['N'] = parameters['N']
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
+    mesh_0_metadata['shape_format'] = parameters['shape_format']
+
+    # if the shape derives from a parametric form, write N and the parametric function
+    if parameters['shape_format'] == 'parametric':
+        mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
+        mesh_0_metadata['N'] = parameters['N']
+        
+    
+    # if the shape comes both from a parametric form or from raw coordinates, write the raw coordinates of the shape
     mesh_0_metadata['shape_coordinates'] = shape_coordinates
-    mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
 
     mesh_0_metadata['sub_mesh_0_dim'] = parameters['sub_mesh_0_0_dim']
     mesh_0_metadata['sub_mesh_1_dim'] = parameters['sub_mesh_0_1_dim']
@@ -2091,11 +2121,9 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     shape_lines = []
 
-    print(f'Added point with coordinates {shape_coordinates[-1]}')
 
-    print("Starting loop over shape ... ")
 
-    for i in range(1, parameters['N']):
+    for i in range(1, len(shape_coordinates)):
 
         shape_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
         gmsh.model.geo.synchronize()
@@ -2103,7 +2131,6 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         shape_lines.append(gmsh.model.geo.addLine(shape_points[-2], shape_points[-1]))
         gmsh.model.geo.synchronize()
 
-    print("... done.")
 
     shape_lines.append(gmsh.model.geo.addLine(shape_points[-1], shape_points[0]))
     gmsh.model.geo.synchronize()
@@ -2124,7 +2151,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
 
 
-    # add 1-dimensional objects
+    #3. add 1-dimensional objects
     lines = gmsh.model.getEntities(dim=1)
 
     # add square lines
@@ -2134,18 +2161,18 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     tag_physical_object(lines[3], parameters['line_l_id'], gmsh.model, 'line_l')
 
     #add shape lines
-    tag_physical_object([lines[i] for i in range(4, 4 + parameters['N'])], parameters['shape_id'], gmsh.model, 'shape_loop')
+    tag_physical_object([lines[i] for i in range(4, 4 + len(shape_coordinates))], parameters['shape_id'], gmsh.model, 'shape_loop')
 
 
 
-    # add 2-dimensional objects
+    #4. add 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
     tag_physical_object(surfaces[0], parameters['sub_mesh_0_1_id'], gmsh.model, 'square_minus_shape_surface')
     tag_physical_object(surfaces[1], parameters['sub_mesh_0_0_id'], gmsh.model, 'shape_surface')
 
 
-    # set the resolution
+    #5. set the resolution
     # se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(parameters["L"],parameters["h"]) from sub_mesh_0_1_id
     distance = gmsh.model.mesh.field.add("Distance")
 
@@ -2173,24 +2200,15 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_0'), parameters["sub_mesh_0_0_id"])
     generate_sub_mesh(output_directory_mesh_0, os.path.join(output_directory_mesh_0, 'sub_meshes', 'sub_mesh_1'), parameters["sub_mesh_0_1_id"])
 
-    _, cumulative_arc_length = shape_tool(output_directory_mesh_0, parameters['shape_id'])
-    mesh_1_metadata['coordinates'] = cumulative_arc_length
 
 
-    # print the boundary points of the boundary given by the shape
-    sorted_boundary_points(
-        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
-        output_directory_mesh_0, 
-        [parameters['shape_id']],
-        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
-
-
-    # check that the number of mesh vertices on the circle matches N and if it does not, abort. 
+    #6. check that the number of mesh vertices on the circle matches N and if it does not, insert these poitns into shape_coordinates and call again generate_square_shape_line_mesh. 
     mesh_0 = read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf'))
     mf_mesh_0 = read_mesh_components(mesh_0, mesh_0.topology().dim() - 1, os.path.join(output_directory_mesh_0, 'line_mesh.xdmf'))
 
-    # collect unique vertex indices touched by facets tagged with shape_id
-    shape_vertex_ids = set()
+    # collect unique vertex indices and coordinates touched by facets tagged with shape_id
+    shape_vertex_ids = []
+    shape_vertex_coordinates = []
 
     for facet in facets(mesh_0):
         #run through all facets of mesh_0 
@@ -2201,46 +2219,84 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             for v in vertices(facet):
                 # run through the vertices of the facet under consideration, and ad them to shape_vertex_ids
 
-                shape_vertex_ids.add(v.index())
+                if v.index() not in shape_vertex_ids:
+
+                    shape_vertex_ids.append(v.index())
+                    shape_vertex_coordinates.append(v.point().array().tolist())
 
     n_vertices_on_shape = len(shape_vertex_ids)
+    n_vertices_on_line = len(shape_coordinates) 
 
-    if n_vertices_on_shape != parameters['N']:
+    if n_vertices_on_shape != n_vertices_on_line:
         # the meshing algorithm has added additional vertices on the shape, while I want the number of vertices on the shape to match N, and thus the number of vertices in the line mesh -> print an error message
 
-        print(f"{col.Fore.RED}{'Error: the number of vertices on shape does not match the number of vertices of the 1d mesh!!! Aborting...'}{col.Style.RESET_ALL}")
-        print(f'Number of vertices on shape = {n_vertices_on_shape}\nNumber of vertices on line = {parameters["N"]}')
+        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on shape does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
+        print(f'\tNumber of vertices on shape = {n_vertices_on_shape}\n\tNumber of vertices on line = {n_vertices_on_line}')
 
-        sys.exit()
+        for i in range(len(shape_vertex_coordinates)):
+            # run through the mesh vertices which belong to a facet on the shape
+
+            for j in range(len(shape_coordinates)):
+                # find two subsequent vertices in shape_coordinates, such that shape_vertex_coordinates[i] lies on the line between them
+
+                p = shape_vertex_coordinates[i][:2]
+                p_start = shape_coordinates[j]
+                p_end = shape_coordinates[(j+1) % len(shape_coordinates)]
+
+                lies_in_between = geo_u.between_points(p, p_start, p_end) and \
+                (np.linalg.norm(np.subtract(p, p_start)) > epsilon) and \
+                (np.linalg.norm(np.subtract(p, p_end)) > epsilon)
+
+                if lies_in_between:
+                    # shape_vertex_coordinates[i] lies between two subsequent vertices in shape_coordinates, and it is not one of the vertices in shape_coordinates -> insert it into shape_coordinates and break the inner loop
+
+                    shape_coordinates.insert(j+1, p)
+
+                    break
 
 
-    # B) mesh B (line)
+        print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
+
+     
+        model.__exit__()
 
 
-    # generate the line mesh corresponding to the shape
+        # now shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
 
-    genereate_line_mesh(0, shape_length, None,
-                            parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
-                            x_m=None,
-                            vertex_m_id=None,
-                            output_directory=output_directory_mesh_1, 
-                            metadata=mesh_1_metadata,
-                            coordinates=cumulative_arc_length)
+        generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
 
-    '''
-    # check - start
+    else:
+        # the meshing algorithm introduced no additional vertices in between the vertices of shape_coordinates -> proceed
 
-    for i in range(len(shape_coordinates)-1):
-        print(f'{i} \t {np.linalg.norm(np.subtract(shape_coordinates[i+1], shape_coordinates[i]))}')
-    print(f'{len(shape_coordinates)-1} \t {np.linalg.norm(np.subtract(shape_coordinates[-1], shape_coordinates[0]))}')
+        _, cumulative_arc_length = shape_tool(mesh_0, mf_mesh_0, mesh_0_metadata['shape_coordinates'], parameters['shape_id'])
+        mesh_1_metadata['coordinates'] = cumulative_arc_length
 
-    # check - end
-    '''
+        # print the boundary points of the boundary given by the shape
+        sorted_boundary_points(
+            read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+            output_directory_mesh_0, 
+            [parameters['shape_id']],
+            os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
 
-    #print overall mesh metadata
-    io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-    model.__exit__()
+        # B) mesh B (line)
+
+
+        # generate the line mesh corresponding to the shape
+
+        genereate_line_mesh(0, shape_length, None,
+                                parameters['shape_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
+                                x_m=None,
+                                vertex_m_id=None,
+                                output_directory=output_directory_mesh_1, 
+                                metadata=mesh_1_metadata,
+                                coordinates=cumulative_arc_length)
+
+
+        #print overall mesh metadata
+        io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
+
+        model.__exit__()
 
 
 '''
@@ -2371,14 +2427,19 @@ Input values:
     * Mandatory:
         - 'f_2d': the field on the 2d mesh
         - 'f_1d': the field on the 2d mesh
-        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'mesh_2d': the 2d mesh is stored
+        - 'mf_mesh_2d': a function on 'mesh_2d' that tags its facets
+        - 'shape_coordinates' : [[p_0_x, p_0_y], [p_1_x, p_1_y], ... ] the coordinates of the vertices of the shape in 'mesh_2d'
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
+def transfer_2d_to_1d(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
 
     # 1. initialize 
-    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    # mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    # mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    # mesh_2d_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+
     coordinates_mesh_2d = mesh_2d.coordinates()
 
     Q_1d = f_1d.function_space()
@@ -2392,12 +2453,11 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, shape_coordinates, shape_id)
 
 
 
     #7. write the values of f_2d into f_1d
-    print(f'Running over 1d mesh ...')
 
     for i in range(len(dof_coordinates_1d)):
         # run through all unique DOF coordinates of 1d mesh
@@ -2430,40 +2490,85 @@ def transfer_2d_to_1d(f_2d, f_1d, mesh_2d_path, shape_id):
 
         # print(f'  f_1d(p)   = {f_1d(dof_coordinates_1d[i][0])}')
 
-    print(f'... done.')
+
+
+'''
+given a 2d mesh with a shape boundary which is laid flat on a 1d mesh, it maps a point on the 1d mesh onto the 2d mesh
+Input values: 
+    - 'x': the coordinate of the point on the 1d mesh
+    - 'mesh': the 2d mesh
+    - 'mf_mesh': a function on the 2d mesh that tags mesh facets
+    - 'shape_coordinates': [[p_0_x, p_0_y], [p_1_x, p_1_y], ...], the list of coordinates of the mesh vertices lying on the shape
+    - 'shape_id': the id with which the shape is tagged on the 2d mesh
+Return values: 
+    - 'p': [p_x, p_y] the coordinates of the point corresponding to 'x' on the 2d mesh
+'''
+def map_1d_to_2d(x, mesh, mf_mesh, shape_coordinates, shape_id):
+
+    # 1. initialize 
+    # mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
+    # mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
+    # mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
+    mesh_coordinates = mesh.coordinates()
+
+    # 2. read the parametric form of the shape in the 2d mesh
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh, mf_mesh,  shape_coordinates, shape_id)
+  
+    # return j in such a way that cumulative_arc_length[j] <= dof_coordinates_1d[i][0] < cumulative_arc_length[j+1]
+    j = np.searchsorted(cumulative_arc_length, x, side='right') - 1
+    j = np.clip(j, 0, len(indices_vertices_on_shape) - 2)
+
+    p_start = mesh_coordinates[indices_vertices_on_shape[j]]
+    p_end = mesh_coordinates[indices_vertices_on_shape[j+1]]
+
+    # p is the point in between p_start and p_end whose arc length along the shape corresponds to  dof_coordinates_1d[i][0] (the arc length of the DOF on the 1d mesh)
+    p = np.add(p_start, 
+                    np.multiply(
+                            np.subtract(p_end, p_start), 
+                            (x - cumulative_arc_length[j])/(cumulative_arc_length[j+1] - cumulative_arc_length[j])
+                    )
+            )
+
+    return p
+
+
+ 
+
 
 '''
 compute quantities related a to a shape (a one-dimensional manifold, a curve) embedded in a 2d mesh
 Input values: 
     * Mandatory: 
-        - 'mesh_2d_path': the path of the 2d mesh
+        - 'mesh': the mesh
+        - 'mf_mesh': a funciton defined on the mesh that tags its facets
+        - 'shape_coordinates': [[p_0_x, p_0_y], [p_1_x, p_1_y], ...], the list of coordinates of the mesh vertices lying on the shape
         - 'shape_id': the ID withi which the shape is tagged in the 2d mesh
 
 Return values: 
-    - 'indices_vertices_on_shape': the indices (defined as in facet_vertex.index()) of the vertices on the 2d mesh, ordered in increasing order of the parameter t by which the shape is parameterized
-        indices_vertices_on_shape = [index_v_t_0, index_v_t_1, ... ]
+    - 'indices_vertices_on_shape': the indices (defined as in facet_vertex.index()) of the vertices on the 2d mesh, ordered in increasing order of the parameter t by which the shape is parameterized, 'indices_vertices_on_shape' = [index_v_t_0, index_v_t_1, ... ]
     - 'cumulative_arc_length': cumulative_arc_length[i] is the cumulated arc length from the beginning of the curve up to vertex with index indices_vertices_on_shape[i] included
 '''
-def shape_tool(mesh_2d_path, shape_id):
+def shape_tool(mesh, mf_mesh, shape_coordinates, shape_id):
 
-    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
-    parameters_mesh_2d = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
-    mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
-    coordinates_mesh_2d = mesh_2d.coordinates()
+    # mesh = read_mesh(os.path.join(mesh_path, 'triangle_mesh.xdmf'))
+    # mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, "mesh_metadata.csv"))
+    # mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(mesh_path, 'line_mesh.xdmf'))
+    mesh_coordinates = mesh.coordinates()
 
+    # shape_coordinates = mesh_parameters['shape_coordinates']
 
 
     # 2. read the parametric form of the shape in the 2d mesh
-    shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
+    # shape_parametric_form = io.read_function_expresssion(parameters_mesh_2d['shape_parametric_form'])
 
 
     # 3. compute the facets of the 2d mesh that lie on shape: facets_on_shape contains the facets of the mesh of f_2d that have been tagged with ID 'shape_id'
     facets_on_shape = []
 
-    for facet in facets(mesh_2d):
+    for facet in facets(mesh):
         #run through all facets of mesh_0 
 
-        if mf_mesh_2d[facet] == shape_id:
+        if mf_mesh[facet] == shape_id:
             # the facet under consideration belongs to the shape
 
             facets_on_shape.append(facet)
@@ -2481,27 +2586,26 @@ def shape_tool(mesh_2d_path, shape_id):
 
         v_list = list(vertices(facet))
     
-        if (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+        if (np.isclose(v_list[0].point().array()[:2], shape_coordinates[0]).all()) and (np.isclose(v_list[1].point().array()[:2], shape_coordinates[1]).all()):
             # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
             indices_vertices_on_shape.append(v_list[0].index())
 
             break
 
-        if (np.isclose(v_list[1].point().array()[:2], shape_parametric_form(0)).all()) and (np.isclose(v_list[0].point().array()[:2], shape_parametric_form(1.0/parameters_mesh_2d['N'])).all()):
+        if (np.isclose(v_list[1].point().array()[:2], shape_coordinates[0]).all()) and (np.isclose(v_list[0].point().array()[:2], shape_coordinates[1]).all()):
             # add the vertex under consideration if it is equal to coordinates_vertices_on_shape[0]
 
             indices_vertices_on_shape.append(v_list[1].index())
 
             break
 
-
     # print(f'The vertex corresponding to t=0 is {coordinates_vertices_on_shape}, index = {indices_vertices_on_shape}')
 
     # 4.2 Add subsequent vertices by running on the edges in a sequential way
     used_facet_indices = set()
 
-    while len(indices_vertices_on_shape) < parameters_mesh_2d['N']:
+    while len(indices_vertices_on_shape) < len(shape_coordinates):
         # stop when you addedd N vertices
 
         for facet in facets_on_shape:
@@ -2539,12 +2643,12 @@ def shape_tool(mesh_2d_path, shape_id):
 
     for i in range(1, len(indices_vertices_on_shape)):
 
-        delta_l =  np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[i]], coordinates_mesh_2d[indices_vertices_on_shape[i-1]]))
+        delta_l =  np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[i]], mesh_coordinates[indices_vertices_on_shape[i-1]]))
 
         l += delta_l
         cumulative_arc_length.append(l)
 
-    delta_l = np.linalg.norm(np.subtract(coordinates_mesh_2d[indices_vertices_on_shape[-1]], coordinates_mesh_2d[indices_vertices_on_shape[0]]))
+    delta_l = np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[-1]], mesh_coordinates[indices_vertices_on_shape[0]]))
 
     l += delta_l
     cumulative_arc_length.append(l)
@@ -2563,17 +2667,22 @@ Input values:
     * Mandatory:
         - 'f_1d': the field on the 2d mesh
         - 'f_2d': the field on the 2d mesh
-        - 'mesh_2d_path': the path where the 2d mesh is stored
+        - 'mesh_2d': the 2d mesh is stored
+        - 'mf_mesh_2d': a function on 'mesh_2d' that tags its facets
+        - 'shape_coordinates' : [[p_0_x, p_0_y], [p_1_x, p_1_y], ... ] the coordinates of the vertices of the shape in 'mesh_2d'
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
     * Optional:
         - 'epislon': the accuracy threshold to identify to which a vertex belongs to a segment in the 2d mesh 
 '''
 
-def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
+def transfer_1d_to_2d(f_1d, f_2d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id,
                       epsilon = const.epsilon):
 
     # 1. initialize 
-    mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    # mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
+    # mf_mesh_2d = read_mesh_components(mesh_2d, mesh_2d.topology().dim() - 1, os.path.join(mesh_2d_path, 'line_mesh.xdmf'))
+    # mesh_2d_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_2d_path, "mesh_metadata.csv"))
+
     coordinates_mesh_2d = mesh_2d.coordinates()
 
     Q_2d = f_2d.function_space()
@@ -2585,12 +2694,10 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
     coordinates_all_2d = Q_2d.tabulate_dof_coordinates().reshape(-1, dim_2d)
     dof_coordinates_2d = coordinates_all_2d[::value_size_2d]
 
-    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d_path, shape_id)
+    indices_vertices_on_shape, cumulative_arc_length = shape_tool(mesh_2d, mf_mesh_2d, shape_coordinates, shape_id)
 
 
     #7. write the values of f_1d into f_2d
-    print(f'Running over 2d mesh ...')
-
 
     for i in range(len(dof_coordinates_2d)):
         # coordinates of the i-th node in the 2d mesh
@@ -2627,7 +2734,6 @@ def transfer_1d_to_2d(f_1d, f_2d, mesh_2d_path, shape_id,
 
                 break  # no need to check other segments in the j loop
 
-    print(f'... done.')
 
 
 '''
@@ -2694,6 +2800,47 @@ def transfer(f, g, u):
 
         g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
 
+
+'''
+given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
+
+Input values: 
+    - 'f': the field to be read. Note that this method will do f.set_allow_extrapolation(True)
+    - 'g': the field to be written in
+
+'''
+
+def transfer_1d(f, g):
+
+    f.set_allow_extrapolation(True)
+
+    Q_g = g.function_space()
+
+    value_shape = Q_g.ufl_element().value_shape()
+    value_size  = int(np.prod(value_shape)) if value_shape else 1
+
+
+    # unique DOF coordinates: tabulate_dof_coordinates repeats each position
+    # value_size times, so stride by value_size to get unique positions
+    dof_coords  = (Q_g.tabulate_dof_coordinates())[::value_size]
+
+    dof_map = Q_g.dofmap().dofs()
+    dof_values = g.vector().get_local()
+
+
+    for i in range(len(dof_coords)):
+        # run through all coordinates in the 1d mesh
+
+        s  = dof_coords[i][0]
+
+        value = np.atleast_1d(np.array(f(s)))
+
+        for k in range(value_size):
+
+            dof_values[dof_map[value_size * i + k]] = value[k]
+
+    g.vector().set_local(dof_values)
+    g.vector().apply("insert")
 
 '''
 compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells

@@ -962,6 +962,20 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_mesh', 'generate_mesh',  
                                                                      generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
+case_name = 'dynamics/lagrangian_approach/one_dimension/circle/curvature'
+
+problem_name = 'square_shape_line_a'
+generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 'generate_mesh',    
+                                                                     os.path.join(generate_mesh_path, 'curvature_parameters'),  
+                                                                     os.path.join(generate_mesh_path, 'curvature_parameters'), 
+                                                                     problem_name, problem_name, success)
+
 
 
 # Test fluid_structure_interaction
@@ -1027,7 +1041,9 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      problem_name, problem_name, success)
 
 
-case_name = 'fluid_structure_interaction/fluid_obstacle'
+
+
+case_name = 'fluid_structure_interaction/fluid_obstacle/remesh'
 
 problem_name = 'square_shape_line_a'
 generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
@@ -1037,8 +1053,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', 'generate_mesh', 
-                                                                     os.path.join(generate_mesh_path, 'disk_parameters'),  
-                                                                     os.path.join(generate_mesh_path, 'disk_parameters'),         
+                                                                     generate_mesh_path, generate_mesh_path,         
                                                                      problem_name, problem_name, success)
 
 

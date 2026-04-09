@@ -65,7 +65,7 @@ class f_0__Expression(UserExpression):
     
 fsp.f_sub_mesh_0_1.interpolate(f_0__Expression(element=fsp.Q[0][1].ufl_element()))
 
-msh.transfer_2d_to_1d(fsp.f_sub_mesh_0_1, fsp.f_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_2d_to_1d(fsp.f_sub_mesh_0_1, fsp.f_mesh_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.f_sub_mesh_0_1, f'u_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -89,7 +89,7 @@ class f_1_Expression(UserExpression):
 fsp.f_mesh_1.interpolate(f_1_Expression(element=fsp.Q[1].ufl_element()))
 
 
-msh.transfer_1d_to_2d(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_1d_to_2d(fsp.f_mesh_1, fsp.f_sub_mesh_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.f_mesh_1, f'u_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -115,7 +115,7 @@ fsp.v_sub_mesh_0_0.interpolate(v_sub_mesh_0__Expression(element=fsp.V_sub_mesh_0
 fsp.v_sub_mesh_0_1.interpolate(v_sub_mesh_0__Expression(element=fsp.V_sub_mesh_0_1.ufl_element()))
 
 
-msh.transfer_2d_to_1d(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_2d_to_1d(fsp.v_sub_mesh_0_0, fsp.v_mesh_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.v_sub_mesh_0_0, f'v_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -136,7 +136,7 @@ class v_mesh_1_Expression(UserExpression):
     
 fsp.v_mesh_1.interpolate(v_mesh_1_Expression(element=fsp.V_mesh_1.ufl_element()))
 
-msh.transfer_1d_to_2d(fsp.v_mesh_1, fsp.v_sub_mesh_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_1d_to_2d(fsp.v_mesh_1, fsp.v_sub_mesh_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.v_mesh_1, f'v_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -169,7 +169,7 @@ class t_sub_mesh_0__Expression(UserExpression):
 fsp.t_sub_mesh_0_1.interpolate(t_sub_mesh_0__Expression(element=fsp.T_sub_mesh_0_1.ufl_element()))
 
 
-msh.transfer_2d_to_1d(fsp.t_sub_mesh_0_1, fsp.t_mesh_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_2d_to_1d(fsp.t_sub_mesh_0_1, fsp.t_mesh_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.t_sub_mesh_0_1, f't_2d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -195,7 +195,7 @@ class t_mesh_1_Expression(UserExpression):
 fsp.t_mesh_1.interpolate(t_mesh_1_Expression(element=fsp.T_mesh_1.ufl_element()))
 
 
-msh.transfer_1d_to_2d(fsp.t_mesh_1, fsp.t_sub_mesh_0_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_1d_to_2d(fsp.t_mesh_1, fsp.t_sub_mesh_0_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.t_mesh_1, f't_1d', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -225,8 +225,9 @@ print('...done.')
 
 print(f'Transferring solution ...')
 
-msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
-msh.transfer_1d_to_2d(fsp.u_0_1_on_1, fsp.u_1_on_0_0, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
+
+msh.transfer_1d_to_2d(fsp.u_0_1_on_1, fsp.u_1_on_0_0, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 print(f'... done.')
 

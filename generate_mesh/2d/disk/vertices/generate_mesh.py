@@ -65,7 +65,6 @@ circle_coordinates = [[rpam.parameters['r'], 0]]
 circle_vertices = [gmsh.model.geo.addPoint(circle_coordinates[0][0], circle_coordinates[0][1], 0)]
 gmsh.model.geo.synchronize()
 
-print(f'Added point with coordinates {circle_coordinates[-1]}')
 
 circle_lines = []
 

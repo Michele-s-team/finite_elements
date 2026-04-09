@@ -36,7 +36,7 @@ class t_sq_n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = 0
+        values[1] =  rpam.parameters['sigma_sq_t']
 
     def value_shape(self):
         return (2,)
@@ -103,5 +103,3 @@ F_phi_square = ( \
 # step 3 for v_square_n
 F_v_square_n = ( ( (fsp.v_square_n[alpha] - fsp.v_square__[alpha]) + (dt / rpam.parameters['rho_sq']) * ela.G(fsp.u_n_1_sq)[gamma, alpha] * (fsp.phi_square.dx(gamma)) ) * fsp.nu_v_square_n[alpha] ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1]
 
-
-# check

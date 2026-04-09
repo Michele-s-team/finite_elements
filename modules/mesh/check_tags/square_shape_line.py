@@ -51,7 +51,6 @@ For example, the exact integral over the circular boundary of sub_mesh 1 of mesh
 #1.1 exact bulk integrals for mesh 0
 
 #1.1.1 exact bulk integrals for sub_mesh 0 of mesh 0 
-print(f'***** shape_coordinates = {lmsh.mesh_parameters[0]["shape_coordinates"]}')
 integral_exact[0][0]['dx'] = cal.surface_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'])
 
 #1.1.2 exact bulk integrals for sub_mesh 1 of mesh 0 

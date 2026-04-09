@@ -38,7 +38,7 @@ def test_generate_mesh_and_solve(commit_a,
 
         # 1.1 generate the mesh
         # 1.1.1 copy mesh_parameters.csv
-        run_command(f'cp {mesh_path_a}/mesh_parameters.csv {mesh_solution_path_a}/../', success)
+        run_command(f'cp {mesh_parameters_path_a}/mesh_parameters.csv {mesh_solution_path_a}/../', success)
         # 1.1.2 run mesh-generation code
         run_command(f'cd {mesh_path_a}; rm -rf {mesh_solution_path_a}; mkdir -p {mesh_solution_path_a}; python3 {name_of_generate_mesh_a}.py {mesh_parameters_path_a} {mesh_solution_path_a}', success)
 
@@ -51,7 +51,7 @@ def test_generate_mesh_and_solve(commit_a,
 
         # 2.1 generate the mesh
         # 2.1.1 copy mesh_parameters.csv
-        run_command(f'cp {mesh_path_b}/mesh_parameters.csv {mesh_solution_path_b}/../', success)
+        run_command(f'cp {mesh_parameters_path_b}/mesh_parameters.csv {mesh_solution_path_b}/../', success)
         # 2.1.2 run mesh-generation code
         run_command(f'cd {mesh_path_b}; rm -rf {mesh_solution_path_b}; mkdir -p {mesh_solution_path_b}; python3 {name_of_generate_mesh_b}.py {mesh_parameters_path_b} {mesh_solution_path_b}', success)
 

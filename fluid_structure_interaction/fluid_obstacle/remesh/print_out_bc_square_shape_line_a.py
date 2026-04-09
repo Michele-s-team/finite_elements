@@ -29,7 +29,7 @@ def natural_bc_fl_di_v__():
              flu.sigma_ale(fsp.V_di, fsp.sigma_disk_n_32, fsp.u_n_1_di, rpam.parameters['eta_di'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma]
         ) \
         - (
-             flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 1.0 / ela.detF(fsp.u_n_1_di) * vp_fluid_di.f_M(fsp.c_n_1, fsp.U_n_32)[alpha] 
+             flu.sigma_ale(fsp.v_square_n_1_0_1_on_0_0, fsp.sigma_square_n_32_0_1_on_0_0, fsp.u_n_1_di, rpam.parameters['eta_sq'])[alpha, beta] * ela.G(fsp.u_n_1_di)[gamma, beta] * bgeo.sub_mesh_facet_normal[0][0][gamma] + 1.0 / ela.detF(fsp.u_n_1_di) * vp_fluid_di.f_M(fsp.c_n_1, fsp.U_n_32, fsp.mu_n_12_1_on_0_0)[alpha] 
         ), 
         (alpha)
     )
@@ -54,12 +54,12 @@ fieldnames = [ \
     # 2 bcs for D
     # 2.1 disk
     '<<|u_n_di - U_n_12|^2>>_[partial Omega^y shape]', \
-    '<<|u_n_di_dot - [v_square^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]', \
+    '<<|u_n_di_dot - [v_di^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]', \
     # 2.2 square
     '<<|u_n_sq|^2>>_[partial Omega^y sq]', \
     '<<|u_n_sq - U_n_12|^2>>_[partial Omega^y shape]',\
     '<<|u_n_sq_dot|^2>>_[partial Omega^y sq]', \
-    '<<|u_n_sq_dot - [v_square^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]',\
+    '<<|u_n_sq_dot - [v_di^{n-1} \dot \hat{n}^{n-1/2}] \hat{n}^{n-1/2}|^2>>_[partial Omega^y shape]',\
     
     # 3 fluid disk
     '<<|\varsigma_{\alpha \beta}^disk G^{n-1}_{\gamma \beta} \nu_gamma - [\varsigma_{\alpha \beta}^square G^{n-1}_{\gamma \beta} \nu_\gamma + 1/|F^{n-1}| F_M^\alpha]|^2>>_[partial Omega^y shape]', \
