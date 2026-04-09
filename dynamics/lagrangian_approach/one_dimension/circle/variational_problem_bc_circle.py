@@ -27,7 +27,7 @@ class v_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1
-        values[1] = np.sin(2.0 * np.pi * x[0] / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[1] = np.sin(2.0 * np.pi * (x[0] - rmsh.parameters['x_l']) / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (2,)
@@ -46,8 +46,8 @@ class u_n_1_expression(UserExpression):
 class ys_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2.0 * np.pi * x[0] / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
-        values[1] = np.sin(2.0 * np.pi * x[0] / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[0] = np.cos(2.0 * np.pi * (x[0] - rmsh.parameters['x_l']) / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
+        values[1] = np.sin(2.0 * np.pi * (x[0] - rmsh.parameters['x_l']) / (rmsh.parameters['x_r'] - rmsh.parameters['x_l']))
 
     def value_shape(self):
         return (2,)
