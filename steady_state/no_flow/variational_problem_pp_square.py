@@ -3,7 +3,7 @@ import ufl as ufl
 
 import command as cmd
 import function_spaces as fsp
-import physics as phys
+import physics.utils as phys
 import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module('mesh.read.square')
 import parameters.read.solution as rpam

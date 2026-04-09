@@ -18,10 +18,9 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import fluid as flu
+import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -119,7 +118,7 @@ for n in range(rpam.parameters['num_steps']):
 
     # print out force exerted by  fl on el
     #
-    import elasticity as ela
+    import physics.elasticity as ela
     import ufl
     import differential_geometry.manifold.geometry as geo
     import input_output as io

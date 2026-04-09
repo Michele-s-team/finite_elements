@@ -10,10 +10,8 @@ import differential_geometry.boundary.geometry as bgeo
 import files as files
 import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
-import physics as phys
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi

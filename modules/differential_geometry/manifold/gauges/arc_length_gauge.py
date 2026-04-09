@@ -13,8 +13,8 @@ import differential_geometry.manifold.geometry as geo
 epsilon = ufl.PermutationSymbol(2)
 
 # definition of scalar, vectorial and tensorial quantities
-# latin indexes run on 2d curvilinear coordinates
-i, j, k, l = ufl.indices(4)
+# greek indices run on 2d Euclidean coordinates
+alpha, beta = ufl.indices(2)
 
 '''
 vector tangent to the curvilinear coordinate x on the manifold 
@@ -43,8 +43,8 @@ Return values:
 
 
 def normal(psi, nu):
-    v = as_tensor(-epsilon[i, j] * e(psi, nu)[0, j], (i))
-    return as_tensor(v[i] / geo.ufl_norm(v), (i))
+    v = as_tensor(-epsilon[alpha, beta] * e(psi, nu)[0, beta], (alpha))
+    return as_tensor(v[alpha] / geo.ufl_norm(v), (alpha))
 
 '''
 gaussian curvature: K = K_{al-izzi2020shear}

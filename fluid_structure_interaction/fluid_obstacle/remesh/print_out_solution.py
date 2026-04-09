@@ -3,7 +3,7 @@ from fenics import *
 import csv
 import importlib
 
-import elasticity as ela
+import physics.elasticity as ela
 import files as fi
 import function_spaces as fsp
 import input_output as io

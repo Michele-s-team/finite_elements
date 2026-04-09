@@ -12,7 +12,7 @@ import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import parameters.read.solution as rpam
-import physics as phys
+import physics.utils as phys
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi

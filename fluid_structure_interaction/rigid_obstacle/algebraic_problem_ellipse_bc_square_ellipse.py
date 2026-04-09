@@ -8,8 +8,8 @@ import numpy as np
 import ufl as ufl
 
 import calculus as cal
-import elasticity as ela
-import fluid as flu
+import physics.elasticity as ela
+import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io

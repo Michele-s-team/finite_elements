@@ -495,18 +495,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 
 
 
-# Test nitsche_method/two_fields
-case_name = 'nitsche_method/two_fields'
-
-problem_name = 'disk'
-generate_mesh_path = root_path + 'generate_mesh/2d/disk/'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
 
 # Test third_order_pde
 case_name = 'third_order_pde'

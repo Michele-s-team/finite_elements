@@ -5,7 +5,7 @@ import os
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import fluid as flu
+import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import mesh.utils as msh
 import parameters.read.solution as rpam

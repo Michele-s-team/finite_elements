@@ -8,7 +8,7 @@ import command as cmd
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
-import fluid as flu
+import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import mesh.load as lmsh
 import parameters.read.solution as rpam
