@@ -9,7 +9,6 @@ Examples:
 
 from fenics import *
 import importlib
-import os
 import sys
 
 # add the path where to find the shared modules
@@ -41,38 +40,13 @@ params = {'nonlinear_solver': 'newton',
 
 
 
-J, problem, solver, vp = [[None]*2, None], [[None]*2, None], [[None]*2, None], [[None]*2, None]
+print('Solving the monolithic problem in mesh[0]...')
 
-#1. solve the variational problem in sub_mesh[0][1], and obtain the solution 
-print('Solving the problem in sub_mesh[0][1]...')
-
-vp[0][1] = importlib.import_module(swi.vp_sub_mesh_0_1)
-var_pr.solve_vp(vp[0][1].F, fsp.u[0][1], vp[0][1].bcs, fsp.J_u[0][1])
+vp = importlib.import_module(swi.vp)
+var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u)
 
 print('...done.')
 
-# 2. transfer solution on sub_mesh[0][1] to mesh[1]
-
-print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
-
-msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
-
-io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
-
-
-print(f'... done.')
-
-
-
-# 5. solve the problem on sub_mesh[0][0]
-
-print('Solving the problem in sub_mesh[0][0]...')
-
-vp[0][0] = importlib.import_module(swi.vp)
-var_pr.solve_vp(vp[0][0].F, fsp.u[0][0], vp[0][0].bcs, fsp.J_u[0][0])
-
-print('...done.')
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
