@@ -111,7 +111,7 @@ print('...done.')
 
 print(f'Transferring solution on sub_mesh[0][1] to mesh[1] ...')
 
-msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, os.path.join(rarg.args.input_directory, f'mesh_{0}'), rmsh.lmsh.parameters['shape_id'])
+msh.transfer_2d_to_1d(fsp.u[0][1], fsp.u_0_1_on_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
 io.full_print(fsp.u_0_1_on_1, f'u_0_1_on_1', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
