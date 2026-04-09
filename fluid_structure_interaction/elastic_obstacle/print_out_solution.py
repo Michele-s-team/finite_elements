@@ -103,6 +103,6 @@ def print_solution(t, step, dt):
     print_solution_msh(t, step)
     print_solution_fl(t, step, dt)
 
-    # print solution metadata
-    io.write_parameters_to_csv_file(solpath.csv_files_path + "metadata.csv", rpam.parameters)
+# print solution metadata
+io.write_parameters_to_csv_file(os.path.join(solpath.csv_files_path, "metadata.csv"), rpam.parameters)
 

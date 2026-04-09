@@ -21,7 +21,6 @@ sys.path.append(module_path)
 import fluid as flu
 import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
