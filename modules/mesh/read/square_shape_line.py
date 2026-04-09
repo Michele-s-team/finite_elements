@@ -76,6 +76,10 @@ ds_mesh[0] = dict([ \
     ('ds_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"shape_id"]))
     ])
 
+ds_mesh[0]['ds_lr'] = ds_mesh[0]['ds_l'] + ds_mesh[0]['ds_r']
+ds_mesh[0]['ds_tb'] = ds_mesh[0]['ds_t'] + ds_mesh[0]['ds_b']
+ds_mesh[0]['ds'] = ds_mesh[0]['ds_lr'] + ds_mesh[0]['ds_tb']
+
 # 1.2 mesh 1
 # 1.2.1 bulk measures
 dx_mesh[1] = Measure("dx", domain=lmsh.mesh[1], subdomain_data=lmsh.sf[1])
