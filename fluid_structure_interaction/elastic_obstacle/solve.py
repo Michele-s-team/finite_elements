@@ -118,7 +118,7 @@ for n in range(rpam.parameters['num_steps']):
 
     # print out force exerted by  fl on el
     #
-    import elasticity as ela
+    import physics.elasticity as ela
     import ufl
     import differential_geometry.manifold.geometry as geo
     import input_output as io

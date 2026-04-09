@@ -6,7 +6,7 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import elasticity as ela
+import physics.elasticity as ela
 import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo

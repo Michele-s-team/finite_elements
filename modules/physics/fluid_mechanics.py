@@ -5,7 +5,7 @@ This module contains methods related to fluid mechanics
 from fenics import *
 import ufl as ufl
 
-import elasticity as ela
+import physics.elasticity as ela
 
 alpha, beta, gamma = ufl.indices(3)
 

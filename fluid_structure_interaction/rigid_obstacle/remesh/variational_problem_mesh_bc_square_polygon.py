@@ -7,7 +7,7 @@ import importlib
 import ufl as ufl
 
 import calculus as cal
-import elasticity as ela
+import physics.elasticity as ela
 import function_spaces as fsp
 import numpy as np
 import parameters.read.solution as rpam

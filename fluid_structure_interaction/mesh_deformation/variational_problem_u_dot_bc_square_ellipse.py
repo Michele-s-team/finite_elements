@@ -9,7 +9,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import calculus as cal
-import elasticity as ela
+import physics.elasticity as ela
 import function_spaces as fsp
 import read_parameters as rpam
 import switch_problem as swi
