@@ -9,7 +9,7 @@ import ufl as ufl
 
 import calculus as cal
 import elasticity as ela
-import fluid as flu
+import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo

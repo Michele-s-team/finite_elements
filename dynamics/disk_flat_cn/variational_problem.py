@@ -4,7 +4,7 @@ import ufl as ufl
 
 import function_spaces as fsp
 import differential_geometry.boundary.geometry as bgeo
-import fluid as flu
+import physics.fluid_mechanics as flu
 import parameters.read.solution as rpam
 import switch_problem as swi
 
