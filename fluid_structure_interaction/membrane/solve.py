@@ -21,7 +21,7 @@ import fluid as flu
 import function as fu
 import function_spaces as fsp
 import parameters.read.solution as rpam
-import physics as phys
+import physics.utils as phys
 import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr

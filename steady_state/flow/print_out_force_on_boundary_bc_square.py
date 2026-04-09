@@ -1,7 +1,7 @@
 from fenics import *
 
 import differential_geometry.boundary.geometry as bgeo
-import physics as phys
+import physics.utils as phys
 import parameters.read.solution as rpam
 import print_out_solution as prout
 

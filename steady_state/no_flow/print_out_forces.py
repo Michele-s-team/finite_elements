@@ -5,7 +5,7 @@ import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
-import physics as phys
+import physics.utils as phys
 import solution_paths as solpath
 
 import print_out_solution as prout

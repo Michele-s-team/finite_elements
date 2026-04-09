@@ -2,7 +2,7 @@ from fenics import *
 import importlib
 
 import differential_geometry.boundary.geometry as bgeo
-import physics as phys
+import physics.utils as phys
 import print_out_solution as prout
 import parameters.read.solution as rpam
 import switch_problem as swi
