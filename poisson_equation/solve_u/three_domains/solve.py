@@ -1,6 +1,5 @@
 '''
-This code solves the Poisson equation in two sub_meshes, sub_mesh[0] and sub_mesh[1], which share one boundary
-The problem is first solved in sub_mesh[1], and the solution u[1] is then used to specify the BCs of the problem of sub_mesh[0]
+This code solves the Poisson equation in two sub_meshes, sub_mesh[0][0] and sub_mesh[0][1], which share one boundary. The boundary is laid flat on a line, which is mesh[1]
 
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
