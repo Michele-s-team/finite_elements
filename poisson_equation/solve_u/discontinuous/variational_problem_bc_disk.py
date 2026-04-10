@@ -4,6 +4,7 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
+import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -95,7 +96,7 @@ bcs = []
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
-F_G = rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u("+")  * bgeo.facet_normal("+")[i] + fsp.u("-") * bgeo.facet_normal("-")[i]) * (fsp.nu_u("+")  * bgeo.facet_normal("+")[i] + fsp.nu_u("-") * bgeo.facet_normal("-")[i]) * rmsh.dS
+F_G = rpam.parameters['alpha']/rmsh.r_mesh * msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS
 
 F_BC = rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
 

@@ -9,6 +9,7 @@ import os
 import pygmsh
 import shutil
 import sys
+import ufl
 
 import calculus as cal
 import constants.utils as const
@@ -17,6 +18,7 @@ import function as fu
 import geometry.utils as geo_u
 import input_output as io
 
+alpha = ufl.indices(1)
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -2861,8 +2863,9 @@ Input values:
     - 'u': the field
     -  'n': the facet normal
 Return values: 
-    - 'u("+") * n("+") + u("-") * n("-")': the jump
+    - 'u("+") * n("+")[alpha] + u("-") * n("-")[alpha]': the jump
 
 '''
 def jump(u, n): 
-    return u("+") * n("+") + u("-") * n("-")
+
+    return as_tensor(u("+") * (n("+"))[alpha] + u("-") * (n("-"))[alpha], (alpha))
