@@ -21,13 +21,39 @@ import runtime_arguments as rarg
 
 sf = [None] * lmsh.parameters['n_meshes']
 mf = [None] * lmsh.parameters['n_meshes']
+mf_I = [None] * lmsh.parameters['n_meshes']
 r_mesh = [None] * lmsh.parameters['n_meshes']
 
 # read quantities for mesh[0]
-# read the triangles
+
+# 1. read the triangles
 sf[0] = msh.read_mesh_components(lmsh.mesh[0], (lmsh.mesh[0]).topology().dim(), os.path.join(rarg.args.input_directory, f'mesh_{0}', 'triangle_mesh.xdmf'))
-# read the lines
+
+
+# 2. read the lines
+
+# 2.1 read the boundary lines
 mf[0] = msh.read_mesh_components(lmsh.mesh[0], (lmsh.mesh[0]).topology().dim() - 1, os.path.join(rarg.args.input_directory, f'mesh_{0}', 'line_mesh.xdmf'))
+
+# 2.2 read the inner (I) lines
+
+# build a function mf_I[0] that tags interior lines and allows for reading them
+mf_I[0] = MeshFunction("size_t", lmsh.mesh[0], lmsh.mesh[0].topology().dim() - 1, 0)
+
+lmsh.mesh[0].init(1, 2)   # build facet-to-cell connectivity
+
+for facet in facets(lmsh.mesh[0]):
+
+    if facet.exterior() == False:
+
+        cell_tags = [sf[0][Cell(lmsh.mesh[0], cell_id)] for cell_id in facet.entities(2)]
+
+        if all(c == lmsh.parameters['sub_mesh_0_0_id'] for c in cell_tags):
+            mf_I[0][facet] = lmsh.parameters['sub_mesh_0_0_id']
+
+        elif all(c == lmsh.parameters['sub_mesh_0_1_id'] for c in cell_tags):
+            mf_I[0][facet] = lmsh.parameters['sub_mesh_0_1_id']
+
 
 
 
