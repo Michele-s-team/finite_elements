@@ -45,14 +45,29 @@ lmsh.mesh[0].init(1, 2)   # build facet-to-cell connectivity
 for facet in facets(lmsh.mesh[0]):
 
     if facet.exterior() == False:
+        # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
 
+        # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
+
+        # consider the cells that have facet as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
         cell_tags = [sf[0][Cell(lmsh.mesh[0], cell_id)] for cell_id in facet.entities(2)]
 
         if all(c == lmsh.parameters['sub_mesh_0_0_id'] for c in cell_tags):
+            # all cells that have facet as one of their boundary facets belong to sub_mesh_0_0 -> the facet under consideration is an internal facet of the shape (the region correspondign to sub_mesh[0][0]) -> tag this facet in mf_I[0] with ID sub_mesh_0_0_id
+
             mf_I[0][facet] = lmsh.parameters['sub_mesh_0_0_id']
 
         elif all(c == lmsh.parameters['sub_mesh_0_1_id'] for c in cell_tags):
+            # all cells that have facet as one of their boundary facets belong to sub_mesh_0_1 -> the facet under consideration is an internal facet of the square (the region corresponding to sub_mesh[0][1]) -> tag this facet in mf_I[0] with ID sub_mesh_0_1_id
+
             mf_I[0][facet] = lmsh.parameters['sub_mesh_0_1_id']
+    
+    else:
+
+            print(f'facet {facet.index()} belongs to the exterior of the mesh, vertices: {[v.point().array().tolist() for v in vertices(facet)]}')
+
+    
+
 
 
 
