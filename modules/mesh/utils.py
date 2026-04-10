@@ -2340,8 +2340,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     if "n_sub_meshes" in mesh_medatada:
         # found sub-meshes
 
-        print(f'Found sub_meshes')
-
         # read the functions that tag elements of the parent mesh
         sf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
         mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "line_mesh.xdmf"))
@@ -2398,8 +2396,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     sf_sub_meshes.append(cf_sub_mesh_1d)
                     mf_sub_meshes.append(vf_sub_mesh_1d)
 
-                print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
-
             print('... done.')
 
         else:
@@ -2411,8 +2407,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     else:
         # did not find sub_meshes -> return None for all fields
-
-        print(f'Did not find sub_meshes')
 
         sub_meshes = None
         sf_sub_meshes = None 

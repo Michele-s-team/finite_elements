@@ -64,17 +64,12 @@ for facet in facets(lmsh.mesh[0]):
 
         else:
             print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
-
-    
+ 
     # else:
 
             # print(f'facet {facet.index()} belongs to the exterior of the mesh, vertices: {[v.point().array().tolist() for v in vertices(facet)]}')
 
     
-
-
-
-
 
 # read quantities for mesh[1]
 # read the lines
@@ -94,9 +89,6 @@ r_sub_mesh = [[None] * 2, None]
 r_sub_mesh[0][0] = lmsh.sub_meshes[0][0].hmin()
 r_sub_mesh[0][1] = lmsh.sub_meshes[0][1].hmin()
 
-
-print(f'lmsh_sub_meshes: {lmsh.sub_meshes}')
-print(f'sf_sub_meshes: {lmsh.sf_sub_meshes}')
 
 #  define measures
 
@@ -118,7 +110,9 @@ ds_mesh[0] = dict([ \
     ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_t_id"])), \
     ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_b_id"])), \
-    ('ds_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"shape_id"]))
+    ('ds_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"shape_id"])), \
+    ('ds_I_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_0_id"])),\
+    ('ds_I_square', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_1_id"]))
     ])
 
 ds_mesh[0]['ds_lr'] = ds_mesh[0]['ds_l'] + ds_mesh[0]['ds_r']
