@@ -2854,3 +2854,15 @@ def custom_mesh_quality(mesh):
     result, _ = MeshQuality.radius_ratio_min_max(mesh)
 
     return result
+
+'''
+return the jump in a field with respect to a facet normal for discontinuous function spaces
+Input values: 
+    - 'u': the field
+    -  'n': the facet normal
+Return values: 
+    - 'u("+") * n("+") + u("-") * n("-")': the jump
+
+'''
+def jump(u, n): 
+    return u("+") * n("+") + u("-") * n("-")
