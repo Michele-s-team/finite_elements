@@ -64,14 +64,19 @@ fsp.g_shape.interpolate(g_shape_expression(element=fsp.Q.ufl_element()))
 
 # boundary conditions for sub_mesh[0][1]
 bcs = [ \
-    DirichletBC(fsp.Q, fsp.u_exact_shape, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
-    DirichletBC(fsp.Q, fsp.u_exact_shape, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
-    DirichletBC(fsp.Q, fsp.u_exact_shape, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
-    DirichletBC(fsp.Q, fsp.u_exact_shape, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_b_id"])
+    DirichletBC(fsp.Q, fsp.u_exact_square, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_l_id"]),\
+    DirichletBC(fsp.Q, fsp.u_exact_square, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_r_id"]),\
+    DirichletBC(fsp.Q, fsp.u_exact_square, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_t_id"]),\
+    DirichletBC(fsp.Q, fsp.u_exact_square, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_b_id"])
     ]
 
 # variational functional for sub_mesh[1]
-F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
-    + (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] \
-    - fsp.g_shape * fsp.nu_u * rmsh.ds_mesh[0]['ds_shape']\
-    - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+F_sh = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
+        - ((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) * fsp.nu_u('+') * rmsh.ds_mesh[0]['ds_shape']
+
+F_sq = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] \
+        - ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i)) * fsp.nu_u('-') * rmsh.ds_mesh[0]['ds_shape']\
+        - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+
+
+F = F_sh + F_sq
