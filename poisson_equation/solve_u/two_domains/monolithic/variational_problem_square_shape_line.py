@@ -18,7 +18,7 @@ i, j = ufl.indices(2)
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
-     values[0] = 1 + x[0]**2 + 2 * x[1]**2 + ((x[0] - rmsh.lmsh.parameters['c'][0])**2 + (x[1] - rmsh.lmsh.parameters['c'][1])**2)
+     values[0] = 1 + x[0]**2 + 2 * x[1]**2 + ((x[0] - rmsh.lmsh.parameters['c'][0])**2 + (x[1] - rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
 
     def value_shape(self):
         return (1,)
