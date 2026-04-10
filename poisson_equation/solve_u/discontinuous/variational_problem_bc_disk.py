@@ -97,18 +97,11 @@ F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
 F_i = (
-        - (\
-            msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] +  # consistency
-            msh.average(fsp.nu_u.dx(i)) * msh.jump(fsp.u,    bgeo.facet_normal)[i]   # adjoint
-        ) + \
+        -  msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
         ) * rmsh.dS
 
-
-F_e =  (\
-            - bgeo.facet_normal[i] * (fsp.u - fsp.u_exact) * fsp.nu_u.dx(i) + \
-            rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u\
-        ) * rmsh.ds
+F_e =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
 
 
 F = F_0 + F_i + F_e
