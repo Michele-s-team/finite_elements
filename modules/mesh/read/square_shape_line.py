@@ -62,13 +62,10 @@ for facet in facets(lmsh.mesh[0]):
 
             mf_I[0][facet] = lmsh.parameters['sub_mesh_0_1_id']
 
-        else:
-            print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
+        # else:
+        #     print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
  
-    # else:
-
-            # print(f'facet {facet.index()} belongs to the exterior of the mesh, vertices: {[v.point().array().tolist() for v in vertices(facet)]}')
-
+    
     
 
 # read quantities for mesh[1]
