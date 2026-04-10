@@ -68,8 +68,6 @@ class hess_u_exact_expression(UserExpression):
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
-# fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
-
 bcs = []
 
 # variational functional for the original problem (poisson equation)
@@ -85,7 +83,3 @@ F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u 
 
 
 F = F_0 + F_I + F_E
-
-# variational functional for post-processing problem (pp) to obtain the hessian (hess)
-# F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
-#    - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
