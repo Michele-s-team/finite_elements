@@ -61,10 +61,14 @@ for facet in facets(lmsh.mesh[0]):
             # all cells that have facet as one of their boundary facets belong to sub_mesh_0_1 -> the facet under consideration is an internal facet of the square (the region corresponding to sub_mesh[0][1]) -> tag this facet in mf_I[0] with ID sub_mesh_0_1_id
 
             mf_I[0][facet] = lmsh.parameters['sub_mesh_0_1_id']
-    
-    else:
 
-            print(f'facet {facet.index()} belongs to the exterior of the mesh, vertices: {[v.point().array().tolist() for v in vertices(facet)]}')
+        else:
+            print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
+
+    
+    # else:
+
+            # print(f'facet {facet.index()} belongs to the exterior of the mesh, vertices: {[v.point().array().tolist() for v in vertices(facet)]}')
 
     
 
