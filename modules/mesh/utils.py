@@ -9,6 +9,7 @@ import os
 import pygmsh
 import shutil
 import sys
+import ufl
 
 import calculus as cal
 import constants.utils as const
@@ -17,6 +18,7 @@ import function as fu
 import geometry.utils as geo_u
 import input_output as io
 
+alpha = ufl.indices(1)
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -2854,3 +2856,28 @@ def custom_mesh_quality(mesh):
     result, _ = MeshQuality.radius_ratio_min_max(mesh)
 
     return result
+
+'''
+return the jump in a field with respect to a facet normal for discontinuous function spaces
+Input values: 
+    - 'u': the field
+    -  'n': the facet normal
+Return values: 
+    - 'u("+") * n("+")[alpha] + u("-") * n("-")[alpha]': the jump
+
+'''
+def jump(u, n): 
+
+    return as_tensor(u("+") * (n("+"))[alpha] + u("-") * (n("-"))[alpha], (alpha))
+
+
+'''
+Return the average of a field across facets in a discontinuous function space
+Input values: 
+    - 'u': the field
+Return values: 
+    -  the average (u('+')+u('-'))/2
+'''
+def average(u):
+
+    return (u("+")+u("-"))/2
