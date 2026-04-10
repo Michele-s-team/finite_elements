@@ -5,6 +5,8 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
+import input_output as io
+import solution_paths as solpath
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -61,6 +63,41 @@ fsp.f_square.interpolate(laplacian_u_exact_square_expression(element=fsp.Q.ufl_e
 
 fsp.g_shape.interpolate(g_shape_expression(element=fsp.Q.ufl_element()))
 
+def smooth_facet_normal(mesh, dS, side):
+
+    V = VectorFunctionSpace(mesh, "CG", 2)
+
+    n = FacetNormal(mesh)
+
+    u = TrialFunction(V)
+    v = TestFunction(V)
+
+
+    if side == '+':
+        a = inner(u('+'), v('+')) * dS
+        l = inner(n('+'), v('+')) * dS
+    elif side =='-':
+        a = inner(u('-'), v('-')) * dS
+        l = inner(n('-'), v('-')) * dS
+
+
+    A = assemble(a, keep_diagonal=True)
+    L = assemble(l)
+
+    A.ident_zeros()
+    n_smooth = Function(V)
+
+    solve(A, n_smooth.vector(), L)
+
+    return n_smooth
+
+n_smooth = smooth_facet_normal(rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['ds_shape'], '-')
+
+
+io.full_print(n_smooth, 'n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+# it seems that '+' points into the shape, '-' outside the shape
 
 # boundary conditions for sub_mesh[0][1]
 bcs = [ \
@@ -72,10 +109,10 @@ bcs = [ \
 
 # variational functional for sub_mesh[1]
 F_sh = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
-        - ((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) * fsp.nu_u('+') * rmsh.ds_mesh[0]['ds_shape']
+        - ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i)) * fsp.nu_u('-') * rmsh.ds_mesh[0]['ds_shape']
 
 F_sq = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] \
-        - ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i)) * fsp.nu_u('-') * rmsh.ds_mesh[0]['ds_shape']\
+        - ((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) * fsp.nu_u('+') * rmsh.ds_mesh[0]['ds_shape']\
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 
