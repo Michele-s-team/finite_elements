@@ -8,17 +8,18 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 
 
-# mesh i has no sub-meshes 
-
 Q = FunctionSpace(lmsh.mesh[0], 'P', rpam.parameters['function_space_degree'])
 
-# Define variational problem
 u = Function(Q)
-nu_u = TestFunction(Q)
+g_shape = Function(Q)
 f_shape = Function(Q)
+f_square = Function(Q)
+
+nu_u = TestFunction(Q)
 
 J_u = TrialFunction(Q)
 u_exact_shape = Function(Q)
+u_exact_square = Function(Q)
 
 
 
