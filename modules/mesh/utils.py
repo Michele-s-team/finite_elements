@@ -2869,3 +2869,15 @@ Return values:
 def jump(u, n): 
 
     return as_tensor(u("+") * (n("+"))[alpha] + u("-") * (n("-"))[alpha], (alpha))
+
+
+'''
+Return the average of a field across facets in a discontinuous function space
+Input values: 
+    - 'u': the field
+Return values: 
+    -  the average (u('+')+u('-'))/2
+'''
+def average(u):
+
+    return (u("+")+u("-"))/2

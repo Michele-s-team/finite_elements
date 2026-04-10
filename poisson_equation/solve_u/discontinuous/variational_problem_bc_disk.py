@@ -96,12 +96,22 @@ bcs = []
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
-F_G = rpam.parameters['alpha']/rmsh.r_mesh * msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS
+F_i = (
+        - (\
+            msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] +  # consistency
+            msh.average(fsp.nu_u.dx(i)) * msh.jump(fsp.u,    bgeo.facet_normal)[i]   # adjoint
+        ) + \
+        rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
+        ) * rmsh.dS
 
-F_BC = rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
+
+F_e =  (\
+            - bgeo.facet_normal[i] * (fsp.u - fsp.u_exact) * fsp.nu_u.dx(i) + \
+            rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u\
+        ) * rmsh.ds
 
 
-F = F_0 + F_G + F_BC
+F = F_0 + F_i + F_e
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 # F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
