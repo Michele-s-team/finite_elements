@@ -6,6 +6,7 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import input_output as io
+import parameters.read.solution as rpam
 import solution_paths as solpath
 import switch_problem as swi
 
@@ -22,13 +23,35 @@ class u_exact_shape_expression(UserExpression):
     def value_shape(self):
         return (1,)
     
+
 class u_exact_square_expression(UserExpression):
     def eval(self, values, x):
 
-     values[0] = 1 + x[0]**2 + 2 * x[1]**2 + 1 * ( (x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 -  rmsh.lmsh.parameters['r']**2)
+     values[0] = 1 + x[0]**2 + 2 * x[1]**2
 
     def value_shape(self):
         return (1,)
+    
+
+class grad_u_exact_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+     values[0] = 2 * x[0]
+     values[1] = 4 * x[1]
+
+    def value_shape(self):
+        return (1,)
+
+
+class grad_u_exact_square_expression(UserExpression):
+    def eval(self, values, x):
+
+     values[0] = 2 * x[0] 
+     values[1] = 4 * x[1]
+
+    def value_shape(self):
+        return (1,)
+
 
 class laplacian_u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
@@ -38,10 +61,11 @@ class laplacian_u_exact_shape_expression(UserExpression):
     def value_shape(self):
         return (1,)
     
+
 class laplacian_u_exact_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 6 + 4 * 1
+        values[0] = 6
 
     def value_shape(self):
         return (1,)
@@ -57,6 +81,9 @@ class g_shape_expression(UserExpression):
 
 fsp.u_exact_shape.interpolate(u_exact_shape_expression(element=fsp.Q.ufl_element()))
 fsp.u_exact_square.interpolate(u_exact_square_expression(element=fsp.Q.ufl_element()))
+
+fsp.grad_u_exact_shape.interpolate(grad_u_exact_shape_expression(element=fsp.V.ufl_element()))
+fsp.grad_u_exact_square.interpolate(grad_u_exact_square_expression(element=fsp.V.ufl_element()))
 
 fsp.f_shape.interpolate(laplacian_u_exact_shape_expression(element=fsp.Q.ufl_element()))
 fsp.f_square.interpolate(laplacian_u_exact_square_expression(element=fsp.Q.ufl_element()))
@@ -103,9 +130,18 @@ bcs = [ \
     ]
 
 
-F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
+F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
     + (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square']\
     - ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i)) * fsp.nu_u('-') * rmsh.ds_mesh[0]['ds_shape']\
     - ((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) * fsp.nu_u('+') * rmsh.ds_mesh[0]['ds_shape']\
     - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
+F_N = rpam.parameters['alpha']/rmsh.r_mesh[0] * \
+    ( 
+        (((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) + ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i))) \
+        - (((bgeo.facet_normal[0])('+'))[i] * (fsp.u_exact_square('+').dx(i)) + ((bgeo.facet_normal[0])('-'))[i] * (fsp.u_exact_shape('-').dx(i)))\
+    )\
+    * ( ((bgeo.facet_normal[0])('+'))[j] * (fsp.nu_u('+').dx(j)) + ((bgeo.facet_normal[0])('-'))[j] * (fsp.nu_u('-').dx(j)))\
+    * rmsh.ds_mesh[0]['ds_shape']
+
+F = F_0 + F_N
