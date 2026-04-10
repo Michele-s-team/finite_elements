@@ -15,10 +15,10 @@ Q = FunctionSpace(lmsh.mesh[0], 'P', rpam.parameters['function_space_degree'])
 # Define variational problem
 u = Function(Q)
 nu_u = TestFunction(Q)
-f = Function(Q)
+f_shape = Function(Q)
 
 J_u = TrialFunction(Q)
-u_exact = Function(Q)
+u_exact_shape = Function(Q)
 
 
 
