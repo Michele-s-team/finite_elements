@@ -25,7 +25,7 @@ class u_exact_shape_expression(UserExpression):
 class u_exact_square_expression(UserExpression):
     def eval(self, values, x):
 
-     values[0] = 1 + x[0]**2 + 2 * x[1]**2
+     values[0] = 1 + x[0]**2 + 2 * x[1]**2 + 1 * ( (x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 -  rmsh.lmsh.parameters['r']**2)
 
     def value_shape(self):
         return (1,)
@@ -41,7 +41,7 @@ class laplacian_u_exact_shape_expression(UserExpression):
 class laplacian_u_exact_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 6
+        values[0] = 6 + 4 * 1
 
     def value_shape(self):
         return (1,)
@@ -73,13 +73,8 @@ def smooth_facet_normal(mesh, dS, side):
     v = TestFunction(V)
 
 
-    if side == '+':
-        a = inner(u('+'), v('+')) * dS
-        l = inner(n('+'), v('+')) * dS
-    elif side =='-':
-        a = inner(u('-'), v('-')) * dS
-        l = inner(n('-'), v('-')) * dS
-
+    a = inner(u(side), v(side)) * dS
+    l = inner(n(side), v(side)) * dS
 
     A = assemble(a, keep_diagonal=True)
     L = assemble(l)
@@ -91,7 +86,7 @@ def smooth_facet_normal(mesh, dS, side):
 
     return n_smooth
 
-n_smooth = smooth_facet_normal(rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['ds_shape'], '-')
+n_smooth = smooth_facet_normal(rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['ds_shape'], '+')
 
 
 io.full_print(n_smooth, 'n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
@@ -107,13 +102,10 @@ bcs = [ \
     DirichletBC(fsp.Q, fsp.u_exact_square, rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]["line_b_id"])
     ]
 
-# variational functional for sub_mesh[1]
-F_sh = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
-        - ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i)) * fsp.nu_u('-') * rmsh.ds_mesh[0]['ds_shape']
 
-F_sq = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] \
-        - ((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) * fsp.nu_u('+') * rmsh.ds_mesh[0]['ds_shape']\
-        - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
+    + (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square']\
+    - ((bgeo.facet_normal[0])('-'))[i] * (fsp.u('-').dx(i)) * fsp.nu_u('-') * rmsh.ds_mesh[0]['ds_shape']\
+    - ((bgeo.facet_normal[0])('+'))[i] * (fsp.u('+').dx(i)) * fsp.nu_u('+') * rmsh.ds_mesh[0]['ds_shape']\
+    - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
-
-F = F_sh + F_sq
