@@ -12,7 +12,6 @@ u = Function(Q)
 nu_u = TestFunction(Q)
 f = Function(Q)
 
-# grad_u = Function(V)
 J_u = TrialFunction(Q)
 u_exact = Function(Q)
 
