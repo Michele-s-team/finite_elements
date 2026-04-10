@@ -4,6 +4,7 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -13,6 +14,7 @@ i, j = ufl.indices(2)
 
 class u_exact_expression(UserExpression):
     def eval(self, values, x):
+
         # test case 1
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
@@ -25,6 +27,7 @@ class u_exact_expression(UserExpression):
 
 class grad_u_expression(UserExpression):
     def eval(self, values, x):
+
         # test case 1
         values[0] = 2.0 * x[0]
         values[1] = 4.0 * x[1]
@@ -43,6 +46,7 @@ def value_shape(self):
 
 class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
+
         # test case 1
         values[0] = 6.0
 
@@ -61,6 +65,7 @@ class hess_u_exact_expression(UserExpression):
         super().init(**kwargs)
 
     def eval(self, values, x):
+
         # test case 1
         values[0] = 2
         values[1] = 0
@@ -79,18 +84,24 @@ class hess_u_exact_expression(UserExpression):
 
 
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q.ufl_element()))
-fsp.grad_u.interpolate(grad_u_expression(element=fsp.V.ufl_element()))
+# fsp.grad_u.interpolate(grad_u_expression(element=fsp.V.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
-fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
+# fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-bc_u_circle = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary)
-bcs = [bc_u_circle]
+bcs = []
 
 # variational functional for the original problem (poisson equation)
-F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx \
+F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
+F_G = rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u("+")  * bgeo.facet_normal("+")[i] + fsp.u("-") * bgeo.facet_normal("-")[i]) * (fsp.nu_u("+")  * bgeo.facet_normal("+")[i] + fsp.nu_u("-") * bgeo.facet_normal("-")[i]) * rmsh.dS
+
+F_BC = rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
+
+
+F = F_0 + F_G + F_BC
+
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
-F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
-       - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
+# F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \
+#    - (bgeo.facet_normal[i] * (fsp.u.dx(j)) * fsp.nu_hess_u[i, j]) * rmsh.ds
