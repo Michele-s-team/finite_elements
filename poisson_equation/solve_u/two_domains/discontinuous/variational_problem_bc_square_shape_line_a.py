@@ -48,15 +48,15 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 bcs = []
 
 # variational functional for the original problem (poisson equation)
-F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
+F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx_mesh[0]['dx'] \
+    - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 F_I = (
         -  msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh[0] * ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] )
         ) * rmsh.dS
 
-F_E =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
+F_E =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 
 F = F_0 + F_I + F_E
