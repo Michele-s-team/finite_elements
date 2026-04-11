@@ -63,8 +63,12 @@ for facet in facets(lmsh.mesh[0]):
 
             mf_I[0][facet] = lmsh.parameters['sub_mesh_0_1_id']
 
-        # else:
-        #     print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
+        else:
+            # one of the two cells that have facet as one of their boundary facets belongs to sub_mesh[0][0], and the other to sub_mesh[0][1] -> the facet under consideration is an internal facet coinciding with the shape -> tag this facet in mf_I[0] with ID shape_id
+
+            mf_I[0][facet] = lmsh.parameters['shape_id']
+
+            # print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
  
     
     
@@ -108,7 +112,7 @@ ds_mesh[0] = dict([ \
     ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_t_id"])), \
     ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_b_id"])), \
-    ('ds_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"shape_id"])), \
+    ('ds_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"shape_id"])), \
     ('ds_I_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_0_id"])),\
     ('ds_I_square', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_1_id"]))
     ])
@@ -116,6 +120,9 @@ ds_mesh[0] = dict([ \
 ds_mesh[0]['ds_lr'] = ds_mesh[0]['ds_l'] + ds_mesh[0]['ds_r']
 ds_mesh[0]['ds_tb'] = ds_mesh[0]['ds_t'] + ds_mesh[0]['ds_b']
 ds_mesh[0]['ds'] = ds_mesh[0]['ds_lr'] + ds_mesh[0]['ds_tb']
+
+# all internal facets in the region inside the square (including the shape and the facets at the shape boundary)
+ds_mesh[0]['ds_I'] = ds_mesh[0]['ds_shape'] + ds_mesh[0]['ds_I_shape'] + ds_mesh[0]['ds_I_square']
 
 # 3.1.2 mesh 1
 # 3.1.2.1 bulk measures
