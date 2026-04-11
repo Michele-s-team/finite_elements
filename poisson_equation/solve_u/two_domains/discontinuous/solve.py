@@ -1,11 +1,13 @@
 '''
-This code solves the Poisson equation Nabla u = f expressed in terms of the function u, on a discontinuous Galerkin function space
+This code solves the Poisson equation Nabla u = f expressed in terms of the function u, on a mesh (mesh[0]) given by a rectangle with a shape in it. Both the rectangle and the shape are meshed inside. 
+
+I use a discontinuous Galerkin function space, by allowing for a jump of grad u across the shape boundary. 
 
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
 
 '''
 
@@ -38,7 +40,5 @@ params = {'nonlinear_solver': 'newton',
 
 
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
-
-# var_pr.solve_vp(vp.F_pp, fsp.hess_u, [], fsp.J_hess_u)
 
 prout_bc = importlib.import_module(swi.prout_bc)
