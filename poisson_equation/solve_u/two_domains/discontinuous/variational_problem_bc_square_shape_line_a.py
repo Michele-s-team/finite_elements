@@ -14,6 +14,23 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j = ufl.indices(2)
 
 
+# 
+import input_output as io
+import solution_paths as solpath
+
+n_ds = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0], rmsh.ds_mesh[0]['ds'])
+n_dS_p = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0]('+'), rmsh.ds_mesh[0]['dS_shape'], interior=True)
+n_dS_m = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0]('-'), rmsh.ds_mesh[0]['dS_shape'], interior=True)
+
+io.full_print(n_ds, 'n_out', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+io.full_print(n_dS_p, 'n_in_p', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+io.full_print(n_dS_m, 'n_in_m', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+
+
+# 
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
