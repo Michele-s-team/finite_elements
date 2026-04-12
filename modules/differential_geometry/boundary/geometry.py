@@ -131,26 +131,27 @@ return the normal to a mesh as a smooth field
 Note: the resulting vector field is not normalized to unity. 
 Input values: 
     - 'mesh': the mesh
+    - 'n': the normal, e.g., FacetNormal(mesh) or FacetNormal(mesh)('+') ...
+    - 'measure': the measure over which the normal will be smoothened, e.g., a ds or a dS of 'mesh'
 Return values: 
-    - the unit normal as a smooth field
+    - the normal as a smooth field
 '''
-def calc_normal_cg2(mesh):
-
-    n = FacetNormal(mesh)
+def calc_normal_cg2(n, mesh, measure):
 
     V = VectorFunctionSpace(mesh, "CG", 2)
 
     u = TrialFunction(V)
     v = TestFunction(V)
 
-    a = inner(u, v) * ds
-    l = inner(n, v) * ds
+    a = inner(u, v) * measure
+    l = inner(n, v) * measure
+
     A = assemble(a, keep_diagonal=True)
     L = assemble(l)
 
     A.ident_zeros()
     nh = Function(V)
-    
+
     solve(A, nh.vector(), L)
 
     return nh
@@ -160,6 +161,7 @@ normal to the manifold pointing outwards the manifold and normalized according t
 Input values: 
     * Mandatory:
         - 'mesh': the mesh of which the normal is to be computed
+        - 'measure': the measure of 'mesh' where the normal will be computed
     * Optional:
         - 'norm_threshold': the threshold for normalization of the normal. Entries of the normal whose norm is smaller than norm_threshold will be normalized by norm unity (these entries are irrelevant, because they live in the bulk of the mesh). 
 Return values: 
@@ -167,10 +169,11 @@ Return values:
  '''
 
 def facet_normal_smooth(mesh, 
+                        measure,
                         norm_threshold = const.vector_norm_threshold):
 
     # obtain the non-normalized normal 
-    n = calc_normal_cg2(mesh)
+    n = calc_normal_cg2(FacetNormal(mesh), mesh, measure)
 
     '''
     n_vector contains the DOFs of the vector field n :
