@@ -88,7 +88,7 @@ F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx'] + \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 # here I put the average for d because d is the same on both sides (it is a jump)
-F_shape = - (rpam.parameters['sign'] * msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['ds_shape']
+F_shape = - (rpam.parameters['sign'] * msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['dS_shape']
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] + \
