@@ -62,53 +62,21 @@ loop_r = gmsh.model.geo.addCurveLoop([l_mt_rt, l_rt_rb, l_rb_mb, l_mb_mt])
 surface_r = gmsh.model.geo.addPlaneSurface([loop_r])
 
 # tag objects
-# Synchronize and tag surfaces
+# Synchronize 
 gmsh.model.geo.synchronize()
 
+# tag surfaces
 msh.tag_physical_object((2, surface_l), rpam.parameters['l_surface_id'], gmsh.model, 'left_square')
 msh.tag_physical_object((2, surface_r), rpam.parameters['r_surface_id'], gmsh.model, 'right_square')
 
 
 # tag lines
-# gmsh.model.addPhysicalGroup(1, [l_lt_lb], rpam.parameters['l_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['l_line_id'], "l_line")
-
 msh.tag_physical_object((1, l_lt_lb), rpam.parameters['l_line_id'], gmsh.model, 'l_line')
-
-
-# gmsh.model.addPhysicalGroup(1, [l_lb_mb], rpam.parameters['lb_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['lb_line_id'], "lb_line")
-
 msh.tag_physical_object((1, l_lb_mb), rpam.parameters['lb_line_id'], gmsh.model, 'lb_line')
-
-
-# gmsh.model.addPhysicalGroup(1, [l_rb_mb], rpam.parameters['rb_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['rb_line_id'], "rb_line")
-
 msh.tag_physical_object((1, l_rb_mb), rpam.parameters['rb_line_id'], gmsh.model, 'rb_line')
-
-
-# gmsh.model.addPhysicalGroup(1, [l_rt_rb], rpam.parameters['r_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['r_line_id'], "r_line")
-
 msh.tag_physical_object((1, l_rt_rb), rpam.parameters['r_line_id'], gmsh.model, 'r_line')
-
-
-# gmsh.model.addPhysicalGroup(1, [l_mt_rt], rpam.parameters['tr_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['tr_line_id'], "tr_line")
-
 msh.tag_physical_object((1, l_mt_rt), rpam.parameters['tr_line_id'], gmsh.model, 'tr_line')
-
-
-# gmsh.model.addPhysicalGroup(1, [l_mt_lt], rpam.parameters['tl_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['tl_line_id'], "tl_line")
-
 msh.tag_physical_object((1, l_mt_lt), rpam.parameters['tl_line_id'], gmsh.model, 'tl_line')
-
-
-# gmsh.model.addPhysicalGroup(1, [l_mb_mt], rpam.parameters['m_line_id'])
-# gmsh.model.setPhysicalName(1, rpam.parameters['m_line_id'], "m_line")
-
 msh.tag_physical_object((1, l_mb_mt), rpam.parameters['m_line_id'], gmsh.model, 'm_line')
 
 
