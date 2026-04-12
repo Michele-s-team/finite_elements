@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -15,25 +16,25 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-l_surface_id = 1
-r_surface_id = 2
-l_line_id = 3
-lb_line_id = 4
-rb_line_id = 5
-r_line_id = 6
-tr_line_id = 7
-tl_line_id = 8
-m_line_id = 9
+# parameters['l_surface_id'] = 1
+# parameters['r_surface_id'] = 2
+# parameters['l_line_id'] = 3
+# parameters['lb_line_id'] = 4
+# parameters['rb_line_id'] = 5
+# parameters['r_line_id'] = 6
+# parameters['tr_line_id'] = 7
+# parameters['tl_line_id'] = 8
+# parameters['m_line_id'] = 9
 
-dx_l = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=l_surface_id)
-dx_r = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=r_surface_id)
-ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=l_line_id)
-ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=r_line_id)
-ds_lb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lb_line_id)
-ds_rb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=rb_line_id)
-ds_rt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=tr_line_id)
-ds_lt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=tl_line_id)
-ds_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=m_line_id)
+dx_l = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['l_surface_id'])
+dx_r = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['r_surface_id'])
+ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['l_line_id'])
+ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['r_line_id'])
+ds_lb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['lb_line_id'])
+ds_rb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['rb_line_id'])
+ds_rt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['tr_line_id'])
+ds_lt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['tl_line_id'])
+ds_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['m_line_id'])
 
 dx = dx_l + dx_r
 
@@ -44,7 +45,6 @@ ds_tb = ds_t + ds_b
 
 ds = ds_lr + ds_tb
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.two_squares_no_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
