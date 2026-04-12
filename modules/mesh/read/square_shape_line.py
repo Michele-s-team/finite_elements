@@ -113,8 +113,8 @@ ds_mesh[0] = dict([ \
     ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_t_id"])), \
     ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=lmsh.parameters[f"line_b_id"])), \
     ('dS_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"shape_id"])), \
-    ('ds_I_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_0_id"])),\
-    ('ds_I_square', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_1_id"]))
+    ('dS_I_shape', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_0_id"])),\
+    ('dS_I_square', Measure("dS", domain=lmsh.mesh[0], subdomain_data=mf_I[0], subdomain_id=lmsh.parameters[f"sub_mesh_0_1_id"]))
     ])
 
 ds_mesh[0]['ds_lr'] = ds_mesh[0]['ds_l'] + ds_mesh[0]['ds_r']
@@ -122,7 +122,7 @@ ds_mesh[0]['ds_tb'] = ds_mesh[0]['ds_t'] + ds_mesh[0]['ds_b']
 ds_mesh[0]['ds'] = ds_mesh[0]['ds_lr'] + ds_mesh[0]['ds_tb']
 
 # all internal facets in the region inside the square (including the shape and the facets at the shape boundary)
-ds_mesh[0]['ds_I'] = ds_mesh[0]['dS_shape'] + ds_mesh[0]['ds_I_shape'] + ds_mesh[0]['ds_I_square']
+ds_mesh[0]['ds_I'] = ds_mesh[0]['dS_shape'] + ds_mesh[0]['dS_I_shape'] + ds_mesh[0]['dS_I_square']
 
 # 3.1.2 mesh 1
 # 3.1.2.1 bulk measures
