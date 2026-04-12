@@ -1,3 +1,4 @@
+from matplotlib.path import Path
 import numpy as np
 
 import constants.utils as const
@@ -45,3 +46,7 @@ Return values:
 '''
 
 def in_polygon(x, polygon_coordinates):
+
+    print(f'polygon coordinates = {polygon_coordinates}')
+
+    return Path(polygon_coordinates).contains_points([x])[0]
