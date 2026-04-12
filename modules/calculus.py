@@ -1,8 +1,9 @@
 import numpy as np
-from scipy.spatial import cKDTree
 import scipy.integrate as spi
+from scipy.spatial.distance import pdist
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
+import sys
 
 
 small_number = 1e-3
@@ -720,31 +721,35 @@ def line_is_radial(line_to_check, N, mesh):
 
 
 '''
-given a list of point coordinates, find the minimal distance between pairs of points in the list
+given a list of point coordinates, find the minimal distance between all pairs of points in the list
 Input values: 
     - 'points' = [[point0x, point0y, ...], [point1x, point1y, ...], ] the list containing the coordinates of the points 
+    - 'min_max': 'min' ('max') if one wants the minimal or maximal distance
 
 Return values: 
-    - 'result': the minimal distance
+    - 'result': the minimal/maximal distance
 '''
 
-def min_distance (points):
+def min_max_distance(points, min_max):
 
-    # query the 2 nearest neighbors among 'points' (the point itself and its closest neighbor)
-    tree = cKDTree(points)
+    result = None
+    distances = pdist(points)
+
+    if min_max == 'min':
+
+        result = np.min(distances)
+
+    elif min_max == 'max':
+
+        result = np.max(distances)
+
+    else:
+
+        print(f"Error: min_max must be 'min' or 'max', got '{min_max}'")
+        sys.exit(1)
     
-    '''
-    distances contains, for each point, the distance from itself (0) and from its nearest neighbor. For example
-    distances = [
-    [0.0,  0.3],   # point 0: distance 0 to itself, 0.3 to nearest other point
-             [0.0,  0.3],   # point 1
-             [0.0,  0.5],   # point 2
-             [0.0,  0.4]]   # point 3
-    '''
-    distances, _ = tree.query(points, k=2)
-
-    #distances[:, 1] takes the second column of distances, and then the method returns its minimum 
-    return np.min(distances[:, 1])
+    return result
+   
 
 '''
 returns the coordinates of the points on an ellipse, obtained by dividing its boundary into a finite number of parts. The ellipse may be rotated about its left focal point

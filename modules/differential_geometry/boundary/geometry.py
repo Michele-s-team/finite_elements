@@ -147,8 +147,6 @@ def field_facet_normal(n, mesh, measure, interior=False):
     u = TrialFunction(V)
     v = TestFunction(V)
 
-    print(f'dir = {dir(measure)}')
-
     if interior:
         # the provided measure is an interior measure in the mesh, of type 'dS' -> specify that the quantities in the variational problem are averages over '+' and '-' side
 
