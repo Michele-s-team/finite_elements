@@ -37,16 +37,6 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 
-l_surface_id = 1
-r_surface_id = 2
-l_line_id = 3
-lb_line_id = 4
-rb_line_id = 5
-r_line_id = 6
-tr_line_id = 7
-tl_line_id = 8
-m_line_id = 9
-
 # Create corner points
 p_lb = gmsh.model.geo.addPoint(0, 0, 0)
 p_mb = gmsh.model.geo.addPoint(rpam.parameters["L_m"], 0, 0)
@@ -74,33 +64,53 @@ surface_r = gmsh.model.geo.addPlaneSurface([loop_r])
 # tag objects
 # Synchronize and tag surfaces
 gmsh.model.geo.synchronize()
-gmsh.model.addPhysicalGroup(2, [surface_l], l_surface_id)
-gmsh.model.setPhysicalName(2, l_surface_id, "left_square")
 
-gmsh.model.addPhysicalGroup(2, [surface_r], r_surface_id)
-gmsh.model.setPhysicalName(2, r_surface_id, "right_square")
+msh.tag_physical_object((2, surface_l), rpam.parameters['l_surface_id'], gmsh.model, 'left_square')
+msh.tag_physical_object((2, surface_r), rpam.parameters['r_surface_id'], gmsh.model, 'right_square')
+
 
 # tag lines
-gmsh.model.addPhysicalGroup(1, [l_lt_lb], l_line_id)
-gmsh.model.setPhysicalName(1, l_line_id, "l_line")
+# gmsh.model.addPhysicalGroup(1, [l_lt_lb], rpam.parameters['l_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['l_line_id'], "l_line")
 
-gmsh.model.addPhysicalGroup(1, [l_lb_mb], lb_line_id)
-gmsh.model.setPhysicalName(1, lb_line_id, "lb_line")
+msh.tag_physical_object((1, l_lt_lb), rpam.parameters['l_line_id'], gmsh.model, 'l_line')
 
-gmsh.model.addPhysicalGroup(1, [l_rb_mb], rb_line_id)
-gmsh.model.setPhysicalName(1, rb_line_id, "rb_line")
 
-gmsh.model.addPhysicalGroup(1, [l_rt_rb], r_line_id)
-gmsh.model.setPhysicalName(1, r_line_id, "r_line")
+# gmsh.model.addPhysicalGroup(1, [l_lb_mb], rpam.parameters['lb_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['lb_line_id'], "lb_line")
 
-gmsh.model.addPhysicalGroup(1, [l_mt_rt], tr_line_id)
-gmsh.model.setPhysicalName(1, tr_line_id, "tr_line")
+msh.tag_physical_object((1, l_lb_mb), rpam.parameters['lb_line_id'], gmsh.model, 'lb_line')
 
-gmsh.model.addPhysicalGroup(1, [l_mt_lt], tl_line_id)
-gmsh.model.setPhysicalName(1, tl_line_id, "tl_line")
 
-gmsh.model.addPhysicalGroup(1, [l_mb_mt], m_line_id)
-gmsh.model.setPhysicalName(1, m_line_id, "m_line")
+# gmsh.model.addPhysicalGroup(1, [l_rb_mb], rpam.parameters['rb_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['rb_line_id'], "rb_line")
+
+msh.tag_physical_object((1, l_rb_mb), rpam.parameters['rb_line_id'], gmsh.model, 'rb_line')
+
+
+# gmsh.model.addPhysicalGroup(1, [l_rt_rb], rpam.parameters['r_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['r_line_id'], "r_line")
+
+msh.tag_physical_object((1, l_rt_rb), rpam.parameters['r_line_id'], gmsh.model, 'r_line')
+
+
+# gmsh.model.addPhysicalGroup(1, [l_mt_rt], rpam.parameters['tr_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['tr_line_id'], "tr_line")
+
+msh.tag_physical_object((1, l_mt_rt), rpam.parameters['tr_line_id'], gmsh.model, 'tr_line')
+
+
+# gmsh.model.addPhysicalGroup(1, [l_mt_lt], rpam.parameters['tl_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['tl_line_id'], "tl_line")
+
+msh.tag_physical_object((1, l_mt_lt), rpam.parameters['tl_line_id'], gmsh.model, 'tl_line')
+
+
+# gmsh.model.addPhysicalGroup(1, [l_mb_mt], rpam.parameters['m_line_id'])
+# gmsh.model.setPhysicalName(1, rpam.parameters['m_line_id'], "m_line")
+
+msh.tag_physical_object((1, l_mb_mt), rpam.parameters['m_line_id'], gmsh.model, 'm_line')
+
 
 # set the resolution
 distance = gmsh.model.mesh.field.add("Distance")
