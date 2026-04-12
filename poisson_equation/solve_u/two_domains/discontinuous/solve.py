@@ -39,6 +39,14 @@ params = {'nonlinear_solver': 'newton',
           }
 
 
-var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
+'''
+import geometry.utils as geo
+import numpy as np
 
+x = [0.5 + 0.21 * np.cos(np.pi/4), 0.5 +  0.21 * np.cos(np.pi/4)]
+
+print(f'in polygon = {geo.in_polygon(x, rmsh.lmsh.mesh_parameters[0]["shape_coordinates"])}')
+'''
+
+var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 prout_bc = importlib.import_module(swi.prout_bc)
