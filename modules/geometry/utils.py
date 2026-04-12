@@ -34,3 +34,14 @@ def between_points(p, a, b,
     else: 
        
         return False
+    
+'''
+check whether a point is in the region delimited by a polygon
+Input values: 
+    - 'x': [X, Y] the coordinates of the point
+    - 'polygon_coordinates': [[p0x, p0y], [p1x, p1y], ..., ] the coordinates of the points of the polygon. The last point of polygon_coordinates does not coincide with the first point, i.e., len(polygon_coordinates) = [number of vertices of the polygon]
+Return values: 
+    - 'True' ('False') if x belongs (does not belong to the polygon)
+'''
+
+def in_polygon(x, polygon_coordinates):
