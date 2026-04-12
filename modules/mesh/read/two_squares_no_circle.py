@@ -25,7 +25,7 @@ ds_lb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=paramete
 ds_rb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['rb_line_id'])
 ds_rt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['tr_line_id'])
 ds_lt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['tl_line_id'])
-ds_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['m_line_id'])
+dS_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['m_line_id'])
 
 dx = dx_l + dx_r
 
