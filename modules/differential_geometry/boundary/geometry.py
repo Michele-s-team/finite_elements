@@ -137,9 +137,12 @@ Return values:
 def calc_normal_cg2(mesh):
 
     n = FacetNormal(mesh)
+
     V = VectorFunctionSpace(mesh, "CG", 2)
+
     u = TrialFunction(V)
     v = TestFunction(V)
+
     a = inner(u, v) * ds
     l = inner(n, v) * ds
     A = assemble(a, keep_diagonal=True)
@@ -147,6 +150,7 @@ def calc_normal_cg2(mesh):
 
     A.ident_zeros()
     nh = Function(V)
+    
     solve(A, nh.vector(), L)
 
     return nh
