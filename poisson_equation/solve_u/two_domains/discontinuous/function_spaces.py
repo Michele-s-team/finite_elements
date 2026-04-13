@@ -1,3 +1,8 @@
+'''
+here 'a' anb 'b' refer to the two domains
+    - 'a' is the label for one domain
+    - 'b' is the label for the other domain
+'''
 from fenics import *
 
 import mesh.load as lmsh

@@ -1,3 +1,9 @@
+'''
+here 
+    - 'a' is the label for the shape
+    - 'b' is the label for the square (region between the shape and the rectangular boundary)
+'''
+
 from fenics import *
 import importlib
 import numpy as np
