@@ -39,7 +39,7 @@ else:
 '''
 
 
-class u_exact_a_expression(UserExpression):
+class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -49,7 +49,7 @@ class u_exact_a_expression(UserExpression):
         return (1,)
 
 
-class u_exact_b_expression(UserExpression):
+class u_exact_square_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -94,8 +94,8 @@ class d_expression(UserExpression):
         return (1,)
 
 
-fsp.u_exact_a.interpolate(u_exact_a_expression(element=fsp.Q.ufl_element()))
-fsp.u_exact_b.interpolate(u_exact_b_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_shape.interpolate(u_exact_shape_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_square.interpolate(u_exact_square_expression(element=fsp.Q.ufl_element()))
 
 fsp.f_a.interpolate(laplacian_u_shape_expression(element=fsp.Q.ufl_element()))
 fsp.f_b.interpolate(laplacian_u_square_expression(element=fsp.Q.ufl_element()))
@@ -120,7 +120,7 @@ F_I = (
         rpam.parameters['alpha']/rmsh.r_mesh[0] * ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] )
         ) * rmsh.ds_mesh[0]['ds_I']
 
-F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact_b) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact_square) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 
 F = F_0 + F_I + F_a + F_b

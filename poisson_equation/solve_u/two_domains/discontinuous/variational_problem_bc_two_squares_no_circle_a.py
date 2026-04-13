@@ -73,8 +73,8 @@ class d_expression(UserExpression):
         return (1,)
 
 
-fsp.u_exact_a.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
-fsp.u_exact_b.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_l.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_r.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
 
 fsp.f_a.interpolate(laplacian_u_l_expression(element=fsp.Q.ufl_element()))
 fsp.f_b.interpolate(laplacian_u_r_expression(element=fsp.Q.ufl_element()))
@@ -100,8 +100,8 @@ F_I = (
         ) * rmsh.dS
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh * (\
-            (fsp.u - fsp.u_exact_a) * fsp.nu_u * (rmsh.ds_l + rmsh.ds_lt + rmsh.ds_lb) + \
-            (fsp.u - fsp.u_exact_b) * fsp.nu_u * (rmsh.ds_r + rmsh.ds_rt + rmsh.ds_rb)
+            (fsp.u - fsp.u_exact_l) * fsp.nu_u * (rmsh.ds_l + rmsh.ds_lt + rmsh.ds_lb) + \
+            (fsp.u - fsp.u_exact_r) * fsp.nu_u * (rmsh.ds_r + rmsh.ds_rt + rmsh.ds_rb)
         )
 
 

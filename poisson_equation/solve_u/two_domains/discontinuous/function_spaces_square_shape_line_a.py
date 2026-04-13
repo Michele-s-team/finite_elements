@@ -21,5 +21,5 @@ d = Function(Q)
 
 J_u = TrialFunction(Q)
 
-u_exact_a = Function(Q)
-u_exact_b = Function(Q)
+u_exact_shape = Function(Q)
+u_exact_square = Function(Q)
