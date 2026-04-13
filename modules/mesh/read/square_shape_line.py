@@ -38,38 +38,8 @@ mf[0] = msh.read_mesh_components(lmsh.mesh[0], (lmsh.mesh[0]).topology().dim() -
 
 # 1.2.2 read the inner (I) lines
 
-# build a function mf_I[0] that tags interior lines and allows for reading them
-mf_I[0] = MeshFunction("size_t", lmsh.mesh[0], lmsh.mesh[0].topology().dim() - 1, 0)
+mf_I[0] = msh.read_mesh_internal_components(lmsh.mesh[0], sf[0], lmsh.parameters['sub_mesh_0_0_id'], lmsh.parameters['sub_mesh_0_1_id'], lmsh.parameters['shape_id'])
 
-lmsh.mesh[0].init(1, 2)   # build facet-to-cell connectivity
-
-for facet in facets(lmsh.mesh[0]):
-
-    if facet.exterior() == False:
-        # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
-
-        # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
-
-        # consider the cells that have facet as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
-        cell_tags = [sf[0][Cell(lmsh.mesh[0], cell_id)] for cell_id in facet.entities(2)]
-
-        if all(c == lmsh.parameters['sub_mesh_0_0_id'] for c in cell_tags):
-            # all cells that have facet as one of their boundary facets belong to sub_mesh_0_0 -> the facet under consideration is an internal facet of the shape (the region correspondign to sub_mesh[0][0]) -> tag this facet in mf_I[0] with ID sub_mesh_0_0_id
-
-            mf_I[0][facet] = lmsh.parameters['sub_mesh_0_0_id']
-
-        elif all(c == lmsh.parameters['sub_mesh_0_1_id'] for c in cell_tags):
-            # all cells that have facet as one of their boundary facets belong to sub_mesh_0_1 -> the facet under consideration is an internal facet of the square (the region corresponding to sub_mesh[0][1]) -> tag this facet in mf_I[0] with ID sub_mesh_0_1_id
-
-            mf_I[0][facet] = lmsh.parameters['sub_mesh_0_1_id']
-
-        else:
-            # one of the two cells that have facet as one of their boundary facets belongs to sub_mesh[0][0], and the other to sub_mesh[0][1] -> the facet under consideration is an internal facet coinciding with the shape -> tag this facet in mf_I[0] with ID shape_id
-
-            mf_I[0][facet] = lmsh.parameters['shape_id']
-
-            # print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
- 
     
     
 

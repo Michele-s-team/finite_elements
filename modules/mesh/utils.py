@@ -191,6 +191,55 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
 
+'''
+returns a mesh function that tags internal facets of a 2d mesh contained into two neighboring surfaces
+Input values:   
+    - 'mesh': the mesh
+    - 'sf': the mesh function tagging mesh surfaces of the mesh
+    - 'surface_a_id', 'surface_b_id': ID with which the neighboring surfaces have been tagged
+    - 'boundary_ab_id': ID with which the 1d boundary between the two surfaces has been tagged
+
+Return values"
+    - 'mf': a mesh function where internal facets of surface_a are tagged with 'surface_a_id', the internal facets of surface_b are tagged with 'surface_b_id', and the facets at the interface between surface_a and surface_b are tagged with 'boundary_ab_id'
+'''
+def read_mesh_internal_components(mesh, sf, surface_a_id, surface_b_id, boundary_ab_id):
+
+    # build a function mf_I that tags interior lines and allows for reading them
+    mf = MeshFunction("size_t", mesh, mesh.topology().dim() - 1, 0)
+
+    mesh.init(1, 2)   # build facet-to-cell connectivity
+
+    for facet in facets(mesh):
+
+        if facet.exterior() == False:
+            # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
+
+            # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
+
+            # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
+            cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
+
+            if all(c == surface_a_id for c in cell_tags):
+                # all cells that have facet as one of their boundary facets belong to l_surface -> the facet under consideration is an internal facet of l_surface -> tag this facet in mf_I with ID l_surface_id
+
+                mf[facet] = surface_a_id
+
+            elif all(c == surface_b_id for c in cell_tags):
+                # all cells that have 'facet' as one of their boundary facets belong to r_surface -> the facet under consideration is an internal facet of r_surface -> tag this facet in mf_I with ID r_surface_id
+
+                mf[facet] = surface_b_id
+
+            else:
+                # one of the two cells that have 'facet' as one of their boundary facets belongs to l_surface, and the other to r_surface -> the facet under consideration is an internal facet coinciding with 'm_line' -> tag this facet in mf_I with ID 'm_line_id'
+
+                mf[facet] = boundary_ab_id
+
+                # print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
+
+    return mf
+ 
+   
+
 
 '''
 compare the numerical value of the integral of a test function over a ds, dx, .... with the exact one and output the relative difference and prints out the difference
@@ -1583,16 +1632,12 @@ def read_from_xdmf_file(mesh_path):
             mesh = read_mesh(mesh_path_with_slash + "triangle_mesh.xdmf")
             sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "triangle_mesh.xdmf")
 
-            print('2d mesh')
-
             result = mesh, sf
 
         else:
             if cmd.check_if_file_exists(mesh_path_with_slash + "line_mesh.xdmf"):
                 mesh = read_mesh(mesh_path_with_slash + "line_mesh.xdmf")
                 sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.xdmf")
-
-                print('1d mesh')
 
                 result = mesh, sf
             else:
@@ -2340,6 +2385,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     if "n_sub_meshes" in mesh_medatada:
         # found sub-meshes
 
+        print(f'Found sub_meshes')
+
         # read the functions that tag elements of the parent mesh
         sf_mesh = read_mesh_components(mesh, mesh.topology().dim(), os.path.join(input_directory, "triangle_mesh.xdmf"))
         mf_mesh = read_mesh_components(mesh, mesh.topology().dim() - 1, os.path.join(input_directory, "line_mesh.xdmf"))
@@ -2396,6 +2443,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     sf_sub_meshes.append(cf_sub_mesh_1d)
                     mf_sub_meshes.append(vf_sub_mesh_1d)
 
+                print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
+
             print('... done.')
 
         else:
@@ -2407,6 +2456,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     else:
         # did not find sub_meshes -> return None for all fields
+
+        print(f'Did not find sub_meshes')
 
         sub_meshes = None
         sf_sub_meshes = None 
