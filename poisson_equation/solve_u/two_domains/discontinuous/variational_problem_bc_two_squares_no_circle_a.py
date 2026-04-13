@@ -30,7 +30,7 @@ class u_exact_l_expression(UserExpression):
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 3
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2.0*np.pi*(x[0]-rmsh.lmsh.parameters['L_m'])/rmsh.lmsh.parameters['L'])
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2 * np.pi / rmsh.lmsh.parameters['L'] * (x[0] - rmsh.lmsh.parameters['L_m'])) * np.cos(4 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['L'])
 
     def value_shape(self):
         return (1,)
@@ -63,8 +63,7 @@ class d_expression(UserExpression):
         # values[0] = rpam.parameters['A']
 
         # test case 3
-        values[0] = 2.0*np.pi*rpam.parameters['A']/rmsh.lmsh.parameters['L']
-
+        values[0] = (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
 
     def value_shape(self):
         return (1,)
@@ -94,7 +93,7 @@ A   = Constant(rpam.parameters['A'])
 pi = Constant(np.pi)
 
 f = conditional(le(x_[0], L_m),
-                    2.0 + 24.0 * x_[1]**2 - A * (2.0 * pi / L)**2 * sin(2 * pi / L * (x_[0]-L_m)),
+                    2.0 + 24.0 * x_[1]**2 + 2 * A * pi**2/ L**2 * (13 * sin((2 * pi * (L_m - 3 * x_[0] - 2 * x_[1])) / L) +  5 * sin((2 * pi * (L_m + x_[0] + 2 * x_[1])) / L) ),
                     2.0 + 24.0 * x_[1]**2)
 
 
