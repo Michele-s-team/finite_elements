@@ -101,6 +101,9 @@ class d_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+
+# build a UFL expression that contains the expression for the laplacians in both surface_l and surface_r
+
 x_  = SpatialCoordinate(rmsh.lmsh.mesh)
 L_m = Constant(rmsh.lmsh.parameters['L_m'])
 A   = Constant(rpam.parameters['A'])
