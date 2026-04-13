@@ -94,7 +94,7 @@ class d_expression(UserExpression):
 
 # build a UFL expression that contains the expression for the laplacians in both surface_l and surface_r
 
-x_  = SpatialCoordinate(rmsh.lmsh.mesh)
+# x_  = SpatialCoordinate(rmsh.lmsh.mesh)
 
 
 '''
@@ -110,6 +110,7 @@ f = 2.0 + 24.0 * x_[1]**2
 
 
 # test case 3
+'''
 L = Constant(rmsh.lmsh.parameters['L'])
 L_m = Constant(rmsh.lmsh.parameters['L_m'])
 A   = Constant(rpam.parameters['A'])
@@ -118,7 +119,16 @@ pi = Constant(np.pi)
 f = conditional(le(x_[0], L_m),
                     2.0 + 24.0 * x_[1]**2 + 2 * A * pi**2/ L**2 * (13 * sin((2 * pi * (L_m - 3 * x_[0] - 2 * x_[1])) / L) +  5 * sin((2 * pi * (L_m + x_[0] + 2 * x_[1])) / L) ),
                     2.0 + 24.0 * x_[1]**2)
+'''
 
+def f_l(x):
+    return 2.0 + 24.0 * x[1]**2 + 2 * rpam.parameters['A'] * np.pi**2/ rmsh.lmsh.parameters['L']**2 * (13 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] - 3 * x[0] - 2 * x[1])) / rmsh.lmsh.parameters['L']) +  5 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[0] + 2 * x[1])) / rmsh.lmsh.parameters['L']) )
+
+def f_r(x):
+    return 2.0 + 24.0 * x[1]**2
+
+msh.set_dg_scalar_field(fsp.f, f_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.set_dg_scalar_field(fsp.f, f_r, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
 
 fsp.u_exact_l.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
@@ -131,7 +141,7 @@ bcs = []
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx + \
-        (f * fsp.nu_u) * rmsh.dx + \
+        (fsp.f * fsp.nu_u) * rmsh.dx + \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
 # here I put the average for d because d is the same on both sides (it is a jump)
