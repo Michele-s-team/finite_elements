@@ -24,13 +24,13 @@ class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 2
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 3
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]**2-rmsh.lmsh.parameters['L_m']**2)
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]**2-rmsh.lmsh.parameters['L_m']**2)
 
     def value_shape(self):
         return (1,)
@@ -40,62 +40,30 @@ class u_exact_r_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
         # test case 3
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
     def value_shape(self):
         return (1,)
 
 
-class laplacian_u_l_expression(UserExpression):
-    def eval(self, values, x):
-
-        # test case 1
-        # values[0] = 6.0
-
-        # test case 2
-        # values[0] = 2.0 + 24.0 * x[1]**2
-
-        # test case 3
-        values[0] = 2.0 + 24.0 * x[1]**2 + 2.0 * rpam.parameters['A']
-
-
-    def value_shape(self):
-        return (1,)
-
-
-class laplacian_u_r_expression(UserExpression):
-    def eval(self, values, x):
-
-        # test case 1
-        # values[0] = 6.0
-
-        # test case 2
-        # values[0] = 2.0 + 24.0 * x[1]**2
-
-        # test case 3
-        values[0] = 2.0 + 24.0 * x[1]**2
-
-    def value_shape(self):
-        return (1,)
-    
 
 class d_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = rpam.parameters['A']
+        values[0] = rpam.parameters['A']
 
         # test case 2
         # values[0] = rpam.parameters['A']
 
         # test case 3
-        values[0] = 2 * rpam.parameters['A'] * rmsh.lmsh.parameters['L_m']
+        # values[0] = 2 * rpam.parameters['A'] * rmsh.lmsh.parameters['L_m']
 
 
     def value_shape(self):
@@ -108,9 +76,23 @@ x_  = SpatialCoordinate(rmsh.lmsh.mesh)
 L_m = Constant(rmsh.lmsh.parameters['L_m'])
 A   = Constant(rpam.parameters['A'])
 
+
+# test case 1
+f = 6.0
+
+
+'''
+# test case 2
+f = 2.0 + 24.0 * x_[1]**2
+'''
+
+
+'''
+# test case 3
 f = conditional(le(x_[0], L_m),
                     2.0 + 24.0 * x_[1]**2 + 2.0 * A,
                     2.0 + 24.0 * x_[1]**2)
+'''
 
 fsp.u_exact_l.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
 fsp.u_exact_r.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
