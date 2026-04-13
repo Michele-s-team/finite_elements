@@ -9,12 +9,12 @@ Q = FunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
 u = Function(Q)
 nu_u = TestFunction(Q)
 
-f_shape = Function(Q)
-f_square = Function(Q)
+f_a = Function(Q)
+f_b = Function(Q)
 
 d = Function(Q)
 
 J_u = TrialFunction(Q)
 
-u_exact_shape = Function(Q)
-u_exact_square = Function(Q)
+u_exact_a = Function(Q)
+u_exact_b = Function(Q)

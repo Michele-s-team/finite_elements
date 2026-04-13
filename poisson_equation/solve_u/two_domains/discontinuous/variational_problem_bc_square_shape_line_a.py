@@ -34,7 +34,7 @@ else:
 '''
 
 
-class u_exact_shape_expression(UserExpression):
+class u_exact_a_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -44,7 +44,7 @@ class u_exact_shape_expression(UserExpression):
         return (1,)
 
 
-class u_exact_square_expression(UserExpression):
+class u_exact_b_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -89,11 +89,11 @@ class d_expression(UserExpression):
         return (1,)
 
 
-fsp.u_exact_shape.interpolate(u_exact_shape_expression(element=fsp.Q.ufl_element()))
-fsp.u_exact_square.interpolate(u_exact_square_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_a.interpolate(u_exact_a_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_b.interpolate(u_exact_b_expression(element=fsp.Q.ufl_element()))
 
-fsp.f_shape.interpolate(laplacian_u_shape_expression(element=fsp.Q.ufl_element()))
-fsp.f_square.interpolate(laplacian_u_square_expression(element=fsp.Q.ufl_element()))
+fsp.f_a.interpolate(laplacian_u_shape_expression(element=fsp.Q.ufl_element()))
+fsp.f_b.interpolate(laplacian_u_square_expression(element=fsp.Q.ufl_element()))
 
 fsp.d.interpolate(d_expression(element=fsp.Q.ufl_element()))
 
@@ -103,19 +103,19 @@ bcs = []
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx'] + \
-        (fsp.f_shape * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] + \
-        (fsp.f_square * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] +\
+        (fsp.f_a * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] + \
+        (fsp.f_b * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] +\
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 # here I put the average for d because d is the same on both sides (it is a jump)
-F_shape = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['dS_shape']
+F_a = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['dS_shape']
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh[0] * ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] )
         ) * rmsh.ds_mesh[0]['ds_I']
 
-F_square =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact_square) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact_b) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 
-F = F_0 + F_I + F_shape + F_square
+F = F_0 + F_I + F_a + F_b
