@@ -20,6 +20,13 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
+
+# 
+msh.set_discontinuous(fsp.u)
+
+
+# 
+
 class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 

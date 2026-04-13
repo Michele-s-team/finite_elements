@@ -2926,3 +2926,30 @@ Return values:
 def average(u):
 
     return (u("+")+u("-"))/2
+
+
+def set_discontinuous(f):
+
+    import csv 
+
+    csvfile = open('dofs.csv', 'w', newline='')
+    fieldnames = [":0", ":1"]
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+
+
+    Q = f.function_space()
+
+    f_values = f.vector().get_local()
+
+    dof_coordinates = Q.tabulate_dof_coordinates()
+
+    for coordinate in dof_coordinates:
+        print(f'\t{coordinate}')
+
+        writer.writerows([{ \
+            fieldnames[0]: coordinate[0], \
+            fieldnames[1]: coordinate[1]
+        }])
+
+    csvfile.close()
