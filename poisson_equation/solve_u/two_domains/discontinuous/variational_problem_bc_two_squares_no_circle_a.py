@@ -101,6 +101,13 @@ class d_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+x_  = SpatialCoordinate(rmsh.lmsh.mesh)
+L_m = Constant(rmsh.lmsh.parameters['L_m'])
+A   = Constant(rpam.parameters['A'])
+
+f_ufl = conditional(le(x_[0], L_m),
+                    2.0 + 24.0 * x_[1]**2 + 2.0 * A,
+                    2.0 + 24.0 * x_[1]**2)
 
 fsp.u_exact_l.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
 fsp.u_exact_r.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
@@ -116,8 +123,7 @@ bcs = []
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx + \
-        (fsp.f_a * fsp.nu_u) * rmsh.dx_l + \
-        (fsp.f_b * fsp.nu_u) * rmsh.dx_r +\
+        (f_ufl * fsp.nu_u) * rmsh.dx + \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
 # here I put the average for d because d is the same on both sides (it is a jump)
