@@ -20,10 +20,10 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import function_spaces as fsp
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 

@@ -46,6 +46,9 @@ ds_tb = ds_t + ds_b
 
 ds = ds_lr + ds_tb
 
+# all internal facets contained into the square
+dS = dS_l + dS_r + dS_m
+
 check_mesh_module = importlib.import_module('mesh.check_tags.two_squares_no_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
