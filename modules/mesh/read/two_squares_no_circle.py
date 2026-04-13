@@ -18,7 +18,9 @@ mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_m
 
 # 1.2.2 read inner (I) lines
 
+mf_I = msh.read_mesh_internal_components(lmsh.mesh, sf, lmsh.parameters['l_surface_id'], lmsh.parameters['r_surface_id'], lmsh.parameters['m_line_id'])
 
+'''
 # build a function mf_I that tags interior lines and allows for reading them
 mf_I = MeshFunction("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1, 0)
 
@@ -50,7 +52,7 @@ for facet in facets(lmsh.mesh):
             mf_I[facet] = lmsh.parameters['m_line_id']
 
             print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
- 
+'''
    
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
