@@ -20,7 +20,7 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-
+'''
 # test set_dg_scalar_field - start
 import input_output as io
 import solution_paths as solpath
@@ -41,6 +41,7 @@ io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.
 
 sys.exit(1)
 # test set_dg_scalar_field - end
+'''
 
 class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
