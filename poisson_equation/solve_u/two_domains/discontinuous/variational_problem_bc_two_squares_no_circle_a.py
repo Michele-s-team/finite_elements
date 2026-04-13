@@ -21,11 +21,13 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j = ufl.indices(2)
 
 
-# 
-msh.set_discontinuous(fsp.u)
+# test set_dg_field - start
+def g(x):
+    return 0
 
+msh.set_dg_field(fsp.u, g, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 
-# 
+# test set_dg_field - end
 
 class u_exact_l_expression(UserExpression):
     def eval(self, values, x):

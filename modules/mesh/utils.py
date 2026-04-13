@@ -2928,28 +2928,25 @@ def average(u):
     return (u("+")+u("-"))/2
 
 
-def set_discontinuous(f):
-
-    import csv 
-
-    csvfile = open('dofs.csv', 'w', newline='')
-    fieldnames = [":0", ":1"]
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheader()
-
+def set_dg_field(f, g, sf, id):
 
     Q = f.function_space()
-
-    f_values = f.vector().get_local()
-
+    mesh = f.function_space().mesh()
     dof_coordinates = Q.tabulate_dof_coordinates()
 
-    for coordinate in dof_coordinates:
-        print(f'\t{coordinate}')
+    f_values = f.vector().get_local()   # get a copy of field values
+    
+    for cell in cells(mesh):
 
-        writer.writerows([{ \
-            fieldnames[0]: coordinate[0], \
-            fieldnames[1]: coordinate[1]
-        }])
 
-    csvfile.close()
+        cell_tag = sf[cell]
+
+        if cell_tag == id:
+
+            for dof in Q.dofmap().cell_dofs(cell.index()):
+
+                f_values[dof] = g(dof_coordinates[dof][:2])
+
+    f.vector().set_local(f_values) 
+    f.vector().apply("insert")
+   
