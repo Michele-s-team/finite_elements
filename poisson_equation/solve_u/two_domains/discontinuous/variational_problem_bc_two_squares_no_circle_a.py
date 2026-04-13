@@ -22,11 +22,24 @@ i, j = ufl.indices(2)
 
 
 # test set_dg_field - start
-def g(x):
-    return 0
+import input_output as io
+import solution_paths as solpath
+import sys
 
-msh.set_dg_field(fsp.u, g, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+def g_l(x):
+    return np.cos(2*np.pi*(x[0]+x[1]))
 
+def g_r(x):
+    return np.sin(4*np.pi*(x[0]-x[1]))
+
+msh.set_dg_field(fsp.u, g_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.set_dg_field(fsp.u, g_r, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+
+io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+
+sys.exit(1)
 # test set_dg_field - end
 
 class u_exact_l_expression(UserExpression):
