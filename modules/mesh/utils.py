@@ -1632,16 +1632,12 @@ def read_from_xdmf_file(mesh_path):
             mesh = read_mesh(mesh_path_with_slash + "triangle_mesh.xdmf")
             sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "triangle_mesh.xdmf")
 
-            print('2d mesh')
-
             result = mesh, sf
 
         else:
             if cmd.check_if_file_exists(mesh_path_with_slash + "line_mesh.xdmf"):
                 mesh = read_mesh(mesh_path_with_slash + "line_mesh.xdmf")
                 sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.xdmf")
-
-                print('1d mesh')
 
                 result = mesh, sf
             else:
