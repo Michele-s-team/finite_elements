@@ -23,12 +23,7 @@ class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-
-        if x[0] < rmsh.lmsh.parameters['L_m']:
-            values[0] += rpam.parameters['jump_coefficient'] * (x[0]-rmsh.lmsh.parameters['L_m'])
-
-
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['jump_coefficient'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
     def value_shape(self):
         return (1,)
