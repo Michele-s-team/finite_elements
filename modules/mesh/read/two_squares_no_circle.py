@@ -17,43 +17,9 @@ sf = msh.read_mesh_components(lmsh.mesh, 2, rarg.args.input_directory + "/triang
 mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
 # 1.2.2 read inner (I) lines
-
 mf_I = msh.read_mesh_internal_components(lmsh.mesh, sf, lmsh.parameters['l_surface_id'], lmsh.parameters['r_surface_id'], lmsh.parameters['m_line_id'])
 
-'''
-# build a function mf_I that tags interior lines and allows for reading them
-mf_I = MeshFunction("size_t", lmsh.mesh, lmsh.mesh.topology().dim() - 1, 0)
 
-lmsh.mesh.init(1, 2)   # build facet-to-cell connectivity
-
-for facet in facets(lmsh.mesh):
-
-    if facet.exterior() == False:
-        # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
-
-        # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
-
-        # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
-        cell_tags = [sf[Cell(lmsh.mesh, cell_id)] for cell_id in facet.entities(2)]
-
-        if all(c == lmsh.parameters['l_surface_id'] for c in cell_tags):
-            # all cells that have facet as one of their boundary facets belong to l_surface -> the facet under consideration is an internal facet of l_surface -> tag this facet in mf_I with ID l_surface_id
-
-            mf_I[facet] = lmsh.parameters['l_surface_id']
-
-        elif all(c == lmsh.parameters['r_surface_id'] for c in cell_tags):
-            # all cells that have 'facet' as one of their boundary facets belong to r_surface -> the facet under consideration is an internal facet of r_surface -> tag this facet in mf_I with ID r_surface_id
-
-            mf_I[facet] = lmsh.parameters['r_surface_id']
-
-        else:
-            # one of the two cells that have 'facet' as one of their boundary facets belongs to l_surface, and the other to r_surface -> the facet under consideration is an internal facet coinciding with 'm_line' -> tag this facet in mf_I with ID 'm_line_id'
-
-            mf_I[facet] = lmsh.parameters['m_line_id']
-
-            print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
-'''
-   
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
@@ -67,7 +33,9 @@ ds_lb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lmsh.par
 ds_rb = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lmsh.parameters['rb_line_id'])
 ds_rt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lmsh.parameters['tr_line_id'])
 ds_lt = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lmsh.parameters['tl_line_id'])
-dS_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=lmsh.parameters['m_line_id'])
+dS_l = Measure("dS", domain=lmsh.mesh, subdomain_data=mf_I, subdomain_id=lmsh.parameters['l_surface_id'])
+dS_r = Measure("dS", domain=lmsh.mesh, subdomain_data=mf_I, subdomain_id=lmsh.parameters['r_surface_id'])
+dS_m = Measure("dS", domain=lmsh.mesh, subdomain_data=mf_I, subdomain_id=lmsh.parameters['m_line_id'])
 
 dx = dx_l + dx_r
 

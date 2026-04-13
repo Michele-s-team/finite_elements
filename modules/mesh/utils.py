@@ -234,7 +234,9 @@ def read_mesh_internal_components(mesh, sf, surface_a_id, surface_b_id, boundary
 
                 mf[facet] = boundary_ab_id
 
-                print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
+                # print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
+
+    return mf
  
    
 
