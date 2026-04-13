@@ -43,7 +43,7 @@ class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['jump_coefficient'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
 
     def value_shape(self):
         return (1,)
@@ -63,7 +63,7 @@ class laplacian_u_shape_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 6.0 + rpam.parameters['jump_coefficient'] * 4.0
+        values[0] = 6.0 + rpam.parameters['A'] * 4.0
 
     def value_shape(self):
         return (1,)
@@ -88,7 +88,7 @@ class d_expression(UserExpression):
         '''
 
         # test case 1
-        values[0] = rpam.parameters['jump_coefficient'] * 2.0 * rmsh.lmsh.parameters['r']
+        values[0] = rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
 
     def value_shape(self):
         return (1,)

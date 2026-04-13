@@ -7,6 +7,7 @@ here 'a' anb 'b' refer to the two domains
 
 from fenics import *
 import importlib
+import numpy as np
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
@@ -23,10 +24,10 @@ class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['jump_coefficient'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 2
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['jump_coefficient'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2.0*np.pi*(x[0]-rmsh.lmsh.parameters['L_m'])/rmsh.lmsh.parameters['L'])
 
     def value_shape(self):
         return (1,)
@@ -52,7 +53,8 @@ class laplacian_u_l_expression(UserExpression):
         # values[0] = 6.0
 
         # test case 2
-        values[0] = 2.0 + 24.0 * x[1]**2
+        values[0] = 2.0 + 24.0 * x[1]**2 + (4 * rpam.parameters['A'] * np.pi**2 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] - x[0])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']**2
+
 
     def value_shape(self):
         return (1,)
@@ -74,7 +76,11 @@ class d_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = rpam.parameters['jump_coefficient']
+        # values[0] = rpam.parameters['A']
+
+        # test case 2
+        values[0] = (2 * rpam.parameters['A'] * np.pi) / rmsh.lmsh.parameters['L']
+
 
     def value_shape(self):
         return (1,)
