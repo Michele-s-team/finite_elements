@@ -2944,13 +2944,16 @@ def set_dg_field(f, g, sf, id):
     f_values = f.vector().get_local()   # get a copy of field values
     
     for cell in cells(mesh):
+        # run on all mesh cells
 
-
+        # compute 'sf' on the cell; under consideration
         cell_tag = sf[cell]
 
         if cell_tag == id:
+            # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'
 
             for dof in Q.dofmap().cell_dofs(cell.index()):
+                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
 
                 f_values[dof] = g(dof_coordinates[dof][:2])
 
