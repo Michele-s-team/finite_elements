@@ -2926,3 +2926,34 @@ Return values:
 def average(u):
 
     return (u("+")+u("-"))/2
+
+'''
+set a scalar field defined on a DG space equal to a function profile in a mesh region 
+Input values: 
+    - 'f': the scalar field defined on a DG space
+    - 'g': the function profile to which 'f' will be set
+    - 'sf': the mesh function that tags mesh surfaces
+    - 'id': the id of the mesh surface on which 'f' will be set equal to 'g'
+'''
+def set_dg_field(f, g, sf, id):
+
+    Q = f.function_space()
+    mesh = f.function_space().mesh()
+    dof_coordinates = Q.tabulate_dof_coordinates()
+
+    f_values = f.vector().get_local()   # get a copy of field values
+    
+    for cell in cells(mesh):
+
+
+        cell_tag = sf[cell]
+
+        if cell_tag == id:
+
+            for dof in Q.dofmap().cell_dofs(cell.index()):
+
+                f_values[dof] = g(dof_coordinates[dof][:2])
+
+    f.vector().set_local(f_values) 
+    f.vector().apply("insert")
+   
