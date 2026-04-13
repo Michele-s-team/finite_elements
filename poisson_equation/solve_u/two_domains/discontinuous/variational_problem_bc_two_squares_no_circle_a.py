@@ -27,7 +27,10 @@ class u_exact_l_expression(UserExpression):
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 2
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+
+        # test case 3
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]**2-rmsh.lmsh.parameters['L_m']**2)
 
     def value_shape(self):
         return (1,)
@@ -40,6 +43,9 @@ class u_exact_r_expression(UserExpression):
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
+
+        # test case 3
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
     def value_shape(self):
@@ -53,7 +59,10 @@ class laplacian_u_l_expression(UserExpression):
         # values[0] = 6.0
 
         # test case 2
-        values[0] = 2.0 + 24.0 * x[1]**2
+        # values[0] = 2.0 + 24.0 * x[1]**2
+
+        # test case 3
+        values[0] = 2.0 + 24.0 * x[1]**2 + 2.0 * rpam.parameters['A']
 
 
     def value_shape(self):
@@ -67,11 +76,15 @@ class laplacian_u_r_expression(UserExpression):
         # values[0] = 6.0
 
         # test case 2
+        # values[0] = 2.0 + 24.0 * x[1]**2
+
+        # test case 3
         values[0] = 2.0 + 24.0 * x[1]**2
 
     def value_shape(self):
         return (1,)
     
+
 class d_expression(UserExpression):
     def eval(self, values, x):
 
@@ -79,7 +92,10 @@ class d_expression(UserExpression):
         # values[0] = rpam.parameters['A']
 
         # test case 2
-        values[0] = rpam.parameters['A']
+        # values[0] = rpam.parameters['A']
+
+        # test case 3
+        values[0] = 2 * rpam.parameters['A'] * rmsh.lmsh.parameters['L_m']
 
 
     def value_shape(self):
