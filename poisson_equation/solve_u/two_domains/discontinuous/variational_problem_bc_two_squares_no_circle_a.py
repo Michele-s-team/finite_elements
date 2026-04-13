@@ -24,13 +24,13 @@ class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 2
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 3
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]**2-rmsh.lmsh.parameters['L_m']**2)
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2.0*np.pi*(x[0]-rmsh.lmsh.parameters['L_m'])/rmsh.lmsh.parameters['L'])
 
     def value_shape(self):
         return (1,)
@@ -40,13 +40,13 @@ class u_exact_r_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
+        # value`s[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
         # test case 3
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
     def value_shape(self):
         return (1,)
@@ -57,13 +57,13 @@ class d_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = rpam.parameters['A']
+        # values[0] = rpam.parameters['A']
 
         # test case 2
         # values[0] = rpam.parameters['A']
 
         # test case 3
-        # values[0] = 2 * rpam.parameters['A'] * rmsh.lmsh.parameters['L_m']
+        values[0] = 2.0*np.pi*rpam.parameters['A']/rmsh.lmsh.parameters['L']
 
 
     def value_shape(self):
@@ -73,13 +73,12 @@ class d_expression(UserExpression):
 # build a UFL expression that contains the expression for the laplacians in both surface_l and surface_r
 
 x_  = SpatialCoordinate(rmsh.lmsh.mesh)
-L_m = Constant(rmsh.lmsh.parameters['L_m'])
-A   = Constant(rpam.parameters['A'])
 
 
+'''
 # test case 1
 f = 6.0
-
+'''
 
 '''
 # test case 2
@@ -87,12 +86,18 @@ f = 2.0 + 24.0 * x_[1]**2
 '''
 
 
-'''
+
 # test case 3
+L = Constant(rmsh.lmsh.parameters['L'])
+L_m = Constant(rmsh.lmsh.parameters['L_m'])
+A   = Constant(rpam.parameters['A'])
+pi = Constant(np.pi)
+
 f = conditional(le(x_[0], L_m),
-                    2.0 + 24.0 * x_[1]**2 + 2.0 * A,
+                    2.0 + 24.0 * x_[1]**2 - A * (2.0 * pi / L)**2 * sin(2 * pi / L * (x_[0]-L_m)),
                     2.0 + 24.0 * x_[1]**2)
-'''
+
+
 
 fsp.u_exact_l.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
 fsp.u_exact_r.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
