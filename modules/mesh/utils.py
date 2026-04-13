@@ -2935,7 +2935,7 @@ Input values:
     - 'sf': the mesh function that tags mesh surfaces
     - 'id': the id of the mesh surface on which 'f' will be set equal to 'g'
 '''
-def set_dg_field(f, g, sf, id):
+def set_dg_scalar_field(f, g, sf, id):
 
     Q = f.function_space()
     mesh = f.function_space().mesh()
