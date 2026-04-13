@@ -49,7 +49,7 @@ for facet in facets(lmsh.mesh):
 
             mf_I[facet] = lmsh.parameters['m_line_id']
 
-            # print(f'facet {facet.index()} belongs to both shape and square, vertices: {[v.index() for v in vertices(facet)]}')
+            print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
  
    
 # radius of the smallest cell in the mesh
