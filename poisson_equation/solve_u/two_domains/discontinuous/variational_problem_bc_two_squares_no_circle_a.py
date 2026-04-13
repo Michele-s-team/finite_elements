@@ -13,28 +13,7 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-
-'''
-import calculus as cal
-import geometry.utils as geo_u
-
-
-min_distance = cal.min_max_distance(rmsh.lmsh.mesh[0].coordinates(), "min")
-
-n_dS = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0]('+'), rmsh.ds_mesh[0]['dS_shape'], interior=True)
-
-coordinate_in_out = rmsh.lmsh.mesh_parameters[0]["shape_coordinates"][0] + n_dS(rmsh.lmsh.mesh_parameters[0]["shape_coordinates"][0]) * min_distance/2.0
-
-in_out = geo_u.in_polygon(coordinate_in_out, rmsh.lmsh.mesh_parameters[0]['shape_coordinates'])
-
-if in_out:
-    print(f'The "+" domain is the region oustide the shape.')
-else:
-    print(f'The "+" domain is the region inside the shape.')
-'''
-
-
-class u_exact_shape_expression(UserExpression):
+class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -44,7 +23,7 @@ class u_exact_shape_expression(UserExpression):
         return (1,)
 
 
-class u_exact_square_expression(UserExpression):
+class u_exact_r_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -54,7 +33,7 @@ class u_exact_square_expression(UserExpression):
         return (1,)
 
 
-class laplacian_u_shape_expression(UserExpression):
+class laplacian_u_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -64,7 +43,7 @@ class laplacian_u_shape_expression(UserExpression):
         return (1,)
 
 
-class laplacian_u_square_expression(UserExpression):
+class laplacian_u_r_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
@@ -76,24 +55,18 @@ class laplacian_u_square_expression(UserExpression):
 class d_expression(UserExpression):
     def eval(self, values, x):
 
-        '''
-        ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
-        grad = 2[ x[0]-rmsh.lmsh.parameters['c'][0], x[1]-rmsh.lmsh.parameters['c'][1] ]
-        n.grad = 2 r 
-        '''
-
         # test case 1
-        values[0] = rpam.parameters['jump_coefficient'] * 2.0 * rmsh.lmsh.parameters['r']
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
 
 
-fsp.u_exact_shape.interpolate(u_exact_shape_expression(element=fsp.Q.ufl_element()))
-fsp.u_exact_square.interpolate(u_exact_square_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_shape.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
+fsp.u_exact_square.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
 
-fsp.f_shape.interpolate(laplacian_u_shape_expression(element=fsp.Q.ufl_element()))
-fsp.f_square.interpolate(laplacian_u_square_expression(element=fsp.Q.ufl_element()))
+fsp.f_shape.interpolate(laplacian_u_l_expression(element=fsp.Q.ufl_element()))
+fsp.f_square.interpolate(laplacian_u_r_expression(element=fsp.Q.ufl_element()))
 
 fsp.d.interpolate(d_expression(element=fsp.Q.ufl_element()))
 
