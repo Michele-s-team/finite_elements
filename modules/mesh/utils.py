@@ -552,11 +552,13 @@ def difference_in_bulk(f, g):
 
 # return sqrt(<(f-g)^2>_measure / <measure>), where measure can be dx, ds_...
 def difference_wrt_measure(f, g, measure):
+
     return sqrt(assemble(((f - g) ** 2 * measure)) / assemble(Constant(1.0) * measure))
 
 
 # return sqrt(<f^2>_measure / <measure>), where measure can be dx, ds_...
 def abs_wrt_measure(f, measure):
+    
     return difference_wrt_measure(f, Constant(0), measure)
 
 

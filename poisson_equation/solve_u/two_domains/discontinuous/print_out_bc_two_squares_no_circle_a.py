@@ -31,8 +31,6 @@ print("Comparison with exact solution: ")
 print(f"\t\t<<(u - u_exact)^2>>_[Omega l] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact_l, rmsh.dx_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 print(f"\t\t<<(u - u_exact)^2>>_[Omega r] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact_r, rmsh.dx_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-print(f"\t\terror_norm(u, u_exact)_[Omega l] = {col.Fore.RED}{fu.error_norm(fsp.u, fsp.u_exact_l, rmsh.dx_l):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-print(f"\t\terror_norm(u, u_exact)_[Omega r] = {col.Fore.RED}{fu.error_norm(fsp.u, fsp.u_exact_r, rmsh.dx_r):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 import print_out_solution

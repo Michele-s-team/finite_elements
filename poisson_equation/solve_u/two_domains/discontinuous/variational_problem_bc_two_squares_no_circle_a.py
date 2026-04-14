@@ -42,12 +42,26 @@ io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.
 sys.exit(1)
 # test interpolate_dg - end
 '''
+'''
+# build a UFL expression that contains the expression for the laplacians in both surface_l and surface_r
+# x_  = SpatialCoordinate(rmsh.lmsh.mesh)
+# L = Constant(rmsh.lmsh.parameters['L'])
+# L_m = Constant(rmsh.lmsh.parameters['L_m'])
+# A   = Constant(rpam.parameters['A'])
+# pi = Constant(np.pi)
 
+# f = conditional(le(x_[0], L_m),
+#                     2.0 + 24.0 * x_[1]**2 + 2 * A * pi**2/ L**2 * (13 * sin((2 * pi * (L_m - 3 * x_[0] - 2 * x_[1])) / L) +  5 * sin((2 * pi * (L_m + x_[0] + 2 * x_[1])) / L) ),
+#                     2.0 + 24.0 * x_[1]**2)
+
+
+'''
+'''
 class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
         # test case 2
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
@@ -63,7 +77,7 @@ class u_exact_r_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
         # test case 2
         # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
@@ -73,20 +87,20 @@ class u_exact_r_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
-
+'''
 
 
 class d_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = rpam.parameters['A']
+        # values[0] = rpam.parameters['A']
 
         # test case 2
         # values[0] = rpam.parameters['A']
 
         # test case 3
-        # values[0] = (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
+        values[0] = (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
 
     def value_shape(self):
         return (1,)
@@ -94,54 +108,60 @@ class d_expression(UserExpression):
 
 
 
-
+'''
 # test case 1
-def f_l(x): 
+def u_exact_l_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+
+def u_exact_r_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+def f_l_expression(x): 
     return 6.0
 
-def f_r(x):
+def f_r_expression(x):
     return 6.0
-
+'''
 
 
 '''
 # test case 2
-def f_l(x): 
+def u_exact_l_expression(x):
+   return  1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+
+def u_exact_r_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 4 
+
+def f_l_expression(x): 
     return 2.0 + 24.0 * x[1]**2
 
-def f_r(x):
-    return f_l(x)
+def f_r_expression(x):
+    return f_l_expression(x)
 '''
 
 
-'''
+
 # test case 3
 
-# build a UFL expression that contains the expression for the laplacians in both surface_l and surface_r
-# x_  = SpatialCoordinate(rmsh.lmsh.mesh)
-# L = Constant(rmsh.lmsh.parameters['L'])
-# L_m = Constant(rmsh.lmsh.parameters['L_m'])
-# A   = Constant(rpam.parameters['A'])
-# pi = Constant(np.pi)
-
-# f = conditional(le(x_[0], L_m),
-#                     2.0 + 24.0 * x_[1]**2 + 2 * A * pi**2/ L**2 * (13 * sin((2 * pi * (L_m - 3 * x_[0] - 2 * x_[1])) / L) +  5 * sin((2 * pi * (L_m + x_[0] + 2 * x_[1])) / L) ),
-#                     2.0 + 24.0 * x_[1]**2)
-
-
-def f_l(x):
+def f_l_expression(x):
     return 2.0 + 24.0 * x[1]**2 + 2 * rpam.parameters['A'] * np.pi**2/ rmsh.lmsh.parameters['L']**2 * (13 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] - 3 * x[0] - 2 * x[1])) / rmsh.lmsh.parameters['L']) +  5 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[0] + 2 * x[1])) / rmsh.lmsh.parameters['L']) )
 
-def f_r(x):
+def f_r_expression(x):
     return 2.0 + 24.0 * x[1]**2
-'''
 
-msh.interpolate_dg(fsp.f, f_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.f, f_r, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+def u_exact_l_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2 * np.pi / rmsh.lmsh.parameters['L'] * (x[0] - rmsh.lmsh.parameters['L_m'])) * np.cos(4 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['L'])
+
+def u_exact_r_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
 
-fsp.u_exact_l.interpolate(u_exact_l_expression(element=fsp.Q.ufl_element()))
-fsp.u_exact_r.interpolate(u_exact_r_expression(element=fsp.Q.ufl_element()))
+msh.interpolate_dg(fsp.u_exact_l, u_exact_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.u_exact_r, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.f, f_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
 
 fsp.d.interpolate(d_expression(element=fsp.Q.ufl_element()))
 
