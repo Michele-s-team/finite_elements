@@ -102,14 +102,15 @@ def d_expression(x):
     return rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
 
 
+msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-fsp.u_exact_shape.interpolate(u_exact_shape_expression(element=fsp.Q.ufl_element()))
-fsp.u_exact_square.interpolate(u_exact_square_expression(element=fsp.Q.ufl_element()))
+msh.interpolate_dg(fsp.f, f_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.f, f_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-fsp.f_a.interpolate(laplacian_u_shape_expression(element=fsp.Q.ufl_element()))
-fsp.f_b.interpolate(laplacian_u_square_expression(element=fsp.Q.ufl_element()))
+msh.interpolate_dg(fsp.d, d_expression, rmsh.sf[0])
 
-fsp.d.interpolate(d_expression(element=fsp.Q.ufl_element()))
+
 
 
 bcs = []
@@ -117,8 +118,7 @@ bcs = []
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx'] + \
-        (fsp.f_a * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] + \
-        (fsp.f_b * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] +\
+        (fsp.f * fsp.nu_u) * rmsh.dx_mesh[0]['dx'] + \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 # here I put the average for d because d is the same on both sides (it is a jump)
@@ -129,7 +129,7 @@ F_I = (
         rpam.parameters['alpha']/rmsh.r_mesh[0] * ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] )
         ) * rmsh.ds_mesh[0]['ds_I']
 
-F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact_square) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
 
 F = F_0 + F_I + F_a + F_b
