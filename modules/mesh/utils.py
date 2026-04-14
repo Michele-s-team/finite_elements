@@ -552,11 +552,13 @@ def difference_in_bulk(f, g):
 
 # return sqrt(<(f-g)^2>_measure / <measure>), where measure can be dx, ds_...
 def difference_wrt_measure(f, g, measure):
+
     return sqrt(assemble(((f - g) ** 2 * measure)) / assemble(Constant(1.0) * measure))
 
 
 # return sqrt(<f^2>_measure / <measure>), where measure can be dx, ds_...
 def abs_wrt_measure(f, measure):
+    
     return difference_wrt_measure(f, Constant(0), measure)
 
 
@@ -2926,3 +2928,39 @@ Return values:
 def average(u):
 
     return (u("+")+u("-"))/2
+
+'''
+set a scalar field defined on a DG space equal to a function profile in a mesh region 
+Input values: 
+    * Mandatory:
+        - 'f': the scalar field defined on a DG space
+        - 'g': the function profile to which 'f' will be set
+        - 'sf': the mesh function that tags mesh surfaces
+    * Optional:
+        - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
+'''
+def interpolate_dg(f, g, sf, region_id=None):
+
+    Q = f.function_space()
+    mesh = f.function_space().mesh()
+    dof_coordinates = Q.tabulate_dof_coordinates()
+
+    f_values = f.vector().get_local()   # get a copy of field values
+    
+    for cell in cells(mesh):
+        # run on all mesh cells
+
+        # compute 'sf' on the cell; under consideration
+        cell_tag = sf[cell]
+
+        if (cell_tag == region_id) or (region_id == None):
+            # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'
+
+            for dof in Q.dofmap().cell_dofs(cell.index()):
+                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
+
+                f_values[dof] = g(dof_coordinates[dof][:2])
+
+    f.vector().set_local(f_values) 
+    f.vector().apply("insert")
+   
