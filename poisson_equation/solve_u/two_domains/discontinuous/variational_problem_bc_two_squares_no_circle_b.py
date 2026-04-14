@@ -22,7 +22,7 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 
 # test case 1
 def u_exact_l_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
 
 def u_exact_r_expression(x):
    return 1 + x[0] ** 2 + 2 * x[1] ** 2
