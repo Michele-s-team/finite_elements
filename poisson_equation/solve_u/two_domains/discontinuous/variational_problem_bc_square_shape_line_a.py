@@ -1,9 +1,3 @@
-'''
-here 
-    - 'a' is the label for the shape
-    - 'b' is the label for the square (region between the shape and the rectangular boundary)
-'''
-
 from fenics import *
 import importlib
 import ufl as ufl
@@ -38,7 +32,7 @@ else:
     print(f'The "+" domain is the region inside the shape.')
 '''
 
-
+'''
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
@@ -81,17 +75,32 @@ class laplacian_u_square_expression(UserExpression):
 class d_expression(UserExpression):
     def eval(self, values, x):
 
-        '''
-        ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
-        grad = 2[ x[0]-rmsh.lmsh.parameters['c'][0], x[1]-rmsh.lmsh.parameters['c'][1] ]
-        n.grad = 2 r 
-        '''
+
 
         # test case 1
         values[0] = rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
 
     def value_shape(self):
         return (1,)
+'''
+
+# test case 1
+
+def f_shape_expression(x):
+    return 6.0 + rpam.parameters['A'] * 4.0
+
+def f_square_expression(x):
+    return 6.0
+
+def u_exact_shape_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
+
+def u_exact_square_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+def d_expression(x):
+    return rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
+
 
 
 fsp.u_exact_shape.interpolate(u_exact_shape_expression(element=fsp.Q.ufl_element()))
