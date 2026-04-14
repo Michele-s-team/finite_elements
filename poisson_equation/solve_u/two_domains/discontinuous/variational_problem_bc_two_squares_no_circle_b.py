@@ -85,21 +85,21 @@ bcs = []
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx + \
-        (fsp.f * fsp.nu_u) * rmsh.dx + \
-        - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
+        (fsp.f * fsp.nu_u) * rmsh.dx - \
+        bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
 # here I put the average for d because d is the same on both sides (it is a jump)
 F_a = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.dS_m
 
 F_I = (
-        - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] + \
-        rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
-        ) * rmsh.dS
-
-F_b =   rpam.parameters['alpha']/rmsh.r_mesh * (\
-            (fsp.u - fsp.u_exact) * fsp.nu_u * (rmsh.ds_l + rmsh.ds_lt + rmsh.ds_lb) + \
-            (fsp.u - fsp.u_exact) * fsp.nu_u * (rmsh.ds_r + rmsh.ds_rt + rmsh.ds_rb)
+        - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] 
+        ) * rmsh.dS +\
+        rpam.parameters['alpha']/rmsh.r_mesh * ( \
+            ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] ) * (rmsh.dS_l + rmsh.dS_r) + \
+            ( msh.jump(fsp.u, bgeo.facet_normal)[i] - bgeo.facet_normal('+')[i] * msh.average(fsp.e) ) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_m
         )
+
+F_b =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds 
 
 
 F = F_0 + F_I + F_a + F_b
