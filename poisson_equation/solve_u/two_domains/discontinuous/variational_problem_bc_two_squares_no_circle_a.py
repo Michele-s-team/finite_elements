@@ -56,39 +56,6 @@ sys.exit(1)
 
 
 '''
-'''
-class u_exact_l_expression(UserExpression):
-    def eval(self, values, x):
-
-        # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
-
-        # test case 2
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
-
-        # test case 3
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2 * np.pi / rmsh.lmsh.parameters['L'] * (x[0] - rmsh.lmsh.parameters['L_m'])) * np.cos(4 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['L'])
-
-    def value_shape(self):
-        return (1,)
-
-
-class u_exact_r_expression(UserExpression):
-    def eval(self, values, x):
-
-        # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-
-        # test case 2
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
-
-        # test case 3
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
-
-    def value_shape(self):
-        return (1,)
-'''
-
 
 class d_expression(UserExpression):
     def eval(self, values, x):
@@ -138,7 +105,6 @@ def f_l_expression(x):
 def f_r_expression(x):
     return f_l_expression(x)
 '''
-
 
 
 # test case 3
