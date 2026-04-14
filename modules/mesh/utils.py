@@ -2932,12 +2932,14 @@ def average(u):
 '''
 set a scalar field defined on a DG space equal to a function profile in a mesh region 
 Input values: 
-    - 'f': the scalar field defined on a DG space
-    - 'g': the function profile to which 'f' will be set
-    - 'sf': the mesh function that tags mesh surfaces
-    - 'id': the id of the mesh surface on which 'f' will be set equal to 'g'
+    * Mandatory:
+        - 'f': the scalar field defined on a DG space
+        - 'g': the function profile to which 'f' will be set
+        - 'sf': the mesh function that tags mesh surfaces
+    * Optional:
+        - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
 '''
-def interpolate_dg(f, g, sf, id):
+def interpolate_dg(f, g, sf, region_id=None):
 
     Q = f.function_space()
     mesh = f.function_space().mesh()
@@ -2951,7 +2953,7 @@ def interpolate_dg(f, g, sf, id):
         # compute 'sf' on the cell; under consideration
         cell_tag = sf[cell]
 
-        if cell_tag == id:
+        if (cell_tag == region_id) or (region_id == None):
             # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'
 
             for dof in Q.dofmap().cell_dofs(cell.index()):
