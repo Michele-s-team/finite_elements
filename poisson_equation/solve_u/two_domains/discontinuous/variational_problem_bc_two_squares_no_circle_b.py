@@ -13,9 +13,13 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
+# print facet_normal('+') to check whether L = '+' or '-'
+bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, interior=True)
 
 
-'''
+# 
+
+
 # test case 1
 def u_exact_l_expression(x):
    return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
@@ -31,7 +35,10 @@ def f_r_expression(x):
 
 def d_expression(x):
     return rpam.parameters['A']
-'''
+
+def e_expression(x):
+    return 0
+
 
 '''
 # test case 2
@@ -49,9 +56,12 @@ def f_r_expression(x):
 
 def d_expression(x):
     return rpam.parameters['A']
+
+def e_expression(x):
+    return 0
 '''
 
-
+'''
 # test case 3
 
 def f_l_expression(x):
@@ -69,7 +79,9 @@ def u_exact_r_expression(x):
 def d_expression(x):
     return (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
 
-
+def e_expression(x):
+    return 0
+'''
 
 msh.interpolate_dg(fsp.u_exact, u_exact_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 msh.interpolate_dg(fsp.u_exact, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
@@ -78,6 +90,7 @@ msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surfa
 msh.interpolate_dg(fsp.f, f_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
 msh.interpolate_dg(fsp.d, d_expression, rmsh.sf)
+msh.interpolate_dg(fsp.e, e_expression, rmsh.sf)
 
 
 bcs = []
