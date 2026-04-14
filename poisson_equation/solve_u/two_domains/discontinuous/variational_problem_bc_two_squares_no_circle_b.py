@@ -37,7 +37,7 @@ def d_expression(x):
     return rpam.parameters['A']
 
 def e_expression(x):
-    return 0
+    return rpam.parameters['B']
 
 
 '''
