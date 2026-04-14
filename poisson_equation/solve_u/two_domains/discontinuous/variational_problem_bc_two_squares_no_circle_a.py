@@ -1,10 +1,3 @@
-'''
-here 'a' anb 'b' refer to the two domains
-    - 'a' is the label for the left square
-    - 'b' is the label for the right square
-'''
-
-
 from fenics import *
 import importlib
 import numpy as np
