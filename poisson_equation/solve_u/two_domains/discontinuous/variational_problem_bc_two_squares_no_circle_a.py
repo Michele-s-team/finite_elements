@@ -45,7 +45,7 @@ sys.exit(1)
 
 
 
-
+'''
 # test case 1
 def u_exact_l_expression(x):
    return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
@@ -61,7 +61,7 @@ def f_r_expression(x):
 
 def d_expression(x):
     return rpam.parameters['A']
-
+'''
 
 '''
 # test case 2
@@ -81,7 +81,7 @@ def d_expression(x):
     return rpam.parameters['A']
 '''
 
-'''
+
 # test case 3
 
 def f_l_expression(x):
@@ -98,11 +98,11 @@ def u_exact_r_expression(x):
 
 def d_expression(x):
     return (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
-'''
 
 
-msh.interpolate_dg(fsp.u_exact_l, u_exact_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.u_exact_r, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+msh.interpolate_dg(fsp.u_exact, u_exact_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
 msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 msh.interpolate_dg(fsp.f, f_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
@@ -127,8 +127,8 @@ F_I = (
         ) * rmsh.dS
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh * (\
-            (fsp.u - fsp.u_exact_l) * fsp.nu_u * (rmsh.ds_l + rmsh.ds_lt + rmsh.ds_lb) + \
-            (fsp.u - fsp.u_exact_r) * fsp.nu_u * (rmsh.ds_r + rmsh.ds_rt + rmsh.ds_rb)
+            (fsp.u - fsp.u_exact) * fsp.nu_u * (rmsh.ds_l + rmsh.ds_lt + rmsh.ds_lb) + \
+            (fsp.u - fsp.u_exact) * fsp.nu_u * (rmsh.ds_r + rmsh.ds_rt + rmsh.ds_rb)
         )
 
 
