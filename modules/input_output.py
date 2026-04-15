@@ -46,6 +46,13 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     csvfile = open(filename, "w")
 
     Q = f.function_space()
+    element  = Q.ufl_element()
+
+    # value shape is the shape of 'f', for example (2, 2) for a 2 x 2 tensor
+    value_shape = element.value_shape()
+
+    print(f'value_shape = {value_shape}')
+
     mesh = Q.mesh()
     dof_coordinates = Q.tabulate_dof_coordinates()
     f_values = f.vector().get_local()
