@@ -64,28 +64,31 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
    
     print(headers, file=csvfile)
 
-    for cell in cells(mesh):
-        # run over all cells in 'mesh'
+    if Q_continuous:
+        # the function space of 'f' is continuous -> run over all DOF coordinates and print the value of 'f' on each of them
 
-        if Q_continuous == False:
-            # the function space is discontinuous -> compute 'mesh_function' on the cell under consideration to tell to which tagged domain the cell under consideration belongs
+        for x, val in zip(dof_coordinates, f.vector().get_local()):
 
+            padded_x = pad(x, 3)
+
+            print(f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+    
+    else:
+        # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f.vector().get_local(), each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
+
+        for cell in cells(mesh):
+            # run over all cells in 'mesh'
+
+            #compute 'mesh_function' on the cell under consideration to tell to which tagged domain the cell under consideration belongs
             cell_tag = mesh_function[cell]
 
-        for dof in Q.dofmap().cell_dofs(cell.index()):
-            # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
+            for dof in Q.dofmap().cell_dofs(cell.index()):
+                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordinates of those DOFs, by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file
 
-            # pad 'x' to three dimensions
-            x = pad(dof_coordinates[dof], 3)
+                # pad 'x' to three dimensions
+                x = pad(dof_coordinates[dof], 3)
 
-            line = f'{f.vector().get_local()[dof]},{x[0]},{x[1]},{x[2]}'
-
-            if Q_continuous == False:
-                # the function space is dicontinuous -> append to the value of 'f' and of 'x', the value of 'cell_tag'
-
-                line += f',{cell_tag}'
-
-            print(line, file=csvfile)
+                print(f'{f.vector().get_local()[dof]},{x[0]},{x[1]},{x[2]},{cell_tag}', file=csvfile)
 
 
     csvfile.close()
