@@ -599,6 +599,8 @@ Input values:
         - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
     * Optional:
         - 'mesh_function': a mesh function that tags mesh region, needed to plot fields on discontinuous spaces
+Return values:
+    This method does not return anything, but it writes 'f' to xdmf, h5 files. It also writes the DOF values of 'f' to csv file, and, if 'f' is defined on a continuous function space, the nodal values of 'f' on mesh vertices. 
 '''
 
 
