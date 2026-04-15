@@ -18,13 +18,21 @@ number_of_decimals = 2
 '''
 prints a scalar to csv file
 Input values: 
-    - 'f': the scalar
-    - 'filename': path, filename and extension of the csv file
+    * Mandatory: 
+        - 'f': the scalar
+        - 'filename': path, filename and extension of the csv file
+    * Optional:
+        - 'mesh_function': 
 '''
 
-def print_scalar_to_csvfile(f, filename):
+def print_scalar_to_csvfile(f, filename, mesh_function=None):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+    if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
+        print(f'The field is discontinuous: {f.function_space().ufl_element().family()}')
+    else: 
+        print(f'The field is continuous: {f.function_space().ufl_element().family()}')
 
     csvfile = open(filename, "w")
     print(f"\"f\",\":0\",\":1\",\":2\"", file=csvfile)
