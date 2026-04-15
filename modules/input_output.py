@@ -7,6 +7,7 @@ import importlib
 import numpy as np
 import os
 import shutil
+import sys
 
 import function as fu
 msh = importlib.import_module('mesh.utils')
@@ -39,6 +40,12 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
         print(f'The field is discontinuous: {f.function_space().ufl_element().family()}')
 
         Q_continuous = False
+        
+        if mesh_function == None:
+            # the meshod has been called on a discontinuous function space -> 'mesh_function' is needed to tell to which tagged domain each DOF coordinate corresponds -> throw an error and exit
+
+            print(f'{col.Fore.RED}Error!! print_scalar_to_csv_file has been called on a discontinuous function space without providing mesh_function.{col.Fore.RESET}')
+            sys.exit(1)
 
     else: 
 
