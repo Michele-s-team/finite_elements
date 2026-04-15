@@ -29,16 +29,38 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
+    Q = f.function_space()
+    mesh = Q.mesh()
+    dof_coordinates = Q.tabulate_dof_coordinates()
+
     if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
         print(f'The field is discontinuous: {f.function_space().ufl_element().family()}')
     else: 
         print(f'The field is continuous: {f.function_space().ufl_element().family()}')
 
     csvfile = open(filename, "w")
-    print(f"\"f\",\":0\",\":1\",\":2\"", file=csvfile)
+
+    print(f"\"f\",\":0\",\":1\",\":2\",\"tag\"", file=csvfile)
+
+    '''
+
     for x, val in zip(f.function_space().tabulate_dof_coordinates(), f.vector().get_local()):
         padded_x = pad(x, 3)
         print(f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+    '''
+
+    for cell in cells(mesh):
+
+        # compute 'mesh_function' on the cell under consideration
+        cell_tag = mesh_function[cell]
+
+        for dof in Q.dofmap().cell_dofs(cell.index()):
+            # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
+
+            x = dof_coordinates[dof]
+
+            print(f"{f.vector().get_local()[dof]},{x[0]},{x[1]},{x[2]},{cell_tag}", file=csvfile)
+
     csvfile.close()
 
 
