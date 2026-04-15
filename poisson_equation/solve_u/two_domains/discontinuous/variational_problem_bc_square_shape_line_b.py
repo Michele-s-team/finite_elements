@@ -1,0 +1,91 @@
+from fenics import *
+import importlib
+import ufl as ufl
+
+import differential_geometry.boundary.geometry as bgeo
+import mesh.utils as msh
+import parameters.read.solution as rpam
+import switch_problem as swi
+
+fsp = importlib.import_module(swi.fsp)
+rmsh = importlib.import_module(swi.rmsh)
+
+i, j = ufl.indices(2)
+
+
+'''
+import calculus as cal
+import geometry.utils as geo_u
+
+
+min_distance = cal.min_max_distance(rmsh.lmsh.mesh[0].coordinates(), "min")
+
+n_dS = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0]('+'), rmsh.ds_mesh[0]['dS_shape'], interior=True)
+
+coordinate_in_out = rmsh.lmsh.mesh_parameters[0]["shape_coordinates"][0] + n_dS(rmsh.lmsh.mesh_parameters[0]["shape_coordinates"][0]) * min_distance/2.0
+
+in_out = geo_u.in_polygon(coordinate_in_out, rmsh.lmsh.mesh_parameters[0]['shape_coordinates'])
+
+if in_out:
+    print(f'The "+" domain is the region oustide the shape.')
+else:
+    print(f'The "+" domain is the region inside the shape.')
+'''
+
+
+# test case 1
+
+def f_shape_expression(x):
+    return 6.0 + rpam.parameters['A'] * 4.0
+
+def f_square_expression(x):
+    return 6.0
+
+def u_exact_shape_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
+
+def u_exact_square_expression(x):
+   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+def d_expression(x):
+    return rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
+
+
+msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+msh.interpolate_dg(fsp.f, f_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.f, f_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+msh.interpolate_dg(fsp.d, d_expression, rmsh.sf[0])
+
+# 
+import input_output as io
+import solution_paths as solpath
+io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+
+# 
+
+
+
+bcs = []
+
+
+# variational functional for the original problem (poisson equation)
+F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx'] + \
+        (fsp.f * fsp.nu_u) * rmsh.dx_mesh[0]['dx'] + \
+        - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+
+# here I put the average for d because d is the same on both sides (it is a jump)
+F_a = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['dS_shape']
+
+F_I = (
+        - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] + \
+        rpam.parameters['alpha']/rmsh.r_mesh[0] * ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] )
+        ) * rmsh.ds_mesh[0]['ds_I']
+
+F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+
+
+F = F_0 + F_I + F_a + F_b
