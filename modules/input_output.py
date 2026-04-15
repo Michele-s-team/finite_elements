@@ -625,7 +625,10 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     if type == 'scalar':
         print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv',
                                 mesh_function=mesh_function)
-        print_nodal_values_scalar_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+        
+        if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
+
+            print_nodal_values_scalar_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
     elif type == 'vector':
         print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
