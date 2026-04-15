@@ -23,7 +23,7 @@ Input values:
         - 'f': the scalar
         - 'filename': path, filename and extension of the csv file
     * Optional:
-        - 'mesh_function': 
+        - 'mesh_function': a mesh function that tags regions of the mesh, needed if the function space of f is discontinuous
 '''
 
 def print_scalar_to_csvfile(f, filename, mesh_function=None):
@@ -37,7 +37,6 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     dof_coordinates = Q.tabulate_dof_coordinates()
 
     if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
-        print(f'The field is discontinuous: {f.function_space().ufl_element().family()}')
 
         Q_continuous = False
         
@@ -48,8 +47,6 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
             sys.exit(1)
 
     else: 
-
-        print(f'The field is continuous: {f.function_space().ufl_element().family()}')
 
         Q_continuous = True
 
@@ -562,15 +559,19 @@ def field_type(f):
 '''
 print a field as xdmf, h5, csv file and its nodal values on a csv file
 Input values:
-    - 'f': the field
-    - 'path_xdmf_file' the path of the xdmf file
-    - 'path_csv_file' the path of the csv file
-    - 'path_h5_file' the path of the h5 file
-    - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+    * Mandatory:
+        - 'f': the field
+        - 'path_xdmf_file' the path of the xdmf file
+        - 'path_csv_file' the path of the csv file
+        - 'path_h5_file' the path of the h5 file
+        - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+    * Optional:
+        - 'mesh_function': a mesh function that tags mesh region, needed to plot fields on discontinuous spaces
 '''
 
 
-def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
+def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file,
+               mesh_function=None):
 
     type = field_type(f)
 
@@ -590,7 +591,8 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
 
     # write to csv file and the nodal values to csv file
     if type == 'scalar':
-        print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv',
+                                mesh_function=mesh_function)
         print_nodal_values_scalar_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
     elif type == 'vector':

@@ -39,13 +39,13 @@ msh.interpolate_dg(fsp.f, f_square_expression, rmsh.sf[0], rmsh.lmsh.parameters[
 
 msh.interpolate_dg(fsp.d, d_expression, rmsh.sf[0])
 
-
+'''
 import input_output as io
 import os
 import solution_paths as solpath
 
 io.print_scalar_to_csvfile(fsp.u_exact, os.path.join(solpath.csv_files_path, 'u_exact.csv'), rmsh.lmsh.sf[0])
-
+'''
 
 
 
