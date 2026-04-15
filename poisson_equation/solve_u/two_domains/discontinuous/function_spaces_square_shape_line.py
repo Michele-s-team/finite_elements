@@ -10,8 +10,8 @@ u = Function(Q)
 nu_u = TestFunction(Q)
 
 f = Function(Q)
-
 d = Function(Q)
+e = Function(Q)
 
 J_u = TrialFunction(Q)
 

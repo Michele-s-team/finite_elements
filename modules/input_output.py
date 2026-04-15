@@ -7,6 +7,7 @@ import importlib
 import numpy as np
 import os
 import shutil
+import sys
 
 import function as fu
 msh = importlib.import_module('mesh.utils')
@@ -18,19 +19,92 @@ number_of_decimals = 2
 '''
 prints a scalar to csv file
 Input values: 
-    - 'f': the scalar
-    - 'filename': path, filename and extension of the csv file
+    * Mandatory: 
+        - 'f': the scalar
+        - 'filename': path, filename and extension of the csv file
+    * Optional:
+        - 'mesh_function': a mesh function that tags regions of the mesh, needed if the function space of f is discontinuous
+
+Return values: 
+This method does not return anything but
+- If the function space of 'f' is a continuous one, the output csv file wil be of the form
+    f,":0",":1",":2"
+    2.80916762649242,0.1265394779209243,0.9468478039819185,0.2
+    2.633369164732261,0.08583087380404092,0.9016260730925969,0.3
+    ....
+- If the function space of 'f' is discontinuous
+    f,":0",":1",":2",tag
+    2.80916762649242,0.1265394779209243,0.9468478039819185,0.234,2
+    2.633369164732261,0.08583087380404092,0.9016260730925969,0.43,2
+    ...
 '''
 
-def print_scalar_to_csvfile(f, filename):
+def print_scalar_to_csvfile(f, filename, mesh_function=None):
+
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
-
     csvfile = open(filename, "w")
-    print(f"\"f\",\":0\",\":1\",\":2\"", file=csvfile)
-    for x, val in zip(f.function_space().tabulate_dof_coordinates(), f.vector().get_local()):
-        padded_x = pad(x, 3)
-        print(f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+
+    Q = f.function_space()
+    mesh = Q.mesh()
+    dof_coordinates = Q.tabulate_dof_coordinates()
+    f_values = f.vector().get_local()
+
+    if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
+
+        Q_continuous = False
+        
+        if mesh_function == None:
+            # the meshod has been called on a discontinuous function space -> 'mesh_function' is needed to tell to which tagged domain each DOF coordinate corresponds -> throw an error and exit
+
+            print(f'{col.Fore.RED}Error!! print_scalar_to_csv_file has been called on a discontinuous function space without providing mesh_function.{col.Fore.RESET}')
+            sys.exit(1)
+
+    else: 
+
+        Q_continuous = True
+
+    
+    component_headers = '"f"'
+    coordinate_headers = ",".join([f'":{i}"' for i in range(3)])
+
+    headers = f'{component_headers},{coordinate_headers}'
+
+    if Q_continuous == False:
+
+        headers += ',tag' 
+
+   
+    print(headers, file=csvfile)
+
+    if Q_continuous:
+        # the function space of 'f' is continuous -> run over all DOF coordinates and print the value of 'f' on each of them
+
+        for dof_coordinate, dof_value in zip(dof_coordinates, f_values):
+
+            # pad 'x' to three dimensions
+            x = pad(dof_coordinate, 3)
+
+            print(f"{dof_value},{x[0]},{x[1]},{x[2]}", file=csvfile)
+    
+    else:
+        # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f_values, each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
+
+        for cell in cells(mesh):
+            # run over all cells in 'mesh'
+
+            #compute 'mesh_function' on the cell under consideration to tell to which tagged domain the cell under consideration belongs
+            cell_tag = mesh_function[cell]
+
+            for dof in Q.dofmap().cell_dofs(cell.index()):
+                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordinates of those DOFs, by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file
+
+                # pad 'x' to three dimensions
+                dof_coordinate = pad(dof_coordinates[dof], 3)
+
+                print(f'{f_values[dof]},{dof_coordinate[0]},{dof_coordinate[1]},{dof_coordinate[2]},{cell_tag}', file=csvfile)
+
+
     csvfile.close()
 
 
@@ -502,15 +576,19 @@ def field_type(f):
 '''
 print a field as xdmf, h5, csv file and its nodal values on a csv file
 Input values:
-    - 'f': the field
-    - 'path_xdmf_file' the path of the xdmf file
-    - 'path_csv_file' the path of the csv file
-    - 'path_h5_file' the path of the h5 file
-    - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+    * Mandatory:
+        - 'f': the field
+        - 'path_xdmf_file' the path of the xdmf file
+        - 'path_csv_file' the path of the csv file
+        - 'path_h5_file' the path of the h5 file
+        - 'path_csv_nodal_value_file' the path of the csv file where the nodal values will be written
+    * Optional:
+        - 'mesh_function': a mesh function that tags mesh region, needed to plot fields on discontinuous spaces
 '''
 
 
-def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
+def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file,
+               mesh_function=None):
 
     type = field_type(f)
 
@@ -530,7 +608,8 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
 
     # write to csv file and the nodal values to csv file
     if type == 'scalar':
-        print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
+        print_scalar_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv',
+                                mesh_function=mesh_function)
         print_nodal_values_scalar_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
     elif type == 'vector':
