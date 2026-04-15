@@ -1,3 +1,8 @@
+'''
+solve for the Poisson equation on a domain given by a square with a shape in it, where the shape is meshed inside
+It allows for discontinuities of both u and grad u
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
@@ -39,15 +44,24 @@ msh.interpolate_dg(fsp.f, f_square_expression, rmsh.sf[0], rmsh.lmsh.parameters[
 
 msh.interpolate_dg(fsp.d, d_expression, rmsh.sf[0])
 
-# 
+'''
 import input_output as io
+import os
 import solution_paths as solpath
-io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path)
 
+io.print_scalar_to_csvfile(fsp.u_exact, os.path.join(solpath.csv_files_path, 'u_exact.csv'), rmsh.lmsh.sf[0])
+'''
+
+'''
+n_shape = bgeo.field_facet_normal(bgeo.facet_normal[0]('-'), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior = True)
+io.full_print(n_shape, 'n_shape', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
 # 
 
 
+
+'''
 
 bcs = []
 
