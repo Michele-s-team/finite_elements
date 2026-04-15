@@ -1,3 +1,8 @@
+'''
+solve for the Poisson equation on a domain given by a square with a shape in it, where the shape is meshed inside
+It allows for discontinuities of both u and grad u
+'''
+
 from fenics import *
 import importlib
 import ufl as ufl
