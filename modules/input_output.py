@@ -26,6 +26,7 @@ Input values:
 '''
 
 def print_scalar_to_csvfile(f, filename, mesh_function=None):
+
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(filename), exist_ok=True)
 
@@ -57,7 +58,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
         for dof in Q.dofmap().cell_dofs(cell.index()):
             # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
 
-            x = dof_coordinates[dof]
+            x = pad(dof_coordinates[dof], 3)
 
             print(f"{f.vector().get_local()[dof]},{x[0]},{x[1]},{x[2]},{cell_tag}", file=csvfile)
 
