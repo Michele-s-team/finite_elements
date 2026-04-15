@@ -65,7 +65,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
         Q_continuous = True
 
     
-    component_headers = 'f'
+    component_headers = '"f"'
     coordinate_headers = ",".join([f'":{i}"' for i in range(3)])
 
     headers = f'{component_headers},{coordinate_headers}'
