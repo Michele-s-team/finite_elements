@@ -13,26 +13,6 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j = ufl.indices(2)
 
 
-'''
-import calculus as cal
-import geometry.utils as geo_u
-
-
-min_distance = cal.min_max_distance(rmsh.lmsh.mesh[0].coordinates(), "min")
-
-n_dS = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0]('+'), rmsh.ds_mesh[0]['dS_shape'], interior=True)
-
-coordinate_in_out = rmsh.lmsh.mesh_parameters[0]["shape_coordinates"][0] + n_dS(rmsh.lmsh.mesh_parameters[0]["shape_coordinates"][0]) * min_distance/2.0
-
-in_out = geo_u.in_polygon(coordinate_in_out, rmsh.lmsh.mesh_parameters[0]['shape_coordinates'])
-
-if in_out:
-    print(f'The "+" domain is the region oustide the shape.')
-else:
-    print(f'The "+" domain is the region inside the shape.')
-'''
-
-
 # test case 1
 
 def f_shape_expression(x):
