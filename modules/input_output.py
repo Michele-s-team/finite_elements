@@ -57,8 +57,16 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     print(f'value_shape = {value_shape}\nvalue_size = {value_size}')
 
     mesh = Q.mesh()
+    # dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks of value_size entries which are all identical
     dof_coordinates = Q.tabulate_dof_coordinates()
-    f_values = f.vector().get_local()
+    # remove these identical entries by creating dof_coordinates_unique
+    dof_coordinates_unique = dof_coordinates[::value_size]
+
+    f_values = f.vector().get_local().reshape(-1, value_size)
+
+    print(f'len dof_coordinates = {len(dof_coordinates)}')
+    print(f'len dof_coordinates_unique = {len(dof_coordinates_unique)}')
+    print(f'len f_values = {len(f_values)}')
 
     if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
 
