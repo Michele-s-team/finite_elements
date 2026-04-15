@@ -24,6 +24,19 @@ Input values:
         - 'filename': path, filename and extension of the csv file
     * Optional:
         - 'mesh_function': a mesh function that tags regions of the mesh, needed if the function space of f is discontinuous
+
+Return values: 
+This method does not return anything but
+- If the function space of 'f' is a continuous one, the output csv file wil be of the form
+    f,":0",":1",":2"
+    2.80916762649242,0.1265394779209243,0.9468478039819185,0.2
+    2.633369164732261,0.08583087380404092,0.9016260730925969,0.3
+    ....
+- If the function space of 'f' is discontinuous
+    f,":0",":1",":2",tag
+    2.80916762649242,0.1265394779209243,0.9468478039819185,0.234,2
+    2.633369164732261,0.08583087380404092,0.9016260730925969,0.43,2
+    ...
 '''
 
 def print_scalar_to_csvfile(f, filename, mesh_function=None):
@@ -35,6 +48,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     Q = f.function_space()
     mesh = Q.mesh()
     dof_coordinates = Q.tabulate_dof_coordinates()
+    f_values = f.vector().get_local()
 
     if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
 
@@ -66,14 +80,15 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     if Q_continuous:
         # the function space of 'f' is continuous -> run over all DOF coordinates and print the value of 'f' on each of them
 
-        for x, val in zip(dof_coordinates, f.vector().get_local()):
+        for dof_coordinate, dof_value in zip(dof_coordinates, f_values):
 
-            padded_x = pad(x, 3)
+            # pad 'x' to three dimensions
+            x = pad(dof_coordinate, 3)
 
-            print(f"{val},{padded_x[0]},{padded_x[1]},{padded_x[2]}", file=csvfile)
+            print(f"{dof_value},{x[0]},{x[1]},{x[2]}", file=csvfile)
     
     else:
-        # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f.vector().get_local(), each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
+        # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f_values, each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
 
         for cell in cells(mesh):
             # run over all cells in 'mesh'
@@ -85,9 +100,9 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
                 # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordinates of those DOFs, by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file
 
                 # pad 'x' to three dimensions
-                x = pad(dof_coordinates[dof], 3)
+                dof_coordinate = pad(dof_coordinates[dof], 3)
 
-                print(f'{f.vector().get_local()[dof]},{x[0]},{x[1]},{x[2]},{cell_tag}', file=csvfile)
+                print(f'{f_values[dof]},{dof_coordinate[0]},{dof_coordinate[1]},{dof_coordinate[2]},{cell_tag}', file=csvfile)
 
 
     csvfile.close()
