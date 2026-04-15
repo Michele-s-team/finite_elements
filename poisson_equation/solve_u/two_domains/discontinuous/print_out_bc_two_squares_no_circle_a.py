@@ -3,7 +3,6 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import function as fu
 import differential_geometry.boundary.geometry as bgeo
 import input_output as io
 import mesh.utils as msh
