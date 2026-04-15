@@ -26,16 +26,16 @@ Input values:
         - 'mesh_function': a mesh function that tags regions of the mesh, needed if the function space of f is discontinuous
 
 Return values: 
-This method does not return anything but
-- If the function space of 'f' is a continuous one, the output csv file wil be of the form
-    f,":0",":1",":2"
-    2.80916762649242,0.1265394779209243,0.9468478039819185,0.2
-    2.633369164732261,0.08583087380404092,0.9016260730925969,0.3
-    ....
-- If the function space of 'f' is discontinuous
-    f,":0",":1",":2",tag
-    2.80916762649242,0.1265394779209243,0.9468478039819185,0.234,2
-    2.633369164732261,0.08583087380404092,0.9016260730925969,0.43,2
+    This method does not return anything but
+    - If the function space of 'f' is a continuous one, the output csv file wil be of the form
+        f,":0",":1",":2"
+        2.80916762649242,0.1265394779209243,0.9468478039819185,0.2
+        2.633369164732261,0.08583087380404092,0.9016260730925969,0.3
+        ....
+    - If the function space of 'f' is discontinuous
+        f,":0",":1",":2",tag
+        2.80916762649242,0.1265394779209243,0.9468478039819185,0.234,2
+        2.633369164732261,0.08583087380404092,0.9016260730925969,0.43,2
     ...
 '''
 
@@ -109,36 +109,51 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
 
 
 '''
-print the nodal values a scalar field 'f' on the mesh 'mesh' to csv file
+print the nodal values a scalar field 'f', defined on a continuous function space, on the mesh 'mesh' to csv file. The nodal values are computed by evaluating 'f' on the coordinates 'x' of the mesh nodes. If 'f' belongs to a discontinuous function space, the method is ill posed and returns an error
 
 Input values: 
     - 'f': the field
     - 'filename': the output filename
+
+Return values: 
+    This method does not return anything but the output csv file is of the form
+        f,":0",":1",":2"
+        f(p0),p0_x,p0_y,p0_z
+        f(p1),p1_x,p1_y,p1_z
+        ....
 '''
 
 def print_nodal_values_scalar_to_csvfile(f, filename):
 
-    # extract the mesh on which f is defined
-    mesh = f.function_space().mesh()
+    if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
 
-    # a dummy function space of order 1 used to tabulated the vertices
-    Q = FunctionSpace(mesh, 'CG', 1)
-    coordinates = Q.tabulate_dof_coordinates()
+        # extract the mesh on which f is defined
+        mesh = f.function_space().mesh()
 
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
+        # a dummy function space of order 1 used to tabulated the vertices
+        Q = FunctionSpace(mesh, 'CG', 1)
+        coordinates = Q.tabulate_dof_coordinates()
 
-    csvfile = open(filename, "w")
-    print(f"\"f\",\":0\",\":1\",\":2\"", file=csvfile)
+        # create the path for the csv file if it does not exist
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    for i in range(Q.dim()):
-        coordinate = coordinates[i]
-        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
-        padded_coordinate = pad(coordinate, 3)
+        csvfile = open(filename, "w")
+        print(f"\"f\",\":0\",\":1\",\":2\"", file=csvfile)
 
-        print(f"{f(*coordinate)}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
+        for i in range(Q.dim()):
+            coordinate = coordinates[i]
+            # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+            padded_coordinate = pad(coordinate, 3)
 
-    csvfile.close()
+            print(f"{f(*coordinate)}, {padded_coordinate[0]}, {padded_coordinate[1]}, {padded_coordinate[2]}", file=csvfile)
+
+        csvfile.close()
+
+    else:
+
+        print(f'{col.Fore.RED}Error!! print_nodal_values_scalar_to_csvfile has been called on a discontinuous function space.{col.Fore.RESET}')
+        sys.exit(1)
+
 
 
 '''
