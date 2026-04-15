@@ -59,7 +59,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
 
     if Q_continuous == False:
 
-        headers += ',tag_headers'
+        headers += ',' + tag_headers
 
    
     print(headers, file=csvfile)
