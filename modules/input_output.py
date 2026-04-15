@@ -83,7 +83,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
         Q_continuous = True
 
     
-    component_headers = '"f"'
+    component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
     coordinate_headers = ",".join([f'":{i}"' for i in range(3)])
 
     headers = f'{component_headers},{coordinate_headers}'
@@ -98,13 +98,17 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     if Q_continuous:
         # the function space of 'f' is continuous -> run over all DOF coordinates and print the value of 'f' on each of them
 
-        for dof_coordinate, dof_value in zip(dof_coordinates, f_values):
+        for dof_coordinate, dof_value in zip(dof_coordinates_unique, f_values):
 
             # pad 'x' to three dimensions
             x = pad(dof_coordinate, 3)
 
-            print(f"{dof_value},{x[0]},{x[1]},{x[2]}", file=csvfile)
+            component_string = ",".join([str(list(dof_value)[i]) for i in range(value_size)])
+
+
+            print(f"{component_string},{x[0]},{x[1]},{x[2]}", file=csvfile)
     
+    # sign
     else:
         # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f_values, each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
 
@@ -120,7 +124,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
                 # pad 'x' to three dimensions
                 dof_coordinate = pad(dof_coordinates[dof], 3)
 
-                print(f'{f_values[dof]},{dof_coordinate[0]},{dof_coordinate[1]},{dof_coordinate[2]},{cell_tag}', file=csvfile)
+                # print(f'{f_values[dof]},{dof_coordinate[0]},{dof_coordinate[1]},{dof_coordinate[2]},{cell_tag}', file=csvfile)
 
 
     csvfile.close()
