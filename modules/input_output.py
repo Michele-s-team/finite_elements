@@ -48,10 +48,13 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     Q = f.function_space()
     element  = Q.ufl_element()
 
-    # value shape is the shape of 'f', for example (2, 2) for a 2 x 2 tensor
+    # value shape is the shape of 'f', for example () for a scalar, (3,) for a 3-component vector, and (2, 3) for a 2 x 3 tensor
     value_shape = element.value_shape()
 
-    print(f'value_shape = {value_shape}')
+    # value_size is the total number of components of 'f', for example for a (2, 3) tensor values_size = 2 * 3 
+    value_size  = int(np.prod(value_shape)) if value_shape else 1
+
+    print(f'value_shape = {value_shape}\nvalue_size = {value_size}')
 
     mesh = Q.mesh()
     dof_coordinates = Q.tabulate_dof_coordinates()

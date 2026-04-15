@@ -58,6 +58,8 @@ f = Function(Q)
 v = Function(V)
 t = Function(T)
 
+io.print_scalar_to_csvfile(f, os.path.join(solpath.csv_files_path, 'f.csv'), rmsh.lmsh.sf[0])
+io.print_scalar_to_csvfile(v, os.path.join(solpath.csv_files_path, 'v.csv'), rmsh.lmsh.sf[0])
 io.print_scalar_to_csvfile(t, os.path.join(solpath.csv_files_path, 't.csv'), rmsh.lmsh.sf[0])
 
 
