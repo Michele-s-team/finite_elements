@@ -1,3 +1,9 @@
+'''
+solve for a poisson equation by enforcing a jump in u and also in grad u
+
+note: I don't understand why, but here I need to replace bgeo.facet_normal('+')[i] fsp.e with msh.jump(fsp.u_exact, bgeo.facet_normal)[i] for this code to give the correct solution. They are the same thing, so this is correct
+'''
+
 from fenics import *
 import importlib
 import numpy as np
@@ -103,6 +109,7 @@ F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx + \
 
 # here I put the average for d because d is the same on both sides (it is a jump)
 F_a = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.dS_m
+
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] 
