@@ -62,7 +62,8 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     # remove these identical entries by creating dof_coordinates_unique
     dof_coordinates_unique = dof_coordinates[::value_size]
 
-    f_values = f.vector().get_local().reshape(-1, value_size)
+    f_values = f.vector().get_local()
+    f_values_unique = f_values.reshape(-1, value_size)
 
     print(f'len dof_coordinates = {len(dof_coordinates)}')
     print(f'len dof_coordinates_unique = {len(dof_coordinates_unique)}')
@@ -97,20 +98,35 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
 
     if Q_continuous:
         # the function space of 'f' is continuous -> run over all DOF coordinates and print the value of 'f' on each of them
-
-        for dof_coordinate, dof_value in zip(dof_coordinates_unique, f_values):
+        
+        for dof_coordinate, f_value in zip(dof_coordinates_unique, f_values_unique):
 
             # pad 'x' to three dimensions
             x = pad(dof_coordinate, 3)
 
-            component_string = ",".join([str(list(dof_value)[i]) for i in range(value_size)])
-
+            component_string = ",".join([str(list(f_value)[i]) for i in range(value_size)])
 
             print(f"{component_string},{x[0]},{x[1]},{x[2]}", file=csvfile)
+        
     
     # sign
     else:
         # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f_values, each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
+        
+        # 
+        counter = 0
+        target = np.array([0.3, 0.5])
+        for cell in cells(mesh):
+            cell_dofs = Q.dofmap().cell_dofs(cell.index())
+            coords = dof_coordinates[cell_dofs]
+            for row in coords:
+                diff = np.linalg.norm(row - target)
+                if diff < 1e-10:
+                    print(f'cell {cell.index()}: found target, diff = {diff}, exact coords = {repr(row)}')
+                    counter+=1
+
+        print(f'found that coordinate {counter} times')
+        # 
 
         for cell in cells(mesh):
             # run over all cells in 'mesh'
@@ -118,15 +134,28 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
             #compute 'mesh_function' on the cell under consideration to tell to which tagged domain the cell under consideration belongs
             cell_tag = mesh_function[cell]
 
-            for dof in Q.dofmap().cell_dofs(cell.index()):
+
+            cell_dofs = Q.dofmap().cell_dofs(cell.index())
+            dof_coordinates_cell = dof_coordinates[cell_dofs]
+
+            n_nodes = len(cell_dofs) // value_size
+
+            print(f'n_nodes = {n_nodes}')
+
+            cell_dofs_unique = cell_dofs[:n_nodes]
+
+            print(f'dof coorindates in cell: {dof_coordinates_cell}')
+
+            for i in range(len(cell_dofs_unique)):
                 # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordinates of those DOFs, by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file
 
                 # pad 'x' to three dimensions
-                dof_coordinate = pad(dof_coordinates[dof], 3)
+                dof_coordinate = pad(dof_coordinates[cell_dofs_unique[i]], 3)
 
-                print(f'cell coord = {dof_coordinate}')
+                f_value_string = ",".join([f'{f_values[cell_dofs[j * n_nodes + i]]}' for j in range(value_size)])
+                dof_coordinate_string = ",".join([f'{dof_coordinate[j]}' for j in range(len(dof_coordinate))])
 
-                # print(f'{f_values[dof]},{dof_coordinate[0]},{dof_coordinate[1]},{dof_coordinate[2]},{cell_tag}', file=csvfile)
+                print(f"{f_value_string},{dof_coordinate_string},{cell_tag}", file=csvfile)
 
 
     csvfile.close()
