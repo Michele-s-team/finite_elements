@@ -12,4 +12,5 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path)
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf)
