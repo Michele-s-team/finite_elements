@@ -123,7 +123,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
         Q_continuous = True
 
     if value_size == 1:
-        component_headers = "f"
+        component_headers = '\"f\"'
     else:
         component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
         
