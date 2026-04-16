@@ -187,7 +187,9 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
 
                 ...
             ]
-            where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]
+            where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
+
+            cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the tensor 'f' sitting on ith DOF in the cell 'cell']
             '''
             cell_dofs = Q.dofmap().cell_dofs(cell.index())
 
