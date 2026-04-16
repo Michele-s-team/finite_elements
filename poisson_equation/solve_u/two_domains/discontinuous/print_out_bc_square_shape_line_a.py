@@ -27,4 +27,4 @@ print(f"\t\t<<(u - u_exact)^2>>_[Omega shape] = {col.Fore.RED}{msh.difference_wr
 print(f"\t\t<<(u - u_exact)^2>>_[Omega square] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.dx_mesh[0]['dx_square']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
-import print_out_solution
+prout_sol = importlib.import_module(swi.prout_sol)

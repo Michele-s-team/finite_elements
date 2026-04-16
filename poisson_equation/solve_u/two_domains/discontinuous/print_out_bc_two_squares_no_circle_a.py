@@ -32,4 +32,4 @@ print(f"\t\t<<(u - u_exact)^2>>_[Omega r] = {col.Fore.RED}{msh.difference_wrt_me
 
 
 
-import print_out_solution
+prout_sol = importlib.import_module(swi.prout_sol)
