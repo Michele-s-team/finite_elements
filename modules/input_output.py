@@ -17,26 +17,26 @@ number_of_decimals = 2
 
 
 '''
-prints a scalar to csv file
+prints a field (scalar, vector, tensor) to csv file
 Input values: 
     * Mandatory: 
-        - 'f': the scalar
+        - 'f': the field
         - 'filename': path, filename and extension of the csv file
     * Optional:
-        - 'mesh_function': a mesh function that tags regions of the mesh, needed if the function space of f is discontinuous
+        - 'mesh_function': a mesh function that tags regions of the mesh, needed if the function space of 'f' is discontinuous
 
 Return values: 
     This method does not return anything but
     - If the function space of 'f' is a continuous one, the output csv file wil be of the form
-        f,":0",":1",":2"
-        2.80916762649242,0.1265394779209243,0.9468478039819185,0.2
-        2.633369164732261,0.08583087380404092,0.9016260730925969,0.3
+        f:0,f:1,...,":0",":1",":2"
+        f0_DOF0,f1_DOF0,...,rx_DOF_0,ry_DOF_0,rz_DOF_0
+        f0_DOF1,f1_DOF1,...,rx_DOF_1,ry_DOF_1,rz_DOF_1
         ....
     - If the function space of 'f' is discontinuous
         f,":0",":1",":2",tag
-        2.80916762649242,0.1265394779209243,0.9468478039819185,0.234,2
-        2.633369164732261,0.08583087380404092,0.9016260730925969,0.43,2
-    ...
+        f0_DOF0,f1_DOF0,...,rx_DOF_0,ry_DOF_0,rz_DOF_0,tag_DOF_0
+        f0_DOF1,f1_DOF1,...,rx_DOF_1,ry_DOF_1,rz_DOF_1,tag_DOF_1
+        ...
 '''
 
 def print_scalar_to_csvfile(f, filename, mesh_function=None):
