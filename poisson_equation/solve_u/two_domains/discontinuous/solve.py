@@ -41,7 +41,7 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-
+'''
 # test print to csv file - start
 import input_output as io
 import os
@@ -65,6 +65,7 @@ io.print_to_csvfile(v, os.path.join(solpath.csv_files_path, 'v.csv'), rmsh.lmsh.
 
 sys.exit(0)
 # test print to csv file - end
+'''
 
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 
