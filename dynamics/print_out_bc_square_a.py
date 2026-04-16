@@ -135,9 +135,9 @@ def print_solution(psi, step, t):
     files.xdmffile_f.write( fsp.f_sigma_t, t )
     files.xdmffile_f.write( fsp.f_v_t, t )
 
-    io.print_vector_to_csvfile( fsp.f_visc_t, (rarg.args.output_directory)  + '/snapshots/csv/fvisc_t_' + str( step + 1 )  + '.csv' )
-    io.print_vector_to_csvfile( fsp.f_sigma_t, (rarg.args.output_directory)  + '/snapshots/csv/fsigma_t_' + str( step + 1 )  + '.csv' )
-    io.print_vector_to_csvfile( fsp.f_v_t, (rarg.args.output_directory)  + '/snapshots/csv/fv_t_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.f_visc_t, (rarg.args.output_directory)  + '/snapshots/csv/fvisc_t_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.f_sigma_t, (rarg.args.output_directory)  + '/snapshots/csv/fsigma_t_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.f_v_t, (rarg.args.output_directory)  + '/snapshots/csv/fv_t_' + str( step + 1 )  + '.csv' )
 
 
     # normal forces
@@ -162,7 +162,7 @@ def print_solution(psi, step, t):
     files.xdmffile_dFdl.write( fsp.dFdl, t )
     files.xdmffile_dFds.write( fsp.dFds, t )
 
-    io.print_vector_to_csvfile( fsp.dFdl, (rarg.args.output_directory) + '/snapshots/csv/dFdl_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.dFdl, (rarg.args.output_directory) + '/snapshots/csv/dFdl_' + str( step + 1 )  + '.csv' )
     io.print_to_csvfile( fsp.dFds, (rarg.args.output_directory) + '/snapshots/csv/dFds_' + str( step + 1 )  + '.csv' )
 
 

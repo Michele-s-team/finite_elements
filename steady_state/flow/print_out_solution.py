@@ -50,11 +50,11 @@ xdmffile_f.write(project(phys.fsigma_t(sigma_output, omega_output), fsp.Q_f_t), 
 xdmffile_f.write(
     project(phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, rpam.parameters['rho']), fsp.Q_f_t), 0)
 
-io.print_vector_to_csvfile(project(phys.fvisc_t(fsp.d, omega_output, rpam.parameters['eta']), fsp.Q_f_t),
+io.print_to_csvfile(project(phys.fvisc_t(fsp.d, omega_output, rpam.parameters['eta']), fsp.Q_f_t),
                            (rarg.args.output_directory) + '/fvisc_t.csv')
-io.print_vector_to_csvfile(project(phys.fsigma_t(sigma_output, omega_output), fsp.Q_f_t),
+io.print_to_csvfile(project(phys.fsigma_t(sigma_output, omega_output), fsp.Q_f_t),
                            (rarg.args.output_directory) + '/fsigma_t.csv')
-io.print_vector_to_csvfile(
+io.print_to_csvfile(
     project(phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, rpam.parameters['rho']), fsp.Q_f_t),
     (rarg.args.output_directory) + '/fv_t.csv')
 
