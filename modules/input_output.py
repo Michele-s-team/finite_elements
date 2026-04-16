@@ -57,12 +57,49 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     print(f'value_shape = {value_shape}\nvalue_size = {value_size}')
 
     mesh = Q.mesh()
-    # dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks of value_size entries which are all identical
+    '''
+    dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
+    For example, dof_coordinates is of the form ->
+        row 0:  [x0, y0]   ← this corresponds to 0th-component of f at DOF point 0
+        row 1:  [x0, y0]   ← this corresponds to 1st-component of f at DOF point 0
+        ...
+        row value_size  [x1, y1]   ← this corresponds to 0th-component of f at DOF point 1
+        row value_size+1 [x1, y1]   ← this corresponds to 1st-component of f at DOF point 1
+        ...
+        
+    '''
     dof_coordinates = Q.tabulate_dof_coordinates()
-    # remove these identical entries by creating dof_coordinates_unique
+    
+    '''
+    remove these identical entries by creating dof_coordinates_unique: I jump on 'dof_coordinates' with stride 'value_size' 
+    dof_coordinates_unique = 
+        [[x0, y0],
+        [x1, y1],
+        ....]
+    '''
     dof_coordinates_unique = dof_coordinates[::value_size]
 
+    '''
+    f_values contains the value of 'f' on the DOFs, and it has the same structure as 'dof_coordinates'
+    f_values = 
+            row 0: f[0] at DOF point 0
+            row 1: f[1] at DOF point 0
+            ...
+            row value_size  f[0] at DOF point 1
+            row value_size+1 f[1] at DOF point 1
+            ...
+        
+    '''
     f_values = f.vector().get_local()
+
+    '''
+    f_values_unique is obtained by f_values by putting f[0], f[1], ... into a nested list
+    f_values_unique = 
+            [f[0] at DOF point 0, f[1] at DOF point 0, ...]
+            [f[0] at DOF point 1, f[1] at DOF point 1, ...]
+            ...
+    
+    '''
     f_values_unique = f_values.reshape(-1, value_size)
 
     print(f'len dof_coordinates = {len(dof_coordinates)}')
@@ -70,16 +107,18 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     print(f'len f_values = {len(f_values)}')
 
     if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
+        # the methods has been called with a discontinuous function space
 
         Q_continuous = False
         
         if mesh_function == None:
-            # the meshod has been called on a discontinuous function space -> 'mesh_function' is needed to tell to which tagged domain each DOF coordinate corresponds -> throw an error and exit
+            # the meshod has been called on a discontinuous function space and mesh_function has not been provided -> 'mesh_function' is needed to tell to which tagged domain each DOF coordinate corresponds -> throw an error and exit
 
             print(f'{col.Fore.RED}Error!! print_scalar_to_csv_file has been called on a discontinuous function space without providing mesh_function.{col.Fore.RESET}')
             sys.exit(1)
 
     else: 
+        # the method has been called with a continuous function space
 
         Q_continuous = True
 
@@ -97,7 +136,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     print(headers, file=csvfile)
 
     if Q_continuous:
-        # the function space of 'f' is continuous -> run over all DOF coordinates and print the value of 'f' on each of them
+        # the function space of 'f' is continuous -> run over all unique DOF coordinates and print the value of f[0], f[1], ...  on each of them
         
         for dof_coordinate, f_value in zip(dof_coordinates_unique, f_values_unique):
 
@@ -109,7 +148,6 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
             print(f"{f_value_string},{x[0]},{x[1]},{x[2]}", file=csvfile)
         
     
-    # sign
     else:
         # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f_values, each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
         
@@ -134,20 +172,49 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
             #compute 'mesh_function' on the cell under consideration to tell to which tagged domain the cell under consideration belongs
             cell_tag = mesh_function[cell]
 
+            '''
+            cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+            [
+                id_f_0_on_DOF_0, 
+                id_f_0_on_ DOF_1,
+                ...,
+                id_f_0_on_DOF_{n_nodes-1},
 
+                id_f_1_on_DOF_0, 
+                id_f_1_on_ DOF_1,
+                ...,
+                id_f_1_on_DOF_{n_nodes-1},
+
+                ...
+            ]
+            where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]
+            '''
             cell_dofs = Q.dofmap().cell_dofs(cell.index())
+
+
             dof_coordinates_cell = dof_coordinates[cell_dofs]
 
             n_nodes = len(cell_dofs) // value_size
 
-            print(f'n_nodes = {n_nodes}')
+            print(f'cell_dofs = {cell_dofs}')
 
+            '''
+            remove the redundancy in cell_dofs and store the result in 
+            cell_dofs_unique = 
+                [
+                    id_DOF_0, 
+                    id_DOF_1,
+                    ...,
+                    id_DOF_{n_nodes-1}
+                ]
+            
+            '''
             cell_dofs_unique = cell_dofs[:n_nodes]
 
             print(f'dof coorindates in cell: {dof_coordinates_cell}')
 
             for i in range(len(cell_dofs_unique)):
-                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordinates of those DOFs, by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file
+                # run over physical DOFs contained to 'cell' and print out the value of 'f' by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file. Note that, because the space of 'f' is discontinuous, here DOFs in 'cell' may belong to different mesh regions, and thus have different tags
 
                 # pad 'x' to three dimensions
                 dof_coordinate = pad(dof_coordinates[cell_dofs_unique[i]], 3)
