@@ -763,10 +763,12 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     hdf5_file.write(f, "/f")
     hdf5_file.close()
 
-    # write to csv file and the nodal values to csv file
+    # write to csv file 
     print_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv',
                                 mesh_function=mesh_function)
+    
     if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
+        # the field is defined on a continuous space -> print its nodal values to csv file
 
         if type == 'scalar':
                 
