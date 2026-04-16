@@ -104,16 +104,16 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
             # pad 'x' to three dimensions
             x = pad(dof_coordinate, 3)
 
-            component_string = ",".join([str(list(f_value)[i]) for i in range(value_size)])
+            f_value_string = ",".join([str(list(f_value)[i]) for i in range(value_size)])
 
-            print(f"{component_string},{x[0]},{x[1]},{x[2]}", file=csvfile)
+            print(f"{f_value_string},{x[0]},{x[1]},{x[2]}", file=csvfile)
         
     
     # sign
     else:
         # the function space of 'f' is discontinuous: the same DOF coordinate and f value may appear multiple times in f_values, each time for a different cell (and possibly mesh region) to which it belongs -> print the values of 'f' by looping through cells
         
-        # 
+        '''
         counter = 0
         target = np.array([0.3, 0.5])
         for cell in cells(mesh):
@@ -126,7 +126,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
                     counter+=1
 
         print(f'found that coordinate {counter} times')
-        # 
+        '''
 
         for cell in cells(mesh):
             # run over all cells in 'mesh'
