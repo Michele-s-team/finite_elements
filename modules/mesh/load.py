@@ -44,9 +44,6 @@ else:
         # read the i-th mesh
         mesh[i], sf[i] = msh.read_from_file(os.path.join(rarg.args.input_directory, f'mesh_{i}'), parameters[f'mesh_{i}_file_format'])
 
-        print(f'mesh[{i}] = {mesh[i]}')
-        print(f'sf[{i}] = {sf[i]}', flush=True)
-
         # read the sub_meshes and generate their functions tagging cells and vertices
         sub_meshes[i], sf_sub_meshes[i], mf_sub_meshes[i] = msh.read_sub_meshes(mesh[i], sf[i], mesh_parameters[i], os.path.join(rarg.args.input_directory, f'mesh_{i}'))
 

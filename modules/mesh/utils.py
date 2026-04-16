@@ -9,6 +9,7 @@ import os
 import pygmsh
 import shutil
 import sys
+import ufl
 
 import calculus as cal
 import constants.utils as const
@@ -17,6 +18,7 @@ import function as fu
 import geometry.utils as geo_u
 import input_output as io
 
+alpha = ufl.indices(1)
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
@@ -188,6 +190,55 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
 
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
+
+'''
+returns a mesh function that tags internal facets of a 2d mesh contained into two neighboring surfaces
+Input values:   
+    - 'mesh': the mesh
+    - 'sf': the mesh function tagging mesh surfaces of the mesh
+    - 'surface_a_id', 'surface_b_id': ID with which the neighboring surfaces have been tagged
+    - 'boundary_ab_id': ID with which the 1d boundary between the two surfaces has been tagged
+
+Return values"
+    - 'mf': a mesh function where internal facets of surface_a are tagged with 'surface_a_id', the internal facets of surface_b are tagged with 'surface_b_id', and the facets at the interface between surface_a and surface_b are tagged with 'boundary_ab_id'
+'''
+def read_mesh_internal_components(mesh, sf, surface_a_id, surface_b_id, boundary_ab_id):
+
+    # build a function mf_I that tags interior lines and allows for reading them
+    mf = MeshFunction("size_t", mesh, mesh.topology().dim() - 1, 0)
+
+    mesh.init(1, 2)   # build facet-to-cell connectivity
+
+    for facet in facets(mesh):
+
+        if facet.exterior() == False:
+            # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
+
+            # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
+
+            # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
+            cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
+
+            if all(c == surface_a_id for c in cell_tags):
+                # all cells that have facet as one of their boundary facets belong to l_surface -> the facet under consideration is an internal facet of l_surface -> tag this facet in mf_I with ID l_surface_id
+
+                mf[facet] = surface_a_id
+
+            elif all(c == surface_b_id for c in cell_tags):
+                # all cells that have 'facet' as one of their boundary facets belong to r_surface -> the facet under consideration is an internal facet of r_surface -> tag this facet in mf_I with ID r_surface_id
+
+                mf[facet] = surface_b_id
+
+            else:
+                # one of the two cells that have 'facet' as one of their boundary facets belongs to l_surface, and the other to r_surface -> the facet under consideration is an internal facet coinciding with 'm_line' -> tag this facet in mf_I with ID 'm_line_id'
+
+                mf[facet] = boundary_ab_id
+
+                # print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
+
+    return mf
+ 
+   
 
 
 '''
@@ -501,11 +552,13 @@ def difference_in_bulk(f, g):
 
 # return sqrt(<(f-g)^2>_measure / <measure>), where measure can be dx, ds_...
 def difference_wrt_measure(f, g, measure):
+
     return sqrt(assemble(((f - g) ** 2 * measure)) / assemble(Constant(1.0) * measure))
 
 
 # return sqrt(<f^2>_measure / <measure>), where measure can be dx, ds_...
 def abs_wrt_measure(f, measure):
+    
     return difference_wrt_measure(f, Constant(0), measure)
 
 
@@ -1581,16 +1634,12 @@ def read_from_xdmf_file(mesh_path):
             mesh = read_mesh(mesh_path_with_slash + "triangle_mesh.xdmf")
             sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "triangle_mesh.xdmf")
 
-            print('2d mesh')
-
             result = mesh, sf
 
         else:
             if cmd.check_if_file_exists(mesh_path_with_slash + "line_mesh.xdmf"):
                 mesh = read_mesh(mesh_path_with_slash + "line_mesh.xdmf")
                 sf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.xdmf")
-
-                print('1d mesh')
 
                 result = mesh, sf
             else:
@@ -2854,3 +2903,64 @@ def custom_mesh_quality(mesh):
     result, _ = MeshQuality.radius_ratio_min_max(mesh)
 
     return result
+
+'''
+return the jump in a field with respect to a facet normal for discontinuous function spaces
+Input values: 
+    - 'u': the field
+    -  'n': the facet normal
+Return values: 
+    - 'u("+") * n("+")[alpha] + u("-") * n("-")[alpha]': the jump
+
+'''
+def jump(u, n): 
+
+    return as_tensor(u("+") * (n("+"))[alpha] + u("-") * (n("-"))[alpha], (alpha))
+
+
+'''
+Return the average of a field across facets in a discontinuous function space
+Input values: 
+    - 'u': the field
+Return values: 
+    -  the average (u('+')+u('-'))/2
+'''
+def average(u):
+
+    return (u("+")+u("-"))/2
+
+'''
+set a scalar field defined on a DG space equal to a function profile in a mesh region 
+Input values: 
+    * Mandatory:
+        - 'f': the scalar field defined on a DG space
+        - 'g': the function profile to which 'f' will be set
+        - 'sf': the mesh function that tags mesh surfaces
+    * Optional:
+        - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
+'''
+def interpolate_dg(f, g, sf, region_id=None):
+
+    Q = f.function_space()
+    mesh = f.function_space().mesh()
+    dof_coordinates = Q.tabulate_dof_coordinates()
+
+    f_values = f.vector().get_local()   # get a copy of field values
+    
+    for cell in cells(mesh):
+        # run on all mesh cells
+
+        # compute 'sf' on the cell; under consideration
+        cell_tag = sf[cell]
+
+        if (cell_tag == region_id) or (region_id == None):
+            # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'
+
+            for dof in Q.dofmap().cell_dofs(cell.index()):
+                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
+
+                f_values[dof] = g(dof_coordinates[dof][:2])
+
+    f.vector().set_local(f_values) 
+    f.vector().apply("insert")
+   

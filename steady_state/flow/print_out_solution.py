@@ -50,11 +50,11 @@ xdmffile_f.write(project(phys.fsigma_t(sigma_output, omega_output), fsp.Q_f_t), 
 xdmffile_f.write(
     project(phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, rpam.parameters['rho']), fsp.Q_f_t), 0)
 
-io.print_vector_to_csvfile(project(phys.fvisc_t(fsp.d, omega_output, rpam.parameters['eta']), fsp.Q_f_t),
+io.print_to_csvfile(project(phys.fvisc_t(fsp.d, omega_output, rpam.parameters['eta']), fsp.Q_f_t),
                            (rarg.args.output_directory) + '/fvisc_t.csv')
-io.print_vector_to_csvfile(project(phys.fsigma_t(sigma_output, omega_output), fsp.Q_f_t),
+io.print_to_csvfile(project(phys.fsigma_t(sigma_output, omega_output), fsp.Q_f_t),
                            (rarg.args.output_directory) + '/fsigma_t.csv')
-io.print_vector_to_csvfile(
+io.print_to_csvfile(
     project(phys.conv_cn_t(v_output, v_output, v_output, w_output, w_output, omega_output, rpam.parameters['rho']), fsp.Q_f_t),
     (rarg.args.output_directory) + '/fv_t.csv')
 
@@ -65,13 +65,13 @@ xdmffile_f.write(project(phys.flaplace(sigma_output, omega_output), fsp.Q_f_n), 
 xdmffile_f.write(
     project(phys.conv_cn_n(v_output, v_output, v_output, w_output, w_output, omega_output, rpam.parameters['rho']), fsp.Q_f_n), 0)
 
-io.print_scalar_to_csvfile(project(phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, rpam.parameters['eta']), fsp.Q_f_n),
+io.print_to_csvfile(project(phys.fvisc_n(v_output, w_output, omega_output, fsp.mu, rpam.parameters['eta']), fsp.Q_f_n),
                            (rarg.args.output_directory) + '/fvisc_n.csv')
-io.print_scalar_to_csvfile(project(phys.fel_n(omega_output, mu_output, fsp.tau, rpam.parameters['kappa']), fsp.Q_f_n),
+io.print_to_csvfile(project(phys.fel_n(omega_output, mu_output, fsp.tau, rpam.parameters['kappa']), fsp.Q_f_n),
                            (rarg.args.output_directory) + '/fel_n.csv')
-io.print_scalar_to_csvfile(project(phys.flaplace(sigma_output, omega_output), fsp.Q_f_n),
+io.print_to_csvfile(project(phys.flaplace(sigma_output, omega_output), fsp.Q_f_n),
                            (rarg.args.output_directory) + '/flaplace.csv')
-io.print_scalar_to_csvfile(
+io.print_to_csvfile(
     project(phys.conv_cn_n(v_output, v_output, v_output, w_output, w_output, omega_output, rpam.parameters['rho']), fsp.Q_f_n),
     (rarg.args.output_directory) + '/conv_cn_n.csv')
 

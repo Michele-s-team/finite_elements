@@ -5,6 +5,7 @@ import ufl as ufl
 import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
+import mesh.utils as msh
 
 alpha, beta, gamma, i, j, k, l = ufl.indices(7)
 
@@ -130,23 +131,40 @@ else:
 return the normal to a mesh as a smooth field
 Note: the resulting vector field is not normalized to unity. 
 Input values: 
-    - 'mesh': the mesh
+    * Mandatory:
+        - 'mesh': the mesh
+        - 'n': the normal, e.g., FacetNormal(mesh) or FacetNormal(mesh)('+') ...
+        - 'measure': the measure over which the normal will be smoothened, e.g., a ds or a dS of 'mesh'
+    * Optional:
+        - 'interior': (False by default): True whether 'measure' is of type 'dS', false if it is of type 'ds'
 Return values: 
-    - the unit normal as a smooth field
+    - the normal as a smooth field
 '''
-def calc_normal_cg2(mesh):
+def field_facet_normal(n, mesh, measure, interior=False):
 
-    n = FacetNormal(mesh)
     V = VectorFunctionSpace(mesh, "CG", 2)
+
     u = TrialFunction(V)
     v = TestFunction(V)
-    a = inner(u, v) * ds
-    l = inner(n, v) * ds
+
+    if interior:
+        # the provided measure is an interior measure in the mesh, of type 'dS' -> specify that the quantities in the variational problem are averages over '+' and '-' side
+
+        a = inner(msh.average(u), msh.average(v)) * measure
+        l = inner(n, msh.average(v)) * measure
+
+    else:
+        # the provided measure is at the mesh boundary, of type 'ds' -> no need to specify that the quantities in the variational problem  are  '+' or '-' 
+
+        a = inner(u, v) * measure
+        l = inner(n, v) * measure
+    
     A = assemble(a, keep_diagonal=True)
     L = assemble(l)
 
     A.ident_zeros()
     nh = Function(V)
+
     solve(A, nh.vector(), L)
 
     return nh
@@ -156,23 +174,26 @@ normal to the manifold pointing outwards the manifold and normalized according t
 Input values: 
     * Mandatory:
         - 'mesh': the mesh of which the normal is to be computed
+        - 'n': the normal, e.g., FacetNormal(mesh) or FacetNormal(mesh)('+') ...
+        - 'measure': the measure of 'mesh' where the normal will be computed
     * Optional:
         - 'norm_threshold': the threshold for normalization of the normal. Entries of the normal whose norm is smaller than norm_threshold will be normalized by norm unity (these entries are irrelevant, because they live in the bulk of the mesh). 
 Return values: 
-    - 'n': the facet normal as a smooth field, norma
+    - 'n_smooth': the facet normal as a smooth field, norma
  '''
 
-def facet_normal_smooth(mesh, 
+def field_facet_normal_normalized(mesh, n, measure,
+                        interior=False,
                         norm_threshold = const.vector_norm_threshold):
 
     # obtain the non-normalized normal 
-    n = calc_normal_cg2(mesh)
+    n_smooth = field_facet_normal(n, mesh, measure, interior)
 
     '''
     n_vector contains the DOFs of the vector field n :
         n_vector = [nx_dof0, ny_dof0, nx_dof1, ny_dof1, ...]
     '''
-    n_vector = n.vector().get_local()
+    n_vector = n_smooth.vector().get_local()
 
     '''
     reshape n_vector in this way:
@@ -223,11 +244,11 @@ def facet_normal_smooth(mesh,
     '''
     write n_vector into the DOF vector of n
     '''
-    n.vector().set_local(n_vector.reshape(-1))
+    n_smooth.vector().set_local(n_vector.reshape(-1))
 
-    n.vector().apply("insert")
+    n_smooth.vector().apply("insert")
     
-    return n
+    return n_smooth
 
 '''
 normal to a curve expressed n term of the reference and current configuration of a curve

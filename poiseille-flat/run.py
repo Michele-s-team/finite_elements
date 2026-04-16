@@ -232,8 +232,8 @@ for n in range( num_steps ):
     xdmffile_v.write( v_n, t )
     xdmffile_sigma.write( sigma_n, t )
 
-    io.print_vector_to_csvfile( v_n, (args.output_directory) + '/snapshots/csv/v_n_' + str( step ) + '.csv' )
-    io.print_scalar_to_csvfile( sigma_n, (args.output_directory) + '/snapshots/csv/sigma_' + str( step ) + '.csv' )
+    io.print_to_csvfile( v_n, (args.output_directory) + '/snapshots/csv/v_n_' + str( step ) + '.csv' )
+    io.print_to_csvfile( sigma_n, (args.output_directory) + '/snapshots/csv/sigma_' + str( step ) + '.csv' )
 
     print( "BC = ", assemble( ((phi.dx( i )) * (facet_normal[i])) ** 2 * ds_l ) )
     print( "\t%.2f %%" % (100.0 * (t / T)), flush=True )

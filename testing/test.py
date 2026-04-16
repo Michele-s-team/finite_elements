@@ -367,6 +367,47 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
+# Test poisson_equation/solve_u/two_domains/discontinuous
+case_name = 'poisson_equation/solve_u/two_domains/discontinuous'
+
+problem_name = 'square_shape_line_a'
+generate_mesh_path = root_path + 'generate_mesh/2d/square/shape_line/'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+problem_name = 'square_shape_line_b'
+generate_mesh_path = root_path + 'generate_mesh/2d/square/shape_line/'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+problem_name = 'two_squares_no_circle_a'
+generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/two_squares_no_circle/'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+problem_name = 'two_squares_no_circle_b'
+generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/two_squares_no_circle/'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+
+
 # Test poisson_equation/solve_u/three_domains
 case_name = 'poisson_equation/solve_u/three_domains'
 
@@ -394,6 +435,21 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+
+# Test poisson_equation/solve_u/discontinuous
+case_name = 'poisson_equation/solve_u/discontinuous'
+
+problem_name = 'disk'
+generate_mesh_path = root_path + 'generate_mesh/2d/disk/'
+checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
+                                                                     root_path,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     generate_mesh_path, root_path + case_name,
+                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
+                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+
+
 
 # Test poisson_equation/solve_u_v
 case_name = 'poisson_equation/solve_u_v'
