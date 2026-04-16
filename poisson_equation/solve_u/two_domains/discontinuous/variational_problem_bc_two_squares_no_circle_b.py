@@ -19,11 +19,10 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
+'''
 # print facet_normal('+') to check whether L = '+' or '-'
 bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, interior=True)
-
-
-# 
+'''
 
 
 # test case 1
