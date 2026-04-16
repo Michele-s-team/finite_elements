@@ -460,47 +460,55 @@ The resulting csv file is of this form
 
 def print_nodal_values_vector_to_csvfile(v, filename):
 
-    V = v.function_space()
-    mesh = V.mesh()
-
-    # value_shape is the shape of the vector, for example (2,) for a vector with two components
-    vector_shape = V.ufl_element().value_shape()
-
-    # value_size is the number of components of the vector
-    vector_shape_size = int(vector_shape[0])
-
-    # a dummy function space of order 1 used to tabulated the vertices
-    Q = FunctionSpace(mesh, 'CG', 1)
-    coordinates = Q.tabulate_dof_coordinates()
-
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-
-    csvfile = open(filename, "w")
-
-    component_headers = ",".join([f'"f:{i}"' for i in range(vector_shape_size)])
-    coord_headers     = ",".join([f'":{i}"' for i in range(3)])
-
-    print(f"{component_headers},{coord_headers}", file=csvfile)
-
-    for i in range(Q.dim()):
-        # run through the nodes
-
-        coordinate = coordinates[i]
-        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
-        padded_coordinate = pad(coordinate, 3)
-
-        # evaluate the function at the coordinate
-        # if the vector field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
-        v_value = np.atleast_1d(v(*coordinate))
-
-        value_string = ",".join([f'{v_value[i]}' for i in range(vector_shape_size)])
-        coordinate_string  = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
-
-        print(f"{value_string},{coordinate_string}", file=csvfile)
+    if (v.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
 
 
-    csvfile.close()
+        V = v.function_space()
+        mesh = V.mesh()
+
+        # value_shape is the shape of the vector, for example (2,) for a vector with two components
+        vector_shape = V.ufl_element().value_shape()
+
+        # value_size is the number of components of the vector
+        vector_shape_size = int(vector_shape[0])
+
+        # a dummy function space of order 1 used to tabulated the vertices
+        Q = FunctionSpace(mesh, 'CG', 1)
+        coordinates = Q.tabulate_dof_coordinates()
+
+        # create the path for the csv file if it does not exist
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        csvfile = open(filename, "w")
+
+        component_headers = ",".join([f'"f:{i}"' for i in range(vector_shape_size)])
+        coord_headers     = ",".join([f'":{i}"' for i in range(3)])
+
+        print(f"{component_headers},{coord_headers}", file=csvfile)
+
+        for i in range(Q.dim()):
+            # run through the nodes
+
+            coordinate = coordinates[i]
+            # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+            padded_coordinate = pad(coordinate, 3)
+
+            # evaluate the function at the coordinate
+            # if the vector field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
+            v_value = np.atleast_1d(v(*coordinate))
+
+            value_string = ",".join([f'{v_value[i]}' for i in range(vector_shape_size)])
+            coordinate_string  = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
+
+            print(f"{value_string},{coordinate_string}", file=csvfile)
+
+
+        csvfile.close()
+
+    else:
+
+        print(f'{col.Fore.RED}Error!! print_nodal_values_scalar_to_csvfile has been called on a discontinuous function space.{col.Fore.RESET}')
+        sys.exit(1)
 
 
 '''
@@ -518,46 +526,53 @@ Input values:
 
 def print_nodal_values_tensor_to_csvfile(t, filename):
 
-    T = t.function_space()
-    mesh = T.mesh()
-    
-    # the shape of the tensor, for example (2, 3)
-    tensor_shape = T.ufl_element().value_shape()
-    # value_size is the total number of components of the tensor, for example for a (2, 3) tensor shape_size = 2 * 3 
-    tensor_shape_size  = int(np.prod(tensor_shape))
+    if (t.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
 
-    # a dummy function space of order 1 used to tabulated the vertices
-    Q = FunctionSpace(mesh, 'CG', 1)
-    coordinates = Q.tabulate_dof_coordinates()
+        T = t.function_space()
+        mesh = T.mesh()
+        
+        # the shape of the tensor, for example (2, 3)
+        tensor_shape = T.ufl_element().value_shape()
+        # value_size is the total number of components of the tensor, for example for a (2, 3) tensor shape_size = 2 * 3 
+        tensor_shape_size  = int(np.prod(tensor_shape))
 
-    # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
+        # a dummy function space of order 1 used to tabulated the vertices
+        Q = FunctionSpace(mesh, 'CG', 1)
+        coordinates = Q.tabulate_dof_coordinates()
 
-    csvfile = open(filename, "w")
+        # create the path for the csv file if it does not exist
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-    component_headers = ",".join([f'"f:{i}"' for i in range(tensor_shape_size)])
-    coord_headers     = ",".join([f'":{i}"' for i in range(3)])
+        csvfile = open(filename, "w")
 
-    print(f"{component_headers},{coord_headers}", file=csvfile)
+        component_headers = ",".join([f'"f:{i}"' for i in range(tensor_shape_size)])
+        coord_headers     = ",".join([f'":{i}"' for i in range(3)])
 
-    for i in range(Q.dim()):
-        # run through the nodes
+        print(f"{component_headers},{coord_headers}", file=csvfile)
 
-        coordinate = coordinates[i]
-        # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
-        padded_coordinate = pad(coordinate, 3)
+        for i in range(Q.dim()):
+            # run through the nodes
 
-        # evaluate the function at the coordinate
-        # if the tensor field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
-        t_value = np.atleast_1d(t(*coordinate))
+            coordinate = coordinates[i]
+            # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
+            padded_coordinate = pad(coordinate, 3)
 
-        component_str = ",".join([str(t_value[j]) for j in range(tensor_shape_size)])
-        coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
+            # evaluate the function at the coordinate
+            # if the tensor field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
+            t_value = np.atleast_1d(t(*coordinate))
 
-        print(f"{component_str},{coord_str}", file=csvfile)
+            component_str = ",".join([str(t_value[j]) for j in range(tensor_shape_size)])
+            coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
+
+            print(f"{component_str},{coord_str}", file=csvfile)
 
 
-    csvfile.close()
+        csvfile.close()
+
+    else:
+
+        print(f'{col.Fore.RED}Error!! print_nodal_values_scalar_to_csvfile has been called on a discontinuous function space.{col.Fore.RESET}')
+        sys.exit(1)
     
 
 '''
@@ -749,21 +764,21 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
     hdf5_file.close()
 
     # write to csv file and the nodal values to csv file
-    if type == 'scalar':
-        print_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv',
+    print_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv',
                                 mesh_function=mesh_function)
-        
-        if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
+    if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
 
+        if type == 'scalar':
+                
             print_nodal_values_scalar_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
-    elif type == 'vector':
-        print_vector_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        print_nodal_values_vector_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+        elif type == 'vector':
 
-    elif type == 'tensor':
-        print_tensor_to_csvfile(f, path_csv_file_with_slash + field_name + '.csv')
-        print_nodal_values_tensor_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+            print_nodal_values_vector_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
+
+        elif type == 'tensor':
+
+            print_nodal_values_tensor_to_csvfile(f, path_csv_nodal_value_file_with_slash + field_name + '.csv')
 
 
 '''
