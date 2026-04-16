@@ -124,6 +124,8 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
                 # pad 'x' to three dimensions
                 dof_coordinate = pad(dof_coordinates[dof], 3)
 
+                print(f'cell coord = {dof_coordinate}')
+
                 # print(f'{f_values[dof]},{dof_coordinate[0]},{dof_coordinate[1]},{dof_coordinate[2]},{cell_tag}', file=csvfile)
 
 
