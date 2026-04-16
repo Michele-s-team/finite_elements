@@ -127,7 +127,7 @@ def print_solution(psi, step, t):
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/tau_n_12_' + str( step + 1 ) + '.xdmf' ).write( fsp.tau_n_12 )
     XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/d_n' + str( step + 1 ) + '.xdmf' ).write( fsp.d )
 
-    io.print_scalar_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
+    io.print_to_csvfile( fsp.tau_n_12, (rarg.args.output_directory) + '/snapshots/csv/tau_' + str( step + 1 ) + '.csv' )
 
 
     # print to file the forces which appear in the RHS of the equations (5a) in notes
@@ -154,9 +154,9 @@ def print_solution(psi, step, t):
     files.xdmffile_f.write( fsp.f_el_n, t )
     files.xdmffile_f.write( fsp.f_laplace, t )
 
-    io.print_scalar_to_csvfile( fsp.f_visc_n, (rarg.args.output_directory) + '/snapshots/csv/fvisc_n_' + str( step + 1 )  + '.csv')
-    io.print_scalar_to_csvfile( fsp.f_el_n, (rarg.args.output_directory) + '/snapshots/csv/fel_n_' + str( step + 1 )  + '.csv' )
-    io.print_scalar_to_csvfile( fsp.f_laplace, (rarg.args.output_directory) + '/snapshots/csv/flaplace_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.f_visc_n, (rarg.args.output_directory) + '/snapshots/csv/fvisc_n_' + str( step + 1 )  + '.csv')
+    io.print_to_csvfile( fsp.f_el_n, (rarg.args.output_directory) + '/snapshots/csv/fel_n_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.f_laplace, (rarg.args.output_directory) + '/snapshots/csv/flaplace_' + str( step + 1 )  + '.csv' )
 
  
     #print tangential (normal) force per unit length (surface)
@@ -168,7 +168,7 @@ def print_solution(psi, step, t):
     files.xdmffile_dFds.write( fsp.dFds, t )
 
     io.print_vector_to_csvfile( fsp.dFdl, (rarg.args.output_directory) + '/snapshots/csv/dFdl_' + str( step + 1 )  + '.csv' )
-    io.print_scalar_to_csvfile( fsp.dFds, (rarg.args.output_directory) + '/snapshots/csv/dFds_' + str( step + 1 )  + '.csv' )
+    io.print_to_csvfile( fsp.dFds, (rarg.args.output_directory) + '/snapshots/csv/dFds_' + str( step + 1 )  + '.csv' )
 
 
     xdmffile_dFdlds = XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/dFdlds_' + str( step + 1 ) + '.xdmf' )
