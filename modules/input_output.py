@@ -54,7 +54,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     # value_size is the total number of components of 'f', for example for a (2, 3) tensor values_size = 2 * 3 
     value_size  = int(np.prod(value_shape)) if value_shape else 1
 
-    print(f'value_shape = {value_shape}\nvalue_size = {value_size}')
+    # print(f'value_shape = {value_shape}\nvalue_size = {value_size}')
 
     mesh = Q.mesh()
     '''
@@ -102,9 +102,9 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
     '''
     f_values_unique = f_values.reshape(-1, value_size)
 
-    print(f'len dof_coordinates = {len(dof_coordinates)}')
-    print(f'len dof_coordinates_unique = {len(dof_coordinates_unique)}')
-    print(f'len f_values = {len(f_values)}')
+    # print(f'len dof_coordinates = {len(dof_coordinates)}')
+    # print(f'len dof_coordinates_unique = {len(dof_coordinates_unique)}')
+    # print(f'len f_values = {len(f_values)}')
 
     if (f.function_space().ufl_element().family() == 'Discontinuous Lagrange'):
         # the methods has been called with a discontinuous function space
@@ -198,7 +198,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
 
             n_nodes = len(cell_dofs) // value_size
 
-            print(f'cell_dofs = {cell_dofs}')
+            # print(f'cell_dofs = {cell_dofs}')
 
             '''
             remove the redundancy in cell_dofs and store the result in 
@@ -213,7 +213,7 @@ def print_scalar_to_csvfile(f, filename, mesh_function=None):
             '''
             cell_dofs_unique = cell_dofs[:n_nodes]
 
-            print(f'dof coorindates in cell: {dof_coordinates_cell}')
+            # print(f'dof coorindates in cell: {dof_coordinates_cell}')
 
             for i in range(len(cell_dofs_unique)):
                 # run over physical DOFs contained to 'cell' and print out the value of 'f' by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file. Note that, because the space of 'f' is discontinuous, here DOFs in 'cell' may belong to different mesh regions, and thus have different tags
