@@ -26,9 +26,11 @@ import switch_problem as swi
 import variational_problem.utils as var_pr
 
 # test interpolate_dg for vectors  and tensors - start
+import input_output as io
 import sys
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import solution_paths as solpath
 rmsh = importlib.import_module(swi.rmsh)
 
 #1. test for scalar
@@ -55,6 +57,9 @@ class u_square_expression(UserExpression):
 
 msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
+io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
 
 '''
 #2. test for vector
