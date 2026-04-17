@@ -33,7 +33,7 @@ import mesh.utils as msh
 import parameters.read.solution as rpam
 import solution_paths as solpath
 rmsh = importlib.import_module(swi.rmsh)
-
+'''
 #1. test for scalar
 Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
 u = Function(Q)
@@ -61,24 +61,25 @@ msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['s
 io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               mesh_function=rmsh.lmsh.sf[0])
-
 '''
+
 #2. test for vector
-V = VectorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'])
+V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
 v = Function(V)
 
 class v_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-        values[1] = 1 - x[0] ** 2 + 2 * x[1] ** 2 
+        values[0] = np.cos(1 + x[0] ** 2 + 2 * x[1] ** 2)
+        values[1] = np.sin(1 - x[0] ** 2 + 2 * x[1] ** 2)
+        values[2] = np.sin(1 - x[0] ** 2 + 2 * x[1] ** 2 )**2
 
 
     def value_shape(self):
-        return (2,)
+        return (3,)
 
-msh.interpolate_dg(v, v_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-'''
+msh.interpolate_dg(v, v_expression(), rmsh.sf[0], rmsh.lmsh.parameters['shape_id'])
+
 
 '''
 # 3. test for tensor
