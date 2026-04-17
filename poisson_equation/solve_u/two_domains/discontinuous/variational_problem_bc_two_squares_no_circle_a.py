@@ -15,7 +15,7 @@ i, j = ufl.indices(2)
 
 
 
-
+'''
 # test case 1
 
 class u_exact_l_expression(UserExpression):
@@ -58,7 +58,7 @@ class d_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
-
+'''
 
 '''
 # test case 2
@@ -105,7 +105,7 @@ class d_expression(UserExpression):
 '''
 
 
-'''
+
 # test case 3
 
 
@@ -149,7 +149,7 @@ class d_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
-'''
+
 
 msh.interpolate_dg(fsp.u_exact, u_exact_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 msh.interpolate_dg(fsp.u_exact, u_exact_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
