@@ -349,16 +349,19 @@ def print_nodal_values_vector_to_csvfile(v, filename):
 
 
 '''
-print the nodal values of a tensor to csv file
+print the nodal values of a field (scalar, vector or tensor) to csv file
 Input values: 
-    - 't': the tensor
+    - 'f': the field
     - 'filename': the path, filename and extension of the csv file where the tensor will be written 
 
- The resulting csv file is of this form
-    
-    f:0,f:1,....,f:[number of components of t],:0,:1,:2
-    t_0,t_1,....,t_[(number of components of t) - 1],x_0,x_1,x_2
+Return values: 
+This method does not return anythinb, but the resulting csv file is of this form
+
+    f:0,f:1,....,f:[number of components of f],:0,:1,:2
+    t_0,t_1,....,t_[(number of components of f) - 1],x_0,x_1,x_2
     ....
+
+The header is 'f,:0,:1,:2' is 'f' is a scalar. 
 '''
 
 def print_nodal_values_tensor_to_csvfile(t, filename):
@@ -369,9 +372,9 @@ def print_nodal_values_tensor_to_csvfile(t, filename):
         mesh = T.mesh()
         
         # the shape of the tensor, for example (2, 3)
-        tensor_shape = T.ufl_element().value_shape()
+        shape = T.ufl_element().value_shape()
         # value_size is the total number of components of the tensor, for example for a (2, 3) tensor shape_size = 2 * 3 
-        tensor_shape_size  = int(np.prod(tensor_shape))
+        shape_size  = int(np.prod(shape))
 
         # a dummy function space of order 1 used to tabulated the vertices
         Q = FunctionSpace(mesh, 'CG', 1)
@@ -382,13 +385,13 @@ def print_nodal_values_tensor_to_csvfile(t, filename):
 
         csvfile = open(filename, "w")
 
-        component_headers = ",".join([f'"f:{i}"' for i in range(tensor_shape_size)])
+        component_headers = ",".join([f'"f:{i}"' for i in range(shape_size)])
         coord_headers     = ",".join([f'":{i}"' for i in range(3)])
 
         print(f"{component_headers},{coord_headers}", file=csvfile)
 
         for i in range(Q.dim()):
-            # run through the nodes
+            # run through the mesh nodes
 
             coordinate = coordinates[i]
             # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
@@ -398,7 +401,7 @@ def print_nodal_values_tensor_to_csvfile(t, filename):
             # if the tensor field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
             t_value = np.atleast_1d(t(*coordinate))
 
-            component_str = ",".join([str(t_value[j]) for j in range(tensor_shape_size)])
+            component_str = ",".join([str(t_value[j]) for j in range(shape_size)])
             coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
 
             print(f"{component_str},{coord_str}", file=csvfile)
