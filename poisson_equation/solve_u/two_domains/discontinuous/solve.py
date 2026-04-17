@@ -25,6 +25,127 @@ sys.path.append(module_path)
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
+# test interpolate_dg for vectors  and tensors - start
+import input_output as io
+import sys
+import numpy as np
+import mesh.utils as msh
+import parameters.read.solution as rpam
+import solution_paths as solpath
+rmsh = importlib.import_module(swi.rmsh)
+
+
+'''
+# test of interpolate_dg
+
+
+#1. test for scalar
+Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
+u = Function(Q)
+
+class u_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(u, u_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+
+class u_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.sin(2 * np.pi*(x[0]-x[1]))
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
+
+
+#2. test for vector
+V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
+v = Function(V)
+
+class v_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+
+    def value_shape(self):
+        return (3,)
+    
+msh.interpolate_dg(v, v_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+
+    
+class v_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.sin(8 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(2 * np.pi*(x[0]+x[1]))**4
+        values[2] = np.sin(2 * np.pi*(x[0]-2*x[1]**2))**3
+
+    def value_shape(self):
+        return (3,)
+
+msh.interpolate_dg(v, v_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
+
+
+
+# 3. test for tensor
+T = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
+t = Function(T)
+
+class t_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**2))**2
+
+    def value_shape(self):
+        return (2, 3)
+
+msh.interpolate_dg(t, t_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+
+
+class t_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**3
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**4
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**3))**5
+
+    def value_shape(self):
+        return (2, 3)
+
+msh.interpolate_dg(t, t_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+io.full_print(t, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
+
+sys.exit(1)
+# test interpolate_dg for vectors  and tensors - end
+'''
+
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
@@ -41,31 +162,8 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-'''
-# test print to csv file - start
-import input_output as io
-import os
-import solution_paths as solpath
-import parameters.read.solution as rpam
-import sys
-
-Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
-V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
-T = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], shape=(3,2))
 
 
-f = Function(Q)
-v = Function(V)
-t = Function(T)
-
-io.print_to_csvfile(f, os.path.join(solpath.csv_files_path, 'f.csv'), rmsh.lmsh.sf[0])
-io.print_to_csvfile(v, os.path.join(solpath.csv_files_path, 'v.csv'), rmsh.lmsh.sf[0])
-# io.print_to_csvfile(t, os.path.join(solpath.csv_files_path, 't.csv'), rmsh.lmsh.sf[0])
-
-
-sys.exit(0)
-# test print to csv file - end
-'''
 
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 

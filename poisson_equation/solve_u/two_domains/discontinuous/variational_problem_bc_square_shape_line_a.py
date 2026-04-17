@@ -35,37 +35,54 @@ else:
 
 # test case 1
 
-def f_shape_expression(x):
-    return 6.0 + rpam.parameters['A'] * 4.0
+class f_shape_expression(UserExpression):
+    def eval(self, values, x):
 
-def f_square_expression(x):
-    return 6.0
+        values[0] = 6.0 + rpam.parameters['A'] * 4.0
 
-def u_exact_shape_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
+    def value_shape(self):
+        return (1,)
+    
+class f_square_expression(UserExpression):
+    def eval(self, values, x):
 
-def u_exact_square_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 6.0
 
-def d_expression(x):
-    return rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
+    def value_shape(self):
+        return (1,)
+
+class u_exact_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2)
+
+    def value_shape(self):
+        return (1,)
+    
+class u_exact_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+    def value_shape(self):
+        return (1,)
+    
+class d_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
+
+    def value_shape(self):
+        return (1,)
 
 
-msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
-msh.interpolate_dg(fsp.u_exact, u_exact_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.f, f_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
-msh.interpolate_dg(fsp.f, f_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(fsp.f, f_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.d, d_expression, rmsh.sf[0])
-
-'''
-import input_output as io
-import solution_paths as solpath
-io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path)
-
-'''
+msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf[0])
 
 
 
@@ -83,7 +100,7 @@ F_a = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['dS_shape'
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh[0] * ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] )
-        ) * rmsh.ds_mesh[0]['ds_I']
+        ) * rmsh.ds_mesh[0]['dS_I']
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 

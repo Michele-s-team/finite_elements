@@ -92,7 +92,7 @@ ds_mesh[0]['ds_tb'] = ds_mesh[0]['ds_t'] + ds_mesh[0]['ds_b']
 ds_mesh[0]['ds'] = ds_mesh[0]['ds_lr'] + ds_mesh[0]['ds_tb']
 
 # all internal facets in the region inside the square (including the shape and the facets at the shape boundary)
-ds_mesh[0]['ds_I'] = ds_mesh[0]['dS_shape'] + ds_mesh[0]['dS_I_shape'] + ds_mesh[0]['dS_I_square']
+ds_mesh[0]['dS_I'] = ds_mesh[0]['dS_shape'] + ds_mesh[0]['dS_I_shape'] + ds_mesh[0]['dS_I_square']
 
 # 3.1.2 mesh 1
 # 3.1.2.1 bulk measures
