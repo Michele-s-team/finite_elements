@@ -3019,12 +3019,8 @@ def interpolate_dg(f, g, sf, region_id=None):
         '''
         cell_dofs = Q.dofmap().cell_dofs(cell.index())
 
-
-        dof_coordinates_cell = dof_coordinates[cell_dofs]
-
         n_nodes = len(cell_dofs) // value_size
 
-        # print(f'cell_dofs = {cell_dofs}')
 
         '''
         remove the redundancy in cell_dofs and store the result in 
