@@ -19,30 +19,54 @@ i, j = ufl.indices(2)
 
 
 # test case 1
+class f_shape_expression(UserExpression):
+    def eval(self, values, x):
 
-def f_shape_expression(x):
-    return 6.0 + rpam.parameters['A'] * 4.0
+        values[0] = 6.0 + rpam.parameters['A'] * 4.0
 
-def f_square_expression(x):
-    return 6.0
+    def value_shape(self):
+        return (1,)
+    
+class f_square_expression(UserExpression):
+    def eval(self, values, x):
 
-def u_exact_shape_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']
+        values[0] = 6.0
 
-def u_exact_square_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+    def value_shape(self):
+        return (1,)
 
-def d_expression(x):
-    return rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
+class u_exact_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']
+
+    def value_shape(self):
+        return (1,)
+    
+class u_exact_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+    def value_shape(self):
+        return (1,)
+    
+class d_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
+
+    def value_shape(self):
+        return (1,)
 
 
-msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
-msh.interpolate_dg(fsp.u_exact, u_exact_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.f, f_shape_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
-msh.interpolate_dg(fsp.f, f_square_expression, rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(fsp.f, f_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.d, d_expression, rmsh.sf[0])
+msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf[0])
 
 
 '''
