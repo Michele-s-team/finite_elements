@@ -33,7 +33,12 @@ import mesh.utils as msh
 import parameters.read.solution as rpam
 import solution_paths as solpath
 rmsh = importlib.import_module(swi.rmsh)
+
+
 '''
+# test of interpolate_dg
+
+
 #1. test for scalar
 Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
 u = Function(Q)
@@ -61,9 +66,9 @@ msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['s
 io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               mesh_function=rmsh.lmsh.sf[0])
-'''
 
-'''#2. test for vector
+
+#2. test for vector
 V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
 v = Function(V)
 
@@ -96,7 +101,7 @@ io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_
               solpath.nodal_values_path,
               mesh_function=rmsh.lmsh.sf[0])
 
-'''
+
 
 # 3. test for tensor
 T = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
@@ -139,7 +144,7 @@ io.full_print(t, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_
 
 sys.exit(1)
 # test interpolate_dg for vectors  and tensors - end
-
+'''
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
