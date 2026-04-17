@@ -86,15 +86,7 @@ msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf)
 msh.interpolate_dg(fsp.e, e_expression(), rmsh.sf)
 
 
-# io.full_print(fsp.u_exact, 'u_exact_l', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-#               solpath.nodal_values_path,
-#               mesh_function=rmsh.lmsh.sf)
-
-# sys.exit(1)
-# 
-
 bcs = []
-
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx + \
