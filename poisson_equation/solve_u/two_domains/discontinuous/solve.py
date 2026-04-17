@@ -85,7 +85,7 @@ class v_square_expression(UserExpression):
 
         values[0] = np.sin(8 * np.pi*(x[0]+x[1]))
         values[1] = np.cos(2 * np.pi*(x[0]+x[1]))**4
-        values[2] = np.sin(2 * np.pi*(x[0]-2*x[1]))**3
+        values[2] = np.sin(2 * np.pi*(x[0]-2*x[1]**2))**3
 
     def value_shape(self):
         return (3,)
