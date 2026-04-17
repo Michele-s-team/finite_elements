@@ -25,6 +25,7 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 '''
 
 
+
 # test case 1
 
 class u_exact_l_expression(UserExpression):
