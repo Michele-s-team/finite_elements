@@ -25,6 +25,33 @@ sys.path.append(module_path)
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
+# test interpolate_dg for vectors  and tensors - start
+import sys
+import mesh.utils as msh
+import parameters.read.solution as rpam
+rmsh = importlib.import_module(swi.rmsh)
+
+
+
+V = VectorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'])
+v = Function(V)
+
+class v_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
+        values[1] = 1 - x[0] ** 2 + 2 * x[1] ** 2 
+
+
+    def value_shape(self):
+        return (2,)
+
+msh.interpolate_dg(v, v_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+
+sys.exit(1)
+# test interpolate_dg for vectors  and tensors - end
+
+
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
@@ -41,31 +68,8 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
-'''
-# test print to csv file - start
-import input_output as io
-import os
-import solution_paths as solpath
-import parameters.read.solution as rpam
-import sys
-
-Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
-V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
-T = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], shape=(3,2))
 
 
-f = Function(Q)
-v = Function(V)
-t = Function(T)
-
-io.print_to_csvfile(f, os.path.join(solpath.csv_files_path, 'f.csv'), rmsh.lmsh.sf[0])
-io.print_to_csvfile(v, os.path.join(solpath.csv_files_path, 'v.csv'), rmsh.lmsh.sf[0])
-# io.print_to_csvfile(t, os.path.join(solpath.csv_files_path, 't.csv'), rmsh.lmsh.sf[0])
-
-
-sys.exit(0)
-# test print to csv file - end
-'''
 
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 

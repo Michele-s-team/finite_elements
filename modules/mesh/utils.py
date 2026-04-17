@@ -2942,24 +2942,34 @@ Input values:
 def interpolate_dg(f, g, sf, region_id=None):
 
     Q = f.function_space()
+    element = Q.ufl_element()
 
-    if (Q.ufl_element().family() != 'Discontinuous Lagrange'):
+    if (element.family() != 'Discontinuous Lagrange'):
         # the method has been called on a field defined on a continuous function space -> throw an error and exit
 
         print(f'{col.Fore.RED}Error: interpolate_dg has been called on a field with a continuous function space!! Stopping now.{col.Fore.RESET}')
 
         sys.exit(1)
+
+    if (element.value_shape() != g.value_shape()):
+        # the method has been called on a field defined on a continuous function space -> throw an error and exit
+
+        print(f'{col.Fore.RED}Error: value shapes are different!!\n\telement value shape = {element.value_shape()}\n\tg value shape= {g.value_shape()}\nStopping now.{col.Fore.RESET}')
+
+        sys.exit(1)
    
+    value_size  = int(np.prod(element.value_shape())) if element.value_shape() else 1
+
     mesh = Q.mesh()
 
     '''
     dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
     For example, dof_coordinates is of the form ->
-        row 0:  [x0, y0]   ← this corresponds to 0th-component of f at DOF point 0
-        row 1:  [x0, y0]   ← this corresponds to 1st-component of f at DOF point 0
+        row 0:  [x0, y0]   ← this corresponds to f[0] at DOF point 0
+        row 1:  [x0, y0]   ← this corresponds to f[1] at DOF point 0
         ...
-        row value_size  [x1, y1]   ← this corresponds to 0th-component of f at DOF point 1
-        row value_size+1 [x1, y1]   ← this corresponds to 1st-component of f at DOF point 1
+        row value_size  [x1, y1]   ← this corresponds to f[0] at DOF point 1
+        row value_size+1 [x1, y1]   ← this corresponds to f[1] at DOF point 1
         ...
         
     '''
@@ -2989,12 +2999,12 @@ def interpolate_dg(f, g, sf, region_id=None):
         cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
         [
             id_f_0_on_DOF_0, 
-            id_f_0_on_ DOF_1,
+            id_f_0_on_DOF_1,
             ...,
             id_f_0_on_DOF_{n_nodes-1},
 
             id_f_1_on_DOF_0, 
-            id_f_1_on_ DOF_1,
+            id_f_1_on_DOF_1,
             ...,
             id_f_1_on_DOF_{n_nodes-1},
 
