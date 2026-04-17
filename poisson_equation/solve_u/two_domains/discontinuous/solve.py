@@ -30,12 +30,12 @@ import sys
 import mesh.utils as msh
 import parameters.read.solution as rpam
 rmsh = importlib.import_module(swi.rmsh)
-'''
+
 #1. test for scalar
-Q = FunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'])
+Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
 u = Function(Q)
 
-class u_expression(UserExpression):
+class u_shape_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
@@ -43,8 +43,18 @@ class u_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
-msh.interpolate_dg(u, u_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-'''
+msh.interpolate_dg(u, u_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+
+class u_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 - x[0] ** 2 + 2 * x[1] ** 2 
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
 
 '''
 #2. test for vector
@@ -62,6 +72,8 @@ class v_expression(UserExpression):
         return (2,)
 
 msh.interpolate_dg(v, v_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+'''
+
 '''
 # 3. test for tensor
 T = TensorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
@@ -82,7 +94,7 @@ class t_expression(UserExpression):
         return (2, 3)
 
 msh.interpolate_dg(t, t_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-
+'''
 
 
 sys.exit(1)
