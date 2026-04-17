@@ -28,6 +28,7 @@ import variational_problem.utils as var_pr
 # test interpolate_dg for vectors  and tensors - start
 import input_output as io
 import sys
+import numpy as np
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import solution_paths as solpath
@@ -40,7 +41,7 @@ u = Function(Q)
 class u_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
 
     def value_shape(self):
         return (1,)
@@ -50,7 +51,7 @@ msh.interpolate_dg(u, u_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['su
 class u_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 - x[0] ** 2 + 2 * x[1] ** 2 
+        values[0] = np.sin(2 * np.pi*(x[0]-x[1]))
 
     def value_shape(self):
         return (1,)
