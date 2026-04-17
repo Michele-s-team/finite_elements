@@ -110,7 +110,7 @@ class t_shape_expression(UserExpression):
         values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
         values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**2
         values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[5] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**2))**2
 
     def value_shape(self):
         return (2, 3)
@@ -124,9 +124,9 @@ class t_square_expression(UserExpression):
         values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
         values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
         values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[5] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**3
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**4
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**3))**5
 
     def value_shape(self):
         return (2, 3)
