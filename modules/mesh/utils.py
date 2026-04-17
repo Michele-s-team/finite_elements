@@ -2941,13 +2941,16 @@ Input values:
 '''
 def interpolate_dg(f, g, sf, region_id=None):
 
-    # 
-    print(f'value shape = {g.value_shape()}')
-
-    # 
-
     Q = f.function_space()
-    mesh = f.function_space().mesh()
+
+    if (Q.ufl_element().family() != 'Discontinuous Lagrange'):
+        # the method has been called on a field defined on a continuous function space -> throw an error and exit
+
+        print(f'{col.Fore.RED}Error: interpolate_dg has been called on a field with a continuous function space!! Stopping now.{col.Fore.RESET}')
+
+        sys.exit(1)
+   
+    mesh = Q.mesh()
 
     '''
     dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
@@ -2981,6 +2984,48 @@ def interpolate_dg(f, g, sf, region_id=None):
 
         # compute 'sf' on the cell; under consideration
         cell_tag = sf[cell]
+
+        '''
+        cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+        [
+            id_f_0_on_DOF_0, 
+            id_f_0_on_ DOF_1,
+            ...,
+            id_f_0_on_DOF_{n_nodes-1},
+
+            id_f_1_on_DOF_0, 
+            id_f_1_on_ DOF_1,
+            ...,
+            id_f_1_on_DOF_{n_nodes-1},
+
+            ...
+        ]
+        where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
+
+        cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the field 'f' sitting on ith DOF in the cell 'cell']
+        '''
+        cell_dofs = Q.dofmap().cell_dofs(cell.index())
+
+
+        dof_coordinates_cell = dof_coordinates[cell_dofs]
+
+        n_nodes = len(cell_dofs) // value_size
+
+        # print(f'cell_dofs = {cell_dofs}')
+
+        '''
+        remove the redundancy in cell_dofs and store the result in 
+        cell_dofs_unique = 
+            [
+                id_DOF_0, 
+                id_DOF_1,
+                ...,
+                id_DOF_{n_nodes-1}
+            ]
+        
+        '''
+        cell_dofs_unique = cell_dofs[:n_nodes]
+
 
         if (cell_tag == region_id) or (region_id == None):
             # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'

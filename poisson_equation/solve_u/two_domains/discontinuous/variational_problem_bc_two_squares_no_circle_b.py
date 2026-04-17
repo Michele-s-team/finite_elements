@@ -25,6 +25,30 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 '''
 
 
+# test interpolate_dg for vectors  and tensors - start
+import sys
+
+
+V = VectorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'])
+v = Function(V)
+
+class v_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
+        values[1] = 1 - x[0] ** 2 + 2 * x[1] ** 2 
+
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(v, v_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+
+sys.exit(1)
+# test interpolate_dg for vectors  and tensors - end
+
+
+
 # test case 1
 
 class u_exact_l_expression(UserExpression):
