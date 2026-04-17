@@ -2970,7 +2970,7 @@ def interpolate_dg(f, g, sf, region_id=None):
             entry 1: f[1] at DOF point 0
             ...
             entry value_size  f[0] at DOF point 1
-            entry value_size+1 f[1] at DOF point 1
+            entry value_size + 1 f[1] at DOF point 1
             ...
         
     '''
