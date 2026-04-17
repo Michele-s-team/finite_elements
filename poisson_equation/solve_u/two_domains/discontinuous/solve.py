@@ -67,18 +67,34 @@ io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_
 V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
 v = Function(V)
 
-class v_expression(UserExpression):
+class v_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(1 + x[0] ** 2 + 2 * x[1] ** 2)
-        values[1] = np.sin(1 - x[0] ** 2 + 2 * x[1] ** 2)
-        values[2] = np.sin(1 - x[0] ** 2 + 2 * x[1] ** 2 )**2
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
 
+    def value_shape(self):
+        return (3,)
+    
+msh.interpolate_dg(v, v_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+
+    
+class v_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.sin(8 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(2 * np.pi*(x[0]+x[1]))**4
+        values[2] = np.sin(2 * np.pi*(x[0]-2*x[1]))**3
 
     def value_shape(self):
         return (3,)
 
-msh.interpolate_dg(v, v_expression(), rmsh.sf[0], rmsh.lmsh.parameters['shape_id'])
+msh.interpolate_dg(v, v_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
 
 
 '''
