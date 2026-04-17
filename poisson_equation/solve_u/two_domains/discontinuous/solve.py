@@ -133,6 +133,9 @@ class t_square_expression(UserExpression):
 
 msh.interpolate_dg(t, t_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
+io.full_print(t, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
 
 sys.exit(1)
 # test interpolate_dg for vectors  and tensors - end
