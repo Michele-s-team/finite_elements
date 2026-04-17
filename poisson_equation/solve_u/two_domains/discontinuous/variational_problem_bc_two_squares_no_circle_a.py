@@ -13,94 +13,151 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-'''
-# test interpolate_dg - start
-import input_output as io
-import solution_paths as solpath
-import sys
-
-def g_l(x):
-    return np.cos(2*np.pi*(x[0]+x[1]))
-
-def g_r(x):
-    return np.sin(4*np.pi*(x[0]-x[1]))
-
-msh.interpolate_dg(fsp.u, g_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.u, g_r, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
-
-
-io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path)
-
-sys.exit(1)
-# test interpolate_dg - end
-'''
-
 
 
 '''
 # test case 1
-def u_exact_l_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
-def u_exact_r_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+class u_exact_l_expression(UserExpression):
+    def eval(self, values, x):
 
-def f_l_expression(x): 
-    return 6.0
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
-def f_r_expression(x):
-    return 6.0
+    def value_shape(self):
+        return (1,)
 
-def d_expression(x):
-    return rpam.parameters['A']
+class u_exact_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] =  1 + x[0] ** 2 + 2 * x[1] ** 2
+
+    def value_shape(self):
+        return (1,)
+
+class f_l_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 6.0
+
+    def value_shape(self):
+        return (1,)
+
+class f_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 6.0
+
+    def value_shape(self):
+        return (1,)
+
+
+class d_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['A']
+
+    def value_shape(self):
+        return (1,)
 '''
 
 '''
 # test case 2
-def u_exact_l_expression(x):
-   return  1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
+class u_exact_l_expression(UserExpression):
+    def eval(self, values, x):
 
-def u_exact_r_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 4 
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m'])
 
-def f_l_expression(x): 
-    return 2.0 + 24.0 * x[1]**2
+    def value_shape(self):
+        return (1,)
 
-def f_r_expression(x):
-    return f_l_expression(x)
+class u_exact_r_expression(UserExpression):
+    def eval(self, values, x):
 
-def d_expression(x):
-    return rpam.parameters['A']
+        values[0] =  1 + x[0] ** 2 + 2 * x[1] ** 4
+
+    def value_shape(self):
+        return (1,)
+
+class f_l_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 2.0 + 24.0 * x[1]**2
+
+    def value_shape(self):
+        return (1,)
+
+
+class f_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = f_l_expression()(x)
+
+    def value_shape(self):
+        return (1,)
+
+class d_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['A']
+
+    def value_shape(self):
+        return (1,)
 '''
+
 
 
 # test case 3
 
-def f_l_expression(x):
-    return 2.0 + 24.0 * x[1]**2 + 2 * rpam.parameters['A'] * np.pi**2/ rmsh.lmsh.parameters['L']**2 * (13 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] - 3 * x[0] - 2 * x[1])) / rmsh.lmsh.parameters['L']) +  5 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[0] + 2 * x[1])) / rmsh.lmsh.parameters['L']) )
 
-def f_r_expression(x):
-    return 2.0 + 24.0 * x[1]**2
+class f_l_expression(UserExpression):
+    def eval(self, values, x):
 
-def u_exact_l_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2 * np.pi / rmsh.lmsh.parameters['L'] * (x[0] - rmsh.lmsh.parameters['L_m'])) * np.cos(4 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['L'])
+        values[0] = 2.0 + 24.0 * x[1]**2 + 2 * rpam.parameters['A'] * np.pi**2/ rmsh.lmsh.parameters['L']**2 * (13 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] - 3 * x[0] - 2 * x[1])) / rmsh.lmsh.parameters['L']) +  5 * np.sin((2 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[0] + 2 * x[1])) / rmsh.lmsh.parameters['L']) )
 
-def u_exact_r_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 4 
+    def value_shape(self):
+        return (1,)
+    
+class f_r_expression(UserExpression):
+    def eval(self, values, x):
 
-def d_expression(x):
-    return (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
+        values[0] = 2.0 + 24.0 * x[1]**2
+
+    def value_shape(self):
+        return (1,)
+    
+class u_exact_l_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 + rpam.parameters['A'] * np.sin(2 * np.pi / rmsh.lmsh.parameters['L'] * (x[0] - rmsh.lmsh.parameters['L_m'])) * np.cos(4 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['L'])
 
 
+    def value_shape(self):
+        return (1,)
+    
+class u_exact_r_expression(UserExpression):
+    def eval(self, values, x):
 
-msh.interpolate_dg(fsp.u_exact, u_exact_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.u_exact, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 4 
 
-msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.f, f_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+    def value_shape(self):
+        return (1,)
+    
+class d_expression(UserExpression):
+    def eval(self, values, x):
 
-msh.interpolate_dg(fsp.d, d_expression, rmsh.sf)
+        values[0] = (2 * rpam.parameters['A'] * np.pi * np.cos((4 * np.pi * (rmsh.lmsh.parameters['L_m'] + x[1])) / rmsh.lmsh.parameters['L'])) / rmsh.lmsh.parameters['L']
+
+    def value_shape(self):
+        return (1,)
+
+
+msh.interpolate_dg(fsp.u_exact, u_exact_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+msh.interpolate_dg(fsp.f, f_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.f, f_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf)
 
 
 bcs = []

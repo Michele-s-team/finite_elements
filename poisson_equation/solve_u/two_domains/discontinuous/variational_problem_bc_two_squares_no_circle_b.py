@@ -26,10 +26,7 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 
 
 # test case 1
-'''
-    def u_exact_l_expression(x):
-    return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
-'''
+
 class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
@@ -38,40 +35,58 @@ class u_exact_l_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+    
+class u_exact_r_expression(UserExpression):
+    def eval(self, values, x):
 
-u_exact_l = u_exact_l_expression()
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
-msh.interpolate_dg(fsp.u_exact, u_exact_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+    def value_shape(self):
+        return (1,)
 
+class f_l_expression(UserExpression):
+    def eval(self, values, x):
 
-def u_exact_r_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2
+        values[0] = 6.0
 
-def f_l_expression(x): 
-    return 6.0
+    def value_shape(self):
+        return (1,)
+    
+class f_r_expression(UserExpression):
+    def eval(self, values, x):
 
-def f_r_expression(x):
-    return 6.0
+        values[0] = 6.0
 
-def d_expression(x):
-    return rpam.parameters['A']
+    def value_shape(self):
+        return (1,)
+    
+class d_expression(UserExpression):
+    def eval(self, values, x):
 
-def e_expression(x):
-    return rpam.parameters['B']
+        values[0] = rpam.parameters['A']
 
+    def value_shape(self):
+        return (1,)
+    
+class e_expression(UserExpression):
+    def eval(self, values, x):
 
+        values[0] = rpam.parameters['B']
 
-msh.interpolate_dg(fsp.u_exact, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+    def value_shape(self):
+        return (1,)
 
-msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.f, f_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
-msh.interpolate_dg(fsp.d, d_expression, rmsh.sf)
-msh.interpolate_dg(fsp.e, e_expression, rmsh.sf)
+msh.interpolate_dg(fsp.f, f_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.f, f_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.e, e_expression(), rmsh.sf)
 
 
 bcs = []
-
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx + \
