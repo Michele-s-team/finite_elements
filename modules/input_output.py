@@ -253,7 +253,7 @@ The header is 'f,:0,:1,:2' is 'f' is a scalar.
 def print_nodal_values_to_csvfile(f, filename):
 
     if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
-        # 'f' is defined on a continuous function space -> proceed
+        # 'f' is not defined on a DG function space -> proceed
 
         # create the path for the csv file if it does not exist
         os.makedirs(os.path.dirname(filename), exist_ok=True)
