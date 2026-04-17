@@ -2948,6 +2948,18 @@ def interpolate_dg(f, g, sf, region_id=None):
 
     Q = f.function_space()
     mesh = f.function_space().mesh()
+
+    '''
+    dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
+    For example, dof_coordinates is of the form ->
+        row 0:  [x0, y0]   ← this corresponds to 0th-component of f at DOF point 0
+        row 1:  [x0, y0]   ← this corresponds to 1st-component of f at DOF point 0
+        ...
+        row value_size  [x1, y1]   ← this corresponds to 0th-component of f at DOF point 1
+        row value_size+1 [x1, y1]   ← this corresponds to 1st-component of f at DOF point 1
+        ...
+        
+    '''
     dof_coordinates = Q.tabulate_dof_coordinates()
 
     f_values = f.vector().get_local()   # get a copy of field values
