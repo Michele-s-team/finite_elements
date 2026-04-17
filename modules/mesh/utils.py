@@ -2941,6 +2941,11 @@ Input values:
 '''
 def interpolate_dg(f, g, sf, region_id=None):
 
+    # 
+    print(f'value shape = {g.value_shape()}')
+
+    # 
+
     Q = f.function_space()
     mesh = f.function_space().mesh()
     dof_coordinates = Q.tabulate_dof_coordinates()

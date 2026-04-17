@@ -26,6 +26,9 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 
 
 # test case 1
+# 
+import io
+import sys
 '''
     def u_exact_l_expression(x):
     return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
@@ -35,7 +38,6 @@ class u_exact_l_expression(UserExpression):
 
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
 
-
     def value_shape(self):
         return (1,)
 
@@ -43,6 +45,12 @@ u_exact_l = u_exact_l_expression()
 
 msh.interpolate_dg(fsp.u_exact, u_exact_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 
+io.full_print(fsp.u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf)
+
+sys.exit(1)
+# 
 
 def u_exact_r_expression(x):
    return 1 + x[0] ** 2 + 2 * x[1] ** 2
