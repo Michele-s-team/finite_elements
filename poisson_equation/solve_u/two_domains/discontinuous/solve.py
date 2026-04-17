@@ -63,7 +63,7 @@ io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_
               mesh_function=rmsh.lmsh.sf[0])
 '''
 
-#2. test for vector
+'''#2. test for vector
 V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
 v = Function(V)
 
@@ -96,28 +96,42 @@ io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_
               solpath.nodal_values_path,
               mesh_function=rmsh.lmsh.sf[0])
 
-
 '''
+
 # 3. test for tensor
-T = TensorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
+T = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
 t = Function(T)
 
-class t_expression(UserExpression):
+class t_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-        values[1] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-        values[2] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-        values[3] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-        values[4] = 1 + x[0] ** 2 + 2 * x[1] ** 2 
-        values[5] = 1 - x[0] ** 2 + 2 * x[1] ** 2 
-
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]))**2
 
     def value_shape(self):
         return (2, 3)
 
-msh.interpolate_dg(t, t_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-'''
+msh.interpolate_dg(t, t_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+
+
+class t_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+
+    def value_shape(self):
+        return (2, 3)
+
+msh.interpolate_dg(t, t_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 
 sys.exit(1)
