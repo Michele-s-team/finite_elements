@@ -93,12 +93,6 @@ msh.interpolate_dg(fsp.e, e_expression(), rmsh.sf)
 # sys.exit(1)
 # 
 
-
-
-
-
-
-
 bcs = []
 
 
