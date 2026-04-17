@@ -2952,11 +2952,14 @@ def interpolate_dg(f, g, sf, region_id=None):
         sys.exit(1)
 
     if (element.value_shape() != g.value_shape()):
-        # the method has been called on a field defined on a continuous function space -> throw an error and exit
+        # the value shape of Q and that of g differ -> check whether this is due to a 'convention' issue where scalars have been given a value shape of (1,) vs. ()
 
-        print(f'{col.Fore.RED}Error: value shapes are different!!\n\telement value shape = {element.value_shape()}\n\tg value shape= {g.value_shape()}\nStopping now.{col.Fore.RESET}')
+        if ((((element.value_shape() == ()) and (g.value_shape() == (1,))) or ((element.value_shape() == (1,)) and  (g.value_shape() == ()))) == False):
+            # the discrepancy was not due to a convention issue -> throw an error and exit
 
-        sys.exit(1)
+            print(f'{col.Fore.RED}Error: value shapes are different!!\n\telement value shape = {element.value_shape()}\n\tg value shape= {g.value_shape()}\nStopping now.{col.Fore.RESET}')
+
+            sys.exit(1)
    
     value_size  = int(np.prod(element.value_shape())) if element.value_shape() else 1
 
@@ -3040,10 +3043,15 @@ def interpolate_dg(f, g, sf, region_id=None):
         if (cell_tag == region_id) or (region_id == None):
             # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'
 
-            for dof in Q.dofmap().cell_dofs(cell.index()):
-                # run over DOFs relative to 'cell' and set the value of 'f' on those DOFs equal to 'g' computed on the spatial coordiantes of those DOFs
+            for i in range(len(cell_dofs_unique)):
+                # run over physical DOFs contained to 'cell' and print out the value of 'f' by specifying that those DOFs belong to region tagged with 'cell_tag' in a separate column of the csv output file. Note that, because the space of 'f' is discontinuous, here DOFs in 'cell' may belong to different mesh regions, and thus have different tags
 
-                f_values[dof] = g(dof_coordinates[dof][:2])
+                # pad 'x' to three dimensions
+                dof_coordinate = dof_coordinates[cell_dofs_unique[i]]
+
+                for j in range(value_size):
+                    f_values[cell_dofs[j * n_nodes + i]] = np.atleast_1d(g(dof_coordinate[:2]))[j]
+
 
     f.vector().set_local(f_values) 
     f.vector().apply("insert")
