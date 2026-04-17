@@ -250,44 +250,51 @@ This method does not return anythinb, but the resulting csv file is of this form
 The header is 'f,:0,:1,:2' is 'f' is a scalar. 
 '''
 
-def print_nodal_values_to_csvfile(t, filename):
+def print_nodal_values_to_csvfile(f, filename):
 
-    if (t.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
-
-        T = t.function_space()
-        mesh = T.mesh()
-        
-        # the shape of the tensor, for example (2, 3)
-        shape = T.ufl_element().value_shape()
-        # value_size is the total number of components of the tensor, for example for a (2, 3) tensor shape_size = 2 * 3 
-        shape_size  = int(np.prod(shape))
-
-        # a dummy function space of order 1 used to tabulated the vertices
-        Q = FunctionSpace(mesh, 'CG', 1)
-        coordinates = Q.tabulate_dof_coordinates()
+    if (f.function_space().ufl_element().family() != 'Discontinuous Lagrange'):
+        # 'f' is defined on a continuous function space -> proceed
 
         # create the path for the csv file if it does not exist
         os.makedirs(os.path.dirname(filename), exist_ok=True)
 
+        Q = f.function_space()
+        mesh = Q.mesh()
+        
+        # the shape of the tensor, for example (2, 3)
+        value_shape = Q.ufl_element().value_shape()
+        
+        # value_size is the total number of components of 'f', for example is 'f' is a (2, 3) tensor, shape_size = 2 * 3 
+        value_size  = int(np.prod(value_shape)) if value_shape else 1
+
+        # a dummy function space of order 1 used to tabulated the vertices
+        Q_1 = FunctionSpace(mesh, 'CG', 1)
+        coordinates = Q_1.tabulate_dof_coordinates()
+
         csvfile = open(filename, "w")
 
-        component_headers = ",".join([f'"f:{i}"' for i in range(shape_size)])
-        coord_headers     = ",".join([f'":{i}"' for i in range(3)])
+        if value_size == 1:
+            component_headers = '\"f\"'
+        else:
+            component_headers = ",".join([f'"f:{i}"' for i in range(value_size)])
+
+        coord_headers = ",".join([f'":{i}"' for i in range(3)])
 
         print(f"{component_headers},{coord_headers}", file=csvfile)
 
-        for i in range(Q.dim()):
+        for i in range(Q_1.dim()):
             # run through the mesh nodes
 
             coordinate = coordinates[i]
+
             # convert the coordinate in the correct format by addding 0s for the unused dimensions, in order to form an array of dimension 3
             padded_coordinate = pad(coordinate, 3)
 
-            # evaluate the function at the coordinate
-            # if the tensor field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
-            t_value = np.atleast_1d(t(*coordinate))
+            # evaluate the field at the coordinate
+            # if the field has only one component, atleast_1d converts it to an array with one entry so it has the correct format 
+            f_value = np.atleast_1d(f(*coordinate))
 
-            component_str = ",".join([str(t_value[j]) for j in range(shape_size)])
+            component_str = ",".join([str(f_value[j]) for j in range(value_size)])
             coord_str     = f"{padded_coordinate[0]},{padded_coordinate[1]},{padded_coordinate[2]}"
 
             print(f"{component_str},{coord_str}", file=csvfile)
@@ -296,8 +303,9 @@ def print_nodal_values_to_csvfile(t, filename):
         csvfile.close()
 
     else:
+        # 'f' is defined on a discontinuous function space -> it does not make sense to call this method because f(x) may be ill-defined -> throw an error and exit
 
-        print(f'{col.Fore.RED}Error!! print_nodal_values_to_csvfile has been called on a discontinuous function space.{col.Fore.RESET}')
+        print(f'{col.Fore.RED}Error!! print_nodal_values_to_csvfile has been called on a discontinuous function space. Stopping now. {col.Fore.RESET}')
         sys.exit(1)
     
 
