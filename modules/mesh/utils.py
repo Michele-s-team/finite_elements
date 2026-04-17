@@ -2962,6 +2962,18 @@ def interpolate_dg(f, g, sf, region_id=None):
     '''
     dof_coordinates = Q.tabulate_dof_coordinates()
 
+
+    '''
+    f_values contains the value of 'f' on the DOFs, and it has the same structure as 'dof_coordinates'
+    f_values = 
+            entry 0: f[0] at DOF point 0
+            entry 1: f[1] at DOF point 0
+            ...
+            entry value_size  f[0] at DOF point 1
+            entry value_size+1 f[1] at DOF point 1
+            ...
+        
+    '''
     f_values = f.vector().get_local()   # get a copy of field values
     
     for cell in cells(mesh):

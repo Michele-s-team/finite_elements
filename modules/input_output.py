@@ -82,11 +82,11 @@ def print_to_csvfile(f, filename, mesh_function=None):
     '''
     f_values contains the value of 'f' on the DOFs, and it has the same structure as 'dof_coordinates'
     f_values = 
-            row 0: f[0] at DOF point 0
-            row 1: f[1] at DOF point 0
+            entry 0: f[0] at DOF point 0
+            entry 1: f[1] at DOF point 0
             ...
-            row value_size  f[0] at DOF point 1
-            row value_size+1 f[1] at DOF point 1
+            entry value_size  f[0] at DOF point 1
+            entry value_size + 1 f[1] at DOF point 1
             ...
         
     '''
