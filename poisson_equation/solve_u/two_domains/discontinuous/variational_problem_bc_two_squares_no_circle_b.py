@@ -30,21 +30,45 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 import input_output as io
 import solution_paths as solpath
 import sys
-'''
-    def u_exact_l_expression(x):
-    return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
-'''
+
 class u_exact_l_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * np.cos(4*np.pi*(x[0]+x[1]-rmsh.lmsh.parameters['L_m'])/rmsh.lmsh.parameters['L']) + rpam.parameters['B']
+
+    def value_shape(self):
+        return (1,)
+    
+class u_exact_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
 
     def value_shape(self):
         return (1,)
 
-u_exact_l = u_exact_l_expression()
+class f_l_expression(UserExpression):
+    def eval(self, values, x):
 
-msh.interpolate_dg(fsp.u_exact, u_exact_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+        values[0] = 6.0
+
+    def value_shape(self):
+        return (1,)
+    
+class f_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 6.0
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(fsp.u_exact, u_exact_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.u_exact, u_exact_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
+msh.interpolate_dg(fsp.f, f_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+msh.interpolate_dg(fsp.f, f_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
+
 
 io.full_print(fsp.u_exact, 'u_exact_l', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
@@ -53,14 +77,7 @@ io.full_print(fsp.u_exact, 'u_exact_l', solpath.xdmf_file_path, solpath.h5_file_
 sys.exit(1)
 # 
 
-def u_exact_r_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2
 
-def f_l_expression(x): 
-    return 6.0
-
-def f_r_expression(x):
-    return 6.0
 
 def d_expression(x):
     return rpam.parameters['A']
@@ -70,10 +87,7 @@ def e_expression(x):
 
 
 
-msh.interpolate_dg(fsp.u_exact, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
-msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
-msh.interpolate_dg(fsp.f, f_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
 msh.interpolate_dg(fsp.d, d_expression, rmsh.sf)
 msh.interpolate_dg(fsp.e, e_expression, rmsh.sf)
