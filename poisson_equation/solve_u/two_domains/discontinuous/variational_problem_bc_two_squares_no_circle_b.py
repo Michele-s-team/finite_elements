@@ -26,8 +26,23 @@ bgeo.field_facet_normal(bgeo.facet_normal('+'), rmsh.lmsh.mesh, rmsh.dS_m, inter
 
 
 # test case 1
-def u_exact_l_expression(x):
-   return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
+'''
+    def u_exact_l_expression(x):
+    return 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
+'''
+class u_exact_l_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * (x[0]-rmsh.lmsh.parameters['L_m']) + rpam.parameters['B']
+
+
+    def value_shape(self):
+        return (1,)
+
+u_exact_l = u_exact_l_expression()
+
+msh.interpolate_dg(fsp.u_exact, u_exact_l, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
+
 
 def u_exact_r_expression(x):
    return 1 + x[0] ** 2 + 2 * x[1] ** 2
@@ -46,7 +61,6 @@ def e_expression(x):
 
 
 
-msh.interpolate_dg(fsp.u_exact, u_exact_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 msh.interpolate_dg(fsp.u_exact, u_exact_r_expression, rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
 msh.interpolate_dg(fsp.f, f_l_expression, rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
