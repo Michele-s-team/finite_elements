@@ -18,6 +18,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
 import print_out_solution as pr_sol
@@ -31,12 +32,14 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadr
 
 
 # set the initial profiles
-fsp.v_n_1.interpolate(vp.v0_Expression(element=fsp.Q_v.ufl_element()))
+msh.interpolate_dg(vp.v_n_1, vp.v_0_expression(), rmsh.sf)
 fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp.sigma0_Expression(element=fsp.Q_sigma.ufl_element()))
+
+msh.interpolate_dg(fsp.sigma_n_12, vp.sigma_0_expression(), rmsh.sf)
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
 
+sys.exit(1)
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping

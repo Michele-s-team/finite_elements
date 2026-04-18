@@ -15,31 +15,35 @@ alpha, beta, gamma, delta = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
-class v0_Expression(UserExpression):
+class v_0_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.0
-        values[1] = 0.0
+
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
     
-class sigma0_Expression(UserExpression):
+    
+class sigma_0_expression(UserExpression):
     def eval(self, values, x):
+
         values[0] = 0.0
 
     def value_shape(self):
         return (1,)
 
 
-class f_Expression(UserExpression):
+class f_expression(UserExpression):
     def eval(self, values, x):
+
         values[0] = 0.0
         values[1] = 0.0
 
     def value_shape(self):
         return (2,)
 
-class tau_Expression(UserExpression):
+class tau_expression(UserExpression):
     def eval(self, values, x):
         values[0] = 1.0
         values[1] = 0.0
