@@ -36,8 +36,8 @@ import numpy as np
 class v_0_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2 * np.pi * (x[0]+x[1]))
-        values[1] = np.sin(2 * np.pi * (x[0]+x[1]))
+        values[0] = 0
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
@@ -46,7 +46,7 @@ class v_0_expression(UserExpression):
 class sigma_0_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.sin(2 * np.pi * (x[0]+x[1]**2))
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -56,9 +56,8 @@ class sigma_0_expression(UserExpression):
 msh.interpolate_dg(fsp.v_n_1, v_0_expression(), rmsh.sf)
 fsp.v_n_2.assign(fsp.v_n_1)
 
-msh.interpolate_dg(fsp.sigma_n_12, sigma_0_expression(), rmsh.sf)
-fsp.sigma_n_32.assign(fsp.sigma_n_12)
-
+msh.interpolate_dg(fsp.sigma_n_32, sigma_0_expression(), rmsh.sf)
+'''
 # print test - start
 import input_output as io
 import solution_paths as solpath
@@ -72,7 +71,7 @@ io.full_print(fsp.sigma_n_12, 'sigma_n_12', \
     
 
 # print test - end
-
+'''
 sys.exit(1)
 
 print("Starting time iteration ...", flush=True)
