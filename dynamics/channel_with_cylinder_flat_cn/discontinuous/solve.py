@@ -131,8 +131,10 @@ for n in range(rpam.parameters['num_steps']):
     fsp.v_n_1.assign(fsp.v_n)
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
+    if (step % rpam.parameters['print_out_stride']) == 0:
+    
+        pr_sol.print_solution(t, step, vp.dt)
 
-    pr_sol.print_solution(t, step, vp.dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 
