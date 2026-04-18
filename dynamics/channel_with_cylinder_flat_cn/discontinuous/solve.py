@@ -118,11 +118,13 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F_3, fsp.v_n, vp.bcs_3, fsp.J_v_n)
 
-    sys.exit(1)
 
 
 
     pr_bc.print_bcs()
+
+
+    sys.exit(1)
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
     fsp.sigma_n_12.assign(project(fsp.sigma_n_32 - phi_output, fsp.Q_sigma))

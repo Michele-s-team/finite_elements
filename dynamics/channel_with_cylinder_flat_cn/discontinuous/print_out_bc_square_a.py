@@ -24,8 +24,8 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
-    '<<|sigma_{alpha beta} n_beta - \tau_alpha|^2>>_{partial \Omega}',\
-    '<<(phi - mu * n_alpha n_beta * \partial_beta (\overline{v}_alpha - v^{n-2}_alpha - dt/mu * \partial_alpha \phi))>>'
+    '<<|sigma_{alpha beta} n_beta - tau_alpha|^2>>_{partial Omega r}',\
+    '<<phi^2>>_{partial Omega r}'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -35,16 +35,13 @@ writer.writeheader()
 def print_bcs():
     # get the solution and write it to file
 
-    V = 0.5 * (fsp.v_n_1 + fsp.v_)
-    phi_output, omega_output = fsp.phi_omega.split(deepcopy=True)
-
 
     # write the residual of natural BCs on step 2 to file
     writer.writerows( [{ \
         fieldnames[0]: \
-            msh.abs_wrt_measure(sqrt((flu.sigma(V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * bgeo.facet_normal[beta] - fsp.tau[alpha]) * (flu.sigma(V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, gamma] * bgeo.facet_normal[gamma] - fsp.tau[alpha])), rmsh.ds),\
+            msh.abs_wrt_measure(sqrt((flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * bgeo.facet_normal[beta] - fsp.tau[alpha]) * (flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, gamma] * bgeo.facet_normal[gamma] - fsp.tau[alpha])), rmsh.ds_r),\
         fieldnames[1]:
-            msh.abs_wrt_measure(phi_output - rpam.parameters['mu'] * bgeo.facet_normal[alpha] * bgeo.facet_normal[beta] * (fsp.v_[alpha] - fsp.v_n_2[alpha] - vp.dt/rpam.parameters['rho'] * omega_output[alpha]).dx(beta), rmsh.ds)
+            msh.abs_wrt_measure(fsp.phi, rmsh.ds_r)
         }] )
 
     csvfile.flush()
