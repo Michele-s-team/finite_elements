@@ -123,16 +123,14 @@ for n in range(rpam.parameters['num_steps']):
 
     pr_bc.print_bcs()
 
-
-    sys.exit(1)
-
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(project(fsp.sigma_n_32 - phi_output, fsp.Q_sigma))
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
     # Update previous solution
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
 
     pr_sol.print_solution(t, step, vp.dt)
 
