@@ -2,10 +2,10 @@ import colorama as col
 
 import runtime_arguments as rarg
 
-if rarg.args.problem == 'disk':
-    rmsh = 'mesh.read.disk'
-    vp = 'variational_problem'
-    prout_bc = 'print_out_bc'
+if rarg.args.problem == 'square_a':
+    rmsh = 'mesh.read.square'
+    vp = 'variational_problem_square_a'
+    prout_bc = 'print_out_bc_square_a'
 
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')
