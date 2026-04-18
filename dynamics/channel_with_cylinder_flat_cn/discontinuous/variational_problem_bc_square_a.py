@@ -85,25 +85,24 @@ F_1_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
 
 F_1 = F_1_0 + F_1_N
 
-'''
+
 
 # step 2
-F2_phi = (
+F2_0 = (
             (fsp.phi.dx(alpha)) * (fsp.nu_phi.dx(alpha)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[alpha].dx(alpha)) * fsp.nu_phi
         ) * rmsh.dx \
-        - ( bgeo.facet_normal[alpha] * (fsp.phi.dx(alpha)) * fsp.nu_phi) * rmsh.ds
+        - ( msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * msh.average(fsp.phi.dx(alpha)) ) * rmsh.dS \
+        - ( bgeo.facet_normal[alpha] * (fsp.phi.dx(alpha)) * fsp.nu_phi ) * rmsh.ds_r
 
-F2_omega = (fsp.omega[alpha] - fsp.phi.dx(alpha)) * (fsp.nu_omega[alpha] - fsp.nu_phi.dx(alpha)) * rmsh.dx
 
-F2_N = rpam.parameters['alpha'] / rmsh.r_mesh * (
-        fsp.phi - rpam.parameters['mu'] * bgeo.facet_normal[alpha] * bgeo.facet_normal[beta] * (fsp.v_[alpha] - fsp.v_n_2[alpha] - dt/rpam.parameters['rho'] * fsp.omega[alpha]).dx(beta)
-    ) * \
-    (
-        fsp.nu_phi + rpam.parameters['mu'] * dt / rpam.parameters['rho'] *  bgeo.facet_normal[gamma] * bgeo.facet_normal[delta] * fsp.nu_omega[gamma].dx(delta)
-    ) * rmsh.ds
+F2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
+      msh.jump(fsp.phi, bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * rmsh.dS + \
+      fsp.phi * fsp.nu_phi * rmsh.ds_r
+    )
 
-F2 = (F2_phi + F2_omega) + F2_N
+F2 = F2_0 + F2_N
 
+'''
 # step 3
 F3 = (fsp.v_n[alpha] - fsp.v_[alpha] + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_n[alpha] * rmsh.dx
 '''
