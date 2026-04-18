@@ -58,6 +58,16 @@ fsp.v_n_2.assign(fsp.v_n_1)
 msh.interpolate_dg(fsp.sigma_n_12, sigma_0_expression(), rmsh.sf)
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
+# print test - start
+import input_output as io
+import solution_paths as solpath
+
+io.full_print(fsp.v_n, 'v_n', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path,
+                  mesh_function=rmsh.sf)
+    
+
+# print test - end
 
 sys.exit(1)
 
