@@ -74,8 +74,9 @@ F_1_0 = ( \
       - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds_r
 
 F_1_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
-            msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * rmsh.dS \
-            (fsp.v_[alpha] - fsp.g[alpha]) * fsp.nu_v_[alpha] * (rmsh.ds_tb + rmsh.ds_l + rmsh.ds_circle)
+            msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * rmsh.dS + \
+            (fsp.v_[alpha] - fsp.v_l[alpha]) * fsp.nu_v_[alpha] * rmsh.ds_l + \
+            (fsp.v_[alpha] - fsp.v_tb_circle[alpha]) * fsp.nu_v_[alpha] * (rmsh.ds_tb + rmsh.ds_circle)
         )
 
 F_1 = F_1_0 + F_1_N
