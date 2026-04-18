@@ -37,7 +37,6 @@ class tau_expression(UserExpression):
 msh.interpolate_dg(fsp.f, f_expression(), rmsh.sf)
 msh.interpolate_dg(fsp.tau, tau_expression(), rmsh.sf)
 
-'''
 # step 1
 F1 = ( \
                 ( 
@@ -49,7 +48,10 @@ F1 = ( \
                     ) * fsp.nu_v_[alpha] \
                 +  flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_[alpha].dx(beta)
       ) * rmsh.dx \
-      - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds
+      - (bgeo.facet_normal[beta] * flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_[alpha]) * (rmsh.ds_tb + rmsh.ds_l + rmsh.ds_circle) \
+      - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds_r
+
+'''
 
 # step 2
 F2_phi = (
