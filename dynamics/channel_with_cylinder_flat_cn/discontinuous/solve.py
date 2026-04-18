@@ -8,7 +8,6 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk $MESH_PATH $SOLUTION_PATH
 """
 
-import colorama as col
 import dolfin
 from fenics import *
 import importlib
@@ -20,7 +19,6 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import parameters.read.solution as rpam
-import runtime_arguments as rarg
 import switch_problem as swi
 import print_out_solution as pr_sol
 
