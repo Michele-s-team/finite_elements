@@ -17,8 +17,6 @@ The fields are
 from fenics import *
 
 import mesh.load as lmsh
-import mesh.utils as msh
-import parameters.read.solution as rpam
 
 
 Q_v = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
