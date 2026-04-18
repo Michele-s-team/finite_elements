@@ -93,14 +93,21 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F_1, fsp.v_, vp.bcs_1, fsp.J_v_)
 
-    sys.exit(1)
 
-
+    '''
     # Step 2: surface_tension correction step
     J2 = derivative(vp.F2, fsp.phi_omega, fsp.J_phi_omega)
     problem2 = NonlinearVariationalProblem(vp.F2, fsp.phi_omega, [], J2)
     solver2 = NonlinearVariationalSolver(problem2)
     solver2.solve()
+    '''
+    
+    var_pr.solve_vp(vp.F_2, fsp.phi, vp.bcs_2, fsp.J_phi)
+
+
+
+    sys.exit(1)
+
 
     # step 3
     J3 = derivative(vp.F3, fsp.v_n, fsp.J_v_n)

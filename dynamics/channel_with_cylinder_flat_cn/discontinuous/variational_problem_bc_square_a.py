@@ -88,19 +88,19 @@ F_1 = F_1_0 + F_1_N
 
 
 # step 2
-F2_0 = (
+F_2_0 = (
             (fsp.phi.dx(alpha)) * (fsp.nu_phi.dx(alpha)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[alpha].dx(alpha)) * fsp.nu_phi
         ) * rmsh.dx \
         - ( msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * msh.average(fsp.phi.dx(alpha)) ) * rmsh.dS \
         - ( bgeo.facet_normal[alpha] * (fsp.phi.dx(alpha)) * fsp.nu_phi ) * rmsh.ds_r
 
 
-F2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
+F_2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
       msh.jump(fsp.phi, bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * rmsh.dS + \
       fsp.phi * fsp.nu_phi * rmsh.ds_r
     )
 
-F2 = F2_0 + F2_N
+F_2 = F_2_0 + F_2_N
 
 '''
 # step 3

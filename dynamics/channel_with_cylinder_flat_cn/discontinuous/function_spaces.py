@@ -50,7 +50,7 @@ v_tb_circle = Function(Q_v_)
 # Define test functions
 nu_v_ = TestFunction(Q_v_)
 nu_v_n = TestFunction(Q_v)
-nu_phi = TestFunctions(Q_sigma)
+nu_phi = TestFunction(Q_sigma)
 
 
 J_v_ = TrialFunction(Q_v_)
