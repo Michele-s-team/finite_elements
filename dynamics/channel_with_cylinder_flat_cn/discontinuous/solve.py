@@ -30,13 +30,14 @@ pr_bc = importlib.import_module(swi.prout_bc)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
 
+import numpy as np
 
 # set the initial profiles
 class v_0_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 0
-        values[1] = 0
+        values[0] = np.cos(2 * np.pi * (x[0]+x[1]))
+        values[1] = np.sin(2 * np.pi * (x[0]+x[1]))
 
     def value_shape(self):
         return (2,)
@@ -45,7 +46,7 @@ class v_0_expression(UserExpression):
 class sigma_0_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 0.0
+        values[0] = np.sin(2 * np.pi * (x[0]+x[1]**2))
 
     def value_shape(self):
         return (1,)
@@ -62,7 +63,7 @@ fsp.sigma_n_32.assign(fsp.sigma_n_12)
 import input_output as io
 import solution_paths as solpath
 
-io.full_print(fsp.v_n, 'v_n', \
+io.full_print(fsp.v_n_1, 'v_n_1', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path,
                   mesh_function=rmsh.sf)
 io.full_print(fsp.sigma_n_12, 'sigma_n_12', \
