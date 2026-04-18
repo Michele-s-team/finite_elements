@@ -5,7 +5,7 @@ run with:
 rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
 """
 
 import dolfin
@@ -32,10 +32,30 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadr
 
 
 # set the initial profiles
-msh.interpolate_dg(vp.v_n_1, vp.v_0_expression(), rmsh.sf)
+class v_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+    
+    
+class sigma_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0.0
+
+    def value_shape(self):
+        return (1,)
+
+
+
+msh.interpolate_dg(fsp.v_n_1, v_0_expression(), rmsh.sf)
 fsp.v_n_2.assign(fsp.v_n_1)
 
-msh.interpolate_dg(fsp.sigma_n_12, vp.sigma_0_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.sigma_n_12, sigma_0_expression(), rmsh.sf)
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
 

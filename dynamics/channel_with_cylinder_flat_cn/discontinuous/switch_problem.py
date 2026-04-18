@@ -4,7 +4,7 @@ import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_a':
     rmsh = 'mesh.read.square'
-    vp = 'variational_problem_square_a'
+    vp = 'variational_problem_bc_square_a'
     prout_bc = 'print_out_bc_square_a'
 
 

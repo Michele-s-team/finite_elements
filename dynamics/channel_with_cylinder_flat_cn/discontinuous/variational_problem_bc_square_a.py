@@ -4,6 +4,7 @@ import ufl as ufl
 
 import function_spaces as fsp
 import differential_geometry.boundary.geometry as bgeo
+import mesh.utils as msh
 import physics.fluid_mechanics as flu
 import parameters.read.solution as rpam
 import switch_problem as swi
@@ -14,25 +15,6 @@ alpha, beta, gamma, delta = ufl.indices(4)
 
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
-
-class v_0_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-    
-    
-class sigma_0_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0.0
-
-    def value_shape(self):
-        return (1,)
-
 
 class f_expression(UserExpression):
     def eval(self, values, x):
@@ -51,9 +33,11 @@ class tau_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-fsp.f.interpolate(f_Expression(element=fsp.Q_f.ufl_element()))
-fsp.tau.interpolate(tau_Expression(element=fsp.Q_tau.ufl_element()))
 
+msh.interpolate_dg(fsp.f, f_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.tau, tau_expression(), rmsh.sf)
+
+'''
 # step 1
 F1 = ( \
                 ( 
@@ -86,3 +70,4 @@ F2 = (F2_phi + F2_omega) + F2_N
 
 # step 3
 F3 = (fsp.v_n[alpha] - fsp.v_[alpha] + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_n[alpha] * rmsh.dx
+'''
