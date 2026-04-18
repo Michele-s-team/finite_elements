@@ -102,7 +102,6 @@ F_2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
 
 F_2 = F_2_0 + F_2_N
 
-'''
+
 # step 3
-F3 = (fsp.v_n[alpha] - fsp.v_[alpha] + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_n[alpha] * rmsh.dx
-'''
+F_3 = (fsp.v_n[alpha] - fsp.v_[alpha] + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_n[alpha] * rmsh.dx

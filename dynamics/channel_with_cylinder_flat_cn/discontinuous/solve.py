@@ -101,21 +101,25 @@ for n in range(rpam.parameters['num_steps']):
     solver2 = NonlinearVariationalSolver(problem2)
     solver2.solve()
     '''
-    
+
     var_pr.solve_vp(vp.F_2, fsp.phi, vp.bcs_2, fsp.J_phi)
 
 
 
-    sys.exit(1)
 
 
     # step 3
+    '''
     J3 = derivative(vp.F3, fsp.v_n, fsp.J_v_n)
     problem3 = NonlinearVariationalProblem(vp.F3, fsp.v_n, [], J3)
     solver3 = NonlinearVariationalSolver(problem3)
     solver3.solve()
+    '''
 
-    phi_output, omega_output = fsp.phi_omega.split(deepcopy=True)
+    var_pr.solve_vp(vp.F_3, fsp.v_n, vp.bcs_3, fsp.J_v_n)
+
+    sys.exit(1)
+
 
 
     pr_bc.print_bcs()
