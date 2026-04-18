@@ -43,6 +43,10 @@ phi = Function(Q_sigma)
 f = Function(Q_f)
 tau = Function(Q_f)
 
+# velocity profiles for the BCs
+v_l = Function(Q_v_)
+v_tb_circle = Function(Q_v_)
+
 # Define test functions
 nu_v_ = TestFunction(Q_v_)
 nu_v_n = TestFunction(Q_v)

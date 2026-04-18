@@ -16,6 +16,25 @@ alpha, beta, gamma, delta = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
+class v_l_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        values[1] = 0.0
+
+    def value_shape(self):
+        return (2,)
+    
+class v_tb_circle_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+
 class f_expression(UserExpression):
     def eval(self, values, x):
 
@@ -33,6 +52,8 @@ class tau_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+msh.interpolate_dg(fsp.v_l, v_l_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression(), rmsh.sf)
 
 msh.interpolate_dg(fsp.f, f_expression(), rmsh.sf)
 msh.interpolate_dg(fsp.tau, tau_expression(), rmsh.sf)
