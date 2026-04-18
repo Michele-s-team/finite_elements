@@ -38,7 +38,7 @@ msh.interpolate_dg(fsp.f, f_expression(), rmsh.sf)
 msh.interpolate_dg(fsp.tau, tau_expression(), rmsh.sf)
 
 # step 1
-F1 = ( \
+F_1_0 = ( \
                 ( 
                     rpam.parameters['rho'] * (
                         (fsp.v_[alpha] - fsp.v_n_1[alpha]) / dt \
@@ -48,8 +48,16 @@ F1 = ( \
                     ) * fsp.nu_v_[alpha] \
                 +  flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_[alpha].dx(beta)
       ) * rmsh.dx \
+      - (msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * msh.average(flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[beta, alpha])) * rmsh.dS \
       - (bgeo.facet_normal[beta] * flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_[alpha]) * (rmsh.ds_tb + rmsh.ds_l + rmsh.ds_circle) \
       - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds_r
+
+F_1_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
+            msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * rmsh.dS \
+            (fsp.v_[alpha] - fsp.g[alpha]) * fsp.nu_v_[alpha] * (rmsh.ds_tb + rmsh.ds_l + rmsh.ds_circle)
+        )
+
+F_1 = F_1_0 + F_1_N
 
 '''
 
