@@ -65,6 +65,9 @@ import solution_paths as solpath
 io.full_print(fsp.v_n, 'v_n', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path,
                   mesh_function=rmsh.sf)
+io.full_print(fsp.sigma_n_12, 'sigma_n_12', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path,
+                  mesh_function=rmsh.sf)
     
 
 # print test - end
