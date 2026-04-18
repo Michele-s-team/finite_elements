@@ -22,6 +22,7 @@ import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
 import print_out_solution as pr_sol
+import variational_problem.utils as var_pr
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
@@ -72,7 +73,6 @@ io.full_print(fsp.sigma_n_12, 'sigma_n_12', \
 
 # print test - end
 '''
-sys.exit(1)
 
 print("Starting time iteration ...", flush=True)
 # Time-stepping
@@ -86,10 +86,15 @@ for n in range(rpam.parameters['num_steps']):
     vp = importlib.import_module(swi.vp)
 
     # step 1
-    J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
-    problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, [], J1)
-    solver1 = NonlinearVariationalSolver(problem1)
-    solver1.solve()
+    # J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
+    # problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, [], J1)
+    # solver1 = NonlinearVariationalSolver(problem1)
+    # solver1.solve()
+
+    var_pr.solve_vp(vp.F_1, fsp.v_, vp.bcs_1, fsp.J_v_)
+
+    sys.exit(1)
+
 
     # Step 2: surface_tension correction step
     J2 = derivative(vp.F2, fsp.phi_omega, fsp.J_phi_omega)

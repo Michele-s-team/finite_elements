@@ -58,6 +58,10 @@ msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression(), rmsh.sf)
 msh.interpolate_dg(fsp.f, f_expression(), rmsh.sf)
 msh.interpolate_dg(fsp.tau, tau_expression(), rmsh.sf)
 
+bcs_1 = []
+bcs_2 = []
+bcs_3 = []
+
 # step 1
 F_1_0 = ( \
                 ( 
@@ -74,7 +78,7 @@ F_1_0 = ( \
       - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds_r
 
 F_1_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
-            msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * rmsh.dS + \
+            msh.jump(fsp.v_[beta], bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * rmsh.dS + \
             (fsp.v_[alpha] - fsp.v_l[alpha]) * fsp.nu_v_[alpha] * rmsh.ds_l + \
             (fsp.v_[alpha] - fsp.v_tb_circle[alpha]) * fsp.nu_v_[alpha] * (rmsh.ds_tb + rmsh.ds_circle)
         )
