@@ -79,6 +79,7 @@ print("Starting time iteration ...", flush=True)
 t = 0
 step = 0
 for n in range(rpam.parameters['num_steps']):
+    
     # Update current time
     t += vp.dt
     step += 1
@@ -86,40 +87,13 @@ for n in range(rpam.parameters['num_steps']):
     vp = importlib.import_module(swi.vp)
 
     # step 1
-    # J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
-    # problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, [], J1)
-    # solver1 = NonlinearVariationalSolver(problem1)
-    # solver1.solve()
-
     var_pr.solve_vp(vp.F_1, fsp.v_, vp.bcs_1, fsp.J_v_)
 
-
-    '''
-    # Step 2: surface_tension correction step
-    J2 = derivative(vp.F2, fsp.phi_omega, fsp.J_phi_omega)
-    problem2 = NonlinearVariationalProblem(vp.F2, fsp.phi_omega, [], J2)
-    solver2 = NonlinearVariationalSolver(problem2)
-    solver2.solve()
-    '''
-
+    # step 2
     var_pr.solve_vp(vp.F_2, fsp.phi, vp.bcs_2, fsp.J_phi)
 
-
-
-
-
     # step 3
-    '''
-    J3 = derivative(vp.F3, fsp.v_n, fsp.J_v_n)
-    problem3 = NonlinearVariationalProblem(vp.F3, fsp.v_n, [], J3)
-    solver3 = NonlinearVariationalSolver(problem3)
-    solver3.solve()
-    '''
-
     var_pr.solve_vp(vp.F_3, fsp.v_n, vp.bcs_3, fsp.J_v_n)
-
-
-
 
     pr_bc.print_bcs()
 
