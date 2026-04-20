@@ -1,5 +1,5 @@
 '''
-solve the poisson equation on a disk \Omega with Neumann BCs n^i \partial_i u = g on \partial \Omega, imposed as natural BCs
+solve the poisson equation on a disk \Omega whose boundary is given by custom generated vertices  with Neumann BCs n^i \partial_i u = g on \partial \Omega, imposed as natural BCs
 '''
 
 from fenics import *
