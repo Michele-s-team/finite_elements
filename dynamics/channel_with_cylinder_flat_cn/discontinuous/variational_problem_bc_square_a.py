@@ -19,7 +19,7 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 class v_l_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        values[0] = rpam.parameters['v__l_const'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
         values[1] = 0.0
 
     def value_shape(self):
@@ -102,26 +102,6 @@ F_2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
 
 F_2 = F_2_0 + F_2_N
 
-'''
-
-# step 2
-F_2_0 = (
-            (fsp.phi.dx(alpha)) * (fsp.nu_phi.dx(alpha)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[alpha].dx(alpha)) * fsp.nu_phi
-        ) * rmsh.dx \
-        - ( msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * msh.average(fsp.phi.dx(alpha)) ) * rmsh.dS \
-        - ( bgeo.facet_normal[alpha] * (- (rpam.parameters['rho'] / dt) * (fsp.v_l[alpha] - fsp.v_[alpha])) * fsp.nu_phi ) * rmsh.ds_l \
-        - ( bgeo.facet_normal[alpha] * (- (rpam.parameters['rho'] / dt) * (fsp.v_tb_circle[alpha] - fsp.v_[alpha])) * fsp.nu_phi ) * (rmsh.ds_tb + rmsh.ds_circle) \
-        - ( bgeo.facet_normal[alpha] * (fsp.phi.dx(alpha)) * fsp.nu_phi ) * rmsh.ds_r
-
-
-F_2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
-      msh.jump(fsp.phi, bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * rmsh.dS + \
-      fsp.phi * fsp.nu_phi * rmsh.ds_r
-    )
-
-F_2 = F_2_0 + F_2_N
-
-'''
 
 
 
