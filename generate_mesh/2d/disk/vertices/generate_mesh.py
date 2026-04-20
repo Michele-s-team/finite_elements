@@ -1,5 +1,5 @@
 '''
-This code generates a 2d mesh given by a disk with. The disk boundary is given by a polygon with N vertices, where N is determined from the mesh resolution. The polygon, disk surface and vertices are all tagged as separate physical entities. Vertices are tagged with IDs rpam.parameters["vertex_0_id"], rpam.parameters["vertex_0_id"]+1, ....  starting from vertex with coordinate [rpam.parameters['r'], 0] and continuing along the polygon in the counterclockwise direction
+This code generates a 2d mesh given by a disk. The disk boundary is given by a polygon with N vertices, where N is determined from the mesh resolution. The polygon, disk surface and vertices are all tagged as separate physical entities. Vertices are tagged with IDs rpam.parameters["vertex_0_id"], rpam.parameters["vertex_0_id"]+1, ....  starting from vertex with coordinate [rpam.parameters['r'], 0] and continuing along the polygon in the counterclockwise direction
 
 The vertex is tagged as a one-dimensional mesh component. 
 
@@ -165,7 +165,6 @@ for facet in facets(read_mesh):
             circle_vertex_ids.add(v.index())
 
 n_vertices_on_circle = len(circle_vertex_ids)
-print(f'Number of vertices on circle = {n_vertices_on_circle}')
 
 if n_vertices_on_circle != N:
     # the meshing algorithm has added additional vertices on the circle, while I want the number of vertices on the circle to match N, and thus the number of vertices in the line mesh -> print an error message

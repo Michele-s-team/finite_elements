@@ -2930,11 +2930,11 @@ def average(u):
     return (u("+")+u("-"))/2
 
 '''
-set a scalar field defined on a DG space equal to a function profile in a mesh region 
+set field defined on a DG space equal to a profile in a mesh region 
 Input values: 
     * Mandatory:
-        - 'f': the scalar field defined on a DG space
-        - 'g': the function profile to which 'f' will be set
+        - 'f': the field defined on a DG space
+        - 'g': the profile to which 'f' will be set
         - 'sf': the mesh function that tags mesh surfaces
     * Optional:
         - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs

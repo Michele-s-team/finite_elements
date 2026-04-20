@@ -1,3 +1,7 @@
+'''
+solve the poisson equation on a disk \Omega with dirichlet BCs u = g on \partial \Omega imposed with a penalty term
+'''
+
 from fenics import *
 import importlib
 import numpy as np
@@ -23,10 +27,24 @@ class u_exact_expression(UserExpression):
         # test case 2
         values[0] = np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['r']) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.lmsh.parameters['r'])
 
+
     def value_shape(self):
         return (1,)
 
 
+class grad_u_exact_expression(UserExpression):
+    def eval(self, values, x):
+
+        # test case 1
+        # values[0] = 2 * x[0]
+        # values[1] = 4 * x[1]
+
+        # test case 2
+        values[0] = 2.0 * np.pi / rmsh.lmsh.parameters['r'] * np.cos(4.0 * np.pi / rmsh.lmsh.parameters['r'] * x[0])
+        values[1] = 2.0 * np.pi / rmsh.lmsh.parameters['r'] * np.cos(4.0 * np.pi / rmsh.lmsh.parameters['r'] * x[1])
+
+    def value_shape(self):
+        return (2,)
 
 
 class laplacian_u_expression(UserExpression):
@@ -38,48 +56,30 @@ class laplacian_u_expression(UserExpression):
         # test case 2
         values[0] = - (4 * np.pi/rmsh.lmsh.parameters['r'])**2 * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['r']) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.lmsh.parameters['r'])
 
+
     def value_shape(self):
         return (1,)
 
-'''
-class hess_u_exact_expression(UserExpression):
-    def init(self, **kwargs):
-        super().init(**kwargs)
 
-    def eval(self, values, x):
+msh.interpolate_dg(fsp.u_exact, u_exact_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.grad_u_exact, grad_u_exact_expression(),  rmsh.sf)
+msh.interpolate_dg(fsp.f, laplacian_u_expression(), rmsh.sf)
 
-        # test case 1
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
-
-        # test case 2
-        # pi = np.pi
-        # values[0] = -2 * pi ** 2 * np.sin(2 * pi * x[0])  # ∂²u/∂x²
-        # values[1] = 0  # ∂²u/∂x∂y
-        # values[2] = 0  # ∂²u/∂y∂x
-        # values[3] = -2 * pi ** 2 * np.sin(2 * pi * x[1])  # ∂²u/∂y²
-
-    def value_shape(self):
-        return (2, 2)
-'''
-
-fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q.ufl_element()))
-fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 bcs = []
 
 # variational functional for the original problem (poisson equation)
+# natural BC imposed here
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
+    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_square \
+    - bgeo.facet_normal[i] * (fsp.grad_u_exact[i]) * fsp.nu_u * rmsh.ds_circle
 
 F_I = (
         -  msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
         ) * rmsh.dS
 
-F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
+F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_square
 
 
 F = F_0 + F_I + F_E

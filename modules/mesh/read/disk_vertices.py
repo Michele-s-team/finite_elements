@@ -1,5 +1,6 @@
 from fenics import *
 
+import importlib
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
@@ -24,13 +25,15 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['surface_id'])
 # define line measure
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['circle_id'])
+# define internal facet measure
+dS = Measure("dS", domain=lmsh.mesh)
+
 # define vertex measure
 dp = []
 for i in range(parameters['N']):
     dp.append(Measure("dP", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_0_id'] + i))
 
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.disk_vertices')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
