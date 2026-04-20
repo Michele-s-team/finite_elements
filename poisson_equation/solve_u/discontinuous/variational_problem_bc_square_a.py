@@ -22,7 +22,11 @@ class u_exact_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+
+        # test case 2
+        values[0] = np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['r']) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.lmsh.parameters['r'])
+
 
     def value_shape(self):
         return (1,)
@@ -32,8 +36,12 @@ class grad_u_exact_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 2 * x[0]
-        values[1] = 4 * x[1]
+        # values[0] = 2 * x[0]
+        # values[1] = 4 * x[1]
+
+        # test case 2
+        values[0] = 2.0 * np.pi / rmsh.lmsh.parameters['r'] * np.cos(4.0 * np.pi / rmsh.lmsh.parameters['r'] * x[0])
+        values[1] = 2.0 * np.pi / rmsh.lmsh.parameters['r'] * np.cos(4.0 * np.pi / rmsh.lmsh.parameters['r'] * x[1])
 
     def value_shape(self):
         return (2,)
@@ -43,7 +51,11 @@ class laplacian_u_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 6.0
+        # values[0] = 6.0
+
+        # test case 2
+        values[0] = - (4 * np.pi/rmsh.lmsh.parameters['r'])**2 * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['r']) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.lmsh.parameters['r'])
+
 
     def value_shape(self):
         return (1,)
@@ -57,6 +69,7 @@ msh.interpolate_dg(fsp.f, laplacian_u_expression(), rmsh.sf)
 bcs = []
 
 # variational functional for the original problem (poisson equation)
+# natural BC imposed here
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_square \
     - bgeo.facet_normal[i] * (fsp.grad_u_exact[i]) * fsp.nu_u * rmsh.ds_circle
