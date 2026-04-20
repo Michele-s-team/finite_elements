@@ -1,3 +1,5 @@
+
+from fenics import *
 import numpy as np
 import scipy.integrate as spi
 from scipy.spatial.distance import pdist
@@ -255,6 +257,44 @@ def curve_integral_circle_arc(f, r, theta_min, theta_max, c):
     circle_arc_curve = lambda t: circle_arc(r, c, theta_min, theta_max, t)
     return curve_integral(f, circle_arc_curve)
 
+
+'''
+compute the integral of a function over measure of internal facets 'dS'
+Input values: 
+    - 'mesh' the mesh
+    - 'f': the function that will be integrated over 'dS'
+Return values: 
+    - int dS_ f
+
+'''
+def curve_integral_dS(mesh, f):
+
+    result = 0.0
+
+    for facet in facets(mesh):
+        # loop through all mesh facets
+
+        if facet.exterior() == False:
+            # the facet under consideration is an internal facet -> consider it for the check
+
+            '''
+            facet_vertices contains the coordinates of the endpoints of `facet`:
+            facet_vertices = 
+            [
+                [p_0_x, p_0_y],
+                [p_1_x, p_1_y]
+            ]
+            ''' 
+            facet_vertices = []
+
+            for v in vertices(facet):
+                # run through the vertices of `facet`
+
+                facet_vertices.append((v.point().array().tolist())[:2])
+
+            result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
+
+    return result
 
 '''
 compute the integral of a function of two variables over a rectangle
