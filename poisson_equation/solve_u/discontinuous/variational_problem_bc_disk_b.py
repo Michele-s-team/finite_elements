@@ -66,14 +66,15 @@ bcs = []
 
 # variational functional for the original problem (poisson equation)
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
-    - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
+    - bgeo.facet_normal[i] * fsp.grad_u_exact[i] * fsp.nu_u * rmsh.ds
 
 F_I = (
         -  msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
         ) * rmsh.dS
 
-F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
+# F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
 
 
-F = F_0 + F_I + F_E
+# F = F_0 + F_I + F_E
+F = F_0 + F_I 
