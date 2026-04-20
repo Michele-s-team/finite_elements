@@ -54,7 +54,7 @@ print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_diction
 total_length_dS = assemble(1 * rmsh.dS)
 
 # total length by looping over interior facets directly
-total_length_facets = 0.0
+integral_exact_dS = 0.0
 for facet in facets(rmsh.lmsh.mesh):
 
     if facet.exterior() == False:
@@ -77,9 +77,9 @@ for facet in facets(rmsh.lmsh.mesh):
 
         print(f'\t facet vertices = {facet_vertices}')
 
-        total_length_facets += np.linalg.norm(np.subtract(facet_vertices[1], facet_vertices[0]))
-
+        integral_exact_dS += cal.curve_integral_line(tf.function_test_integrals, facet_vertices[0], facet_vertices[1])
+        
 print(f'dS integral        = {assemble(1 * rmsh.dS)}')
-print(f'direct edge sum    = {total_length_facets}')
+print(f'direct edge sum    = {integral_exact_dS}')
 
 # test dS - end
