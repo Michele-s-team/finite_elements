@@ -25,22 +25,6 @@ ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
 ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
 dS = Measure("dS", domain=lmsh.mesh)
 
-'''
-# test dS - start
-# total length via dS
-total_length_dS = assemble(1 * dS)
-
-# total length by looping over interior facets directly
-total_length_facets = 0.0
-for facet in facets(lmsh.mesh):
-    if facet.num_entities(2) == 2:   # interior facet
-        total_length_facets += Edge(lmsh.mesh, facet.index()).length()
-
-print(f'dS integral        = {assemble(1 * dS)}')
-print(f'direct edge sum    = {total_length_facets}')
-
-# test dS - end
-'''
 
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
