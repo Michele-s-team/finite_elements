@@ -440,7 +440,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 # Test poisson_equation/solve_u/discontinuous
 case_name = 'poisson_equation/solve_u/discontinuous'
 
-problem_name = 'disk'
+problem_name = 'disk_a'
 generate_mesh_path = root_path + 'generate_mesh/2d/disk/'
 checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
                                                                      root_path,
