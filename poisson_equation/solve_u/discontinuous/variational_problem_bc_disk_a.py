@@ -45,29 +45,6 @@ class laplacian_u_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
-'''
-class hess_u_exact_expression(UserExpression):
-    def init(self, **kwargs):
-        super().init(**kwargs)
-
-    def eval(self, values, x):
-
-        # test case 1
-        values[0] = 2
-        values[1] = 0
-        values[2] = 0
-        values[3] = 4
-
-        # test case 2
-        # pi = np.pi
-        # values[0] = -2 * pi ** 2 * np.sin(2 * pi * x[0])  # ∂²u/∂x²
-        # values[1] = 0  # ∂²u/∂x∂y
-        # values[2] = 0  # ∂²u/∂y∂x
-        # values[3] = -2 * pi ** 2 * np.sin(2 * pi * x[1])  # ∂²u/∂y²
-
-    def value_shape(self):
-        return (2, 2)
-'''
 
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
