@@ -35,7 +35,7 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 pr_bc = importlib.import_module(swi.prout_bc)
 
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
 print("Input directory", rarg.args.input_directory)
 print("Output directory", rarg.args.output_directory)
