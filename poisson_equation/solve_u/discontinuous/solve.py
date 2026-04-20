@@ -7,7 +7,7 @@ Run with
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/disk/vertices/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py disk_vertices_a $MESH_PATH $SOLUTION_PATH
-
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
 '''
 
 from fenics import *
