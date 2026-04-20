@@ -78,8 +78,8 @@ for facet in facets(rmsh.lmsh.mesh):
         print(f'\t facet vertices = {facet_vertices}')
 
         integral_exact_dS += cal.curve_integral_line(tf.function_test_integrals, facet_vertices[0], facet_vertices[1])
-        
-print(f'dS integral        = {assemble(1 * rmsh.dS)}')
-print(f'direct edge sum    = {integral_exact_dS}')
+
+print(f'numerical        = {assemble(tf.function_test_integrals_fenics * rmsh.dS)}')
+print(f'exact    = {integral_exact_dS}')
 
 # test dS - end
