@@ -47,3 +47,39 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'test_i
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
+
+
+# test dS - start
+# total length via dS
+total_length_dS = assemble(1 * rmsh.dS)
+
+# total length by looping over interior facets directly
+total_length_facets = 0.0
+for facet in facets(rmsh.lmsh.mesh):
+
+    if facet.exterior() == False:
+        # the facet under consideration is an internal facet -> consider it for the check
+
+        '''
+        facet_vertices contains the coordinates of the endpoints of `facet`:
+        facet_vertices = 
+        [
+            [p_0_x, p_0_y],
+            [p_1_x, p_1_y]
+        ]
+        ''' 
+        facet_vertices = []
+
+        for v in vertices(facet):
+            # run through the vertices of `facet`
+
+            facet_vertices.append((v.point().array().tolist())[:2])
+
+        print(f'\t facet vertices = {facet_vertices}')
+
+        total_length_facets += np.linalg.norm(np.subtract(facet_vertices[1], facet_vertices[0]))
+
+print(f'dS integral        = {assemble(1 * rmsh.dS)}')
+print(f'direct edge sum    = {total_length_facets}')
+
+# test dS - end
