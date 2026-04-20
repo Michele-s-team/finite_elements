@@ -73,8 +73,4 @@ F_I = (
         rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
         ) * rmsh.dS
 
-# F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
-
-
-# F = F_0 + F_I + F_E
 F = F_0 + F_I 
