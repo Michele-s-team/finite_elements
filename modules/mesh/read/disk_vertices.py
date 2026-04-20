@@ -24,6 +24,9 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['surface_id'])
 # define line measure
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['circle_id'])
+# define internal facet measure
+dS = Measure("dS", domain=lmsh.mesh)
+
 # define vertex measure
 dp = []
 for i in range(parameters['N']):
