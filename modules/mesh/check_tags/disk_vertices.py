@@ -20,8 +20,11 @@ delta_theta = 2 * np.pi / rmsh.parameters['N']
 # exact integrals over surface
 integral_exact_dx = cal.surface_integral_disk(tf.function_test_integrals, rmsh.parameters["r"], [0]*2)
 
-# exact integrals over lines
+# exact integral over exterior boundary lines
 integral_exact_ds = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters["r"], [0]*2)
+
+# exact integral over interior boundary lines
+integral_exact_dS = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals)
 
 # exact integrals over vertices
 integral_exact_dp = []
@@ -39,6 +42,8 @@ test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_d
 
 test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, tf.function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
+test_mesh_integral_errors['\int f dS'] = msh.test_mesh_integral(integral_exact_dS, tf.function_test_integrals_fenics, rmsh.dS, '\int f dS')
+
 for i in range(rmsh.parameters['N']):
     test_mesh_integral_errors[f'\int f dp_{i}'] = msh.test_mesh_integral(integral_exact_dp[i], tf.function_test_integrals_fenics, rmsh.dp[i], f'\int f dp_{i}')
 
@@ -47,39 +52,3 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'test_i
 
 print(f'Maximum relative error of mesh integrals = {col.Fore.RED}{io.max_dictionary(test_mesh_integral_errors):.{io.number_of_decimals}e}{col.Fore.RESET}')
 
-
-
-# test dS - start
-# total length via dS
-total_length_dS = assemble(1 * rmsh.dS)
-
-# total length by looping over interior facets directly
-integral_exact_dS = 0.0
-for facet in facets(rmsh.lmsh.mesh):
-
-    if facet.exterior() == False:
-        # the facet under consideration is an internal facet -> consider it for the check
-
-        '''
-        facet_vertices contains the coordinates of the endpoints of `facet`:
-        facet_vertices = 
-        [
-            [p_0_x, p_0_y],
-            [p_1_x, p_1_y]
-        ]
-        ''' 
-        facet_vertices = []
-
-        for v in vertices(facet):
-            # run through the vertices of `facet`
-
-            facet_vertices.append((v.point().array().tolist())[:2])
-
-        print(f'\t facet vertices = {facet_vertices}')
-
-        integral_exact_dS += cal.curve_integral_line(tf.function_test_integrals, facet_vertices[0], facet_vertices[1])
-
-print(f'numerical        = {assemble(tf.function_test_integrals_fenics * rmsh.dS)}')
-print(f'exact    = {integral_exact_dS}')
-
-# test dS - end
