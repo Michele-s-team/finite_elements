@@ -30,8 +30,15 @@ pr_bc = importlib.import_module(swi.prout_bc)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
-
-import numpy as np
+params = {
+    'nonlinear_solver': 'newton',
+    'newton_solver': {
+        'linear_solver': 'superlu',
+        'absolute_tolerance': 1e-9,
+        'relative_tolerance': 1e-9,
+        'maximum_iterations': 50,
+    }
+}
 
 # set the initial profiles
 class v_0_expression(UserExpression):
@@ -87,13 +94,13 @@ for n in range(rpam.parameters['num_steps']):
     vp = importlib.import_module(swi.vp)
 
     # step 1
-    var_pr.solve_vp(vp.F_1, fsp.v_, vp.bcs_1, fsp.J_v_)
+    var_pr.solve_vp(vp.F_1, fsp.v_, vp.bcs_1, fsp.J_v_, parameters=params)
 
     # step 2
-    var_pr.solve_vp(vp.F_2, fsp.phi, vp.bcs_2, fsp.J_phi)
+    var_pr.solve_vp(vp.F_2, fsp.phi, vp.bcs_2, fsp.J_phi, parameters=params)
 
     # step 3
-    var_pr.solve_vp(vp.F_3, fsp.v_n, vp.bcs_3, fsp.J_v_n)
+    var_pr.solve_vp(vp.F_3, fsp.v_n, vp.bcs_3, fsp.J_v_n, parameters=params)
 
     pr_bc.print_bcs()
 
