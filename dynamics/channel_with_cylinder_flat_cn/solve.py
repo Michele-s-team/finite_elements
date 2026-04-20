@@ -67,30 +67,12 @@ for n in range(rpam.parameters['num_steps']):
     vp = importlib.import_module(swi.vp)
 
     # step 1
-
-    '''J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
-    problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, vp.bc_v_, J1)
-    solver1 = NonlinearVariationalSolver(problem1)
-    solver1.solve()
-    '''
     var_pr.solve_vp(vp.F1, fsp.v_, vp.bc_v_, fsp.J_v_)
 
     # Step 2: surface_tension correction step
-    '''
-    J2 = derivative(vp.F2, fsp.phi, fsp.J_phi)
-    problem2 = NonlinearVariationalProblem(vp.F2, fsp.phi, vp.bc_phi, J2)
-    solver2 = NonlinearVariationalSolver(problem2)
-    solver2.solve()
-    '''
     var_pr.solve_vp(vp.F2, fsp.phi, vp.bc_phi, fsp.J_phi)
 
     # step 3
-    '''
-    J3 = derivative(vp.F3, fsp.v_n, fsp.J_v_n)
-    problem3 = NonlinearVariationalProblem(vp.F3, fsp.v_n, [], J3)
-    solver3 = NonlinearVariationalSolver(problem3)
-    solver3.solve()
-    '''
     var_pr.solve_vp(vp.F3, fsp.v_n, [], fsp.J_v_n)
 
     pr_bc.print_bcs()
