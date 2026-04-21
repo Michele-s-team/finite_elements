@@ -2935,11 +2935,11 @@ Input values:
     * Mandatory:
         - 'f': the field defined on a DG space
         - 'g': the profile to which 'f' will be set
-        - 'sf': the mesh function that tags mesh surfaces
     * Optional:
+        - 'sf': 'None' by default, the mesh function that tags mesh surfaces. 
         - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
 '''
-def interpolate_dg(f, g, sf, region_id=None):
+def interpolate_dg(f, g, sf=None, region_id=None):
 
     Q = f.function_space()
     element = Q.ufl_element()
