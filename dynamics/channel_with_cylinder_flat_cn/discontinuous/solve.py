@@ -61,10 +61,10 @@ class sigma_0_expression(UserExpression):
 
 
 
-msh.interpolate_dg(fsp.v_n_1, v_0_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 fsp.v_n_2.assign(fsp.v_n_1)
 
-msh.interpolate_dg(fsp.sigma_n_32, sigma_0_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.sigma_n_32, sigma_0_expression())
 '''
 # print test - start
 import input_output as io

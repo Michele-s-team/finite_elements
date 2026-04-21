@@ -52,11 +52,11 @@ class tau_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-msh.interpolate_dg(fsp.v_l, v_l_expression(), rmsh.sf)
-msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.v_l, v_l_expression())
+msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression())
 
-msh.interpolate_dg(fsp.f, f_expression(), rmsh.sf)
-msh.interpolate_dg(fsp.tau, tau_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.f, f_expression())
+msh.interpolate_dg(fsp.tau, tau_expression())
 
 bcs_1 = []
 bcs_2 = []

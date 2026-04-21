@@ -2935,11 +2935,11 @@ Input values:
     * Mandatory:
         - 'f': the field defined on a DG space
         - 'g': the profile to which 'f' will be set
-        - 'sf': the mesh function that tags mesh surfaces
     * Optional:
+        - 'sf': 'None' by default, the mesh function that tags mesh surfaces. 
         - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
 '''
-def interpolate_dg(f, g, sf, region_id=None):
+def interpolate_dg(f, g, sf=None, region_id=None):
 
     Q = f.function_space()
     element = Q.ufl_element()
@@ -2995,8 +2995,11 @@ def interpolate_dg(f, g, sf, region_id=None):
     for cell in cells(mesh):
         # run on all mesh cells
 
-        # compute 'sf' on the cell; under consideration
-        cell_tag = sf[cell]
+        if region_id != None:
+            #region_id has been given when calling this method -> evaluate sf on the cell to obtain the tag of cell `cell` 
+
+            # compute 'sf' on the cell; under consideration
+            cell_tag = sf[cell]
 
         '''
         cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
@@ -3036,7 +3039,7 @@ def interpolate_dg(f, g, sf, region_id=None):
         cell_dofs_unique = cell_dofs[:n_nodes]
 
 
-        if (cell_tag == region_id) or (region_id == None):
+        if (region_id == None) or (cell_tag == region_id):
             # if 'cell_tag' == 'id', then the cell under consideration belongs to the surface tagged with 'id' -> set the DOFs of 'f' relative to this cell according to 'g'
 
             for i in range(len(cell_dofs_unique)):

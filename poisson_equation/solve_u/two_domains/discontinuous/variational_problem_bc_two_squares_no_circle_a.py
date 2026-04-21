@@ -157,7 +157,7 @@ msh.interpolate_dg(fsp.u_exact, u_exact_r_expression(), rmsh.sf, rmsh.lmsh.param
 msh.interpolate_dg(fsp.f, f_l_expression(), rmsh.sf, rmsh.lmsh.parameters['l_surface_id'])
 msh.interpolate_dg(fsp.f, f_r_expression(), rmsh.sf, rmsh.lmsh.parameters['r_surface_id'])
 
-msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.d, d_expression())
 
 
 bcs = []

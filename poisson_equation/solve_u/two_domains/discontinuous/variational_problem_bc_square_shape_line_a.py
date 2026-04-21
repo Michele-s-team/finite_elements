@@ -82,7 +82,7 @@ msh.interpolate_dg(fsp.u_exact, u_exact_square_expression(), rmsh.sf[0], rmsh.lm
 msh.interpolate_dg(fsp.f, f_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.d, d_expression(), rmsh.sf[0])
+msh.interpolate_dg(fsp.d, d_expression())
 
 
 

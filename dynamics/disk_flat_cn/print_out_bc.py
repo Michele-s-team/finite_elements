@@ -25,7 +25,7 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
     '<<|sigma_{alpha beta} n_beta - \tau_alpha|^2>>_{partial \Omega}',\
-    '<<(phi - mu * n_alpha n_beta * \partial_beta (\overline{v}_alpha - v^{n-2}_alpha - dt/mu * \partial_alpha \phi))>>'
+    '<<(phi - mu * n_alpha n_beta * \partial_beta (\overline{v}_alpha - v^{n-2}_alpha - dt/mu * \partial_alpha \phi))>>_{partial \Omega}'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()

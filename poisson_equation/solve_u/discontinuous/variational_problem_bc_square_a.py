@@ -61,9 +61,9 @@ class laplacian_u_expression(UserExpression):
         return (1,)
 
 
-msh.interpolate_dg(fsp.u_exact, u_exact_expression(), rmsh.sf)
-msh.interpolate_dg(fsp.grad_u_exact, grad_u_exact_expression(),  rmsh.sf)
-msh.interpolate_dg(fsp.f, laplacian_u_expression(), rmsh.sf)
+msh.interpolate_dg(fsp.u_exact, u_exact_expression())
+msh.interpolate_dg(fsp.grad_u_exact, grad_u_exact_expression())
+msh.interpolate_dg(fsp.f, laplacian_u_expression())
 
 
 bcs = []

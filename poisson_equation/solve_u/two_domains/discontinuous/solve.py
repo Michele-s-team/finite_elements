@@ -25,18 +25,17 @@ sys.path.append(module_path)
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
-# test interpolate_dg for vectors  and tensors - start
-import input_output as io
-import sys
-import numpy as np
-import mesh.utils as msh
-import parameters.read.solution as rpam
-import solution_paths as solpath
-rmsh = importlib.import_module(swi.rmsh)
 
 
 '''
 # test of interpolate_dg
+
+rmsh = importlib.import_module(swi.rmsh)
+import input_output as io
+import parameters.read.solution as rpam
+import numpy as np
+import solution_paths as solpath
+import mesh.utils as msh
 
 
 #1. test for scalar
@@ -100,6 +99,9 @@ msh.interpolate_dg(v, v_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['s
 io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
               mesh_function=rmsh.lmsh.sf[0])
+
+
+
 
 
 
