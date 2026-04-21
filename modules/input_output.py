@@ -114,7 +114,7 @@ def print_to_csvfile(f, filename, mesh_function=None):
         if mesh_function == None:
             # the meshod has been called on a discontinuous function space and mesh_function has not been provided -> 'mesh_function' is needed to tell to which tagged domain each DOF coordinate corresponds -> throw an error and exit
 
-            print(f'{col.Fore.RED}Error!! print_scalar_to_csv_file has been called on a discontinuous function space without providing mesh_function.{col.Fore.RESET}')
+            print(f'{col.Fore.RED}Error!! print_to_csv_file has been called on a discontinuous function space without providing mesh_function.{col.Fore.RESET}')
             sys.exit(1)
 
     else: 

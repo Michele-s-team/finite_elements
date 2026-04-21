@@ -22,6 +22,5 @@ import mesh.load as lmsh
 import mesh.utils as msh
 rmsh = importlib.import_module('mesh.read.square')
 
-import mesh.check_tags.square
 msh.check_mesh_symmetry(lmsh.mesh, rmsh.parameters["c_r"])
 

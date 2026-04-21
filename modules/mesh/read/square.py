@@ -23,6 +23,9 @@ ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
 ds_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=4)
 ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
 ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
+dS = Measure("dS", domain=lmsh.mesh)
+
+
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
