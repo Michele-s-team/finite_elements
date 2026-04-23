@@ -97,6 +97,12 @@ msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameter
 msh.interpolate_dg(fsp.d, d_expression())
 msh.interpolate_dg(fsp.e, e_expression())
 
+# test plus_minus - start
+
+msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'], rmsh.ds_mesh[0]['dS_shape'])
+
+# test plus_minus - end
+
 
 '''
 n_shape = bgeo.field_facet_normal(bgeo.facet_normal[0]('-'), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior = True)

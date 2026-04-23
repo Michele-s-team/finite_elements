@@ -3055,3 +3055,29 @@ def interpolate_dg(f, g, sf=None, region_id=None):
     f.vector().set_local(f_values) 
     f.vector().apply("insert")
    
+def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
+
+    Q = FunctionSpace(mesh, 'DG', 0)
+
+    class a_expression(UserExpression):
+        def eval(self, values, x):
+
+            values[0] = 1.0
+
+        def value_shape(self):
+            return (1,)
+        
+    class b_expression(UserExpression):
+        def eval(self, values, x):
+
+            values[0] = -1.0
+
+        def value_shape(self):
+            return (1,)
+
+    u = Function(Q)
+
+    interpolate_dg(u, a_expression(), sf, region_a_id)
+    interpolate_dg(u, b_expression(), sf, region_b_id)
+
+    print(f'<u+> = {assemble(u("+") * dS_ab) / assemble(Constant(1.0) * dS_ab)}')
