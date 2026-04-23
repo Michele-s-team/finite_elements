@@ -135,7 +135,7 @@ F_I = (
         rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
             ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] ) * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square']) + \
             # ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - msh.jump(fsp.u_exact, bgeo.facet_normal[0])[i] ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
-            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - (msh.average(fsp.e) * ((bgeo.facet_normal[0])("-"))[i] ) ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
+            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - (msh.average(fsp.e) * ((bgeo.facet_normal[0])(sub_mesh_0_0_label))[i] ) ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
             )
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
