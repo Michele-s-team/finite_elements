@@ -3054,7 +3054,19 @@ def interpolate_dg(f, g, sf=None, region_id=None):
 
     f.vector().set_local(f_values) 
     f.vector().apply("insert")
-   
+
+
+'''
+recognize to which mesh subregions + and - parts of an internal boundary correspond in a mesh
+Input values:
+    - 'mesh': the mesh
+    - 'sf': the mesh function that tags mesh facets
+    - 'region_a_id', 'region_b_id': the tags with which regions a and b are tagged in 'sf'
+    - 'dS_ab': the measure corresponding to the facets between region a and b
+Return values: 
+    - [symbol corresponding to region a, symbol corresponding to region b]. For example, if region a corresponds to '-' and region b to '+', this method returns ['-', '+']
+
+'''
 def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
 
     Q = FunctionSpace(mesh, 'DG', 0)
@@ -3080,4 +3092,23 @@ def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
     interpolate_dg(u, a_expression(), sf, region_a_id)
     interpolate_dg(u, b_expression(), sf, region_b_id)
 
-    print(f'<u+> = {assemble(u("+") * dS_ab) / assemble(Constant(1.0) * dS_ab)}')
+    mean_p = assemble(u("+") * dS_ab) / assemble(Constant(1.0) * dS_ab)
+    mean_m = assemble(u("-") * dS_ab) / assemble(Constant(1.0) * dS_ab)
+
+    if (np.isclose(mean_p, 1)) and (np.isclose(mean_m, -1)):
+
+        print(f'+ = a, - = b')
+
+        return ['+', '-']
+    
+    elif (np.isclose(mean_p, -1)) and (np.isclose(mean_m, 1)):
+        print(f'- = a, + = b')
+
+        return ['-', '+']
+
+    else:
+
+        print(f"{col.Fore.RED}Error: plus_minus failed!{col.Style.RESET_ALL}")
+        sys.exit(1)
+
+
