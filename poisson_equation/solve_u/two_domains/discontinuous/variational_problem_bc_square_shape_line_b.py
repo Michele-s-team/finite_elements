@@ -58,6 +58,34 @@ class d_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+    
+class e_expression(UserExpression):
+    def eval(self, values, x):
+
+
+        '''
+        e is the jump in u: assuming that '+' = 'square' and '-' = 'shape', we have
+
+            msh.jump(fsp.u, bgeo.facet_normal[0])[i] = 
+            = n_square[i] u_square + n_shape[i] u _shape = 
+            = n_+[i] ( 1 + x[0] ** 2 + 2 * x[1] ** 2) + n_-[i] (1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']) = 
+            = n_-[i] (rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']) = 
+
+        thus I set 
+
+        e = (rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B'])
+
+        and 
+
+        msh.jump(fsp.u, bgeo.facet_normal[0])[i]  = fsp.e *  n_-[i]
+
+        and this is the term that must appear in the variational problem
+        '''
+
+        values[0] = (rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B'])
+
+    def value_shape(self):
+        return (1,)
 
 
 msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
@@ -67,6 +95,7 @@ msh.interpolate_dg(fsp.f, f_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters
 msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 msh.interpolate_dg(fsp.d, d_expression())
+msh.interpolate_dg(fsp.e, e_expression())
 
 
 '''
@@ -96,7 +125,8 @@ F_I = (
         ) * rmsh.ds_mesh[0]['dS_I'] + \
         rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
             ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] ) * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square']) + \
-            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - msh.jump(fsp.u_exact, bgeo.facet_normal[0])[i] ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
+            # ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - msh.jump(fsp.u_exact, bgeo.facet_normal[0])[i] ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
+            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - (msh.average(fsp.e) * ((bgeo.facet_normal[0])("-"))[i] ) ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
             )
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
