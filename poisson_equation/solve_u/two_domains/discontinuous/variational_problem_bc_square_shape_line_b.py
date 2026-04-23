@@ -99,6 +99,15 @@ msh.interpolate_dg(fsp.e, e_expression())
 
 
 '''
+# test plus_minus - start
+print(f'plus_minus = {msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]["dS_shape"])}')
+# test plus_minus - end
+'''
+sub_mesh_0_0_label, sub_mesh_0_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]["dS_shape"])
+
+print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}')
+
+'''
 n_shape = bgeo.field_facet_normal(bgeo.facet_normal[0]('-'), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior = True)
 io.full_print(n_shape, 'n_shape', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
@@ -126,7 +135,7 @@ F_I = (
         rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
             ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] ) * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square']) + \
             # ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - msh.jump(fsp.u_exact, bgeo.facet_normal[0])[i] ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
-            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - (msh.average(fsp.e) * ((bgeo.facet_normal[0])("-"))[i] ) ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
+            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i]  - (msh.average(fsp.e) * ((bgeo.facet_normal[0])(sub_mesh_0_0_label))[i] ) ) *  msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_shape']
             )
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
