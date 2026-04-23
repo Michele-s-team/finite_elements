@@ -3097,12 +3097,9 @@ def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
 
     if (np.isclose(mean_p, 1)) and (np.isclose(mean_m, -1)):
 
-        print(f'+ = a, - = b')
-
         return ['+', '-']
     
     elif (np.isclose(mean_p, -1)) and (np.isclose(mean_m, 1)):
-        print(f'- = a, + = b')
 
         return ['-', '+']
 
