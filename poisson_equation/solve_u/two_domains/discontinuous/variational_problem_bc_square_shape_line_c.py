@@ -19,13 +19,6 @@ i, j = ufl.indices(2)
 
 
 # test case 1
-class f_shape_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 6.0 + rpam.parameters['A'] * 4.0
-
-    def value_shape(self):
-        return (1,)
     
 class f_square_expression(UserExpression):
     def eval(self, values, x):
@@ -38,7 +31,7 @@ class f_square_expression(UserExpression):
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -51,51 +44,13 @@ class u_exact_square_expression(UserExpression):
     def value_shape(self):
         return (1,)
     
-class d_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = rpam.parameters['A'] * 2.0 * rmsh.lmsh.parameters['r']
-
-    def value_shape(self):
-        return (1,)
-    
-class e_expression(UserExpression):
-    def eval(self, values, x):
-
-
-        '''
-        e is the jump in u: assuming that '+' = 'square' and '-' = 'shape', we have
-
-            msh.jump(fsp.u, bgeo.facet_normal[0])[i] = 
-            = n_square[i] u_square + n_shape[i] u _shape = 
-            = n_+[i] ( 1 + x[0] ** 2 + 2 * x[1] ** 2) + n_-[i] (1 + x[0] ** 2 + 2 * x[1] ** 2 + rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']) = 
-            = n_-[i] (rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B']) = 
-
-        thus I set 
-
-        e = (rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B'])
-
-        and 
-
-        msh.jump(fsp.u, bgeo.facet_normal[0])[i]  = fsp.e *  n_-[i]
-
-        and this is the term that must appear in the variational problem
-        '''
-
-        values[0] = (rpam.parameters['A'] * ((x[0]-rmsh.lmsh.parameters['c'][0])**2 + (x[1]-rmsh.lmsh.parameters['c'][1])**2 - rmsh.lmsh.parameters['r']**2) + rpam.parameters['B'])
-
-    def value_shape(self):
-        return (1,)
 
 
 msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(fsp.u_exact, u_exact_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.f, f_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-msh.interpolate_dg(fsp.d, d_expression())
-msh.interpolate_dg(fsp.e, e_expression())
 
 
 '''
@@ -122,9 +77,11 @@ bcs = []
 
 
 # variational functional for the original problem (poisson equation)
-F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx'] + \
-        (fsp.f * fsp.nu_u) * rmsh.dx_mesh[0]['dx'] + \
-        - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx_square'] + \
+        (fsp.f * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] + \
+        ((fsp.u - fsp.u_exact_shape) * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
+        - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] \
+        - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.ds_mesh[0]['dS_shape']
 
 # here I put the average for d because d is the same on both sides (it is a jump)
 F_a = - (msh.average(fsp.d)* msh.average(fsp.nu_u)) * rmsh.ds_mesh[0]['dS_shape']
