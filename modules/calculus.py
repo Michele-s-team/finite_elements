@@ -273,6 +273,11 @@ Return values:
 def curve_integral_dS(mesh, f, sf=None, surface_id=None):
 
     result = 0.0
+    cell_tags = None
+
+    # ensure facet->cell connectivity is built
+    mesh.init(1, 2)  
+
 
     for facet in facets(mesh):
         # loop through all mesh facets
@@ -281,9 +286,12 @@ def curve_integral_dS(mesh, f, sf=None, surface_id=None):
             # the facet under consideration is an internal facet -> consider it for the check
 
             if sf != None:
+                # this method has been called with 'sf' != None -> consider all cells adjacent to 'facet', compute their tags, and store them in 'cell_tags'
+
                 cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
 
-            if (((surface_id == None) and(sf ==None)) or all(c == surface_id for c in cell_tags)):
+            if (((surface_id == None) or (sf == None)) or all(c == surface_id for c in cell_tags)):
+                # the method has been called on the whole mesh, i.e., (surface_id == None) or (sf == None), or it has been called on a specific region of the mesh, and 'facet' is an facet internal to this region -> compute the integral over 'facet' and add it to the result
 
                 '''
                 facet_vertices contains the coordinates of the endpoints of `facet`:
