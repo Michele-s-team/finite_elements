@@ -31,7 +31,7 @@ class f_square_expression(UserExpression):
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 0
+        values[0] = 1
 
     def value_shape(self):
         return (1,)
@@ -87,3 +87,13 @@ F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
 
 
 F = F_0 + F_I + F_b
+
+
+# test print  u _exact - start
+import input_output as io
+import solution_paths as solpath
+
+io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path,
+              mesh_function=rmsh.lmsh.sf[0])
+# test print u_exact - end
