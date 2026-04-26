@@ -79,7 +79,7 @@ bcs = []
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx_square'] + \
         (fsp.f * fsp.nu_u) * rmsh.dx_mesh[0]['dx_square'] + \
-        ((fsp.u - fsp.u_exact_shape) * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
+        ((fsp.u - fsp.u_exact) * fsp.nu_u) * rmsh.dx_mesh[0]['dx_shape'] \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] \
         - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.ds_mesh[0]['dS_shape']
 
@@ -91,9 +91,8 @@ F_I = (
             )
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
-            (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds']\
+            (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] + \
             (fsp.u(sub_mesh_0_1_label) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.ds_mesh[0]['dS_shape']\
-        
         )
 
 
