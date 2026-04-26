@@ -120,8 +120,8 @@ test_mesh_integral_errors[f'\int_mesh_{0} f ds_t'] = msh.test_mesh_integral(inte
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_b'] = msh.test_mesh_integral(integral_exact[0][1]['ds_b'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_b'], f'\int_mesh_{0} f ds_b')
 test_mesh_integral_errors[f'\int_mesh_{0} f dS_shape'] = msh.test_mesh_integral(integral_exact[0][0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['dS_shape'], f'\int_mesh_{0} f dS_shape')
 
-test_mesh_integral_errors[f'\int_mesh{0} f dS_I_shape'] = msh.test_mesh_integral(integral_exact[0][0]['dS_I_shape'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['dS_I_shape'], f'\int_mesh{0} f dS_I_shape')
-test_mesh_integral_errors[f'\int_mesh{0} f dS_I_square'] = msh.test_mesh_integral(integral_exact[0][1]['dS_I_square'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['dS_I_square'], f'\int_mesh{0} f dS_I_square')
+test_mesh_integral_errors[f'\int_mesh_{0} f dS_I_shape'] = msh.test_mesh_integral(integral_exact[0][0]['dS_I_shape'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['dS_I_shape'], f'\int_mesh_{0} f dS_I_shape')
+test_mesh_integral_errors[f'\int_mesh_{0} f dS_I_square'] = msh.test_mesh_integral(integral_exact[0][1]['dS_I_square'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['dS_I_square'], f'\int_mesh_{0} f dS_I_square')
 
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_lr'] = msh.test_mesh_integral(integral_exact[0][1]['ds_l'] + integral_exact[0][1]['ds_r'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_lr'], f'\int_mesh_{0} f ds_lr')
 test_mesh_integral_errors[f'\int_mesh_{0} f ds_tb'] = msh.test_mesh_integral(integral_exact[0][1]['ds_t'] + integral_exact[0][1]['ds_b'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_tb'], f'\int_mesh_{0} f ds_tb')
