@@ -62,16 +62,6 @@ sub_mesh_0_0_label, sub_mesh_0_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.
 
 print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}')
 
-'''
-n_shape = bgeo.field_facet_normal(bgeo.facet_normal[0]('-'), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior = True)
-io.full_print(n_shape, 'n_shape', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              mesh_function=rmsh.lmsh.sf[0])
-# 
-
-
-
-'''
 
 bcs = []
 
