@@ -65,6 +65,23 @@ print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}'
 
 bcs = []
 
+'''
+# test ufl method - start
+from fenics import conditional
+
+# lift the cell tag into a DG0 function
+V_dg0 = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 0)
+cell_tag = Function(V_dg0)
+cell_tag.vector()[:] = rmsh.sf[0].array()   # DG0 dofs are ordered by cell index
+
+# build f as a pure UFL expression
+f_ufl = conditional(
+    ufl.eq(cell_tag, rmsh.lmsh.parameters['sub_mesh_0_0_id']),
+    (fsp.u - fsp.u_exact) * fsp.nu_u,
+    fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u
+) 
+# test ufl method-end
+'''
 
 # variational functional for the original problem (poisson equation)
 F_0 =   (fsp.u.dx(i) * fsp.nu_u.dx(i)) * rmsh.dx_mesh[0]['dx_square'] + \
