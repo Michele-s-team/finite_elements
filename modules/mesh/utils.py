@@ -3109,3 +3109,22 @@ def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
         sys.exit(1)
 
 
+
+def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
+
+    Q = FunctionSpace(mesh, 'DG', 0)
+    cell_tag = Function(Q)
+
+    cell_tag.vector()[:] = sf.array()   # DG0 dofs are ordered by cell index
+
+    # build f as a pure UFL expression
+    result = conditional(
+                ufl.eq(cell_tag, tag_a),
+                        form_a,
+                        conditional(ufl.eq(cell_tag, tag_b), 
+                                    form_b,
+                                    form_b * 0
+                                    )
+                )
+    
+    return result

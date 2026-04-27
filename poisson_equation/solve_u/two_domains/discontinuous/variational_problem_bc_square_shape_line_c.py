@@ -65,7 +65,7 @@ print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}'
 
 bcs = []
 
-
+'''
 # test ufl method - start
 
 # lift the cell tag into a DG0 function
@@ -80,10 +80,19 @@ f_ufl = conditional(
             fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u
     ) 
 # test ufl method-end
+'''
+
 
 
 # variational functional for the original problem (poisson equation)
-F_0 =   f_ufl * rmsh.dx_mesh[0]['dx'] \
+F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh[0],
+                                rmsh.sf[0],
+                                (fsp.u - fsp.u_exact) * fsp.nu_u,
+                                fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u,
+                                rmsh.lmsh.parameters['sub_mesh_0_0_id'],
+                                rmsh.lmsh.parameters['sub_mesh_0_1_id']
+                                ) * \
+        rmsh.dx_mesh[0]['dx'] \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] \
         - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.ds_mesh[0]['dS_shape']
 
