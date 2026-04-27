@@ -31,7 +31,7 @@ class f_square_expression(UserExpression):
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1
+        values[0] = 2
 
     def value_shape(self):
         return (1,)
