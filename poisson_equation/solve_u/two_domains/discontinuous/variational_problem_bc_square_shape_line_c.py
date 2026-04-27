@@ -67,7 +67,6 @@ bcs = []
 
 
 # test ufl method - start
-from fenics import conditional
 
 # lift the cell tag into a DG0 function
 V_dg0 = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 0)
@@ -77,9 +76,9 @@ cell_tag.vector()[:] = rmsh.sf[0].array()   # DG0 dofs are ordered by cell index
 # build f as a pure UFL expression
 f_ufl = conditional(
     ufl.eq(cell_tag, rmsh.lmsh.parameters['sub_mesh_0_0_id']),
-    (fsp.u - fsp.u_exact) * fsp.nu_u,
-    fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u
-) 
+            (fsp.u - fsp.u_exact) * fsp.nu_u,
+            fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u
+    ) 
 # test ufl method-end
 
 
@@ -102,13 +101,3 @@ F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
 
 
 F = F_0 + F_I + F_b
-
-
-# test print  u _exact - start
-import input_output as io
-import solution_paths as solpath
-
-io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              mesh_function=rmsh.lmsh.sf[0])
-# test print u_exact - end
