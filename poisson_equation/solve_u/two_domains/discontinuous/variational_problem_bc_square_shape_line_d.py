@@ -73,18 +73,19 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh[0],
                                 ) * \
         rmsh.dx_mesh[0]['dx'] \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] \
-        - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.ds_mesh[0]['dS_shape']
+        - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.ds_mesh[0]['dS_shape'] \
+        - bgeo.facet_normal[0](sub_mesh_0_0_label)[i] * fsp.u(sub_mesh_0_0_label) * ((fsp.u(sub_mesh_0_0_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_0_label)) * rmsh.ds_mesh[0]['dS_shape']
 
-F_I = (
-        - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i]
-        ) * rmsh.ds_mesh[0]['dS_I_square'] + \
-        rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
-            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] ) * rmsh.ds_mesh[0]['dS_I_square'] \
+F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_I_square'] \
+        - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_I_shape'] \
+        + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+            ( msh.jump(fsp.u, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i] ) * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square']) \
             )
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] + \
-            (fsp.u(sub_mesh_0_1_label) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.ds_mesh[0]['dS_shape']\
+            (fsp.u(sub_mesh_0_1_label) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.ds_mesh[0]['dS_shape'] + \
+            (fsp.u(sub_mesh_0_0_label) - fsp.u_exact(sub_mesh_0_0_label)) * fsp.nu_u(sub_mesh_0_0_label) * rmsh.ds_mesh[0]['dS_shape']\
         )
 
 
