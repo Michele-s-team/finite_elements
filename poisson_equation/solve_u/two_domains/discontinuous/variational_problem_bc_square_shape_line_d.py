@@ -70,7 +70,7 @@ print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}'
 bcs = []
 
 # I assign a value to the function to give a reasonable initial condition to the solver
-fsp.u.assign(Constant(1))
+fsp.u.assign(Constant(rpam.parameters['u_0']))
 
 
 
@@ -96,7 +96,7 @@ F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i]
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] + \
             (fsp.u(sub_mesh_0_1_label) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.ds_mesh[0]['dS_shape'] + \
-            (fsp.u(sub_mesh_0_0_label) - fsp.u_exact(sub_mesh_0_0_label)) * fsp.nu_u(sub_mesh_0_0_label) * rmsh.ds_mesh[0]['dS_shape']\
+            (fsp.u(sub_mesh_0_0_label) - fsp.u_exact(sub_mesh_0_0_label)) * fsp.nu_u(sub_mesh_0_0_label) * rmsh.ds_mesh[0]['dS_shape'] \
         )
 
 
