@@ -168,7 +168,6 @@ params = {'nonlinear_solver': 'newton',
 
 
 
-
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
 
 prout_bc = importlib.import_module(swi.prout_bc)

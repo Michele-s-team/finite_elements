@@ -20,6 +20,14 @@ i, j = ufl.indices(2)
 
 # test case 1
     
+class f_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 2 * (-1 + x[0]**2 + 10 * x[1]**2)
+
+    def value_shape(self):
+        return (1,)
+    
 class f_square_expression(UserExpression):
     def eval(self, values, x):
 
@@ -31,7 +39,7 @@ class f_square_expression(UserExpression):
 class u_exact_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 2
+        values[0] = 1 + x[0] ** 2 - 2 * x[1] ** 2
 
     def value_shape(self):
         return (1,)
@@ -49,6 +57,7 @@ class u_exact_square_expression(UserExpression):
 msh.interpolate_dg(fsp.u_exact, u_exact_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(fsp.u_exact, u_exact_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
+msh.interpolate_dg(fsp.f, f_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 
@@ -60,6 +69,8 @@ print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}'
 
 bcs = []
 
+# I assign a value to the function to give a reasonable initial condition to the solver
+fsp.u.assign(Constant(1))
 
 
 
@@ -90,3 +101,4 @@ F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
 
 
 F = F_0 + F_I + F_b
+
