@@ -65,6 +65,7 @@ F_v_ = ( \
 
 
 # step 2 for phi
+# natural BC imposed here
 F_phi = ( \
                     - dt / rpam.parameters['rho_fluid'] * ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) * ela.G(fsp.u_msh_n_1)[l, i] * (fsp.nu_phi.dx(l)) \
                     - ela.G(fsp.u_msh_n_1)[k, i] * ((fsp.v_[i]).dx(k)) * fsp.nu_phi \
