@@ -259,17 +259,25 @@ def curve_integral_circle_arc(f, r, theta_min, theta_max, c):
 
 
 '''
-compute the integral of a function over measure of internal facets 'dS'
+compute the integral of a function over measure of internal facets 'dS' for a 2d mesh
 Input values: 
-    - 'mesh' the mesh
-    - 'f': the function that will be integrated over 'dS'
+    * Mandatory
+        - 'mesh' the mesh
+        - 'f': the function that will be integrated over 'dS'
+    * Optional: 
+        - 'sf', 'surface_id': the mesh function that is used to tag mesh surfaces, and the tag of the mesh surface to be considered for the calculation. Both are 'None' by default: if not provided, this method computes the curve integral across all internal facets of 'mesh'
 Return values: 
     - int dS_ f
 
 '''
-def curve_integral_dS(mesh, f):
+def curve_integral_dS(mesh, f, sf=None, surface_id=None):
 
     result = 0.0
+    cell_tags = None
+
+    # ensure facet->cell connectivity is built
+    mesh.init(1, 2)  
+
 
     for facet in facets(mesh):
         # loop through all mesh facets
@@ -277,22 +285,30 @@ def curve_integral_dS(mesh, f):
         if facet.exterior() == False:
             # the facet under consideration is an internal facet -> consider it for the check
 
-            '''
-            facet_vertices contains the coordinates of the endpoints of `facet`:
-            facet_vertices = 
-            [
-                [p_0_x, p_0_y],
-                [p_1_x, p_1_y]
-            ]
-            ''' 
-            facet_vertices = []
+            if sf != None:
+                # this method has been called with 'sf' != None -> consider all cells adjacent to 'facet', compute their tags, and store them in 'cell_tags'
 
-            for v in vertices(facet):
-                # run through the vertices of `facet`
+                cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
 
-                facet_vertices.append((v.point().array().tolist())[:2])
+            if (((surface_id == None) or (sf == None)) or all(c == surface_id for c in cell_tags)):
+                # the method has been called on the whole mesh, i.e., (surface_id == None) or (sf == None), or it has been called on a specific region of the mesh, and 'facet' is an facet internal to this region -> compute the integral over 'facet' and add it to the result
 
-            result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
+                '''
+                facet_vertices contains the coordinates of the endpoints of `facet`:
+                facet_vertices = 
+                [
+                    [p_0_x, p_0_y],
+                    [p_1_x, p_1_y]
+                ]
+                ''' 
+                facet_vertices = []
+
+                for v in vertices(facet):
+                    # run through the vertices of `facet`
+
+                    facet_vertices.append((v.point().array().tolist())[:2])
+
+                result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
 
     return result
 
