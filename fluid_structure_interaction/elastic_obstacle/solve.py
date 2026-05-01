@@ -171,7 +171,7 @@ for n in range(rpam.parameters['num_steps']):
     var_pr.solve_vp(vp_fl.F_phi, fsp.phi, vp_fl.bc_phi, fsp.J_phi)
 
     # step 3.3
-    var_pr.solve_vp(vp_fl.F_v_n, fsp.v_n, [], fsp.J_v_n)
+    var_pr.solve_vp(vp_fl.F_v_n, fsp.v_n, vp_fl.bc_v_n, fsp.J_v_n)
 
     print('... done.', flush=True)
 
