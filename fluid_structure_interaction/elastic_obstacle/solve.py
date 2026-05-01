@@ -116,6 +116,7 @@ for n in range(rpam.parameters['num_steps']):
     fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
     fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
 
+    '''  
     # print out force exerted by  fl on el
     #
     import physics.elasticity as ela
@@ -131,7 +132,7 @@ for n in range(rpam.parameters['num_steps']):
     io.full_print(f, 'F_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path)
     #
-
+    '''
     vp_el = importlib.reload(vp_el)
 
     var_pr.solve_vp(vp_el.F_el, fsp.psi_el, vp_el.bcs_el, fsp.J_psi_el, parameters=params)
@@ -170,7 +171,7 @@ for n in range(rpam.parameters['num_steps']):
     var_pr.solve_vp(vp_fl.F_phi, fsp.phi, vp_fl.bc_phi, fsp.J_phi)
 
     # step 3.3
-    var_pr.solve_vp(vp_fl.F_v_n, fsp.v_n, [], fsp.J_v_n)
+    var_pr.solve_vp(vp_fl.F_v_n, fsp.v_n, vp_fl.bc_v_n, fsp.J_v_n)
 
     print('... done.', flush=True)
 
