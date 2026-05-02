@@ -65,23 +65,10 @@ msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 fsp.v_n_2.assign(fsp.v_n_1)
 
 msh.interpolate_dg(fsp.sigma_n_32, sigma_0_expression())
-'''
-# print test - start
-import input_output as io
-import solution_paths as solpath
 
-io.full_print(fsp.v_n_1, 'v_n_1', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path,
-                  mesh_function=rmsh.sf)
-io.full_print(fsp.sigma_n_12, 'sigma_n_12', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path,
-                  mesh_function=rmsh.sf)
-    
-
-# print test - end
-'''
 
 print("Starting time iteration ...", flush=True)
+
 # Time-stepping
 t = 0
 step = 0
@@ -93,23 +80,19 @@ for n in range(rpam.parameters['num_steps']):
 
     vp = importlib.import_module(swi.vp)
 
-    # step 1
-    var_pr.solve_vp(vp.F_1, fsp.v_, vp.bcs_1, fsp.J_v_, parameters=params)
-
-    # step 2
-    var_pr.solve_vp(vp.F_2, fsp.phi, vp.bcs_2, fsp.J_phi, parameters=params)
-
-    # step 3
-    var_pr.solve_vp(vp.F_3, fsp.v_n, vp.bcs_3, fsp.J_v_n, parameters=params)
+    # step 1, 2, 3 all together
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs_psi, fsp.J_psi, parameters=params)
 
     pr_bc.print_bcs()
 
+    v__dummy, phi_dummy, v_n_dummy = fsp.psi.split( deepcopy=True )
+
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - phi_dummy)
 
     # Update previous solution
     fsp.v_n_2.assign(fsp.v_n_1)
-    fsp.v_n_1.assign(fsp.v_n)
+    fsp.v_n_1.assign(v_n_dummy)
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     if (step % rpam.parameters['print_out_stride']) == 0:
