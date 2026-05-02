@@ -1,11 +1,11 @@
 """
-This code solves for the dynamics of the Navier Stokes equations on a flat  manifold  with Crank Nicholson discretization scheme, by using discontinuous function spaces
+This code solves for the dynamics of the Navier Stokes equations on a flat  manifold  with Crank Nicholson discretization scheme, by using discontinuous function spaces and merging all fields into a single field defined on a mixed space
 
 run with:
 rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_flat_cn/discontinuous/mixed_space/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
 """
 
 import dolfin
