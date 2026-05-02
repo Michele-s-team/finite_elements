@@ -19,26 +19,31 @@ from fenics import *
 import mesh.load as lmsh
 
 
-Q_v = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
-Q_v_ = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
+D_v_ = VectorElement('DG', triangle, 2)
+D_phi = VectorElement('DG', triangle, 1)
+D_v_n = VectorElement('DG', triangle, 2)
 
-Q_sigma = FunctionSpace(lmsh.mesh, 'DG', 1)
+element = MixedElement([D_v_, D_phi, D_v_n])
+
+Q = FunctionSpace(lmsh.mesh, element)
+
+Q_v_ = Q.sub(0).collapse()
+Q_phi = Q.sub(1).collapse()
+Q_v_n = Q.sub(2).collapse()
 
 Q_f = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
 Q_tau = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
 
 
 # Define functions for solutions at previous and current time steps
-v_n = Function(Q_v)
-v_n_1 = Function(Q_v)
-v_n_2 = Function(Q_v)
+psi = Function(Q)
+v_, phi, v_n = split(psi)
 
-v_ = Function(Q_v_)
+v_n_1 = Function(Q_v_n)
+v_n_2 = Function(Q_v_n)
 
-sigma_n_12 = Function(Q_sigma)
-sigma_n_32 = Function(Q_sigma)
-
-phi = Function(Q_sigma)
+sigma_n_12 = Function(Q_phi)
+sigma_n_32 = Function(Q_phi)
 
 f = Function(Q_f)
 tau = Function(Q_f)
@@ -48,13 +53,8 @@ v_l = Function(Q_v_)
 v_tb_circle = Function(Q_v_)
 
 # Define test functions
-nu_v_ = TestFunction(Q_v_)
-nu_v_n = TestFunction(Q_v)
-nu_phi = TestFunction(Q_sigma)
+nu_v_, nu_phi, nu_v_n = TestFunctions(Q)
 
-
-J_v_ = TrialFunction(Q_v_)
-J_v_n = TrialFunction(Q_v)
-J_phi = TrialFunction(Q_sigma)
+J_psi = TrialFunction(Q)
 
 V = 0.5 * (v_n_1 + v_)
