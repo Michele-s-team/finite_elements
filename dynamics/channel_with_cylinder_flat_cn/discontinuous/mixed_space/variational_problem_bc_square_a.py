@@ -58,9 +58,8 @@ msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression())
 msh.interpolate_dg(fsp.f, f_expression())
 msh.interpolate_dg(fsp.tau, tau_expression())
 
-bcs_1 = []
-bcs_2 = []
-bcs_3 = []
+bcs_psi = [] 
+
 
 # step 1
 F_1_0 = ( \
@@ -86,7 +85,6 @@ F_1_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
 F_1 = F_1_0 + F_1_N
 
 
-
 # step 2
 F_2_0 = (
             dt / rpam.parameters['rho'] * (fsp.phi.dx(alpha)) * (fsp.nu_phi.dx(alpha)) + ((fsp.v_)[alpha].dx(alpha)) * fsp.nu_phi
@@ -103,7 +101,8 @@ F_2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
 F_2 = F_2_0 + F_2_N
 
 
-
-
 # step 3
 F_3 = (fsp.v_n[alpha] - fsp.v_[alpha] + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_n[alpha] * rmsh.dx
+
+
+F = F_1 + F_2 + F_3

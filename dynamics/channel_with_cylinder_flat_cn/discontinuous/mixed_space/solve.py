@@ -80,15 +80,15 @@ for n in range(rpam.parameters['num_steps']):
 
     vp = importlib.import_module(swi.vp)
 
-    # step 1, 2, 3 all together
+    # step 1, 2, 3 together
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs_psi, fsp.J_psi, parameters=params)
 
     pr_bc.print_bcs()
 
-    v__dummy, phi_dummy, v_n_dummy = fsp.psi.split( deepcopy=True )
+    _, phi_dummy, v_n_dummy = fsp.psi.split( deepcopy=True )
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - phi_dummy)
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
 
     # Update previous solution
     fsp.v_n_2.assign(fsp.v_n_1)

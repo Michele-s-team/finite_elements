@@ -20,7 +20,7 @@ import mesh.load as lmsh
 
 
 D_v_ = VectorElement('DG', triangle, 2)
-D_phi = VectorElement('DG', triangle, 1)
+D_phi = FiniteElement('DG', triangle, 1)
 D_v_n = VectorElement('DG', triangle, 2)
 
 element = MixedElement([D_v_, D_phi, D_v_n])
