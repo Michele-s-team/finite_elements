@@ -17,12 +17,10 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import input_output as io
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
-import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
@@ -44,19 +42,12 @@ params = {'nonlinear_solver': 'newton',
 
 pr_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
-vp_el = importlib.import_module(swi.vp_el)
-vp_fl = importlib.import_module(swi.vp_fl)
-vp_msh = importlib.import_module(swi.vp_msh)
+vp = importlib.import_module(swi.vp)
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
-io.full_print(fsp.ys_ellipse, 'ys_ellipse', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
-
-io.full_print(fsp.dyds_ellipse, 'dyds_ellipse', \
-              solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path)
 
 
 
