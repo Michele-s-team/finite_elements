@@ -18,7 +18,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
-import input_output as io
+import mesh.utils as msh
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
 import solution_paths as solpath
@@ -51,16 +51,37 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
 
-#set the initial profiles from analytical expressions
-#
-fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v_n.ufl_element()))
+#1. set the initial profiles
+
+# trial analytical expression for a vector
+class v_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+
+
+# trial analytical expression for the  surface tension sigma(x,y)
+class sigma_0_expression(UserExpression):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['sigma_r']
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp_fl.sigma_expression(element=fsp.Q_phi.ufl_element()))
+
+msh.interpolate_dg(fsp.sigma_n_32, sigma_0_expression())
 fsp.sigma_n_32.assign(fsp.sigma_n_12)
-# 
+
+
+#2. Time-stepping
 
 print("Starting time iteration ...", flush=True)
-# Time-stepping
 t = 0
 step = 0
 for n in range(rpam.parameters['num_steps']):
