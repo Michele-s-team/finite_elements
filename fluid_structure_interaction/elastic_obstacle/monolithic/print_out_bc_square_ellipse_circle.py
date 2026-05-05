@@ -16,8 +16,7 @@ import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
-vp_mesh = importlib.import_module(swi.vp_msh)
-vp_fluid = importlib.import_module(swi.vp_fl)
+vp = importlib.import_module(swi.vp)
 
 i, j, k, l, m = ufl.indices(5)
 

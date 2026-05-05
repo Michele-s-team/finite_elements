@@ -5,7 +5,7 @@ run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/monolithic/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle $MESH_PATH $SOLUTION_PATH
 """
 
 import dolfin
@@ -89,7 +89,7 @@ for n in range(rpam.parameters['num_steps']):
     t += dt
     step += 1
 
-
+    '''
     # step 1): solve elastic problem
     print('Solving elastic problem ...', flush=True)
 
@@ -98,28 +98,9 @@ for n in range(rpam.parameters['num_steps']):
     fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
     fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
 
-    '''  
-    # print out force exerted by  fl on el
-    #
-    import physics.elasticity as ela
-    import ufl
-    import differential_geometry.manifold.geometry as geo
-    import input_output as io
-    import solution_paths as solpath
-    import mesh.load as lmsh
-
-    i, j, k, l, m = ufl.indices(5)
-    f = Function(fsp.Q_u_el)
-    f.assign(project(as_tensor((flu.sigma_ale(fsp.v_n_1_on_sub_mesh_0, fsp.sigma_n_32_on_sub_mesh_0, fsp.u_el_n, rpam.parameters['mu_fluid'])[i, j] * geo.epsilon[j, k] * ela.F(fsp.u_el_n_1)[k, l] * fsp.dyds_ellipse[l] / sqrt(fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m])), (i)), fsp.Q_u_el))
-    io.full_print(f, 'F_el_n_' + str(step), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
-                  solpath.snapshots_csv_nodal_values_path)
-    #
-    '''
     vp_el = importlib.reload(vp_el)
 
     var_pr.solve_vp(vp_el.F_el, fsp.psi_el, vp_el.bcs_el, fsp.J_psi_el, parameters=params)
-
-    # pr_sol.print_solution_el(t, step)
 
     print('... done.', flush=True)
 
@@ -193,6 +174,7 @@ for n in range(rpam.parameters['num_steps']):
         pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
+    '''
 
 print("... done.", flush=True)
 
