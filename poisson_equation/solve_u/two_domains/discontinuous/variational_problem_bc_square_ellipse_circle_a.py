@@ -74,8 +74,8 @@ print(f'label_0 ={sub_mesh_0_label}\nlabel_1 = {sub_mesh_1_label}')
 bcs = []
 
 # I assign a value to the function to give a reasonable initial condition to the solver
-# fsp.u.assign(Constant(rpam.parameters['u_0']))
-fsp.u.assign(fsp.u_exact)
+fsp.u.assign(Constant(rpam.parameters['u_0']))
+# fsp.u.assign(fsp.u_exact)
 
 
 
