@@ -60,9 +60,13 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-bc_u_tb = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_tb)
-bc_u_circle = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_circle)
-bcs = [bc_u_tb, bc_u_circle]
+
+
+bc_u_t = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.lmsh.parameters[f"line_sub_mesh_{1}_t_id"])
+bc_u_b = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.lmsh.parameters[f"line_sub_mesh_{1}_b_id"])
+bc_u_circle = DirichletBC(fsp.Q, fsp.u_exact, rmsh.mf, rmsh.lmsh.parameters[f"circle_loop_id"])
+
+bcs = [bc_u_t, bc_u_b, bc_u_circle]
 
 # variational functional for the original problem (poisson equation)
 # natural BC imposed here
