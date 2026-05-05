@@ -44,7 +44,7 @@ class v_tb_circle_expression(UserExpression):
         return (2,)
     
 msh.interpolate_dg(fsp.v_l, v_l_expression())
-msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression())
+msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
 
 
 bcs = []
@@ -74,6 +74,10 @@ F_v__square = ( \
            ) \
         + rpam.parameters['alpha']/rmsh.r_mesh * ( \
             msh.jump(fsp.v_[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_v_[i], bgeo.facet_normal)[j] * rmsh.dS_I[1] \
+            + (fsp.v_[i] - fsp.v_l[i]) * fsp.nu_v_[i] * rmsh.ds_l \
+            + (fsp.v_[i] - fsp.v_tb[i]) * fsp.nu_v_[i] * rmsh.ds_tb \
+            + (fsp.v_(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_(sub_mesh_1_label)[i] * rmsh.dS_ellipse
+
         )
 
 
