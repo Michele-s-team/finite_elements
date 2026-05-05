@@ -7,29 +7,32 @@ import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-# 0 read quantities for entire mesh
-
-# 0.1 read the triangles
-sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")
-
-# 0.2 read the lines
-mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
-
-# 0.3 read the inner (I) lines
-mf_I = msh.read_mesh_internal_components(lmsh.mesh, sf, lmsh.parameters[f'sub_mesh_{0}_id'], lmsh.parameters[f'sub_mesh_{1}_id'], lmsh.parameters['ellipse_loop_id'])
-
-
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
 
-# 1. measures for the whole mesh
-# 1.1 surface measures
+
+# 1 read quantities for the whole mesh
+
+# 1.1 read the triangles
+sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")
+
+# 1.2 read the lines
+mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
+
+# 1.3 read the inner (I) lines
+mf_I = msh.read_mesh_internal_components(lmsh.mesh, sf, lmsh.parameters[f'sub_mesh_{0}_id'], lmsh.parameters[f'sub_mesh_{1}_id'], lmsh.parameters['ellipse_loop_id'])
+
+
+# 2. measures for the whole mesh
+
+# 2.1 surface measures
 dx = Measure("dx", domain=lmsh.mesh)
 
 
-# 1.2 line measures
-# 1.2.1 external
+# 2.2 line measures
+
+# 2.2.1 external
 ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"circle_loop_id"])
 
 ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])
@@ -42,7 +45,7 @@ ds_tb = ds_t + ds_b
 
 ds_lrtb = ds_lr + ds_tb
 
-# 1.2.2 internal
+# 2.2.2 internal
 dS_ellipse = Measure("dS", domain=lmsh.mesh, subdomain_data=mf_I, subdomain_id=parameters[f"ellipse_loop_id"])
 dS_I = [
     Measure("dS", domain=lmsh.mesh, subdomain_data=mf_I, subdomain_id=lmsh.parameters[f'sub_mesh_{0}_id']),
@@ -52,12 +55,14 @@ dS_I = [
 
 
 
-# 2. measures for sub_meshes
+# 3. measures for sub_meshes
 dx_sub_mesh = []
 
+# 3.1 surface measures
 for p in range(len(lmsh.sub_meshes)):
     dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=lmsh.sf_sub_meshes[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
 
+# 3.2 line measures
 ds_sub_mesh = [''] * len(lmsh.sub_meshes)
 
 ds_sub_mesh[0] = dict([ \
