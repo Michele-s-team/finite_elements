@@ -16,13 +16,26 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 r_mesh = lmsh.mesh.hmin()
 
 
-# 1. surface element for the whole mesh
-dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf)
+# 1. measures for the whole mesh
+dx = Measure("dx", domain=lmsh.mesh)
 
 ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"circle_loop_id"])
+ds_ellipse = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"ellipse_loop_id"])
+
+ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])
+ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])
+ds_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_t_id"])
+ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_b_id"])
+
+ds_lr = ds_l + ds_r
+ds_tb = ds_t + ds_b
+
+ds_lrtb = ds_lr + ds_tb
 
 
-# 2. line and surface elements for sub_meshes
+
+
+# 2. measures for sub_meshes
 dx_sub_mesh = []
 
 for p in range(len(lmsh.sub_meshes)):
