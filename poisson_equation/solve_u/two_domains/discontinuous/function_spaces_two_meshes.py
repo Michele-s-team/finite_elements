@@ -1,3 +1,7 @@
+'''
+this module defines function spaces for problem involving two meshes
+'''
+
 from fenics import *
 
 import mesh.load as lmsh
