@@ -20,6 +20,8 @@ i, j, k, l = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
+sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.sf, rmsh.lmsh.parameters["sub_mesh_0_id"], rmsh.lmsh.parameters["sub_mesh_1_id"], rmsh.dS_ellipse)
+
 
 # 1. define expressions for BCs
 
@@ -68,9 +70,11 @@ F_v__square = ( \
                 bgeo.sub_mesh_facet_normal[l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n) * rmsh.ds_l + \
                 bgeo.sub_mesh_facet_normal[l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n) * rmsh.ds_tb + \
                 bgeo.sub_mesh_facet_normal[l] * ela.G(fsp.u_n)[l, 1] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, 1] * fsp.nu_v_[i] * ela.detF(fsp.u_n) * rmsh.ds_r + \
-                #sign
-                bgeo.sub_mesh_facet_normal[l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n) * rmsh.ds_l 
+                bgeo.sub_mesh_facet_normal(sub_mesh_1_label)[l] * ela.G(fsp.u_n(sub_mesh_1_label))[l, j] * flu.sigma_ale(fsp.V(sub_mesh_1_label), fsp.sigma_n_32(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_(sub_mesh_1_label)[i] * ela.detF(fsp.u_n(sub_mesh_1_label)) * rmsh.dS_ellipse
            )
+
+#sign
+
 
 '''
 # step 2 for phi
