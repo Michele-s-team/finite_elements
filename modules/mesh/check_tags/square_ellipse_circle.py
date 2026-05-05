@@ -61,8 +61,17 @@ integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_e
 
 test_mesh_integral_errors = dict([])
 
+# 1. check mesh integral on the whole mesh
+
+print(f'Check integrals on the whole mesh: ')
+
+
+test_mesh_integral_errors[f'\int_mesh f dx'] = msh.test_mesh_integral(integral_exact[0]['dx'] + integral_exact[1]['dx'], tf.function_test_integrals_fenics, rmsh.dx, f'\int_mesh f dx')
+
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
+
+
 
 # surface integrals
 for i in range(len(lmsh.sub_meshes)):
