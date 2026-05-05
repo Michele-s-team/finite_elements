@@ -16,10 +16,13 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 r_mesh = lmsh.mesh.hmin()
 
 
-# surface element for the whole mesh
-dx = Measure("dx", domain=lmsh.mesh, subdomain_data=lmsh.sf)
+# 1. surface element for the whole mesh
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf)
 
-# create line and surface elements for sub_meshes
+ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"circle_loop_id"])
+
+
+# 2. line and surface elements for sub_meshes
 dx_sub_mesh = []
 
 for p in range(len(lmsh.sub_meshes)):
