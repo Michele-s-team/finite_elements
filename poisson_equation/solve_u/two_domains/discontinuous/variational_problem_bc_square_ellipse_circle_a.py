@@ -74,7 +74,8 @@ print(f'label_0 ={sub_mesh_0_label}\nlabel_1 = {sub_mesh_1_label}')
 bcs = []
 
 # I assign a value to the function to give a reasonable initial condition to the solver
-fsp.u.assign(Constant(rpam.parameters['u_0']))
+# fsp.u.assign(Constant(rpam.parameters['u_0']))
+fsp.u.assign(fsp.u_exact)
 
 
 
@@ -85,12 +86,12 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u,
                                 rmsh.lmsh.parameters['sub_mesh_0_id'],
                                 rmsh.lmsh.parameters['sub_mesh_1_id']
-                                ) * \
-        rmsh.dx \
-        - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_lrtb \
-        - bgeo.facet_normal(sub_mesh_1_label)[i] * ((fsp.u(sub_mesh_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_1_label)) * rmsh.dS_ellipse \
+                                ) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.u * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_circle \
-        - bgeo.facet_normal(sub_mesh_0_label)[i] * fsp.u(sub_mesh_0_label) * ((fsp.u(sub_mesh_0_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_label)) * rmsh.dS_ellipse
+        - bgeo.facet_normal(sub_mesh_0_label)[i] * fsp.u(sub_mesh_0_label) * ((fsp.u(sub_mesh_0_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_label)) * rmsh.dS_ellipse \
+        - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_lrtb \
+        - bgeo.facet_normal(sub_mesh_1_label)[i] * ((fsp.u(sub_mesh_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_1_label)) * rmsh.dS_ellipse
+
 
 F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I[0] \
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I[1] \
@@ -98,11 +99,11 @@ F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_norma
             ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] ) * (rmsh.dS_I[0] + rmsh.dS_I[1]) \
             )
 
-        # sign
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_lrtb + \
             (fsp.u(sub_mesh_1_label) - fsp.u_exact(sub_mesh_1_label)) * fsp.nu_u(sub_mesh_1_label) * rmsh.dS_ellipse + \
+            (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_circle + \
             (fsp.u(sub_mesh_0_label) - fsp.u_exact(sub_mesh_0_label)) * fsp.nu_u(sub_mesh_0_label) * rmsh.dS_ellipse \
         )
 
