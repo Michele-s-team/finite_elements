@@ -71,7 +71,11 @@ F_v__square = ( \
                 bgeo.facet_normal[l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n) * rmsh.ds_tb + \
                 bgeo.facet_normal[l] * ela.G(fsp.u_n)[l, 1] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, 1] * fsp.nu_v_[i] * ela.detF(fsp.u_n) * rmsh.ds_r + \
                 bgeo.facet_normal(sub_mesh_1_label)[l] * ela.G(fsp.u_n(sub_mesh_1_label))[l, j] * flu.sigma_ale(fsp.V(sub_mesh_1_label), fsp.sigma_n_32(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_(sub_mesh_1_label)[i] * ela.detF(fsp.u_n(sub_mesh_1_label)) * rmsh.dS_ellipse
-           )
+           ) \
+        + rpam.parameters['alpha']/rmsh.r_mesh * ( \
+            msh.jump(fsp.v_[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_v_[i], bgeo.facet_normal)[j] * rmsh.dS_I[1] \ 
+        )
+
 
 #sign
 
