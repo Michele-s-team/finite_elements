@@ -26,7 +26,7 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 class v_l_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['v__l_const'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        values[0] = rpam.parameters['v_l'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
         values[1] = 0.0
 
     def value_shape(self):
@@ -52,13 +52,15 @@ bcs = []
 # 2.1 fluid
 
 # 2.1.1 v_
-'''
+
 # natural BC imposed here
-F_v_ = ( \
+F_v__square = ( \
                    rpam.parameters['rho_fluid'] * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                               + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_msh_dot_n_1[k]) * ela.G(fsp.u_msh_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_msh_dot_n_2[k]) * ela.G(fsp.u_msh_n_2)[j, k]) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
-                   + ela.G(fsp.u_msh_n_1)[k, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_msh_n_1, rpam.parameters['mu_fluid'])[i, j] * (fsp.nu_v_[i]).dx(k) \
-           ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1] \
+                               + (3.0 / 2.0 * (fsp.v_n_1[k] - fsp.u_dot_n_1[k]) * ela.G(fsp.u_n_1)[j, k] - 1.0 / 2.0 * (fsp.v_n_2[k] - fsp.u_dot_n_2[k]) * ela.G(fsp.u_n_2)[j, k]) * (fsp.V[i]).dx(j)) * fsp.nu_v_[i] \
+                   + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * (fsp.nu_v_[i]).dx(k) \
+           ) * ela.detF(fsp.u_n) 
+#sign
+        * rmsh.dx_sub_mesh[1] \
        - ( \
                 bgeo.sub_mesh_facet_normal[1][k] * ela.G(fsp.u_msh_n_1)[k, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_msh_n_1, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_l'] + \
                 bgeo.sub_mesh_facet_normal[1][k] * ela.G(fsp.u_msh_n_1)[k, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_msh_n_1, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_tb'] + \
@@ -66,7 +68,7 @@ F_v_ = ( \
                 bgeo.sub_mesh_facet_normal[1][k] * ela.G(fsp.u_msh_n_1)[k, 1] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_msh_n_1, rpam.parameters['mu_fluid'])[i, 1] * fsp.nu_v_[i] * ela.detF(fsp.u_msh_n_1) * rmsh.ds_sub_mesh[1]['ds_r']\
            )
 
-
+'''
 # step 2 for phi
 # natural BC imposed here
 F_phi = ( \
