@@ -20,7 +20,7 @@ r_mesh = lmsh.mesh.hmin()
 dx = Measure("dx", domain=lmsh.mesh)
 
 ds_circle = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"circle_loop_id"])
-ds_ellipse = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"ellipse_loop_id"])
+dS_ellipse = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"ellipse_loop_id"])
 
 ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_l_id"])
 ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[f"line_sub_mesh_{1}_r_id"])

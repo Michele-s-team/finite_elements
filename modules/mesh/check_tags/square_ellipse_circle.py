@@ -65,8 +65,22 @@ test_mesh_integral_errors = dict([])
 
 print(f'Check integrals on the whole mesh: ')
 
-
 test_mesh_integral_errors[f'\int_mesh f dx'] = msh.test_mesh_integral(integral_exact[0]['dx'] + integral_exact[1]['dx'], tf.function_test_integrals_fenics, rmsh.dx, f'\int_mesh f dx')
+
+test_mesh_integral_errors[f'\int f ds_mesh_circle'] = msh.test_mesh_integral(integral_exact[0]['ds_circle'], tf.function_test_integrals_fenics, rmsh.ds_circle, f'\int f ds_mesh_circle')
+test_mesh_integral_errors[f'\int f ds_mesh_ellipse'] = msh.test_mesh_integral(integral_exact[0]['ds_ellipse'], tf.function_test_integrals_fenics, rmsh.dS_ellipse, f'\int f ds_mesh_ellipse')
+
+test_mesh_integral_errors[f'\int f ds_mesh_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], tf.function_test_integrals_fenics, rmsh.ds_l, f'\int f ds_mesh_l')
+test_mesh_integral_errors[f'\int f ds_mesh_r'] = msh.test_mesh_integral(integral_exact[1]['ds_r'], tf.function_test_integrals_fenics, rmsh.ds_r, f'\int f ds_mesh_r')
+test_mesh_integral_errors[f'\int f ds_mesh_t'] = msh.test_mesh_integral(integral_exact[1]['ds_t'], tf.function_test_integrals_fenics, rmsh.ds_t, f'\int f ds_mesh_t')
+test_mesh_integral_errors[f'\int f ds_mesh_b'] = msh.test_mesh_integral(integral_exact[1]['ds_b'], tf.function_test_integrals_fenics, rmsh.ds_b, f'\int f ds_mesh_b')
+
+test_mesh_integral_errors[f'\int f ds_mesh_lr'] = msh.test_mesh_integral(integral_exact[1]['ds_lr'], tf.function_test_integrals_fenics, rmsh.ds_lr, f'\int f ds_mesh_lr')
+test_mesh_integral_errors[f'\int f ds_mesh_tb'] = msh.test_mesh_integral(integral_exact[1]['ds_tb'], tf.function_test_integrals_fenics, rmsh.ds_tb, f'\int f ds_mesh_tb')
+
+test_mesh_integral_errors[f'\int f ds_mesh_lrtb'] = msh.test_mesh_integral(integral_exact[1]['ds_lrtb'], tf.function_test_integrals_fenics, rmsh.ds_lrtb, f'\int f ds_mesh_lrtb')
+
+
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
