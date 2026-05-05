@@ -15,6 +15,10 @@ parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
 
+
+# surface element for the whole mesh
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=lmsh.sf)
+
 # create line and surface elements for sub_meshes
 dx_sub_mesh = []
 
