@@ -184,4 +184,8 @@ F_u_dot_n = msh.ufl_conditional_form(
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
                                         rmsh.lmsh.parameters['sub_mesh_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_1_id']
-                                ) * rmsh.dx
+                                ) * rmsh.dx \
+            - (\
+                msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[k] * msh.average( ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] )
+            ) * rmsh.dS_I[0] \
+            
