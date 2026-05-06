@@ -88,16 +88,22 @@ F_v__square = msh.ufl_conditional_form(
         )
 
 
-#sign
 
 
 
 # step 2 for phi
 # natural BC imposed here
-F_phi = ( \
-            ela.G(fsp.u_n)[k, i] * ((fsp.v_[i]).dx(k)) * fsp.nu_phi \
-            + dt / rpam.parameters['rho_fluid'] * ela.G(fsp.u_n)[k, i] * ela.G(fsp.u_n)[j, i] * (fsp.phi.dx(j)) * (fsp.nu_phi.dx(k)) \
-        ) * ela.detF(fsp.u_n) * rmsh.dx \
+F_phi = msh.ufl_conditional_form(
+            rmsh.lmsh.mesh,
+            rmsh.sf, 
+            fsp.phi * fsp.nu_phi, 
+            ( \
+                ela.G(fsp.u_n)[k, i] * ((fsp.v_[i]).dx(k)) * fsp.nu_phi \
+                + dt / rpam.parameters['rho_fluid'] * ela.G(fsp.u_n)[k, i] * ela.G(fsp.u_n)[j, i] * (fsp.phi.dx(j)) * (fsp.nu_phi.dx(k)) \
+            ) * ela.detF(fsp.u_n),
+            rmsh.lmsh.parameters['sub_mesh_0_id'],
+            rmsh.lmsh.parameters['sub_mesh_1_id']
+        ) * rmsh.dx \
         - dt / rpam.parameters['rho_fluid'] * ( \
             ( msh.jump(fsp.nu_phi, bgeo.facet_normal)[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, i] * ela.G(fsp.u_n)[j, i] * fsp.phi.dx(j) ) ) * rmsh.dS_I[1] \
             + ( bgeo.facet_normal[k]  * ela.G(fsp.u_n)[k, i] * ela.G(fsp.u_n)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi ) * ela.detF(fsp.u_n) * rmsh.ds_r \
@@ -106,8 +112,9 @@ F_phi = ( \
             msh.jump(fsp.phi, bgeo.facet_normal)[i] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[i] * rmsh.dS_I[1] \
             + fsp.phi * fsp.nu_phi * rmsh.dS_ellipse
         )
+#sign
 
 
-# step 3 for v_n
+'''# step 3 for v_n
 F_v_n = ( ( (fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) ) * fsp.nu_v_n[i] ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1]
-
+'''
