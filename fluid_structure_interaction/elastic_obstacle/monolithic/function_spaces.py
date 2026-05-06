@@ -81,7 +81,6 @@ dyds_ellipse = Function(Q_dyds)
 v_l = Function(Q_v_)
 v_tb = Function(Q_v_)
 
-sigma_n_12_dummy = Function(Q_phi)
 
 
 # 3.3 test functions
