@@ -144,4 +144,7 @@ F_u_n = msh.ufl_conditional_form(
         ) * rmsh.dS_I[1] \
         + bgeo.facet_normal[i] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * fsp.nu_u_n[k] * rmsh.ds_lrtb \
         + bgeo.facet_normal(sub_mesh_1_label)[i] * ela.P(fsp.u_n(sub_mesh_1_label), ela.K(fsp.u_n(sub_mesh_1_label), rpam.parameters['exponent']), ela.mu(fsp.u_n(sub_mesh_1_label), rpam.parameters['exponent']))[k, i] * fsp.nu_u_n(sub_mesh_1_label)[k] * rmsh.dS_ellipse \
-        
+        + rpam.parameters['alpha']/rmsh.r_mesh * (\
+            msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * (rmsh.dS_I[1] + rmsh.dS_ellipse) \
+            + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_lrtb \
+        )
