@@ -115,6 +115,15 @@ F_phi = msh.ufl_conditional_form(
 #sign
 
 
-'''# step 3 for v_n
-F_v_n = ( ( (fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_msh_n_1)[j, i] * (fsp.phi.dx(j)) ) * fsp.nu_v_n[i] ) * ela.detF(fsp.u_msh_n_1) * rmsh.dx_sub_mesh[1]
-'''
+# step 3 for v_n
+F_v_n = msh.ufl_conditional_form(
+            rmsh.lmsh.mesh,
+            rmsh.sf, 
+            fsp.v_n[i] * fsp.nu_v_n[i], 
+            ( \
+                ( (fsp.v_[i] - fsp.v_n[i]) - (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_n)[j, i] * (fsp.phi.dx(j)) ) * fsp.nu_v_n[i] \
+            ) * ela.detF(fsp.u_n), 
+            rmsh.lmsh.parameters['sub_mesh_0_id'],
+            rmsh.lmsh.parameters['sub_mesh_1_id']
+        ) * rmsh.dx
+
