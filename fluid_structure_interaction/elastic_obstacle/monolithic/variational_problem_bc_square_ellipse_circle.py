@@ -55,8 +55,6 @@ bcs = []
 
 # 2.1.1 v_
 
-
-
 # natural BC imposed here
 F_v_ = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh,
@@ -91,7 +89,8 @@ F_v_ = msh.ufl_conditional_form(
 
 
 
-# step 2 for phi
+# 2.1.2 phi
+
 # natural BC imposed here
 F_phi = msh.ufl_conditional_form(
             rmsh.lmsh.mesh,
@@ -112,10 +111,9 @@ F_phi = msh.ufl_conditional_form(
             msh.jump(fsp.phi, bgeo.facet_normal)[i] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[i] * rmsh.dS_I[1] \
             + fsp.phi * fsp.nu_phi * rmsh.dS_ellipse
         )
-#sign
 
+# 2.1.3 v_n
 
-# step 3 for v_n
 F_v_n = msh.ufl_conditional_form(
             rmsh.lmsh.mesh,
             rmsh.sf, 
@@ -127,3 +125,4 @@ F_v_n = msh.ufl_conditional_form(
             rmsh.lmsh.parameters['sub_mesh_1_id']
         ) * rmsh.dx
 
+#sign
