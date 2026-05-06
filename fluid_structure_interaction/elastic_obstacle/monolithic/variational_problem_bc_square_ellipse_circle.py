@@ -43,7 +43,7 @@ class v_tb_circle_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-    
+
 class rho_el_expression(UserExpression):
     def eval(self, values, x):
 
@@ -166,8 +166,8 @@ F_u_n = msh.ufl_conditional_form(
 F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh,
                                         rmsh.sf, 
-                                        fsp.rho_el / dt * (fsp.u_dot_n[i] - fsp.u_dot_n_1[i]) * fsp.nu_u_el_n[i] \
-                                        + ela.N(fsp.u_el_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_el_n[i].dx(k)), 
+                                        fsp.rho_el / dt * (fsp.u_dot_n[i] - fsp.u_dot_n_1[i]) * fsp.nu_u_dot_n[i] \
+                                        + ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_dot_n[i].dx(k)), 
                                         , 
                                         rmsh.lmsh.parameters['sub_mesh_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_1_id']
