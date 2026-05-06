@@ -141,7 +141,7 @@ F_phi = msh.ufl_conditional_form(
         ) \
         + rpam.parameters['alpha']/rmsh.r_mesh * (\
             msh.jump(fsp.phi, bgeo.facet_normal)[i] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[i] * rmsh.dS_I[1] \
-            + fsp.phi * fsp.nu_phi * rmsh.dS_ellipse
+            + fsp.phi * fsp.nu_phi * rmsh.ds_r
         )
 
 # 2.1.3 v_n
