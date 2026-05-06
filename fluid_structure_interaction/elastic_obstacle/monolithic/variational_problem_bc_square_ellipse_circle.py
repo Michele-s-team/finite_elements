@@ -217,4 +217,12 @@ F_u_dot_n = msh.ufl_conditional_form(
             ) * rmsh.dS_ellipse \
             + rpam.parameters['alpha']/rmsh.r_mesh * (\
                 fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_circle
+            ) \
+            + ( msh.jump(fsp.nu_u_dot_n[k], bgeo.facet_normal)[i] * msh.average( Q(fsp.u_n, fsp.u_dot_n)[k, i] ) ) * rmsh.dS_I[1] \
+            + ( bgeo.facet_normal[i] * Q(fsp.u_n, fsp.u_dot_n)[k, i] * fsp.nu_u_dot_n[k] ) * rmsh.ds_lrtb \
+            + ( bgeo.facet_normal(sub_mesh_1_label)[i] * Q(fsp.u_n(sub_mesh_1_label), fsp.u_dot_n(sub_mesh_1_label))[k, i] * (fsp.nu_u_dot_n(sub_mesh_1_label))[k]) * rmsh.dS_ellipse \
+            + rpam.parameters['alpha']/rmsh.r_mesh * ( \
+                msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_dot_n[i], bgeo.facet_normal)[j] * (rmsh.dS_I[1] + rmsh.dS_ellipse) \
+                + ( fsp.u_dot_n[i] * fsp.nu_u_dot_n[i] ) * rmsh.ds_lrtb \
             )
+            
