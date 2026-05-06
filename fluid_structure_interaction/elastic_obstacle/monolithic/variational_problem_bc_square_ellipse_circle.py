@@ -210,12 +210,12 @@ F_u_dot_n = msh.ufl_conditional_form(
                 msh.jump(fsp.nu_u_dot_n[i], bgeo.facet_normal)[k] * msh.average( ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] )
             ) * rmsh.dS_I[0] \
             - bgeo.facet_normal[k] * ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * fsp.nu_u_dot_n[i] * rmsh.ds_circle \
-            - (\
+            - ( \
                 msh.average( 
                     1.0 / sqrt( fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m] ) * fsp.dyds_ellipse[l] * ela.F(fsp.u_n)[k, l] \
                 ) * geo.epsilon[j, k] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n_12(sub_mesh_1_label), msh.average(fsp.u_n), rpam.parameters['mu_fluid'])[i, j] * fsp.nu_u_dot_n(sub_mesh_0_label)[i]
             ) * rmsh.dS_ellipse \
-            + rpam.parameters['alpha']/rmsh.r_mesh * (\
+            + rpam.parameters['alpha']/rmsh.r_mesh * ( \
                 fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_circle
             ) \
             + ( msh.jump(fsp.nu_u_dot_n[k], bgeo.facet_normal)[i] * msh.average( Q(fsp.u_n, fsp.u_dot_n)[k, i] ) ) * rmsh.dS_I[1] \
