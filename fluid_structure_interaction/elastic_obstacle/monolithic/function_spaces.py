@@ -47,6 +47,7 @@ Q_v_n = Q.sub(2).collapse()
 Q_u = Q.sub(3).collapse()
 Q_u_dot = Q.sub(4).collapse()
 
+Q_rho_el = FunctionSpace(lmsh.mesh, 'DG', 1)
 
 
 #3 define fields
@@ -68,6 +69,8 @@ u_n_2 = Function(Q_u)
 
 u_dot_n_1 = Function(Q_u_dot)
 u_dot_n_2 = Function(Q_u_dot)
+
+rho_el = Function(Q_rho_el)
 
 # velocity profiles for the BCs
 v_l = Function(Q_v_)
