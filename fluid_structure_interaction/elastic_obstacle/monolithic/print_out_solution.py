@@ -115,6 +115,11 @@ def print_solution(t, step, dt):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
     io.full_print(phi_dummy, 'phi_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+    
+    io.full_print(u_n_dummy, 'u_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+    io.full_print(u_dot_n_dummy, 'u_dot_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
 
 
 # print solution metadata
