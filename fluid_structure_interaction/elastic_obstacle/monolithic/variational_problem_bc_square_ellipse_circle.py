@@ -58,7 +58,7 @@ bcs = []
 
 
 # natural BC imposed here
-F_v__square = msh.ufl_conditional_form(
+F_v_ = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh,
                                         rmsh.sf, 
                                         fsp.v_[i] * fsp.nu_v_[i], 
