@@ -214,4 +214,7 @@ F_u_dot_n = msh.ufl_conditional_form(
                 msh.average( 
                     1.0 / sqrt( fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m] ) * fsp.dyds_ellipse[l] * ela.F(fsp.u_n)[k, l] \
                 ) * geo.epsilon[j, k] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n_12(sub_mesh_1_label), msh.average(fsp.u_n), rpam.parameters['mu_fluid'])[i, j] * fsp.nu_u_dot_n(sub_mesh_0_label)[i]
-            ) * rmsh.dS_ellipse
+            ) * rmsh.dS_ellipse \
+            + rpam.parameters['alpha']/rmsh.r_mesh * (\
+                fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_circle
+            )
