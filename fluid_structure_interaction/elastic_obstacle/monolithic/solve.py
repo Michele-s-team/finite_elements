@@ -89,54 +89,17 @@ for n in range(rpam.parameters['num_steps']):
     t += dt
     step += 1
 
+    vp = importlib.import_module(swi.vp)
+
+    print('Solving monolithic problem ... ')
+
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
+
+    print('... done.', flush=True)
+
+
     '''
-    # step 1): solve elastic problem
-    print('Solving elastic problem ...', flush=True)
-
-
-    # project v_n_1 and sigma_n_32 on the mesh of the elastic problem to define the BC for the elastic problem
-    fsp.v_n_1_on_sub_mesh_0.assign(project(fsp.v_n_1, fsp.Q_v_el))
-    fsp.sigma_n_32_on_sub_mesh_0.assign(project(fsp.sigma_n_32, fsp.Q_sigma_el))
-
-    vp_el = importlib.reload(vp_el)
-
-    var_pr.solve_vp(vp_el.F_el, fsp.psi_el, vp_el.bcs_el, fsp.J_psi_el, parameters=params)
-
-    print('... done.', flush=True)
-
-
-    # step 2): update u and u_dot (mesh problem)
-    print('Solving mesh problem ...', flush=True)
-
-    # define fields from mesh 0 on mesh 1 form the elastic problem to define BCs for the mesh problem
-    u_el_n_output, u_el_dot_n_output = fsp.psi_el.split(deepcopy=True)
-    u_el_n_output.set_allow_extrapolation(True)
-    u_el_dot_n_output.set_allow_extrapolation(True)
-    fsp.u_el_n_on_sub_mesh_1.assign(project(u_el_n_output, fsp.Q_u_msh))
-    fsp.u_el_dot_n_on_sub_mesh_1.assign(project(u_el_dot_n_output, fsp.Q_u_msh_dot))
-
-    vp_msh = importlib.reload(vp_msh)
-
-    var_pr.solve_vp(vp_msh.F_msh_u, fsp.u_msh_n, vp_msh.bcs_msh, fsp.J_msh_u, parameters=params)
-    var_pr.solve_vp(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, vp_msh.bcs_msh_dot, fsp.J_msh_u_dot, parameters=params)
-
-    print('... done.', flush=True)
-
-    # step 3) update v_n and sigma_n_12 (fluid problem)
-    print('Solving fluid problem ...', flush=True)
-
-    vp_fl = importlib.reload(vp_fl)
-
-    # step 3.1
-    var_pr.solve_vp(vp_fl.F_v_, fsp.v_, vp_fl.bc_v_, fsp.J_v_)
-
-    # Step 3.2: surface_tension correction step
-    var_pr.solve_vp(vp_fl.F_phi, fsp.phi, vp_fl.bc_phi, fsp.J_phi)
-
-    # step 3.3
-    var_pr.solve_vp(vp_fl.F_v_n, fsp.v_n, vp_fl.bc_v_n, fsp.J_v_n)
-
-    print('... done.', flush=True)
+    
 
     # note: print_bcs() must be before the fields update to print the correct residuals of BCs
     pr_bc.print_bcs()

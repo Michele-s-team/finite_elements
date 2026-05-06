@@ -157,7 +157,6 @@ F_v_n = msh.ufl_conditional_form(
             rmsh.lmsh.parameters['sub_mesh_1_id']
         ) * rmsh.dx
 
-#sign
 
 # 2.2 elastic body and mesh
 
@@ -226,3 +225,6 @@ F_u_dot_n = msh.ufl_conditional_form(
                 + ( fsp.u_dot_n[i] * fsp.nu_u_dot_n[i] ) * rmsh.ds_lrtb \
             )
             
+
+
+F = F_v_ + F_phi + F_v_n + F_u_n + F_u_dot_n
