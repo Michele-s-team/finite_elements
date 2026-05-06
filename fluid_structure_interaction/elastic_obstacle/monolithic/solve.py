@@ -85,9 +85,12 @@ print("Starting time iteration ...", flush=True)
 t = 0
 step = 0
 for n in range(rpam.parameters['num_steps']):
-    # Update current time
+
+    #2.1 Update current time
     t += dt
     step += 1
+
+    #2.2 solve variational problem
 
     vp = importlib.import_module(swi.vp)
 
@@ -97,12 +100,32 @@ for n in range(rpam.parameters['num_steps']):
 
     print('... done.', flush=True)
 
+    #2.3 note: print_bcs() must be before the fields update to print the correct residuals of BCs
+    # pr_bc.print_bcs()
+
+    #2.4 unpack the mixed field 
+    v__dummy, phi_dummy, v_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+
+    #2.5 obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
+
+    #2.6 Update fields
+    fsp.v_n_2.assign(fsp.v_n_1)
+    fsp.v_n_1.assign(v_n_dummy)
+
+    fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
+    fsp.u_n_2.assign(fsp.u_n_1)
+    fsp.u_n_1.assign(u_n_dummy)
+
+    fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
+    fsp.u_dot_n_1.assign(u_dot_n_dummy)
+
 
     '''
     
 
-    # note: print_bcs() must be before the fields update to print the correct residuals of BCs
-    pr_bc.print_bcs()
+
 
 
     # update the fields
