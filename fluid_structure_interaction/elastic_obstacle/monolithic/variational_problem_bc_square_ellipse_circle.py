@@ -101,6 +101,10 @@ F_phi = ( \
         - dt / rpam.parameters['rho_fluid'] * ( \
             ( msh.jump(fsp.nu_phi, bgeo.facet_normal)[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, i] * ela.G(fsp.u_n)[j, i] * fsp.phi.dx(j) ) ) * rmsh.dS_I[1] \
             + ( bgeo.facet_normal[k]  * ela.G(fsp.u_n)[k, i] ** ela.G(fsp.u_n)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi ) * ela.detF(fsp.u_n) * rmsh.ds_r \
+        ) \
+        + rpam.parameters['alpha']/rmsh.r_mesh * (\
+            msh.jump(fsp.phi, bgeo.facet_normal)[i] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[i] * rmsh.dS_I[1] \
+            + fsp.phi * fsp.nu_phi * rmsh.dS_ellipse
         )
 
 
