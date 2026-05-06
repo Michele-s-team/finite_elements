@@ -148,3 +148,15 @@ F_u_n = msh.ufl_conditional_form(
             msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * (rmsh.dS_I[1] + rmsh.dS_ellipse) \
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_lrtb \
         )
+
+
+# 2.2.2 u_dot_n
+
+F_u_dot_n = msh.ufl_conditional_form(
+                                        rmsh.lmsh.mesh,
+                                        rmsh.sf, 
+                                        , 
+                                        , 
+                                        rmsh.lmsh.parameters['sub_mesh_0_id'],
+                                        rmsh.lmsh.parameters['sub_mesh_1_id']
+                                ) * rmsh.dx
