@@ -121,46 +121,15 @@ for n in range(rpam.parameters['num_steps']):
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
-
-    '''
-    
-
-
-
-
-    # update the fields
-    # 1) update the elastic problem
-    u_el_n_output, u_el_dot_n_output = fsp.psi_el.split( deepcopy=True)
-
-    fsp.u_el_n_2.assign(fsp.u_el_n_1)
-    fsp.u_el_n_1.assign(u_el_n_output)
-
-    fsp.u_el_dot_n_2.assign(fsp.u_el_dot_n_1)
-    fsp.u_el_dot_n_1.assign(u_el_dot_n_output)
-
-
-    # 2) update the mesh problem
-    fsp.u_msh_n_2.assign(fsp.u_msh_n_1)
-    fsp.u_msh_n_1.assign(fsp.u_msh_n)
-
-    fsp.u_msh_dot_n_2.assign(fsp.u_msh_dot_n_1)
-    fsp.u_msh_dot_n_1.assign(fsp.u_msh_dot_n)
-
-
-    # 3) update the fluid problem
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
-
-    fsp.v_n_2.assign(fsp.v_n_1)
-    fsp.v_n_1.assign(fsp.v_n)
-
-    fsp.sigma_n_32.assign(fsp.sigma_n_12)
-    
+    # 2.7 print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
+
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
+        
         pr_sol.print_solution(t, step, dt)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
-    '''
+    
 
 print("... done.", flush=True)
 

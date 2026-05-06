@@ -1,18 +1,18 @@
-from fenics import *
-
 import csv
+from fenics import *
+import importlib
 
-import physics.elasticity as ela
-import files as fi
 import function_spaces as fsp
 import input_output as io
-import mesh.load as lmsh
-import mesh.utils as msh
 import os
 import parameters.read.solution as rpam
-import solution_paths as solpath
-
 import runtime_arguments as rarg
+import solution_paths as solpath
+import switch_problem as swi
+
+
+rmsh = importlib.import_module(swi.rmsh)
+
 
 # create the path for the csv file if it does not exist
 filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
@@ -26,7 +26,7 @@ fieldnames = [ \
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
-
+'''
 # print the solution for the elastic problem
 def print_solution_el(t, step):
     
@@ -96,12 +96,26 @@ def print_solution_fl(t, step, dt):
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print_deformed(fsp.phi, fsp.u_msh_n, 'phi_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-
+'''
 
 def print_solution(t, step, dt):
-    print_solution_el(t, step)
-    print_solution_msh(t, step)
-    print_solution_fl(t, step, dt)
+
+    #2.4 unpack the mixed field 
+    v__dummy, phi_dummy, v_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+
+    fsp.sigma_n_12_dummy.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
+    
+
+    io.full_print(v__dummy, 'v_bar_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+    io.full_print(v_n_dummy, 'v_n_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+    
+    io.full_print(fsp.sigma_n_12_dummy, 'sigma_n_12_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+    io.full_print(phi_dummy, 'phi_' + str(step), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+
 
 # print solution metadata
 io.write_parameters_to_csv_file(os.path.join(solpath.csv_files_path, "metadata.csv"), rpam.parameters)
