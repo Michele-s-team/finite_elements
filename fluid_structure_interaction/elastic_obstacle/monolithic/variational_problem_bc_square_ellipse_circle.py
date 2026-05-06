@@ -26,6 +26,18 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.sf, rmsh.lmsh.parameters["sub_mesh_0_id"], rmsh.lmsh.parameters["sub_mesh_1_id"], rmsh.dS_ellipse)
 
 
+
+'''# print facet_normal to check sub_mesh_0_label and sub_mesh_1_label
+import input_output as io 
+import solution_paths as solpath
+
+n_1 = bgeo.field_facet_normal(bgeo.facet_normal(sub_mesh_1_label), rmsh.lmsh.mesh, rmsh.dS_ellipse, interior=True)
+
+io.full_print(n_1, 'n_1', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+'''
+
+
 # 1. define expressions for BCs
 
 class v_l_expression(UserExpression):
