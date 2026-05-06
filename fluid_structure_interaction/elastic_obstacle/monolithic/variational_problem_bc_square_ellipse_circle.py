@@ -4,9 +4,12 @@ this module solves for the fields v_n, sigma_n_12, u_n, u_dot_n which define the
 
 from fenics import *
 import importlib
+import numpy as np
 import ufl as ufl
 
+import calculus as cal
 import differential_geometry.boundary.geometry as bgeo
+import differential_geometry.manifold.geometry as geo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
 import physics.elasticity as ela
@@ -16,7 +19,7 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l = ufl.indices(4)
+i, j, k, l, m = ufl.indices(5)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
@@ -51,11 +54,29 @@ class rho_el_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+
+# {d y_s / ds}_notes
+class dyds_ellipse_expression(UserExpression):
+    def eval(self, values, x):
+
+        s = 1 / (2 * np.pi) * cal.atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
+
+        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[1]
+
+        values[0] = t[0]
+        values[1] = t[1]
+
+    def value_shape(self):
+        return (2,)
+    
     
 msh.interpolate_dg(fsp.v_l, v_l_expression())
 msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
 
 msh.interpolate_dg(fsp.rho_el, rho_el_expression())
+
+msh.interpolate_dg(fsp.dyds_ellipse, dyds_ellipse_expression())
+
 
 
 bcs = []
@@ -189,4 +210,8 @@ F_u_dot_n = msh.ufl_conditional_form(
                 msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[k] * msh.average( ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] )
             ) * rmsh.dS_I[0] \
             - bgeo.facet_normal[k] * ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * fsp.nu_u_dot_n[i] * rmsh.ds_circle \
-            
+            - (\
+                msh.average( 
+                    1.0 / sqrt( fsp.dyds_ellipse[m] * fsp.dyds_ellipse[m] ) * fsp.dyds_ellipse[l] * ela.F(fsp.u_n)[k, l] \
+                ) * geo.epsilon[j, k] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n_12(sub_mesh_1_label), msh.average(fsp.u_n), rpam.parameters['mu_fluid'])[i, j] * fsp.nu_u_dot_n(sub_mesh_0_label)[i]
+            ) * rmsh.dS_ellipse
