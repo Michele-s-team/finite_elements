@@ -185,6 +185,9 @@ F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.parameters['sub_mesh_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_1_id']
                                 ) * rmsh.dx \
+        + rpam.parameters['alpha']/rmsh.r_mesh * ( \
+            msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[0]
+        ) \
         + (\
             msh.jump(fsp.nu_u_n[k], bgeo.facet_normal)[i] * msh.average( ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] )   
         ) * rmsh.dS_I[1] \
