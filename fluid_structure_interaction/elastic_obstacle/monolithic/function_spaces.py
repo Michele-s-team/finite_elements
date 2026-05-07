@@ -78,6 +78,7 @@ rho_el = Function(Q_rho_el)
 dyds_ellipse = Function(Q_dyds)
 
 # velocity profiles for the BCs
+f = Function(Q_v_)
 v_l = Function(Q_v_)
 v_tb = Function(Q_v_)
 
