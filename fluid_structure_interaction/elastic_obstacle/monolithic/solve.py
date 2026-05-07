@@ -96,7 +96,7 @@ for n in range(rpam.parameters['num_steps']):
 
     print('Solving monolithic problem ... ')
 
-    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
     print('... done.', flush=True)
 
