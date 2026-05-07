@@ -167,7 +167,10 @@ F_v_n = msh.ufl_conditional_form(
             ) * ela.detF(fsp.u_n), 
             rmsh.lmsh.parameters['sub_mesh_0_id'],
             rmsh.lmsh.parameters['sub_mesh_1_id']
-        ) * rmsh.dx
+        ) * rmsh.dx \
+        + rpam.parameters['alpha']/rmsh.r_mesh * ( \
+            msh.jump(fsp.v_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[1]
+        )
 
 
 # 2.2 elastic body and mesh
