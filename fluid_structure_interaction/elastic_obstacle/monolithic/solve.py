@@ -17,6 +17,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import continuation as cont
 import function_spaces as fsp
 import mesh.utils as msh
 import print_out_solution as pr_sol
@@ -118,9 +119,19 @@ for n in range(rpam.parameters['num_steps']):
 
     #2.2 solve variational problem
 
-    vp = importlib.import_module(swi.vp)
 
     print('Solving monolithic problem ... ')
+
+    n_hold = 5    # steps with pressure off, while transient decays
+    n_ramp = 20   # steps to ramp from 0 to 1
+
+    if step <= n_hold:
+        cont.pressure_scale = 0.0
+    else:
+        cont.pressure_scale = min(1.0, ((step - n_hold) / n_ramp)**2)
+    print(f'\t pressure scale = {cont.pressure_scale}')
+
+    vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
