@@ -1,7 +1,3 @@
 - dt at the denominator may derange the other terms
 - terms that enforce continuity and that are not needed may derange the solver
-- here
-        + ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_n[i].dx(k)), 
-                                        - ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_n[k].dx(i))
-    you have the inner problem with + sign and the outer problem with - sign -> this may derange the solver
 - wrong definition of def Q(...)
