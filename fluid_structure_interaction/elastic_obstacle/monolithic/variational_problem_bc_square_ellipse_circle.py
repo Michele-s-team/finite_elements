@@ -189,6 +189,8 @@ F_v_n = msh.ufl_conditional_form(
 
 # 2.2.1 u_n
 
+#             - (flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n_12(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[j, k]) * bgeo.facet_normal(sub_mesh_0_label)[j]) * fsp.nu_u_n(sub_mesh_0_label)[i] * rmsh.dS_ellipse \
+
 
 F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh,
