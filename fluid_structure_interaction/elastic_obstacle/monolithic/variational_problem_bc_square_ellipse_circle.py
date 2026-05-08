@@ -165,7 +165,6 @@ F_phi = msh.ufl_conditional_form(
             + fsp.phi * fsp.nu_phi * rmsh.ds_r
         )
 
-#check
 
 
 # 2.1.3 v_n
@@ -183,6 +182,8 @@ F_v_n = msh.ufl_conditional_form(
         + rpam.parameters['alpha']/rmsh.r_mesh * ( \
             msh.jump(fsp.v_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[1]
         )
+
+#check
 
 
 # 2.2 elastic body and mesh
