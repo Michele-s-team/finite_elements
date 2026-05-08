@@ -210,7 +210,6 @@ F_u_n = msh.ufl_conditional_form(
             msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[0] \
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_circle
         ) \
-        # check
         + (\
             msh.jump(fsp.nu_u_n[k], bgeo.facet_normal)[i] * msh.average( ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] )   
         ) * rmsh.dS_I[1] \
@@ -220,6 +219,8 @@ F_u_n = msh.ufl_conditional_form(
             msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * (rmsh.dS_I[1] + rmsh.dS_ellipse) \
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_lrtb \
         )
+
+# check
 
 
 # 2.2.2 u_dot_n
