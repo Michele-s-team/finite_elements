@@ -40,6 +40,32 @@ params = {'nonlinear_solver': 'newton',
               }
           }
 
+'''
+params = {
+    'nonlinear_solver': 'snes',
+    'snes_solver': {
+        'linear_solver': 'superlu',
+        'line_search': 'bt', 
+        'absolute_tolerance': 1e-6,
+        'relative_tolerance': 1e-6,
+        'maximum_iterations': 1000000,
+        'report': True,
+    }
+}
+
+PETScOptions.clear()
+PETScOptions.set('snes_type', 'newtontr')
+PETScOptions.set('snes_atol', 1e-12)     
+PETScOptions.set('snes_rtol', 1e-12)     
+PETScOptions.set('snes_stol', 1e-8)      
+PETScOptions.set('snes_max_it', 100000)
+PETScOptions.set('snes_monitor')
+PETScOptions.set('snes_max_funcs', 1000000)         
+
+solver.parameters.update(params)
+solver_pp.parameters.update(params)
+'''
+
 pr_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)

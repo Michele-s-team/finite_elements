@@ -49,3 +49,7 @@ Return values:
 '''
 def sigma_ale(v, s, u, eta):
         return(as_tensor(s * ufl.Identity(len(v))[alpha, beta] + eta * ( ela.G(u)[gamma, beta] * (v[alpha].dx(gamma)) + ela.G(u)[gamma, alpha] * v[beta].dx(gamma) ),(alpha, beta)))
+
+
+def sigma_ale_no_pressure(v, s, u, eta):
+        return(as_tensor(eta * ( ela.G(u)[gamma, beta] * (v[alpha].dx(gamma)) + ela.G(u)[gamma, alpha] * v[beta].dx(gamma) ),(alpha, beta)))
