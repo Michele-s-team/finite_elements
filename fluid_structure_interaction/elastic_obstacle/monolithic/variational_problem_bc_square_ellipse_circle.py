@@ -220,7 +220,6 @@ F_u_n = msh.ufl_conditional_form(
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_lrtb \
         )
 
-# check
 
 
 # 2.2.2 u_dot_n
