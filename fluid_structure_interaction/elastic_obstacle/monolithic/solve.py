@@ -122,14 +122,11 @@ for n in range(rpam.parameters['num_steps']):
 
     print('Solving monolithic problem ... ')
 
-    n_hold = 5    # steps with pressure off, while transient decays
-    n_ramp = 20   # steps to ramp from 0 to 1
-
-    if step <= n_hold:
+    if step <= rpam.parameters['n_hold']:
         cont.pressure_scale = 0.0
     else:
-        cont.pressure_scale = min(1.0, ((step - n_hold) / n_ramp)**2)
-    print(f'\t pressure scale = {cont.pressure_scale}')
+        cont.pressure_scale = min(1.0, ((step - rpam.parameters['n_hold']) / rpam.parameters['n_ramp'])**2)
+    print(f'\t - pressure scale = {cont.pressure_scale}')
 
     vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
 
