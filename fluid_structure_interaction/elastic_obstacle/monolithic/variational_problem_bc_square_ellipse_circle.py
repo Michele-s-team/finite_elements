@@ -138,7 +138,6 @@ F_v_ = msh.ufl_conditional_form(
             + (fsp.v_(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_(sub_mesh_1_label)[i] * rmsh.dS_ellipse
         )
 
-#check
 
 
 
@@ -165,6 +164,9 @@ F_phi = msh.ufl_conditional_form(
             msh.jump(fsp.phi, bgeo.facet_normal)[i] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[i] * rmsh.dS_I[1] \
             + fsp.phi * fsp.nu_phi * rmsh.ds_r
         )
+
+#check
+
 
 # 2.1.3 v_n
 
