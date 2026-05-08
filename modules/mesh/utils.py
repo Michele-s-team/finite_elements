@@ -1452,7 +1452,6 @@ def deform_mesh(mesh, u):
 
     # Create a coordinate map for modifying vertex coordinates
     new_mesh_coordinates = deformed_mesh.coordinates()
-    mesh_dimension = mesh.geometry().dim()
 
     # Loop over all vertex coordinates and apply displacement
     for i in range(len(new_mesh_coordinates)):
