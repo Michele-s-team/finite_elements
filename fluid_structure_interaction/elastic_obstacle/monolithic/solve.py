@@ -17,6 +17,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import continuation as cont
 import function_spaces as fsp
 import mesh.utils as msh
 import print_out_solution as pr_sol
@@ -62,8 +63,6 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
-solver.parameters.update(params)
-solver_pp.parameters.update(params)
 '''
 
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -118,11 +117,33 @@ for n in range(rpam.parameters['num_steps']):
 
     #2.2 solve variational problem
 
-    vp = importlib.import_module(swi.vp)
 
     print('Solving monolithic problem ... ')
 
+    if step <= rpam.parameters['n_hold']:
+        cont.pressure_scale = 0.0
+    else:
+        cont.pressure_scale = min(1.0, ((step - rpam.parameters['n_hold']) / rpam.parameters['n_ramp'])**2)
+    print(f'\t - pressure scale = {cont.pressure_scale}')
+
+    vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
+
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
+
+    ''' 
+    print("||sigma_n_32|| at interface:", 
+        assemble(fsp.sigma_n_32(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
+    print("||phi|| at interface:", 
+        assemble(phi_dummy(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
+    print("||viscous traction||:", 
+        assemble(flu.sigma_ale_no_pressure(
+            v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
+            u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
+        )[i,k] * flu.sigma_ale_no_pressure(
+            v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
+            u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
+        )[i,k] * rmsh.dS_ellipse)**0.5)
+    '''
 
     print('... done.', flush=True)
 
