@@ -63,8 +63,6 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
-solver.parameters.update(params)
-solver_pp.parameters.update(params)
 '''
 
 pr_bc = importlib.import_module(swi.prout_bc)
