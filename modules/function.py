@@ -183,6 +183,7 @@ Input values:
 
 
 def copy_function_values(f_in, f_out):
+    
     f_out.vector()[:] = f_in.vector()[:]
 
 '''
@@ -193,6 +194,7 @@ Input values:
 
 '''
 def deform_function(f, u):
+
     Q = deform_function_space(f.function_space(), u)
 
     g = Function(Q)

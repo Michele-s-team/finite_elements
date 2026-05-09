@@ -68,14 +68,14 @@ def print_solution(t, step, dt):
 
     # 3.2 current configuration
     io.full_print_deformed(v__dummy, u_n_dummy, 'v_bar_' + str(step), \
-                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
     io.full_print_deformed(v_n_dummy, u_n_dummy, 'v_n_' + str(step), \
-                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
     
     io.full_print_deformed(fsp.sigma_n_12, u_n_dummy, 'sigma_n_12_' + str(step), \
-                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
     io.full_print_deformed(phi_dummy, u_n_dummy, 'phi_' + str(step), \
-                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
 
 
     #4. Write the deformed mesh to file
