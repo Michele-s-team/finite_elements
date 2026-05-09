@@ -123,7 +123,8 @@ for n in range(rpam.parameters['num_steps']):
     if step <= rpam.parameters['n_hold']:
         cont.pressure_scale = 0.0
     else:
-        cont.pressure_scale = min(1.0, ((step - rpam.parameters['n_hold']) / rpam.parameters['n_ramp'])**2)
+        cont.pressure_scale = 1.0
+        
     print(f'\t - pressure scale = {cont.pressure_scale}')
 
     vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
