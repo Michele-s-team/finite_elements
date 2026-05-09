@@ -125,8 +125,6 @@ for n in range(rpam.parameters['num_steps']):
     else:
         cont.pressure_scale = 1.0
         
-    print(f'\t - pressure scale = {cont.pressure_scale}')
-
     vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
