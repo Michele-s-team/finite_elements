@@ -1,3 +1,4 @@
 - wrong definition of def Q(...)
 - implement inside the same equations you implement outside
 - you use lagged u_n_1 u_n_2 in the convective term
+- use nonlinear convective term (fsp.V[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.V[i]).dx(j) to avoid extrapolation of v_n from previous steps in the convective term
