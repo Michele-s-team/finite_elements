@@ -129,7 +129,14 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
-    ''' 
+    '''
+    import ufl as ufl
+    import physics.fluid_mechanics as flu
+    i, j, k, l, m = ufl.indices(5)
+
+    v__dummy, phi_dummy, v_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+
+
     print("||sigma_n_32|| at interface:", 
         assemble(fsp.sigma_n_32(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
     print("||phi|| at interface:", 
