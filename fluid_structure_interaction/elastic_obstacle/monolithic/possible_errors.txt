@@ -1,4 +1,4 @@
 - wrong definition of def Q(...)
 - implement inside the same equations you implement outside
 - you use lagged u_n_1 u_n_2 in the convective term
-- you use sigma_ale(v_, sigma_n_32) in the fluid VP and sigma_ale(v_n, sigma_n_32 - phi) in the traction BC
+- you use sigma_ale(V, sigma_n_32) in the fluid VP and sigma_ale(v_n, sigma_n_32 - phi) in the traction BC
