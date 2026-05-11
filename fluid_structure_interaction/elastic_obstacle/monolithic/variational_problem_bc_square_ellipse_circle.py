@@ -60,6 +60,15 @@ class v_tb_circle_expression(UserExpression):
         return (2,)
     
 
+class sigma_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['sigma_r']
+
+    def value_shape(self):
+        return (1,)
+    
+
 class rho_el_expression(UserExpression):
     def eval(self, values, x):
 
@@ -94,6 +103,9 @@ class f_expression(UserExpression):
     
 msh.interpolate_dg(fsp.v_l, v_l_expression())
 msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
+
+msh.interpolate_dg(fsp.sigma_r, sigma_r_expression())
+
 
 msh.interpolate_dg(fsp.rho_el, rho_el_expression())
 
@@ -140,16 +152,14 @@ F_v_n = msh.ufl_conditional_form(
         )
 
 
-# sign
-
 F_sigma_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh,
                                         rmsh.sf, 
-                                        fsp.sigma_n[i] * fsp.nu_sigma_n[i], 
+                                        fsp.sigma_n * fsp.nu_sigma_n, 
                                         fsp.v_n[i].dx(j) * ela.G(fsp.u_n)[j, i] * fsp.nu_sigma_n * ela.detF(fsp.u_n),
                                         rmsh.lmsh.parameters['sub_mesh_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_1_id']
-                                        )  * rmsh.dx \
+                                    )  * rmsh.dx \
     + rpam.parameters['alpha']/rmsh.r_mesh * (\
         msh.jump(fsp.sigma_n, bgeo.facet_normal)[i] * msh.jump(fsp.nu_sigma_n, bgeo.facet_normal)[i] * rmsh.dS_I[1] + \
         (fsp.sigma_n - fsp.sigma_r) * fsp.nu_sigma_n * rmsh.ds_r \

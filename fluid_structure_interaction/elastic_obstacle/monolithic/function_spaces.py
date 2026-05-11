@@ -66,6 +66,9 @@ u_dot_n_2 = Function(Q_u_dot)
 
 rho_el = Function(Q_rho_el)
 
+sigma_r = Function(Q_sigma_n)
+
+
 # dyds_ellipse = {dy^s/ds}_notes
 dyds_ellipse = Function(Q_dyds)
 
