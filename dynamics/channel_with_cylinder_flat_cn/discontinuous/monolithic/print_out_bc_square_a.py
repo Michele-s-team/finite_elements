@@ -27,8 +27,8 @@ csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
     '<<(v_n[i] - g[i])(v_n[i] - g[i])>>_{\partial Omega l}',\
     '<<(v_n[i] - g[i])(v_n[i] - g[i])>>_{\partial Omega tb circle}',\
-    '<<(n_j sigma_\{ij\}) (n_k sigma_\{ik\})>>_{\partial Omega r}',\
-    '<<sigma_n^2>>_{\partial Omega r}'
+    '<<(n_j sigma_\{ij\} - tau_i) (n_k sigma_\{ik\} - tau_i)>>_{\partial Omega r}',\
+    '<<(sigma_n - sigma_out)^2>>_{\partial Omega r}'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -45,9 +45,9 @@ def print_bcs():
         fieldnames[1]: \
             msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_tb_circle), rmsh.ds_tb + rmsh.ds_circle) ,\
         fieldnames[2]: \
-            msh.abs_wrt_measure(sqrt(bgeo.facet_normal[j] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, j] * bgeo.facet_normal[k] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, k]), rmsh.ds_r),\
+            msh.abs_wrt_measure(sqrt((bgeo.facet_normal[j] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, j] - fsp.tau[i]) * (bgeo.facet_normal[k] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, k] - fsp.tau[i])), rmsh.ds_r),\
         fieldnames[3]: \
-            msh.abs_wrt_measure(fsp.sigma_n, rmsh.ds_r)
+            msh.difference_wrt_measure(fsp.sigma_n, fsp.sigma_r, rmsh.ds_r)
         }] )
 
     csvfile.flush()
