@@ -3,7 +3,6 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import differential_geometry.manifold.geometry as geo
 import parameters.read.solution as rpam
 import physics.fluid_mechanics as flu
 import switch_problem as swi
@@ -12,8 +11,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
 
-
-dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
+# time step size
+dt = rpam.parameters['T'] / rpam.parameters['num_steps'] 
 
 class v_l_expression(UserExpression):
     def eval(self, values, x):
@@ -50,24 +49,25 @@ fsp.v_tb_circle.interpolate(v_tb_circle_expression(element=fsp.Q_v_n.ufl_element
 fsp.sigma_r.interpolate(sigma_r_expression(element=fsp.Q_sigma_n.ufl_element()))
 
 
-# boundary conditions for the surface_tension p
+# boundary conditions 
 bcs = [
+        # BCs for v_n
         DirichletBC(fsp.Q.sub(0), fsp.v_l, rmsh.mf, 2), 
         DirichletBC(fsp.Q.sub(0), fsp.v_tb_circle, rmsh.mf, 4), 
         DirichletBC(fsp.Q.sub(0), fsp.v_tb_circle, rmsh.mf, 5), 
         DirichletBC(fsp.Q.sub(0), fsp.v_tb_circle, rmsh.mf, 6),
+        # BC for sigma_n
         DirichletBC(fsp.Q.sub(1), fsp.sigma_r, rmsh.mf, 3)
     ]
 
 
-# Define variational problem for step 1
-
+# define variational problem
+# natural BC imposed here
 F_v_n = ( \
-                 rpam.parameters['rho'] * ((fsp.v_n[i] - fsp.v_n_1[i]) / dt + fsp.v_n[j] * (fsp.v_n[i]).dx(j)) * fsp.nu_v_n[i] \
+                 rpam.parameters['rho'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt + fsp.v_n[j] * (fsp.v_n[i]).dx(j) ) * fsp.nu_v_n[i] \
                  + flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, j] * (fsp.nu_v_n[i]).dx(j) \
          ) * rmsh.dx
 
-# step 2
 F_sigma_n = (fsp.v_n[i].dx(i)) * fsp.nu_sigma_n * rmsh.dx
 
 F = F_v_n + F_sigma_n

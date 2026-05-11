@@ -23,7 +23,6 @@ nu_v_n, nu_sigma_n = TestFunctions( Q )
 
 # Define functions for solutions at previous and current time steps
 v_n_1 = Function(Q_v_n)
-sigma_n_1 = Function(Q_sigma_n)
 
 
 v_l = Function(Q_v_n)
