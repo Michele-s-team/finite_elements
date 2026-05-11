@@ -125,18 +125,16 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
-    '''
+    # 
     import ufl as ufl
     import physics.fluid_mechanics as flu
     i, j, k, l, m = ufl.indices(5)
 
-    v__dummy, phi_dummy, v_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
 
-    print("||sigma_n_32|| at interface:", 
-        assemble(fsp.sigma_n_32(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
-    print("||phi|| at interface:", 
-        assemble(phi_dummy(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
+    print("||sigma_n|| at interface:", 
+        assemble(fsp.sigma_n(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
     print("||viscous traction||:", 
         assemble(flu.sigma_ale_no_pressure(
             v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
@@ -145,7 +143,7 @@ for n in range(rpam.parameters['num_steps']):
             v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
             u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
         )[i,k] * rmsh.dS_ellipse)**0.5)
-    '''
+    # 
 
     print('... done.', flush=True)
 
