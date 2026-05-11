@@ -148,8 +148,10 @@ F_v_n = msh.ufl_conditional_form(
             msh.jump(fsp.v_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[1] \
             + (fsp.v_n[i] - fsp.v_l[i]) * fsp.nu_v_n[i] * rmsh.ds_l \
             + (fsp.v_n[i] - fsp.v_tb[i]) * fsp.nu_v_n[i] * rmsh.ds_tb \
-            + (fsp.v_n(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.dS_ellipse
-        )
+        ) \
+        + rpam.parameters['alpha_ellipse']/rmsh.r_mesh * (\
+             (fsp.v_n(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.dS_ellipse
+         )
 
 
 F_sigma_n = msh.ufl_conditional_form(
