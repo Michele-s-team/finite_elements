@@ -5,10 +5,11 @@ import os
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import physics.fluid_mechanics as flu
+import differential_geometry.manifold.geometry as geo
 import function_spaces as fsp
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -16,7 +17,7 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 
-alpha, beta, gamma = ufl.indices( 3 )
+i, j, k, l = ufl.indices( 4 )
 
 # create the path for the csv file if it does not exist
 filename_bcs = rarg.args.output_directory + '/bcs.csv'
@@ -24,11 +25,10 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
-    '<<|sigma_{alpha beta} n_beta - tau_alpha|^2>>_{partial Omega r}',\
-    '<<|v_bar_alpha - g_alpha|^2>>_{partial Omega l}',\
-    '<<|v_bar_alpha - g_alpha|^2>>_{partial Omega tb + circle}',\
-    '<<n_alpha partial_alpha phi>>_{partial Omega D}',\
-    '<<phi^2>>_{partial Omega r}'
+    '<<(v_n[i] - g[i])(v_n[i] - g[i])>>_{\partial Omega l}',\
+    '<<(v_n[i] - g[i])(v_n[i] - g[i])>>_{\partial Omega tb circle}',\
+    '<<(n_j sigma_\{ij\} - tau_i) (n_k sigma_\{ik\} - tau_i)>>_{\partial Omega r}',\
+    '<<(sigma_n - sigma_out)^2>>_{\partial Omega r}'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -38,19 +38,16 @@ writer.writeheader()
 def print_bcs():
     # get the solution and write it to file
 
-
     # write the residual of natural BCs on step 2 to file
     writer.writerows( [{ \
         fieldnames[0]: \
-            msh.abs_wrt_measure(sqrt((flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * bgeo.facet_normal[beta] - fsp.tau[alpha]) * (flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, gamma] * bgeo.facet_normal[gamma] - fsp.tau[alpha])), rmsh.ds_r),\
-        fieldnames[1]:
-            msh.abs_wrt_measure(sqrt((fsp.v_[alpha] - fsp.v_l[alpha]) * (fsp.v_[alpha] - fsp.v_l[alpha])), rmsh.ds_l),\
-        fieldnames[2]:
-            msh.abs_wrt_measure(sqrt((fsp.v_[alpha] - fsp.v_tb_circle[alpha]) * (fsp.v_[alpha] - fsp.v_tb_circle[alpha])), rmsh.ds_tb + rmsh.ds_circle),\
-        fieldnames[3]:
-            msh.abs_wrt_measure(bgeo.facet_normal[alpha] * fsp.phi.dx(alpha), rmsh.ds_tb + rmsh.ds_l + rmsh.ds_circle),\
-        fieldnames[4]:
-            msh.abs_wrt_measure(fsp.phi, rmsh.ds_r)
+            msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_l), rmsh.ds_l),\
+        fieldnames[1]: \
+            msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_tb_circle), rmsh.ds_tb + rmsh.ds_circle) ,\
+        fieldnames[2]: \
+            msh.abs_wrt_measure(sqrt((bgeo.facet_normal[j] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, j] - fsp.tau[i]) * (bgeo.facet_normal[k] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, k] - fsp.tau[i])), rmsh.ds_r),\
+        fieldnames[3]: \
+            msh.difference_wrt_measure(fsp.sigma_n, fsp.sigma_r, rmsh.ds_r)
         }] )
 
     csvfile.flush()

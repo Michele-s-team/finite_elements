@@ -1,2 +1,2 @@
-T,num_steps,mu,rho,quadrature_degree,print_out_stride,v__l_const,alpha
-1e-2,10,0.001,1.0,10,2,1.0,1e2
+T,num_steps,mu,rho,v_n_const,alpha,quadrature_degree,print_out_stride
+1e0,100,0.001,1.0,1.0,1e2,10,2

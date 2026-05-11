@@ -25,8 +25,8 @@ os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile = open(filename_bcs, 'a', newline='' )
 fieldnames = [ \
-    '<<(v_n[i] - v_l[i])(v_n[i] - v_l[i])>>_{\partial Omega l}',\
-    '<<(v_n[i] - v_l[i])(v_n[i] - v_l[i])>>_{\partial Omega tb circle}',\
+    '<<(v_n[i] - g[i])(v_n[i] - g[i])>>_{\partial Omega l}',\
+    '<<(v_n[i] - g[i])(v_n[i] - g[i])>>_{\partial Omega tb circle}',\
     '<<(n_j sigma_\{ij\}) (n_k sigma_\{ik\})>>_{\partial Omega r}',\
     '<<sigma_n^2>>_{\partial Omega r}'
     ]
