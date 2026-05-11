@@ -143,6 +143,8 @@ for n in range(rpam.parameters['num_steps']):
             v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
             u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
         )[i,k] * rmsh.dS_ellipse)**0.5)
+    print("<u_n^2> at interface:", 
+        assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.dS_ellipse)**0.5)
     # 
 
     print('... done.', flush=True)
