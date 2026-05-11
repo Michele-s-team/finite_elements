@@ -20,7 +20,6 @@ sys.path.append(module_path)
 
 import function_spaces as fsp
 import parameters.read.solution as rpam
-import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 import print_out_solution as pr_sol
@@ -34,10 +33,9 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadr
 
 
 # set the initial profiles
-fsp.v_n_1.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v.ufl_element()))
-fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_n_12.interpolate(vp.SurfaceTensionExpression(element=fsp.Q.ufl_element()))
-fsp.sigma_n_32.assign(fsp.sigma_n_12)
+# fsp.v_n.interpolate(vp.TangentVelocityExpression(element=fsp.Q_v_n.ufl_element()))
+# fsp.v_n_1.assign(fsp.v_n_1)
+# fsp.sigma_n.interpolate(vp.SurfaceTensionExpression(element=fsp.Q.ufl_element()))
 
 
 print("Starting time iteration ...", flush=True)
@@ -51,25 +49,16 @@ for n in range(rpam.parameters['num_steps']):
 
     vp = importlib.import_module(swi.vp)
 
-    # step 1
-    var_pr.solve_vp(vp.F1, fsp.v_, vp.bc_v_, fsp.J_v_)
+    # step
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
-    # Step 2: surface_tension correction step
-    var_pr.solve_vp(vp.F2, fsp.phi, vp.bc_phi, fsp.J_phi)
-
-    # step 3
-    var_pr.solve_vp(vp.F3, fsp.v_n, [], fsp.J_v_n)
 
     pr_bc.print_bcs()
 
-    # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
+    v_n_dummy, sigma_n_dummy = fsp.psi.split( deepcopy=True )
 
-    # Update previous solution
-    fsp.v_n_2.assign(fsp.v_n_1)
-    fsp.v_n_1.assign(fsp.v_n)
-
-    fsp.sigma_n_32.assign(fsp.sigma_n_12)
+    fsp.v_n_1.assign(v_n_dummy)
+    fsp.sigma_n_1.assign(sigma_n_dummy)
 
     if (step % rpam.parameters['print_out_stride']) == 0:
 

@@ -5,6 +5,7 @@ import ufl as ufl
 import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -14,50 +15,59 @@ i, j, k, l = ufl.indices(4)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
-
-# trial analytical expression for a vector
-class TangentVelocityExpression(UserExpression):
+class v_l_expression(UserExpression):
     def eval(self, values, x):
-        values[0] = 0.0
+
+        values[0] = rpam.parameters['v_n_l_const'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
         values[1] = 0.0
 
     def value_shape(self):
         return (2,)
+    
 
-
-# trial analytical expression for the  surface tension sigma(x,y)
-class SurfaceTensionExpression(UserExpression):
+class v_tb_circle_expression(UserExpression):
     def eval(self, values, x):
-        # values[0] = 4*x[0]*x[1]*sin(8*(norm(np.subtract(x, c_r)) - r))*sin(8*(norm(np.subtract(x, c_R)) - R))
-        # values[0] = cos(norm(np.subtract(x, c_r)) - r) * sin(norm(np.subtract(x, c_R)) - R)
-        values[0] = 0.0
+
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+    
+
+class sigma_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['sigma_r']
 
     def value_shape(self):
         return (1,)
 
 
-v__profile_l = Expression((f'{rpam.parameters["v__l_const"]} * 4.0*1.5*x[1]*({rmsh.parameters["h"]} - x[1]) / pow({rmsh.parameters["h"]}, 2)', '0'), degree=2, h=rmsh.parameters["h"])
+fsp.v_l.interpolate(v_l_expression(element=fsp.Q_v_n.ufl_element()))
+fsp.v_tb_circle.interpolate(v_tb_circle_expression(element=fsp.Q_v_n.ufl_element()))
 
-bc_v__inflow = DirichletBC(fsp.Q_v, v__profile_l, rmsh.boundary_l)
-bc_v__walls = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_tb)
-bc_v__cylinder = DirichletBC(fsp.Q_v, Constant((0, 0)), rmsh.boundary_circle)
+fsp.sigma_r.interpolate(sigma_r_expression(element=fsp.Q_sigma_n.ufl_element()))
 
-bc_phi_outflow = DirichletBC(fsp.Q, Constant(0), rmsh.boundary_r)
 
 # boundary conditions for the surface_tension p
-bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
-bc_phi = [bc_phi_outflow]
+bcs = [
+        DirichletBC(fsp.Q.sub(0), fsp.v_l, rmsh.mf, 2), 
+        DirichletBC(fsp.Q.sub(0), fsp.v_tb_circle, rmsh.mf, 4), 
+        DirichletBC(fsp.Q.sub(0), fsp.v_tb_circle, rmsh.mf, 5), 
+        DirichletBC(fsp.Q.sub(0), fsp.v_tb_circle, rmsh.mf, 6),
+        DirichletBC(fsp.Q.sub(1), fsp.sigma_r, rmsh.mf, 3)
+    ]
+
 
 # Define variational problem for step 1
-# step 1 for v
-F1 = ( \
-                 rpam.parameters['rho'] * ((fsp.v_[i] - fsp.v_n_1[i]) / dt \
-                        + (3.0 / 2.0 * fsp.v_n_1[j] - 1.0 / 2.0 * fsp.v_n_2[j]) * (fsp.V[i]).dx(j)) * fsp.nu[i] \
-                 + fsp.sigma_n_32 * (fsp.nu[i]).dx(i) + rpam.parameters['mu'] * ((fsp.V[i]).dx(j) + (fsp.V[j]).dx(i)) * (fsp.nu[j]).dx(i) \
+
+F_v_n = ( \
+                 rpam.parameters['rho'] * ((fsp.v_n[i] - fsp.v_n_1[i]) / dt + fsp.v_n[j] * (fsp.v_n[i]).dx(j)) * fsp.nu_v_n[i] \
+                 + flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[i, j] * (fsp.nu_v_n[i]).dx(j) \
          ) * rmsh.dx
 
 # step 2
-F2 = ((fsp.phi.dx(i)) * (fsp.q.dx(i)) + (rpam.parameters['rho'] / dt) * ((fsp.v_)[i].dx(i)) * fsp.q) * rmsh.dx
+F_sigma_n = (fsp.v_n[i].dx(i)) * fsp.nu_sigma_n * rmsh.dx
 
-# Define variational problem for step 3
-F3 = (((fsp.v_n[i] - fsp.v_[i]) + (dt / rpam.parameters['rho']) * (fsp.phi.dx(i))) * fsp.nu[i]) * rmsh.dx
+F = F_v_n + F_sigma_n
