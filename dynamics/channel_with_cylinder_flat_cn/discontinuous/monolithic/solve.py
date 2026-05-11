@@ -88,7 +88,7 @@ for n in range(rpam.parameters['num_steps']):
     _, phi_dummy, v_n_dummy = fsp.psi.split( deepcopy=True )
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_sigma_n))
 
     # Update previous solution
     fsp.v_n_2.assign(fsp.v_n_1)
