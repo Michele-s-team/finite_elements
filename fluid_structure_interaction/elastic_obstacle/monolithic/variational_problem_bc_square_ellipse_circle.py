@@ -142,7 +142,18 @@ F_v_n = msh.ufl_conditional_form(
 
 # sign
 
-
+F_sigma_n = msh.ufl_conditional_form(
+                                        rmsh.lmsh.mesh,
+                                        rmsh.sf, 
+                                        fsp.sigma_n[i] * fsp.nu_sigma_n[i], 
+                                        fsp.v_n[i].dx(j) * ela.G(fsp.u_n)[j, i] * fsp.nu_sigma_n * ela.detF(fsp.u_n),
+                                        rmsh.lmsh.parameters['sub_mesh_0_id'],
+                                        rmsh.lmsh.parameters['sub_mesh_1_id']
+                                        )  * rmsh.dx \
+    + rpam.parameters['alpha']/rmsh.r_mesh * (\
+        msh.jump(fsp.sigma_n, bgeo.facet_normal)[i] * msh.jump(fsp.nu_sigma_n, bgeo.facet_normal)[i] * rmsh.dS_I[1] + \
+        (fsp.sigma_n - fsp.sigma_r) * fsp.nu_sigma_n * rmsh.ds_r \
+    )
 
 
 
