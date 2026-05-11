@@ -62,47 +62,24 @@ bcs_psi = []
 
 
 # step 1
-F_1_0 = ( \
-                ( 
-                    rpam.parameters['rho'] * (
-                        (fsp.v_[alpha] - fsp.v_n_1[alpha]) / dt \
-                        + (3.0 / 2.0 * fsp.v_n_1[beta] - 1.0 / 2.0 * fsp.v_n_2[beta]) * (fsp.V[alpha]).dx(beta)
-                    ) 
-                    - fsp.f[alpha]
-                    ) * fsp.nu_v_[alpha] \
-                +  flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_[alpha].dx(beta)
+F_v_n = ( \
+                ( \
+                    rpam.parameters['rho'] * ( (fsp.v_n[alpha] - fsp.v_n_1[alpha]) / dt + fsp.v_n[beta]  * (fsp.v_n[alpha]).dx(beta) ) - fsp.f[alpha] \
+                ) * fsp.nu_v_n[alpha] \
+                + flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_n[alpha].dx(beta) \
       ) * rmsh.dx \
-      - (msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * msh.average(flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[beta, alpha])) * rmsh.dS \
-      - (bgeo.facet_normal[beta] * flu.sigma(fsp.V, fsp.sigma_n_32, rpam.parameters['mu'])[alpha, beta] * fsp.nu_v_[alpha]) * (rmsh.ds_tb + rmsh.ds_l + rmsh.ds_circle) \
-      - (fsp.tau[alpha] * fsp.nu_v_[alpha]) * rmsh.ds_r
+      - (msh.jump(fsp.nu_v_n[beta], bgeo.facet_normal)[alpha] * msh.average(flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[beta, alpha])) * rmsh.dS \
+      - (bgeo.facet_normal[alpha] * flu.sigma(fsp.v_n, fsp.sigma_n, rpam.parameters['mu'])[beta, alpha] * fsp.nu_v_n[beta]) * (rmsh.ds_l + rmsh.ds_tb + rmsh.ds_circle) \
+      - (fsp.tau[beta] * fsp.nu_v_n[beta]) * rmsh.ds_r
 
-F_1_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
-            msh.jump(fsp.v_[beta], bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_v_[beta], bgeo.facet_normal)[alpha] * rmsh.dS + \
-            (fsp.v_[alpha] - fsp.v_l[alpha]) * fsp.nu_v_[alpha] * rmsh.ds_l + \
-            (fsp.v_[alpha] - fsp.v_tb_circle[alpha]) * fsp.nu_v_[alpha] * (rmsh.ds_tb + rmsh.ds_circle)
+F_N = rpam.parameters['alpha']/rmsh.r_mesh * (\
+            msh.jump(fsp.v_n[alpha], bgeo.facet_normal)[beta] * msh.jump(fsp.nu_v_n[alpha], bgeo.facet_normal)[beta] * rmsh.dS + \
+            (fsp.v_n[alpha] - fsp.v_l[alpha]) * fsp.nu_v_n[alpha] * rmsh.ds_l + \
+            (fsp.v_n[alpha] - fsp.v_tb_circle[alpha]) * fsp.nu_v_n[alpha] * (rmsh.ds_tb + rmsh.ds_circle) + \
+            (fsp.sigma_n - fsp.sigma_r) * fsp.nu_sigma_n * rmsh.ds_r \
         )
 
-F_1 = F_1_0 + F_1_N
+F_sigma_n = ( fsp.v_n[alpha].dx(alpha) * fsp.nu_sigma_n ) * rmsh.dx
 
 
-# step 2
-F_2_0 = (
-            dt / rpam.parameters['rho'] * (fsp.phi.dx(alpha)) * (fsp.nu_phi.dx(alpha)) + ((fsp.v_)[alpha].dx(alpha)) * fsp.nu_phi
-        ) * rmsh.dx \
-        - dt / rpam.parameters['rho'] * ( msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * msh.average(fsp.phi.dx(alpha)) ) * rmsh.dS \
-        - dt / rpam.parameters['rho'] * ( bgeo.facet_normal[alpha] * (fsp.phi.dx(alpha)) * fsp.nu_phi ) * rmsh.ds_r
-
-
-F_2_N = rpam.parameters['alpha'] / rmsh.r_mesh * ( \
-      msh.jump(fsp.phi, bgeo.facet_normal)[alpha] * msh.jump(fsp.nu_phi, bgeo.facet_normal)[alpha] * rmsh.dS + \
-      fsp.phi * fsp.nu_phi * rmsh.ds_r
-    )
-
-F_2 = F_2_0 + F_2_N
-
-
-# step 3
-F_3 = (fsp.v_n[alpha] - fsp.v_[alpha] + (dt / rpam.parameters['rho']) * (fsp.phi.dx(alpha))) * fsp.nu_v_n[alpha] * rmsh.dx
-
-
-F = F_1 + F_2 + F_3
+F = F_v_n + F_sigma_n

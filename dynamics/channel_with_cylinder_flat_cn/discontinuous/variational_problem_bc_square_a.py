@@ -19,7 +19,7 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 class v_l_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['v__l_const'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        values[0] = rpam.parameters['v_n_const'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
         values[1] = 0.0
 
     def value_shape(self):
@@ -33,6 +33,15 @@ class v_tb_circle_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+
+class sigma_r_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['sigma_r']
+
+    def value_shape(self):
+        return (1,)
 
 
 class f_expression(UserExpression):
@@ -52,8 +61,11 @@ class tau_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+
 msh.interpolate_dg(fsp.v_l, v_l_expression())
 msh.interpolate_dg(fsp.v_tb_circle, v_tb_circle_expression())
+
+msh.interpolate_dg(fsp.sigma_r, sigma_r_expression())
 
 msh.interpolate_dg(fsp.f, f_expression())
 msh.interpolate_dg(fsp.tau, tau_expression())

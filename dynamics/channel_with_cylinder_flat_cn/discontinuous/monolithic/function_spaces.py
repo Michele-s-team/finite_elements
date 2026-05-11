@@ -33,6 +33,8 @@ v_n_1 = Function(Q_v_n)
 v_l = Function(Q_v_n)
 v_tb_circle = Function(Q_v_n)
 
+sigma_r = Function(Q_sigma_n)
+
 f = Function(Q_f)
 tau = Function(Q_tau)
 
