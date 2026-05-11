@@ -240,4 +240,4 @@ F_u_dot_n = msh.ufl_conditional_form(
             
 
 
-F = F_v_n + F_phi + F_v_n + F_u_n + F_u_dot_n
+F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n
