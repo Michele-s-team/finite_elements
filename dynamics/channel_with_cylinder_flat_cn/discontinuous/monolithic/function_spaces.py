@@ -20,6 +20,9 @@ Q = FunctionSpace(lmsh.mesh, element)
 Q_v_n = Q.sub(0).collapse()
 Q_sigma_n = Q.sub(1).collapse()
 
+Q_f = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
+Q_tau = VectorFunctionSpace(lmsh.mesh, 'DG', 2)
+
 
 # 2. fields
 psi = Function(Q)
@@ -29,6 +32,9 @@ v_n_1 = Function(Q_v_n)
 
 v_l = Function(Q_v_n)
 v_tb_circle = Function(Q_v_n)
+
+f = Function(Q_f)
+tau = Function(Q_tau)
 
 nu_v_n, nu_sigma_n = TestFunctions(Q)
 
