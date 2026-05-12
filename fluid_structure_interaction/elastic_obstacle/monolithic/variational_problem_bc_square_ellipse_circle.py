@@ -139,20 +139,19 @@ F_v_n = msh.ufl_conditional_form(
              (fsp.v_n(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.dS_ellipse
          )
 
-#sign
 
 
 F_sigma_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh,
                                         rmsh.sf, 
                                         fsp.sigma_n * fsp.nu_sigma_n, 
-                                        fsp.v_n[i].dx(j) * ela.G(fsp.u_n)[j, i] * fsp.nu_sigma_n * ela.detF(fsp.u_n),
+                                        ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n),
                                         rmsh.lmsh.parameters['sub_mesh_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_1_id']
                                     )  * rmsh.dx \
     + rpam.parameters['alpha']/rmsh.r_mesh * (\
         msh.jump(fsp.sigma_n, bgeo.facet_normal)[i] * msh.jump(fsp.nu_sigma_n, bgeo.facet_normal)[i] * rmsh.dS_I[1] + \
-        (fsp.sigma_n - fsp.sigma_r) * fsp.nu_sigma_n * rmsh.ds_r \
+        fsp.sigma_n * fsp.nu_sigma_n * rmsh.ds_r \
     )
 
 
@@ -160,8 +159,6 @@ F_sigma_n = msh.ufl_conditional_form(
 # 2.2 elastic body and mesh
 
 # 2.2.1 u_n
-
-#             - (flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n_12(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[j, k]) * bgeo.facet_normal(sub_mesh_0_label)[j]) * fsp.nu_u_n(sub_mesh_0_label)[i] * rmsh.dS_ellipse \
 
 
 F_u_n = msh.ufl_conditional_form(
@@ -177,7 +174,7 @@ F_u_n = msh.ufl_conditional_form(
                 msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[k] * msh.average( ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] )
         ) * rmsh.dS_I[0] \
         - bgeo.facet_normal[k] * ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * fsp.nu_u_n[i] * rmsh.ds_circle \
-        - (flu.sigma_ale(fsp.v_n(sub_mesh_1_label), cont.pressure_scale * fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[j, k]) * bgeo.facet_normal(sub_mesh_0_label)[j]) * fsp.nu_u_n(sub_mesh_0_label)[i] * rmsh.dS_ellipse \
+        - (flu.sigma_ale(fsp.v_n(sub_mesh_1_label), cont.pressure_scale * fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j]) * bgeo.facet_normal(sub_mesh_0_label)[k]) * fsp.nu_u_n(sub_mesh_0_label)[i] * rmsh.dS_ellipse \
         + rpam.parameters['alpha']/rmsh.r_mesh * ( \
             msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[0] \
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_circle
@@ -187,14 +184,15 @@ F_u_n = msh.ufl_conditional_form(
         ) * rmsh.dS_I[1] \
         + bgeo.facet_normal[i] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * fsp.nu_u_n[k] * rmsh.ds_lrtb \
         + bgeo.facet_normal(sub_mesh_1_label)[i] * ela.P(fsp.u_n(sub_mesh_1_label), ela.K(fsp.u_n(sub_mesh_1_label), rpam.parameters['exponent']), ela.mu(fsp.u_n(sub_mesh_1_label), rpam.parameters['exponent']))[k, i] * fsp.nu_u_n(sub_mesh_1_label)[k] * rmsh.dS_ellipse \
-        + rpam.parameters['alpha_ellipse']/rmsh.r_mesh * (\
-            msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * rmsh.dS_ellipse \
-        ) \
         + rpam.parameters['alpha']/rmsh.r_mesh * (\
             msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * rmsh.dS_I[1] \
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_lrtb \
-        )
+        ) \
+        + rpam.parameters['alpha_ellipse']/rmsh.r_mesh * (\
+            msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal)[j] * rmsh.dS_ellipse \
+        ) \
 
+#sign
 
 
 # 2.2.2 u_dot_n
