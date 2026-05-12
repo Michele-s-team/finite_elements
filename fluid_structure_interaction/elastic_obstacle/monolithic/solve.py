@@ -11,6 +11,7 @@ Examples:
 import dolfin
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -19,10 +20,11 @@ sys.path.append(module_path)
 
 import continuation as cont
 import function_spaces as fsp
+import input_output as io
 import mesh.utils as msh
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
-import solution_paths as solpath
+import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
@@ -74,6 +76,11 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
 
+# 0. store metadata
+# 0.1 store mesh metadata
+
+mesh_metadata = rmsh.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
 
 #1. set the initial profiles
