@@ -18,7 +18,7 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-i, j, k, l, m = ufl.indices(5)
+i, j, k, l, m, n = ufl.indices(6)
 
 # create the path for the csv file if it does not exist
 filename_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
@@ -32,10 +32,18 @@ fieldnames = [ \
     '<<varsigma_{i 1} varsigma_{i 1}>>_{partial Omega r}',\
     '<<varsigma^2>>_{partial Omega r}',\
     '<<|u^n|^2>>_{partial Omega circle}', \
+    '<<(nu_j P_{ij} - vasigma_{ij} |F| G_{kj} nu_k) (nu_j P_{il} - vasigma_{il} |F| G_{ml} nu_m)>>_{partial Omega circle}', \
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
+
+def natural_bc_ela():
+
+    return as_tensor(
+        (bgeo.facet_normal(vp.sub_mesh_0_label)[j] * ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, j] \
+        - bgeo.facet_normal(vp.sub_mesh_1_label)[l] * ela.G(fsp.u_n(vp.sub_mesh_1_label))[l, j] * flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * ela.detF(fsp.u_n(vp.sub_mesh_1_label))),
+    (i) )
 
 # this function prints out the residuals of BCs
 def print_bcs():
@@ -53,6 +61,8 @@ def print_bcs():
             f"{msh.abs_wrt_measure(sqrt(fsp.sigma_n**2), rmsh.ds_r):.{io.number_of_decimals}e}",\
         fieldnames[5]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_circle):.{io.number_of_decimals}e}",\
+        fieldnames[6]: \
+            f"{msh.abs_wrt_measure( ( bgeo.facet_normal(vp.sub_mesh_0_label)[j] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, j] - bgeo.facet_normal(vp.sub_mesh_1_label)[l] * ela.G(fsp.u_n(vp.sub_mesh_1_label))[l, j] * flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * ela.detF(fsp.u_n(vp.sub_mesh_1_label)) ) * ( bgeo.facet_normal(vp.sub_mesh_0_label)[m] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, m] - bgeo.facet_normal(vp.sub_mesh_1_label)[n] * ela.G(fsp.u_n(vp.sub_mesh_1_label))[n, m] * flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, m] * ela.detF(fsp.u_n(vp.sub_mesh_1_label)) ), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
         }])
 
     csvfile.flush()
