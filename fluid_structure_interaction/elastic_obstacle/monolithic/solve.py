@@ -11,6 +11,7 @@ Examples:
 import dolfin
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -19,10 +20,11 @@ sys.path.append(module_path)
 
 import continuation as cont
 import function_spaces as fsp
+import input_output as io
 import mesh.utils as msh
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
-import solution_paths as solpath
+import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
@@ -74,6 +76,11 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
 
+# 0. store metadata
+# 0.1 store mesh metadata
+
+mesh_metadata = rmsh.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
 
 #1. set the initial profiles
@@ -98,10 +105,6 @@ class sigma_0_expression(UserExpression):
         return (1,)
 
 msh.interpolate_dg(fsp.v_n_1, v_0_expression())
-fsp.v_n_2.assign(fsp.v_n_1)
-
-msh.interpolate_dg(fsp.sigma_n_32, sigma_0_expression())
-fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
 
 #2. Time-stepping
@@ -129,18 +132,16 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
-    '''
+    # 
     import ufl as ufl
     import physics.fluid_mechanics as flu
     i, j, k, l, m = ufl.indices(5)
 
-    v__dummy, phi_dummy, v_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
 
-    print("||sigma_n_32|| at interface:", 
-        assemble(fsp.sigma_n_32(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
-    print("||phi|| at interface:", 
-        assemble(phi_dummy(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
+    print("||sigma_n|| at interface:", 
+        assemble(fsp.sigma_n(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
     print("||viscous traction||:", 
         assemble(flu.sigma_ale_no_pressure(
             v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
@@ -149,7 +150,9 @@ for n in range(rpam.parameters['num_steps']):
             v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
             u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
         )[i,k] * rmsh.dS_ellipse)**0.5)
-    '''
+    print("<u_n^2> at interface:", 
+        assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.dS_ellipse)**0.5)
+    # 
 
     print('... done.', flush=True)
 
@@ -157,16 +160,11 @@ for n in range(rpam.parameters['num_steps']):
     # pr_bc.print_bcs()
 
     #2.4 unpack the mixed field 
-    v__dummy, phi_dummy, v_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
-    #2.5 obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
 
     #2.6 Update fields
-    fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(v_n_dummy)
-
-    fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(u_n_dummy)
