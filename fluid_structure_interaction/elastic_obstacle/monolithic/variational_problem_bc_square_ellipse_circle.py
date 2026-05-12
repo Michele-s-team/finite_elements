@@ -63,7 +63,7 @@ class v_tb_circle_expression(UserExpression):
 class sigma_r_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['sigma_r']
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -76,21 +76,8 @@ class rho_el_expression(UserExpression):
 
     def value_shape(self):
         return (1,)
-
-# {d y_s / ds}_notes
-class dyds_ellipse_expression(UserExpression):
-    def eval(self, values, x):
-
-        s = 1 / (2 * np.pi) * cal.atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
-
-        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[1]
-
-        values[0] = t[0]
-        values[1] = t[1]
-
-    def value_shape(self):
-        return (2,)
     
+'''    
 class f_expression(UserExpression):
     def eval(self, values, x):
 
@@ -99,19 +86,18 @@ class f_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
-    
-    
+
+msh.interpolate_dg(fsp.f, f_expression())
+'''
+
 msh.interpolate_dg(fsp.v_l, v_l_expression())
 msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
 
 msh.interpolate_dg(fsp.sigma_r, sigma_r_expression())
 
-
 msh.interpolate_dg(fsp.rho_el, rho_el_expression())
 
-msh.interpolate_dg(fsp.dyds_ellipse, dyds_ellipse_expression())
 
-msh.interpolate_dg(fsp.f, f_expression())
 
 
 bcs = []
@@ -120,7 +106,7 @@ bcs = []
 
 # 2.1 fluid
 
-# 2.1.1 v_
+# 2.1.1 v_n
 
 # natural BC imposed here
 F_v_n = msh.ufl_conditional_form(
@@ -137,7 +123,7 @@ F_v_n = msh.ufl_conditional_form(
                                 ) * rmsh.dx \
         - (\
             msh.jump(fsp.nu_v_n[i], bgeo.facet_normal)[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] ) \
-            ) * rmsh.dS_I[1] \
+        ) * rmsh.dS_I[1] \
         - ( \
                 bgeo.facet_normal[l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_l + \
                 bgeo.facet_normal[l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_tb + \
@@ -152,6 +138,8 @@ F_v_n = msh.ufl_conditional_form(
         + rpam.parameters['alpha_ellipse']/rmsh.r_mesh * (\
              (fsp.v_n(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.dS_ellipse
          )
+
+#sign
 
 
 F_sigma_n = msh.ufl_conditional_form(
