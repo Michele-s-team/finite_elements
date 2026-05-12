@@ -77,10 +77,14 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
 # 0. store metadata
-# 0.1 store mesh metadata
 
+# 0.1 store mesh metadata
 mesh_metadata = rmsh.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
+
+# 0.2 store solution metadata
+solution_metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'solution_metadata.csv'), solution_metadata)
 
 
 #1. set the initial profiles
@@ -157,7 +161,7 @@ for n in range(rpam.parameters['num_steps']):
     print('... done.', flush=True)
 
     #2.3 note: print_bcs() must be before the fields update to print the correct residuals of BCs
-    # pr_bc.print_bcs()
+    pr_bc.print_bcs()
 
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )

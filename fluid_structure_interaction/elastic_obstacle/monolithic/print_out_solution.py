@@ -2,6 +2,7 @@ import csv
 from fenics import *
 import importlib
 
+import differential_geometry.manifold.geometry as geo
 import files as fi
 import function_spaces as fsp
 import input_output as io
@@ -22,8 +23,7 @@ os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
 
 csvfile = open(filename_theta_omega, 'a', newline='')
 fieldnames = [ \
-    "theta", \
-    "omega", \
+    '<<|v^n - v_l|^2>>_{partial Omega l}', \
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -78,6 +78,16 @@ def print_solution(t, step, dt):
     io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
 
 
-# print solution metadata
-io.write_parameters_to_csv_file(os.path.join(solpath.csv_files_path, "metadata.csv"), rpam.parameters)
+
+
+# this function prints out the residuals of BCs
+def print_bcs():
+
+    writer.writerows([{
+        fieldnames[0]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_l), rmsh.ds_l):.{io.number_of_decimals}e}"
+        }])
+
+    csvfile.flush()
+
 
