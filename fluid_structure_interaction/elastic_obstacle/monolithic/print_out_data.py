@@ -31,6 +31,7 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 csvfile = open(filename_data, 'a', newline='')
 fieldnames = [ \
     '<<|u_n|^2>>_{partial Omega ellipse}',
+    '<<sigma_n^2>>_{partial Omega ellipse}',
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -42,7 +43,9 @@ def print_data():
 
     writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(msh.average(geo.ufl_norm(fsp.u_n)), rmsh.dS_ellipse):.{io.number_of_decimals}e}"
+            f"{sqrt(assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.dS_ellipse)):.{io.number_of_decimals}e}",
+        fieldnames[1]: \
+            f"{sqrt(assemble((fsp.sigma_n(vp.sub_mesh_1_label))**2 * rmsh.dS_ellipse)):.{io.number_of_decimals}e}"
         }])
 
     csvfile.flush()
