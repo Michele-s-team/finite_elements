@@ -17,16 +17,6 @@ import switch_problem as swi
 rmsh = importlib.import_module(swi.rmsh)
 
 
-# create the path for the csv file if it does not exist
-filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
-os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
-
-csvfile = open(filename_theta_omega, 'a', newline='')
-fieldnames = [ \
-    '<<|v^n - v_l|^2>>_{partial Omega l}', \
-    ]
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
 
 
 def print_solution(t, step, dt):
@@ -80,14 +70,5 @@ def print_solution(t, step, dt):
 
 
 
-# this function prints out the residuals of BCs
-def print_bcs():
-
-    writer.writerows([{
-        fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_l), rmsh.ds_l):.{io.number_of_decimals}e}"
-        }])
-
-    csvfile.flush()
 
 
