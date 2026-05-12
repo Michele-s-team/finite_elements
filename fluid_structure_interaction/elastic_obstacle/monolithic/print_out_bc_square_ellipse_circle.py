@@ -34,7 +34,9 @@ fieldnames = [ \
     '<<|u^n|^2>>_{partial Omega circle}', \
     '<<(nu_j P_{ij} - vasigma_{ij} |F| G_{kj} nu_k) (nu_j P_{il} - vasigma_{il} |F| G_{ml} nu_m)>>_{partial Omega circle}', \
     '<<|u^n|^2>>_{partial Omega square}', \
-    '<<[u^n_i]_j [u^n_i]_j>>_{partial Omega ellipse}'
+    '<<[u^n_i]_j [u^n_i]_j>>_{partial Omega ellipse}',\
+    '<<|\dot{u}^n|^2>>_{partial Omega square}', \
+    '<<[\dot{u}^n_i]_j [\dot{u}^n_i]_j>>_{partial Omega ellipse}'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -62,7 +64,11 @@ def print_bcs():
         fieldnames[7]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_lrtb):.{io.number_of_decimals}e}", \
         fieldnames[8]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{io.number_of_decimals}e}"
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
+        fieldnames[9]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_n), rmsh.ds_lrtb):.{io.number_of_decimals}e}", \
+        fieldnames[10]: \
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{io.number_of_decimals}e}"
         }])
 
     csvfile.flush()
