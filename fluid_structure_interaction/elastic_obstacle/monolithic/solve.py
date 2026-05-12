@@ -23,6 +23,7 @@ import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
 import print_out_ic as pr_ic
+import print_out_data as pr_data
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -164,6 +165,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.3 note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
     pr_bc.print_bcs()
     pr_ic.print_ics()
+    pr_data.print_data()
 
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
