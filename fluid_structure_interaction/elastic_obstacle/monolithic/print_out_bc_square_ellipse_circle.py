@@ -33,6 +33,7 @@ fieldnames = [ \
     '<<varsigma^2>>_{partial Omega r}',\
     '<<|u^n|^2>>_{partial Omega circle}', \
     '<<(nu_j P_{ij} - vasigma_{ij} |F| G_{kj} nu_k) (nu_j P_{il} - vasigma_{il} |F| G_{ml} nu_m)>>_{partial Omega circle}', \
+    '<<|u^n|^2>>_{partial Omega square}', \
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -63,6 +64,8 @@ def print_bcs():
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_circle):.{io.number_of_decimals}e}",\
         fieldnames[6]: \
             f"{msh.abs_wrt_measure( ( bgeo.facet_normal(vp.sub_mesh_0_label)[j] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, j] - ( flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] ) * bgeo.facet_normal(vp.sub_mesh_0_label)[k] ) ) * ( bgeo.facet_normal(vp.sub_mesh_0_label)[l] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, l] - ( flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, l] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[m, l] ) *  bgeo.facet_normal(vp.sub_mesh_0_label)[m] ) ), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
+        fieldnames[7]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_lrtb):.{io.number_of_decimals}e}",\
         }])
 
     csvfile.flush()
