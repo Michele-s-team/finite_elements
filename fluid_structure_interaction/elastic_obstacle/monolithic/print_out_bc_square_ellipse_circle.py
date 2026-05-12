@@ -28,7 +28,8 @@ csvfile = open(filename_bcs, 'a', newline='')
 fieldnames = [ \
     '<<|v^n - v_l|^2>>_{partial Omega l}', \
     '<<|v^n - v_tb|^2>>_{partial Omega tb}',\
-    '<<|v^{n square} - average(u_dot_n)|^2>>_{partial Omega ellipse}'
+    '<<|v^{n square} - average(u_dot_n)|^2>>_{partial Omega ellipse}',\
+    '<<varsigma_{i 1} varsigma_{i 1}>>_{partial Omega r}'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -44,6 +45,8 @@ def print_bcs():
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_tb), rmsh.ds_tb):.{io.number_of_decimals}e}",\
         fieldnames[2]: \
             f"{msh.abs_wrt_measure(sqrt((fsp.v_n(vp.sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * (fsp.v_n(vp.sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i]))), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
+        fieldnames[3]: \
+            f"{msh.abs_wrt_measure(sqrt(flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 0] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 0]), rmsh.ds_r):.{io.number_of_decimals}e}",\
         }])
 
     csvfile.flush()
