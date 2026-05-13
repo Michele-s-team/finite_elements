@@ -7,9 +7,7 @@ import files as fi
 import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
-import os
-import parameters.read.solution as rpam
-import runtime_arguments as rarg
+import physics.elasticity as ela
 import solution_paths as solpath
 import switch_problem as swi
 
@@ -24,7 +22,7 @@ def print_solution(t, step, dt):
     #1 unpack the mixed field 
 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
-
+    det_F_n = project(ela.detF(u_n_dummy), fsp.Q_det_F)
 
     #2 write to xdmf files
 
@@ -33,6 +31,9 @@ def print_solution(t, step, dt):
 
     fi.xdmffile_u_n.write(u_n_dummy, t)
     fi.xdmffile_u_dot_n.write(u_dot_n_dummy, t)
+
+    fi.xdmffile_det_F_n.write(det_F_n, t)
+
 
 
     # 3 write snapshots
@@ -55,6 +56,10 @@ def print_solution(t, step, dt):
     
     io.full_print_deformed(sigma_n_dummy, u_n_dummy, 'sigma_n_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+    
+    # 3.3 average of det(F)
+    io.full_print(det_F_n, 'det_F_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
 
 
 

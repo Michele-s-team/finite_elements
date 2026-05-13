@@ -9,3 +9,6 @@ xdmffile_sigma_n = XDMFFile(os.path.join(rarg.args.output_directory, "sigma_n.xd
 
 xdmffile_u_n = XDMFFile(os.path.join(rarg.args.output_directory, "u_n.xdmf"))
 xdmffile_u_dot_n = XDMFFile(os.path.join(rarg.args.output_directory, "u_dot_n.xdmf"))
+
+xdmffile_det_F_n = XDMFFile(os.path.join(rarg.args.output_directory, "det_F_n.xdmf"))
+

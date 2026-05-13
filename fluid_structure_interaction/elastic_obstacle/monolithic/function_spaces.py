@@ -45,6 +45,7 @@ Q_u_n = Q.sub(2).collapse()
 Q_u_dot_n = Q.sub(3).collapse()
 
 Q_rho_el = FunctionSpace(lmsh.mesh, 'DG', 1)
+Q_det_F = FunctionSpace(lmsh.mesh, 'DG', 1)
 
 
 
