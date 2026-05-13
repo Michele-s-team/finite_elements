@@ -1,8 +1,13 @@
+To try:
 - Go monolithic for NS — eliminate phi as an independent field, solve (v, p) directly so the pressure
 - wrong definition of def Q(...)
 - implement inside the same equations you implement outside
 - you use lagged u_n_1 u_n_2 in the convective term
 - use nonlinear convective term (fsp.V[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.V[i]).dx(j) to avoid extrapolation of v_n from previous steps in the convective term
 - replace quantities that are continuous (such as u_n) with their average
-- in some terms you may need to add  ela.detF(fsp.u_n) if it is not there 
 - move all dts to numerator
+
+
+
+Tried and not fixing anything
+- in some terms you may need to add  ela.detF(fsp.u_n) if it is not there 
