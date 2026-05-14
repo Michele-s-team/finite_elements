@@ -92,3 +92,8 @@ nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
 J_psi = TrialFunction(Q)
 
 
+# 3.5  function assigner for mixed space
+
+assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n])
+
+
