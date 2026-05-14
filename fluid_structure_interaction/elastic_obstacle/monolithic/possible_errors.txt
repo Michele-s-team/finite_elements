@@ -2,7 +2,6 @@ To try:
 - Go monolithic for NS — eliminate phi as an independent field, solve (v, p) directly so the pressure
 - wrong definition of def Q(...)
 - implement inside the same equations you implement outside
-- you use lagged u_n_1 u_n_2 in the convective term
 - replace quantities that are continuous (such as u_n) with their average
 - move all dts to numerator
 
@@ -10,3 +9,5 @@ To try:
 
 Tried and not fixing anything
 - in some terms you may need to add  ela.detF(fsp.u_n) if it is not there 
+- you use lagged u_n_1 u_n_2 in the convective term
+- try finer resolution at dS_ellipse
