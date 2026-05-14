@@ -60,14 +60,13 @@ v_n, sigma_n, u_n, u_dot_n = split(psi)
 v_n_1 = Function(Q_v_n)
 
 u_n_1 = Function(Q_u_n)
-u_n_2 = Function(Q_u_n)
 
 u_dot_n_1 = Function(Q_u_dot_n)
-u_dot_n_2 = Function(Q_u_dot_n)
 
 rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
+
 
 
 # velocity profiles for the BCs
@@ -82,5 +81,7 @@ nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
+
+
 
 

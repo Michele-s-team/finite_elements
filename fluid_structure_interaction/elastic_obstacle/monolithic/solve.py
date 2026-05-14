@@ -76,6 +76,37 @@ vp = importlib.import_module(swi.vp)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
+'''
+# test read iniital profiles - start
+import solution_paths as solpath
+import numpy as np
+
+
+class t_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(x[0]-x[1])
+        values[1] = 1
+        values[2] = np.cos(x[0]+x[1]**2)
+        values[3] = 3
+
+    def value_shape(self):
+        return (2, 2)
+    
+msh.interpolate_dg(fsp.t_output, t_expression())
+
+io.full_print(fsp.t_output, 't_output', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+
+
+io.read_dg_field_from_csv_file(f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution/snapshots/csv/t_output.csv', fsp.t_input)
+
+io.full_print(fsp.t_input, 't_input', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+
+sys.exit(1)
+# test read initial profile - end
+'''
 
 
 # 0. store metadata
@@ -90,6 +121,10 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'soluti
 
 
 #1. set the initial profiles
+
+# 1.1 set from expressions
+'''
+# 
 
 # trial analytical expression for a vector
 class v_0_expression(UserExpression):
@@ -111,6 +146,17 @@ class sigma_0_expression(UserExpression):
         return (1,)
 
 msh.interpolate_dg(fsp.v_n_1, v_0_expression())
+# 
+'''
+
+# 1.2 set from files
+# 
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'v_n_{rpam.parameters["ic_n"]}.csv'), fsp.v_n_1)
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_n_1)
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_dot_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_dot_n_1)
+# 
+
+
 
 
 #2. Time-stepping
@@ -174,10 +220,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.6 Update fields
     fsp.v_n_1.assign(v_n_dummy)
 
-    fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(u_n_dummy)
-
-    fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
     # 2.7 print the solution

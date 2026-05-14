@@ -1,5 +1,5 @@
 '''
-this module solves for the fields v_n, sigma_n_12, u_n, u_dot_n which define the state of the whole system
+this module solves for the fields v_n, sigma_n, u_n, u_dot_n which define the state of the whole system
 '''
 
 from fenics import *
