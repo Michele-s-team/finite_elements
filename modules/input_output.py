@@ -6,6 +6,7 @@ import glob
 import importlib
 import numpy as np
 import os
+import pandas as pd
 import shutil
 import sys
 
@@ -814,7 +815,8 @@ Input values;
     - 'f': the field in which the result will be written
 '''
 def read_dg_field_from_csv_file(filepath, f):
-    import pandas as pd
+
+    print(f'path = {filepath}')
 
     # function space, value_shape, value_size and mesh relative to the field 'f'
     Q          = f.function_space()

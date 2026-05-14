@@ -122,6 +122,8 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'soluti
 
 #1. set the initial profiles
 
+# 1.1 set from expressions
+'''
 # trial analytical expression for a vector
 class v_0_expression(UserExpression):
     def eval(self, values, x):
@@ -142,6 +144,13 @@ class sigma_0_expression(UserExpression):
         return (1,)
 
 msh.interpolate_dg(fsp.v_n_1, v_0_expression())
+'''
+
+# 1.2 set from files
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'sigma_n_{rpam.parameters["ic_n"]}.csv'), fsp.sigma_input)
+
+
+sys.exit(1)
 
 
 #2. Time-stepping
