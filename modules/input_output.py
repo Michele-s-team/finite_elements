@@ -825,8 +825,6 @@ def read_dg_field_from_csv_file(filepath, f):
     # read the csv file and store it in a pandas data frame
     f_data = pd.read_csv(filepath)
 
-    print(f'f_data = {f_data}')
-
     # match column names used in print_to_csvfile
     column_names = ['f'] if value_size == 1 else [f'f:{j}' for j in range(value_size)]
 
