@@ -123,7 +123,6 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'soluti
 #1. set the initial profiles
 
 # 1.1 set from expressions
-'''
 # 
 
 # trial analytical expression for a vector
@@ -147,8 +146,8 @@ class sigma_0_expression(UserExpression):
 
 msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 # 
-'''
 
+'''
 # 1.2 set from files
 # 
 io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'v_n_{rpam.parameters["ic_n"]}.csv'), fsp.v_input)
@@ -165,7 +164,7 @@ fsp.u_dot_n_1.assign(fsp.u_dot_input)
 fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
 #
-# 
+# '''
 
 
 
