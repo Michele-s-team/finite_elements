@@ -806,11 +806,12 @@ def read_function_expresssion(function_string):
 
     return f
 
+
 '''
-read a field (scalar, vector or tensor) from h5 file
+read a DG field (scalar, vector or tensor) from file. This works only if the field has been written to csv file with the method `print_to_csvfile` 
 Input values; 
-
-
+    - 'filepath': path, filename and extension of the csv file
+    - 'f': the field in which the result will be written
 '''
 def read_dg_field_from_csv_file(filepath, f):
     import pandas as pd
@@ -835,13 +836,42 @@ def read_dg_field_from_csv_file(filepath, f):
 
     row_idx = 0
     for cell in cells(mesh):
+        # loop through cells in the mesh
+
+        '''
+        cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+        [
+            id_f_0_on_DOF_0, 
+            id_f_0_on_ DOF_1,
+            ...,
+            id_f_0_on_DOF_{n_nodes-1},
+
+            id_f_1_on_DOF_0, 
+            id_f_1_on_ DOF_1,
+            ...,
+            id_f_1_on_DOF_{n_nodes-1},
+
+            ...
+        ]
+        where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words, 
+        cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the tensor 'f' sitting on ith DOF in the cell 'cell']
+        '''
         cell_dofs = Q.dofmap().cell_dofs(cell.index())
+
         n_nodes   = len(cell_dofs) // value_size
+
         for i in range(n_nodes):
+            # loop through nodes in `cell`
+
             for j in range(value_size):
+                # loop through components of `f`
+
+                # write into f_values the value of the field by extracting the row and column in f_data, i.e., in the csv file, following the same structure in which the field has been written to csv file by `print_to_csvfile`
                 f_values[cell_dofs[j * n_nodes + i]] = f_data.iloc[row_idx][column_names[j]]
+
             row_idx += 1
 
+    # write f_values into f.vector
     f.vector()[:] = f_values
     f.vector().apply('insert')
 
