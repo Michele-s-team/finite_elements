@@ -70,8 +70,12 @@ rho_el = Function(Q_rho_el)
 sigma_r = Function(Q_sigma_n)
 
 # 3.1.1 fields for reading from file
+
 sigma_input = Function(Q_sigma_n)
 v_input = Function(Q_v_n)
+
+u_input = Function(Q_u_n)
+u_dot_input = Function(Q_u_dot_n)
 
 
 # velocity profiles for the BCs
