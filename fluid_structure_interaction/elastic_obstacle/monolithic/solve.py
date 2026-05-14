@@ -225,9 +225,8 @@ for n in range(rpam.parameters['num_steps']):
 
     #2.6 Update fields
     fsp.v_n_1.assign(v_n_dummy)
-
+    
     fsp.u_n_1.assign(u_n_dummy)
-
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
     # 2.7 print the solution
