@@ -77,6 +77,13 @@ vp = importlib.import_module(swi.vp)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
+# test read iniital profiles - start
+HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution_reproduce_fig_10_13012025_220000/snapshots/sigma_n_{10}.h5', "r").read(fsp.sigma_n, "/f")
+
+sys.exit(1)
+# test read initial profile - end
+
+
 
 # 0. store metadata
 
