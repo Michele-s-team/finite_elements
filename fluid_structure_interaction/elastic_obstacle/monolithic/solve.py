@@ -78,7 +78,12 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
 # test read iniital profiles - start
-HDF5File(MPI.comm_world, f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution_reproduce_fig_10_13012025_220000/snapshots/sigma_n_{10}.h5', "r").read(fsp.sigma_n, "/f")
+import solution_paths as solpath
+
+io.read_dg_field_from_csv_file(f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution_reproduce_fig_10_13012025_220000/snapshots/csv/sigma_n_{10}.csv', fsp.sigma_input)
+
+io.full_print(fsp.sigma_input, 'sigma_output', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
 
 sys.exit(1)
 # test read initial profile - end

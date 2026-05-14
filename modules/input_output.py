@@ -805,3 +805,43 @@ def read_function_expresssion(function_string):
         return [eval(expr, env) for expr in parts]
 
     return f
+
+'''
+read a field (scalar, vector or tensor) from h5 file
+Input values; 
+
+
+'''
+def read_dg_field_from_csv_file(filepath, f):
+    import pandas as pd
+
+    # function space, value_shape, value_size and mesh relative to the field 'f'
+    Q          = f.function_space()
+    value_shape = Q.ufl_element().value_shape()
+    value_size  = int(np.prod(value_shape)) if value_shape else 1
+    mesh        = Q.mesh()
+
+    # read the csv file and store it in a pandas data frame
+    f_data = pd.read_csv(filepath)
+
+    print(f'f_data = {f_data}')
+
+    # match column names used in print_to_csvfile
+    column_names = ['f'] if value_size == 1 else [f'f:{j}' for j in range(value_size)]
+
+    # vector of DOF values of the field 'f'
+    f_values  = f.vector().get_local()
+
+
+    row_idx = 0
+    for cell in cells(mesh):
+        cell_dofs = Q.dofmap().cell_dofs(cell.index())
+        n_nodes   = len(cell_dofs) // value_size
+        for i in range(n_nodes):
+            for j in range(value_size):
+                f_values[cell_dofs[j * n_nodes + i]] = f_data.iloc[row_idx][column_names[j]]
+            row_idx += 1
+
+    f.vector()[:] = f_values
+    f.vector().apply('insert')
+

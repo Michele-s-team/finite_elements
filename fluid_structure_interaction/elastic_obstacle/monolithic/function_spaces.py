@@ -69,6 +69,9 @@ rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
 
+# 3.1.1 fields for reading from file
+sigma_input = Function(Q_sigma_n)
+
 
 # velocity profiles for the BCs
 f = Function(Q_v_n)
