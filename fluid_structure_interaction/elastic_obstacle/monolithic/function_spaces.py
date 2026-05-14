@@ -67,13 +67,6 @@ rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
 
-# 3.1.1 fields for reading from file
-
-sigma_input = Function(Q_sigma_n)
-v_input = Function(Q_v_n)
-
-u_input = Function(Q_u_n)
-u_dot_input = Function(Q_u_dot_n)
 
 
 # velocity profiles for the BCs
@@ -90,8 +83,5 @@ nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
 J_psi = TrialFunction(Q)
 
 
-# 3.5  function assigner for mixed space
-
-assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n])
 
 
