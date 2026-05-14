@@ -67,6 +67,13 @@ rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
 
+# 3.2.1 fields to store initial condition read from file
+
+v_input = Function(Q_v_n)
+sigma_input = Function(Q_sigma_n)
+u_input = Function(Q_u_n)
+u_dot_input = Function(Q_u_dot_n)
+
 
 
 # velocity profiles for the BCs
@@ -82,6 +89,8 @@ nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
 
+# 3.5 function assigner
 
+assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n])
 
 

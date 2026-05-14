@@ -151,9 +151,20 @@ msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 
 # 1.2 set from files
 # 
-io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'v_n_{rpam.parameters["ic_n"]}.csv'), fsp.v_n_1)
-io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_n_1)
-io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_dot_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_dot_n_1)
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'v_n_{rpam.parameters["ic_n"]}.csv'), fsp.v_input)
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'sigma_n_{rpam.parameters["ic_n"]}.csv'), fsp.sigma_input)
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_input)
+io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_dot_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_dot_input)
+
+# 1.2.1 set v_n_1, u_n_1 and u_dot_n_1 according to the initial condition: in this way, the dynamics will start from where it left off
+fsp.v_n_1.assign(fsp.v_input)
+fsp.u_n_1.assign(fsp.u_input)
+fsp.u_dot_n_1.assign(fsp.u_dot_input)
+
+# 1.2.2 write the read initial condition into psi to let the solver start from a good initial point
+fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
+
+#
 # 
 
 
