@@ -35,7 +35,7 @@ element = MixedElement([D_v_n, D_sigma_n, D_u, D_u_dot])
 #2 define function spaces
 
 #2.1 global function space
-Q = FunctionSpace(lmsh.mesh, element)
+Q = FunctionSpace(lmsh.mesh[0], element)
 
 #2.2 collapsed function spaces
 Q_v_n = Q.sub(0).collapse()
@@ -44,8 +44,8 @@ Q_sigma_n = Q.sub(1).collapse()
 Q_u_n = Q.sub(2).collapse()
 Q_u_dot_n = Q.sub(3).collapse()
 
-Q_rho_el = FunctionSpace(lmsh.mesh, 'DG', 1)
-Q_det_F = FunctionSpace(lmsh.mesh, 'DG', 1)
+Q_rho_el = FunctionSpace(lmsh.mesh[0], 'DG', 1)
+Q_det_F = FunctionSpace(lmsh.mesh[0], 'DG', 1)
 
 
 
