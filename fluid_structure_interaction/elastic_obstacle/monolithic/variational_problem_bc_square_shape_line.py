@@ -14,10 +14,11 @@ import differential_geometry.manifold.geometry as geo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
 import physics.elasticity as ela
-import function_spaces as fsp
 import parameters.read.solution as rpam
 import switch_problem as swi
 
+
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l, m = ufl.indices(5)

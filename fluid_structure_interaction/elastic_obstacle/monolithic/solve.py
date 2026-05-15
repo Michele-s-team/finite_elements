@@ -20,7 +20,6 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
-import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
 import print_out_ic as pr_ic
@@ -70,6 +69,7 @@ PETScOptions.set('snes_max_funcs', 1000000)
 
 '''
 
+fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)

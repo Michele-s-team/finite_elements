@@ -4,14 +4,13 @@ import importlib
 
 import differential_geometry.manifold.geometry as geo
 import files as fi
-import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
 import physics.elasticity as ela
 import solution_paths as solpath
 import switch_problem as swi
 
-
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 
