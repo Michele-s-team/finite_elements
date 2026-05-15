@@ -8,6 +8,7 @@ if rarg.args.problem == 'square_ellipse_circle':
     vp = 'variational_problem_bc_square_ellipse_circle'
     prout_bc = 'print_out_bc_square_ellipse_circle'
     prout_ic = 'print_out_ic_square_ellipse_circle'
+    prout_da = 'print_out_data_square_ellipse_circle'
 
 elif rarg.args.problem == 'square_shape_line':
     fsp = 'function_spaces_square_shape_line'
@@ -15,5 +16,6 @@ elif rarg.args.problem == 'square_shape_line':
     vp = 'variational_problem_bc_square_shape_line'
     prout_bc = 'print_out_bc_square_shape_line'
     prout_ic = 'print_out_ic_square_shape_line'
+    prout_da = 'print_out_data_square_shape_line'
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')

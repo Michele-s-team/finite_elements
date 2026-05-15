@@ -22,7 +22,6 @@ sys.path.append(module_path)
 import continuation as cont
 import input_output as io
 import mesh.utils as msh
-import print_out_data as pr_data
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -71,6 +70,7 @@ PETScOptions.set('snes_max_funcs', 1000000)
 fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
+pr_da = importlib.import_module(swi.prout_da)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -222,7 +222,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.3 note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
     pr_bc.print_bcs()
     pr_ic.print_ics()
-    pr_data.print_data()
+    pr_da.print_data()
 
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
