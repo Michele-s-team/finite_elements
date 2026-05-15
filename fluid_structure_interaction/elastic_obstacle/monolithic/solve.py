@@ -22,7 +22,6 @@ sys.path.append(module_path)
 import continuation as cont
 import input_output as io
 import mesh.utils as msh
-import print_out_ic as pr_ic
 import print_out_data as pr_data
 import print_out_solution as pr_sol
 import parameters.read.solution as rpam
@@ -71,6 +70,7 @@ PETScOptions.set('snes_max_funcs', 1000000)
 
 fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_ic = importlib.import_module(swi.prout_ic)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
