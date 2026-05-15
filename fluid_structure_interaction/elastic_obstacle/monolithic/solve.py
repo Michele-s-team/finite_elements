@@ -22,7 +22,6 @@ sys.path.append(module_path)
 import continuation as cont
 import input_output as io
 import mesh.utils as msh
-import print_out_solution as pr_sol
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -71,6 +70,7 @@ fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
+pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
