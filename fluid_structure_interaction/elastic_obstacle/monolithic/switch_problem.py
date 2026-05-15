@@ -3,11 +3,13 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_ellipse_circle':
+    fsp = 'function_spaces_square_ellipse_circle'
     rmsh = 'mesh.read.square_ellipse_circle'
     vp = 'variational_problem_bc_square_ellipse_circle'
     prout_bc = 'print_out_bc_square_ellipse_circle'
 
 elif rarg.args.problem == 'square_shape_line':
+    fsp = 'function_spaces_square_shape_line'
     rmsh = 'mesh.read.square_shape_line'
     vp = 'variational_problem_bc_square_shape_line'
     prout_bc = 'print_out_bc_square_shape_line'
