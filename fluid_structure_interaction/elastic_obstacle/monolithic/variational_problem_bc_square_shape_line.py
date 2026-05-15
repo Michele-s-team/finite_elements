@@ -24,7 +24,7 @@ i, j, k, l, m = ufl.indices(5)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
-sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.sf, rmsh.lmsh.parameters["sub_mesh_0_id"], rmsh.lmsh.parameters["sub_mesh_1_id"], rmsh.ds_mesh[0]('dS_shape'))
+sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf, rmsh.lmsh.parameters["sub_mesh_0_id"], rmsh.lmsh.parameters["sub_mesh_1_id"], rmsh.ds_mesh[0]('dS_shape'))
 
 
 
@@ -32,7 +32,7 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.sf, rms
 import input_output as io 
 import solution_paths as solpath
 
-n_1 = bgeo.field_facet_normal(bgeo.facet_normal(sub_mesh_1_label), rmsh.lmsh.mesh, rmsh.ds_mesh[0]('dS_shape'), interior=True)
+n_1 = bgeo.field_facet_normal(bgeo.facet_normal(sub_mesh_1_label), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]('dS_shape'), interior=True)
 
 io.full_print(n_1, 'n_1', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
@@ -110,7 +110,7 @@ bcs = []
 
 # natural BC imposed here
 F_v_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         fsp.v_n[i] * fsp.nu_v_n[i], 
                                         ( \
@@ -142,7 +142,7 @@ F_v_n = msh.ufl_conditional_form(
 
 
 F_sigma_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         fsp.sigma_n * fsp.nu_sigma_n, 
                                         ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n),
@@ -162,7 +162,7 @@ F_sigma_n = msh.ufl_conditional_form(
 
 
 F_u_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         fsp.rho_el / dt * (fsp.u_dot_n[i] - fsp.u_dot_n_1[i]) * fsp.nu_u_n[i] \
                                         + ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_n[i].dx(k)), 
@@ -208,7 +208,7 @@ def Q(u, u_dot):
 
 
 F_u_dot_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         (fsp.u_n[i] - fsp.u_n_1[i] - fsp.u_dot_n[i] * dt) * fsp.nu_u_dot_n[i], 
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
