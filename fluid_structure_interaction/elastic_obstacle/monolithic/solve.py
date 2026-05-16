@@ -231,7 +231,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
     # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if False:
+    if True:
         # the mesh quality got below the threshold -> remesh 
 
 
@@ -299,17 +299,17 @@ for n in range(rpam.parameters['num_steps']):
         pr_da = importlib.reload(pr_da)
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
-        '''
-                msh.transfer_dg(v_n_old, fsp.v_n, u_n_old)
-                msh.transfer_dg(v_n_1_old, fsp.v_n_1, u_n_old)
+        
+        msh.transfer(v_n_old, fsp.v_input, u_n_old)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-                msh.transfer_dg(sigma_n_old, fsp.sigma_n, u_n_old)
+        msh.transfer(sigma_n_old, fsp.sigma_input, u_n_old)
 
-                fsp.u_n.assign(Constant((0, 0)))
+        fsp.u_input.assign(Constant((0, 0)))
 
-                msh.transfer_dg(u_dot_n_old, fsp.u_dot_n, u_n_old)
-                msh.transfer_dg(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
-        '''
+        msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
+        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+
 
         #9 clean up
 
