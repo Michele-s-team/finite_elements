@@ -223,7 +223,10 @@ for n in range(rpam.parameters['num_steps']):
     #2.3 print BCs, ICs and useful data such as mesh quality. Note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
 
     _, _, u_n_dummy, _ = fsp.psi.split( deepcopy=True )
-    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy))
+    deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy)
+    msh_qu.quality = msh.custom_mesh_quality(deformed_mesh)
+
+    del u_n_dummy, deformed_mesh
 
     pr_bc.print_bcs()
     pr_ic.print_ics()
@@ -337,6 +340,10 @@ for n in range(rpam.parameters['num_steps']):
 
     fsp.u_n_1.assign(u_n_dummy)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
+
+    # 2.6.2 free memory
+    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy
+
 
     # 2.7 print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
