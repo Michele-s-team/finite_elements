@@ -13,6 +13,7 @@ import physics.elasticity as ela
 import physics.fluid_mechanics as flu
 import differential_geometry.manifold.geometry as geo
 import input_output as io
+import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -33,6 +34,7 @@ fieldnames = [ \
     '<<|u_n|^2>>_{partial Omega ellipse}',
     '<<sigma_n^2>>_{partial Omega ellipse}',
     '<<varsigma_no_pressure_{ij} varsigma_no_pressure_{ij}>>_{partial Omega ellipse}',
+    'mesh_quality'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -47,6 +49,8 @@ def print_data():
             f"{sqrt(assemble((fsp.sigma_n(vp.sub_mesh_1_label))**2 * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
         fieldnames[2]: \
             f"{sqrt(assemble(flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
+        fieldnames[3]: \
+            f"{msh_qu.quality:.{io.number_of_decimals}e}",
         }])
 
     csvfile.flush()

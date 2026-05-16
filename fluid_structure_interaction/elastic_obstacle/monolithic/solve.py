@@ -22,6 +22,7 @@ sys.path.append(module_path)
 import continuation as cont
 import input_output as io
 import mesh.utils as msh
+import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -80,7 +81,6 @@ msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.in
 
 print(f'... done.')
 
-sys.exit(1)
 
 fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -189,8 +189,10 @@ fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_d
 #2. Time-stepping
 
 print("Starting time iteration ...", flush=True)
+
 t = 0
 step = 0
+
 for n in range(rpam.parameters['num_steps']):
 
     #2.1 Update current time
@@ -211,34 +213,17 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
-    '''  # 
-        import ufl as ufl
-        import physics.fluid_mechanics as flu
-        i, j, k, l, m = ufl.indices(5)
-
-        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
-
-
-        print("||sigma_n|| at interface:", 
-            assemble(fsp.sigma_n(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
-        print("||viscous traction||:", 
-            assemble(flu.sigma_ale_no_pressure(
-                v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
-                u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
-            )[i,k] * flu.sigma_ale_no_pressure(
-                v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
-                u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
-            )[i,k] * rmsh.dS_ellipse)**0.5)
-        print("<u_n^2> at interface:", 
-            assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.dS_ellipse)**0.5)
-        # 
-    '''
     print('... done.', flush=True)
 
-    #2.3 note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
+    #2.3 print BCs, ICs and useful data such as mesh quality. Note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
+
+    _, _, u_n_dummy, _ = fsp.psi.split( deepcopy=True )
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy))
+
     pr_bc.print_bcs()
     pr_ic.print_ics()
     pr_da.print_data()
+
 
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
