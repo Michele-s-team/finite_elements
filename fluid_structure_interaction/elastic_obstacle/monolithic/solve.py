@@ -225,9 +225,28 @@ for n in range(rpam.parameters['num_steps']):
     pr_da.print_data()
 
 
+    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+        # the mesh quality got below the threshold -> remesh 
+
+        # 1.transfer fields
+
+        # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
+
+        v_n_old = Function(fsp.Q_v_n)
+        v_n_1_old = Function(fsp.Q_v_n)
+        
+        sigma_n_old = Function(fsp.Q_sigma_n)
+
+        u_n_old = Function(fsp.Q_u_n)
+        u_dot_n_old = Function(fsp.Q_u_dot_n)
+
+        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+
+
+
+
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
-
 
     #2.6 Update fields
     fsp.v_n_1.assign(v_n_dummy)
