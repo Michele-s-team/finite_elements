@@ -83,7 +83,9 @@ msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.in
 
 print(f'... done.')
 
-
+# first load of modules
+import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
 fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
@@ -284,6 +286,18 @@ for n in range(rpam.parameters['num_steps']):
 
         #4. generate the mesh with the new shape_coordinates
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+        #5. reload modules so everything is updated according to the mesh change
+        importlib.reload(geo)
+        importlib.reload(rmsh.lmsh)
+        importlib.reload(bgeo)
+        fsp = importlib.reload(fsp)
+        rmsh = importlib.reload(rmsh)
+        pr_bc = importlib.reload(pr_bc)
+        pr_ic = importlib.reload(pr_ic)
+        pr_da = importlib.reload(pr_da)
+
+        #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
