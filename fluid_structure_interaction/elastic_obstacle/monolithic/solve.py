@@ -12,6 +12,7 @@ Examples:
 import colorama as col
 import dolfin
 from fenics import *
+import gc
 import importlib
 import numpy as np
 import os
@@ -309,6 +310,11 @@ for n in range(rpam.parameters['num_steps']):
                 msh.transfer_dg(u_dot_n_old, fsp.u_dot_n, u_n_old)
                 msh.transfer_dg(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
         '''
+
+        #9 clean up
+
+        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old
+        gc.collect()
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
