@@ -3129,3 +3129,67 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
     
     return result
 
+
+"""
+Transfer DG field f (on old mesh) to DG field g (on new mesh),
+using displacement u to map the geometry, and exploiting the fact
+that both fields are continuous within the tagged regions.
+
+The key steps are:
+    1. Push f to the deformed geometry via u: f_def lives on mesh with
+        coordinates x + u(x), i.e., the same geometry as the new mesh.
+        Within each tagged region, f is continuous, so evaluating f_def
+        at DOF coordinates of g is unambiguous (no DG boundary issue).
+    2. For each DOF of g in a tagged region, evaluate f_def there and
+        write the result into g, following the same DOF layout as interpolate_dg.
+
+Args:
+    f          : DG Function on old mesh (continuous within each tagged region)
+    g          : DG Function on new mesh (continuous within each tagged region)
+    u          : displacement field on old mesh (maps old mesh -> deformed)
+    sf_g       : MeshFunction tagging cells of the NEW mesh by region
+    region_ids : list/set of region IDs where both f and g are continuous
+"""
+def transfer_dg(f, g, u, sf, region_ids):
+
+
+    # 1. push f onto the deformed geometry (same DOF values as f,
+    #    but the underlying mesh has coordinates x + u(x))
+    f_def = fu.deform_function(f, u)
+    f_def.set_allow_extrapolation(True)
+
+    Q_g = g.function_space()
+    element = Q_g.ufl_element()
+    value_shape = element.value_shape()
+    value_size = int(np.prod(value_shape)) if value_shape else 1
+
+    dof_coords = Q_g.tabulate_dof_coordinates()
+    g_values = g.vector().get_local()
+    dofmap_g = Q_g.dofmap()
+
+    for cell in cells(Q_g.mesh()):
+
+        if sf[cell] not in region_ids:
+            continue
+
+        cell_dofs = dofmap_g.cell_dofs(cell.index())
+        n_nodes = len(cell_dofs) // value_size
+
+        # cell_dofs layout (same convention as interpolate_dg):
+        #   cell_dofs[j * n_nodes + i] = global index of component j at node i
+        # so cell_dofs[:n_nodes] gives the unique spatial node indices
+        cell_dofs_unique = cell_dofs[:n_nodes]
+
+        for i in range(n_nodes):
+            
+            x = dof_coords[cell_dofs_unique[i]]
+
+            # evaluate f_def at x_new — unambiguous because f is continuous
+            # within this region, so there is no DG jump to worry about
+            vals = np.atleast_1d(f_def(x[:2]))
+
+            for j in range(value_size):
+                g_values[cell_dofs[j * n_nodes + i]] = vals[j]
+
+    g.vector().set_local(g_values)
+    g.vector().apply("insert")
