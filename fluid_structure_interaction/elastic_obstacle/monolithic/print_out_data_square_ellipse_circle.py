@@ -11,7 +11,6 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import physics.elasticity as ela
 import physics.fluid_mechanics as flu
-import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.utils as msh
@@ -19,6 +18,7 @@ import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 

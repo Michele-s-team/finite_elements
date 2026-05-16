@@ -6,6 +6,7 @@ run with:
 
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line $MESH_PATH $SOLUTION_PATH
 """
 
 import dolfin
@@ -19,16 +20,15 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
-import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
-import print_out_ic as pr_ic
-import print_out_data as pr_data
-import print_out_solution as pr_sol
+import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
+
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
@@ -69,7 +69,24 @@ PETScOptions.set('snes_max_funcs', 1000000)
 
 '''
 
+
+print(f'Generating initial mesh ...')
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
+
+shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+
+# generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+print(f'... done.')
+
+
+fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_ic = importlib.import_module(swi.prout_ic)
+pr_da = importlib.import_module(swi.prout_da)
+pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -172,8 +189,10 @@ fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_d
 #2. Time-stepping
 
 print("Starting time iteration ...", flush=True)
+
 t = 0
 step = 0
+
 for n in range(rpam.parameters['num_steps']):
 
     #2.1 Update current time
@@ -194,34 +213,17 @@ for n in range(rpam.parameters['num_steps']):
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
-    # 
-    import ufl as ufl
-    import physics.fluid_mechanics as flu
-    i, j, k, l, m = ufl.indices(5)
-
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
-
-
-    print("||sigma_n|| at interface:", 
-        assemble(fsp.sigma_n(vp.sub_mesh_1_label)**2 * rmsh.dS_ellipse)**0.5)
-    print("||viscous traction||:", 
-        assemble(flu.sigma_ale_no_pressure(
-            v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
-            u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
-        )[i,k] * flu.sigma_ale_no_pressure(
-            v_n_dummy(vp.sub_mesh_1_label), Constant(0), 
-            u_n_dummy(vp.sub_mesh_1_label), rpam.parameters['mu_fluid']
-        )[i,k] * rmsh.dS_ellipse)**0.5)
-    print("<u_n^2> at interface:", 
-        assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.dS_ellipse)**0.5)
-    # 
-
     print('... done.', flush=True)
 
-    #2.3 note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
+    #2.3 print BCs, ICs and useful data such as mesh quality. Note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
+
+    _, _, u_n_dummy, _ = fsp.psi.split( deepcopy=True )
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy))
+
     pr_bc.print_bcs()
     pr_ic.print_ics()
-    pr_data.print_data()
+    pr_da.print_data()
+
 
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )

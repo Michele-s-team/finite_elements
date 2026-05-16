@@ -11,7 +11,6 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import physics.elasticity as ela
 import physics.fluid_mechanics as flu
-import function_spaces as fsp
 import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.utils as msh
@@ -19,6 +18,7 @@ import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -47,17 +47,17 @@ def print_ics():
 
     writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{io.number_of_decimals}e}",
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.sigma_n, bgeo.facet_normal)[i] * msh.jump(fsp.sigma_n, bgeo.facet_normal)[i]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.sigma_n, bgeo.facet_normal[0])[i] * msh.jump(fsp.sigma_n, bgeo.facet_normal[0])[i]), rmsh.ds_mesh[0]['dS_I_square']):.{io.number_of_decimals}e}",
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[0]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_shape']):.{io.number_of_decimals}e}",
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{io.number_of_decimals}e}",
         fieldnames[4]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[0]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_shape']):.{io.number_of_decimals}e}",
         fieldnames[5]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{io.number_of_decimals}e}",
         }])
 
     csvfile.flush()

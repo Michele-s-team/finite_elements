@@ -3,9 +3,23 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_ellipse_circle':
+   
+    fsp = 'function_spaces_square_ellipse_circle'
     rmsh = 'mesh.read.square_ellipse_circle'
     vp = 'variational_problem_bc_square_ellipse_circle'
     prout_bc = 'print_out_bc_square_ellipse_circle'
-    prout_forces_on_boundaries = 'print_out_force_on_boundaries_bc_square_ellipse_circle'
+    prout_ic = 'print_out_ic_square_ellipse_circle'
+    prout_da = 'print_out_data_square_ellipse_circle'
+    prout_sol = 'print_out_solution_square_ellipse_circle'
+
+elif rarg.args.problem == 'square_shape_line':
+
+    fsp = 'function_spaces_square_shape_line'
+    rmsh = 'mesh.read.square_shape_line'
+    vp = 'variational_problem_bc_square_shape_line'
+    prout_bc = 'print_out_bc_square_shape_line'
+    prout_ic = 'print_out_ic_square_shape_line'
+    prout_da = 'print_out_data_square_shape_line'
+    prout_sol = 'print_out_solution_square_shape_line'
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')
