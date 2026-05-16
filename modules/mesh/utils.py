@@ -3165,31 +3165,62 @@ def transfer_dg(f, g, u, sf, region_ids):
 
     dof_coords = Q_g.tabulate_dof_coordinates()
     g_values = g.vector().get_local()
-    dofmap_g = Q_g.dofmap()
 
     for cell in cells(Q_g.mesh()):
+        # run on all mesh cells of the mesh of g
 
-        if sf[cell] not in region_ids:
-            continue
+        if sf[cell] in region_ids:
+            # the cell under consideration belongs to one of the region where the fields are continous -> make the transfer
 
-        cell_dofs = dofmap_g.cell_dofs(cell.index())
-        n_nodes = len(cell_dofs) // value_size
+            '''
+            cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+            [
+                id_g_0_on_DOF_0, 
+                id_g_0_on_DOF_1,
+                ...,
+                id_g_0_on_DOF_{n_nodes-1},
 
-        # cell_dofs layout (same convention as interpolate_dg):
-        #   cell_dofs[j * n_nodes + i] = global index of component j at node i
-        # so cell_dofs[:n_nodes] gives the unique spatial node indices
-        cell_dofs_unique = cell_dofs[:n_nodes]
+                id_g_1_on_DOF_0, 
+                id_g_1_on_DOF_1,
+                ...,
+                id_g_1_on_DOF_{n_nodes-1},
 
-        for i in range(n_nodes):
+                ...
+            ]
+            where the pattern is repeated value_size times, i.e., one for each component of 'g', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
+
+            cell_dofs[j * n_nodes + i] = [index in g.vector().get_local() corresponding to the j-th component of the field 'g' sitting on ith DOF in the cell 'cell']
+            '''
+
+            cell_dofs = Q_g.dofmap().cell_dofs(cell.index())
+            n_nodes = len(cell_dofs) // value_size
+
+
+            '''
+            remove the redundancy in cell_dofs and store the result in 
+            cell_dofs_unique = 
+                [
+                    id_DOF_0, 
+                    id_DOF_1,
+                    ...,
+                    id_DOF_{n_nodes-1}
+                ]
             
-            x = dof_coords[cell_dofs_unique[i]]
+            '''
+            cell_dofs_unique = cell_dofs[:n_nodes]
 
-            # evaluate f_def at x_new — unambiguous because f is continuous
-            # within this region, so there is no DG jump to worry about
-            vals = np.atleast_1d(f_def(x[:2]))
+            for i in range(len(cell_dofs_unique)):
+                # run over physical DOFs contained to 'cell'
 
-            for j in range(value_size):
-                g_values[cell_dofs[j * n_nodes + i]] = vals[j]
+                # 'x' is the coordinate of the DOF under condiseration
+                x = dof_coords[cell_dofs_unique[i]]
+
+
+                for j in range(value_size):
+
+                # evaluate f_def at x_new — unambiguous because f is continuous
+                # within this region, so there is no DG jump to worry about
+                    g_values[cell_dofs[j * n_nodes + i]] = (np.atleast_1d(f_def(x[:2])))[j]
 
     g.vector().set_local(g_values)
     g.vector().apply("insert")
