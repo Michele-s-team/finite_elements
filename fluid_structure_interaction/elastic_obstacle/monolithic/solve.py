@@ -13,6 +13,7 @@ import colorama as col
 import dolfin
 from fenics import *
 import importlib
+import numpy as np
 import os
 import sys
 
@@ -227,7 +228,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
     # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if step > 2:
+    if step > 1:
         # the mesh quality got below the threshold -> remesh 
 
 
@@ -260,6 +261,29 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
+
+
+        #3. trace the coordinates of shape vertices according to the deformation field u_n: these will be the coordinates of the new reference configuration of the shape
+
+        mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
+
+
+        shape_coordinates = []
+        for i in range(len(mesh_0_parameters["shape_coordinates"])):
+            # run through all coordinates of the nodes of mesh[1]
+
+            coordinate = mesh_0_parameters["shape_coordinates"][i]
+
+            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_n
+            shape_coordinates.append(np.add(
+                                        coordinate,
+                                        u_n_dummy(coordinate)
+                                        ).tolist()
+                                )  
+
+        #4. generate the mesh with the new shape_coordinates
+        msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
