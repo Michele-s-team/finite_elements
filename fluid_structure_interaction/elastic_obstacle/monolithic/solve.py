@@ -239,6 +239,7 @@ for n in range(rpam.parameters['num_steps']):
 
         u_n_old = Function(fsp.Q_u_n)
         u_dot_n_old = Function(fsp.Q_u_dot_n)
+        u_dot_n_1_old = Function(fsp.Q_u_dot_n)
 
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
@@ -253,6 +254,7 @@ for n in range(rpam.parameters['num_steps']):
 
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
+        u_dot_n_1_old.assign(fsp.u_dot_n_1)
 
 
 
