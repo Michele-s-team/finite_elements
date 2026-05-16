@@ -9,6 +9,7 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line $MESH_PATH $SOLUTION_PATH
 """
 
+import colorama as col
 import dolfin
 from fenics import *
 import importlib
@@ -225,8 +226,12 @@ for n in range(rpam.parameters['num_steps']):
     pr_da.print_data()
 
 
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    if step > 2:
         # the mesh quality got below the threshold -> remesh 
+
+
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
         # 1.transfer fields
 
@@ -255,6 +260,9 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
+
+        print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
+
 
 
 
