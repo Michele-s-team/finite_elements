@@ -230,8 +230,8 @@ for n in range(rpam.parameters['num_steps']):
     pr_da.print_data()
 
 
-    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if True:
+    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    # if True:
         # the mesh quality got below the threshold -> remesh 
 
 
@@ -324,12 +324,13 @@ for n in range(rpam.parameters['num_steps']):
 
 
 
+    #2.6 Update fields
 
-
-    #2.4 unpack the mixed field 
+    #2.6.1 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
-    #2.6 Update fields
+    # 2.6.1 update
+
     fsp.v_n_1.assign(v_n_dummy)
 
     fsp.u_n_1.assign(u_n_dummy)
