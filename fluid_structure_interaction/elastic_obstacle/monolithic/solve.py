@@ -310,6 +310,8 @@ for n in range(rpam.parameters['num_steps']):
         msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
 
+        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
+
 
         #9 clean up
 
