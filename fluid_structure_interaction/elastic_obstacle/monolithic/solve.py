@@ -297,6 +297,8 @@ for n in range(rpam.parameters['num_steps']):
         pr_bc = importlib.reload(pr_bc)
         pr_ic = importlib.reload(pr_ic)
         pr_da = importlib.reload(pr_da)
+        pr_sol = importlib.reload(pr_sol)
+
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
         
