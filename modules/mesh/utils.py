@@ -1455,6 +1455,7 @@ def deform_mesh(mesh, u):
 
     # Loop over all vertex coordinates and apply displacement
     for i in range(len(new_mesh_coordinates)):
+        
         new_mesh_coordinate = new_mesh_coordinates[i]
         value_u = u(new_mesh_coordinates[i])  # Evaluate displacement at this point
         new_mesh_coordinates[i] = new_mesh_coordinate + value_u

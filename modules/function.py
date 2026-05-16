@@ -153,6 +153,7 @@ Return values:
 
 
 def deform_function_space(Q, u):
+    
     deformed_mesh = msh.deform_mesh(Mesh(Q.mesh()), u)
 
     # Extract the features of the vector space Q
