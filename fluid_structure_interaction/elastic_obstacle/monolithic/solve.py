@@ -231,7 +231,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
     # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if step > 1:
+    if False:
         # the mesh quality got below the threshold -> remesh 
 
 
