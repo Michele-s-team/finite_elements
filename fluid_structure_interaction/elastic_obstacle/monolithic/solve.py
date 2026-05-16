@@ -27,6 +27,8 @@ import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
+
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
@@ -65,6 +67,20 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
 '''
+
+
+print(f'Generating initial mesh ...')
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
+
+shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+
+# generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+print(f'... done.')
+
+sys.exit(1)
 
 fsp = importlib.import_module(swi.fsp)
 pr_bc = importlib.import_module(swi.prout_bc)
