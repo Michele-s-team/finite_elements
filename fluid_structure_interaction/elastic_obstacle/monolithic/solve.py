@@ -96,6 +96,38 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 
+# test patch fields - start
+print(f'**** Testing patch ... ')
+
+import solution_paths as solpath
+
+sigma = Function(fsp.Q_sigma_n)
+
+class sigma_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]+x[1]
+
+    def value_shape(self):
+        return (1,)
+    
+class sigma_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]-x[1]**2
+
+    def value_shape(self):
+        return (1,)
+
+msh.interpolate_dg(sigma, sigma_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(sigma, sigma_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+io.full_print(sigma, 'sigma', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
+print(f'**** ... done.')
+# test patch fields - end
+
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 # 0. store metadata
