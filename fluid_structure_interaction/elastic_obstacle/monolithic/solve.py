@@ -101,7 +101,9 @@ print(f'**** Testing patch ... ')
 
 import solution_paths as solpath
 
-sigma = Function(fsp.Q_sigma_n)
+
+Q_sigma = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
+sigma = Function(Q_sigma)
 
 class sigma_shape_expression(UserExpression):
     def eval(self, values, x):
@@ -122,10 +124,12 @@ class sigma_square_expression(UserExpression):
 msh.interpolate_dg(sigma, sigma_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(sigma, sigma_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
+io.full_print(sigma, 'sigma_not_patched', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 msh.patch_interface_dofs(sigma, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-io.full_print(sigma, 'sigma', \
+io.full_print(sigma, 'sigma_patched', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 print(f'**** ... done.')
