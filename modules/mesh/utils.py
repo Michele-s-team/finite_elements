@@ -3178,7 +3178,7 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
     # --- Step 1: build surface_1-side interface map ---
 
     #  interface_vertex_ids  is the set of IDs of all vertices that lie on the shape
-    interface_vertex_ids = set()
+    spahe_vertex_ids = set()
 
     fluid_interface_map = {}
 
@@ -3193,7 +3193,7 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
             facet_vertex_coords = coordinates[facet_vertex_ids]
 
             for v_id in facet_vertex_ids:
-                interface_vertex_ids.add(int(v_id))
+                spahe_vertex_ids.add(int(v_id))
 
             for cell_id in facet.entities(2):
                 # run through all cells that neighbor `facet`
@@ -3278,22 +3278,33 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
             for i in range(n_nodes):
                 # run through all physical DOFs in `cell`
 
+                # consider a DOF with coordinates `x`
                 x = dof_coordinates[cell_dofs[i]][:2]
+
                 key = None
 
                 '''             
-                1. check if x is at an interface vertex, this catches shape cells that touch the interface only at a corner
-                (no interface facet -> not found by the facet loop below)
+                1. check if `x` is  an interface vertex
                 '''
                 for v_id in cell.entities(0):
+                    # run through all vertices that belong to `cell`
 
-                    if int(v_id) in interface_vertex_ids and np.allclose(x, coordinates[v_id], atol=tol):
+
+                    if np.allclose(x, coordinates[v_id], atol=tol) and (int(v_id) in spahe_vertex_ids):
+                        ''' 
+                        the DOF coordinate `x` under consideration coincides with one of the cell vertices (1st condition) and it is one of the shape vertices -> add  to `key`
+                        ('v', [id of the vertex corresponding to `x`])
+                        '''
+
                         key = ('v', int(v_id))
                         break
 
-                # 2.: check if x lies on an interface facet of this cell
-                # this catches edge-interior DOFs for degree >= 2
+                ''' 
+                2.: check if `x` lies on an interface facet of  `cell`
+                this catches edge-interior DOFs for degree >= 2
+                '''
                 if key is None:
+                    
                     for facet in facets(cell):
                         if mf_I[facet] != shape_id:
                             continue
