@@ -3322,8 +3322,10 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                                 key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
                                 break
 
-                if key is not None and key in fluid_interface_map:
+                if (key is not None) and (key in fluid_interface_map):
+                    # the DOF with coordinates `x` is either a vertex belonging to the shape, or it lies in between an edge belonging to the shape -> it its on the shape -> overwrite into f_values the value of `f` stored in fluid_interface_map (i.e., the vlaues of `f` into region_0)
                     for j in range(value_size):
+
                         f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[key][j]
 
     f.vector().set_local(f_values)
