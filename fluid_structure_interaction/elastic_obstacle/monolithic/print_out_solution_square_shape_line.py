@@ -15,6 +15,8 @@ fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 
+
+
 def print_solution(t, step, dt):
 
     #1 unpack the mixed field 
@@ -62,8 +64,6 @@ def print_solution(t, step, dt):
 
 
     #4. Write the deformed mesh to file
-
-    # 4.1 write mesh vertices and lines
     deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy)
 
     with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step) + '.xdmf') as xdmf:
@@ -76,7 +76,6 @@ def print_solution(t, step, dt):
     input_path = os.path.join(rarg.args.input_directory, f"mesh_0/boundary_points_id_{rmsh.parameters['shape_id']}.csv")
     output_path = os.path.join(rarg.args.output_directory, f"snapshots/csv/boundary_points_id_{rmsh.parameters['shape_id']}_n_{step}.csv")
     os.system(f'cp {input_path} {output_path}')
-
 
 
 

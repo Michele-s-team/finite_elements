@@ -95,41 +95,59 @@ pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-
-dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
-
 '''
-# test read iniital profiles - start
+# test patch fields - start
+print(f'**** Testing patch ... ')
+
 import solution_paths as solpath
-import numpy as np
 
 
-class t_expression(UserExpression):
+Q_sigma = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 4, shape=(2, 3))
+sigma = Function(Q_sigma)
+
+class sigma_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(x[0]-x[1])
-        values[1] = 1
-        values[2] = np.cos(x[0]+x[1]**2)
-        values[3] = 3
+        values[0] = x[0]+x[1]
+        values[1] = x[0]-2 * x[1]
+        values[2] = x[0]+3 *x[1]
+        values[3] = x[0]+x[1]**2
+        values[4] = x[0]+x[1]**3
+        values[5] = x[0]+x[1]**4
 
     def value_shape(self):
-        return (2, 2)
+        return (2, 3)
     
-msh.interpolate_dg(fsp.t_output, t_expression())
+class sigma_square_expression(UserExpression):
+    def eval(self, values, x):
 
-io.full_print(fsp.t_output, 't_output', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+        values[0] = x[0]-x[1]
+        values[1] = x[0]-4 * x[1]
+        values[2] = x[0]-3 *x[1]
+        values[3] = x[0]-x[1]**2
+        values[4] = x[0]+2*x[1]**3
+        values[5] = x[0]-2*x[1]**4+1
 
+    def value_shape(self):
+        return (2, 3)
 
-io.read_dg_field_from_csv_file(f'/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution/snapshots/csv/t_output.csv', fsp.t_input)
+msh.interpolate_dg(sigma, sigma_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(sigma, sigma_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-io.full_print(fsp.t_input, 't_input', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf)
+io.full_print(sigma, 'sigma_not_patched', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
-sys.exit(1)
-# test read initial profile - end
+msh.overwrite_interface_dofs(sigma, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+io.full_print(sigma, 'sigma_patched', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
+print(f'**** ... done.')
+# test patch fields - end
+
 '''
 
+dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 # 0. store metadata
 
@@ -207,7 +225,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.2 solve variational problem
 
 
-    print('Solving monolithic problem ... ')
+    print('Solving problem ... ')
 
     if step <= rpam.parameters['n_hold']:
         cont.pressure_scale = 0.0
@@ -222,11 +240,9 @@ for n in range(rpam.parameters['num_steps']):
 
     #2.3 print BCs, ICs and useful data such as mesh quality. Note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
 
-    _, _, u_n_dummy, _ = fsp.psi.split( deepcopy=True )
-    deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy)
-    msh_qu.quality = msh.custom_mesh_quality(deformed_mesh)
+    _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
 
-    del u_n_dummy, deformed_mesh
 
     pr_bc.print_bcs()
     pr_ic.print_ics()
@@ -234,7 +250,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    # if True:
+    # if step > 1:
         # the mesh quality got below the threshold -> remesh 
 
 
@@ -267,6 +283,13 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
+
+        # 1.2.2.1
+        # fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer`, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+        msh.overwrite_interface_dofs(v_n_1_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+        msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 
         #3. trace the coordinates of shape vertices according to the deformation field u_n: these will be the coordinates of the new reference configuration of the shape
@@ -302,7 +325,6 @@ for n in range(rpam.parameters['num_steps']):
         pr_da = importlib.reload(pr_da)
         pr_sol = importlib.reload(pr_sol)
 
-
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
         
         msh.transfer(v_n_old, fsp.v_input, u_n_old)
@@ -317,6 +339,7 @@ for n in range(rpam.parameters['num_steps']):
 
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
+        
 
         #9 clean up
 
@@ -328,22 +351,17 @@ for n in range(rpam.parameters['num_steps']):
 
 
 
-
-    #2.6 Update fields
-
-    #2.6.1 unpack the mixed field 
+    #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
-    # 2.6.1 update
-
+    #2.6 Update fields
     fsp.v_n_1.assign(v_n_dummy)
 
     fsp.u_n_1.assign(u_n_dummy)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
-    # 2.6.2 free memory
-    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy
-
+    # 2.6.1 clean up
+    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
 
     # 2.7 print the solution
     if step % rpam.parameters['print_out_stride'] == 0:

@@ -3129,3 +3129,250 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
     
     return result
 
+
+'''
+Return key identifying the DOF at coordinate x on an interface facet:
+Input values: 
+    * Mandatory:
+        - 'x': the DOF coordinates
+        - 'facet_vertex_ids': a list containing the IDs of the facet vertices
+        - 'facet_id': the ID of the facet
+        - 'coordinates': mesh.coordinates()
+        - 'degree': the degree of the polynomial space of the field under consideration
+    * Optional: 
+        - 'tol': the ditance tolerance used to tell whether `x` lies on the edge segment 
+
+Return values: 
+    - ('v', vertex_id)          if x coincides with a facet vertex
+    - ('e', facet_id, t_int)    if x is an interior edge DOF. Here t_int = round(t * degree) = [1, 2, 3, ...] identifies the canonical number of `x` along the edge. Here `facet_id` is the ID of the facet under consideration 
+'''
+
+def get_key(x, facet_vertex_ids, facet_id, coordinates, degree, tol=const.epsilon):
+
+    #1. check if x is at one of the facet's extremal vertices
+    for v_id in facet_vertex_ids:
+        # run through IDs of extremal vertices of the facet under consideration
+
+        if np.allclose(x, coordinates[v_id], atol=tol):
+            # `x` coincides with the coordinates of one of these extremal vertices -> return ('v', [ID of the extremal vertex that coincides with `x`])
+
+            return ('v', int(v_id))
+
+    #2. check if `x` is an interior edge DOF: compute t along canonical direction
+
+    v0_id, v1_id = sorted(int(v) for v in facet_vertex_ids)
+
+    # coordinates of the extremal vertices of the facet
+    x_0 = coordinates[v0_id]
+    x_1 = coordinates[v1_id]
+
+    # vector going from `x_0` to `x_1`
+    d = x_1 - x_0
+
+    # 0<t<1 locates `x` along the facet: t=0 means that `x` is `x_0` and t=1 means that `x` is `x_1`
+    t = np.dot(x - x_0, d) / np.dot(d, d)
+
+    '''
+    For a Lagrange element of degree k, the interior edge nodes are placed at equally spaced positions t = 1/k, 2/k, ..., (k-1)/k. Multiplying by degree maps these to integers 1, 2, ..., k-1. round handles floating point imprecision, a
+    '''
+    t_int = int(round(t * degree))
+
+    return ('e', int(facet_id), t_int)
+
+
+'''
+Consider a DG field `f` (scalar, vector or tensor) defined on a mesh divided into two surfaces which are delimited by a shape. Here `f` may be discontinuous at the shape. This method overwrites the DOFs of `f` at the shape by setting them equal to the DOFs of surface_1 -> DOFs belonging to surface_0 are overwritten
+Input values; 
+    * Mandatory: 
+        - `f`: the field
+        - `sf`: the mesh function tagging surfaces
+        - `mf_I`: the mesh function tagging interior facets
+        - `shape_id`: tag of the shape
+        - `surface_0_id`, `surface_1_id`: tags of surface_0 and surface_0
+
+    * Optional:
+        - `tol`: tolerance used for spatial distances
+
+'''
+def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=const.epsilon):
+
+    Q = f.function_space()
+    mesh = Q.mesh()
+    mesh.init(1, 2)
+
+    degree = Q.ufl_element().degree()
+    value_shape = Q.ufl_element().value_shape()
+    value_size = int(np.prod(value_shape)) if value_shape else 1
+
+    dof_coordinates = Q.tabulate_dof_coordinates()
+    f_values = f.vector().get_local()
+    coordinates = mesh.coordinates()
+    dofmap = Q.dofmap()
+
+
+
+    '''
+        Step 1: build surface_1-side interface map 
+        This step would build a list, interface_map, which is 
+        interface_map = {
+        ([key of DOF 0 lying on shape], [values of f on DOF 0 lying on shape],
+        ([key of DOF 1 lying on shape], [values of f on DOF 1 lying on shape],
+        ...
+        )
+        
+        }
+    '''
+    #  interface_vertex_ids  is the set of IDs of all vertices that lie on the shape
+    spahe_vertex_ids = set()
+
+    fluid_interface_map = {}
+
+    for facet in facets(mesh):
+        # run through all mesh facets
+
+        if mf_I[facet] == shape_id:
+            # `facet` belongs to the shape interface
+
+            # `facet_vertex_ids` is a list of ids of vertices belonging to `facet`
+            facet_vertex_ids = facet.entities(0)
+            facet_vertex_coords = coordinates[facet_vertex_ids]
+
+            for v_id in facet_vertex_ids:
+                spahe_vertex_ids.add(int(v_id))
+
+            for cell_id in facet.entities(2):
+                # run through all cells that neighbor `facet`
+
+                cell = Cell(mesh, cell_id)
+
+                if sf[cell] == surface_1_id:
+                    # `cell` belongs to surface_1
+
+                    '''
+                    cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+                    [
+                        id_f_0_on_DOF_0, 
+                        id_f_0_on_DOF_1,
+                        ...,
+                        id_f_0_on_DOF_{n_nodes-1},
+
+                        id_f_1_on_DOF_0, 
+                        id_f_1_on_DOF_1,
+                        ...,
+                        id_f_1_on_DOF_{n_nodes-1},
+
+                        ...
+                    ]
+                    where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
+
+                    cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the field 'f' sitting on ith DOF in the cell 'cell']
+                    '''
+
+                    cell_dofs = dofmap.cell_dofs(cell.index())
+                    n_nodes = len(cell_dofs) // value_size
+
+                    for i in range(n_nodes):
+                        # run through all physical DOFs in `cell`
+
+                        x = dof_coordinates[cell_dofs[i]][:2]
+
+                        if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
+
+                            # `x` lies on `facet`: get its key as defined in `get_key`
+                            key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol)
+
+                            if key not in fluid_interface_map:
+                                ''' 
+                                append to fluid_interface map
+                                    ([key of the DOF corresponding to `x`], value of `f` on that DOF)
+                                '''
+                                fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]] for j in range(value_size)]
+
+    '''
+        Step 2: patch all shape (surface_0) DOFs at interface locations 
+        This step will write into DOFs of `f` belongin to `surface_0` and lying on the shape (which are stored in `fluid_interface_map`) the values of `f` in `surface_1`
+    '''  
+    for cell in cells(mesh):
+        # run through all cells in the mesh
+
+        if sf[cell] == surface_0_id:
+            # `cell belongs to surface_0 -> proceed with overwriting
+
+            '''
+                cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+                [
+                    id_f_0_on_DOF_0, 
+                    id_f_0_on_DOF_1,
+                    ...,
+                    id_f_0_on_DOF_{n_nodes-1},
+
+                    id_f_1_on_DOF_0, 
+                    id_f_1_on_DOF_1,
+                    ...,
+                    id_f_1_on_DOF_{n_nodes-1},
+
+                    ...
+                ]
+                where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
+
+                cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the field 'f' sitting on ith DOF in the cell 'cell']
+            '''
+
+            cell_dofs = dofmap.cell_dofs(cell.index())
+            n_nodes = len(cell_dofs) // value_size
+
+            for i in range(n_nodes):
+                # run through all physical DOFs in `cell`
+
+                # consider a DOF with coordinates `x`
+                x = dof_coordinates[cell_dofs[i]][:2]
+
+                key = None
+
+                '''             
+                1. check if `x` is  an interface vertex
+                '''
+                for v_id in cell.entities(0):
+                    # run through all vertices that belong to `cell`
+
+
+                    if np.allclose(x, coordinates[v_id], atol=tol) and (int(v_id) in spahe_vertex_ids):
+                        ''' 
+                        the DOF coordinate `x` under consideration coincides with one of the cell vertices (1st condition) and it is one of the shape vertices -> add  to `key`
+                        ('v', [id of the vertex corresponding to `x`]) (2nd condition)
+                        '''
+
+                        key = ('v', int(v_id))
+                        break
+
+                ''' 
+                2.: check if `x` lies on an interface facet of  `cell`
+                this catches edge-interior DOFs for degree >= 2
+                '''
+                if key is None:
+                    # `x` is not one of the cell vertices -> check whethe it lies on a facet lying on the shape
+                    
+                    for facet in facets(cell):
+                        # run through all facets of `cell`
+
+                        if mf_I[facet] == shape_id:
+                            # `facet` belongs to the shape
+
+                            # build list of IDs and coordinates extremal vertices of `facets`
+                            facet_vertex_ids = facet.entities(0)
+                            facet_vertex_coords = coordinates[facet_vertex_ids]
+
+                            if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
+                                # the coodinates `x` of the DOF under consideration lie on the segment of `facet` -> add it to `key`
+
+                                key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
+                                break
+
+                if (key is not None) and (key in fluid_interface_map):
+                    # the DOF with coordinates `x` is either a vertex belonging to the shape, or it lies in between an edge belonging to the shape -> it its on the shape -> overwrite into f_values the value of `f` stored in fluid_interface_map (i.e., the vlaues of `f` into region_0)
+                    for j in range(value_size):
+
+                        f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[key][j]
+
+    f.vector().set_local(f_values)
+    f.vector().apply("insert")
