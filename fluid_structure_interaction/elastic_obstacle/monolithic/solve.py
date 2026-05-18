@@ -283,6 +283,13 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
 
+        # 1.2.2.1
+        # fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer`, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+        msh.overwrite_interface_dofs(v_n_1_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
+        msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+
 
         #3. trace the coordinates of shape vertices according to the deformation field u_n: these will be the coordinates of the new reference configuration of the shape
 
@@ -317,17 +324,17 @@ for n in range(rpam.parameters['num_steps']):
         pr_da = importlib.reload(pr_da)
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
-        '''
-                msh.transfer_dg(v_n_old, fsp.v_n, u_n_old)
-                msh.transfer_dg(v_n_1_old, fsp.v_n_1, u_n_old)
+        
+        msh.transfer(v_n_old, fsp.v_n, u_n_old)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-                msh.transfer_dg(sigma_n_old, fsp.sigma_n, u_n_old)
+        msh.transfer(sigma_n_old, fsp.sigma_n, u_n_old)
 
-                fsp.u_n.assign(Constant((0, 0)))
+        fsp.u_n.assign(Constant((0, 0)))
 
-                msh.transfer_dg(u_dot_n_old, fsp.u_dot_n, u_n_old)
-                msh.transfer_dg(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
-        '''
+        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+        
 
         #9 clean up
 

@@ -3296,7 +3296,7 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
         # run through all cells in the mesh
 
         if sf[cell] == surface_0_id:
-            # `cell belongs to surface_0 -> proceed with patching
+            # `cell belongs to surface_0 -> proceed with overwriting
 
             '''
                 cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
