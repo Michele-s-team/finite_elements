@@ -225,7 +225,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.2 solve variational problem
 
 
-    print('Solving monolithic problem ... ')
+    print('Solving problem ... ')
 
     if step <= rpam.parameters['n_hold']:
         cont.pressure_scale = 0.0
