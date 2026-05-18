@@ -3146,9 +3146,12 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
     fluid_interface_map = {}
 
     for facet in facets(mesh):
-        
-        if mf_I[facet] == shape_id:
+        # run through all mesh facets
 
+        if mf_I[facet] == shape_id:
+            # `facet` belongs to the shape 
+
+            # store into `facet_vertex_ids` the IDs of the vertices that delimit `facet`
             facet_vertex_ids = facet.entities(0)
 
             for cell_id in facet.entities(2):
