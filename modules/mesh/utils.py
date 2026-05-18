@@ -3197,10 +3197,17 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
                             # the vertex under consideration belongs to `facet`
 
                             if vertex_id not in fluid_interface_map:
-                                # the vertex under consideration is not in `fluid_interface_map`
+                                '''
+                                the vertex under consideration is not in `fluid_interface_map` -> append to `fluid_interface_map` 
 
+                                    vertex_id, [f_0_on_vertex, f_1_on_vertex, ...]
+                                '''
                                 fluid_interface_map[vertex_id] = [f_values[cell_dofs[j * n_nodes + i]]
                                                                 for j in range(value_size)]
+                                
+
+    print(f'fluid_interface_mape = {fluid_interface_map}')
+
 
     # patch all shape (surface_0) DOFs at interface vertices
     for cell in cells(mesh):
