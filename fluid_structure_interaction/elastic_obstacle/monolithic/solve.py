@@ -102,7 +102,7 @@ print(f'**** Testing patch ... ')
 import solution_paths as solpath
 
 
-Q_sigma = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
+Q_sigma = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 4)
 sigma = Function(Q_sigma)
 
 class sigma_shape_expression(UserExpression):
