@@ -3177,7 +3177,7 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
 
     # --- Step 1: build surface_1-side interface map ---
 
-    # precompute interface_vertex_ids (needed in step 2 to catch shape cells) that touch the interface only at a corner, with no interface facet)
+    #  interface_vertex_ids  is the set of IDs of all vertices that lie on the shape
     interface_vertex_ids = set()
 
     fluid_interface_map = {}
