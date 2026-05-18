@@ -3180,8 +3180,21 @@ def get_key(x, facet_vertex_ids, facet_id, coordinates, degree, tol=const.epsilo
     return ('e', int(facet_id), t_int)
 
 
+'''
+Consider a DG field `f` (scalar, vector or tensor) defined on a mesh divided into two surfaces which are delimited by a shape. Here `f` may be discontinuous at the shape. This method overwrites the DOFs of `f` at the shape by setting them equal to the DOFs of surface_1 -> DOFs belonging to surface_0 are overwritten
+Input values; 
+    * Mandatory: 
+        - `f`: the field
+        - `sf`: the mesh function tagging surfaces
+        - `mf_I`: the mesh function tagging interior facets
+        - `shape_id`: tag of the shape
+        - `surface_0_id`, `surface_1_id`: tags of surface_0 and surface_0
 
-def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=const.epsilon):
+    * Optional:
+        - `tol`: tolerance used for spatial distances
+
+'''
+def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=const.epsilon):
 
     Q = f.function_space()
     mesh = Q.mesh()
