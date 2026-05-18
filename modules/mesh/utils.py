@@ -3129,3 +3129,71 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
     
     return result
 
+
+
+def _on_segment(x, p1, p2, tol=1e-12):
+
+    d = p2 - p1
+    L = np.linalg.norm(d)
+    if L < tol:
+        return np.linalg.norm(x - p1) < tol
+    t = np.dot(x - p1, d) / L**2
+    return np.linalg.norm(x - p1 - t * d) < tol * L and -tol <= t <= 1 + tol
+
+def patch_interface_dofs(f, sf, mf_I, shape_id, shape_region_id, fluid_region_id):
+
+    Q = f.function_space()
+    mesh = Q.mesh()
+    mesh.init(1, 2)
+
+    value_shape = Q.ufl_element().value_shape()
+    value_size = int(np.prod(value_shape)) if value_shape else 1
+
+    dof_coords = Q.tabulate_dof_coordinates()
+    f_values = f.vector().get_local()
+    coords = mesh.coordinates()
+    dofmap = Q.dofmap()
+
+    PREC = 10
+
+    # --- Step 1: build fluid-side interface map from facet loop ---
+    fluid_interface_map = {}
+
+    for facet in facets(mesh):
+        if mf_I[facet] != shape_id:
+            continue
+        p1, p2 = coords[facet.entities(0)][:, :2]
+
+        for cell_id in facet.entities(2):
+            cell = Cell(mesh, cell_id)
+            if sf[cell] != fluid_region_id:
+                continue
+            cell_dofs = dofmap.cell_dofs(cell.index())
+            n_nodes = len(cell_dofs) // value_size
+
+            for i in range(n_nodes):
+                x = dof_coords[cell_dofs[i]][:2]
+                if not _on_segment(x, p1, p2):
+                    continue
+                key = tuple(np.round(x, PREC))
+                if key not in fluid_interface_map:
+                    fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]]
+                                                for j in range(value_size)]
+
+    # --- Step 2: patch ALL shape DOFs whose coordinate is an interface coordinate ---
+    # (includes cells that touch the interface only at a vertex, not caught by facet loop)
+    for cell in cells(mesh):
+        if sf[cell] != shape_region_id:
+            continue
+        cell_dofs = dofmap.cell_dofs(cell.index())
+        n_nodes = len(cell_dofs) // value_size
+
+        for i in range(n_nodes):
+            x = dof_coords[cell_dofs[i]][:2]
+            key = tuple(np.round(x, PREC))
+            if key in fluid_interface_map:
+                for j in range(value_size):
+                    f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[key][j]
+
+    f.vector().set_local(f_values)
+    f.vector().apply("insert")
