@@ -3150,8 +3150,10 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, shape_region_id, fluid_region_id
     value_size = int(np.prod(value_shape)) if value_shape else 1
 
     dof_coords = Q.tabulate_dof_coordinates()
+
     f_values = f.vector().get_local()
-    coords = mesh.coordinates()
+    
+    coordinates = mesh.coordinates()
     dofmap = Q.dofmap()
 
     PREC = 10
@@ -3160,25 +3162,31 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, shape_region_id, fluid_region_id
     fluid_interface_map = {}
 
     for facet in facets(mesh):
-        if mf_I[facet] != shape_id:
-            continue
-        p1, p2 = coords[facet.entities(0)][:, :2]
+        # run through all facets in the mesh
 
-        for cell_id in facet.entities(2):
-            cell = Cell(mesh, cell_id)
-            if sf[cell] != fluid_region_id:
-                continue
-            cell_dofs = dofmap.cell_dofs(cell.index())
-            n_nodes = len(cell_dofs) // value_size
+        if mf_I[facet] == shape_id:
+            # the facet under consideratio belongs to the shape
 
-            for i in range(n_nodes):
-                x = dof_coords[cell_dofs[i]][:2]
-                if not _on_segment(x, p1, p2):
+            # p_1, p_2 are the coordinates of the vertices at the extremal points of `facet`
+            p_1, p_2 = coordinates[facet.entities(0)]
+
+            for cell_id in facet.entities(2):
+
+                cell = Cell(mesh, cell_id)
+
+                if sf[cell] != fluid_region_id:
                     continue
-                key = tuple(np.round(x, PREC))
-                if key not in fluid_interface_map:
-                    fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]]
-                                                for j in range(value_size)]
+                cell_dofs = dofmap.cell_dofs(cell.index())
+                n_nodes = len(cell_dofs) // value_size
+
+                for i in range(n_nodes):
+                    x = dof_coords[cell_dofs[i]][:2]
+                    if not _on_segment(x, p_1, p_2):
+                        continue
+                    key = tuple(np.round(x, PREC))
+                    if key not in fluid_interface_map:
+                        fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]]
+                                                    for j in range(value_size)]
 
     # --- Step 2: patch ALL shape DOFs whose coordinate is an interface coordinate ---
     # (includes cells that touch the interface only at a vertex, not caught by facet loop)
