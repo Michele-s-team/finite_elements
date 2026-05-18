@@ -3238,7 +3238,10 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                             key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol)
 
                             if key not in fluid_interface_map:
-                                
+                                ''' 
+                                append to fluid_interface map
+                                    ([id of the DOF corresponding to `x`], value of `f` on that DOF)
+                                '''
                                 fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]] for j in range(value_size)]
 
 
