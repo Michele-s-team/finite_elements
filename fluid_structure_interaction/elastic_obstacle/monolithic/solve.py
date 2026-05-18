@@ -228,7 +228,13 @@ for n in range(rpam.parameters['num_steps']):
     print('Solving problem ... ')
 
     if step <= rpam.parameters['n_hold']:
+        
         cont.pressure_scale = 0.0
+    
+    elif step <= rpam.parameters['n_hold'] + rpam.parameters['n_ramp']:
+    
+        cont.pressure_scale = (step - rpam.parameters['n_hold']) / rpam.parameters['n_ramp']
+    
     else:
         cont.pressure_scale = 1.0
         
