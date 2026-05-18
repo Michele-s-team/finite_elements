@@ -95,7 +95,7 @@ pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-
+'''
 # test patch fields - start
 print(f'**** Testing patch ... ')
 
@@ -144,6 +144,8 @@ io.full_print(sigma, 'sigma_patched', \
 
 print(f'**** ... done.')
 # test patch fields - end
+
+'''
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
