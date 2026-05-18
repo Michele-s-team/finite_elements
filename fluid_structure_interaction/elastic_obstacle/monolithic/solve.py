@@ -126,7 +126,7 @@ class sigma_square_expression(UserExpression):
         values[2] = x[0]-3 *x[1]
         values[3] = x[0]-x[1]**2
         values[4] = x[0]+2*x[1]**3
-        values[5] = x[0]-2*x[1]**4
+        values[5] = x[0]-2*x[1]**4+1
 
     def value_shape(self):
         return (2, 3)
