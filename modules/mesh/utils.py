@@ -3130,7 +3130,6 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
     return result
 
 
-
 def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
 
     Q = f.function_space()
@@ -3140,90 +3139,51 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
     value_shape = Q.ufl_element().value_shape()
     value_size = int(np.prod(value_shape)) if value_shape else 1
 
-    dof_coordinates = Q.tabulate_dof_coordinates()
-
     f_values = f.vector().get_local()
-    
-    coordinates = mesh.coordinates()
     dofmap = Q.dofmap()
 
-    PREC = 10
-
-    # --- Step 1: build fluid-side interface map from facet loop ---
+    # build map: vertex_index -> fluid-side (surface_1) DOF values
     fluid_interface_map = {}
 
     for facet in facets(mesh):
-        # run through all facets in the mesh
-
+        
         if mf_I[facet] == shape_id:
-            # the facet under consideratio belongs to the shape
 
-            # p_1, p_2 are the coordinates of the vertices at the extremal points of `facet`
-            p_1, p_2 = coordinates[facet.entities(0)]
-
+            facet_vertex_ids = facet.entities(0)
 
             for cell_id in facet.entities(2):
-                #iterate over the cells (entities with dimension `2`) that share  `facet`
 
                 cell = Cell(mesh, cell_id)
 
-                if sf[cell] == surface_1_id:
-                    # the cell under consideration belongs to `surface_1`
-
-
-                    '''
-                    cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
-                    [
-                        id_f_0_on_DOF_0, 
-                        id_f_0_on_DOF_1,
-                        ...,
-                        id_f_0_on_DOF_{n_nodes-1},
-
-                        id_f_1_on_DOF_0, 
-                        id_f_1_on_DOF_1,
-                        ...,
-                        id_f_1_on_DOF_{n_nodes-1},
-
-                        ...
-                    ]
-                    where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
-
-                    cell_dofs[j * n_nodes + i] = [index in f.vector().get_local() corresponding to the j-th component of the field 'f' sitting on ith DOF in the cell 'cell']
-                    '''
-
-                    cell_dofs = dofmap.cell_dofs(cell.index())
+                if sf[cell] == surface_1_id:   # ← fluid side
                     
+                    cell_dofs = dofmap.cell_dofs(cell.index())
                     n_nodes = len(cell_dofs) // value_size
+                    cell_vertex_ids = cell.entities(0)
 
                     for i in range(n_nodes):
-                        # loop through all physical DOFs in the cell 
 
-                        x = dof_coordinates[cell_dofs[i]][:2]
+                        vertex_id = cell_vertex_ids[i]
 
-                        print(f'x = {x}')
-
-                        if  cal.point_on_segment(x, p_1, p_2):
-                            # `x` lies on the `facet` because it lies on the segment delinmited by `p_1` and `p_2`
-                            
-                            key = tuple(np.round(x, PREC))
-                            if key not in fluid_interface_map:
-                                fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]]
+                        if vertex_id not in facet_vertex_ids:
+                            continue
+                        if vertex_id not in fluid_interface_map:
+                            fluid_interface_map[vertex_id] = [f_values[cell_dofs[j * n_nodes + i]]
                                                             for j in range(value_size)]
 
-    # --- Step 2: patch ALL shape DOFs whose coordinate is an interface coordinate ---
-    # (includes cells that touch the interface only at a vertex, not caught by facet loop)
+    # patch all shape (surface_0) DOFs at interface vertices
     for cell in cells(mesh):
-        if sf[cell] != surface_0_id:
+        if sf[cell] != surface_0_id:   # ← shape side
             continue
         cell_dofs = dofmap.cell_dofs(cell.index())
         n_nodes = len(cell_dofs) // value_size
+        cell_vertex_ids = cell.entities(0)
 
         for i in range(n_nodes):
-            x = dof_coordinates[cell_dofs[i]][:2]
-            key = tuple(np.round(x, PREC))
-            if key in fluid_interface_map:
+            vertex_id = cell_vertex_ids[i]
+            if vertex_id in fluid_interface_map:
                 for j in range(value_size):
-                    f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[key][j]
+                    f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[vertex_id][j]
 
     f.vector().set_local(f_values)
     f.vector().apply("insert")
