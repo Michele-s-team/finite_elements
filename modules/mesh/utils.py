@@ -3155,24 +3155,51 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
             facet_vertex_ids = facet.entities(0)
 
             for cell_id in facet.entities(2):
+                # run through all cells that neighbor `facet`
 
                 cell = Cell(mesh, cell_id)
 
-                if sf[cell] == surface_1_id:   # ← fluid side
+                if sf[cell] == surface_1_id: 
+                    # `cell` belongs to surface_1
                     
+                    '''
+                    cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+                    [
+                        id_f_0_on_DOF_0, 
+                        id_f_0_on_DOF_1,
+                        ...,
+                        id_f_0_on_DOF_{n_nodes-1},
+
+                        id_f_1_on_DOF_0, 
+                        id_f_1_on_DOF_1,
+                        ...,
+                        id_f_1_on_DOF_{n_nodes-1},
+
+                        ...
+                    ]
+                    where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
+
+                    cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the field 'f' sitting on ith DOF in the cell 'cell']
+                    '''
                     cell_dofs = dofmap.cell_dofs(cell.index())
+
                     n_nodes = len(cell_dofs) // value_size
+
+                    # `cell_vertex_ids` is a list of vertices belonging to `cell`
                     cell_vertex_ids = cell.entities(0)
 
                     for i in range(n_nodes):
+                        # run through all physical DOFs in `cell`
 
                         vertex_id = cell_vertex_ids[i]
 
-                        if vertex_id not in facet_vertex_ids:
-                            continue
-                        if vertex_id not in fluid_interface_map:
-                            fluid_interface_map[vertex_id] = [f_values[cell_dofs[j * n_nodes + i]]
-                                                            for j in range(value_size)]
+                        if vertex_id in facet_vertex_ids:
+                            # the vertex under consideration belongs to `facet`
+
+                            if vertex_id not in fluid_interface_map:
+                                
+                                fluid_interface_map[vertex_id] = [f_values[cell_dofs[j * n_nodes + i]]
+                                                                for j in range(value_size)]
 
     # patch all shape (surface_0) DOFs at interface vertices
     for cell in cells(mesh):
