@@ -3130,6 +3130,32 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
     return result
 
 
+'''
+Return a purely integer key identifying the DOF at coordinate x on an interface facet:
+    - ('v', vertex_id)          if x coincides with a facet vertex
+    - ('e', facet_id, t_int)    if x is an interior edge DOF,
+        where t_int = round(t * degree) and t is the parameter along the edge
+        in the canonical direction (vertex with smaller ID first),
+        ensuring both sides of the interface produce the same key
+'''
+
+def get_key(x, facet_vertex_ids, facet_id, coordinates, degree, tol=const.epsilon):
+
+    # check if x is at one of the facet's extremal vertices
+    for v_id in facet_vertex_ids:
+        if np.allclose(x, coordinates[v_id], atol=tol):
+            return ('v', int(v_id))
+
+    # x is an interior edge DOF: compute t along canonical direction
+    v0_id, v1_id = sorted(int(v) for v in facet_vertex_ids)
+    p0 = coordinates[v0_id]
+    p1 = coordinates[v1_id]
+    d = p1 - p0
+    t = np.dot(x - p0, d) / np.dot(d, d)
+    t_int = int(round(t * degree))
+    return ('e', int(facet_id), t_int)
+
+
 
 def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=const.epsilon):
 
@@ -3146,31 +3172,10 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
     coordinates = mesh.coordinates()
     dofmap = Q.dofmap()
 
-    def get_key(x, facet_vertex_ids, facet_id):
-        '''
-        Return a purely integer key identifying the DOF at coordinate x on an interface facet:
-            - ('v', vertex_id)          if x coincides with a facet vertex
-            - ('e', facet_id, t_int)    if x is an interior edge DOF,
-              where t_int = round(t * degree) and t is the parameter along the edge
-              in the canonical direction (vertex with smaller ID first),
-              ensuring both sides of the interface produce the same key
-        '''
-        # check if x is at one of the facet's extremal vertices
-        for v_id in facet_vertex_ids:
-            if np.allclose(x, coordinates[v_id], atol=tol):
-                return ('v', int(v_id))
-
-        # x is an interior edge DOF: compute t along canonical direction
-        v0_id, v1_id = sorted(int(v) for v in facet_vertex_ids)
-        p0 = coordinates[v0_id]
-        p1 = coordinates[v1_id]
-        d = p1 - p0
-        t = np.dot(x - p0, d) / np.dot(d, d)
-        t_int = int(round(t * degree))
-        return ('e', int(facet_id), t_int)
 
 
-    # --- Step 1: build fluid-side interface map ---
+
+    # --- Step 1: build surface_1-side interface map ---
 
     # precompute interface vertex IDs (needed in step 2 to catch shape cells
     # that touch the interface only at a corner, with no interface facet)
@@ -3227,16 +3232,14 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
 
                         x = dof_coordinates[cell_dofs[i]][:2]
 
-                        if not cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
-                            # `x` does not lie on `facet` -> skip
-                            continue
+                        if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
 
-                        # `x` lies on `facet`: get its integer key
-                        key = get_key(x, facet_vertex_ids, facet.index())
+                            # `x` lies on `facet`: get its integer key
+                            key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol)
 
-                        if key not in fluid_interface_map:
-                            fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]]
-                                                        for j in range(value_size)]
+                            if key not in fluid_interface_map:
+                                
+                                fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]] for j in range(value_size)]
 
 
     # --- Step 2: patch all shape (surface_0) DOFs at interface locations ---
@@ -3273,7 +3276,7 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                     facet_vertex_ids = facet.entities(0)
                     facet_vertex_coords = coordinates[facet_vertex_ids]
                     if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
-                        key = get_key(x, facet_vertex_ids, facet.index())
+                        key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
                         break
 
             if key is not None and key in fluid_interface_map:
