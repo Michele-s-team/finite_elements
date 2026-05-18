@@ -102,24 +102,34 @@ print(f'**** Testing patch ... ')
 import solution_paths as solpath
 
 
-Q_sigma = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 4)
+Q_sigma = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 4, shape=(2, 3))
 sigma = Function(Q_sigma)
 
 class sigma_shape_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = x[0]+x[1]
+        values[1] = x[0]-2 * x[1]
+        values[2] = x[0]+3 *x[1]
+        values[3] = x[0]+x[1]**2
+        values[4] = x[0]+x[1]**3
+        values[5] = x[0]+x[1]**4
 
     def value_shape(self):
-        return (1,)
+        return (2, 3)
     
 class sigma_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = x[0]-x[1]**2
+        values[0] = x[0]-x[1]
+        values[1] = x[0]-4 * x[1]
+        values[2] = x[0]-3 *x[1]
+        values[3] = x[0]-x[1]**2
+        values[4] = x[0]+2*x[1]**3
+        values[5] = x[0]-2*x[1]**4
 
     def value_shape(self):
-        return (1,)
+        return (2, 3)
 
 msh.interpolate_dg(sigma, sigma_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
 msh.interpolate_dg(sigma, sigma_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
