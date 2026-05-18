@@ -240,8 +240,9 @@ for n in range(rpam.parameters['num_steps']):
 
     #2.3 print BCs, ICs and useful data such as mesh quality. Note: print_bcs() and print_ics() must be before the fields update to print the correct residuals of BCs
 
-    _, _, u_n_dummy, _ = fsp.psi.split( deepcopy=True )
-    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy))
+    _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
+
 
     pr_bc.print_bcs()
     pr_ic.print_ics()
@@ -322,18 +323,22 @@ for n in range(rpam.parameters['num_steps']):
         pr_bc = importlib.reload(pr_bc)
         pr_ic = importlib.reload(pr_ic)
         pr_da = importlib.reload(pr_da)
+        pr_sol = importlib.reload(pr_sol)
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
         
-        msh.transfer(v_n_old, fsp.v_n, u_n_old)
+        msh.transfer(v_n_old, fsp.v_input, u_n_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-        msh.transfer(sigma_n_old, fsp.sigma_n, u_n_old)
+        msh.transfer(sigma_n_old, fsp.sigma_input, u_n_old)
 
-        fsp.u_n.assign(Constant((0, 0)))
+        fsp.u_input.assign(Constant((0, 0)))
 
-        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+        msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+
+        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
+
         
 
         #9 clean up
@@ -346,9 +351,6 @@ for n in range(rpam.parameters['num_steps']):
 
 
 
-
-
-
     #2.4 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
@@ -357,6 +359,9 @@ for n in range(rpam.parameters['num_steps']):
 
     fsp.u_n_1.assign(u_n_dummy)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
+
+    # 2.6.1 clean up
+    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
 
     # 2.7 print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
