@@ -3131,15 +3131,6 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
 
 
 
-def _on_segment(x, p1, p2, tol=1e-12):
-
-    d = p2 - p1
-    L = np.linalg.norm(d)
-    if L < tol:
-        return np.linalg.norm(x - p1) < tol
-    t = np.dot(x - p1, d) / L**2
-    return np.linalg.norm(x - p1 - t * d) < tol * L and -tol <= t <= 1 + tol
-
 def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
 
     Q = f.function_space()
@@ -3211,7 +3202,8 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id):
 
                         print(f'x = {x}')
 
-                        if  _on_segment(x, p_1, p_2):
+                        if  cal.point_on_segment(x, p_1, p_2):
+                            # `x` lies on the `facet` because it lies on the segment delinmited by `p_1` and `p_2`
                             
                             key = tuple(np.round(x, PREC))
                             if key not in fluid_interface_map:
