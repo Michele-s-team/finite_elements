@@ -3177,8 +3177,7 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
 
     # --- Step 1: build surface_1-side interface map ---
 
-    # precompute interface vertex IDs (needed in step 2 to catch shape cells
-    # that touch the interface only at a corner, with no interface facet)
+    # precompute interface_vertex_ids (needed in step 2 to catch shape cells) that touch the interface only at a corner, with no interface facet)
     interface_vertex_ids = set()
 
     fluid_interface_map = {}
@@ -3250,41 +3249,63 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
     for cell in cells(mesh):
         # run through all cells in the mesh
 
-        if sf[cell] != surface_0_id:
-            continue
+        if sf[cell] == surface_0_id:
+            # `cell belongs to surface_0 -> proceed with patching
 
-        cell_dofs = dofmap.cell_dofs(cell.index())
-        n_nodes = len(cell_dofs) // value_size
+            '''
+                cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
+                [
+                    id_f_0_on_DOF_0, 
+                    id_f_0_on_DOF_1,
+                    ...,
+                    id_f_0_on_DOF_{n_nodes-1},
 
-        for i in range(n_nodes):
-            # run through all physical DOFs in `cell`
+                    id_f_1_on_DOF_0, 
+                    id_f_1_on_DOF_1,
+                    ...,
+                    id_f_1_on_DOF_{n_nodes-1},
 
-            x = dof_coordinates[cell_dofs[i]][:2]
-            key = None
+                    ...
+                ]
+                where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words
 
-            # first: check if x is at an interface vertex
-            # this catches shape cells that touch the interface only at a corner
-            # (no interface facet -> not found by the facet loop below)
-            for v_id in cell.entities(0):
-                if int(v_id) in interface_vertex_ids and np.allclose(x, coordinates[v_id], atol=tol):
-                    key = ('v', int(v_id))
-                    break
+                cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the field 'f' sitting on ith DOF in the cell 'cell']
+            '''
 
-            # second: check if x lies on an interface facet of this cell
-            # this catches edge-interior DOFs for degree >= 2
-            if key is None:
-                for facet in facets(cell):
-                    if mf_I[facet] != shape_id:
-                        continue
-                    facet_vertex_ids = facet.entities(0)
-                    facet_vertex_coords = coordinates[facet_vertex_ids]
-                    if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
-                        key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
+            cell_dofs = dofmap.cell_dofs(cell.index())
+            n_nodes = len(cell_dofs) // value_size
+
+            for i in range(n_nodes):
+                # run through all physical DOFs in `cell`
+
+                x = dof_coordinates[cell_dofs[i]][:2]
+                key = None
+
+                '''             
+                1. check if x is at an interface vertex, this catches shape cells that touch the interface only at a corner
+                (no interface facet -> not found by the facet loop below)
+                '''
+                for v_id in cell.entities(0):
+
+                    if int(v_id) in interface_vertex_ids and np.allclose(x, coordinates[v_id], atol=tol):
+                        key = ('v', int(v_id))
                         break
 
-            if key is not None and key in fluid_interface_map:
-                for j in range(value_size):
-                    f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[key][j]
+                # 2.: check if x lies on an interface facet of this cell
+                # this catches edge-interior DOFs for degree >= 2
+                if key is None:
+                    for facet in facets(cell):
+                        if mf_I[facet] != shape_id:
+                            continue
+                        facet_vertex_ids = facet.entities(0)
+                        facet_vertex_coords = coordinates[facet_vertex_ids]
+                        if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
+                            key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
+                            break
+
+                if key is not None and key in fluid_interface_map:
+                    for j in range(value_size):
+                        f_values[cell_dofs[j * n_nodes + i]] = fluid_interface_map[key][j]
 
     f.vector().set_local(f_values)
     f.vector().apply("insert")
