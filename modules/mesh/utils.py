@@ -3293,7 +3293,7 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                     if np.allclose(x, coordinates[v_id], atol=tol) and (int(v_id) in spahe_vertex_ids):
                         ''' 
                         the DOF coordinate `x` under consideration coincides with one of the cell vertices (1st condition) and it is one of the shape vertices -> add  to `key`
-                        ('v', [id of the vertex corresponding to `x`])
+                        ('v', [id of the vertex corresponding to `x`]) (2nd condition)
                         '''
 
                         key = ('v', int(v_id))
@@ -3304,15 +3304,20 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                 this catches edge-interior DOFs for degree >= 2
                 '''
                 if key is None:
+                    # `x` is not one of the cell vertices -> check whethe it lies on a facet lying on the shape
                     
                     for facet in facets(cell):
-                        if mf_I[facet] != shape_id:
-                            continue
-                        facet_vertex_ids = facet.entities(0)
-                        facet_vertex_coords = coordinates[facet_vertex_ids]
-                        if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
-                            key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
-                            break
+                        # run through all facets of `cell`
+
+                        if mf_I[facet] == shape_id:
+                            # `facet` belongs to the shape
+
+                            facet_vertex_ids = facet.entities(0)
+                            facet_vertex_coords = coordinates[facet_vertex_ids]
+
+                            if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
+                                key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
+                                break
 
                 if key is not None and key in fluid_interface_map:
                     for j in range(value_size):
