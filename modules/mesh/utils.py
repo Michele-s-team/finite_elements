@@ -3312,10 +3312,13 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                         if mf_I[facet] == shape_id:
                             # `facet` belongs to the shape
 
+                            # build list of IDs and coordinates extremal vertices of `facets`
                             facet_vertex_ids = facet.entities(0)
                             facet_vertex_coords = coordinates[facet_vertex_ids]
 
                             if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
+                                # the coodinates `x` of the DOF under consideration lie on the segment of `facet` -> add it to `key`
+
                                 key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol=tol)
                                 break
 
