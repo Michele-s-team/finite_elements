@@ -3131,28 +3131,52 @@ def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
 
 
 '''
-Return a purely integer key identifying the DOF at coordinate x on an interface facet:
+Return key identifying the DOF at coordinate x on an interface facet:
+Input values: 
+    * Mandatory:
+        - 'x': the DOF coordinates
+        - 'facet_vertex_ids': a list containing the IDs of the facet vertices
+        - 'facet_id': the ID of the facet
+        - 'coordinates': mesh.coordinates()
+        - 'degree': the degree of the polynomial space of the field under consideration
+    * Optional: 
+        - 'tol': the ditance tolerance used to tell whether `x` lies on the edge segment 
+
+Return values: 
     - ('v', vertex_id)          if x coincides with a facet vertex
-    - ('e', facet_id, t_int)    if x is an interior edge DOF,
-        where t_int = round(t * degree) and t is the parameter along the edge
-        in the canonical direction (vertex with smaller ID first),
-        ensuring both sides of the interface produce the same key
+    - ('e', facet_id, t_int)    if x is an interior edge DOF. Here t_int = round(t * degree) = [1, 2, 3, ...] identifies the canonical number of `x` along the edge. Here `facet_id` is the ID of the facet under consideration 
 '''
 
 def get_key(x, facet_vertex_ids, facet_id, coordinates, degree, tol=const.epsilon):
 
-    # check if x is at one of the facet's extremal vertices
+    #1. check if x is at one of the facet's extremal vertices
     for v_id in facet_vertex_ids:
+        # run through IDs of extremal vertices of the facet under consideration
+
         if np.allclose(x, coordinates[v_id], atol=tol):
+            # `x` coincides with the coordinates of one of these extremal vertices -> return ('v', [ID of the extremal vertex that coincides with `x`])
+
             return ('v', int(v_id))
 
-    # x is an interior edge DOF: compute t along canonical direction
+    #2. check if `x` is an interior edge DOF: compute t along canonical direction
+
     v0_id, v1_id = sorted(int(v) for v in facet_vertex_ids)
-    p0 = coordinates[v0_id]
-    p1 = coordinates[v1_id]
-    d = p1 - p0
-    t = np.dot(x - p0, d) / np.dot(d, d)
+
+    # coordinates of the extremal vertices of the facet
+    x_0 = coordinates[v0_id]
+    x_1 = coordinates[v1_id]
+
+    # vector going from `x_0` to `x_1`
+    d = x_1 - x_0
+
+    # 0<t<1 locates `x` along the facet: t=0 means that `x` is `x_0` and t=1 means that `x` is `x_1`
+    t = np.dot(x - x_0, d) / np.dot(d, d)
+
+    '''
+    For a Lagrange element of degree k, the interior edge nodes are placed at equally spaced positions t = 1/k, 2/k, ..., (k-1)/k. Multiplying by degree maps these to integers 1, 2, ..., k-1. round handles floating point imprecision, a
+    '''
     t_int = int(round(t * degree))
+
     return ('e', int(facet_id), t_int)
 
 
@@ -3174,9 +3198,17 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
 
 
 
-
-    # --- Step 1: build surface_1-side interface map ---
-
+    '''
+        Step 1: build surface_1-side interface map 
+        This step would build a list, interface_map, which is 
+        interface_map = {
+        ([key of DOF 0 lying on shape], [values of f on DOF 0 lying on shape],
+        ([key of DOF 1 lying on shape], [values of f on DOF 1 lying on shape],
+        ...
+        )
+        
+        }
+    '''
     #  interface_vertex_ids  is the set of IDs of all vertices that lie on the shape
     spahe_vertex_ids = set()
 
@@ -3233,13 +3265,13 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
 
                         if cal.point_on_segment(x, facet_vertex_coords[0], facet_vertex_coords[1]):
 
-                            # `x` lies on `facet`: get its integer key
+                            # `x` lies on `facet`: get its key as defined in `get_key`
                             key = get_key(x, facet_vertex_ids, facet.index(), coordinates, degree, tol)
 
                             if key not in fluid_interface_map:
                                 ''' 
                                 append to fluid_interface map
-                                    ([id of the DOF corresponding to `x`], value of `f` on that DOF)
+                                    ([key of the DOF corresponding to `x`], value of `f` on that DOF)
                                 '''
                                 fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]] for j in range(value_size)]
 
