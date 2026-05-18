@@ -3275,9 +3275,10 @@ def patch_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, tol=
                                 '''
                                 fluid_interface_map[key] = [f_values[cell_dofs[j * n_nodes + i]] for j in range(value_size)]
 
-
-    # --- Step 2: patch all shape (surface_0) DOFs at interface locations ---
-
+    '''
+        Step 2: patch all shape (surface_0) DOFs at interface locations 
+        This step will write into DOFs of `f` belongin to `surface_0` and lying on the shape (which are stored in `fluid_interface_map`) the values of `f` in `surface_1`
+    '''  
     for cell in cells(mesh):
         # run through all cells in the mesh
 
