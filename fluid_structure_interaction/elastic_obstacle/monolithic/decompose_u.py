@@ -2,6 +2,7 @@ from fenics import *
 import importlib
 import numpy as np
 
+import calculus as cal
 import mesh.utils as msh
 import switch_problem as swi
 
@@ -26,6 +27,9 @@ class y_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+
+
 
 msh.interpolate_dg(fsp.y, y_expression())
 
@@ -51,3 +55,18 @@ chi = (C[1][0] - C[0][1]) / (C[0][0] + C[1][1])
 theta = np.arcsin(chi/np.sqrt(1.0 + chi**2))
 
 print(f'*** chi = {chi}\ntheta = {theta}')
+
+# 5. set phi_0
+
+class phi_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        result = cal.rotation_translation(x, theta, c, t)
+
+        values[0] = result[0]
+        values[1] = result[1]
+
+    def value_shape(self):
+        return (2,)
+
+msh.interpolate_dg(fsp.phi_0, phi_0_expression())
