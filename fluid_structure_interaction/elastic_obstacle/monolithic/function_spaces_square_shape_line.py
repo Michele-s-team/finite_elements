@@ -67,6 +67,9 @@ rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
 
+# y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
+y = Function(Q_u_n)
+
 # 3.2.1 fields to store initial condition read from file
 
 v_input = Function(Q_v_n)
