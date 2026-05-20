@@ -25,6 +25,8 @@ msh.interpolate_dg(fsp.y, y_expression())
 c = [msh.average_wrt_measure(fsp.y[i], rmsh.dx_mesh[0]['dx_shape']) for i in range(2)]
 print(f'*** c = {c}')
 
+# sign
+
 # 2. compute C[i][j]= {C_{ij}}_notes
 C = [[msh.average_wrt_measure((fsp.y[i] + fsp.u_n[i]) * (fsp.y[j] - c[j]), rmsh.dx_mesh[0]['dx_shape']) for j in range(2)] for i in range(2)]
 

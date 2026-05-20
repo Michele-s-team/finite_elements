@@ -562,6 +562,21 @@ def abs_wrt_measure(f, measure):
     return difference_wrt_measure(f, Constant(0), measure)
 
 
+
+'''
+returns the average of a field `f` (scalar, vector or tensor) with respect to a measure
+Input values: 
+    - `f`: the field 
+    - `measure`: the measure, e.g., `dx`
+
+Return values: 
+    - (int f * measure )/ (int measure)
+'''
+def average_wrt_measure(f, measure):
+
+    return assemble(f * measure ) / assemble(Constant(1.0) * measure)
+
+
 '''
 compute the difference between functions f and g on the boundary of the mesh, boundary_c, given by the boundary points whose distance from point c lies between r and R, returning 
 sqrt(\sum_{i \in {vertices in boundary_c} [f(x_i) - g(x_i)]^2/ (number of vertices in boundary_c})
