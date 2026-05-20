@@ -15,7 +15,8 @@ the variables for the problem are
     - v_n, v_n_1 : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
 
-    - 'u_0' = u_0_{Decomposition of deformation field}
+    - 'u_0' = {u_0}_{Decomposition of deformation field}
+    - 'phi_0' = {phi_0}_{Decomposition of deformation field}
 
 all fields are defined from a mixed function space
 '''
@@ -68,6 +69,7 @@ rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
 
+phi_0 = Function(Q_u_n)
 u_0 = Function(Q_u_n)
 
 
