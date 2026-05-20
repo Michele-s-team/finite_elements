@@ -622,6 +622,23 @@ def dRddtheta(theta):
 
 
 '''
+given a point, returns the point rotated with respect to a point and translated
+Input values: 
+    - `p` = [p_x, p_y], the coordinates of the point
+    - `theta`: the rotation angle
+    - `c`: the rotation center
+    - `t`: the translation vector
+Return values: 
+    - t + c + R(theta).(x-c)
+'''
+
+def rotation_translation(p, theta, c, t):
+
+    return np.add(t, np.add(c, R(theta).dot(np.subtract(p, c))))
+
+
+
+'''
 given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the point and the rectangle boundary
 Input values: 
 - 'L', 'h': the length and  height of the rectangle
