@@ -23,11 +23,13 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
+import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
+import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
@@ -388,7 +390,7 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
 
-        phi_n_old.assign(fsp.y + fsp.u_n_dummy)
+        phi_n_old.assign(project(fsp.y + u_n_dummy, fsp.Q_u_n))
         phi_0_old.assign(fsp.phi_0)
         u_0_old.assign(fsp.u_0)
 
@@ -451,25 +453,45 @@ for n in range(rpam.parameters['num_steps']):
     
         '''
 
-        #sign
 
         # 6.2 set the initial profiles for the displacement fields
 
+        class y_expression(UserExpression):
+            def eval(self, values, x):
+
+                values[0] = x[0]
+                values[1] = x[1]
+
+            def value_shape(self):
+                return (2,)
+
+        msh.interpolate_dg(fsp.y, y_expression())
+
+
         '''
-            phi_0(y) = y + u_0(y)
-            y' = phi_0(y)
+            phi_0_old(y) = y + u_0_old(y)
+            y' = phi_0_old(y)
 
             the function g that satisfies
 
-            g(phi_0(y)) = f(y)
-            g(y') = f(phi_0^{-1}(y'))
+            g(phi_0_old(y)) = phi_n_old(y)
+            g(y') = phi_n_old(phi_0_old^{-1}(y'))
 
             is constructed as
 
-            g = fu.deform_function(f, fsp.u_0)
+            g = fu.deform_function(phi_n_old, fsp.u_0_old)
         '''
 
-        fsp.u_input.assign(Constant((0, 0)))
+        phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
+        phi_n_old_def.set_allow_extrapolation(True)
+
+        fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
+
+        io.full_print(fsp.u_input, 'u_input', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        #sign
+
 
         msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)

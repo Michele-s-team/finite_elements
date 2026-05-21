@@ -76,6 +76,9 @@ u_0 = Function(Q_u_n)
 # y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
 y = Function(Q_u_n)
 
+y.set_allow_extrapolation(True)
+
+
 # 3.2.1 fields to store initial condition read from file
 
 v_input = Function(Q_v_n)
