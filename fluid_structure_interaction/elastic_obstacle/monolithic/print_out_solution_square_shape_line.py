@@ -73,7 +73,11 @@ def print_solution(t, step, dt):
     io.full_print(fsp.u_0, 'u_0_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     
-
+    '''
+        fsp.u_0.assign(fsp.phi_0 - fsp.y)
+        io.full_print(fsp.u_0, 'u_0_exact_n_' + str(step), \
+                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    '''
 
 
 

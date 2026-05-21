@@ -1,5 +1,5 @@
 '''
-this module solves for u_0
+this module solves for u_0: it sets u_0 = phi_0 - y in the shape, and solves an elasticity PDE for u_0 in the square, by imposing continuity for u_0 at dS_shape 
 '''
 
 from fenics import *
@@ -35,7 +35,7 @@ bcs = []
 F = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        (fsp.u_0[i] - (fsp.phi_0[i] - fsp.y[i])) * fsp.nu_u_0[i], 
+                                        rpam.parameters['alpha_ellipse']/rmsh.r_mesh[0] * (fsp.u_0[i] - (fsp.phi_0[i] - fsp.y[i])) * fsp.nu_u_0[i], 
                                         - ela.P(fsp.u_0, ela.K(fsp.u_0, rpam.parameters['exponent']), ela.mu(fsp.u_0, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_0[k].dx(i)), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
