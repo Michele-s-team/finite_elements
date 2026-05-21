@@ -210,6 +210,50 @@ fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_d
 #
 # '''
 
+# test deform_function - start
+import calculus as cal 
+
+class y_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]
+        values[1] = x[1]
+
+    def value_shape(self):
+        return (2,)
+    
+msh.interpolate_dg(fsp.y, y_expression())
+
+
+theta = np.pi/10
+c = [0.2, 0.2]
+t = [0.01, 0.01]
+
+class phi_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        result = cal.rotation_translation(x, theta, c, t)
+
+        values[0] = result[0]
+        values[1] = result[1]
+
+    def value_shape(self):
+        return (2,)
+
+msh.interpolate_dg(fsp.phi_0, phi_0_expression())
+
+
+print('Solving for u_0 ... ')
+
+vp_u_0 = importlib.reload(vp_u_0) 
+var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
+
+print('... done.', flush=True)
+
+
+sys.exit(1)
+# test deform_function - end
+
 
 
 
