@@ -369,6 +369,7 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old = Function(fsp.Q_u_dot_n)
         u_dot_n_1_old = Function(fsp.Q_u_dot_n)
 
+        phi_n_old = Function(fsp.Q_u_n)
         phi_0_old = Function(fsp.Q_u_n)
         u_0_old = Function(fsp.Q_u_n)
 
@@ -387,6 +388,7 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
 
+        phi_n_old.assign(fsp.y + fsp.u_n_dummy)
         phi_0_old.assign(fsp.phi_0)
         u_0_old.assign(fsp.u_0)
 
@@ -478,7 +480,7 @@ for n in range(rpam.parameters['num_steps']):
 
         #9 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_0_old, u_0_old
+        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
