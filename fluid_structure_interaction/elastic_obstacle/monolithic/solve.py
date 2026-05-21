@@ -456,6 +456,8 @@ for n in range(rpam.parameters['num_steps']):
 
         # 6.2 set the initial profiles for the displacement fields
 
+        # 6.2.1 set u_input
+
         class y_expression(UserExpression):
             def eval(self, values, x):
 
@@ -472,14 +474,14 @@ for n in range(rpam.parameters['num_steps']):
             phi_0_old(y) = y + u_0_old(y)
             y' = phi_0_old(y)
 
-            the function g that satisfies
+            the function phi_n_old_def that satisfies
 
-            g(phi_0_old(y)) = phi_n_old(y)
-            g(y') = phi_n_old(phi_0_old^{-1}(y'))
+            phi_n_old_def(phi_0_old(y)) = phi_n_old(y)
+            phi_n_old_def(y') = phi_n_old(phi_0_old^{-1}(y'))
 
             is constructed as
 
-            g = fu.deform_function(phi_n_old, fsp.u_0_old)
+            phi_n_old_def = fu.deform_function(phi_n_old, fsp.u_0_old)
         '''
 
         phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
@@ -492,6 +494,7 @@ for n in range(rpam.parameters['num_steps']):
 
         #sign
 
+        # 6.2.2 set u_dot_input
 
         msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
