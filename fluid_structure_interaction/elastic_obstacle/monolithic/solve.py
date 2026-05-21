@@ -439,10 +439,12 @@ for n in range(rpam.parameters['num_steps']):
 
         #sign
 
-
-
-
         # 6.2 set the initial profiles for the displacement fields
+
+        '''
+                # g(x + u_0(x)) = f(x)
+                g = fu.deform_function(f, fsp.u_0)
+        '''
 
         fsp.u_input.assign(Constant((0, 0)))
 
