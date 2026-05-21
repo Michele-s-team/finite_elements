@@ -208,8 +208,9 @@ fsp.u_dot_n_1.assign(fsp.u_dot_input)
 fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
 #
-# '''
+'''
 
+'''
 # test deform_function - start
 import calculus as cal 
 import function as fu
@@ -281,7 +282,7 @@ print(f'x = {x}\nx_p = {x_p} \n f(x) = {f(x)} \n g(x_p) = {g(x_p)} \n err = {abs
 
 sys.exit(1)
 # test deform_function - end
-
+'''
 
 
 
