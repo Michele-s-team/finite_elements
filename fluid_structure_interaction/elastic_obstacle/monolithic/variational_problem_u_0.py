@@ -10,7 +10,6 @@ import ufl as ufl
 import decompose_u as dec_u
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
-import physics.fluid_mechanics as flu
 import physics.elasticity as ela
 import parameters.read.solution as rpam
 import switch_problem as swi
