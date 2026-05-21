@@ -94,6 +94,9 @@ v_tb = Function(Q_v_n)
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
+nu_u_0 = TestFunction(Q_u_n)
+
+
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
