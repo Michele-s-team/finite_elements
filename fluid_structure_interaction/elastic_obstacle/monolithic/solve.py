@@ -233,7 +233,7 @@ msh.interpolate_dg(fsp.y, y_expression())
 
 theta = np.pi/10
 c = [0.2, 0.2]
-t = [0.01, 0.01]
+t = [0.04, 0.05]
 
 class phi_0_expression(UserExpression):
     def eval(self, values, x):
@@ -273,8 +273,8 @@ msh.interpolate_dg(f, f_expression())
 
 g = fu.deform_function(f, fsp.u_0)
 
-x = [0.3, 0.2]
-x_p = fsp.phi_0(x)
+x = [0.2, 0.2]
+x_p = np.add(x, fsp.u_0(x))
 
 print(f'x = {x}\nx_p = {x_p} \n f(x) = {f(x)} \n g(x_p) = {g(x_p)} \n err = {abs(g(x_p) - f(x))/f(x)}')
 
