@@ -318,18 +318,16 @@ for n in range(rpam.parameters['num_steps']):
 
         mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
 
-
-
         shape_coordinates = []
         for i in range(len(mesh_0_parameters["shape_coordinates"])):
-            # run through all coordinates of the nodes of mesh[1]
+            # run through all coordinates of the nodes of the boundary
 
             coordinate = mesh_0_parameters["shape_coordinates"][i]
 
-            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_n
+            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
             shape_coordinates.append(np.add(
                                         coordinate,
-                                        u_n_dummy(coordinate)
+                                        fsp.u_0(coordinate)
                                         ).tolist()
                                 )  
 
@@ -348,6 +346,8 @@ for n in range(rpam.parameters['num_steps']):
         pr_sol = importlib.reload(pr_sol)
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
+
+        #sign
         
         msh.transfer(v_n_old, fsp.v_input, u_n_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
