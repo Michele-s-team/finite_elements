@@ -229,7 +229,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.2 solve variational problem
 
 
-    print('Solving problem ... ')
+    print('Solving monolithic problem ... ')
 
     if step <= rpam.parameters['n_hold']:
         
@@ -260,12 +260,15 @@ for n in range(rpam.parameters['num_steps']):
     pr_da.print_data()
 
     # 2.3.3 decompose the deformation field
-    dec_u = importlib.reload(dec_u) 
 
+    print('Solving for u_0 ... ')
+
+    dec_u = importlib.reload(dec_u) 
     vp_u_0 = importlib.reload(vp_u_0) 
+
     var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
-
+    print('... done.', flush=True)
 
 
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:

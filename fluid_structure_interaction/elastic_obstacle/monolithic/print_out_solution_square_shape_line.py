@@ -33,7 +33,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_u_dot_n.write(u_dot_n_dummy, t)
 
     fi.xdmffile_det_F_n.write(det_F_n, t)
-
+    fi.xdmffile_u_0.write(fsp.u_0, t)
 
 
     # 3 write snapshots
@@ -59,6 +59,10 @@ def print_solution(t, step, dt):
     
     # 3.3 average of det(F)
     io.full_print(det_F_n, 'det_F_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    # 3.4 u_0
+    io.full_print(fsp.u_0, 'u_0_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 
