@@ -369,6 +369,8 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old = Function(fsp.Q_u_dot_n)
         u_dot_n_1_old = Function(fsp.Q_u_dot_n)
 
+        u_0_old = Function(fsp.Q_u_n)
+
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #1.2.1 unpack the mixed field 
@@ -383,6 +385,9 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
+
+        u_0_old.assign(fsp.u_0)
+
 
         # 1.2.2.1
         # fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer`, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
@@ -456,7 +461,7 @@ for n in range(rpam.parameters['num_steps']):
             g(y') = f(phi_0^{-1}(y'))
 
             is constructed as
-            
+
             g = fu.deform_function(f, fsp.u_0)
         '''
 
