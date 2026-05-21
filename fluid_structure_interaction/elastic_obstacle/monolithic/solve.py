@@ -347,12 +347,27 @@ for n in range(rpam.parameters['num_steps']):
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        #sign
-        
-        msh.transfer(v_n_old, fsp.v_input, u_n_old)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-        msh.transfer(sigma_n_old, fsp.sigma_input, u_n_old)
+        # 6.1 transfer the fluid fields
+        msh.transfer(v_n_old, fsp.v_input, fsp.u_0)
+        msh.transfer(v_n_1_old, fsp.v_n_1, fsp.u_0)
+
+        msh.transfer(sigma_n_old, fsp.sigma_input, fsp.u_0)
+
+        #sign
+
+
+        '''     
+        import solution_paths as solpath
+
+        io.full_print(fsp.v_input, 'v_tr', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        io.full_print(fsp.sigma_input, 'sigma_tr', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+    
+        '''
+
+        # 6.2 transfer the displacement fields
 
         fsp.u_input.assign(Constant((0, 0)))
 
