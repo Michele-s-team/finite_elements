@@ -212,7 +212,12 @@ fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_d
 
 # test deform_function - start
 import calculus as cal 
+import function as fu
 import solution_paths as solpath
+
+Q_f = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
+
+f = Function(Q_f)
 
 class y_expression(UserExpression):
     def eval(self, values, x):
@@ -249,10 +254,25 @@ print('Solving for u_0 ... ')
 vp_u_0 = importlib.reload(vp_u_0) 
 var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
-print('... done.', flush=True)
-
 io.full_print(fsp.u_0, 'u_0', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+print('... done.', flush=True)
+
+
+class f_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0] + x[1]
+
+    def value_shape(self):
+        return (1,)
+    
+msh.interpolate_dg(f, f_expression())
+
+
+g = fu.deform_function(f, fsp.u_0)
+
 
 sys.exit(1)
 # test deform_function - end
