@@ -6,7 +6,8 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import continuation as cont
+
+import decompose_u as dec_u
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
@@ -35,7 +36,7 @@ bcs = []
 F_u_0 = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        0, 
+                                        (fsp.u_0[i] - (fsp.phi_0[i] - fsp.y[i])) * fsp.nu_u_0[i], 
                                         - ela.P(fsp.u_0, ela.K(fsp.u_0, rpam.parameters['exponent']), ela.mu(fsp.u_0, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_0[k].dx(i)), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
