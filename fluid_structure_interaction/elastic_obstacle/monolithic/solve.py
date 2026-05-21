@@ -208,8 +208,81 @@ fsp.u_dot_n_1.assign(fsp.u_dot_input)
 fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
 #
-# '''
+'''
 
+'''
+# test deform_function - start
+import calculus as cal 
+import function as fu
+import solution_paths as solpath
+
+Q_f = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
+
+f = Function(Q_f)
+
+class y_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]
+        values[1] = x[1]
+
+    def value_shape(self):
+        return (2,)
+    
+msh.interpolate_dg(fsp.y, y_expression())
+
+
+theta = np.pi/10
+c = [0.2, 0.2]
+t = [0.04, 0.05]
+
+class phi_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        result = cal.rotation_translation(x, theta, c, t)
+
+        values[0] = result[0]
+        values[1] = result[1]
+
+    def value_shape(self):
+        return (2,)
+
+msh.interpolate_dg(fsp.phi_0, phi_0_expression())
+
+
+print('Solving for u_0 ... ')
+
+vp_u_0 = importlib.reload(vp_u_0) 
+var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
+
+io.full_print(fsp.u_0, 'u_0', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+print('... done.', flush=True)
+
+
+class f_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2*np.pi*(x[0] + x[1])/rmsh.lmsh.parameters['L'])
+
+    def value_shape(self):
+        return (1,)
+    
+msh.interpolate_dg(f, f_expression())
+
+# setting phi(x) = x + u_0(x), here I check that g(phi(x)) = f(x)
+g = fu.deform_function(f, fsp.u_0)
+
+x = [0.2, 0.2]
+x_p = np.add(x, fsp.u_0(x))
+
+print(f'x = {x}\nx_p = {x_p} \n f(x) = {f(x)} \n g(x_p) = {g(x_p)} \n err = {abs(g(x_p) - f(x))/f(x)}')
+
+
+sys.exit(1)
+# test deform_function - end
+'''
 
 
 
@@ -354,9 +427,6 @@ for n in range(rpam.parameters['num_steps']):
 
         msh.transfer(sigma_n_old, fsp.sigma_input, fsp.u_0)
 
-        #sign
-
-
         '''     
         import solution_paths as solpath
 
@@ -366,6 +436,11 @@ for n in range(rpam.parameters['num_steps']):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
     
         '''
+
+        #sign
+
+
+
 
         # 6.2 set the initial profiles for the displacement fields
 
