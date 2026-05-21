@@ -270,7 +270,7 @@ class f_expression(UserExpression):
     
 msh.interpolate_dg(f, f_expression())
 
-
+# setting phi(x) = x + u_0(x), here I check that g(phi(x)) = f(x)
 g = fu.deform_function(f, fsp.u_0)
 
 x = [0.2, 0.2]
