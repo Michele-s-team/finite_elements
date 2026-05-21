@@ -100,6 +100,7 @@ nu_u_0 = TestFunction(Q_u_n)
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
+J_u_0 = TrialFunction(Q_u_n)
 
 # 3.5 function assigner
 

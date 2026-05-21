@@ -95,6 +95,9 @@ pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 import decompose_u as dec_u
+import variational_problem_u_0 as vp_u_0
+
+
 
 '''
 # test patch fields - start
@@ -258,6 +261,10 @@ for n in range(rpam.parameters['num_steps']):
 
     # 2.3.3 decompose the deformation field
     dec_u = importlib.reload(dec_u) 
+
+    vp_u_0 = importlib.reload(vp_u_0) 
+    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
+
 
 
 

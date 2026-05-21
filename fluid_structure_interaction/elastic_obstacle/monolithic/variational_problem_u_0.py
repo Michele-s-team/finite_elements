@@ -33,7 +33,7 @@ bcs = []
 # variational problem
 
 
-F_u_0 = msh.ufl_conditional_form(
+F = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
                                         (fsp.u_0[i] - (fsp.phi_0[i] - fsp.y[i])) * fsp.nu_u_0[i], 
