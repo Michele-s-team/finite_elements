@@ -60,7 +60,7 @@ class phi_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-msh.interpolate_dg(fsp.phi_0, phi_0_expression())
+msh.interpolate_dg(fsp.phi_0, phi_0_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
 
 
 '''

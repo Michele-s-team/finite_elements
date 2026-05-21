@@ -332,16 +332,21 @@ for n in range(rpam.parameters['num_steps']):
     pr_ic.print_ics()
     pr_da.print_data()
 
+
     # 2.3.3 decompose the deformation field
 
-    print('Solving for u_0 ... ')
 
     dec_u = importlib.reload(dec_u) 
     vp_u_0 = importlib.reload(vp_u_0) 
 
+    print('Solving for u_0 ... ')
+
     var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
     print('... done.', flush=True)
+
+    # now that u_0 is known, I set phi_0(y) = y + u_0(y) also in \partial \Omega^y_square
+    fsp.phi_0.assign(fsp.y + fsp.u_0)
 
 
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
