@@ -212,6 +212,7 @@ fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_d
 
 # test deform_function - start
 import calculus as cal 
+import solution_paths as solpath
 
 class y_expression(UserExpression):
     def eval(self, values, x):
@@ -250,6 +251,8 @@ var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
 print('... done.', flush=True)
 
+io.full_print(fsp.u_0, 'u_0', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
 
 sys.exit(1)
 # test deform_function - end
