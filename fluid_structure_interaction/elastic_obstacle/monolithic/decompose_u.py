@@ -63,9 +63,9 @@ class phi_0_expression(UserExpression):
 msh.interpolate_dg(fsp.phi_0, phi_0_expression())
 
 
-
+'''
 print(f'*** c = {c}')
 print(f'*** C = {C}')
 print(f'*** t = {t}')
 print(f'*** chi = {chi}\ntheta = {theta}')
-
+'''
