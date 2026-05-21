@@ -367,7 +367,7 @@ for n in range(rpam.parameters['num_steps']):
     
         '''
 
-        # 6.2 transfer the displacement fields
+        # 6.2 set the initial profiles for the displacement fields
 
         fsp.u_input.assign(Constant((0, 0)))
 
