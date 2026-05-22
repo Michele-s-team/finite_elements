@@ -32,6 +32,7 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 
 csvfile = open(filename_data, 'a', newline='')
 fieldnames = [ \
+    'step',
     '<<|u_n|^2>>_{partial Omega ellipse}',
     '<<sigma_n^2>>_{partial Omega ellipse}',
     '<<varsigma_no_pressure_{ij} varsigma_no_pressure_{ij}>>_{partial Omega ellipse}',
@@ -42,18 +43,20 @@ writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
 
-def print_data():
+def print_data(step):
 
     writer.writerows([{
         fieldnames[0]: \
-            f"{sqrt(assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
+            f"{step:.{io.number_of_decimals}e}",
         fieldnames[1]: \
-            f"{sqrt(assemble((fsp.sigma_n(vp.sub_mesh_1_label))**2 * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
+            f"{sqrt(assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
         fieldnames[2]: \
-            f"{sqrt(assemble(flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
+            f"{sqrt(assemble((fsp.sigma_n(vp.sub_mesh_1_label))**2 * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
         fieldnames[3]: \
-            f"{msh_qu.quality:.{io.number_of_decimals}e}",
+            f"{sqrt(assemble(flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
         fieldnames[4]: \
+            f"{msh_qu.quality:.{io.number_of_decimals}e}",
+        fieldnames[5]: \
             f"{assemble(ela.psi(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic']) * rmsh.dx_mesh[0]['dx_shape']):.{io.number_of_decimals}e}",
         }])
 
