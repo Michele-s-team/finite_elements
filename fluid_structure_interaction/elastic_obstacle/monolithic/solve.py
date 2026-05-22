@@ -502,8 +502,6 @@ for n in range(rpam.parameters['num_steps']):
         io.full_print(fsp.u_input, 'u_n_after_transfer', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
 
-        #sign
-
         # 6.2.2 set u_dot_input
 
 
@@ -524,16 +522,14 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
         u_dot_n_old_def.set_allow_extrapolation(True)
 
+
+
         fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
 
 
         io.full_print(fsp.u_dot_input, 'u_dot_after_transfer', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
 
-        # sys.exit(1)
-
-        # msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
-        # msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
 
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
@@ -546,7 +542,6 @@ for n in range(rpam.parameters['num_steps']):
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
-
 
 
     #2.4 unpack the mixed field 
