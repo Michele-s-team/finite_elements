@@ -30,8 +30,8 @@ i, j, k = ufl.indices(3)
 filename_data = os.path.join(rarg.args.output_directory, 'data.csv')
 os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 
-csvfile = open(filename_data, 'a', newline='')
-fieldnames = [ \
+csvfile_data = open(filename_data, 'a', newline='')
+fieldnames_data = [ \
     'step',
     '<<|u_n|^2>>_{partial Omega ellipse}',
     '<<sigma_n^2>>_{partial Omega ellipse}',
@@ -39,25 +39,25 @@ fieldnames = [ \
     'mesh_quality',
     'int_shape psi dx'
     ]
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
+writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
+writer_data.writeheader()
 
 
 def print_data(step):
 
-    writer.writerows([{
-        fieldnames[0]: \
+    writer_data.writerows([{
+        fieldnames_data[0]: \
             step,
-        fieldnames[1]: \
+        fieldnames_data[1]: \
             sqrt(assemble(msh.average(fsp.u_n[i]*fsp.u_n[i]) * rmsh.ds_mesh[0]['dS_shape'])),
-        fieldnames[2]: \
+        fieldnames_data[2]: \
             sqrt(assemble((fsp.sigma_n(vp.sub_mesh_1_label))**2 * rmsh.ds_mesh[0]['dS_shape'])),
-        fieldnames[3]: \
+        fieldnames_data[3]: \
             sqrt(assemble(flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * rmsh.ds_mesh[0]['dS_shape'])),
-        fieldnames[4]: \
+        fieldnames_data[4]: \
             msh_qu.quality,
-        fieldnames[5]: \
+        fieldnames_data[5]: \
             assemble(ela.psi(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic']) * rmsh.dx_mesh[0]['dx_shape']),
         }])
 
-    csvfile.flush()
+    csvfile_data.flush()
