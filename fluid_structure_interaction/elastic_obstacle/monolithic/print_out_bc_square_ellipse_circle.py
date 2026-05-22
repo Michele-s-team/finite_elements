@@ -21,10 +21,10 @@ vp = importlib.import_module(swi.vp)
 i, j, k, l, m, n = ufl.indices(6)
 
 # create the path for the csv file if it does not exist
-filename_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
-os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
+filepath_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
+os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 
-csvfile = open(filename_bcs, 'a', newline='')
+csvfile = open(filepath_bcs, 'a', newline='')
 fieldnames = [ \
     '<<|v^n - v_l|^2>>_{partial Omega l}', \
     '<<|v^n - v_tb|^2>>_{partial Omega tb}',\

@@ -23,6 +23,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
+import files as fi
 import function as fu
 import input_output as io
 import mesh.utils as msh
@@ -568,3 +569,7 @@ for n in range(rpam.parameters['num_steps']):
 
 print("... done.", flush=True)
 
+
+fi.csvfile_bcs.close()
+fi.csvfile_data.close()
+fi.csvfile_ics.close()
