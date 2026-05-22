@@ -424,6 +424,7 @@ for n in range(rpam.parameters['num_steps']):
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
         #5. reload modules so everything is updated according to the mesh change
+        # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
         importlib.reload(bgeo)
@@ -437,21 +438,30 @@ for n in range(rpam.parameters['num_steps']):
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
 
+
+
         # 6.1 transfer the fluid fields
-        msh.transfer(v_n_old, fsp.v_input, fsp.u_0)
-        msh.transfer(v_n_1_old, fsp.v_n_1, fsp.u_0)
 
-        msh.transfer(sigma_n_old, fsp.sigma_input, fsp.u_0)
-
-        '''     
-        import solution_paths as solpath
-
-        io.full_print(fsp.v_input, 'v_tr', \
+        io.full_print(v_n_old, 'v_n_before_transfer', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-        io.full_print(fsp.sigma_input, 'sigma_tr', \
+        io.full_print(v_n_1_old, 'v_n_1_before_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        io.full_print(sigma_n_old, 'sigma_n_before_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        msh.transfer(v_n_old, fsp.v_input, u_0_old)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
+
+        msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
+
+        io.full_print(fsp.v_input, 'v_n_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        io.full_print(fsp.v_n_1, 'v_n_1_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        io.full_print(fsp.sigma_input, 'sigma_n_after_transfer', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
     
-        '''
 
 
         # 6.2 set the initial profiles for the displacement fields
@@ -481,7 +491,7 @@ for n in range(rpam.parameters['num_steps']):
 
             is constructed as
 
-            phi_n_old_def = fu.deform_function(phi_n_old, fsp.u_0_old)
+            phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
         '''
 
         phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
@@ -489,15 +499,41 @@ for n in range(rpam.parameters['num_steps']):
 
         fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
 
-        io.full_print(fsp.u_input, 'u_input', \
+        io.full_print(fsp.u_input, 'u_n_after_transfer', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
 
         #sign
 
         # 6.2.2 set u_dot_input
 
-        msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
-        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+
+        '''
+            phi_0_old(y) = y + u_0_old(y)
+            y' = phi_0_old(y)
+
+            the function u_dot_n_old_def that satisfies
+
+            u_dot_n_old_def(phi_0_old(y)) = u_dot_n_old(y)
+            u_dot_n_old_def(y') = u_dot_n_old(phi_0_old^{-1}(y'))
+
+            is constructed as
+
+            u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
+        '''
+
+        u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
+        u_dot_n_old_def.set_allow_extrapolation(True)
+
+        fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
+
+
+        io.full_print(fsp.u_dot_input, 'u_dot_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        # sys.exit(1)
+
+        # msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
+        # msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
 
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
