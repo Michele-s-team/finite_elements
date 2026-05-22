@@ -244,4 +244,4 @@ Return values;
 
 def psi(u, K, mu):
 
-    return (1.0/2.0 * (mu * ( detF(u)**(-2.0/len(u))) * C(u)[i, i] - len(u)) + K * (1.0/2.0 * (detF(u)**2 - 1.0) - log(detF(u))))
+    return (1.0/2.0 * (mu * ( detF(u)**(-2.0/len(u))) * C(u)[i, i] - len(u) ) + K * (1.0/2.0 * (detF(u)**2 - 1.0) - log(detF(u))))
