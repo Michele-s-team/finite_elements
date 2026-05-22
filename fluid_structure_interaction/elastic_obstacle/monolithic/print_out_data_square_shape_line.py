@@ -16,6 +16,7 @@ import input_output as io
 import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import physics.elasticity as ela
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -34,7 +35,8 @@ fieldnames = [ \
     '<<|u_n|^2>>_{partial Omega ellipse}',
     '<<sigma_n^2>>_{partial Omega ellipse}',
     '<<varsigma_no_pressure_{ij} varsigma_no_pressure_{ij}>>_{partial Omega ellipse}',
-    'mesh_quality'
+    'mesh_quality',
+    'int_shape psi dx'
     ]
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
@@ -51,6 +53,8 @@ def print_data():
             f"{sqrt(assemble(flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * flu.sigma_ale_no_pressure(fsp.v_n(vp.sub_mesh_1_label), Constant(0), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, k] * rmsh.ds_mesh[0]['dS_shape'])):.{io.number_of_decimals}e}",
         fieldnames[3]: \
             f"{msh_qu.quality:.{io.number_of_decimals}e}",
+        fieldnames[4]: \
+            f"{assemble(ela.psi(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic']) * rmsh.dx_mesh[0]['dx_shape']):.{io.number_of_decimals}e}",
         }])
 
     csvfile.flush()
