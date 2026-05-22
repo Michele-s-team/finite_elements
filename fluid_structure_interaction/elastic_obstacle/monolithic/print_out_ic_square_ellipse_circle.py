@@ -47,17 +47,17 @@ def print_ics():
 
     writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{rpam.parameters['print_out_digits']}e}",
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.sigma_n, bgeo.facet_normal)[i] * msh.jump(fsp.sigma_n, bgeo.facet_normal)[i]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.sigma_n, bgeo.facet_normal)[i] * msh.jump(fsp.sigma_n, bgeo.facet_normal)[i]), rmsh.dS_I[1]):.{rpam.parameters['print_out_digits']}e}",
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[0]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[0]):.{rpam.parameters['print_out_digits']}e}",
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{rpam.parameters['print_out_digits']}e}",
         fieldnames[4]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[0]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[0]):.{rpam.parameters['print_out_digits']}e}",
         fieldnames[5]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_I[1]):.{rpam.parameters['print_out_digits']}e}",
         }])
 
     csvfile.flush()

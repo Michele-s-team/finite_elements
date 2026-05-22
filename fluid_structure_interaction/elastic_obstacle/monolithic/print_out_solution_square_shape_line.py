@@ -2,7 +2,6 @@ from fenics import *
 import importlib
 import os
 
-import differential_geometry.manifold.geometry as geo
 import files as fi
 import input_output as io
 import mesh.utils as msh
