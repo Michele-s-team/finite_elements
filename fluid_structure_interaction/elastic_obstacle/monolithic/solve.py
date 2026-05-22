@@ -23,11 +23,13 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
+import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
+import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
@@ -95,6 +97,9 @@ pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 import decompose_u as dec_u
+import variational_problem_u_0 as vp_u_0
+
+
 
 '''
 # test patch fields - start
@@ -205,8 +210,81 @@ fsp.u_dot_n_1.assign(fsp.u_dot_input)
 fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
 #
-# '''
+'''
 
+'''
+# test deform_function - start
+import calculus as cal 
+import function as fu
+import solution_paths as solpath
+
+Q_f = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
+
+f = Function(Q_f)
+
+class y_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]
+        values[1] = x[1]
+
+    def value_shape(self):
+        return (2,)
+    
+msh.interpolate_dg(fsp.y, y_expression())
+
+
+theta = np.pi/10
+c = [0.2, 0.2]
+t = [0.04, 0.05]
+
+class phi_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        result = cal.rotation_translation(x, theta, c, t)
+
+        values[0] = result[0]
+        values[1] = result[1]
+
+    def value_shape(self):
+        return (2,)
+
+msh.interpolate_dg(fsp.phi_0, phi_0_expression())
+
+
+print('Solving for u_0 ... ')
+
+vp_u_0 = importlib.reload(vp_u_0) 
+var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
+
+io.full_print(fsp.u_0, 'u_0', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+print('... done.', flush=True)
+
+
+class f_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = np.cos(2*np.pi*(x[0] + x[1])/rmsh.lmsh.parameters['L'])
+
+    def value_shape(self):
+        return (1,)
+    
+msh.interpolate_dg(f, f_expression())
+
+# setting phi(x) = x + u_0(x), here I check that g(phi(x)) = f(x)
+g = fu.deform_function(f, fsp.u_0)
+
+x = [0.2, 0.2]
+x_p = np.add(x, fsp.u_0(x))
+
+print(f'x = {x}\nx_p = {x_p} \n f(x) = {f(x)} \n g(x_p) = {g(x_p)} \n err = {abs(g(x_p) - f(x))/f(x)}')
+
+
+sys.exit(1)
+# test deform_function - end
+'''
 
 
 
@@ -226,7 +304,7 @@ for n in range(rpam.parameters['num_steps']):
     #2.2 solve variational problem
 
 
-    print('Solving problem ... ')
+    print('Solving monolithic problem ... ')
 
     if step <= rpam.parameters['n_hold']:
         
@@ -254,11 +332,23 @@ for n in range(rpam.parameters['num_steps']):
     # 2.3.2 compure BCs, ICs and data
     pr_bc.print_bcs()
     pr_ic.print_ics()
-    pr_da.print_data()
+    pr_da.print_data(step)
+
 
     # 2.3.3 decompose the deformation field
-    dec_u = importlib.reload(dec_u) 
 
+
+    dec_u = importlib.reload(dec_u) 
+    vp_u_0 = importlib.reload(vp_u_0) 
+
+    print('Solving for u_0 ... ')
+
+    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
+
+    print('... done.', flush=True)
+
+    # now that u_0 is known, I set phi_0(y) = y + u_0(y) also in \partial \Omega^y_square
+    fsp.phi_0.assign(fsp.y + fsp.u_0)
 
 
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
@@ -281,6 +371,10 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old = Function(fsp.Q_u_dot_n)
         u_dot_n_1_old = Function(fsp.Q_u_dot_n)
 
+        phi_n_old = Function(fsp.Q_u_n)
+        phi_0_old = Function(fsp.Q_u_n)
+        u_0_old = Function(fsp.Q_u_n)
+
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #1.2.1 unpack the mixed field 
@@ -296,6 +390,11 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
 
+        phi_n_old.assign(project(fsp.y + u_n_dummy, fsp.Q_u_n))
+        phi_0_old.assign(fsp.phi_0)
+        u_0_old.assign(fsp.u_0)
+
+
         # 1.2.2.1
         # fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer`, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
         msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
@@ -308,18 +407,16 @@ for n in range(rpam.parameters['num_steps']):
 
         mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
 
-
-
         shape_coordinates = []
         for i in range(len(mesh_0_parameters["shape_coordinates"])):
-            # run through all coordinates of the nodes of mesh[1]
+            # run through all coordinates of the nodes of the boundary
 
             coordinate = mesh_0_parameters["shape_coordinates"][i]
 
-            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_n
+            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
             shape_coordinates.append(np.add(
                                         coordinate,
-                                        u_n_dummy(coordinate)
+                                        fsp.u_0(coordinate)
                                         ).tolist()
                                 )  
 
@@ -327,6 +424,7 @@ for n in range(rpam.parameters['num_steps']):
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
         #5. reload modules so everything is updated according to the mesh change
+        # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
         importlib.reload(bgeo)
@@ -338,16 +436,100 @@ for n in range(rpam.parameters['num_steps']):
         pr_sol = importlib.reload(pr_sol)
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
-        
-        msh.transfer(v_n_old, fsp.v_input, u_n_old)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-        msh.transfer(sigma_n_old, fsp.sigma_input, u_n_old)
 
-        fsp.u_input.assign(Constant((0, 0)))
 
-        msh.transfer(u_dot_n_old, fsp.u_dot_input, u_n_old)
-        msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+
+        # 6.1 transfer the fluid fields
+
+        io.full_print(v_n_old, 'v_n_before_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        io.full_print(v_n_1_old, 'v_n_1_before_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        io.full_print(sigma_n_old, 'sigma_n_before_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        msh.transfer(v_n_old, fsp.v_input, u_0_old)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
+
+        msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
+
+        io.full_print(fsp.v_input, 'v_n_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        io.full_print(fsp.v_n_1, 'v_n_1_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        io.full_print(fsp.sigma_input, 'sigma_n_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+    
+
+
+        # 6.2 set the initial profiles for the displacement fields
+
+        # 6.2.1 set u_input
+
+        class y_expression(UserExpression):
+            def eval(self, values, x):
+
+                values[0] = x[0]
+                values[1] = x[1]
+
+            def value_shape(self):
+                return (2,)
+
+        msh.interpolate_dg(fsp.y, y_expression())
+
+
+        '''
+            phi_0_old(y) = y + u_0_old(y)
+            y' = phi_0_old(y)
+
+            the function phi_n_old_def that satisfies
+
+            phi_n_old_def(phi_0_old(y)) = phi_n_old(y)
+            phi_n_old_def(y') = phi_n_old(phi_0_old^{-1}(y'))
+
+            is constructed as
+
+            phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
+        '''
+
+        phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
+        phi_n_old_def.set_allow_extrapolation(True)
+
+        fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
+
+        io.full_print(fsp.u_input, 'u_n_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
+        # 6.2.2 set u_dot_input
+
+
+        '''
+            phi_0_old(y) = y + u_0_old(y)
+            y' = phi_0_old(y)
+
+            the function u_dot_n_old_def that satisfies
+
+            u_dot_n_old_def(phi_0_old(y)) = u_dot_n_old(y)
+            u_dot_n_old_def(y') = u_dot_n_old(phi_0_old^{-1}(y'))
+
+            is constructed as
+
+            u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
+        '''
+
+        u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
+        u_dot_n_old_def.set_allow_extrapolation(True)
+
+
+
+        fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
+
+
+        io.full_print(fsp.u_dot_input, 'u_dot_after_transfer', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+
 
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
@@ -355,12 +537,11 @@ for n in range(rpam.parameters['num_steps']):
 
         #9 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old
+        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
-
 
 
     #2.4 unpack the mixed field 

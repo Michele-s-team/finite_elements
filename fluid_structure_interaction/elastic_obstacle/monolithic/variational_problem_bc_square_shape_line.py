@@ -231,5 +231,4 @@ F_u_dot_n = msh.ufl_conditional_form(
             ) \
             
 
-#sign
 F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n

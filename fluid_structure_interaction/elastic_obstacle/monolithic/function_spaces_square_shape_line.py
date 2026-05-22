@@ -76,6 +76,9 @@ u_0 = Function(Q_u_n)
 # y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
 y = Function(Q_u_n)
 
+y.set_allow_extrapolation(True)
+
+
 # 3.2.1 fields to store initial condition read from file
 
 v_input = Function(Q_v_n)
@@ -94,9 +97,13 @@ v_tb = Function(Q_v_n)
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
+nu_u_0 = TestFunction(Q_u_n)
+
+
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
+J_u_0 = TrialFunction(Q_u_n)
 
 # 3.5 function assigner
 

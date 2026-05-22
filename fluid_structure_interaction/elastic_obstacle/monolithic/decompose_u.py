@@ -35,28 +35,19 @@ msh.interpolate_dg(fsp.y, y_expression())
 
 # 1. compute c
 c = [msh.average_wrt_measure(fsp.y[i], rmsh.dx_mesh[0]['dx_shape']) for i in range(2)]
-print(f'*** c = {c}')
-
-# sign
 
 # 2. compute C
 C = [[msh.average_wrt_measure((fsp.y[i] + fsp.u_n[i]) * (fsp.y[j] - c[j]), rmsh.dx_mesh[0]['dx_shape']) for j in range(2)] for i in range(2)]
 
-print(f'*** C = {C}')
-
-
 # 3. compute t
 t = [msh.average_wrt_measure(fsp.u_n[i], rmsh.dx_mesh[0]['dx_shape']) for i in range(2)]
-
-print(f'*** t = {t}')
 
 # 4. compute chi = \chi_notes and theta = \theta_notes
 chi = (C[1][0] - C[0][1]) / (C[0][0] + C[1][1])
 theta = np.arcsin(chi/np.sqrt(1.0 + chi**2))
 
-print(f'*** chi = {chi}\ntheta = {theta}')
 
-# 5. set phi_0
+# 5. compute phi_0
 
 class phi_0_expression(UserExpression):
     def eval(self, values, x):
@@ -69,4 +60,12 @@ class phi_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-msh.interpolate_dg(fsp.phi_0, phi_0_expression())
+msh.interpolate_dg(fsp.phi_0, phi_0_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
+
+
+'''
+print(f'*** c = {c}')
+print(f'*** C = {C}')
+print(f'*** t = {t}')
+print(f'*** chi = {chi}\ntheta = {theta}')
+'''
