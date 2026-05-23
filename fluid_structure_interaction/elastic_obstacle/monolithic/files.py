@@ -39,6 +39,7 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
+    'step', \
     '<<|v^n - v_l|^2>>_{partial Omega l}', \
     '<<|v^n - v_tb|^2>>_{partial Omega tb}',\
     '<<|v^{n square} - average(u_dot_n)|^2>>_{partial Omega ellipse}',\
