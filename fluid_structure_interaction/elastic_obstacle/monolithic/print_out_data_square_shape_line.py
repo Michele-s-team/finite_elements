@@ -9,12 +9,10 @@ import ufl as ufl
 import files as fi
 import physics.elasticity as ela
 import physics.fluid_mechanics as flu
-import input_output as io
 import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import physics.elasticity as ela
-import runtime_arguments as rarg
 import switch_problem as swi
 
 fsp = importlib.import_module(swi.fsp)

@@ -2,15 +2,12 @@
 this module prints the ICs (internal conditions) relative to the interior facets of the mesh
 '''
 
-import csv
 import importlib
 from fenics import *
-import os
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import files as fi
-import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
