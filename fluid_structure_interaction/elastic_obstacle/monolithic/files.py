@@ -67,7 +67,11 @@ fieldnames_data = [ \
     '<<sigma_n^2>>_{partial Omega ellipse}',
     '<<varsigma_no_pressure_{ij} varsigma_no_pressure_{ij}>>_{partial Omega ellipse}',
     'mesh_quality',
-    'int_shape psi dx'
+    'int_shape psi dx',
+    't',
+    'c',
+    'C',
+    'theta'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

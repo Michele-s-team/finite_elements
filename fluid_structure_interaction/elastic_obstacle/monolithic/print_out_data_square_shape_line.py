@@ -6,6 +6,7 @@ import importlib
 from fenics import *
 import ufl as ufl
 
+import decompose_u as dec_u
 import files as fi
 import physics.elasticity as ela
 import physics.fluid_mechanics as flu
@@ -37,6 +38,14 @@ def print_data(step):
             f"{msh_qu.quality:.{rpam.parameters['print_out_digits']}e}",
         fi.fieldnames_data[5]: \
             f"{assemble(ela.psi(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic']) * rmsh.dx_mesh[0]['dx_shape']):.{rpam.parameters['print_out_digits']}e}",
+        fi.fieldnames_data[6]: \
+            dec_u.t,
+        fi.fieldnames_data[7]: \
+            dec_u.c,
+        fi.fieldnames_data[8]: \
+            dec_u.C,
+        fi.fieldnames_data[9]: \
+            f"{dec_u.theta:.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_data.flush()
