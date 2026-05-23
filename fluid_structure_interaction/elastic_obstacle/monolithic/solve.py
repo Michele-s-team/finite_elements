@@ -456,7 +456,7 @@ for n in range(rpam.parameters['num_steps']):
             #                             ).tolist()
             #                     )
               
-            shape_coordinates.append(dec_u.phi_0_expression()(coordinate))
+            shape_coordinates.append((dec_u.phi_0_expression()(coordinate)).tolist())
 
         #4.2.1 generate the mesh with the new shape_coordinates
 
