@@ -453,18 +453,23 @@ for n in range(rpam.parameters['num_steps']):
 
         #1.6 transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        #1.6.1 transfer the fluid fields
+        '''
+        1.6.1 Transfer the fields
+
+        Given that the transformation reference -> current before right before remeshing, phi_n, is decomposed into phi_0 (A) + u' (B), the field are transferred in two steps
+            A) trasnfer the field with phi_0_old (u_0_0ld)
+            B) set a nonzero deformation u' with respect to the reference coordinates y'
+        '''
+
+        # 1.6.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
         msh.transfer(v_n_old, fsp.v_input, u_0_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
 
         msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
 
- 
-    
 
-
-        # 6.2 set the initial profiles for the displacement fields
+        # 1.6.1.2 Step B): set the initial u'
 
         # 6.2.1 set u_input
 
