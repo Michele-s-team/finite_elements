@@ -471,7 +471,7 @@ for n in range(rpam.parameters['num_steps']):
 
         # 1.6.1.2 Step B): set the initial u'
 
-        # 6.2.1 set u_input
+        # 1.6.2.1 set u_input
 
         msh.interpolate_dg(fsp.y, fu.identity_expression())
 
@@ -493,12 +493,10 @@ for n in range(rpam.parameters['num_steps']):
         phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
         phi_n_old_def.set_allow_extrapolation(True)
 
+        #  This implements Eq. (15) in 'Decomposition of deformation field' 
         fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
 
-        io.full_print(fsp.u_input, 'u_n_after_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-
-        # 6.2.2 set u_dot_input
+        # 1.6.2.2 set u_dot_input
 
 
         '''
@@ -518,20 +516,13 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
         u_dot_n_old_def.set_allow_extrapolation(True)
 
-
-
+        #  This implements Eq. (16) in 'Decomposition of deformation field' 
         fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
 
-
-        io.full_print(fsp.u_dot_input, 'u_dot_after_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-
-
+        # 1.7 write the profiles of fields right after remeshing into the mixed field psi
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
-        
-
-        #9 clean up
+        #1.8 clean up
 
         del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
