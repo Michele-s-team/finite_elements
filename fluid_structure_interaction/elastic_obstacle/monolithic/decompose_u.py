@@ -3,6 +3,7 @@ import importlib
 import numpy as np
 
 import calculus as cal
+import function as fu
 import mesh.utils as msh
 import switch_problem as swi
 
@@ -19,19 +20,7 @@ C[i][j] = {C_{ij}}_{Decomposition of deformation field}
 chi = \chi_{Decomposition of deformation field}
 '''
 
-class y_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = x[0]
-        values[1] = x[1]
-
-    def value_shape(self):
-        return (2,)
-    
-
-
-
-msh.interpolate_dg(fsp.y, y_expression())
+msh.interpolate_dg(fsp.y, fu.identity_expression())
 
 # 1. compute c
 c = [msh.average_wrt_measure(fsp.y[i], rmsh.dx_mesh[0]['dx_shape']) for i in range(2)]

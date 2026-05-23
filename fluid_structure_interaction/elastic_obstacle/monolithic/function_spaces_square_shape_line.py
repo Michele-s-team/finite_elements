@@ -110,3 +110,5 @@ J_u_0 = TrialFunction(Q_u_n)
 assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n])
 
 
+
+

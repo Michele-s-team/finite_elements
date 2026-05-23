@@ -469,16 +469,7 @@ for n in range(rpam.parameters['num_steps']):
 
         # 6.2.1 set u_input
 
-        class y_expression(UserExpression):
-            def eval(self, values, x):
-
-                values[0] = x[0]
-                values[1] = x[1]
-
-            def value_shape(self):
-                return (2,)
-
-        msh.interpolate_dg(fsp.y, y_expression())
+        msh.interpolate_dg(fsp.y, fu.identity_expression())
 
 
         '''

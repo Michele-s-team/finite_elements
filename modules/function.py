@@ -378,3 +378,22 @@ def error_norm(f, g, measure, delta_function_space_degree=3):
     error = (error**2)*measure
     
     return sqrt(assemble(error))
+
+
+
+'''
+class defining the identity function expression in two dimensions
+Input values:
+    - 'x': [x_0, x_1] the input coordinates
+Return values: 
+    - 'x'
+'''
+
+class identity_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0] 
+        values[1] = x[1] 
+        
+    def value_shape(self):
+        return (2,)
