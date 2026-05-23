@@ -332,7 +332,7 @@ for n in range(rpam.parameters['num_steps']):
 
     # 2.3.2 compure BCs, ICs and data
     pr_bc.print_bcs(step)
-    pr_ic.print_ics()
+    pr_ic.print_ics(step)
     pr_da.print_data(step)
 
 
