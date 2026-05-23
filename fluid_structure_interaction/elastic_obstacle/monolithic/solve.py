@@ -156,21 +156,20 @@ print(f'**** ... done.')
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-# 0. store metadata
+# 1. store metadata
 
-# 0.1 store mesh metadata
+# 1.1 store mesh metadata
 mesh_metadata = rmsh.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-# 0.2 store solution metadata
+# 1.2 store solution metadata
 solution_metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'solution_metadata.csv'), solution_metadata)
 
 
-#1. set the initial profiles
+#2. set the initial profiles
 
-# 1.1 set from expressions
-# 
+#2.1 set from expressions
 
 # trial analytical expression for a vector
 class v_0_expression(UserExpression):
@@ -195,19 +194,19 @@ msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 # 
 
 '''
-# 1.2 set from files
+# 2.2 set from files
 # 
 io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'v_n_{rpam.parameters["ic_n"]}.csv'), fsp.v_input)
 io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'sigma_n_{rpam.parameters["ic_n"]}.csv'), fsp.sigma_input)
 io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_input)
 io.read_dg_field_from_csv_file(os.path.join(rpam.parameters['ic_path'], f'u_dot_n_{rpam.parameters["ic_n"]}.csv'), fsp.u_dot_input)
 
-# 1.2.1 set v_n_1, u_n_1 and u_dot_n_1 according to the initial condition: in this way, the dynamics will start from where it left off
+# 2.2.1 set v_n_1, u_n_1 and u_dot_n_1 according to the initial condition: in this way, the dynamics will start from where it left off
 fsp.v_n_1.assign(fsp.v_input)
 fsp.u_n_1.assign(fsp.u_input)
 fsp.u_dot_n_1.assign(fsp.u_dot_input)
 
-# 1.2.2 write the read initial condition into psi to let the solver start from a good initial point
+# 2.2.2 write the read initial condition into psi to let the solver start from a good initial point
 fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
 #
@@ -289,7 +288,7 @@ sys.exit(1)
 
 
 
-#2. Time-stepping
+#3. Time-stepping
 
 print("Starting time iteration ...", flush=True)
 
@@ -298,12 +297,12 @@ step = 0
 
 for n in range(rpam.parameters['num_steps']):
 
-    #2.1 Update current time
+    #3.1 Update current time
+
     t += dt
     step += 1
 
-    #2.2 solve variational problem
-
+    #3.2 solve variational problem
 
     print('Solving monolithic problem ... ')
 
@@ -324,20 +323,19 @@ for n in range(rpam.parameters['num_steps']):
 
     print('... done.', flush=True)
 
-    #2.3 print BCs, ICs, data such as mesh quality, and decompose the deformation field. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
+    #3.3 print BCs, ICs, data such as mesh quality, and decompose the deformation field. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
-    # 2.3.1 compute mesh quality
+    #3.3.1 compute mesh quality
     _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
 
-    # 2.3.2 compure BCs, ICs and data
+    #3.3.2 compure BCs, ICs and data
     pr_bc.print_bcs(step)
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
 
-    # 2.3.3 decompose the deformation field
-
+    #3.3.3 decompose the deformation field
 
     dec_u = importlib.reload(dec_u) 
     vp_u_0 = importlib.reload(vp_u_0) 
@@ -354,14 +352,15 @@ for n in range(rpam.parameters['num_steps']):
 
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     # if step > 1:
-        # the mesh quality got below mesh_quality_threshold -> remesh 
+
+        #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
-        # 1.transfer fields
+        #4.1 transfer fields
 
-        # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
+        #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
         v_n_old = Function(fsp.Q_v_n)
         v_n_1_old = Function(fsp.Q_v_n)
@@ -376,12 +375,12 @@ for n in range(rpam.parameters['num_steps']):
         phi_0_old = Function(fsp.Q_u_n)
         u_0_old = Function(fsp.Q_u_n)
 
-        # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+        #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
-        #1.2.1 unpack the mixed field 
+        #4.1.2.1 unpack the mixed field 
         v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
-        # 1.2.2 write
+        # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
         v_n_1_old.assign(fsp.v_n_1)
 
@@ -397,7 +396,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
         '''         
-        1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        4.1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
         '''
 
         msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
@@ -407,7 +406,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
         '''
-        1.4
+        4.2
 
         Right before remesh, the deformation field is u_n, which corresponds to phi_n. 
         We decompose phi_n into 
@@ -434,11 +433,11 @@ for n in range(rpam.parameters['num_steps']):
                                         ).tolist()
                                 )  
 
-        #1.4.1 generate the mesh with the new shape_coordinates
+        #4.2.1 generate the mesh with the new shape_coordinates
 
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
-        #1.5 reload modules so everything is updated according to the mesh change
+        #4.3 reload modules so everything is updated according to the mesh change
 
         # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
         importlib.reload(geo)
@@ -451,17 +450,17 @@ for n in range(rpam.parameters['num_steps']):
         pr_da = importlib.reload(pr_da)
         pr_sol = importlib.reload(pr_sol)
 
-        #1.6 transfer the values stored in the _old fields to the fields defined on the new mesh
+        #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
         '''
-        1.6.1 Transfer the fields
+        4.4.1 Transfer the fields
 
         Given that the transformation reference -> current before right before remeshing, phi_n, is decomposed into phi_0 (A) + u' (B), the field are transferred in two steps
             A) trasnfer the field with phi_0_old (u_0_0ld)
             B) set a nonzero deformation u' with respect to the reference coordinates y'
         '''
 
-        # 1.6.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
+        # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
         msh.transfer(v_n_old, fsp.v_input, u_0_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
@@ -469,9 +468,9 @@ for n in range(rpam.parameters['num_steps']):
         msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
 
 
-        # 1.6.1.2 Step B): set the initial u'
+        #4.4.1.2 Step B): set the initial u'
 
-        # 1.6.2.1 set u_input
+        #4.4.1.2.1 set u_input
 
         msh.interpolate_dg(fsp.y, fu.identity_expression())
 
@@ -496,7 +495,7 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (15) in 'Decomposition of deformation field' 
         fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
 
-        # 1.6.2.2 set u_dot_input
+        #4.4.1.2.2 set u_dot_input
 
 
         '''
@@ -519,10 +518,11 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (16) in 'Decomposition of deformation field' 
         fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
 
-        # 1.7 write the profiles of fields right after remeshing into the mixed field psi
+        # 4.4.2 write the profiles of fields right after remeshing into the mixed field psi
+        
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
 
-        #1.8 clean up
+        #4.4.3 clean up
 
         del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
@@ -531,21 +531,21 @@ for n in range(rpam.parameters['num_steps']):
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
 
-    #2 Update fields
+    #5 Update fields
 
-    #2.1 unpack the mixed field 
+    #5.1 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
-    #2.2 update fields
+    #5.2 update fields
     fsp.v_n_1.assign(v_n_dummy)
 
     fsp.u_n_1.assign(u_n_dummy)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
-    # 2.3 clean up
+    #5.3 clean up
     del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
 
-    #3. print the solution
+    #6. print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
 
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
@@ -557,7 +557,7 @@ for n in range(rpam.parameters['num_steps']):
 
 print("... done.", flush=True)
 
-
+# 7. close files
 fi.csvfile_bcs.close()
 fi.csvfile_data.close()
 fi.csvfile_ics.close()
