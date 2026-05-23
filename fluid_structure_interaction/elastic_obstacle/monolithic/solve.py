@@ -531,19 +531,21 @@ for n in range(rpam.parameters['num_steps']):
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
 
-    #2.4 unpack the mixed field 
+    #2 Update fields
+
+    #2.1 unpack the mixed field 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
-    #2.6 Update fields
+    #2.2 update fields
     fsp.v_n_1.assign(v_n_dummy)
 
     fsp.u_n_1.assign(u_n_dummy)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
-    # 2.6.1 clean up
+    # 2.3 clean up
     del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
 
-    # 2.7 print the solution
+    #3. print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
 
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
