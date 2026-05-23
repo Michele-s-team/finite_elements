@@ -396,15 +396,28 @@ for n in range(rpam.parameters['num_steps']):
         u_0_old.assign(fsp.u_0)
 
 
-        # 1.2.2.1
-        # fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        '''         
+        1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        '''
+
         msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
         msh.overwrite_interface_dofs(v_n_1_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
         msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 
-        #3. trace the coordinates of shape vertices according to the deformation field u_n: these will be the coordinates of the new reference configuration of the shape
+        '''
+        1.4
+
+        Right before remesh, the deformation field is u_n, which corresponds to phi_n. 
+        We decompose phi_n into 
+            - a part `phi_0(y)` that preserves the elastic energy, which is a comination of a rotation and a rigid translation, 
+            - a part `u'(y)` that cannot be written as a combination of a rotation and a rigid translation. 
+
+        We trace the coordinates of shape vertices right after remeshing according to phi_0: these will be the coordinates of the new reference configuration of the shape. 
+
+        Right after remeshing, the iteration starts with reference coordinates y' = phi_0(y), and with a nonzero deformation u'(phi_0^{-1}(y')) with respect to this reference configuration phi_0. 
+        '''
 
         mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
 
@@ -421,10 +434,12 @@ for n in range(rpam.parameters['num_steps']):
                                         ).tolist()
                                 )  
 
-        #4. generate the mesh with the new shape_coordinates
+        #1.4.1 generate the mesh with the new shape_coordinates
+
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
-        #5. reload modules so everything is updated according to the mesh change
+        #1.5 reload modules so everything is updated according to the mesh change
+
         # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
@@ -436,32 +451,16 @@ for n in range(rpam.parameters['num_steps']):
         pr_da = importlib.reload(pr_da)
         pr_sol = importlib.reload(pr_sol)
 
-        #6. transfer the values stored in the _old fields to the fields defined on the new mesh
+        #1.6 transfer the values stored in the _old fields to the fields defined on the new mesh
 
-
-
-
-        # 6.1 transfer the fluid fields
-
-        io.full_print(v_n_old, 'v_n_before_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-        io.full_print(v_n_1_old, 'v_n_1_before_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-
-        io.full_print(sigma_n_old, 'sigma_n_before_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+        #1.6.1 transfer the fluid fields
 
         msh.transfer(v_n_old, fsp.v_input, u_0_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
 
         msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
 
-        io.full_print(fsp.v_input, 'v_n_after_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-        io.full_print(fsp.v_n_1, 'v_n_1_after_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-        io.full_print(fsp.sigma_input, 'sigma_n_after_transfer', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
+ 
     
 
 
