@@ -7,7 +7,6 @@ import importlib
 import ufl as ufl
 
 
-import decompose_u as dec_u
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.elasticity as ela
