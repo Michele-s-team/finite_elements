@@ -1,6 +1,8 @@
 """
 This code solves for the dynamics of the Navier Stokes equations with an elastic obstacle which is pinned on part of its boundary on a flat manifold Crank Nicholson discretization scheme, by defining all fields on discontinuous spaces and using the monolithic approach
 
+NOTE: here decompose_u assumes that -pi/2 < theta < pi/2
+
 run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
@@ -73,6 +75,27 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
+'''
+
+
+'''
+# test phi_0_expression() - start
+import decompose_u as dec_u
+
+mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
+shape_coordinates = []
+for i in range(len(mesh_0_parameters["shape_coordinates"])):
+    # run through all coordinates of the nodes of the boundary
+
+    coordinate = mesh_0_parameters["shape_coordinates"][i]
+
+    print(f'coordinate = {coordinate}')
+        
+    shape_coordinates.append(dec_u.phi_0_expression()(coordinate))
+
+sys.exit(1)
+# test phi_0_expression() - end
 '''
 
 
@@ -427,11 +450,13 @@ for n in range(rpam.parameters['num_steps']):
             coordinate = mesh_0_parameters["shape_coordinates"][i]
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
-            shape_coordinates.append(np.add(
-                                        coordinate,
-                                        fsp.u_0(coordinate)
-                                        ).tolist()
-                                )  
+            # shape_coordinates.append(np.add(
+            #                             coordinate,
+            #                             fsp.u_0(coordinate)
+            #                             ).tolist()
+            #                     )
+              
+            shape_coordinates.append((dec_u.phi_0_expression()(coordinate)).tolist())
 
         #4.2.1 generate the mesh with the new shape_coordinates
 

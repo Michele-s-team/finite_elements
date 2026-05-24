@@ -1,3 +1,9 @@
+'''
+decompose the displacement field u_n into its rigid part
+
+NOTE: here we assume that -pi/2 < theta < pi/2
+'''
+
 from fenics import *
 import importlib
 import numpy as np
@@ -51,10 +57,3 @@ class phi_0_expression(UserExpression):
 
 msh.interpolate_dg(fsp.phi_0, phi_0_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
 
-
-'''
-print(f'*** c = {c}')
-print(f'*** C = {C}')
-print(f'*** t = {t}')
-print(f'*** chi = {chi}\ntheta = {theta}')
-'''
