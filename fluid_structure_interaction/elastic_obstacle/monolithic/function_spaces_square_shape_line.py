@@ -15,6 +15,9 @@ the variables for the problem are
     - v_n, v_n_1 : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
 
+    - 'u_0' = {u_0}_{Decomposition of deformation field}
+    - 'phi_0' = {phi_0}_{Decomposition of deformation field}
+
 all fields are defined from a mixed function space
 '''
 
@@ -60,12 +63,21 @@ v_n, sigma_n, u_n, u_dot_n = split(psi)
 v_n_1 = Function(Q_v_n)
 
 u_n_1 = Function(Q_u_n)
-
 u_dot_n_1 = Function(Q_u_dot_n)
 
 rho_el = Function(Q_rho_el)
 
 sigma_r = Function(Q_sigma_n)
+
+phi_0 = Function(Q_u_n)
+u_0 = Function(Q_u_n)
+
+
+# y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
+y = Function(Q_u_n)
+
+y.set_allow_extrapolation(True)
+
 
 # 3.2.1 fields to store initial condition read from file
 
@@ -85,12 +97,18 @@ v_tb = Function(Q_v_n)
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
+nu_u_0 = TestFunction(Q_u_n)
+
+
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
+J_u_0 = TrialFunction(Q_u_n)
 
 # 3.5 function assigner
 
 assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n])
+
+
 
 

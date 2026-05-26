@@ -7,10 +7,8 @@ import importlib
 import numpy as np
 import ufl as ufl
 
-import calculus as cal
 import continuation as cont
 import differential_geometry.boundary.geometry as bgeo
-import differential_geometry.manifold.geometry as geo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
 import physics.elasticity as ela
@@ -231,5 +229,4 @@ F_u_dot_n = msh.ufl_conditional_form(
             ) \
             
 
-#sign
 F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n

@@ -21,10 +21,10 @@ vp = importlib.import_module(swi.vp)
 i, j, k, l, m, n = ufl.indices(6)
 
 # create the path for the csv file if it does not exist
-filename_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
-os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
+filepath_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
+os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 
-csvfile = open(filename_bcs, 'a', newline='')
+csvfile = open(filepath_bcs, 'a', newline='')
 fieldnames = [ \
     '<<|v^n - v_l|^2>>_{partial Omega l}', \
     '<<|v^n - v_tb|^2>>_{partial Omega tb}',\
@@ -48,27 +48,27 @@ def print_bcs():
 
     writer.writerows([{
         fieldnames[0]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_l), rmsh.ds_l):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_l), rmsh.ds_l):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[1]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_tb), rmsh.ds_tb):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_tb), rmsh.ds_tb):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[2]: \
-            f"{msh.abs_wrt_measure(sqrt((fsp.v_n(vp.sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * (fsp.v_n(vp.sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i]))), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(sqrt((fsp.v_n(vp.sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * (fsp.v_n(vp.sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i]))), rmsh.dS_ellipse):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[3]: \
-            f"{msh.abs_wrt_measure(sqrt(flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 0] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 0]), rmsh.ds_r):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(sqrt(flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 0] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 0]), rmsh.ds_r):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[4]: \
-            f"{msh.abs_wrt_measure(sqrt(fsp.sigma_n**2), rmsh.ds_r):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(sqrt(fsp.sigma_n**2), rmsh.ds_r):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[5]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_circle):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_circle):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[6]: \
-            f"{msh.abs_wrt_measure( ( bgeo.facet_normal(vp.sub_mesh_0_label)[j] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, j] - ( flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] ) * bgeo.facet_normal(vp.sub_mesh_0_label)[k] ) ) * ( bgeo.facet_normal(vp.sub_mesh_0_label)[l] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, l] - ( flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, l] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[m, l] ) *  bgeo.facet_normal(vp.sub_mesh_0_label)[m] ) ), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure( ( bgeo.facet_normal(vp.sub_mesh_0_label)[j] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, j] - ( flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] ) * bgeo.facet_normal(vp.sub_mesh_0_label)[k] ) ) * ( bgeo.facet_normal(vp.sub_mesh_0_label)[l] * ela.N(fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, l] - ( flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, l] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[m, l] ) *  bgeo.facet_normal(vp.sub_mesh_0_label)[m] ) ), rmsh.dS_ellipse):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[7]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_lrtb):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_lrtb):.{rpam.parameters['print_out_digits']}e}", \
         fieldnames[8]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{io.number_of_decimals}e}",\
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{rpam.parameters['print_out_digits']}e}",\
         fieldnames[9]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_n), rmsh.ds_lrtb):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_n), rmsh.ds_lrtb):.{rpam.parameters['print_out_digits']}e}", \
         fieldnames[10]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{io.number_of_decimals}e}"
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal)[j]), rmsh.dS_ellipse):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     csvfile.flush()
