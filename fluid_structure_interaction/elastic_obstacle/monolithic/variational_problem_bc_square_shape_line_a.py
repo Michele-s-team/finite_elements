@@ -57,16 +57,7 @@ class v_tb_circle_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
-    
-
-class sigma_r_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-
-    def value_shape(self):
-        return (1,)
-    
+        
 
 class rho_el_expression(UserExpression):
     def eval(self, values, x):
@@ -92,7 +83,6 @@ msh.interpolate_dg(fsp.f, f_expression())
 msh.interpolate_dg(fsp.v_l, v_l_expression())
 msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
 
-msh.interpolate_dg(fsp.sigma_r, sigma_r_expression())
 
 msh.interpolate_dg(fsp.rho_el, rho_el_expression())
 
