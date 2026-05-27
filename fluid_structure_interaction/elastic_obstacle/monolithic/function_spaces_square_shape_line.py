@@ -72,6 +72,9 @@ sigma_t = Function(Q_sigma_n)
 phi_0 = Function(Q_u_n)
 u_0 = Function(Q_u_n)
 
+f_fluid = Function(Q_v_n)
+f_ela = Function(Q_u_n)
+
 
 # y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
 y = Function(Q_u_n)
@@ -89,10 +92,10 @@ u_dot_input = Function(Q_u_dot_n)
 
 
 # velocity profiles for the BCs
-f = Function(Q_v_n)
 v_l = Function(Q_v_n)
 v_tb = Function(Q_v_n)
 v_lrtb = Function(Q_v_n)
+
 
 
 
