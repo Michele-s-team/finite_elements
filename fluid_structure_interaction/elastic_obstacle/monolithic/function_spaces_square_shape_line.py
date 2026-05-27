@@ -67,6 +67,8 @@ u_dot_n_1 = Function(Q_u_dot_n)
 
 rho_el = Function(Q_rho_el)
 
+sigma_t = Function(Q_sigma_n)
+
 phi_0 = Function(Q_u_n)
 u_0 = Function(Q_u_n)
 
