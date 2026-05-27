@@ -200,7 +200,7 @@ def Q(u, u_dot):
 F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        (fsp.u_n[i] - fsp.u_n_1[i] - fsp.u_dot_n[i] * dt) * fsp.nu_u_dot_n[i], 
+                                        ((fsp.u_n[i] - fsp.u_n_1[i])/dt - fsp.u_dot_n[i]) * fsp.nu_u_dot_n[i], 
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
