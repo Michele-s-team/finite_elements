@@ -24,7 +24,7 @@ fieldnames_bcs = [ \
     'step', \
     '<<|v^n - v_lrtb|^2>>_{partial Omega square}', \
     '<<|v^{n square} - average(u_dot_n)|^2>>_{partial Omega ellipse}',\
-    '<<varsigma^2>>_{partial Omega r}',\
+    '<<varsigma^2>>_{partial Omega t}',\
     '<<(nu_j P_{ij} - vasigma_{ij} |F| G_{kj} nu_k) (nu_j P_{il} - vasigma_{il} |F| G_{ml} nu_m)>>_{partial Omega circle}', \
     '<<|u^n|^2>>_{partial Omega square}', \
     '<<[u^n_i]_j [u^n_i]_j>>_{partial Omega ellipse}',\

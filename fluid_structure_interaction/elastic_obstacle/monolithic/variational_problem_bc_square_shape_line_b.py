@@ -27,38 +27,17 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 
-'''# print facet_normal to check sub_mesh_0_label and sub_mesh_1_label
-import input_output as io 
-import solution_paths as solpath
-
-n_1 = bgeo.field_facet_normal(bgeo.facet_normal[0](sub_mesh_1_label), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior=True)
-
-io.full_print(n_1, 'n_1', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
-'''
-
-
 # 1. define expressions for BCs
 
-class v_l_expression(UserExpression):
+class v_lrtb_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['v_l'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        values[0] = 0.0
         values[1] = 0.0
 
     def value_shape(self):
         return (2,)
     
-class v_tb_circle_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-    
-
 class sigma_r_expression(UserExpression):
     def eval(self, values, x):
 
