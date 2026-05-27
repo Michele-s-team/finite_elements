@@ -122,8 +122,7 @@ F_v_n = msh.ufl_conditional_form(
            ) \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
             msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_square'] \
-            + (fsp.v_n[i] - fsp.v_l[i]) * fsp.nu_v_n[i] * rmsh.ds_mesh[0]['ds_l'] \
-            + (fsp.v_n[i] - fsp.v_tb[i]) * fsp.nu_v_n[i] * rmsh.ds_mesh[0]['ds_tb'] \
+            + (fsp.v_n[i] - fsp.v_lrtb[i]) * fsp.nu_v_n[i] * rmsh.ds_mesh[0]['ds'] \
         ) \
         + rpam.parameters['alpha_ellipse']/rmsh.r_mesh[0] * (\
              (fsp.v_n(sub_mesh_1_label)[i] - msh.average(fsp.u_dot_n[i])) * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.ds_mesh[0]['dS_shape']
