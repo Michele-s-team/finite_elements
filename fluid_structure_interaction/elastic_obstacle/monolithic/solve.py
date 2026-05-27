@@ -9,6 +9,7 @@ run with:
 Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_b $MESH_PATH $SOLUTION_PATH
 """
 
 import colorama as col
@@ -16,7 +17,6 @@ import dolfin
 from fenics import *
 import gc
 import importlib
-import numpy as np
 import os
 import sys
 
@@ -341,7 +341,8 @@ for n in range(rpam.parameters['num_steps']):
     else:
         cont.pressure_scale = Constant(1.0)
         
-    vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
+    # rebuild F with new pressure_scale
+    vp = importlib.reload(importlib.import_module(swi.vp))  
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
