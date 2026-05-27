@@ -60,7 +60,7 @@ class f_ela_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0.0
-        values[1] = - rpam.parameters['rho_ela'] * rpam.parameters['g']
+        values[1] = - rpam.parameters['rho_el'] * rpam.parameters['g']
 
     def value_shape(self):
         return (2,)
