@@ -38,7 +38,7 @@ class v_lrtb_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-class sigma_r_expression(UserExpression):
+class sigma_t_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
@@ -55,25 +55,36 @@ class rho_el_expression(UserExpression):
     def value_shape(self):
         return (1,)
     
-'''    
-class f_expression(UserExpression):
+   
+class f_ela_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1.0
-        values[1] = 0.0
+        values[0] = 0.0
+        values[1] = - rpam.parameters['rho_ela'] * rpam.parameters['g']
+
+    def value_shape(self):
+        return (2,)
+    
+
+class f_fluid_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0.0
+        values[1] = - rpam.parameters['rho_fluid'] * rpam.parameters['g']
 
     def value_shape(self):
         return (2,)
 
-msh.interpolate_dg(fsp.f, f_expression())
-'''
 
-msh.interpolate_dg(fsp.v_l, v_l_expression())
-msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
+msh.interpolate_dg(fsp.v_lrtb, v_lrtb_expression())
 
-msh.interpolate_dg(fsp.sigma_r, sigma_r_expression())
+msh.interpolate_dg(fsp.sigma_t, sigma_t_expression())
 
 msh.interpolate_dg(fsp.rho_el, rho_el_expression())
+
+msh.interpolate_dg(fsp.f_ela, f_ela_expression())
+msh.interpolate_dg(fsp.f_fluid, f_fluid_expression())
+
 
 
 
