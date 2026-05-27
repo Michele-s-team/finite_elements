@@ -22,10 +22,8 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
     'step', \
-    '<<|v^n - v_l|^2>>_{partial Omega l}', \
-    '<<|v^n - v_tb|^2>>_{partial Omega tb}',\
+    '<<|v^n - v_lrtb|^2>>_{partial Omega square}', \
     '<<|v^{n square} - average(u_dot_n)|^2>>_{partial Omega ellipse}',\
-    '<<varsigma_{i 1} varsigma_{i 1}>>_{partial Omega r}',\
     '<<varsigma^2>>_{partial Omega r}',\
     '<<(nu_j P_{ij} - vasigma_{ij} |F| G_{kj} nu_k) (nu_j P_{il} - vasigma_{il} |F| G_{ml} nu_m)>>_{partial Omega circle}', \
     '<<|u^n|^2>>_{partial Omega square}', \
