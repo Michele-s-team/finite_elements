@@ -1,5 +1,5 @@
 '''
-this module solves for the fields v_n, sigma_n, u_n, u_dot_n which define the state of the whole system, for an elastic body in a channel in which fluid is injected in the left edge of the channel
+this module solves for the fields v_n, sigma_n, u_n, u_dot_n which define the state of the whole system, for an elastic body in a fluid, where the fluid is contained into a closed box and both the elastic body and the fluid are subjected to gravity
 '''
 
 from fenics import *
