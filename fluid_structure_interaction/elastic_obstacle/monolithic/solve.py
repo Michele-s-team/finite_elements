@@ -25,16 +25,17 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
-import files as fi
 import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
-import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
+
+fi = importlib.import_module(swi.fi)
+
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 

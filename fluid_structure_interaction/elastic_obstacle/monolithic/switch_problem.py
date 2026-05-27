@@ -5,6 +5,7 @@ import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_shape_line_a':
 
+    fi = 'files_square_shape_line_a'
     fsp = 'function_spaces_square_shape_line'
     rmsh = 'mesh.read.square_shape_line'
     vp = 'variational_problem_bc_square_shape_line_a'

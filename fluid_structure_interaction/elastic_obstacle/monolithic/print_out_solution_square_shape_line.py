@@ -2,7 +2,6 @@ from fenics import *
 import importlib
 import os
 
-import files as fi
 import input_output as io
 import mesh.utils as msh
 import physics.elasticity as ela
@@ -10,6 +9,7 @@ import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 
+fi = importlib.import_module(swi.fi)
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 

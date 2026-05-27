@@ -7,11 +7,11 @@ from fenics import *
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import files as fi
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
 
+fi = importlib.import_module(swi.fi)
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
