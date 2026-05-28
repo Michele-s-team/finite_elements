@@ -7,8 +7,9 @@ run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle $MESH_PATH $SOLUTION_PATH
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line $MESH_PATH $SOLUTION_PATH
+
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_b $MESH_PATH $SOLUTION_PATH
 """
 
 import colorama as col
@@ -16,7 +17,6 @@ import dolfin
 from fenics import *
 import gc
 import importlib
-import numpy as np
 import os
 import sys
 
@@ -25,16 +25,17 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import continuation as cont
-import files as fi
 import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
-import solution_paths as solpath
 import switch_problem as swi
 import variational_problem.utils as var_pr
+
+fi = importlib.import_module(swi.fi)
+
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
@@ -204,15 +205,6 @@ class v_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-
-# trial analytical expression for the  surface tension sigma(x,y)
-class sigma_0_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_r']
-
-    def value_shape(self):
-        return (1,)
-
 msh.interpolate_dg(fsp.v_n_1, v_0_expression())
 # 
 
@@ -340,7 +332,8 @@ for n in range(rpam.parameters['num_steps']):
     else:
         cont.pressure_scale = Constant(1.0)
         
-    vp = importlib.reload(importlib.import_module(swi.vp))  # rebuilds F with new pressure_scale
+    # rebuild F with new pressure_scale
+    vp = importlib.reload(importlib.import_module(swi.vp))  
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
