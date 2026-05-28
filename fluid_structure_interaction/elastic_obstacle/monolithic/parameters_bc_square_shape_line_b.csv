@@ -1,0 +1,2 @@
+rho_fluid,mu_fluid,T,g,rho_el,K_elastic,mu_elastic,num_steps,n_hold,n_ramp,exponent,alpha,alpha_ellipse,u_function_space_degree,u_dot_function_space_degree,mesh_quality_threshold,ic_path,ic_n,print_out_stride,print_out_digits
+1.0,0.001,0.175,1.0,1e-1,10.0,10.0,100,0,0,3,1e2,1e4,1,1,0.5,/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution_reproduce_fig_10_13012025_220000/snapshots/csv,6950,10,6

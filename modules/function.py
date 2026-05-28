@@ -153,6 +153,7 @@ Return values:
 
 
 def deform_function_space(Q, u):
+    
     deformed_mesh = msh.deform_mesh(Mesh(Q.mesh()), u)
 
     # Extract the features of the vector space Q
@@ -183,6 +184,7 @@ Input values:
 
 
 def copy_function_values(f_in, f_out):
+    
     f_out.vector()[:] = f_in.vector()[:]
 
 '''
@@ -193,6 +195,7 @@ Input values:
 
 '''
 def deform_function(f, u):
+
     Q = deform_function_space(f.function_space(), u)
 
     g = Function(Q)
@@ -375,3 +378,22 @@ def error_norm(f, g, measure, delta_function_space_degree=3):
     error = (error**2)*measure
     
     return sqrt(assemble(error))
+
+
+
+'''
+class defining the identity function expression in two dimensions
+Input values:
+    - 'x': [x_0, x_1] the input coordinates
+Return values: 
+    - 'x'
+'''
+
+class identity_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0] 
+        values[1] = x[1] 
+        
+    def value_shape(self):
+        return (2,)

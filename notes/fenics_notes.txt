@@ -1,0 +1,427 @@
+ - to install fenics do
+    * start Docker Desktop app
+    * take DockerFile in finite_elements folder (master)
+    * do 'sudo docker build -t finite_elements .'
+    * do 'docker run -ti -v $(pwd):/home/fenics/shared --name fe finite_elements'
+    * if you need an additional package, say h5py, 'pip3 install --user h5py'
+  - to install with pip3 run 'sudo pip install meshio --trusted-host="pypi.python.org"'
+  
+  - to install fenics and make the method `BoundaryMesh` work, do
+    * start Docker Desktop app
+    * take DockerFile_mesh in finite_elements folder (master)
+    * do 'sudo docker build -t finite_elements_mesh .'
+    * do 'docker run -ti -v $(pwd):/home/fenics/shared --name fe_mesh finite_elements_mesh'
+    * if you need an additional package, say h5py, 'pip3 install --user h5py'
+
+- if you get the error '-------------------  End compiler output  ------------------------
+Compilation failed! Sources, command, and errors have been written to: /home/fenics/shared/navier_stokes/fenics_example/jitfailure-ffc_form_17852fbd14c5f68306bd045425549c0cd9aebf3b' then exit and kill the docker container and restart it 
+
+- if you get the error 'integer is not callable' that may be because you defined first a function n(x) and then you re-defined n as a an integer, so when you write n(x) the program is trying to call an integer with an argument. To find out what is going on, on PyCharm the error is highlighted in yellow-brown, use this feature: click on n(x) highlighted in yellow-brown and see that it will redirect you to the integer n -> this will allow you to understand what the code is trying to call 
+- in codes that contain a time evolution, if you see that things do not evolve as much as they should or have an odd temporal dependence, ir may be because the variational problem is not updated fully at every time step ->  define the variational problem, the solver and J into the time loop
+
+- df = pd.read_csv('name of file.csv')
+ p = df.iloc[0].to_dict()
+ p['name of the parameter'] + ....
+
+- use paraview version 5.10.1, the other versions may crash and freeze as soon as you open a file and try to press a button 
+- the (?) in Paraview when plotting a field f may be due to the fact that you are allocating a new field at the next time loop, e.g., with f = interpolate(...)
+- Be careful that Pycharm intellisense may include some lines that you don't want without you noticing ! 
+- BE CAREFUL WHEN YOU WRITE INTO A FIELD: IT MAY ALLOCATE A NEW FIELD WRITTEN IN A NEW MEMORY ADDRESS:
+    * if you do
+        f = Function(Q) (A)
+        g = Function(Q) (B)
+        h = f+g
+    and then
+        f = interpolate( my_expression( element=Q.ufl_element() ), Q ) (C)
+    then (C) will re-allocate f, and h will point to the old allocation of f done in (A) and it will not be updated according to (C)
+      On the other hand, if you do (A), (B) and
+         f_dummy  =    interpolate( my_expression( element=Q.ufl_element() ), Q ) (D)
+         f.assign(f_dummy) (E)
+    then (D) and (E) will assign my_expression to f by keeping the same memory allocation of f, and g will be updated accordingly.
+    * on the other hand, if you do f.interpolate( my_function_Expression( element=Q.ufl_element() ) ), f will not be reallocated and this call to interpolate will write the expression into the already existing memory address of f
+    * when writing a field to a file, if you do
+        xdmf_file_sigma.write( project(-p_n_12, Q),  t)
+    this will allocate a new field at every call of write() and produce a (?) when visualizing the field in Paraview. Instead, do sigma_n_12 = Function(Q) at the beginning of the code and
+        sigma_n_12.assign( project(-p_n_12, Q) )
+        xdmf_file_sigma.write( sigma_n_12,  t - dt/2.0 )
+    which will not yield the (?) in paraview.
+
+    
+    * similarly for a function in a mixed space:
+        P_omega = VectorElement( 'P', triangle, 3 )
+        P_z = FiniteElement( 'P', triangle, 1 )
+        element = MixedElement( [P_omega, P_z] )
+        Q = FunctionSpace(mesh, element)
+        Q_omega = Q.sub(0).collapse()
+        Q_z = Q.sub(1).collapse()
+        psi = Function( Q )
+        assigner.assign(psi, [..., ...])
+        h = f + g (A)
+        f, z = psi.split( deepcopy=True ) (B)
+        then (B) allocates a new f and z and h in (A) will not be updated because it points to the previously allocated f
+        
+- If you give fences a PDE which is ill-posed it may still solve it but return a Hughe L2 error -> Look at the L2 error when you generate a solution
+- Check this Thomas Richter Fluid Structure Interaction
+- To install meshio go to a docker container and do  `sudo pip install meshio`
+
+ 
+- Careful: if you write 1/12 this may lead to errors : write 1.0/12.0 to make sure that the numbers are interpreted as doubles !
+- When you make a test in a rectangular, 2D mesh where nothing depends on x, make sure that
+the solution z(x,y) (say) is significantly different from zero before you check that it is independent of x: if z(x,y) is small, then you may have numerical fluctuations that give you the *impression* that z depends on x too
+- The mesh has L (the dimension of x) large enough, so the solution at x ~ L/2 should not feel the boundary effects and coincide with the correct solution independent of x
+- When you crank up some parameter, say, C, and save the solution for every value of C and then read it with Paraview, if you are interested in the last value of C only, remember to visualize the last snapshot in Paraview.
+
+- To run on Abacus:
+
+    `apptainer exec /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif /usr/local/bin/fenics-version` is equivalent to docker start the single command `fenics-version`
+    `apptainer exec /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif bash` is equivalent `docker start` + `docker attach` and as an output puts you in the container
+    To run fenics from slurm script :
+    Go into the directory where the .py script is located `cd navier_stokes_michele/demo/python/documented/navier-stokes/`
+    Execute the .py code into the container from outside the container with `apptainer exec  /mnt/beegfs/common/containers/singularity/dev/FEniCS/FEniCS.sif python3 demo_navier-stokes.py `
+
+
+- The error
+
+    /usr/local/lib/python3.6/dist-packages/h5py/__init__.py:39: UserWarning: h5py is running against HDF5 1.10.0 when it was built against 1.12.0, this may cause problems
+  '{0}.{1}.{2}'.format(*version.hdf5_built_version_tuple)
+    Warning! ***HDF5 library version mismatched error***
+
+    comes from including `from dolfin import *` together with
+    
+        import numpy
+        import meshio
+        import gmsh
+        import pygmsh
+        import argparse
+
+- if you get the error `OSError: libGLU.so.1: cannot open shared object file: No such file or directory` then do
+        `$sudo   apt-get -y install     libglu1     libxcursor-dev     libxft2     libxinerama1     libfltk1.3-dev`
+        in the fenics container
+
+- if you get a version-conflict error with hdf5, then 
+    1) If you use apptainer, build the container with the following recipe FEnics.def:
+
+            Bootstrap: docker
+            From: quay.io/fenicsproject/stable:current
+
+            %post
+            apt-get -qq update
+            apt-get -y install libglu1 libxcursor-dev libxft2 libxinerama1 libfltk1.3-dev \
+                            python3-h5py libnetcdf-dev libhdf5-dev
+            pip install --upgrade pip
+            pip install meshio[all]
+            pip install gmsh pygmsh colorama pandas shapely
+            rm -rf /var/lib/apt/lists/*
+
+    2) If you use docker, build the container with a docker file that looks like this (to be modified according to the additional packages that you need):
+
+            FROM quay.io/fenicsproject/stable:current
+            USER root
+            RUN apt-get -qq update && \
+                apt-get -y upgrade && \
+                apt-get clean && \
+                apt-get -y install python3-h5py && \
+                pip install --upgrade pip && \
+                pip install meshio[all] && \
+                rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+            USER root
+
+- if the system runs out of memory when running on a fine mesh, use 'superlu'  as a linear solver
+
+        params = {'nonlinear_solver': 'newton',
+                   'newton_solver':
+                    {
+                        'linear_solver'           : 'superlu',
+                        [...]
+                     }
+        }
+        solver.parameters.update(params)
+
+- see the nodes on abacus
+`scontrol show nodes` 
+
+- if you get the error 
+
+        /usr/local/lib/python3.6/dist-packages/h5py/__init__.py:39: UserWarning: h5py is running against HDF5 1.10.0 when it was built against 1.12.0, this may cause problems
+        '{0}.{1}.{2}'.format(*version.hdf5_built_version_tuple)
+       [...]
+        ValueError: Invalid high library version bound (invalid high library version bound)
+
+then include `import h5py` at the top of the .py file
+
+
+- to define an analytical expression for a (2, 2) tensor A, set
+
+    class hessian_u_expression(UserExpression):
+    def init(self, **kwargs):
+        super().init(**kwargs)
+    def eval(self, values, x):
+        values[0] = cos(2.0 * np.pi * x[0] / L)
+        values[1] = cos(2.0 * np.pi * x[1] / h)
+        values[2] = sin(2.0 * np.pi * x[0] / L)
+        values[3] = sin(2.0 * np.pi * x[1] / h)
+        #print("LOCAL tensor\n", values.reshape(self.value_shape()))
+    def value_shape(self):
+        return (2,2)
+
+    where the values are entered in the following order: 
+        * value[0] is A[0,0]
+        * value[1] is A[0,1]
+        * value[2] is A[1,0]
+        * value[3] is A[1,1]
+
+    You can then output this tensor to xdmf file with 
+
+       hessian_u = Function( Q_ddu )
+       hessian_u.interpolate( hessian_u_expression( element=Q_ddu.ufl_element() ) )
+
+    and when you read it back with paraview, remember that indexes for paraview run from 0 to 2, where the third one is set to zero because this tensor lives in a two-dimensional space. For example,
+        * entry '0' in paraview corresponds to A[0,0]
+        * entry '1' in paraview corresponds to A[0,1]
+        * entry '2' in paraview corresponds to A[0,2] (which does not exist in this case, it is thus identically 0)
+        * entry '3' in paraview corresponds to A[1,0]
+        * entry '4' in paraview corresponds to A[1,1]
+        * entry '5' in paraview corresponds to A[1,2] (which does not exist in this case, it is thus identically 0)
+        * etc... 
+
+
+- if by making the mesh finer the residual which measures if the PDE is satisfied stops going down, ty decreasing 'absolute_tolerance' and 'relative_tolerance' in 
+
+        params = {'nonlinear_solver': 'newton',
+           'newton_solver':
+            {
+                # 'linear_solver'           : 'superlu',
+                'linear_solver'           : 'mumps',
+                'absolute_tolerance'      : 1e-6,
+                'relative_tolerance'      : 1e-6,
+                'maximum_iterations'      : 1000000,
+                'relaxation_parameter'    : 0.95,
+                    }
+        }
+        solver.parameters.update(params)    
+
+
+- if you define a function in a space of 1st order polynomials 
+    Q = FunctionSpace( bgeo.mesh, 'P', 1 )  
+    f = Function(Q)
+
+    then the second derivatives of f f.dx(i).dx(j) will be identically zero ! 
+
+
+- list of solvers which manage to solve variational problems with large meshes: 
+
+                   #'linear_solver'           : 'gmres', NO
+                # 'linear_solver'           : 'minres',NO
+                # 'linear_solver'           : 'petsc', NO
+                # 'linear_solver'           : 'richardson', NO
+                # 'linear_solver'           : 'superlu_dist',
+                # 'linear_solver'           : 'tfqmr',NO
+                # 'linear_solver'           : 'umfpack',NO
+                # 'linear_solver'           : 'cg',NO
+                # 'linear_solver'           : 'bicgstab',NO
+                # 'linear_solver'           : 'superlu', NO
+                # 'linear_solver'           : 'mumps', YES
+                # 'linear_solver'           : 'lu', NO
+
+-meshing:  you add vertices to the mesh with gmsh.model.geo engine, the ids must start from 1, not from 0
+
+- to create a virtual environment with python and activate it 
+   * python3.12 -m venv make_figures
+   * source make_figures/bin/activate
+   * pip install --no-cache-dir matplotlib; pip install --upgrade pip setuptools wheel; pip install "matplotlib>=3.8"; pip install --no-deps proplot pandas numpy colorama scipy; pip install --force-reinstall pandas
+   * to exit the virtual environment do 'deactivate'
+
+
+- to create a virtual environment on mesopsl:
+   * connect to mesopsl
+   * create the virtual environment with conda
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        bash Miniconda3-latest-Linux-x86_64.sh -b -p $HOME/miniconda3
+        $HOME/miniconda3/bin/conda init bash
+        conda create -y -n myenv -c conda-forge python=3.10
+        Test:  python will be found from within a slurm job :  
+            srun --clusters=mesopsl2 --account=castellana_hi --partition=hi --qos=mesopsl2_hi_short --pty /bin/bash
+            # Inside the job shell:
+            source ~/miniconda3/bin/activate myenv
+            python --version  # should be Python 3.10
+    * install texlive:
+        curl -L -o install-tl-unx.tar.gz https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+        zcat < install-tl-unx.tar.gz | tar xf - # note final - on that command line
+        cd install-tl-*
+        perl install-tl
+            in the instalation interface: 
+                * select option D
+                * specify the user directory '/mnt/beegfs/home/mcastel1/latex/'
+                * return to the main menu with R
+                * press I to install
+        add this to '~/.bash_profile' 
+            export PATH="/obs/mcastellana/latex/bin/x86_64-linux":$PATH
+    * install nasm: 
+        wget https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/nasm-2.16.01.tar.gz
+        tar -xvf nasm-2.15.05.tar.xz nasm-2.15.05/
+        cd nasm-2*
+        ./configure --prefix=$HOME/ffmpeg
+        make 
+        make install
+        add to ~/.bash_profile these lines: 
+            export PATH="/obs/mcastellana/ffmpeg/bin":$PATH
+    * install x264
+        git clone --depth 1 https://code.videolan.org/videolan/x264.git
+        cd x264/
+        ./configure --prefix=$HOME/ffmpeg --enable-static --enable-shared
+        make
+        make install
+        add this line to '~/.bash_profile'
+         export PKG_CONFIG_PATH=/obs/mcastellana/ffmpeg/lib/pkgconfig:$PKG_CONFIG_PATH 
+    * instal x265:
+        git clone https://bitbucket.org/multicoreware/x265_git.git
+        cd x265_git/build/
+        cmake ../source/ -DCMAKE_INSTALL_PREFIX=$HOME/local/x265
+        make
+        make install
+        add this line to '~/.bash_profile' 
+            export PKG_CONFIG_PATH=/obs/mcastellana/local/x265/lib/pkgconfig:$PKG_CONFIG_PATH
+            export PATH="/obs/mcastellana/local/x265/bin":$PATH
+            export LD_LIBRARY_PATH=/obs/mcastellana/local/x265/lib:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/obs/mcastellana/ffmpeg/lib"
+    * install ffmpeg:
+        wget https://ffmpeg.org/releases/ffmpeg-5.0.tar.bz2
+        tar -xvf ffmpeg-7.1.1.tar.xz 
+        cd ffmpeg-7.1.1/
+        ./configure --prefix=/obs/mcastellana/ffmpeg   --disable-pthreads  --enable-gpl     --enable-libx264  --enable-libx265 --extra-cflags="-I$HOME/local/x265/include"  --extra-ldflags="-L$HOME/local/x265/lib" --enable-shared ; make ;make install
+    * add a file containing the line '/obs/mcastellana/paper_membrane/figures/modules'  to /obs/mcastellana/miniconda3/envs/myenv/lib/python3.10/site-packages/custommodules.pth so python can fin the modules automatically in that path 
+
+- to create a virtual environment to make figures on abacus/calcsub, do 
+    * connect to abacus
+    * python3 -m venv make_figures
+    * source make_figures/bin/activate
+    * /mnt/beegfs/home/mcastel1/make_figures/bin/python3 -m pip install --upgrade pip
+    * pip3 install pandas matplotlib proplot numpy colorama scipy
+    * install texlive:
+        curl -L -o install-tl-unx.tar.gz https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
+        zcat < install-tl-unx.tar.gz | tar xf - # note final - on that command line
+        cd install-tl-*
+        perl install-tl
+            in the instalation interface: 
+                * select option D
+                * specify the user directory '/mnt/beegfs/home/mcastel1/latex/'
+                * return to the main menu with R
+                * press I to install
+        add this to '~/.bash_profile' 
+            export PATH="/obs/mcastellana/latex/bin/x86_64-linux":$PATH
+    * install nasm: 
+        wget https://www.nasm.us/pub/nasm/releasebuilds/2.16.01/nasm-2.16.01.tar.gz
+        tar -xvf nasm-2.15.05.tar.xz nasm-2.15.05/
+        cd nasm-2*
+        ./configure --prefix=$HOME/ffmpeg
+        make 
+        make install
+        add to ~/.bash_profile these lines: 
+            export PATH="/obs/mcastellana/ffmpeg/bin":$PATH
+    * install x264
+        git clone --depth 1 https://code.videolan.org/videolan/x264.git
+        cd x264/
+        ./configure --prefix=$HOME/ffmpeg --enable-static --enable-shared
+        make
+        make install
+        add this line to '~/.bash_profile'
+         export PKG_CONFIG_PATH=/obs/mcastellana/ffmpeg/lib/pkgconfig:$PKG_CONFIG_PATH 
+    * instal x265:
+        git clone https://bitbucket.org/multicoreware/x265_git.git
+        cd x265_git/build/
+        cmake ../source/ -DCMAKE_INSTALL_PREFIX=$HOME/local/x265 -DENABLE_ASSEMBLY=ON -DCMAKE_ASM_NASM_FLAGS="-DENABLE_CET=0"
+        make
+        make install
+        add this line to '~/.bash_profile' 
+            export PKG_CONFIG_PATH=/obs/mcastellana/local/x265/lib/pkgconfig:$PKG_CONFIG_PATH
+            export PATH="/obs/mcastellana/local/x265/bin":$PATH
+            export LD_LIBRARY_PATH=/obs/mcastellana/local/x265/lib:$LD_LIBRARY_PATH
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"/obs/mcastellana/ffmpeg/lib"
+    * install ffmpeg:
+        wget https://ffmpeg.org/releases/ffmpeg-5.0.tar.bz2
+        tar -xvf ffmpeg-7.1.1.tar.xz 
+        cd ffmpeg-7.1.1/
+        ./configure --prefix=/obs/mcastellana/ffmpeg   --disable-pthreads  --enable-gpl     --enable-libx264  --enable-libx265 --extra-cflags="-I$HOME/local/x265/include"  --extra-ldflags="-L$HOME/local/x265/lib" --enable-shared 
+        make 
+        make install
+    * to compress a large  .mp4 do 'ffmpeg -i animation_large.mp4 -c:v libx265 -tag:v hvc1 -crf 23 -preset slow -pix_fmt yuv420p animation.mp4'
+
+- to crete a solution in the strong-deformation regime in steady_state/no_flow / bc-ring :
+        * Construct a solution CC = 4, z(r) = C * r and sigma(r ) =  ((2 + C^2) k)/(2 (1 + C^2) r^2) and zRmin = CC * Rmin, zRmax = CC * Rmax and zpRmin = CC, zpRmax =  CC, with check-with-analytical-solution-bc-ring.nb
+        * Generate the mesh with 'clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py 0.1 $SOLUTION_PATH'
+        * Write the values of the Mathematica solution on the mesh vertices by running the yellow block of cells at the end of check-with-analytical-solution-bc-ring.nb
+        * in variational-problem-bc-ring.py: 
+            - set C, z_r_const, z_R_const, zp_r_const and zp_R_const and SurfaceTensionExpression equal to the values in check-with-analytical-solution-bc-ring.nb
+            - uncomment the lines that read the initial condition from file, see `#uncomment this to set the initial profiles from the ODE soltion`
+            - run with `clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p $SOLUTION_PATH/nodal_values; python3 solve.py /home/fenics/shared/steady_state/no_flow/mesh/solution /home/fenics/shared/steady_state/no_flow/$SOLUTION_PATH`
+        * the resulting solution z.xdmf will be in the strong deformation regime 
+        * you may then slowly change the BCs iteratively to approach slowly other BCs, by reading the solution from the solution at the previous iteration at each step
+
+- if you get an error reading a csv file into a Function, kill the docker container and restart it 
+
+- read always .csv	fields from finite-element solutions from their	nodal-values version !!! Otherwise you may get a varying number of values (rows in the csv files) for fields in O(1) polynomial spaces and fields in O(2) polynomial spaces, and so on 
+
+- a list of linear solver methods can be obtained from within a python code with 
+
+    print("\n\nLinear solver methods:")
+    list_linear_solver_methods()
+    print("\n\nPreconditioners")
+    list_krylov_solver_preconditioners()
+
+
+- to create a mesh on the fly do 
+
+    channel = Rectangle(Point(0, 0), Point(2.2, 0.41))
+    cylinder = Ellipse(Point(0.5, 0.2), 0.05, 0.1)
+    domain = channel - cylinder - cylinder2
+    mesh = generate_mesh(domain, 64)
+
+-  when creating a mesh, if you tag the whole square with
+    model.add_physical( channel_lines, "rectangle" )
+    and then you want to tag a single side of the squre with 
+    model.add_physical( [channel_lines[0]], "i" )
+    it won't work: tag either the side only, or the whole square only
+
+
+- by removing output to files, the codes run way faster -> remove unnecessary print outs to file when you can 
+
+- if the plot of sigma from finite elements vs the exact does not give a good agreement, try to increase locally the mesh resolution around the obstacle rather than increasing the whole mesh resoution
+
+- BE CAREFUL   NOT TO CONFOUND ds_r (boundary on the right edge of the mesh for square meshes) with ds_r (boundary on the inner circle of the mesh for ring meshes)
+
+- to test whether the jacobian is correct with PETSC solver, do 
+    PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
+    PETScOptions.set('snes_test_jacobian_display', '')
+
+- to solve Poisson equation with SNES do
+
+    params = {
+        'nonlinear_solver': 'snes',
+        'snes_solver': {
+            'linear_solver': 'superlu',
+            'line_search': 'bt',  # backtracking line search
+            'absolute_tolerance': 1e-6,
+            'relative_tolerance': 1e-6,
+            'maximum_iterations': 1000000,
+            'report': True,
+        }
+    }
+
+    PETScOptions.clear()
+    PETScOptions.set('snes_type', 'newtontr')
+    PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+    PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+    PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+    PETScOptions.set('snes_max_it', 100000)
+    PETScOptions.set('snes_monitor')
+    PETScOptions.set('snes_max_funcs', 50000)         # Increase function evaluation limit
+    PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
+    PETScOptions.set('snes_test_jacobian_display', '')
+   
+   solver.parameters.update(params)
+
+
+- Problems with discontinuous spaces:
+
+    1. When imposing boundary conditions with penalty terms, if you run a dynamical loop up to time T by dividing T in N steps, as you double N you may  also need to double the alpha parameters that multiply the penalty terms, otherwise 1/dt terms may take over penalty terms. 
+    2. Be careful of which terms have dt at numerator and which at the denominator: a 1/dt can change the ratios of the order of mangnitude of a variational term with respect to another and completely alter the solution, if not make the solver crash
