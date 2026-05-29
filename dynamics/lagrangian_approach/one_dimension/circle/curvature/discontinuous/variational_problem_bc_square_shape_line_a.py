@@ -54,10 +54,10 @@ bcs = []
 
 # variational problem
 
-F = rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+F = (\
         (fsp.u(sub_mesh_0_label) - fsp.u_0(sub_mesh_0_label)) * fsp.nu_u(sub_mesh_0_label) \
         + (fsp.u(sub_mesh_1_label) - fsp.u_0(sub_mesh_1_label)) * fsp.nu_u(sub_mesh_1_label)
-    )* rmsh.ds_mesh[0]['dS_shape'] \
+    ) * rmsh.ds_mesh[0]['dS_shape'] \
     + (fsp.u('+') * fsp.nu_u('+') + fsp.u('-') * fsp.nu_u('-')) * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square']) \
     + fsp.u * fsp.nu_u * rmsh.ds_mesh[0]['ds']
 
