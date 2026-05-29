@@ -48,6 +48,12 @@ msh.interpolate_dg(fsp.u_0, u_0_expression())
 
 bcs = []
 
-F = (fsp.u - fsp.u_0) * fsp.nu_u * rmsh.ds_mesh[0]['dS_shape']
-
 # variational problem
+
+F = (\
+        (fsp.u(sub_mesh_0_label) - fsp.u_0(sub_mesh_0_label)) * fsp.nu_u(sub_mesh_0_label) \
+        + (fsp.u(sub_mesh_1_label) - fsp.u_0(sub_mesh_1_label)) * fsp.nu_u(sub_mesh_1_label)
+    )* rmsh.ds_mesh[0]['dS_shape'] \
+    + ((fsp.u('+') - fsp.u_0('+')) * fsp.nu_u('+') + (fsp.u('-') - fsp.u_0('-')) * fsp.nu_u('-')) * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square']) \
+    + (fsp.u - fsp.u_0) * fsp.nu_u * rmsh.ds_mesh[0]['ds']
+
