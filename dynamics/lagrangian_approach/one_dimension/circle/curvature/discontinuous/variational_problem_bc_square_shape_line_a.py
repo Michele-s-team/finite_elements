@@ -1,3 +1,7 @@
+'''
+NOTE: this VP is well posed only of the degree of the function space of u is <= 2. If it is > 2, some DOFs sitting within the mesh triangles will appear, and these will not be constrained by the VP F
+'''
+
 from fenics import *
 import importlib
 import numpy as np
