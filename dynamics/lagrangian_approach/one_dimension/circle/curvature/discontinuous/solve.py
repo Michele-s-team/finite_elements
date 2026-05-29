@@ -10,30 +10,19 @@ Examples:
 
 """
 
-import colorama as col
 import dolfin
 from fenics import *
-import gc
 import importlib
-import os
 import sys
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import continuation as cont
-import function as fu
-import input_output as io
-import mesh.utils as msh
-import mesh_quality as msh_qu
-import parameters.read.solution as rpam
-import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
 fsp = importlib.import_module(swi.fsp)
-pr_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -41,10 +30,10 @@ vp = importlib.import_module(swi.vp)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
-var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
+# var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
 
-pr_bc.print_bcs(step)        
-pr_sol.print_solution(t, step, dt)
+# pr_bc.print_bcs(step)        
+# pr_sol.print_solution(t, step, dt)
 
    
