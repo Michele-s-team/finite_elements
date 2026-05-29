@@ -17,7 +17,7 @@ the variables for the problem are
 #1.1 fluid 
 
 #1.2 elastic body and mesh
-Q = FunctionSpace(lmsh.mesh[0], 'DG', 1)
+Q = FunctionSpace(lmsh.mesh[0], 'DG', 2)
 
 # fields
 u = Function(Q)

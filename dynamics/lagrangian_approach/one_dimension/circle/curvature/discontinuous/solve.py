@@ -33,7 +33,6 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J)
 
 
-# pr_bc.print_bcs(step)        
-# pr_sol.print_solution(t, step, dt)
+vp = importlib.import_module(swi.prout_sol)
 
    
