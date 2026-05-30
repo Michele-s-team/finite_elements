@@ -38,7 +38,7 @@ io.full_print(n_1, 'n_1', \
 
 # 1. define expressions for BCs
 
-'''class u_0_expression(UserExpression):
+'''class n_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 1.0
@@ -47,9 +47,9 @@ io.full_print(n_1, 'n_1', \
         return (1,)
 
     
-msh.interpolate_dg(fsp.u_0, u_0_expression())'''
+msh.interpolate_dg(fsp.n, n_expression())'''
 
-fsp.u_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+fsp.n.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
 
 
 bcs = []
@@ -57,5 +57,5 @@ bcs = []
 # variational problem
 
 F = (\
-        (fsp.u[i] - fsp.u_0[i]) * fsp.nu_u[i] \
+        (fsp.u[i] - fsp.n[i]) * fsp.nu_u[i] \
     ) * rmsh.dx_mesh[0]['dx'] 
