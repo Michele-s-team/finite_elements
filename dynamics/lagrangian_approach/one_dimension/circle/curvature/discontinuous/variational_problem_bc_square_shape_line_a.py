@@ -51,11 +51,11 @@ class n_expression(UserExpression):
         return (2,)
 
     
-# msh.interpolate_dg(fsp.t, t_expression())
-# msh.interpolate_dg(fsp.n, n_expression())
+msh.interpolate_dg(fsp.t, t_expression())
+msh.interpolate_dg(fsp.n, n_expression())
 
-fsp.t.interpolate(t_expression(element=fsp.V.ufl_element()))
-fsp.n.interpolate(n_expression(element=fsp.V.ufl_element()))
+# fsp.t.interpolate(t_expression(element=fsp.V.ufl_element()))
+# fsp.n.interpolate(n_expression(element=fsp.V.ufl_element()))
 
 
 # fsp.n_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
@@ -69,4 +69,7 @@ bcs = []
 
 F = (\
         (fsp.mu - fsp.t[i].dx(j) * fsp.t[j] * fsp.n[i]) * fsp.nu_mu \
-    ) * rmsh.dx_mesh[0]['dx'] 
+    ) * rmsh.dx_mesh[0]['dx'] \
+    + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+        msh.jump(fsp.mu, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
+    )
