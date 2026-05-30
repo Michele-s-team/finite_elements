@@ -17,16 +17,21 @@ the variables for the problem are
 #1.1 fluid 
 
 #1.2 elastic body and mesh
-Q = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
+Q = FunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
+V = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
 
 # fields
-u = Function(Q)
-n = Function(Q)
-t = Function(Q)
+mu = Function(Q)
+
+n_0 = Function(V)
+t_0 = Function(V)
+
+n = Function(V)
+t = Function(V)
 
 
 # test functions
-nu_u = TestFunction(Q)
+nu_mu = TestFunction(Q)
 
 # jacobian
 J = TrialFunction(Q)
