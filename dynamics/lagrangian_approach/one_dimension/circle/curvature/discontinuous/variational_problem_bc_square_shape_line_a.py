@@ -49,7 +49,7 @@ io.full_print(n_1, 'n_1', \
     
 msh.interpolate_dg(fsp.u_0, u_0_expression())'''
 
-fsp.u_0.assign(bgeo.field_facet_normal(bgeo.facet_normal[0](sub_mesh_1_label), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior=True))
+fsp.u_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
 
 
 bcs = []
