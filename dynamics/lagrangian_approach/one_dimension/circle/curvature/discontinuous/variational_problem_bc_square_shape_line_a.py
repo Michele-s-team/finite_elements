@@ -7,6 +7,7 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import calculus as cal
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
@@ -25,70 +26,47 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 
-class TangentFromProjection(UserExpression):
+# 1. define expressions for BCs
 
-    def __init__(self, mesh, mf, boundary_id, t_field, **kwargs):
-        super().__init__(**kwargs)
-        self.facets = []
-        for facet in facets(mesh):
-
-            if mf[facet] == boundary_id:
-                
-                verts = [v.point().array()[:2] for v in vertices(facet)]
-                p0, p1 = np.array(verts[0]), np.array(verts[1])
-                self.facets.append((p0, p1))
-
-        self.t_field = t_field
-
+class t_expression(UserExpression):
     def eval(self, values, x):
 
-        x_projected = np.array(x[:2])
-        best_dist = np.inf
-        best_proj = None
+        theta = cal.atan_quad(np.subtract(x, rmsh.parameters['c']))
 
-        for p0, p1 in self.facets:
+        values[0] = -np.sin(theta)
+        values[1] = np.cos(theta)
 
-            t_vec = p1 - p0
-            L = np.linalg.norm(t_vec)
-            t_hat = t_vec / L
-            s = np.clip(np.dot(x_projected - p0, t_hat), 0.0, L)
-            x_proj = p0 + s * t_hat
-            dist = np.linalg.norm(x_projected - x_proj)
-            if dist < best_dist:
-                best_dist = dist
-                best_proj = x_proj
-
-        values[:] = self.t_field(Point(best_proj[0], best_proj[1]))[:2]
+    def value_shape(self):
+        return (2,)
     
+class n_expression(UserExpression):
+    def eval(self, values, x):
+
+        theta = cal.atan_quad(np.subtract(x, rmsh.parameters['c']))
+
+        values[0] = np.cos(theta)
+        values[1] = np.sin(theta)
+
     def value_shape(self):
         return (2,)
 
-
-
-# 1. define expressions for BCs
-
-'''class n_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 1.0
-
-    def value_shape(self):
-        return (1,)
-
     
-msh.interpolate_dg(fsp.n, n_expression())'''
+# msh.interpolate_dg(fsp.t, t_expression())
+# msh.interpolate_dg(fsp.n, n_expression())
 
-fsp.n_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+fsp.t.interpolate(t_expression(element=fsp.V.ufl_element()))
+fsp.n.interpolate(n_expression(element=fsp.V.ufl_element()))
 
-fsp.t_0.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
 
-msh.interpolate_dg(fsp.n, TangentFromProjection(rmsh.lmsh.mesh[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], fsp.n_0))
-msh.interpolate_dg(fsp.t, TangentFromProjection(rmsh.lmsh.mesh[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], fsp.t_0))
+# fsp.n_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+
+# fsp.t_0.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+
 
 bcs = []
 
 # # variational problem
 
 F = (\
-        (fsp.mu - 1.0/2.0 * fsp.t[i].dx(j) * fsp.t[j] * fsp.n[i]) * fsp.nu_mu \
+        (fsp.mu - fsp.t[i].dx(j) * fsp.t[j] * fsp.n[i]) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] 

@@ -17,14 +17,16 @@ the variables for the problem are
 #1.1 fluid 
 
 #1.2 elastic body and mesh
-Q = FunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
-V = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
+Q = FunctionSpace(lmsh.mesh[0], 'CG', rpam.parameters['function_space_degree'])
+V = VectorFunctionSpace(lmsh.mesh[0], 'CG', rpam.parameters['function_space_degree'])
+T = TensorFunctionSpace(lmsh.mesh[0], 'CG', rpam.parameters['function_space_degree'], shape=(2,2))
 
 # fields
+b = Function(T)
 mu = Function(Q)
 
-n_0 = Function(V)
-t_0 = Function(V)
+# n_0 = Function(V)
+# t_0 = Function(V)
 
 n = Function(V)
 t = Function(V)
