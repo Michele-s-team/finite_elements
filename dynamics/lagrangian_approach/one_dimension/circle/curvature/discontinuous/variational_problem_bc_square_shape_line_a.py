@@ -39,6 +39,7 @@ class t_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
+    
 class n_expression(UserExpression):
     def eval(self, values, x):
 
