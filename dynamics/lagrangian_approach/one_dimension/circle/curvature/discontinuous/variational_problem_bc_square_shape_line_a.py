@@ -33,8 +33,8 @@ class t_expression(UserExpression):
 
         theta = cal.atan_quad(np.subtract(x, rmsh.parameters['c']))
 
-        values[0] = -np.sin(theta)
-        values[1] = np.cos(theta)
+        values[0] = -rmsh.parameters['a'] * np.sin(theta)  
+        values[1] = rmsh.parameters['b'] * np.cos(theta) 
 
     def value_shape(self):
         return (2,)
@@ -44,8 +44,10 @@ class n_expression(UserExpression):
 
         theta = cal.atan_quad(np.subtract(x, rmsh.parameters['c']))
 
-        values[0] = np.cos(theta)
-        values[1] = np.sin(theta)
+        norm = np.sqrt((rmsh.parameters['a'] * np.sin(theta))**2 + (rmsh.parameters['b'] * np.cos(theta))**2)
+
+        values[0] = rmsh.parameters['b'] * np.cos(theta) / norm
+        values[1] = rmsh.parameters['a'] * np.sin(theta) / norm
 
     def value_shape(self):
         return (2,)
@@ -68,7 +70,7 @@ bcs = []
 # # variational problem
 
 F = (\
-        (fsp.mu - fsp.t[i].dx(j) * fsp.t[j] * fsp.n[i]) * fsp.nu_mu \
+        (fsp.mu - 1.0/2.0 * (fsp.t[i].dx(j) * fsp.t[j] * fsp.n[i]) / dot(fsp.t, fsp.t)) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
         msh.jump(fsp.mu, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
