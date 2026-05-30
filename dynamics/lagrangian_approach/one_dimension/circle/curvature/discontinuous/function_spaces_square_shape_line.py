@@ -22,6 +22,7 @@ Q = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['function_space_degr
 # fields
 u = Function(Q)
 n = Function(Q)
+t = Function(Q)
 
 
 # test functions

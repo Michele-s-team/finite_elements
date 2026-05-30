@@ -51,6 +51,8 @@ msh.interpolate_dg(fsp.n, n_expression())'''
 
 fsp.n.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
 
+fsp.t.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+
 
 bcs = []
 

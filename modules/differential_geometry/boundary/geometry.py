@@ -250,6 +250,60 @@ def field_facet_normal_normalized(mesh, n, measure,
     
     return n_smooth
 
+
+'''
+tangent to a manifold boundary, normalized according to the Euclidean metric, which can be plotted as a field
+Input values: 
+    * Mandatory:
+        - 'mesh': the mesh of which the normal is to be computed
+        - 'n': the normal, e.g., FacetNormal(mesh) or FacetNormal(mesh)('+') ...
+        - 'measure': the measure of 'mesh' which defines the curve of which the tangent will be computed
+    * Optional:
+        - 'norm_threshold': the threshold for normalization of the normal. Entries of the normal whose norm is smaller than norm_threshold will be normalized by norm unity (these entries are irrelevant, because they live outside `measure`). 
+Return values: 
+    - 'n_smooth': the facet normal as a smooth field, norma
+ '''
+def field_facet_tangent_normalized(mesh, n, measure,
+                        interior=False,
+                        norm_threshold = const.vector_norm_threshold):
+    
+    # obtain the smooth, normalized normal
+    n_smooth = field_facet_normal_normalized(mesh, n, measure, interior, norm_threshold)
+
+    '''
+    n_vector has the form
+    [n_DOF_0_x, n_DOF_0_y, n_DOF_1_x, n_DOF_1_y, ...]
+    '''
+    n_vector = n_smooth.vector().get_local()
+
+    '''
+    after reshaping n_vector has the form
+    [
+        [n_DOF_0_x, n_DOF_0_y], 
+        [n_DOF_1_x, n_DOF_1_y,],
+    ...]
+    '''
+
+    n_vector = n_vector.reshape(-1, 2)
+
+
+    '''
+    take the 0-th and first column of n_vector, n_vector[:, 0] and n_vector[:, 1], respectively, change the sign of the 1th column and stack the two columns to obtain the tangent
+    '''
+    t_vector = np.stack([-n_vector[:, 1], n_vector[:, 0]], axis=1)
+
+
+    # allocate a new vector for the smooth tangent
+    t_smooth = n_smooth.copy()
+
+    # write into `t_smooth` t_vector flattened
+    t_smooth.vector().set_local(t_vector.reshape(-1))
+    
+    t_smooth.vector().apply("insert")
+
+    return t_smooth
+
+
 '''
 normal to a curve expressed n term of the reference and current configuration of a curve
 Input values: 
