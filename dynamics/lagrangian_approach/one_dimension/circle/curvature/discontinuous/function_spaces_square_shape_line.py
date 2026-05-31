@@ -28,7 +28,7 @@ mu = Function(Q)
 # t_0 = Function(V)
 
 n = Function(V)
-t = Function(V)
+e = Function(V)
 
 
 # test functions

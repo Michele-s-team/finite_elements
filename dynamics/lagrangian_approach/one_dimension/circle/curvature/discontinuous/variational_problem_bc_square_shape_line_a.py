@@ -28,7 +28,7 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 # 1. define expressions for BCs
 
-class t_expression(UserExpression):
+class e_expression(UserExpression):
     def eval(self, values, x):
         '''
         the curve is parametrized with 
@@ -61,16 +61,16 @@ class n_expression(UserExpression):
         return (2,)
 
     
-msh.interpolate_dg(fsp.t, t_expression())
+msh.interpolate_dg(fsp.e, e_expression())
 msh.interpolate_dg(fsp.n, n_expression())
 
-# fsp.t.interpolate(t_expression(element=fsp.V.ufl_element()))
+# fsp.e.interpolate(t_expression(element=fsp.V.ufl_element()))
 # fsp.n.interpolate(n_expression(element=fsp.V.ufl_element()))
 
 
 # fsp.n_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
 
-# fsp.t_0.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+# fsp.e_0.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
 
 
 bcs = []
@@ -78,7 +78,7 @@ bcs = []
 # # variational problem
 
 F = (\
-        (fsp.mu - 1.0/2.0 * (fsp.t[i].dx(j) * fsp.t[j] * fsp.n[i]) / dot(fsp.t, fsp.t)) * fsp.nu_mu \
+        (fsp.mu - 1.0/2.0 * (fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i]) / dot(fsp.e, fsp.e)) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
         msh.jump(fsp.mu, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
