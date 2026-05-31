@@ -28,15 +28,19 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 # 1. define expressions for BCs
 
+
+'''
+the curve is parametrized with 
+r(t) = c + {a cos(2 pi t), b sin(2 pi t)}
+
+and 0 < t < 1
+'''
+def X(t):
+    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * t),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * t)])
+
+
 class e_expression(UserExpression):
     def eval(self, values, x):
-        '''
-        the curve is parametrized with 
-        r(t) = c + {a cos(2 pi t), b sin(2 pi t)}
-
-        and 0 < t < 1
-        
-        '''
 
         t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
 
