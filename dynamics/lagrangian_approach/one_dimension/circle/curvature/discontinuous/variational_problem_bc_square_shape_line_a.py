@@ -39,7 +39,7 @@ r(t) = c + {a cos(2 pi t), b sin(2 pi t)}
 and 0 < t < 1
 '''
 def X(t):
-    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * t),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * t)])
+    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * t)/(2.0 + np.cos(2.0 * np.pi * t)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * t)])
 
 '''
 compute the difference between the polar angle of the curve vector \vec{X} writh respect to 'c' and a given angle
@@ -88,7 +88,7 @@ class e_expression(UserExpression):
 
         # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
 
-        values[0] = -2.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t)  
+        values[0] = -4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2
         values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * t) 
 
     def value_shape(self):
@@ -103,10 +103,10 @@ class n_expression(UserExpression):
 
         # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
 
-        norm = np.sqrt((2.0*np.pi * rmsh.parameters['a'] * np.sin(2*np.pi*t))**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
+        norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
 
         values[0] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t) / norm
-        values[1] = 2.0*np.pi * rmsh.parameters['a'] * np.sin(2*np.pi*t) / norm
+        values[1] = 4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2 / norm
 
     def value_shape(self):
         return (2,)
