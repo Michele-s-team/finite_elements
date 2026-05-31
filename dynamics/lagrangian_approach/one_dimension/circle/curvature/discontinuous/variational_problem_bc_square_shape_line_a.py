@@ -5,9 +5,11 @@ NOTE: this VP is well posed only of the degree of the function space of u is <= 
 from fenics import *
 import importlib
 import numpy as np
+from scipy.optimize import brentq
 import ufl as ufl
 
 import calculus as cal
+import constants.utils as const
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
@@ -39,10 +41,22 @@ def X(t):
     return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * t),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * t)])
 
 
+def delta_theta(t, theta_0):
+
+    return cal.atan_quad([ X(t)[0] - rmsh.parameters['c'][0], X(t)[1] - rmsh.parameters['c'][1] ]) - theta_0
+
+
+
 class e_expression(UserExpression):
     def eval(self, values, x):
 
+        root = brentq(delta_theta, a=0, b=1.0 - const.epsilon, 
+                      args=( cal.atan_quad([ x[0] - rmsh.parameters['c'][0], x[1] - rmsh.parameters['c'][1] ]))
+                      )  
         t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
+
+        print(f'*** x = {x}root = {root} \t t = {t}', flush=True)  
+
 
         values[0] = -2.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t)  
         values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * t) 
