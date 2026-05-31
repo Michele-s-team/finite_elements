@@ -30,11 +30,18 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 class t_expression(UserExpression):
     def eval(self, values, x):
+        '''
+        the curve is parametrized with 
+        r(t) = c + {a cos(2 pi t), b sin(2 pi t)}
 
-        theta = cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
+        and 0 < t < 1
+        
+        '''
 
-        values[0] = -rmsh.parameters['a'] * np.sin(theta)  
-        values[1] = rmsh.parameters['b'] * np.cos(theta) 
+        t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
+
+        values[0] = -2.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t)  
+        values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * t) 
 
     def value_shape(self):
         return (2,)
@@ -43,12 +50,12 @@ class t_expression(UserExpression):
 class n_expression(UserExpression):
     def eval(self, values, x):
 
-        theta = cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
-        
-        norm = np.sqrt((rmsh.parameters['a'] * np.sin(theta))**2 + (rmsh.parameters['b'] * np.cos(theta))**2)
+        t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
 
-        values[0] = rmsh.parameters['b'] * np.cos(theta) / norm
-        values[1] = rmsh.parameters['a'] * np.sin(theta) / norm
+        norm = np.sqrt((2.0*np.pi * rmsh.parameters['a'] * np.sin(2*np.pi*t))**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
+
+        values[0] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t) / norm
+        values[1] = 2.0*np.pi * rmsh.parameters['a'] * np.sin(2*np.pi*t) / norm
 
     def value_shape(self):
         return (2,)
