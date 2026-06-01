@@ -111,26 +111,38 @@ class n_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+     
+        values[0] = x[0]
+        values[1] = -x[1]
+
+    def value_shape(self):
+        return (2,)
+
     
 msh.interpolate_dg(fsp.e, e_expression())
 msh.interpolate_dg(fsp.n, n_expression())
-
-# fsp.e.interpolate(t_expression(element=fsp.V.ufl_element()))
-# fsp.n.interpolate(n_expression(element=fsp.V.ufl_element()))
-
-
-# fsp.n_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
-
-# fsp.e_0.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+msh.interpolate_dg(fsp.u, u_expression())
 
 
 bcs = []
 
 # # variational problem
 
-F = (\
+F_mu = (\
         (fsp.mu - 1.0/2.0 * (fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i]) / dot(fsp.e, fsp.e)) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
         msh.jump(fsp.mu, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
     )
+
+F_grad_u = (\
+        (fsp.grad_u[i, j] - fsp.u[i].dx(j)) * fsp.nu_grad_u[i, j] \
+    ) * rmsh.dx_mesh[0]['dx'] \
+    + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+        msh.jump(fsp.grad_u[i, j], bgeo.facet_normal[0])[k] *  msh.jump(fsp.nu_grad_u[i, j], bgeo.facet_normal[0])[k] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
+    )
+
+F = F_mu + F_grad_u

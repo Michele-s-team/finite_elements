@@ -14,9 +14,9 @@ i, j, k, l, m = ufl.indices(5)
 
 io.full_print(fsp.n, 'n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 io.full_print(fsp.e, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
-io.full_print(project(fsp.e[i]*fsp.e[i], fsp.Q), 'g', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
+io.full_print(project(fsp.e[i]*fsp.e[i], fsp.Q_mu), 'g', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 
-io.full_print(project(fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i], fsp.Q), 'b', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
+io.full_print(project(fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i], fsp.Q_mu), 'b', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 
 
 
