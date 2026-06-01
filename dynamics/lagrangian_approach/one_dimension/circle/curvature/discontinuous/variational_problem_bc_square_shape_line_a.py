@@ -134,7 +134,7 @@ bcs = []
 F_mu = (\
         (fsp.mu \
          - 1.0/2.0 * ( \
-             (fsp.e[i] + fsp.grad_u[i, k] * fsp.e[k]).dx(j) * (fsp.e[j] + fsp.grad_u[j, l] * fsp.e[l]) \
+             (fsp.e[i] + fsp.grad_u[i, k] * fsp.e[k]).dx(j) * fsp.e[j] \
             * (- sqrt( dot(fsp.e, fsp.e) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.e[q] * fsp.e[r]  ) ) \
                * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.n[u] ) ) \
             / ((fsp.e[m] + fsp.grad_u[m, n] * fsp.e[n]) * (fsp.e[m] + fsp.grad_u[m, o] * fsp.e[o])) \
