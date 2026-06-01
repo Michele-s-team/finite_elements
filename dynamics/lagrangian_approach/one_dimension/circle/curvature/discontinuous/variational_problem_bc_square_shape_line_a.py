@@ -101,18 +101,18 @@ class f_expression(UserExpression):
 class nu_expression(UserExpression):
     def eval(self, values, x):
 
-        # obtain the value of the parametric coordinate `s` corresponding to `x`
-        s = s_y(x)
+        # obtain the value of `t` corresponding to `x`
+        t = s_y(x)
 
-        norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*s))**2)
+        norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
 
-        values[0] = - 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*s) / norm
-        values[1] = - 4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2 / norm
+        values[0] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t) / norm
+        values[1] = 4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2 / norm
 
     def value_shape(self):
         return (2,)
-
-
+    
+# sign
 
 
 class u_expression(UserExpression):
@@ -132,9 +132,6 @@ msh.interpolate_dg(fsp.u, u_expression())
 
 
 bcs = []
-
-# sign
-
 
 # # variational problem
 
