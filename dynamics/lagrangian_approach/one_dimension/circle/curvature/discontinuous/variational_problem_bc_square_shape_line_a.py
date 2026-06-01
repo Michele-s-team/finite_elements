@@ -123,7 +123,7 @@ class u_expression(UserExpression):
 
     
 msh.interpolate_dg(fsp.f, f_expression())
-msh.interpolate_dg(fsp.n, n_expression())
+msh.interpolate_dg(fsp.nu, n_expression())
 msh.interpolate_dg(fsp.u, u_expression())
 
 
@@ -136,7 +136,7 @@ F_mu = (\
          - 1.0/2.0 * ( \
              (fsp.f[i] + fsp.grad_u[i, k] * fsp.f[k]).dx(j) * fsp.f[j] \
             * (- sqrt( dot(fsp.f, fsp.f) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.f[q] * fsp.f[r]  ) ) \
-               * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.n[u] ) ) \
+               * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.nu[u] ) ) \
             / ((fsp.f[m] + fsp.grad_u[m, n] * fsp.f[n]) * (fsp.f[m] + fsp.grad_u[m, o] * fsp.f[o])) \
         ) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \

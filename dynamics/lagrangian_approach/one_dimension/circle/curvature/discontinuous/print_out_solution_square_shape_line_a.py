@@ -23,7 +23,7 @@ io.full_print(project(as_tensor((fsp.f[i] + grad_u_dummy[i, k] * fsp.f[k]) , (i)
 io.full_print(
     project(as_tensor(  
         (- sqrt( dot(fsp.f, fsp.f) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.f[q] * fsp.f[r] ) ) \
-               * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.n[u] ), \
+               * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.nu[u] ), \
         (i)), fsp.V), \
     'n_cur', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 
@@ -37,7 +37,7 @@ io.full_print(\
     'g', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0]\
     )
 
-io.full_print(project(fsp.f[i].dx(j) * fsp.f[j] * fsp.n[i], fsp.Q_mu), 'b', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
+io.full_print(project(fsp.f[i].dx(j) * fsp.f[j] * fsp.nu[i], fsp.Q_mu), 'b', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 
 
 

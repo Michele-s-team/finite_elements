@@ -38,7 +38,7 @@ mu, grad_u = split(psi)
 
 
 f = Function(V)
-n = Function(V)
+nu = Function(V)
 b = Function(Q_grad_u)
 
 u = Function(V)
