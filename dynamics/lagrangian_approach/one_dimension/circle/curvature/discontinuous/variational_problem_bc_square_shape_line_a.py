@@ -22,7 +22,7 @@ import switch_problem as swi
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l, m = ufl.indices(5)
+i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 
 
 sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
@@ -33,75 +33,76 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 '''
-the curve is parametrized with 
-r(t) = c + {a cos(2 pi t), b sin(2 pi t)}
-
-and 0 < t < 1
-'''
-def X(t):
-    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * t)/(2.0 + np.cos(2.0 * np.pi * t)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * t)])
-
-'''
-compute the difference between the polar angle of the curve vector \vec{X} writh respect to 'c' and a given angle
+the curve y_s in the reference configuration
 Input values: 
-    - `t`: the curve parameter
+    - 's' :  the parametric coordinate 0 < s < 1
+Return values; 
+    - 'y_s'
+'''
+def y_s(s):
+    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * s)/(2.0 + np.cos(2.0 * np.pi * s)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)])
+
+'''
+difference between the polar angle of the curve vector y_s with respect to the point 'c' and a given angle theta_0
+Input values: 
+    - `s`: the curve parameter
     - `theta_0`: the given angle
 
 Return values:
-    - [theta of X(t)] - theta_0
+    - [polar angle of y(s)] - theta_0
 
 '''
-def delta_theta(t, theta_0):
+def delta_theta(s, theta_0):
 
-    return cal.atan_quad([ X(t)[0] - rmsh.parameters['c'][0], X(t)[1] - rmsh.parameters['c'][1] ]) - theta_0
+    return cal.atan_quad([ y_s(s)[0] - rmsh.parameters['c'][0], y_s(s)[1] - rmsh.parameters['c'][1] ]) - theta_0
+
 
 '''
-return the parameter `t` of the curve `X` corresponding to a point `x` on the plane
+return the parameter `s` of the curve `y(s)` corresponding to a point `y` on the plane
 Input values: 
-    - `x`: the point
+    - `y`: the point in the reference configuration
 Return values: 
-    - `t`: the value of the parametric coordinate of the curve such that `X(t)` forms the same polar angle as `x` with respect to `c`
+    - `s`: the value of the parametric coordinate of the curve `y(s)` such that the point y(s) forms the same polar angle as `y` with respect to `c`
 '''
-def t_X(x):
+def s_y(y):
 
-    # the polar angle that `x` forms with respect to `c``
-    theta_x = cal.atan_quad([ x[0] - rmsh.parameters['c'][0], x[1] - rmsh.parameters['c'][1] ])
+    # the polar angle that `y` forms with respect to `c``
+    theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
     try:
         # try to bracket the solution in the interval 0 < t < 1
 
-        t = brentq(delta_theta, a=0, b=1.0, args=(theta_x) )
+        s = brentq(delta_theta, a=0, b=1.0, args=(theta_y) )
 
     except ValueError:
         # if the previous bracket fails, try to bracket the solution in the interval 0.5 < t < 1.5
 
-        t = brentq(delta_theta, a=0.5, b=1.5, args=(theta_x))  
+        s = brentq(delta_theta, a=0.5, b=1.5, args=(theta_y))  
         
-    return t
+    return s
 
 
-class e_expression(UserExpression):
+
+class f_expression(UserExpression):
     def eval(self, values, x):
 
-        # obtain the value of `t` corresponding to `x`
-        t = t_X(x)
+        # obtain the value of the parametric coordinate `s` corresponding to `x`
+        s = s_y(x)
 
-        # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
-
-        values[0] = -4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2
-        values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * t) 
+        values[0] = -4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2
+        values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s) 
 
     def value_shape(self):
         return (2,)
     
+
+
     
-class n_expression(UserExpression):
+class nu_expression(UserExpression):
     def eval(self, values, x):
 
         # obtain the value of `t` corresponding to `x`
-        t = t_X(x)
-
-        # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
+        t = s_y(x)
 
         norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
 
@@ -110,27 +111,46 @@ class n_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+
+
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+     
+        values[0] = rpam.parameters['d'] * x[0]
+        values[1] = -rpam.parameters['d'] * x[1]
+
+    def value_shape(self):
+        return (2,)
 
     
-msh.interpolate_dg(fsp.e, e_expression())
-msh.interpolate_dg(fsp.n, n_expression())
-
-# fsp.e.interpolate(t_expression(element=fsp.V.ufl_element()))
-# fsp.n.interpolate(n_expression(element=fsp.V.ufl_element()))
-
-
-# fsp.n_0.assign(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
-
-# fsp.e_0.assign(bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label),  rmsh.ds_mesh[0]['dS_shape'], interior=True))
+msh.interpolate_dg(fsp.f, f_expression())
+msh.interpolate_dg(fsp.nu, nu_expression())
+msh.interpolate_dg(fsp.u, u_expression())
 
 
 bcs = []
 
 # # variational problem
 
-F = (\
-        (fsp.mu - 1.0/2.0 * (fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i]) / dot(fsp.e, fsp.e)) * fsp.nu_mu \
+F_mu = (\
+        (fsp.mu \
+        - (fsp.f[i] + fsp.grad_u[i, k] * fsp.f[k]).dx(j) * fsp.f[j] \
+        * ( sqrt( dot(fsp.f, fsp.f) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.f[q] * fsp.f[r] ) ) \
+        * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.nu[u] )  \
+        / (2.0 * (fsp.f[m] + fsp.grad_u[m, n] * fsp.f[n]) * (fsp.f[m] + fsp.grad_u[m, o] * fsp.f[o]) ) \
+        ) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
         msh.jump(fsp.mu, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
     )
+
+F_grad_u = ( (fsp.grad_u[i, j] - fsp.u[i].dx(j)) * fsp.nu_grad_u[i, j] ) * rmsh.dx_mesh[0]['dx'] \
+    + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+        msh.jump(fsp.grad_u[i, j], bgeo.facet_normal[0])[k] *  msh.jump(fsp.nu_grad_u[i, j], bgeo.facet_normal[0])[k] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
+    )
+
+F = F_mu + F_grad_u
+
+# sign
