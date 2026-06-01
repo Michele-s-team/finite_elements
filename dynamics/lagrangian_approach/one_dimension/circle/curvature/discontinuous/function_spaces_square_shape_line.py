@@ -12,9 +12,10 @@ the variables for the problem are
     - 'mu': the curvature of the curve x_s in the current configuration
     - 'u': displacement field of \partial \Omega_circle, defined on the entire domain (it can represent displacement of points also outside \partial \Omega^y)
     - 'grad_u': grad_u[i, j] = \partial u_i / \partial y_j
-    - 'f': tangent vector to the curve y_s in the reference configuration, extended to the whole domain
-    - 'e': tangent vector to the curve x_s in the current configuration, extended to the whole domain
-    - 'n': unit normal to x_t pointing outwards \Omega_circle
+    - f = f_{Curvature} tangent vector to the curve y_s in the reference configuration, extended to the whole domain
+    - e = e_{Curvature}, tangent vector to the curve x_s in the current configuration, extended to the whole domain
+    - nu = nu_{Curvature} unit normal to y_s pointing outwards \Omega_circle^y, extended to the whole domain
+    - n = n_{Curvature} unit normal to x_s pointing inwards \Omega_circle^y, extended to the whole domain
 
 '''
 
