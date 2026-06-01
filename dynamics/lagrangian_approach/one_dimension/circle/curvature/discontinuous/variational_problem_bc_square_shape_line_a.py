@@ -33,73 +33,77 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 '''
-the curve is parametrized with 
-r(t) = c + {a cos(2 pi t), b sin(2 pi t)}
-
-and 0 < t < 1
-'''
-def X(t):
-    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * t)/(2.0 + np.cos(2.0 * np.pi * t)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * t)])
-
-'''
-compute the difference between the polar angle of the curve vector \vec{X} writh respect to 'c' and a given angle
+the curve y_s in the reference configuration
 Input values: 
-    - `t`: the curve parameter
+    - 's' :  the parametric coordinate 0 < s < 1
+Return values; 
+    - 'y_s'
+'''
+def y_s(s):
+    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * s)/(2.0 + np.cos(2.0 * np.pi * s)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)])
+
+'''
+difference between the polar angle of the curve vector y_s with respect to the point 'c' and a given angle theta_0
+Input values: 
+    - `s`: the curve parameter
     - `theta_0`: the given angle
 
 Return values:
-    - [theta of X(t)] - theta_0
+    - [polar angle of y(s)] - theta_0
 
 '''
-def delta_theta(t, theta_0):
+def delta_theta(s, theta_0):
 
-    return cal.atan_quad([ X(t)[0] - rmsh.parameters['c'][0], X(t)[1] - rmsh.parameters['c'][1] ]) - theta_0
+    return cal.atan_quad([ y_s(s)[0] - rmsh.parameters['c'][0], y_s(s)[1] - rmsh.parameters['c'][1] ]) - theta_0
+
 
 '''
-return the parameter `t` of the curve `X` corresponding to a point `x` on the plane
+return the parameter `s` of the curve `y(s)` corresponding to a point `y` on the plane
 Input values: 
-    - `x`: the point
+    - `y`: the point in the reference configuration
 Return values: 
-    - `t`: the value of the parametric coordinate of the curve such that `X(t)` forms the same polar angle as `x` with respect to `c`
+    - `s`: the value of the parametric coordinate of the curve `y(s)` such that the point y(s) forms the same polar angle as `y` with respect to `c`
 '''
-def t_X(x):
+def s_y(y):
 
-    # the polar angle that `x` forms with respect to `c``
-    theta_x = cal.atan_quad([ x[0] - rmsh.parameters['c'][0], x[1] - rmsh.parameters['c'][1] ])
+    # the polar angle that `y` forms with respect to `c``
+    theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
     try:
         # try to bracket the solution in the interval 0 < t < 1
 
-        t = brentq(delta_theta, a=0, b=1.0, args=(theta_x) )
+        s = brentq(delta_theta, a=0, b=1.0, args=(theta_y) )
 
     except ValueError:
         # if the previous bracket fails, try to bracket the solution in the interval 0.5 < t < 1.5
 
-        t = brentq(delta_theta, a=0.5, b=1.5, args=(theta_x))  
+        s = brentq(delta_theta, a=0.5, b=1.5, args=(theta_y))  
         
-    return t
+    return s
+
 
 
 class f_expression(UserExpression):
     def eval(self, values, x):
 
-        # obtain the value of `t` corresponding to `x`
-        t = t_X(x)
+        # obtain the value of the parametric coordinate `s` corresponding to `x`
+        s = s_y(x)
 
-        # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
-
-        values[0] = -4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2
-        values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * t) 
+        values[0] = -4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2
+        values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s) 
 
     def value_shape(self):
         return (2,)
     
+
+# sign
+
     
 class nu_expression(UserExpression):
     def eval(self, values, x):
 
         # obtain the value of `t` corresponding to `x`
-        t = t_X(x)
+        t = s_y(x)
 
         # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
 
