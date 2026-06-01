@@ -95,7 +95,7 @@ class f_expression(UserExpression):
         return (2,)
     
     
-class n_expression(UserExpression):
+class nu_expression(UserExpression):
     def eval(self, values, x):
 
         # obtain the value of `t` corresponding to `x`
@@ -123,7 +123,7 @@ class u_expression(UserExpression):
 
     
 msh.interpolate_dg(fsp.f, f_expression())
-msh.interpolate_dg(fsp.nu, n_expression())
+msh.interpolate_dg(fsp.nu, nu_expression())
 msh.interpolate_dg(fsp.u, u_expression())
 
 
