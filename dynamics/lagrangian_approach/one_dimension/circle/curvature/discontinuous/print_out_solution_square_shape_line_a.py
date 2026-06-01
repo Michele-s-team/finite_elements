@@ -29,6 +29,9 @@ io.full_print(
 
 
 
+
+io.full_print(project(as_tensor( (fsp.e[i] + fsp.grad_u[i, k] * fsp.e[k]).dx(j) * fsp.e[j], (i)), fsp.V), 'dot_e_cur', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
+
 io.full_print(\
     project( (fsp.e[i] + grad_u_dummy[i, k] * fsp.e[k]) * (fsp.e[i] + grad_u_dummy[i, l] * fsp.e[l]), fsp.Q_mu), \
     'g', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0]\
