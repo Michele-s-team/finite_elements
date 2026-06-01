@@ -22,7 +22,7 @@ import switch_problem as swi
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l, m = ufl.indices(5)
+i, j, k, l, m, n, o = ufl.indices(7)
 
 
 sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
@@ -115,8 +115,8 @@ class u_expression(UserExpression):
     def eval(self, values, x):
 
      
-        values[0] = x[0]
-        values[1] = -x[1]
+        values[0] = rpam.parameters['d'] * x[0]
+        values[1] = -rpam.parameters['d'] * x[1]
 
     def value_shape(self):
         return (2,)
@@ -132,7 +132,12 @@ bcs = []
 # # variational problem
 
 F_mu = (\
-        (fsp.mu - 1.0/2.0 * (fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i]) / dot(fsp.e, fsp.e)) * fsp.nu_mu \
+        (fsp.mu \
+         - 1.0/2.0 * ( \
+             (fsp.e[i] + fsp.grad_u[i, k] * fsp.e[k]).dx(j) * (fsp.e[j] + fsp.grad_u[j, l] * fsp.e[l]) \
+            * fsp.n[i]) \
+            / ((fsp.e[m] + fsp.grad_u[m, n] * fsp.e[n]) * (fsp.e[m] + fsp.grad_u[m, o] * fsp.e[o])) \
+        ) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
         msh.jump(fsp.mu, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
