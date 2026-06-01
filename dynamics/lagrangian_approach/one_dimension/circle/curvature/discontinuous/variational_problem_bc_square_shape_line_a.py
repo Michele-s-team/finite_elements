@@ -80,7 +80,7 @@ def t_X(x):
     return t
 
 
-class e_expression(UserExpression):
+class f_expression(UserExpression):
     def eval(self, values, x):
 
         # obtain the value of `t` corresponding to `x`
@@ -122,7 +122,7 @@ class u_expression(UserExpression):
         return (2,)
 
     
-msh.interpolate_dg(fsp.e, e_expression())
+msh.interpolate_dg(fsp.f, f_expression())
 msh.interpolate_dg(fsp.n, n_expression())
 msh.interpolate_dg(fsp.u, u_expression())
 
@@ -134,10 +134,10 @@ bcs = []
 F_mu = (\
         (fsp.mu \
          - 1.0/2.0 * ( \
-             (fsp.e[i] + fsp.grad_u[i, k] * fsp.e[k]).dx(j) * fsp.e[j] \
-            * (- sqrt( dot(fsp.e, fsp.e) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.e[q] * fsp.e[r]  ) ) \
+             (fsp.f[i] + fsp.grad_u[i, k] * fsp.f[k]).dx(j) * fsp.f[j] \
+            * (- sqrt( dot(fsp.f, fsp.f) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.f[q] * fsp.f[r]  ) ) \
                * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.n[u] ) ) \
-            / ((fsp.e[m] + fsp.grad_u[m, n] * fsp.e[n]) * (fsp.e[m] + fsp.grad_u[m, o] * fsp.e[o])) \
+            / ((fsp.f[m] + fsp.grad_u[m, n] * fsp.f[n]) * (fsp.f[m] + fsp.grad_u[m, o] * fsp.f[o])) \
         ) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
