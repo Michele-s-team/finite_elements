@@ -22,7 +22,7 @@ import switch_problem as swi
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l, m, n, o = ufl.indices(7)
+i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 
 
 sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
@@ -135,7 +135,8 @@ F_mu = (\
         (fsp.mu \
          - 1.0/2.0 * ( \
              (fsp.e[i] + fsp.grad_u[i, k] * fsp.e[k]).dx(j) * (fsp.e[j] + fsp.grad_u[j, l] * fsp.e[l]) \
-            * fsp.n[i]) \
+            * (sqrt( dot(fsp.e, fsp.e) / (ela.F(fsp.u)[p, q] * ela.F(fsp.u)[p, r] * fsp.e[q] * fsp.e[r]  ) ) \
+               * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.n[u] ) ) \
             / ((fsp.e[m] + fsp.grad_u[m, n] * fsp.e[n]) * (fsp.e[m] + fsp.grad_u[m, o] * fsp.e[o])) \
         ) * fsp.nu_mu \
     ) * rmsh.dx_mesh[0]['dx'] \
