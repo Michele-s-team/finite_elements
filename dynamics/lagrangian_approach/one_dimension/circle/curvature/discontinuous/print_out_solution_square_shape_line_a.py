@@ -24,4 +24,5 @@ io.full_print(project(fsp.e[i].dx(j) * fsp.e[j] * fsp.n[i], fsp.Q_mu), 'b', solp
 
 
 io.full_print(mu_dummy, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
+io.full_print(grad_u_dummy, 'grad_u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
     
