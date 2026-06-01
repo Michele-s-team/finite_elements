@@ -96,24 +96,24 @@ class f_expression(UserExpression):
         return (2,)
     
 
-# sign
 
     
 class nu_expression(UserExpression):
     def eval(self, values, x):
 
-        # obtain the value of `t` corresponding to `x`
-        t = s_y(x)
+        # obtain the value of the parametric coordinate `s` corresponding to `x`
+        s = s_y(x)
 
-        # t = 1.0/(2.0*np.pi) * cal.atan_quad([ (x[0] - rmsh.parameters['c'][0])/rmsh.parameters['a'], (x[1] - rmsh.parameters['c'][1])/rmsh.parameters['b'] ])
+        norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*s))**2)
 
-        norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
-
-        values[0] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t) / norm
-        values[1] = 4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2 / norm
+        values[0] = - 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*s) / norm
+        values[1] = - 4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2 / norm
 
     def value_shape(self):
         return (2,)
+
+
+
 
 class u_expression(UserExpression):
     def eval(self, values, x):
@@ -132,6 +132,9 @@ msh.interpolate_dg(fsp.u, u_expression())
 
 
 bcs = []
+
+# sign
+
 
 # # variational problem
 
