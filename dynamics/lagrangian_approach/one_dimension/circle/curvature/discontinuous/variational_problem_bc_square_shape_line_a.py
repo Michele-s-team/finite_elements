@@ -129,8 +129,6 @@ msh.interpolate_dg(fsp.f, f_expression())
 msh.interpolate_dg(fsp.nu, nu_expression())
 msh.interpolate_dg(fsp.u, u_expression())
 
-# sign
-
 
 bcs = []
 
@@ -154,3 +152,5 @@ F_grad_u = ( (fsp.grad_u[i, j] - fsp.u[i].dx(j)) * fsp.nu_grad_u[i, j] ) * rmsh.
     )
 
 F = F_mu + F_grad_u
+
+# sign
