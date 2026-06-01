@@ -112,7 +112,6 @@ class nu_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-# sign
 
 
 class u_expression(UserExpression):
@@ -129,6 +128,8 @@ class u_expression(UserExpression):
 msh.interpolate_dg(fsp.f, f_expression())
 msh.interpolate_dg(fsp.nu, nu_expression())
 msh.interpolate_dg(fsp.u, u_expression())
+
+# sign
 
 
 bcs = []
