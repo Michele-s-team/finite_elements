@@ -10,10 +10,8 @@ import sys
 import ufl as ufl
 
 import calculus as cal
-import constants.utils as const
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
-import physics.fluid_mechanics as flu
 import physics.elasticity as ela
 import parameters.read.solution as rpam
 import switch_problem as swi
@@ -33,14 +31,14 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 '''
-the curve y_s in the reference configuration
+the curve y_s in the reference configuration and its derivative 
 Input values: 
     - 's' :  the parametric coordinate 0 < s < 1
 Return values; 
-    - 'y_s'
+    - 'y_s', 'd y_s/ds': y(s) and d y(s) / ds
 '''
-def y_s(s):
-    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * s)/(2.0 + np.cos(2.0 * np.pi * s)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)])
+def y_s_dy_ds(s):
+    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * s)/(2.0 + np.cos(2.0 * np.pi * s)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)]), np.array([-4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2, 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s) ])
 
 '''
 difference between the polar angle of the curve vector y_s with respect to the point 'c' and a given angle theta_0
@@ -54,7 +52,7 @@ Return values:
 '''
 def delta_theta(s, theta_0):
 
-    return cal.atan_quad([ y_s(s)[0] - rmsh.parameters['c'][0], y_s(s)[1] - rmsh.parameters['c'][1] ]) - theta_0
+    return cal.atan_quad([ y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
 
 
 '''
@@ -89,8 +87,8 @@ class f_expression(UserExpression):
         # obtain the value of the parametric coordinate `s` corresponding to `x`
         s = s_y(x)
 
-        values[0] = -4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2
-        values[1] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s) 
+        values[0] = y_s_dy_ds(s)[1][0]
+        values[1] = y_s_dy_ds(s)[1][1]
 
     def value_shape(self):
         return (2,)
@@ -102,12 +100,14 @@ class nu_expression(UserExpression):
     def eval(self, values, x):
 
         # obtain the value of `t` corresponding to `x`
-        t = s_y(x)
+        s = s_y(x)
 
-        norm = np.sqrt((4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2)**2 + (2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t))**2)
+        _, d_y_s_ds = y_s_dy_ds(s)
 
-        values[0] = 2.0*np.pi * rmsh.parameters['b'] * np.cos(2*np.pi*t) / norm
-        values[1] = 4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * t) / (2.0 + np.cos(2.0 * np.pi * t))**2 / norm
+        norm = np.linalg.norm(d_y_s_ds)
+
+        values[0] = d_y_s_ds[1] / norm
+        values[1] = - d_y_s_ds[0] / norm
 
     def value_shape(self):
         return (2,)
