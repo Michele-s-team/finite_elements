@@ -98,7 +98,36 @@ def f(t):
 
     return np.array([x, y])                     # (2,)
 
-print(f'f(0.5) = {f(0.5)}')
+
+import csv
+import runtime_arguments as rarg
+import os
+
+# create the path for the csv file if it does not exist
+filename_f = rarg.args.output_directory + '/f.csv'
+os.makedirs(os.path.dirname(filename_f), exist_ok=True)
+
+csvfile = open(filename_f, 'a', newline='')
+fieldnames = ['t', 'f:0', 'f:1']
+writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+writer.writeheader()
+
+M = 1000
+N = len(rmsh.parameters['shape_coordinates'])
+for ii in range(M):
+
+    ss = ii/(M-1)
+
+    writer.writerows([{
+        fieldnames[0]: \
+            ss, \
+        fieldnames[1]: \
+            f(ss)[0], \
+        fieldnames[2]: \
+            f(ss)[1]
+        }])
+
+csvfile.close()
 
 # test fit - end 
 
