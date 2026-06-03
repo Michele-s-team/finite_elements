@@ -1,5 +1,9 @@
 """
-This code solves for the mean curvature of a current shape defined with the lagrangian approach as the deformation of a reference shape. The mean curvature obtained is a field defined on the full mesh, and it equals the mean curvature only when evaluated on the shape mesh facets
+This code solves for the mean curvature of a current shape defined with the lagrangian approach as the deformation of a reference shape. The mean curvature mu obtained is a field defined on the full mesh, and if y_s \in \partial \Omega^y_circle, we have
+
+ mu(y_s) = H_s
+
+ where H_s is the mean curvature of the current shape computed at point x_s, with respect to a unit normal pointing into the shape. 
 
 run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
