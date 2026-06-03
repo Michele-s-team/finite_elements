@@ -86,7 +86,7 @@ def s_y(y):
     print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
 
     if 0 <= theta_y < theta_0:
-        # in this case, I look for the solution s in the interval s_0 <= s < 1.0
+        # 0 <= theta_y < theta_0: the solution s must lie in the interval s_0 <= s < 1.0
 
         print(f'Case I\ns_0 = {s_0}\nf(s_0) = {arctan_quad_bare(s_0)}\nf(1) = {arctan_quad_bare(1.0)}', flush=True)
 
@@ -96,12 +96,13 @@ def s_y(y):
             )
 
     else:
-        # in this case, I look for the solution in the interval 0 <= s <= s_0
+        # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
 
         print(f'Case II', flush=True)
 
         s = brentq(\
-            lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, a=0, b=s_0 \
+            lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, 
+            a=0, b=s_0 \
             )
 
 
