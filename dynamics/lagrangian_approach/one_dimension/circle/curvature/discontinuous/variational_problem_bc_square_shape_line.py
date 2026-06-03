@@ -41,14 +41,8 @@ Return values:
 '''
 def delta_theta(s, theta_0):
 
-    if s != 1.0:
-        # 0 <= s < 1: return the angular difference by using atan_quad
+    return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
 
-        return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
-    else:    
-
-        # s = 1: atan_quad would return 0, which wold prevent the bracketing method from finding the root -> set atan_quad -> 2 pi
-        return 2.0*np.pi - theta_0
 
 # 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
@@ -57,7 +51,10 @@ print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # solve for s_0
 # REVISE: INCLUDE A SYSTEMATIC WAY TO DETERMINE THE INTERVAL WHERE TO LOOK FOR S_0
-s_0 = brentq(lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.75, b=1.0 )
+def arctan_quad_bare(s):
+    return np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0]))
+
+s_0 = brentq(arctan_quad_bare, a=0.75, b=1.0 )
 
 print(f's_0 = {s_0}\t theta(s_0) = {delta_theta(s_0, 0)}')
 # 
@@ -75,15 +72,30 @@ def s_y(y):
     # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
     theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
-    try:
-        # try to bracket the solution in the interval 0 < t < 1
+    print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
 
-        s = brentq(delta_theta, a=0, b=1.0, args=(theta_y) )
+    if 0 <= theta_y < theta_0:
 
-    except ValueError:
-        # if the previous bracket fails, try to bracket the solution in the interval 0.5 < t < 1.5
+        print(f'Case I\ns_0 = {s_0}\nf(s_0) = {arctan_quad_bare(s_0)}\nf(1) = {arctan_quad_bare(1.0)}', flush=True)
 
-        s = brentq(delta_theta, a=0.5, b=1.5, args=(theta_y))  
+        s = brentq(delta_theta, a=s_0, b=1, args=(theta_y) )
+
+    else:
+
+        print(f'Case II', flush=True)
+
+        s = brentq(delta_theta, a=0, b=s_0, args=(theta_y) )
+
+
+    # try:
+    #     # try to bracket the solution in the interval 0 < t < 1
+
+    #     s = brentq(delta_theta, a=0, b=1.0, args=(theta_y) )
+
+    # except ValueError:
+    #     # if the previous bracket fails, try to bracket the solution in the interval 0.5 < t < 1.5
+
+    #     s = brentq(delta_theta, a=0.5, b=1.5, args=(theta_y))  
         
     return s
 
