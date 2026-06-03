@@ -76,12 +76,27 @@ def s_y(y):
 
 
 # test fit - start
+'''
+N is the length of rmsh.parameters['shape_coordinates']
+
+C[k][0] = \sum_{m=0}^{n-1} rmsh.parameters['shape_coordinates'][i][0] exp(- 2 pi i m k / N)
+C[k][1] = \sum_{m=0}^{n-1} rmsh.parameters['shape_coordinates'][i][1] exp(- 2 pi i m k / N)
+'''
+
+shape_coordinates = np.array(rmsh.parameters['shape_coordinates'])
+
+C = [np.fft.fft(shape_coordinates[:, 0]), np.fft.fft(shape_coordinates[:, 1])]
+
 def f(t):
-    n = np.arange(N)
-    phases = np.exp(2j * np.pi * n * t)        # (N,)
-    x = np.real(phases @ Cx) / N
-    y = np.real(phases @ Cy) / N
+
+    n = np.arange(rmsh.parameters['N'])
+    exps = np.exp(2j * np.pi * n * t)    
+
+    x = np.real(np.dot(exps, C[0])) / rmsh.parameters['N']
+    y = np.real(np.dot(exps, C[1])) / rmsh.parameters['N']
+
     return np.array([x, y])                     # (2,)
+
 # test fit - end 
 
 class f_expression(UserExpression):
