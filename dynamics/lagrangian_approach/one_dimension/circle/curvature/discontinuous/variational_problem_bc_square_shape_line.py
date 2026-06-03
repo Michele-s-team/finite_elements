@@ -86,7 +86,18 @@ def s_y(y):
     print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
 
     if 0 <= theta_y < theta_0:
-        # 0 <= theta_y < theta_0: the solution s must lie in the interval s_0 <= s < 1.0
+        '''
+            0 <= theta_y < theta_0: the solution s must lie in the interval s_0 <= s < 1.0. 
+            Given that in this interval the angle 
+
+                cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ])
+
+            may abruptly jump from 2 pi to 0, here I use the "bare" version of atan_quad 
+            
+                np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0]))
+
+            that is continuous in the neighborhood of s ~ s_0. 
+        '''
 
         print(f'Case I\ns_0 = {s_0}\nf(s_0) = {arctan_quad_bare(s_0)}\nf(1) = {arctan_quad_bare(1.0)}', flush=True)
 
