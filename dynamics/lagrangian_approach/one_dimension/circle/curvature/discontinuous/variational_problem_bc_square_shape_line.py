@@ -23,6 +23,8 @@ i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
 
 
+# s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
+
 
 
 
