@@ -89,13 +89,16 @@ C = [np.fft.fft(shape_coordinates[:, 0]), np.fft.fft(shape_coordinates[:, 1])]
 
 def f(t):
 
-    n = np.arange(rmsh.parameters['N'])
+    N = len(rmsh.parameters['shape_coordinates'])
+    n = np.arange(N)
     exps = np.exp(2j * np.pi * n * t)    
 
-    x = np.real(np.dot(exps, C[0])) / rmsh.parameters['N']
-    y = np.real(np.dot(exps, C[1])) / rmsh.parameters['N']
+    x = np.real(np.dot(exps, C[0])) / N
+    y = np.real(np.dot(exps, C[1])) / N
 
     return np.array([x, y])                     # (2,)
+
+print(f'f(0.5) = {f(0.5)}')
 
 # test fit - end 
 
