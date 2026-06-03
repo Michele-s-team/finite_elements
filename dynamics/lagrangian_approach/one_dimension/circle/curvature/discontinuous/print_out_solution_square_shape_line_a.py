@@ -54,11 +54,11 @@ io.full_print(grad_u_dummy, 'grad_u', solpath.xdmf_file_path, solpath.h5_file_pa
 
 
 # 2 print the curve y_s
-filename_y_s = rarg.args.output_directory + '/y_s.csv'
+filename_y_s = rarg.args.output_directory + '/y_s_dy_ds.csv'
 os.makedirs(os.path.dirname(filename_y_s), exist_ok=True)
 
 csvfile = open(filename_y_s, 'a', newline='')
-fieldnames = ['t', 'f:0', 'f:1']
+fieldnames = ['t', 'y_s:0', 'y_s:1', 'dy_ds:0', 'dy_ds:1']
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
@@ -75,7 +75,11 @@ for ii in range(M):
         fieldnames[1]: \
             sh.y_s_dy_ds(ss)[0][0], \
         fieldnames[2]: \
-            sh.y_s_dy_ds(ss)[0][1]
+            sh.y_s_dy_ds(ss)[0][1],\
+        fieldnames[3]: \
+            sh.y_s_dy_ds(ss)[1][0], \
+        fieldnames[4]: \
+            sh.y_s_dy_ds(ss)[1][1]
         }])
 
 csvfile.close()
