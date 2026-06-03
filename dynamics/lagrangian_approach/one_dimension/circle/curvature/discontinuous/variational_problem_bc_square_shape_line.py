@@ -55,11 +55,12 @@ def delta_theta(s, theta_0):
 print(f'*** theta(0) = {delta_theta(0, theta_0=0) * const.rad_to_deg}')
 print(f'*** theta(0.5) = {delta_theta(0.5, theta_0=0) * const.rad_to_deg}')
 
-if delta_theta(0.5, theta_0=0) < delta_theta(0, theta_0=0):
-    print(f's_0 is in [0, 0.5]')
-else:
-    print(f's_0 is in [0.5, 1]')
 
+
+# solve for s_0
+s_0 = brentq(lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.75, b=1.0 )
+
+print(f's_0 = {s_0}\t theta(s_0) = {delta_theta(s_0, 0)}')
 
 
 # 
