@@ -23,7 +23,6 @@ i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
 
 
-# s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
 
 
 
@@ -49,6 +48,12 @@ def delta_theta(s, theta_0):
 
         # s = 1: atan_quad would return 0, which wold prevent the bracketing method from finding the root -> set atan_quad -> 2 pi
         return 2.0*np.pi - theta_0
+
+# 
+# s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
+print(f'*** theta(0) = {delta_theta(0, theta_0=0)}')
+
+# 
 
 
 '''
