@@ -5,6 +5,8 @@ This code solves for the mean curvature of a current shape defined with the lagr
 
  where H_s is the mean curvature of the current shape computed at point x_s, with respect to a unit normal pointing into the shape. 
 
+NOTE: This approach works only if the parametric curve y(s) vs. s has no overhangs (this is because the inversion s_y(x) is used)
+
 run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
