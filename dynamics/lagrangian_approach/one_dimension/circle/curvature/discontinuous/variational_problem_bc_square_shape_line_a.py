@@ -9,6 +9,7 @@ import ufl as ufl
 # import analytical_shape as sh
 # B) fit the shape from coordinates
 import fitted_shape as sh
+
 import calculus as cal
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
@@ -42,7 +43,14 @@ Return values:
 '''
 def delta_theta(s, theta_0):
 
-    return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
+    if s != 1.0:
+        # 0 <= s < 1: return the angular difference by using atan_quad
+
+        return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
+    else:    
+
+        # s = 1: atan_quad would return 0, which wold prevent the bracketing method from finding the root -> set atan_quad -> 2 pi
+        return 2.0*np.pi - theta_0
 
 
 '''
@@ -70,8 +78,7 @@ def s_y(y):
     return s
 
 
-print(f'atan quad 0 = {cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters["c"][1] ])}')
-print(f'atan quad 1 = {cal.atan_quad([ sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1] ])}')
+
 
 
 class f_expression(UserExpression):

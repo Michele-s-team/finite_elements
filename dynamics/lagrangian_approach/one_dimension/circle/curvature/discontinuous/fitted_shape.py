@@ -24,12 +24,15 @@ shape_coordinates_closed = np.vstack([shape_coordinates, shape_coordinates[0]])
 # fit a periodic cubic spline for x(t) and y(t) separately
 cspline = [CubicSpline(t_values_closed, shape_coordinates_closed[:, 0], bc_type='periodic'), CubicSpline(t_values_closed, shape_coordinates_closed[:, 1], bc_type='periodic')]
 
-def f(t):
-    return np.array([float(cspline[0](t)), float(cspline[1](t))])
-
-def df(t):
-    return np.array([float(cspline[0](t, 1)), float(cspline[1](t, 1))])  # first derivative
-
+'''
+the curve y_s in the reference configuration and its derivative 
+Input values: 
+    - 's' :  the parametric coordinate 0 < s < 1
+Return values; 
+    - 'y_s', 'd y_s/ds': y(s) and d y(s) / ds
+'''
+def y_s_dy_ds(s):
+    return np.array([float(cspline[0](s)), float(cspline[1](s))]), np.array([float(cspline[0](s, 1)), float(cspline[1](s, 1))])
 
 
 
@@ -53,21 +56,12 @@ for ii in range(M):
         fieldnames[0]: \
             ss, \
         fieldnames[1]: \
-            f(ss)[0], \
+            y_s_dy_ds(ss)[0][0], \
         fieldnames[2]: \
-            f(ss)[1]
+            y_s_dy_ds(ss)[0][1]
         }])
 
 csvfile.close()
 
 
-'''
-the curve y_s in the reference configuration and its derivative 
-Input values: 
-    - 's' :  the parametric coordinate 0 < s < 1
-Return values; 
-    - 'y_s', 'd y_s/ds': y(s) and d y(s) / ds
-'''
-def y_s_dy_ds(s):
-    return f(s), df(s)
 
