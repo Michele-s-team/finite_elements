@@ -76,27 +76,25 @@ def s_y(y):
 
 
 # test fit - start
-'''
-N is the length of rmsh.parameters['shape_coordinates']
-
-C[k][0] = \sum_{m=0}^{n-1} rmsh.parameters['shape_coordinates'][i][0] exp(- 2 pi i m k / N)
-C[k][1] = \sum_{m=0}^{n-1} rmsh.parameters['shape_coordinates'][i][1] exp(- 2 pi i m k / N)
-'''
+from scipy.interpolate import CubicSpline
 
 shape_coordinates = np.array(rmsh.parameters['shape_coordinates'])
+N = len(shape_coordinates)
 
-C = [np.fft.fft(shape_coordinates[:, 0]), np.fft.fft(shape_coordinates[:, 1])]
+# parameter values: uniform in [0, 1), close the curve
+t_values_closed = np.arange(N) / N
+t_values_closed = np.append(t_values_closed, 1.0)
+
+shape_coordinates_closed = np.vstack([shape_coordinates, shape_coordinates[0]])
+
+# fit a periodic cubic spline for x(t) and y(t) separately
+cspline = [CubicSpline(t_values_closed, shape_coordinates_closed[:, 0], bc_type='periodic'), CubicSpline(t_values_closed, shape_coordinates_closed[:, 1], bc_type='periodic')]
 
 def f(t):
+    return np.array([float(cspline[0](t)), float(cspline[1](t))])
 
-    N = len(rmsh.parameters['shape_coordinates'])
-    n = np.arange(N)
-    exps = np.exp(2j * np.pi * n * t)    
-
-    x = np.real(np.dot(exps, C[0])) / N
-    y = np.real(np.dot(exps, C[1])) / N
-
-    return np.array([x, y])                     # (2,)
+def df(t):
+    return np.array([float(cspline[0](t, 1)), float(cspline[1](t, 1))])  # first derivative
 
 
 import csv
@@ -112,8 +110,9 @@ fieldnames = ['t', 'f:0', 'f:1']
 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 writer.writeheader()
 
-M = 1000
 N = len(rmsh.parameters['shape_coordinates'])
+M = N+1
+
 for ii in range(M):
 
     ss = ii/(M-1)
