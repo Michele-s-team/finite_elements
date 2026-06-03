@@ -75,6 +75,14 @@ def s_y(y):
     return s
 
 
+# test fit - start
+def f(t):
+    n = np.arange(N)
+    phases = np.exp(2j * np.pi * n * t)        # (N,)
+    x = np.real(phases @ Cx) / N
+    y = np.real(phases @ Cy) / N
+    return np.array([x, y])                     # (2,)
+# test fit - end 
 
 class f_expression(UserExpression):
     def eval(self, values, x):
