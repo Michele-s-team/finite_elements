@@ -52,17 +52,14 @@ def delta_theta(s, theta_0):
 
 # 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
-print(f'*** theta(0) = {delta_theta(0, theta_0=0) * const.rad_to_deg}')
-print(f'*** theta(0.5) = {delta_theta(0.5, theta_0=0) * const.rad_to_deg}')
-
-
+theta_0 = delta_theta(0, theta_0=0)
+print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # solve for s_0
+# REVISE: INCLUDE A SYSTEMATIC WAY TO DETERMINE THE INTERVAL WHERE TO LOOK FOR S_0
 s_0 = brentq(lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.75, b=1.0 )
 
 print(f's_0 = {s_0}\t theta(s_0) = {delta_theta(s_0, 0)}')
-
-
 # 
 
 
@@ -75,7 +72,7 @@ Return values:
 '''
 def s_y(y):
 
-    # the polar angle that `y` forms with respect to `c``
+    # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
     theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
     try:
