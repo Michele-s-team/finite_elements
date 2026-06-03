@@ -36,32 +36,6 @@ def y_s_dy_ds(s):
 
 
 
-# create the path for the csv file if it does not exist
-filename_f = rarg.args.output_directory + '/f.csv'
-os.makedirs(os.path.dirname(filename_f), exist_ok=True)
-
-csvfile = open(filename_f, 'a', newline='')
-fieldnames = ['t', 'f:0', 'f:1']
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
-
-N = len(rmsh.parameters['shape_coordinates'])
-M = N+1
-
-for ii in range(M):
-
-    ss = ii/(M-1)
-
-    writer.writerows([{
-        fieldnames[0]: \
-            ss, \
-        fieldnames[1]: \
-            y_s_dy_ds(ss)[0][0], \
-        fieldnames[2]: \
-            y_s_dy_ds(ss)[0][1]
-        }])
-
-csvfile.close()
 
 
 

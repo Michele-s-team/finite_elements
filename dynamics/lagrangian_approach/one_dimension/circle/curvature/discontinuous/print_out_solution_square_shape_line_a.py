@@ -1,12 +1,21 @@
+import csv
 from fenics import *
 import importlib
+import os
 import ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import physics.elasticity as ela
 import input_output as io
+import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
+
+# FORK: 
+# A) define the shape analytically
+# import analytical_shape as sh
+# B) fit the shape from coordinates
+import fitted_shape as sh
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
@@ -17,7 +26,7 @@ mu_dummy, grad_u_dummy = fsp.psi.split( deepcopy=True )
 
 
 
-
+# 1 print fields
 io.full_print(project(as_tensor((fsp.f[i] + grad_u_dummy[i, k] * fsp.f[k]) , (i)), fsp.V), 'e_cur', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 
 io.full_print(
@@ -26,8 +35,6 @@ io.full_print(
                * bgeo.epsilon[i, s] * ela.F(fsp.u)[s, t] * bgeo.epsilon[t, u] * fsp.nu[u] ), \
         (i)), fsp.V), \
     'n_cur', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
-
-
 
 
 io.full_print(project(as_tensor( (fsp.f[i] + fsp.grad_u[i, k] * fsp.f[k]).dx(j) * fsp.f[j], (i)), fsp.V), 'dot_e_cur', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
@@ -40,7 +47,35 @@ io.full_print(\
 io.full_print(project(fsp.f[i].dx(j) * fsp.f[j] * fsp.nu[i], fsp.Q_mu), 'b', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 
 
-
 io.full_print(mu_dummy, 'mu', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
 io.full_print(grad_u_dummy, 'grad_u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path, solpath.nodal_values_path,  rmsh.sf[0])
     
+
+
+
+# 2 print the curve y_s
+filename_y_s = rarg.args.output_directory + '/y_s.csv'
+os.makedirs(os.path.dirname(filename_y_s), exist_ok=True)
+
+csvfile = open(filename_y_s, 'a', newline='')
+fieldnames = ['t', 'f:0', 'f:1']
+writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+writer.writeheader()
+
+N = len(rmsh.parameters['shape_coordinates'])
+M = N+1
+
+for ii in range(M):
+
+    ss = ii/(M-1)
+
+    writer.writerows([{
+        fieldnames[0]: \
+            ss, \
+        fieldnames[1]: \
+            sh.y_s_dy_ds(ss)[0][0], \
+        fieldnames[2]: \
+            sh.y_s_dy_ds(ss)[0][1]
+        }])
+
+csvfile.close()
