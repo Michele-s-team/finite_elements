@@ -90,14 +90,19 @@ def s_y(y):
 
         print(f'Case I\ns_0 = {s_0}\nf(s_0) = {arctan_quad_bare(s_0)}\nf(1) = {arctan_quad_bare(1.0)}', flush=True)
 
-        s = brentq(delta_theta_bare, a=s_0, b=1, args=(theta_y) )
+        s = brentq(\
+                lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])) - theta_y, \
+                a=s_0, b=1 \
+            )
 
     else:
         # in this case, I look for the solution in the interval 0 <= s <= s_0
 
         print(f'Case II', flush=True)
 
-        s = brentq(delta_theta, a=0, b=s_0, args=(theta_y) )
+        s = brentq(\
+            lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, a=0, b=s_0 \
+            )
 
 
     # try:
