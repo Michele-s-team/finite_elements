@@ -70,6 +70,9 @@ def s_y(y):
     return s
 
 
+print(f'atan quad 0 = {cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters["c"][1] ])}')
+print(f'atan quad 1 = {cal.atan_quad([ sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1] ])}')
+
 
 class f_expression(UserExpression):
     def eval(self, values, x):
