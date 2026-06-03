@@ -6,6 +6,7 @@ import ufl as ufl
 
 
 import calculus as cal
+import constants.utils as const
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.elasticity as ela
@@ -51,7 +52,15 @@ def delta_theta(s, theta_0):
 
 # 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
-print(f'*** theta(0) = {delta_theta(0, theta_0=0)}')
+print(f'*** theta(0) = {delta_theta(0, theta_0=0) * const.rad_to_deg}')
+print(f'*** theta(0.5) = {delta_theta(0.5, theta_0=0) * const.rad_to_deg}')
+
+if delta_theta(0.5, theta_0=0) < delta_theta(0, theta_0=0):
+    print(f's_0 is in [0, 0.5]')
+else:
+    print(f's_0 is in [0.5, 1]')
+
+
 
 # 
 
