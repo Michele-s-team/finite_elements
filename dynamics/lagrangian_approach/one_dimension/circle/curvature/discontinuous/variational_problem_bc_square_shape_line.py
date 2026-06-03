@@ -29,21 +29,6 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 
-'''
-difference between the polar angle of the curve vector y_s with respect to the point 'c' and a given angle theta_0
-Input values: 
-    - `s`: the curve parameter
-    - `theta_0`: the given angle
-
-Return values:
-    - [polar angle of y(s)] - theta_0
-
-'''
-def delta_theta(s, theta_0):
-
-    return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
-
-
 
 
 # 
@@ -51,23 +36,15 @@ def delta_theta(s, theta_0):
 
 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
-theta_0 = delta_theta(0, theta_0=0)
+theta_0 = cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters['c'][1] ])
 print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # solve for s_0
 # REVISE: INCLUDE A SYSTEMATIC WAY TO DETERMINE THE INTERVAL WHERE TO LOOK FOR S_0
-def arctan_quad_bare(s):
 
-    return np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0]))
+s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.75, b=1.0 )
 
-
-def delta_theta_bare(s, theta_0):
-
-    return arctan_quad_bare(s) - theta_0
-
-s_0 = brentq(arctan_quad_bare, a=0.75, b=1.0 )
-
-print(f's_0 = {s_0}\t theta(s_0) = {delta_theta(s_0, 0)}')
+print(f's_0 = {s_0}\t theta(s_0) = {cal.atan_quad([ sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1] ])}')
 # 
 
 
@@ -99,7 +76,7 @@ def s_y(y):
             that is continuous in the neighborhood of s ~ s_0. 
         '''
 
-        print(f'Case I\ns_0 = {s_0}\nf(s_0) = {arctan_quad_bare(s_0)}\nf(1) = {arctan_quad_bare(1.0)}', flush=True)
+        print(f'Case I\ns_0 = {s_0}', flush=True)
 
         s = brentq(\
                 lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])) - theta_y, \
@@ -115,17 +92,6 @@ def s_y(y):
             lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, 
             a=0, b=s_0 \
             )
-
-
-    # try:
-    #     # try to bracket the solution in the interval 0 < t < 1
-
-    #     s = brentq(delta_theta, a=0, b=1.0, args=(theta_y) )
-
-    # except ValueError:
-    #     # if the previous bracket fails, try to bracket the solution in the interval 0.5 < t < 1.5
-
-    #     s = brentq(delta_theta, a=0.5, b=1.5, args=(theta_y))  
         
     return s
 
