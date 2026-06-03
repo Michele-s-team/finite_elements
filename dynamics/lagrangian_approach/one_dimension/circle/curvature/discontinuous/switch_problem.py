@@ -9,7 +9,7 @@ if rarg.args.problem == 'square_shape_line_a':
     rmsh = 'mesh.read.square_shape_line'
     vp = 'variational_problem_bc_square_shape_line'
     prout_sol = 'print_out_solution_square_shape_line'
-    sh = 'analytical_shape'
+    sh = 'shape_square_shape_line_a'
 
 elif rarg.args.problem == 'square_shape_line_b':
 
@@ -17,7 +17,7 @@ elif rarg.args.problem == 'square_shape_line_b':
     rmsh = 'mesh.read.square_shape_line'
     vp = 'variational_problem_bc_square_shape_line'
     prout_sol = 'print_out_solution_square_shape_line'
-    sh = 'fitted_shape'
+    sh = 'shape_square_shape_line_b'
 
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')
