@@ -11,14 +11,10 @@ import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 
-# FORK: 
-# A) define the shape analytically
-# import analytical_shape as sh
-# B) fit the shape from coordinates
-import fitted_shape as sh
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 
 i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 
