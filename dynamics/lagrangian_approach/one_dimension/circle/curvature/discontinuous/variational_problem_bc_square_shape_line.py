@@ -44,7 +44,12 @@ def delta_theta(s, theta_0):
     return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
 
 
+
+
 # 
+
+
+
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
 theta_0 = delta_theta(0, theta_0=0)
 print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
@@ -52,7 +57,13 @@ print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 # solve for s_0
 # REVISE: INCLUDE A SYSTEMATIC WAY TO DETERMINE THE INTERVAL WHERE TO LOOK FOR S_0
 def arctan_quad_bare(s):
+
     return np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0]))
+
+
+def delta_theta_bare(s, theta_0):
+
+    return arctan_quad_bare(s) - theta_0
 
 s_0 = brentq(arctan_quad_bare, a=0.75, b=1.0 )
 
@@ -75,12 +86,14 @@ def s_y(y):
     print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
 
     if 0 <= theta_y < theta_0:
+        # in this case, I look for the solution s in the interval s_0 <= s < 1.0
 
         print(f'Case I\ns_0 = {s_0}\nf(s_0) = {arctan_quad_bare(s_0)}\nf(1) = {arctan_quad_bare(1.0)}', flush=True)
 
-        s = brentq(delta_theta, a=s_0, b=1, args=(theta_y) )
+        s = brentq(delta_theta_bare, a=s_0, b=1, args=(theta_y) )
 
     else:
+        # in this case, I look for the solution in the interval 0 <= s <= s_0
 
         print(f'Case II', flush=True)
 
