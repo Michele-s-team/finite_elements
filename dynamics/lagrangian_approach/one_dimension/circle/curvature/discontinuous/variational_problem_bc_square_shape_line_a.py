@@ -4,6 +4,11 @@ import numpy as np
 from scipy.optimize import brentq
 import ufl as ufl
 
+# FORK: 
+# A) define the shape analytically
+import analytical_shape as sh
+# B) fit the shape from coordinates
+# import fitted_shape as sh
 import calculus as cal
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
@@ -22,18 +27,8 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 
-# 1. define expressions for BCs
 
 
-'''
-the curve y_s in the reference configuration and its derivative 
-Input values: 
-    - 's' :  the parametric coordinate 0 < s < 1
-Return values; 
-    - 'y_s', 'd y_s/ds': y(s) and d y(s) / ds
-'''
-def y_s_dy_ds(s):
-    return np.add(rmsh.parameters['c'], [rmsh.parameters['a'] * np.cos(2.0 * np.pi * s)/(2.0 + np.cos(2.0 * np.pi * s)),  rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)]), np.array([-4.0*np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2, 2.0*np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s) ])
 
 '''
 difference between the polar angle of the curve vector y_s with respect to the point 'c' and a given angle theta_0
@@ -47,7 +42,7 @@ Return values:
 '''
 def delta_theta(s, theta_0):
 
-    return cal.atan_quad([ y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
+    return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_0
 
 
 '''
@@ -136,8 +131,8 @@ class f_expression(UserExpression):
         # obtain the value of the parametric coordinate `s` corresponding to `x`
         s = s_y(x)
 
-        values[0] = y_s_dy_ds(s)[1][0]
-        values[1] = y_s_dy_ds(s)[1][1]
+        values[0] = sh.y_s_dy_ds(s)[1][0]
+        values[1] = sh.y_s_dy_ds(s)[1][1]
 
     def value_shape(self):
         return (2,)
@@ -151,7 +146,7 @@ class nu_expression(UserExpression):
         # obtain the value of `t` corresponding to `x`
         s = s_y(x)
 
-        _, d_y_s_ds = y_s_dy_ds(s)
+        _, d_y_s_ds = sh.y_s_dy_ds(s)
 
         norm = np.linalg.norm(d_y_s_ds)
 
