@@ -60,7 +60,7 @@ def s_y(y):
     # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
     theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
-    print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
+    # print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
 
     if 0 <= theta_y < theta_0:
         '''
@@ -76,7 +76,7 @@ def s_y(y):
             that is continuous in the neighborhood of s ~ s_0. 
         '''
 
-        print(f'Case I\ns_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {np.arctan((sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0]))}\n\ttheta_R = {np.arctan((sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0]))}', flush=True)
+        print(f'Case I\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {np.arctan((sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0]))}\n\ttheta_R = {np.arctan((sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0]))}', flush=True)
 
         s = brentq(\
                 lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])) - theta_y, \
@@ -86,7 +86,7 @@ def s_y(y):
     else:
         # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
 
-        print(f'Case II\ns_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters["c"][1] ])}\n\ttheta_R = {cal.atan_quad([ sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1] ])}', flush=True)
+        print(f'Case II\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters["c"][1] ])}\n\ttheta_R = {cal.atan_quad([ sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1] ])}', flush=True)
 
         s = brentq(\
             lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, 
