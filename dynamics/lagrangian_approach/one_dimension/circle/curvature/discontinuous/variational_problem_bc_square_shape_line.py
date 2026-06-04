@@ -83,7 +83,8 @@ def s_y(y):
     else:
         # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
 
-        if abs(theta_y - 2.0 * np.pi) > const.epsilon: 
+        if (abs(theta_y) > const.epsilon) and (abs(theta_y - 2.0 * np.pi) > const.epsilon): 
+            # theta_y is not 0 nor 2 pi -> determine s_0 by solving an algebraic equation
 
             s_L = 0
 
@@ -105,6 +106,7 @@ def s_y(y):
                 a=s_L, b=s_R \
                 )
         else:
+            # theta_y = 0 or theta_y = 2 pi -> s must be s_0
 
             s = s_0
         
