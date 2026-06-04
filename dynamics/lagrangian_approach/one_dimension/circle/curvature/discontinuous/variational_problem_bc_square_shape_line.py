@@ -65,22 +65,13 @@ def s_y(y):
     if 0 <= theta_y < theta_0:
         '''
             0 <= theta_y < theta_0: the solution s must lie in the interval s_0 <= s < 1.0. 
-            Given that in this interval the angle 
-
-                cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ])
-
-            may abruptly jump from 2 pi to 0, here I use the "bare" version of atan_quad 
-            
-                np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0]))
-
-            that is continuous in the neighborhood of s ~ s_0. 
         '''
 
-        print(f'Case I\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {np.arctan((sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0]))}\n\ttheta_R = {np.arctan((sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0]))}', flush=True)
+        print(f'Case I\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {cal.atan_quad([ sh.y_s_dy_ds(s_0 + const.epsilon)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0 + const.epsilon)[0][1] - rmsh.parameters["c"][1] ])}\n\ttheta_R = {cal.atan_quad([ sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1] ])}', flush=True)
 
         s = brentq(\
-                lambda s: np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])) - theta_y, \
-                a=s_0, b=1 \
+                lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, \
+                a=s_0 + const.epsilon, b=1 \
             )
 
     else:
