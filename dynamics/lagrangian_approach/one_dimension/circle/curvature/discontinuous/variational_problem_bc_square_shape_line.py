@@ -54,6 +54,7 @@ if theta_0 == 0.0:
 
 else:
     # theta_0 != 0 -> need to solve for s_0
+
     print(f'Solving for s_0 ... ')
 
     # 1.1 find two values of s, s_0_L and s_0_R, that bracket s_0, by looking for a pair of values of s, s_i and s_i_plus_1 such that theta(s_i_plus_1) < theta(s_i). This is done by dividing the interval 0 < s < 1 into ~ N_scan interals. Note that N_scan needs to be large enough to resolve the root. 
@@ -89,15 +90,17 @@ def s_y(y):
     theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
     if (abs(theta_y) < const.epsilon) or (abs(theta_y - 2.0 * np.pi) < const.epsilon): 
+        # theta_y takes the special values 0 or 2 pi -> set directly s = s_0
 
         s = s_0
 
     else:
+        # theta_y is not equal to 0 nor to 2 pi -> solve for s
 
         if 0 < theta_y <= theta_0:
-            '''
-                0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
-            '''
+            
+            # 0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
+            
 
             print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
 
@@ -107,9 +110,7 @@ def s_y(y):
                 )
 
         else:
-            # theta_0 <= theta_y < 2 pi
-
-            #  the solution s must lie in the interval 0 <= s < s_0
+            # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
 
 
             print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
@@ -118,11 +119,9 @@ def s_y(y):
                 lambda s: theta(s) - theta_y, 
                 a=0, b=s_0 - const.epsilon \
             )
-
-
-
-        
+ 
     print(f'\t s = {s}')
+
     return s
 
 
