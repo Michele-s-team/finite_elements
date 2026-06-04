@@ -85,16 +85,33 @@ def s_y(y):
                 )
 
         else:
-            # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
+            # theta_0 <= theta_y < 2 pi
+
+            if theta_0 != 0.0:
+                #  the solution s must lie in the interval 0 <= s < s_0
 
 
-            print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
+                print(f'Case IIa \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
 
-            s = brentq(\
-                lambda s: theta(s) - theta_y, 
-                a=0, b=s_0 - const.epsilon \
+                s = brentq(\
+                    lambda s: theta(s) - theta_y, 
+                    a=0, b=s_0 - const.epsilon \
                 )
+            else:
+
+                #  the solution s must lie in the interval 0 <= s < 1
+
+
+                print(f'Case IIb \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(1 - const.epsilon)}', flush=True)
+
+                s = brentq(\
+                    lambda s: theta(s) - theta_y, 
+                    a=0, b=1 - const.epsilon \
+                )
+
+
         
+    print(f'\t s = {s}')
     return s
 
 
