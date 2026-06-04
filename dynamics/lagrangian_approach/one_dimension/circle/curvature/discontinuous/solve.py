@@ -4,6 +4,9 @@ This code solves for the mean curvature of a current shape defined with the lagr
  mu(y_s) = H_s
 
  where H_s is the mean curvature of the current shape computed at point x_s, with respect to a unit normal pointing into the shape. 
+ The two problems are :
+    - 'square_shape_line_a': here the function y(s) and dy/ds is set from an analytical expression
+    - 'square_shape_line_b': here the function y(s) and dy/ds is obtained by fitting shape coordinates
 
 NOTE: This approach works only if the parametric curve y(s) vs. s has no overhangs (this is because the inversion s_y(x) is used)
 
@@ -13,6 +16,7 @@ run with:
 Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/circle/curvature/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/circle/curvature/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_b $MESH_PATH $SOLUTION_PATH
 
 """
 
