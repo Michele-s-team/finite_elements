@@ -14,12 +14,12 @@ Return values;
 '''
 def y_s_dy_ds(s):
 
-    x = rmsh.parameters['a'] * np.cos(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))
-    y = rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)
+    x = rmsh.parameters['a'] * np.cos(2.0 * np.pi * s) / (np.sqrt(2.0) * (2.0 + np.cos(2.0 * np.pi * s)))
+    y = rmsh.parameters['b'] * np.sin(2.0 * np.pi * s) / np.sqrt(2.0)
 
-    dx = -4.0 * np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2
-    dy = 2.0 * np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s)
-    
-    return np.add(rmsh.parameters['c'], [(x - y) / np.sqrt(2.0), (x + y) / np.sqrt(2.0)]), \
-           np.array([(dx - dy) / np.sqrt(2.0), (dx + dy) / np.sqrt(2.0)])
+    dx = -2.0 * np.pi * rmsh.parameters['a'] * np.sin(2.0 * np.pi * s) * np.sqrt(2.0) / (2.0 + np.cos(2.0 * np.pi * s))**2
+    dy = 2.0 * np.pi * rmsh.parameters['b'] * np.cos(2.0 * np.pi * s) * np.sqrt(2.0)
+
+    return np.add(rmsh.parameters['c'], [x + y, -x + y]), \
+           np.array([dx + dy, -dx + dy])
 

@@ -41,9 +41,11 @@ print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # solve for s_0
 # REVISE: INCLUDE A SYSTEMATIC WAY TO DETERMINE THE INTERVAL WHERE TO LOOK FOR S_0
+print(f'Solving for s_0 ... ')
+s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.0, b=0.5 )
 
-s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.75, b=1.0 )
 
+print(f'... done. ')
 print(f's_0 = {s_0}\t theta(s_0) = {cal.atan_quad([ sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1] ])}')
 # 
 
