@@ -36,21 +36,32 @@ def theta(s):
     return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ])
 
 
+
+
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
 theta_0 = theta(0)
 print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
-# solve for s_0
-# REVISE: INCLUDE A SYSTEMATIC WAY TO DETERMINE THE INTERVAL WHERE TO LOOK FOR S_0
+# 1. solve for s_0
 print(f'Solving for s_0 ... ')
 
-print(f'\n\tf_L = {np.arctan((sh.y_s_dy_ds(0)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(0)[0][0] - rmsh.parameters["c"][0]))}')
-print(f'\n\tf_R = {np.arctan((sh.y_s_dy_ds(0.25)[0][1] - rmsh.parameters["c"][1]) / (sh.y_s_dy_ds(0.25)[0][0] - rmsh.parameters["c"][0]))}')
-s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=0.0, b=0.75 )
+# 1.1 find two values of s, s_0_L and s_0_R, that bracket s_0, by looking for a pair of values of s, s_i and s_i_plus_1 such that theta(s_i_plus_1) < theta(s_i). This is done by dividing the interval 0 < s < 1 into ~ N_scan interals. Note that N_scan needs to be large enough to resolve the root. 
+for i_s in range(rpam.parameters['N_scan']+1):
+    
+    if theta((i_s+1)/(rpam.parameters['N_scan']-1)) < theta(i_s/(rpam.parameters['N_scan']-1)): 
+        break
 
+s_0_L = i_s/(rpam.parameters["N_scan"]-1)
+s_0_R = (i_s+1)/(rpam.parameters["N_scan"]-1)
+
+print(f's_0 lies betwee {s_0_L} and {s_0_R}')
+
+# 1.2 solve for s_0 by using s_0_L and s_0_R
+s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=s_0_L, b=s_0_R)
+
+print(f's_0 = {s_0}\t theta(s_0) = {theta(s_0)}')
 
 print(f'... done. ')
-print(f's_0 = {s_0}\t theta(s_0) = {theta(s_0)}')
 # 
 
 
