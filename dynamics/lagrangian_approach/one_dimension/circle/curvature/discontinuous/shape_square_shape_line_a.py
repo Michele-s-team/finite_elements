@@ -14,12 +14,8 @@ Return values;
 '''
 def y_s_dy_ds(s):
 
-    return np.add(rmsh.parameters['c'], [
-               rmsh.parameters['a'] * np.cos(2.0 * np.pi * s) * np.sin(np.pi / 8.0) / (2.0 + np.cos(2.0 * np.pi * s)) + rmsh.parameters['b'] * np.cos(np.pi / 8.0) * np.sin(2.0 * np.pi * s),
-               - rmsh.parameters['a'] * np.cos(np.pi / 8.0) * np.cos(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s)) + rmsh.parameters['b'] * np.sin(np.pi / 8.0) * np.sin(2.0 * np.pi * s)
-           ]), \
-           np.array([
-               2.0 * np.pi * (rmsh.parameters['b'] * np.cos(np.pi / 8.0) * np.cos(2.0 * np.pi * s) - 2.0 * rmsh.parameters['a'] * np.sin(np.pi / 8.0) * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2),
-               2.0 * rmsh.parameters['b'] * np.pi * np.cos(2.0 * np.pi * s) * np.sin(np.pi / 8.0) + np.sqrt(2.0) * rmsh.parameters['a'] * np.pi * np.sin(2.0 * np.pi * s) / (np.sin(np.pi / 8.0) * (2.0 + np.cos(2.0 * np.pi * s))**2)
-           ])
+    return np.array([rmsh.parameters['a'] + rmsh.parameters['c'][0] - 2.0 * rmsh.parameters['a'] / (2.0 + np.cos(2.0 * np.pi * s)),
+                     rmsh.parameters['c'][1] + rmsh.parameters['b'] * np.sin(2.0 * np.pi * s)]), \
+           np.array([-4.0 * rmsh.parameters['a'] * np.pi * np.sin(2.0 * np.pi * s) / (2.0 + np.cos(2.0 * np.pi * s))**2,
+                      2.0 * rmsh.parameters['b'] * np.pi * np.cos(2.0 * np.pi * s)])
 
