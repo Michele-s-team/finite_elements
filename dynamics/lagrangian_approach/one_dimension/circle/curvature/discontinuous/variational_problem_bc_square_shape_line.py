@@ -66,49 +66,34 @@ def s_y(y):
     # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
     theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
-    # print(f's_y has been called:\n \t theta_y = {theta_y}', flush=True)
+    if (abs(theta_y) < const.epsilon) or (abs(theta_y - 2.0 * np.pi) < const.epsilon): 
 
-    if 0 <= theta_y < theta_0:
-        '''
-            0 <= theta_y < theta_0: the solution s must lie in the interval s_0 <= s < 1.0. 
-        '''
-
-        print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
-
-        s = brentq(\
-                lambda s: theta(s) - theta_y, \
-                a=s_0 + const.epsilon, b=1 \
-            )
+        s = s_0
 
     else:
-        # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
 
-        if (abs(theta_y) > const.epsilon) and (abs(theta_y - 2.0 * np.pi) > const.epsilon): 
-            # theta_y is not 0 nor 2 pi -> determine s_0 by solving an algebraic equation
+        if 0 < theta_y <= theta_0:
+            '''
+                0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
+            '''
 
-            s_L = 0
+            print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
 
-            if theta(s_0) > theta(s_L):
+            s = brentq(\
+                    lambda s: theta(s) - theta_y, \
+                    a=s_0 + const.epsilon, b=1 + const.epsilon \
+                )
 
-                print(f'Case II a')
+        else:
+            # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
 
-                s_R = s_0
-            else: 
 
-                print(f'Case II b')
-
-                s_R = s_0 - const.epsilon
-
-            print(f'\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
+            print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
 
             s = brentq(\
                 lambda s: theta(s) - theta_y, 
-                a=s_L, b=s_R \
+                a=0, b=s_0 - const.epsilon \
                 )
-        else:
-            # theta_y = 0 or theta_y = 2 pi -> s must be s_0
-
-            s = s_0
         
     return s
 
