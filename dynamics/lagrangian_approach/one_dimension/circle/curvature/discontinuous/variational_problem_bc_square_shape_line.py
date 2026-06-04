@@ -32,11 +32,12 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 # 
-
+def theta(s):
+    return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ])
 
 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
-theta_0 = cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters['c'][1] ])
+theta_0 = theta(0)
 print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # solve for s_0
@@ -49,7 +50,7 @@ s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][
 
 
 print(f'... done. ')
-print(f's_0 = {s_0}\t theta(s_0) = {cal.atan_quad([ sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1] ])}')
+print(f's_0 = {s_0}\t theta(s_0) = {theta(s_0)}')
 # 
 
 
@@ -72,20 +73,20 @@ def s_y(y):
             0 <= theta_y < theta_0: the solution s must lie in the interval s_0 <= s < 1.0. 
         '''
 
-        print(f'Case I\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {cal.atan_quad([ sh.y_s_dy_ds(s_0 + const.epsilon)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0 + const.epsilon)[0][1] - rmsh.parameters["c"][1] ])}\n\ttheta_R = {cal.atan_quad([ sh.y_s_dy_ds(1)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(1)[0][1] - rmsh.parameters["c"][1] ])}', flush=True)
+        print(f'Case I\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
 
         s = brentq(\
-                lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, \
+                lambda s: theta(s) - theta_y, \
                 a=s_0 + const.epsilon, b=1 \
             )
 
     else:
         # theta_0 <= theta_y < 2 pi: the solution s must lie in the interval 0 <= s < s_0
 
-        print(f'Case II\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {cal.atan_quad([ sh.y_s_dy_ds(0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(0)[0][1] - rmsh.parameters["c"][1] ])}\n\ttheta_R = {cal.atan_quad([ sh.y_s_dy_ds(s_0)[0][0] - rmsh.parameters["c"][0], sh.y_s_dy_ds(s_0)[0][1] - rmsh.parameters["c"][1] ])}', flush=True)
+        print(f'Case II\n\ts_0 = {s_0}\n\t theta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
 
         s = brentq(\
-            lambda s: cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ]) - theta_y, 
+            lambda s: theta(s) - theta_y, 
             a=0, b=s_0 \
             )
         
