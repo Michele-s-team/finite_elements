@@ -120,6 +120,7 @@ pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 vp = importlib.import_module(swi.vp)
 import decompose_u as dec_u
 import variational_problem_u_0 as vp_u_0
@@ -463,6 +464,7 @@ for n in range(rpam.parameters['num_steps']):
         importlib.reload(bgeo)
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
+        sh = importlib.reload(sh)
         pr_bc = importlib.reload(pr_bc)
         pr_ic = importlib.reload(pr_ic)
         pr_da = importlib.reload(pr_da)
