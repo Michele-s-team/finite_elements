@@ -18,6 +18,7 @@ import switch_problem as swi
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 
 i, j, k, l, m = ufl.indices(5)
 
