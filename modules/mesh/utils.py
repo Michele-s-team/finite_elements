@@ -2107,7 +2107,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             del mesh_metadata['N']
 
     # comphte the center of mass of the shape with respect to `shape_coordinates`and write it into mesh_metadata
-    c = np.mean(shape_coordinates, axis=0)
+    c = np.mean(shape_coordinates, axis=0).tolist()
 
     mesh_metadata['c'] = c
 
