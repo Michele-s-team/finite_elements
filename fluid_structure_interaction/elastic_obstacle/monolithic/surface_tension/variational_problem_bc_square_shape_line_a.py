@@ -63,7 +63,7 @@ if (abs(theta_0) < const.epsilon) or (abs(theta_0 - 2*np.pi) < const.epsilon):
 
     theta_0 = 0
 
-    print(f'** Setting s_0 = 1')
+    # print(f'** Setting s_0 = 1')
 
     s_0 = 1
 
