@@ -394,7 +394,7 @@ for n in range(rpam.parameters['num_steps']):
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field 
-        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, _, _ = fsp.psi.split( deepcopy=True )
 
         # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
