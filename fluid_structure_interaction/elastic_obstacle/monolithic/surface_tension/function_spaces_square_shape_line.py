@@ -39,7 +39,11 @@ D_sigma_n = FiniteElement('DG', triangle, 1)
 D_u = VectorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
 D_u_dot = VectorElement('DG', triangle, rpam.parameters['u_dot_function_space_degree'])
 
-element = MixedElement([D_v_n, D_sigma_n, D_u, D_u_dot])
+D_mu = FiniteElement('DG', triangle, rpam.parameters['u_function_space_degree'])
+D_grad_u = TensorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
+
+
+element = MixedElement([D_v_n, D_sigma_n, D_u, D_u_dot, D_mu, D_grad_u])
 
 
 
@@ -55,6 +59,12 @@ Q_sigma_n = Q.sub(1).collapse()
 Q_u_n = Q.sub(2).collapse()
 Q_u_dot_n = Q.sub(3).collapse()
 
+Q_mu = Q.sub(4).collapse()
+Q_grad_u = Q.sub(5).collapse()
+
+V = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['u_function_space_degree'])
+
+
 Q_rho_el = FunctionSpace(lmsh.mesh[0], 'DG', 1)
 Q_det_F = FunctionSpace(lmsh.mesh[0], 'DG', 1)
 
@@ -64,7 +74,7 @@ Q_det_F = FunctionSpace(lmsh.mesh[0], 'DG', 1)
 
 # 3.1 psi contains all fields
 psi = Function(Q)
-v_n, sigma_n, u_n, u_dot_n = split(psi)
+v_n, sigma_n, u_n, u_dot_n, mu_n, grad_u_n = split(psi)
 
 
 # 3.2 auxiliary fields
@@ -82,6 +92,13 @@ u_0 = Function(Q_u_n)
 
 f_fluid = Function(Q_v_n)
 f_ela = Function(Q_u_n)
+
+
+#3.2.1 auxiliary fields for the curvature computation
+
+f = Function(V)
+nu = Function(V)
+b = Function(Q_grad_u)
 
 
 # y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
@@ -108,7 +125,7 @@ v_lrtb = Function(Q_v_n)
 
 
 # 3.3 test functions
-nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n = TestFunctions(Q)
+nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_mu_n, nu_grad_u_n = TestFunctions(Q)
 nu_u_0 = TestFunction(Q_u_n)
 
 
