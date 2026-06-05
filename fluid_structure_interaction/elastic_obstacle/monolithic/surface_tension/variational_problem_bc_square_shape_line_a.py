@@ -31,6 +31,7 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 
 
+
 '''# print facet_normal to check sub_mesh_0_label and sub_mesh_1_label
 import input_output as io 
 import solution_paths as solpath
@@ -57,17 +58,19 @@ theta_0 = theta(0)
 # 1. Determine for s_0
 # 1.1
 
-if theta_0 == 0.0:
+if (abs(theta_0) < const.epsilon) or (abs(theta_0 - 2*np.pi) < const.epsilon):
     # here s_0 = 1
 
-    # print(f'Setting s_0 = 1')
+    theta_0 = 0
+
+    # print(f'** Setting s_0 = 1')
 
     s_0 = 1
 
 else:
     # theta_0 != 0 -> need to solve for s_0
 
-    # print(f'Solving for s_0 ... ')
+    # print(f'** Solving for s_0 ... ')
 
     # 1.1 find two values of s, s_0_L and s_0_R, that bracket s_0, by looking for a pair of values of s, s_i and s_i_plus_1 such that theta(s_i_plus_1) < theta(s_i). This is done by dividing the interval 0 < s < 1 into ~ N_scan interals. Note that N_scan needs to be large enough to resolve the root. 
     for i_s in range(rpam.parameters['N_scan']+1):
@@ -125,11 +128,11 @@ def s_y(y):
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
 
 
-            # print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
+            # print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta_0}\n\ttheta_R = {theta(s_0)}', flush=True)
 
             s = brentq(\
                 lambda s: theta(s) - theta_y, 
-                a=0, b=s_0 - const.epsilon \
+                a=0 + const.epsilon, b=s_0 - const.epsilon \
             )
  
     # print(f'\t s = {s}')
