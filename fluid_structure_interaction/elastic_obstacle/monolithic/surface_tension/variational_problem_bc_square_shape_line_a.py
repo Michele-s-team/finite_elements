@@ -52,7 +52,7 @@ def theta(s):
 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
 theta_0 = theta(0)
-print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
+# print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # 1. Determine for s_0
 # 1.1
@@ -60,14 +60,14 @@ print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 if theta_0 == 0.0:
     # here s_0 = 1
 
-    print(f'Setting s_0 = 1')
+    # print(f'Setting s_0 = 1')
 
     s_0 = 1
 
 else:
     # theta_0 != 0 -> need to solve for s_0
 
-    print(f'Solving for s_0 ... ')
+    # print(f'Solving for s_0 ... ')
 
     # 1.1 find two values of s, s_0_L and s_0_R, that bracket s_0, by looking for a pair of values of s, s_i and s_i_plus_1 such that theta(s_i_plus_1) < theta(s_i). This is done by dividing the interval 0 < s < 1 into ~ N_scan interals. Note that N_scan needs to be large enough to resolve the root. 
     for i_s in range(rpam.parameters['N_scan']+1):
@@ -78,14 +78,14 @@ else:
     s_0_L = i_s/(rpam.parameters["N_scan"]-1)
     s_0_R = (i_s+1)/(rpam.parameters["N_scan"]-1)
 
-    print(f's_0 lies betwee {s_0_L} and {s_0_R}')
+    # print(f's_0 lies betwee {s_0_L} and {s_0_R}')
 
     # 1.2 solve for s_0 by using s_0_L and s_0_R
     s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=s_0_L, b=s_0_R)
 
-    print(f's_0 = {s_0}\t theta(s_0) = {theta(s_0)}')
+    # print(f's_0 = {s_0}\t theta(s_0) = {theta(s_0)}')
 
-    print(f'... done. ')
+    # print(f'... done. ')
 # 
 
 
@@ -114,7 +114,7 @@ def s_y(y):
             # 0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
             
 
-            print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
+            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
 
             s = brentq(\
                     lambda s: theta(s) - theta_y, \
@@ -125,14 +125,14 @@ def s_y(y):
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
 
 
-            print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
+            # print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0)}', flush=True)
 
             s = brentq(\
                 lambda s: theta(s) - theta_y, 
                 a=0, b=s_0 - const.epsilon \
             )
  
-    print(f'\t s = {s}')
+    # print(f'\t s = {s}')
 
     return s
 
