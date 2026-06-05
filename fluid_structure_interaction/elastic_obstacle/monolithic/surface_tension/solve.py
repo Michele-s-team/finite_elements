@@ -76,8 +76,18 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
+'''# test mean - start
+import numpy as np
+
+coords = [[1,2],[3,4]]
+c = np.mean(coords, axis=0)
+
+print(f'c = {c}')
 
 
+sys.exit(1)
+# test mean - end
+'''
 
 '''
 # test phi_0_expression() - start

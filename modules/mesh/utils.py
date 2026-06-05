@@ -2106,6 +2106,10 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         if 'N' in parameters:
             del mesh_metadata['N']
 
+    # comphte the center of mass of the shape with respect to `shape_coordinates`and write it into mesh_metadata
+    c = np.mean(shape_coordinates, axis=0)
+
+    mesh_metadata['c'] = c
 
 
     # write metadata for mesh 0
@@ -2115,6 +2119,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['n_sub_meshes'] = parameters['n_sub_meshes_0']
     mesh_0_metadata['shape_format'] = parameters['shape_format']
+    mesh_0_metadata['c'] = c
 
     # if the shape derives from a parametric form, write N and the parametric function
     if parameters['shape_format'] == 'parametric':
