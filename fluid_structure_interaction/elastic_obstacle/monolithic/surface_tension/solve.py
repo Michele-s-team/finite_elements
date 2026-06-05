@@ -480,6 +480,8 @@ for n in range(rpam.parameters['num_steps']):
         pr_da = importlib.reload(pr_da)
         pr_sol = importlib.reload(pr_sol)
 
+        print(f'*** new c = {rmsh.parameters["c"]}')
+
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
         '''
