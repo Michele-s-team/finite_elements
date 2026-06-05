@@ -18,6 +18,14 @@ the variables for the problem are
     - 'u_0' = {u_0}_{Decomposition of deformation field}
     - 'phi_0' = {phi_0}_{Decomposition of deformation field}
 
+    - 'mu_n': the curvature of the shape curve x_s in the current configuration
+    - 'grad_u_n': grad_u_n[i, j] = \partial u_n_i / \partial y_j
+    - f = f_{Curvature} tangent vector to the curve y_s in the reference configuration, extended to the whole domain
+    - e = e_{Curvature}, tangent vector to the curve x_s in the current configuration, extended to the whole domain
+    - nu = nu_{Curvature} unit normal to y_s pointing outwards \Omega_circle^y, extended to the whole domain
+    - n = n_{Curvature} unit normal to x_s pointing inwards \Omega_circle^y, extended to the whole domain
+
+
 all fields are defined from a mixed function space
 '''
 
