@@ -59,8 +59,8 @@ Q_sigma_n = Q.sub(1).collapse()
 Q_u_n = Q.sub(2).collapse()
 Q_u_dot_n = Q.sub(3).collapse()
 
-Q_mu = Q.sub(4).collapse()
-Q_grad_u = Q.sub(5).collapse()
+Q_mu_n = Q.sub(4).collapse()
+Q_grad_u_n = Q.sub(5).collapse()
 
 V = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['u_function_space_degree'])
 
@@ -98,7 +98,7 @@ f_ela = Function(Q_u_n)
 
 f = Function(V)
 nu = Function(V)
-b = Function(Q_grad_u)
+b = Function(Q_grad_u_n)
 
 
 # y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
@@ -136,7 +136,7 @@ J_u_0 = TrialFunction(Q_u_n)
 
 # 3.5 function assigner
 
-assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n])
+assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n, Q_mu_n, Q_grad_u_n])
 
 
 
