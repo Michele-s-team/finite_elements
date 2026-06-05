@@ -61,6 +61,7 @@ print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 if (abs(theta_0) < const.epsilon) or (abs(theta_0 - 2*np.pi) < const.epsilon):
     # here s_0 = 1
+    
     theta_0 = 0
 
     print(f'** Setting s_0 = 1')
