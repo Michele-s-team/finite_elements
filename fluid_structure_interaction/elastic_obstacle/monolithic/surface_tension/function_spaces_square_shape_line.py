@@ -113,6 +113,8 @@ v_input = Function(Q_v_n)
 sigma_input = Function(Q_sigma_n)
 u_input = Function(Q_u_n)
 u_dot_input = Function(Q_u_dot_n)
+mu_input = Function(Q_mu_n)
+grad_u_input = Function(Q_grad_u_n)
 
 
 
