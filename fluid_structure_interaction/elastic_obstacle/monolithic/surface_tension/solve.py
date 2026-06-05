@@ -552,7 +552,7 @@ for n in range(rpam.parameters['num_steps']):
     #5 Update fields
 
     #5.1 unpack the mixed field 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, _, _ = fsp.psi.split( deepcopy=True )
 
     #5.2 update fields
     fsp.v_n_1.assign(v_n_dummy)
