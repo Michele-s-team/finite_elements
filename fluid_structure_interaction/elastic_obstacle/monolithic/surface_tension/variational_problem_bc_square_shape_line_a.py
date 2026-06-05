@@ -53,7 +53,7 @@ def theta(s):
 
 # s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
 theta_0 = theta(0)
-print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
+# print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
 
 # 1. Determine for s_0
 # 1.1
