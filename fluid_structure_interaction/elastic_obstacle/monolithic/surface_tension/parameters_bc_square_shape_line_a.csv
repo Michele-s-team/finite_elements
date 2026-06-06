@@ -1,4 +1,3 @@
-rho_fluid,mu_fluid,v_l,T,num_steps,n_hold,n_ramp,exponent,rho_el,K_elastic,mu_elastic,alpha,N_scan,alpha_ellipse,u_function_space_degree,u_dot_function_space_degree,mesh_quality_threshold,ic_path,ic_n,print_out_stride,print_out_digits,code,problem,"notes
+rho_fluid,mu_fluid,v_l,T,num_steps,n_hold,n_ramp,exponent,rho_el,K_elastic,mu_elastic,alpha,alpha_ellipse,N_scan,u_function_space_degree,u_dot_function_space_degree,mesh_quality_threshold,ic_path,ic_n,print_out_stride,print_out_digits,code,problem,"notes
 "
-1.0,0.001,1.0,1.75,500,50,0,3,1e1,20.0,20.0,1e2,128,1e4,1,1,0.5,/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution_reproduce_fig_10_13012025_220000/snapshots/csv,6950,10,6,~/Documents/finite_elements/fluid_structure_interaction/elastic_obstacle/monolithic/solve.py,square_shape_line_a,"remove everywhere in solve.py `parameters=params` "
-,,,,,,,,,,,,,,,,,,,,,,
+1.0,0.001,1.0,1.75,500,50,0,3,1e1,20.0,20.0,1e2,1e4,128,1,1,0.5,/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution_reproduce_fig_10_13012025_220000/snapshots/csv,6950,10,6,~/Documents/finite_elements/fluid_structure_interaction/elastic_obstacle/monolithic/solve.py,square_shape_line_a,"remove everywhere in solve.py `parameters=params` "

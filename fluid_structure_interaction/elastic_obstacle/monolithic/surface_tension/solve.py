@@ -110,7 +110,7 @@ sys.exit(1)
 # test phi_0_expression() - end
 '''
 
-i, j = ufl.indices(2)
+alpha, beta = ufl.indices(2)
 
 
 print(f'Generating initial mesh ...')
@@ -346,7 +346,7 @@ for n in range(rpam.parameters['num_steps']):
     # rebuild F with new pressure_scale
     vp = importlib.reload(importlib.import_module(swi.vp))  
 
-    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
     print('... done.', flush=True)
 
@@ -364,7 +364,7 @@ for n in range(rpam.parameters['num_steps']):
 
     print('Solving for u_0 ... ')
 
-    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0, parameters=params)
+    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
     print('... done.', flush=True)
 
@@ -559,7 +559,7 @@ for n in range(rpam.parameters['num_steps']):
         #4.4.1.3 transfer the fields for the post-processing problem
 
         msh.transfer(mu_n_old, fsp.mu_input, u_0_old)
-        fsp.grad_u_input.assign(project(as_tensor(fsp.u_input[i].dx(j), (i, j)), fsp.Q_grad_u_n))
+        fsp.grad_u_input.assign(project(as_tensor(fsp.u_input[alpha].dx(beta), (alpha, beta)), fsp.Q_grad_u_n))
 
 
 
