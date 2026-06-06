@@ -116,25 +116,47 @@ def s_y(y):
             
             # 0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
             
+            try:
 
-            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1)}', flush=True)
+                s = brentq(\
+                        lambda s: theta(s) - theta_y, \
+                        a=s_0 + const.epsilon, b=1 + const.epsilon \
+                    )
+                
+            except ValueError:
 
-            s = brentq(\
-                    lambda s: theta(s) - theta_y, \
-                    a=s_0 + const.epsilon, b=1 + const.epsilon \
-                )
+                print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1 + const.epsilon)}', flush=True)
 
         else:
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
 
 
-            # print(f'Case II \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta_0}\n\ttheta_R = {theta(s_0)}', flush=True)
 
-            s = brentq(\
-                lambda s: theta(s) - theta_y, 
-                a=0 + const.epsilon, b=s_0 - const.epsilon \
-            )
- 
+
+            try:
+
+                s = brentq(\
+                    lambda s: theta(s) - theta_y, 
+                    a=0 + const.epsilon, b=s_0 - const.epsilon \
+                )
+
+            except ValueError:
+
+                print(f'Case II A \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(const.epsilon)}\n\ttheta_R = {theta(s_0 - const.epsilon)}', flush=True)
+
+                try:
+                    
+                    s = brentq(\
+                        lambda s: theta(s) - theta_y, 
+                        a=0, b=s_0 - const.epsilon \
+                    )
+
+                except ValueError:
+
+                    print(f'Case II A \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(0)}\n\ttheta_R = {theta(s_0 - const.epsilon)}', flush=True)
+
+                    
+    
     # print(f'\t s = {s}')
 
     return s

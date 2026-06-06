@@ -19,6 +19,7 @@ import gc
 import importlib
 import os
 import sys
+import ufl as ufl
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
@@ -108,6 +109,8 @@ for i in range(len(mesh_0_parameters["shape_coordinates"])):
 sys.exit(1)
 # test phi_0_expression() - end
 '''
+
+i, j = ufl.indices(2)
 
 
 print(f'Generating initial mesh ...')
@@ -395,6 +398,9 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old = Function(fsp.Q_u_dot_n)
         u_dot_n_1_old = Function(fsp.Q_u_dot_n)
 
+        mu_n_old = Function(fsp.Q_mu_n)
+
+
         phi_n_old = Function(fsp.Q_u_n)
         phi_0_old = Function(fsp.Q_u_n)
         u_0_old = Function(fsp.Q_u_n)
@@ -402,7 +408,7 @@ for n in range(rpam.parameters['num_steps']):
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field 
-        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, _, _ = fsp.psi.split( deepcopy=True )
+        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, mu_n_dummy, _ = fsp.psi.split( deepcopy=True )
 
         # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
@@ -413,6 +419,9 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
+
+        mu_n_old.assign(mu_n_dummy)
+
 
         phi_n_old.assign(project(fsp.y + u_n_dummy, fsp.Q_u_n))
         phi_0_old.assign(fsp.phi_0)
@@ -547,6 +556,13 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (16) in 'Decomposition of deformation field' 
         fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
 
+        #4.4.1.3 transfer the fields for the post-processing problem
+
+        msh.transfer(mu_n_old, fsp.mu_input, u_0_old)
+        fsp.grad_u_input.assign(project(as_tensor(fsp.u_input[i].dx(j), (i, j)), fsp.Q_grad_u_n))
+
+
+
         '''
         4.4.2 write the profiles of fields right after remeshing into the mixed field psi    
         Note that  mu_input and u_input are not set: these are post-processing fields that are determined by solving a linear variational problem as a function of the other fields, so an initial profile for them, which is needed for the other fields to help the solver, is not needed for mu_n and grad_u_n
@@ -555,7 +571,7 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4.3 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_n_old, phi_0_old, u_0_old
+        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
