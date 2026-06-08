@@ -73,7 +73,8 @@ fieldnames_data = [ \
     't',
     'c',
     'C',
-    'theta'
+    'theta',
+    '<< (2 sigma H |F| G_{k i} nu_k) (2 sigma H |F| G_{l i} nu_l) >>_{partial Omega ellipse}'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
