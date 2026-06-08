@@ -293,7 +293,10 @@ F_u_n = msh.ufl_conditional_form(
         - (\
                 msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] )
         ) * rmsh.ds_mesh[0]['dS_I_shape'] \
-        - (flu.sigma_ale(fsp.v_n(sub_mesh_1_label), cont.pressure_scale * fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j]) * bgeo.facet_normal[0](sub_mesh_0_label)[k]) * fsp.nu_u_n(sub_mesh_0_label)[i] * rmsh.ds_mesh[0]['dS_shape'] \
+        - ( \
+            (flu.sigma_ale(fsp.v_n(sub_mesh_1_label), cont.pressure_scale * fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j]) * bgeo.facet_normal[0](sub_mesh_0_label)[k]) \
+            - 2 * rpam.parameters['sigma'] * fsp.mu_n * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, i]) * bgeo.facet_normal[0](sub_mesh_0_label)[k]
+        ) * fsp.nu_u_n(sub_mesh_0_label)[i] * rmsh.ds_mesh[0]['dS_shape'] \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
             msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_shape'] \
         ) \
