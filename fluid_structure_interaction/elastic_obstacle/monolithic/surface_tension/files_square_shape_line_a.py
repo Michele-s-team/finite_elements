@@ -74,7 +74,8 @@ fieldnames_data = [ \
     'c',
     'C',
     'theta',
-    '<< (2 sigma H |F| G_{k i} nu_k) (2 sigma H |F| G_{l i} nu_l) >>_{partial Omega ellipse}'
+    '<< (varsigma_{ij} |F| G_{kj} nu_k) (varsigma_{il} |F| G_{ml} nu_m) >>_{partial Omega ellipse}',
+    '<< ( - 2 sigma H |F| G_{k i} nu_k) ( - 2 sigma H |F| G_{l i} nu_l) >>_{partial Omega ellipse}'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
