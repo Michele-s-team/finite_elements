@@ -50,7 +50,7 @@ def print_data(step):
         fi.fieldnames_data[10]: \
             f"{msh.average_wrt_measure( sqrt( (flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), cont.pressure_scale * fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j]) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k]) *  (flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), cont.pressure_scale * fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_fluid'])[i, l] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[m, l]) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[m]) ), rmsh.ds_mesh[0]['dS_shape'] ):.{rpam.parameters['print_out_digits']}e}", \
         fi.fieldnames_data[11]: \
-            f"{msh.average_wrt_measure( sqrt( ( - cont.pressure_scale * 2 * rpam.parameters['sigma'] * msh.average(fsp.mu_n * ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, i]) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k]) * ( - cont.pressure_scale * 2 * rpam.parameters['sigma'] * msh.average(fsp.mu_n * ela.detF(fsp.u_n) * ela.G(fsp.u_n)[l, i]) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[l]) ), rmsh.ds_mesh[0]['dS_shape'] ):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.average_wrt_measure( sqrt( ( - 2 * rpam.parameters['sigma'] * msh.average(fsp.mu_n * ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, i]) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k]) * ( - 2 * rpam.parameters['sigma'] * msh.average(fsp.mu_n * ela.detF(fsp.u_n) * ela.G(fsp.u_n)[l, i]) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[l]) ), rmsh.ds_mesh[0]['dS_shape'] ):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_data.flush()
