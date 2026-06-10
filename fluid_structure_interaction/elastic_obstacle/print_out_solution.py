@@ -12,19 +12,6 @@ import os
 import parameters.read.solution as rpam
 import solution_paths as solpath
 
-import runtime_arguments as rarg
-
-# create the path for the csv file if it does not exist
-filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
-os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
-
-csvfile = open(filename_theta_omega, 'a', newline='')
-fieldnames = [ \
-    "theta", \
-    "omega", \
-    ]
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
 
 
 # print the solution for the elastic problem
