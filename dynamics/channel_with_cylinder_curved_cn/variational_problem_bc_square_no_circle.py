@@ -6,6 +6,7 @@ import ufl as ufl
 import command as cmd
 import differential_geometry.manifold.geometry as geo
 import function_spaces as fsp
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 
@@ -13,19 +14,10 @@ rmsh = importlib.import_module(swi.rmsh)
 
 cmd.set_gauge('monge')
 
-
 i, j, k, l = ufl.indices( 4 )
 
 
-# CHANGE PARAMETERS HERE
-T = 0.001
-num_steps = 10
-
-dt = T / num_steps  # time step size
-rho = 1.0
-mu = 0.001
-# CHANGE PARAMETERS HERE
-
+dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 
 #trial analytical expression for a vector
@@ -82,13 +74,13 @@ bc_phi = [bc_phi_outflow]
 # Define variational problem for step 1
 # step 1 for v
 F1 = ( \
-                 rho * ((fsp.v_[i]- fsp.v_n_1[i]) / dt \
+                 rpam.parameters['rho'] * ((fsp.v_[i]- fsp.v_n_1[i]) / dt \
                         + (3.0/2.0 * fsp.v_n_1[j] - 1.0/2.0 * fsp.v_n_2[j]) * geo.Nabla_v( fsp.V, fsp.omega )[i, j]) * fsp.nu[i] \
-                 + fsp.sigma_n_32 * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[i, j] + 2.0 * mu * geo.d_c( fsp.V, fsp.w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]  \
+                 + fsp.sigma_n_32 * geo.g_c( fsp.omega )[i, j] * geo.Nabla_f( fsp.nu, fsp.omega )[i, j] + 2.0 * rpam.parameters['mu'] * geo.d_c( fsp.V, fsp.w, fsp.omega )[j, i] * geo.Nabla_f( fsp.nu, fsp.omega )[j, i]  \
     ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 # step 2
-F2 = ( geo.g_c( fsp.omega )[i, j] * (fsp.phi.dx( i )) * (fsp.q.dx( j )) + (rho / dt) * (geo.Nabla_v( fsp.v_, fsp.omega )[i, i]) * fsp.q ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
+F2 = ( geo.g_c( fsp.omega )[i, j] * (fsp.phi.dx( i )) * (fsp.q.dx( j )) + (rpam.parameters['rho'] / dt) * (geo.Nabla_v( fsp.v_, fsp.omega )[i, i]) * fsp.q ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
 
 # Define variational problem for step 3
-F3 = ( ((fsp.v_n[i] - fsp.v_[i]) + (dt/rho) * geo.g_c( fsp.omega )[i, j] * (fsp.phi.dx( j ))) * fsp.nu[i] ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
+F3 = ( ((fsp.v_n[i] - fsp.v_[i]) + (dt/rpam.parameters['rho']) * geo.g_c( fsp.omega )[i, j] * (fsp.phi.dx( j ))) * fsp.nu[i] ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx
