@@ -24,6 +24,7 @@ import function_spaces as fsp
 import parameters.read.solution as rpam
 import switch_problem as swi
 import print_out_solution as pr_sol
+import variational_problem.utils as var_pr
 
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
@@ -48,29 +49,22 @@ print("Starting time iteration ...", flush=True)
 t = 0
 step = 0
 for n in range(rpam.parameters['num_steps']):
+    
     # Update current time
     t += vp.dt
     step += 1
 
     vp = importlib.import_module(swi.vp)
 
-    # step 1
-    J1 = derivative(vp.F1, fsp.v_, fsp.J_v_)
-    problem1 = NonlinearVariationalProblem(vp.F1, fsp.v_, vp.bc_v_, J1)
-    solver1 = NonlinearVariationalSolver(problem1)
-    solver1.solve()
+    # step 1: tentative velocity step
+    var_pr.solve_vp(vp.F1, fsp.v_, vp.bc_v_, fsp.J_v_)
 
-    # Step 2: surface_tension correction step
-    J2 = derivative(vp.F2, fsp.phi, fsp.J_phi)
-    problem2 = NonlinearVariationalProblem(vp.F2, fsp.phi, vp.bc_phi, J2)
-    solver2 = NonlinearVariationalSolver(problem2)
-    solver2.solve()
+    # step 2: surface_tension correction step
+    var_pr.solve_vp(vp.F2, fsp.phi, vp.bc_phi, fsp.J_phi)
 
-    # step 3
-    J3 = derivative(vp.F3, fsp.v_n, fsp.J_v_n)
-    problem3 = NonlinearVariationalProblem(vp.F3, fsp.v_n, [], J3)
-    solver3 = NonlinearVariationalSolver(problem3)
-    solver3.solve()
+    # step 3: velocity step
+    var_pr.solve_vp(vp.F3, fsp.v_n, vp.bc_v_n, fsp.J_v_n)
+
 
     pr_bc.print_bcs()
 

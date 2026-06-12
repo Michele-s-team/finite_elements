@@ -74,6 +74,7 @@ bc_phi_outflow = DirichletBC( fsp.Q, Constant( 0 ), rmsh.boundary_r )
 # boundary conditions for the surface_tension p
 bc_v_ = [bc_v__walls, bc_v__inflow, bc_v__cylinder]
 bc_phi = [bc_phi_outflow]
+bc_v_n = []
 
 # Define variational problem for step 1
 # step 1 for v
