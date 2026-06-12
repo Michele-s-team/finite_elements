@@ -43,6 +43,18 @@ fsp.omega.interpolate(vp.OmegaExpression(element=fsp.Q_omega.ufl_element()))
 
 pr_sol.print_z_omega()
 
+params = {'nonlinear_solver': 'newton',
+          'newton_solver':
+              {
+                'linear_solver': 'default',
+                'absolute_tolerance': 1e-10,
+                'relative_tolerance': 1e-9,
+                'maximum_iterations': 50,
+                'relaxation_parameter': None,
+                'preconditioner': 'default'
+              }
+          }
+
 print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
@@ -56,13 +68,13 @@ for n in range(rpam.parameters['num_steps']):
     vp = importlib.import_module(swi.vp)
 
     # step 1: tentative velocity step
-    var_pr.solve_vp(vp.F1, fsp.v_, vp.bc_v_, fsp.J_v_)
+    var_pr.solve_vp(vp.F1, fsp.v_, vp.bc_v_, fsp.J_v_, parameters=params)
 
     # step 2: surface_tension correction step
-    var_pr.solve_vp(vp.F2, fsp.phi, vp.bc_phi, fsp.J_phi)
+    var_pr.solve_vp(vp.F2, fsp.phi, vp.bc_phi, fsp.J_phi, parameters=params)
 
     # step 3: velocity step
-    var_pr.solve_vp(vp.F3, fsp.v_n, vp.bc_v_n, fsp.J_v_n)
+    var_pr.solve_vp(vp.F3, fsp.v_n, vp.bc_v_n, fsp.J_v_n, parameters=params)
 
 
     pr_bc.print_bcs()
