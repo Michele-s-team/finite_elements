@@ -45,21 +45,24 @@ import switch_problem as swi
 
 
 prout_bc = importlib.import_module(swi.prout_bc)
-
 rmsh = importlib.import_module(swi.rmsh)
-
 vp = importlib.import_module(swi.vp)
 
 
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-print("Input diredtory = ", rarg.args.input_directory)
-print("Output diredtory = ", rarg.args.output_directory)
-print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-
-
-
+params = {'nonlinear_solver': 'newton',
+        'newton_solver':
+            {
+            'linear_solver': 'default',
+            'absolute_tolerance': 1e-10,
+            'relative_tolerance': 1e-9,
+            'maximum_iterations': 50,
+            'relaxation_parameter': None,
+            'preconditioner': 'default'
+            }
+        }
 
 
 #Option 1: set initial profiles
@@ -112,33 +115,10 @@ for step in range(rpam.parameters['N']):
     solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
     solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
 
-    #set the solver parameters here
-    # params = {'nonlinear_solver': 'newton',
-    #            'newton_solver':
-    #             {
-    #                 'linear_solver'           : 'mumps',
-    #                 # 'line_search' : 'bt',
-    #                 'absolute_tolerance'      : 1e-6,
-    #                 'relative_tolerance'      : 1e-6,
-    #                 'maximum_iterations'      : 1000000,
-    #                 # 'sign'                    : 'nonnegative',
-    #                 'relaxation_parameter'    : 0.95,
-    #                 # 'preconditioner'    : 'ilu',
-    #                 'lu_solver' :{
-    #                     # 'report' : True,
-    #                      'symmetric' : False
-    #                 },
-    #                 'krylov_solver' :{
-    #                     'divergence_limit' : 1e0,
-    #                     'absolute_tolerance' : 1e-6,
-    #                     'relative_tolerance' : 1e-6,
-    #                     'nonzero_initial_guess' : True
-    #                 }
-    # 
-    #              }
-    # }
-    # solver.parameters.update(params)
-    
+    solver.parameters.update(params)
+    solver_pp_tau.parameters.update(params)
+    solver_pp_d.parameters.update(params)
+
     solver.solve()
 
     solver_pp_tau.solve()
