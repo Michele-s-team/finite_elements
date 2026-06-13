@@ -59,7 +59,7 @@ class NormalVelocityExpression( UserExpression ):
 
 
 
-v__profile_l = Expression( ('4.0*1.5*x[1]*(h - x[1])', '0'), degree=2, h=rmsh.parameters["h"] )
+v__profile_l = Expression( ('v_l * 4.0*1.5*x[1]*(h - x[1])', '0'), degree=2, h=rmsh.parameters["h"], v_l=rpam.parameters['v_l'] )
 
 bc_v__inflow = DirichletBC( fsp.Q_v, v__profile_l, rmsh.boundary_l )
 bc_v__walls = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.boundary_tb )
