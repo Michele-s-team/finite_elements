@@ -58,31 +58,13 @@ params = {'nonlinear_solver': 'newton',
 }
 
 
-
-# J = derivative(vp.F, fsp.psi, fsp.J_psi )
-# problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
-# solver = NonlinearVariationalSolver( problem )
-# solver.parameters.update(params)
-# solver.solve()
-
 # solve the variational problem
 var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
-
-#solve the post-processing ('pp') variational problem used to compute tau
-# J_pp_tau = derivative(vp.vp_pp.F_pp_tau, fsp.tau, fsp.J_pp_tau )
-# problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau, [], J_pp_tau )
-# solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
-# solver_pp_tau.solve()
-
+# solve the post-processing ('pp') variational problem used to compute tau
 var_pr.solve_vp(vp.vp_pp.F_pp_tau, fsp.tau, vp.vp_pp.bcs_tau, fsp.J_pp_tau)
 
-#solve the post-processing ('pp') variational problem used to compute d
-# J_pp_d = derivative( vp.vp_pp.F_pp_d, fsp.d, fsp.J_pp_d )
-# problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
-# solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
-# solver_pp_d.solve()
-
+# solve the post-processing ('pp') variational problem used to compute d
 var_pr.solve_vp(vp.vp_pp.F_pp_d, fsp.d, vp.vp_pp.bcs_d, fsp.J_pp_d)
 
 prout_bc = importlib.import_module(swi.prout_bc)
