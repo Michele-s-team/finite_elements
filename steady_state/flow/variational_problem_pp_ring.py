@@ -15,6 +15,9 @@ cmd.set_gauge('monge')
 
 i, j, k, l = ufl.indices(4)
 
+bcs_tau = []
+bcs_d = []
+
 # tau is determined by solving Eq. (3c) in 'Notes'
 F_pp_tau = ( \
                        - phys.conv_cn_n(fsp.v, fsp.v, fsp.v, fsp.w, fsp.w, fsp.omega, rpam.parameters['rho']) \
