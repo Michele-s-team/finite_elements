@@ -66,7 +66,7 @@ params = {'nonlinear_solver': 'newton',
 # solver.solve()
 
 # solve the variational problem
-var_pr.solve_vp(vp.F, fsp.psi, fsp.J_psi, vp.bcs, parameters=params)
+var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
 
 #solve the post-processing ('pp') variational problem used to compute tau
