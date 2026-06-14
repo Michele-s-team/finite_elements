@@ -113,7 +113,10 @@ for step in range(rpam.parameters['N']):
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, z_n_12_output, omega_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
     prout_bc.print_bcs( fsp.psi )
-    prout_bc.print_solution( fsp.psi, step, t )
+    
+    if (step % rpam.parameters['print_out_stride'] == 0):
+    
+        prout_bc.print_solution( fsp.psi, step, t )
 
 
     fsp.v_n_2.assign(fsp.v_n_1)
