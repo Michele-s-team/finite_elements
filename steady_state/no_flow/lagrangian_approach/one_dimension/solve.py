@@ -7,18 +7,6 @@ Run with
 Example:
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_fixed_nu $MESH_PATH $SOLUTION_PATH;
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/steady_state/no_flow/lagrangian_approach/one_dimension/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_solve_nu $MESH_PATH $SOLUTION_PATH;
-    
-    
-
-the fields in this problem are
-psi = psi_{Lagrangian approach}
-mu = H
-X[alpha] = {X^alpha}_{Lagrangian approach}
-u[alpha] = {X^alpha}_{Lagrangian approach} - X_r^alpha
-X_ref^alpha is the manifold in the reference configuration 
-nu = nu_{Lagrangian approach}
-sigma = sigma_{Lagrangian approach}
-
 '''
 
 from fenics import *
