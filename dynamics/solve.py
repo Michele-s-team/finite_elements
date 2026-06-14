@@ -17,19 +17,12 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
-
-
-To produce figure_10, 
-- generate the mesh with /home/fenics/shared/generate_mesh/2d/square/figure_10_parameters/mesh_parameters.csv 
-- use parameter file parameters_bc_square_a_figure_10.csv
-- run with problem 'square_a'. 
 '''
 
-import colorama as col
+import dolfin
 from fenics import *
 import importlib
-import dolfin
-
+import os
 import sys
 
 #add the path where to find the shared modules
@@ -38,13 +31,19 @@ sys.path.append(module_path)
 
 
 import function_spaces as fsp
+import input_output as io
 import parameters.read.solution as rpam
+import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
 prout_bc = importlib.import_module(swi.prout_bc)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
+
+# write solution metadata
+solution_metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'solution_metadata.csv'), solution_metadata)
 
 
 set_log_level(20)
