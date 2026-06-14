@@ -76,11 +76,6 @@ PETScOptions.set('snes_stol', 1e-6)      # Step tolerance
 
 
 # solve the variational problem
-# J = derivative(vp.F, fsp.phi, fsp.J_phi)
-# problem = NonlinearVariationalProblem(vp.F, fsp.phi, vp.bcs, J)
-# solver = NonlinearVariationalSolver(problem)
-# solver.parameters.update(params)
-# solver.solve()
 var_pr.solve_vp(vp.F, fsp.phi, vp.bcs, fsp.J_phi, parameters=params)
 
 prout_bc = importlib.import_module(swi.prout_bc)
