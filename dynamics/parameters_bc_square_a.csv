@@ -1,3 +1,2 @@
-T,kappa,rho,eta,v_bar_l_const,N,boundary_profile_w_bar,r_profile_phi,boundary_profile_z,alpha,print_out_stride
-0.001,1.0,1.0,1.0,1.0,10,0.0,0.0,0.0,10000.0,1
-,,,,,,,,,,
+T,kappa,rho,eta,v_bar_l_const,N,boundary_profile_w_bar,r_profile_phi,boundary_profile_z,alpha,print_out_stride,code,problem
+10.0,1e-6,1.293e-2,1.85e-7,1e-2,625,0.0,0.0,0.0,1e3,100,/Users/michelecastellana/Documents/finite_elements/dynamics/solve.py,square_a

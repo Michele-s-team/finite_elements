@@ -31,7 +31,8 @@ csvfile_bcs = open( (rarg.args.output_directory) + '/bcs.csv', 'a', newline='' )
 fieldnames_bcs = [ \
     '<<(n^{n-1/2}_i d^{i 1})^2>>_R', \
     '<<(n^i Nabla_i phi)^2>>_{L + W + O}', \
-    '<<(n^{n-1/2}_i \overline{v}^i)^2>>_{W + O}', \
+    '<<(n^{n-1/2}_i \overline{v}^i)^2>>_W', \
+    '<<(n^{n-1/2}_i \overline{v}^i)^2>>_O', \
     '<<(n^{n-1/2}^i \omega^{n-1/2}_i)^2 >>', \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_L', \
     '<<(w_bar - boundary_profile_w_bar)^2>>', \
@@ -62,18 +63,20 @@ def print_bcs(psi):
         fieldnames_bcs[1]: \
             f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_l ) + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_tb ) + msh.abs_wrt_measure( (bgeo.n_circle( omega_n_12_dummy ))[i] * (phi_dummy.dx( i )), rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[2]: \
-            f"{msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_tb( omega_n_12_dummy ))[j], rmsh.ds_tb ) + msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_circle( omega_n_12_dummy ))[j], rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_tb( omega_n_12_dummy ))[j], rmsh.ds_tb ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[3]: \
-            f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.grad_square, rmsh.ds_lr )  + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.grad_square, rmsh.ds_tb )  + msh.abs_wrt_measure( (bgeo.n_circle( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.grad_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( v_bar_dummy[i] * geo.g( omega_n_12_dummy )[i, j] * (bgeo.n_circle( omega_n_12_dummy ))[j], rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[4]: \
-            f"{msh.abs_wrt_measure( sqrt((vp.l_profile_v_bar[i] - v_bar_dummy[i]) * (vp.l_profile_v_bar[i] - v_bar_dummy[i])), rmsh.ds_l ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( (bgeo.n_lr( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.grad_square, rmsh.ds_lr )  + msh.abs_wrt_measure( (bgeo.n_tb( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.grad_square, rmsh.ds_tb )  + msh.abs_wrt_measure( (bgeo.n_circle( omega_n_12_dummy ))[i] * omega_n_12_dummy[i] - vp.grad_circle, rmsh.ds_circle ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[5]: \
-            f"{msh.abs_wrt_measure( w_bar_dummy - rpam.parameters['boundary_profile_w_bar'], rmsh.ds ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( sqrt((vp.l_profile_v_bar[i] - v_bar_dummy[i]) * (vp.l_profile_v_bar[i] - v_bar_dummy[i])), rmsh.ds_l ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[6]: \
-            f"{msh.abs_wrt_measure( phi_dummy - rpam.parameters['r_profile_phi'], rmsh.ds_r ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( w_bar_dummy - rpam.parameters['boundary_profile_w_bar'], rmsh.ds ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[7]: \
-            f"{msh.abs_wrt_measure( z_n_12_dummy - rpam.parameters['boundary_profile_z'], rmsh.ds ):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure( phi_dummy - rpam.parameters['r_profile_phi'], rmsh.ds_r ):.{io.number_of_decimals}e}", \
         fieldnames_bcs[8]: \
+            f"{msh.abs_wrt_measure( z_n_12_dummy - rpam.parameters['boundary_profile_z'], rmsh.ds ):.{io.number_of_decimals}e}", \
+        fieldnames_bcs[9]: \
             f"{msh.difference_wrt_measure(mu_n_12_dummy, geo.H(omega_n_12_dummy), rmsh.ds):.{io.number_of_decimals}e}", \
         }] )
     csvfile_bcs.flush()
