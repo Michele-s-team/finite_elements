@@ -6,7 +6,7 @@ if rarg.args.problem == 'square_a':
     rmsh = 'mesh.read.square'
     vp = 'variational_problem_bc_square_a'
     prout_bc =  'print_out_bc_square_a'
-    prout_da =  'print_out_data_bc_square_b'
+    prout_da =  'print_out_data_bc_square_a'
 
 elif rarg.args.problem == 'square_b':
     rmsh = 'mesh.read.square'
