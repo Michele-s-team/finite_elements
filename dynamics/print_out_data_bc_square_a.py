@@ -28,7 +28,7 @@ def print_data(step):
         fi.fieldnames_data[0]: \
             f"{step:.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[1]: \
-            f"{assemble((fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_circle( fsp.omega_n_12 ))[j])**2 * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle):.{rpam.parameters['print_out_digits']}e}"      
+            f'{assemble((fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_circle( fsp.omega_n_12 ))[j])**2 * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle):.{rpam.parameters["print_out_digits"]}e}'   
         }])
 
     fi.csvfile_data.flush()
