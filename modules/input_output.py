@@ -1,3 +1,28 @@
+'''
+Input/output utilities for reading and writing FEniCS fields, meshes, and
+parameters.
+
+Provides standalone helpers for:
+  - Writing fields (scalar/vector/tensor) to file: print_to_csvfile (DOF
+    values, continuous or DG spaces), print_nodal_values_to_csvfile,
+    xdmf_print, and full_print / full_print_deformed (combined XDMF, HDF5,
+    and CSV output).
+  - Reading fields back from CSV (read_dg_field_from_csv_file,
+    read_scalar_from_csvfile).
+  - Exporting mesh geometry to CSV: vertices, triangles, and edges
+    (print_mesh_vertices_to_csv, print_mesh_triangles_to_csv,
+    print_mesh_lines_to_csv).
+  - Reading and writing parameter sets to/from CSV
+    (read_parameter[s]_from_csv_file, write_parameters_to_csv_file) and
+    parsing strings into typed values (string_to_value,
+    read_function_expresssion).
+  - Dictionary helpers (merge_dictionaries, max_dictionary) and small
+    utilities (pad, add_trailing_slash, count_files, field_type).
+  - Colored / formatted terminal output for test reporting
+    (check_print, check_string, print_star_box).
+'''
+
+
 import ast
 import colorama as col
 import csv
