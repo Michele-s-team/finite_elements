@@ -181,16 +181,12 @@ def print_solution(psi, step, t):
 
     #print residuals of variational problems
     fsp.res_F_omega_n.assign( project( sqrt( ((z_n_12_output.dx( i )) - omega_n_12_output[i]) * ((z_n_12_output.dx( i )) - omega_n_12_output[i]) ), fsp.Q_f_n ) )
-    # fsp.res_F_v_bar.assign( project( fsp.f_v_t - fsp.f_sigma_t - fsp.f_visc_t, fsp.Q_v_bar ) )
 
 
     # print residual of the PDEs to files
     xdmffile_check = XDMFFile( (rarg.args.output_directory) + '/snapshots/xdmf/check_' + str( step + 1 ) + '.xdmf'  )
     xdmffile_check.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-
     xdmffile_check.write( fsp.res_F_omega_n, 0 )
-    # xdmffile_check.write( project(sqrt(fsp.res_F_v_bar[i] * fsp.res_F_v_bar[i]), fsp.Q_z_n), 0 )
-
     xdmffile_check.close()
 
     # write the force F extered on ds_circle to file
