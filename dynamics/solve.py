@@ -29,7 +29,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
+import files as fi
 import function_spaces as fsp
 import input_output as io
 import parameters.read.solution as rpam
@@ -38,6 +38,7 @@ import switch_problem as swi
 import variational_problem.utils as var_pr
 
 prout_bc = importlib.import_module(swi.prout_bc)
+prout_da = importlib.import_module(swi.prout_da)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
@@ -112,6 +113,7 @@ for step in range(rpam.parameters['N']):
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, z_n_12_output, omega_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
     prout_bc.print_bcs( fsp.psi )
+    prout_da.print_data(step)
     
     if (step % rpam.parameters['print_out_stride'] == 0):
     
@@ -132,3 +134,4 @@ for step in range(rpam.parameters['N']):
 
 prout_bc.csvfile_bcs.close()
 prout_bc.csvfile_F.close()
+fi.csvfile_data.close()

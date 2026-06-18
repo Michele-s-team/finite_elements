@@ -1,0 +1,29 @@
+'''
+this module prints some useful data  to monitor the time iteration
+'''
+
+import importlib
+from fenics import *
+import ufl as ufl
+
+import parameters.read.solution as rpam
+import switch_problem as swi
+
+import files as fi
+
+rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
+
+
+
+i, j, k = ufl.indices(3)
+
+
+def print_data(step):
+
+    fi.writer_data.writerows([{
+        fi.fieldnames_data[0]: \
+            f"{step:.{rpam.parameters['print_out_digits']}e}"
+        }])
+
+    fi.csvfile_data.flush()
