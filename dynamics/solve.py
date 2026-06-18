@@ -25,7 +25,7 @@ import importlib
 import os
 import sys
 
-#add the path where to find the shared modules
+#path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
