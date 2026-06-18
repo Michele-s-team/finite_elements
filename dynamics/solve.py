@@ -57,7 +57,7 @@ params = {'nonlinear_solver': 'newton',
             'absolute_tolerance': 1e-10,
             'relative_tolerance': 1e-9,
             'maximum_iterations': 50,
-            'relaxation_parameter': None,
+            'relaxation_parameter': 1.0,
             'preconditioner': 'default'
             }
         }
