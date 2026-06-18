@@ -18,21 +18,8 @@ cmd.set_gauge('monge')
 i, j, k, l = ufl.indices( 4 )
 
 
-# CHANGE PARAMETERS HERE
-# T = 0.001
-# kappa = 1.0
-# rho = 1.0
-# eta = 1.0
-# v_bar_l_const = 1.0
-# N = 10
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
-
-# boundary_profile_w_bar = 0.0
-# r_profile_phi = 0.0
-# boundary_profile_z = 0.0
-# Nitche's parameter
-# alpha = 1e4
 
 
 class TangentVelocityExpression( UserExpression ):
