@@ -1,3 +1,36 @@
+'''
+Differential geometry of manifolds. 
+
+This module provides the bulk (interior) differential-geometric machinery for
+fields living on a curved manifold, expressed as UFL tensor
+quantities in curvilinear coordinates. 
+
+  - Metric and curvature: g, g_c (co-/contravariant metric), detg and its
+    variants, b (second fundamental form / shape operator), H (mean curvature,
+    and H_Nabla_omega in terms of the covariant derivative of omega).
+  - Connection and derivatives: Gamma (Christoffel symbols), covariant
+    derivatives of vectors (Nabla_v), one-forms (Nabla_f), and two-covariant
+    tensors (Nabla_ff), and the Laplace-Beltrami operator on scalars
+    (Nabla_LB).
+  - Rate-of-deformation tensors d, d_c for surface flows (including the
+    normal-velocity contribution).
+  - Index raising/lowering and frame maps: f_to_v, v_to_f, normalize,
+    from_tangent_to_3D_space, from_3D_to_tangent, from_3D_to_normal, and their
+    combinations, mapping between the tangent bundle of the manifold and the
+    embedding 3D space.
+  - Circle-related normals (N3d_c_r, Nt_c_r, n_c_r) and small UFL helpers
+    (ufl_norm, euclidean_projection, vector_times_scalar, shape).
+
+Most functions take the geometry argument 'omega' (a one-form, e.g. the
+gradient of the height field z) and an optional gauge function 'nu'. The
+frame field e(omega, nu), curvature K, surface normal, and embedding X are
+module-level globals set externally according to the chosen gauge. 
+
+Depends on FEniCS, UFL, and numpy; index objects and the 2D permutation symbol are
+defined at module level for tensor expressions.
+'''
+
+
 from fenics import *
 import ufl as ufl
 import numpy as np
@@ -28,7 +61,7 @@ epsilon = ufl.PermutationSymbol(2)
 i, j, k, l, alpha, beta = ufl.indices(6)
 
 
-# first fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
+# second fundamental form: b(z)[i,j] = b_{ij}_{al-izzi2020shear}
 def b(omega, nu=None):
     return as_tensor((normal(omega, nu))[k] * (e(omega, nu)[i, k]).dx(j), (i, j))
 

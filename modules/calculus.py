@@ -1,3 +1,23 @@
+'''
+Calculs utilities for finite-element computations.
+
+Provides standalone helpers for:
+  - Parametric curves (line, circle, circle_arc, ellipse, ellipse_arc),
+    each returning [position, derivative] over t in [0, 1].
+  - Curvilinear integrals along curves and over mesh internal facets
+    (curve_integral_*, curve_integral_dS).
+  - Surface integrals over planar regions: rectangles, disks, rings,
+    ellipses, polygons (surface_integral_*).
+  - 3D surface/volume integrals over spheres, balls, and boxes.
+  - Rotations and coordinate transforms (R, R_z, dRddtheta,
+    polar_to_cartesian, rotation_translation).
+  - Geometric tests and queries (point_on_line, point_on_segment,
+    point_in_box, line_on_axis, line_is_radial, mirror_point_line,
+    polygon_length, min/max distances).
+
+Depends on numpy, scipy, shapely, and FEniCS
+'''
+
 
 from fenics import *
 import numpy as np

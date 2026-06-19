@@ -425,3 +425,59 @@ then include `import h5py` at the top of the .py file
 
     1. When imposing boundary conditions with penalty terms, if you run a dynamical loop up to time T by dividing T in N steps, as you double N you may  also need to double the alpha parameters that multiply the penalty terms, otherwise 1/dt terms may take over penalty terms. 
     2. Be careful of which terms have dt at numerator and which at the denominator: a 1/dt can change the ratios of the order of mangnitude of a variational term with respect to another and completely alter the solution, if not make the solver crash
+
+- The default solver parameters are
+
+        newton_solver:
+        absolute_tolerance: 1e-10
+        convergence_criterion: residual
+        error_on_nonconvergence: True
+        krylov_solver:
+            absolute_tolerance: None
+            divergence_limit: None
+            error_on_nonconvergence: None
+            maximum_iterations: None
+            monitor_convergence: None
+            nonzero_initial_guess: None
+            relative_tolerance: None
+            report: None
+        linear_solver: default
+        lu_solver:
+            report: True
+            symmetric: False
+            verbose: False
+        maximum_iterations: 50
+        preconditioner: default
+        relative_tolerance: 1e-09
+        relaxation_parameter: None
+        report: True
+    nonlinear_solver: newton
+    print_matrix: False
+    print_rhs: False
+    snes_solver:
+        absolute_tolerance: 1e-10
+        error_on_nonconvergence: True
+        krylov_solver:
+            absolute_tolerance: None
+            divergence_limit: None
+            error_on_nonconvergence: None
+            maximum_iterations: None
+            monitor_convergence: None
+            nonzero_initial_guess: None
+            relative_tolerance: None
+            report: None
+        line_search: basic
+        linear_solver: default
+        lu_solver:
+            report: True
+            symmetric: False
+            verbose: False
+        maximum_iterations: 50
+        maximum_residual_evaluations: 2000
+        method: default
+        preconditioner: default
+        relative_tolerance: 1e-09
+        report: True
+        sign: default
+        solution_tolerance: 1e-16
+    symmetric: False

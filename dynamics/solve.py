@@ -17,49 +17,50 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/symmetric_left_right_top_bottom/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_b $MESH_PATH $SOLUTION_PATH
-
-
-To produce figure_10, 
-- generate the mesh with /home/fenics/shared/generate_mesh/2d/square/figure_10_parameters/mesh_parameters.csv 
-- use parameter file parameters_bc_square_a_figure_10.csv
-- run with problem 'square_a'. 
 '''
 
-import colorama as col
+import dolfin
 from fenics import *
 import importlib
-import dolfin
-
+import os
 import sys
 
-#add the path where to find the shared modules
+#path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-
+import files as fi
 import function_spaces as fsp
 import input_output as io
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
-
+import variational_problem.utils as var_pr
 
 prout_bc = importlib.import_module(swi.prout_bc)
-
+prout_da = importlib.import_module(swi.prout_da)
 rmsh = importlib.import_module(swi.rmsh)
-
 vp = importlib.import_module(swi.vp)
+
+# write solution metadata
+solution_metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'solution_metadata.csv'), solution_metadata)
 
 
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-print("Input diredtory = ", rarg.args.input_directory)
-print("Output diredtory = ", rarg.args.output_directory)
-print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-
-
-
+params = {'nonlinear_solver': 'newton',
+        'newton_solver':
+            {
+            'linear_solver': 'lu',
+            'absolute_tolerance': 1e-10,
+            'relative_tolerance': 1e-9,
+            'maximum_iterations': 50,
+            'relaxation_parameter': 1.0,
+            'preconditioner': 'default'
+            }
+        }
 
 
 #Option 1: set initial profiles
@@ -99,57 +100,24 @@ for step in range(rpam.parameters['N']):
 
     vp = importlib.import_module(swi.vp)
 
-    # solve the variational problem
-    J = derivative( vp.F, fsp.psi, fsp.J_psi )
-    problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
-    solver = NonlinearVariationalSolver( problem )
 
-    # the post-processing ('pp') variational problem used to compute tau, ...
-    J_pp_tau = derivative( vp.vp_pp.F_pp_tau, fsp.tau_n_12, fsp.J_pp_tau )
-    J_pp_d = derivative( vp.vp_pp.F_pp_d, fsp.d, fsp.J_pp_d )
-    problem_pp_tau = NonlinearVariationalProblem( vp.vp_pp.F_pp_tau, fsp.tau_n_12, [], J_pp_tau )
-    problem_pp_d = NonlinearVariationalProblem( vp.vp_pp.F_pp_d, fsp.d, [], J_pp_d )
-    solver_pp_tau = NonlinearVariationalSolver( problem_pp_tau )
-    solver_pp_d = NonlinearVariationalSolver( problem_pp_d )
+    # solve variational problem
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
-    #set the solver parameters here
-    # params = {'nonlinear_solver': 'newton',
-    #            'newton_solver':
-    #             {
-    #                 'linear_solver'           : 'mumps',
-    #                 # 'line_search' : 'bt',
-    #                 'absolute_tolerance'      : 1e-6,
-    #                 'relative_tolerance'      : 1e-6,
-    #                 'maximum_iterations'      : 1000000,
-    #                 # 'sign'                    : 'nonnegative',
-    #                 'relaxation_parameter'    : 0.95,
-    #                 # 'preconditioner'    : 'ilu',
-    #                 'lu_solver' :{
-    #                     # 'report' : True,
-    #                      'symmetric' : False
-    #                 },
-    #                 'krylov_solver' :{
-    #                     'divergence_limit' : 1e0,
-    #                     'absolute_tolerance' : 1e-6,
-    #                     'relative_tolerance' : 1e-6,
-    #                     'nonzero_initial_guess' : True
-    #                 }
-    # 
-    #              }
-    # }
-    # solver.parameters.update(params)
-    
-    solver.solve()
-
-    solver_pp_tau.solve()
-    solver_pp_d.solve()
+    # solve variational problems for post-processing
+    var_pr.solve_vp(vp.vp_pp.F_pp_tau, fsp.tau_n_12, vp.vp_pp.bcs_tau, fsp.J_pp_tau, parameters=params)
+    var_pr.solve_vp(vp.vp_pp.F_pp_d, fsp.d, vp.vp_pp.bcs_d, fsp.J_pp_d, parameters=params)
 
     #update previous solution:
     #get the solution and write it to file
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, z_n_12_output, omega_n_12_output, mu_n_12_output = fsp.psi.split( deepcopy=True )
 
     prout_bc.print_bcs( fsp.psi )
-    prout_bc.print_solution( fsp.psi, step, t )
+    prout_da.print_data(step)
+    
+    if (step % rpam.parameters['print_out_stride'] == 0):
+    
+        prout_bc.print_solution( fsp.psi, step, t )
 
 
     fsp.v_n_2.assign(fsp.v_n_1)
@@ -166,3 +134,4 @@ for step in range(rpam.parameters['N']):
 
 prout_bc.csvfile_bcs.close()
 prout_bc.csvfile_F.close()
+fi.csvfile_data.close()

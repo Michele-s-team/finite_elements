@@ -3,7 +3,16 @@ from fenics import *
 import mesh.load as lmsh
 import parameters.read.solution as rpam
 
-
+'''
+the fields in this problem are
+psi = psi_{Lagrangian approach}
+mu = H
+X[alpha] = {X^alpha}_{Lagrangian approach}
+u[alpha] = {X^alpha}_{Lagrangian approach} - X_r^alpha
+X_ref^alpha is the manifold in the reference configuration 
+nu = nu_{Lagrangian approach}
+sigma = sigma_{Lagrangian approach}
+'''
 
 P_psi = FiniteElement('P', interval, rpam.parameters['function_space_degree'])
 P_mu = FiniteElement('P', interval, rpam.parameters['function_space_degree'])

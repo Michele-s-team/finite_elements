@@ -1,3 +1,26 @@
+'''
+Boundary geometry for finite-element computations.
+
+This module deals with geometric quantities defined on manifold boundaries:
+ it provides boundary normals and tangents both as
+UFL-level objects and as smooth (CG2) field representations that can be
+plotted.
+
+  - FacetTangent: unit boundary tangent of a 2D mesh, obtained by rotating
+    FacetNormal by pi/2.
+  - facet_normal_sub_meshes, facet_tangent_sub_meshes: build boundary
+    normals/tangents for each sub-mesh of a parent mesh.
+  - field_facet_normal: project a facet normal onto a smooth CG2 field
+    (non-normalized), over a boundary (ds) or interior-facet (dS) measure.
+  - field_facet_normal_normalized, field_facet_tangent_normalized: smooth,
+    Euclidean-normalized boundary normal and tangent fields
+  - calc_tangent_cg2: smooth (non-normalized) boundary tangent field.
+ 
+On import, the module also constructs module-level facet_normal,
+facet_tangent, and their sub-mesh counterparts for the mesh(es) loaded in
+mesh.load, handling both the single-mesh and multi-mesh cases.
+'''
+
 from fenics import *
 import numpy as np
 import ufl as ufl
