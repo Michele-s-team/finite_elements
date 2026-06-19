@@ -53,7 +53,7 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 params = {'nonlinear_solver': 'newton',
         'newton_solver':
             {
-            'linear_solver': 'default',
+            'linear_solver': 'lu',
             'absolute_tolerance': 1e-10,
             'relative_tolerance': 1e-9,
             'maximum_iterations': 50,
