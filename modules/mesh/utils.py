@@ -598,11 +598,16 @@ def difference_on_boundary_circle(f, g, r, R, c):
 
 
 '''
-write to csv file 'outfile' the coordinates of the start and end vertices which define the lines of the triangles of a 2d mesh stored in the .msh file 'infile'
-the vertices are written in the format
-edge1_start[0], edge1_start[1], edge1_start[2], edge1_end[0], edge1_end[1], edge1_end[2]
-edge2_start[0], edge2_start[1], edge2_start[2], edge2_end[0], edge2_end[1], edge2_end[2]
-...
+write to csv file 'outfile' the coordinates of the start and end vertices which define the lines (edges) of a mesh
+
+Input values: 
+    - 'infile': the .msh file where the mesh is stored
+    - 'outfile': the .csv file where the edges will be stored, in the format
+
+    "start:0","start:1","start:2","end:0","end:1","end:2"
+    p_start_edge_0[0], p_start_edge_0[1], p_start_edge_0[2], p_end_edge_0[0], p_end_edge_0[1], p_end_edge_0[2]
+    p_start_edge_1[0], p_start_edge_1[1], p_start_edge_1[2], p_end_edge_1[0], p_end_edge_1[1], p_end_edge_1[2]
+    ...
 '''
 
 
@@ -1536,12 +1541,12 @@ def deform_mesh(mesh, u):
 '''
 full write of mesh data to file
 Input values: 
-- 'mesh_file': the .msh file where the mesh is stored
-- 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']. 
-    They must be inserted in decreasing order of dimension of the component: for example 'triangle' before 'vertex'
-- 'parameters': a dictionary of mesh parameters
-- 'output_directory': the path where the mesh info will be written
-- 'prune_z': whether the z component should be pruned (true) or not (false)
+    - 'mesh_file': the .msh file where the mesh is stored
+    - 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']. 
+        They must be inserted in decreasing order of dimension of the component: for example 'triangle' before 'vertex'
+    - 'parameters': a dictionary of mesh parameters
+    - 'output_directory': the path where the mesh info will be written
+    - 'prune_z': whether the z component should be pruned (true) or not (false)
 
 Example of usage:
     msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
