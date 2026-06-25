@@ -610,9 +610,18 @@ def print_mesh_lines_to_csv(infile, outfile):
     # open the .msh file
     gmsh.open(infile)
 
-    # get the list of components with dimension 2 from the mesh (triangles)
-    triangles = gmsh.model.mesh.getElements(dim=2)
-    # print( "triangles = ", triangles )
+    mesh_dimension = gmsh.model.getDimension()   # highest entity dimension present
+    print(f'mesh dimension = {mesh_dimension}')
+
+    '''
+    get the list of components with dimension equal to the mesh dimension: 
+    - for a 1d mesh `components` are edges
+    - for a 2d mesh `components` are triangles
+    - for a 3d mesh `components` are tetrahedre
+    ''' 
+    components = gmsh.model.mesh.getElements(dim=mesh_dimension)
+
+    print(f' components = {components}')
 
     # construct a map which, given the tag of a node, gives its coordinates
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
@@ -623,17 +632,34 @@ def print_mesh_lines_to_csv(infile, outfile):
     # initialize a 'list' of unique elements, this sets the list to empty
     edges = set()
 
-    # loop over all triangle nodes
-    triangle_nodes = triangles[2][0] if len(triangles[2]) > 0 else []
-    for i in range(0, len(triangle_nodes), 3):
-        # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
-        pair_12 = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1]]))
-        pair_23 = tuple(sorted([triangle_nodes[i + 1], triangle_nodes[i + 2]]))
-        pair_31 = tuple(sorted([triangle_nodes[i + 2], triangle_nodes[i]]))
+    if mesh_dimension == 1: 
 
-        # this pushes back the elements pair_12, pair_23, pair_31 to edges
-        edges.update([pair_12, pair_23, pair_31])
-        # print( f"pair_12 = {pair_12} pair_23 = {pair_23} pair_31 = {pair_31}" )
+        pass
+
+    elif mesh_dimension == 2:
+
+        '''
+        loop over all triangle nodes
+
+        here `component_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
+        
+            [10,11,12, 11,13,12]
+            └ tri 1 ┘ └ tri 2 ┘
+        '''
+        component_nodes = components[2][0] if len(components[2]) > 0 else []
+        for i in range(0, len(component_nodes), 3):
+            # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
+            pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
+            pair_23 = tuple(sorted([component_nodes[i + 1], component_nodes[i + 2]]))
+            pair_31 = tuple(sorted([component_nodes[i + 2], component_nodes[i]]))
+
+            # this pushes back the elements pair_12, pair_23, pair_31 to edges
+            edges.update([pair_12, pair_23, pair_31])
+            # print( f"pair_12 = {pair_12} pair_23 = {pair_23} pair_31 = {pair_31}" )
+
+    elif mesh_dimension == 3:
+
+        pass
 
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
