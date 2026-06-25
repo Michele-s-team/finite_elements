@@ -647,6 +647,7 @@ def print_mesh_lines_to_csv(infile, outfile):
             └ tri 1 ┘ └ tri 2 ┘
         '''
         component_nodes = components[2][0] if len(components[2]) > 0 else []
+
         for i in range(0, len(component_nodes), 3):
             # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
             pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
@@ -668,7 +669,26 @@ def print_mesh_lines_to_csv(infile, outfile):
             └ tetra 1 ┘ └ tetra 2 ┘
         '''
 
-        pass
+        print(f'length of component[1] = {len(components[1][0])}')
+        print(f'length of component[2] = {len(components[2][0])}')
+
+        component_nodes = components[2][0] if len(components[2]) > 0 else []
+
+        for i in range(0, len(component_nodes), 4):
+
+            pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
+            pair_23 = tuple(sorted([component_nodes[i + 1], component_nodes[i + 2]]))
+            pair_31 = tuple(sorted([component_nodes[i + 2], component_nodes[i]]))
+
+            pair_41 = tuple(sorted([component_nodes[i + 3], component_nodes[i]]))
+            pair_42 = tuple(sorted([component_nodes[i + 3], component_nodes[i + 1]]))
+            pair_43 = tuple(sorted([component_nodes[i + 3], component_nodes[i + 2]]))
+
+
+            # this pushes back the elements pair_12, pair_23, pair_31 to edges
+            edges.update([pair_12, pair_23, pair_31, pair_41, pair_42, pair_43])
+            print( f"pairs = {[pair_12, pair_23, pair_31, pair_41, pair_42, pair_43]}" )
+
 
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
