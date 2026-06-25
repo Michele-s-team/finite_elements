@@ -659,6 +659,15 @@ def print_mesh_lines_to_csv(infile, outfile):
 
     elif mesh_dimension == 3:
 
+        '''
+        loop over all tetrahedron nodes
+
+        here `component_nodes` is, for example [array([10, 11, 12, 14, 11, 13, 12, 10])], where 
+        
+            [10,11,12,14, 11,13,12,10]
+            └ tetra 1 ┘ └ tetra 2 ┘
+        '''
+
         pass
 
     # loop through the edges added before and write the endoints of their lines to file
