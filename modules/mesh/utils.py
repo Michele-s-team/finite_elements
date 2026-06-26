@@ -602,7 +602,8 @@ NOTE: This method is different from input_output.print_mesh_vertices_to_csv.
 
 print the mesh vertices tags and coordinates to csv file
 Input values: 
-    - `filename`: full path of the csv file
+    - `infile`: full path of the input msh file
+    - `outfile`: full path of the output csv file
 Returnv alues: 
     The output csv file is
     tag,:0,:1,:2
@@ -613,18 +614,20 @@ Returnv alues:
     The tag convention is the same used in mesh.utils.print_mesh_lines_to_csv
 '''
 
-def print_mesh_vertices_to_csv(filename):
+def print_mesh_vertices_to_csv(infile, outfile):
+
+    # open the .msh file
+    gmsh.open(infile)
 
     # create the path for the csv file if it does not exist
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
 
     # construct a map which, given the tag of a node, gives its coordinates
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
     nodes = [[node_tags[i], list(node_coords[3 * i: 3 * (i + 1)])] for i in range(len(node_tags))]
-    print( "nodes = ", nodes )
+    # print( "nodes = ", nodes )
 
-    csvfile = open(filename, "w")
+    csvfile = open(outfile, "w")
     print(f"tag,:0,:1,:2", file=csvfile)
 
     for node in nodes:
@@ -651,6 +654,7 @@ Input values:
 
 
 def print_mesh_lines_to_csv(infile, outfile):
+
     # open the .msh file
     gmsh.open(infile)
 
@@ -1617,12 +1621,17 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     for component in components:
         write_mesh_components(mesh_file, os.path.join(output_directory_slash, component + "_mesh.xdmf"), component, prune_z)
 
-    # print  mesh vertices to csv file
-    mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
-    io.print_mesh_vertices_to_csv(mesh, os.path.join(output_directory_slash, "vertices.csv"))
+    # print the mesh lines to csv fie
+    print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory_slash, "vertices.csv"))
 
     # print the mesh lines to csv fie
     print_mesh_lines_to_csv(mesh_file, os.path.join(output_directory_slash, "line_vertices.csv"))
+
+
+
+    # print  mesh vertices to csv file
+    mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
+
         
     if mesh.topology().dim() > 1:
         # the mesh has dimension > 1 -> print the mesh triangles to csv
