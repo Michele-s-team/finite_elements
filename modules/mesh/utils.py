@@ -874,9 +874,7 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
     '''
     tetrahedra_nodes = tetrahedra[2][0] if len(tetrahedra[2]) > 0 else []
 
-    print(f'tetrahedra_nodes = ')
     
-
     for i in range(0, len(tetrahedra_nodes), 4):
 
         # store into quartet = [ID_1, ID_2, ID_3, ID_4] the IDs of the vertices which form the triangle
