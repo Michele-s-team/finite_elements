@@ -774,13 +774,22 @@ def print_mesh_edges_to_csv(infile, outfile):
 
 
 '''
-print the mesh triangles to csv file. The mesh triangles will be stored in a csvfile in columns, in the format "p_1:0,p_1:1,p_1:2,p_2:0,p_2:1,p_2:2", where p_1, p_2 and p_3 are the vertices of the triangle, and p_1:0 is the x coordinate of p_1, p_1:1 the y coordinate of p_1, ...
+print the mesh triangles to csv file
 
-* Input values: 
+Input values: 
     - 'infile': the .msh file from which the mesh will be read
     - 'outfile': the path, name and extension of the csv file where the triangles will be stored 
+
+    the .csv file where the edges will be stored, in the format
+
+    p_1,p_2,p_3
+    id_p_1_triangle_0,id_p_2_triangle_0,id_p_3_triangle_0
+    id_p_1_triangle_1,id_p_2_triangle_1,id_p_3_triangle_1
+    ...
+    
 '''
 def print_mesh_triangles_to_csv(infile, outfile):
+
     # open the .msh file
     gmsh.open(infile)
 
@@ -788,16 +797,27 @@ def print_mesh_triangles_to_csv(infile, outfile):
     triangles = gmsh.model.mesh.getElements(dim=2)
 
     # construct a map which, given the tag of a node, gives its coordinates
-    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
     triplets = set()
 
-    # loop over all triangle nodes
+
+    '''
+    loop over all triangle nodes
+
+    here `triangle_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
+    
+        [10,11,12, 11,13,12]
+        └ tri 1 ┘ └ tri 2 ┘
+    '''
     triangle_nodes = triangles[2][0] if len(triangles[2]) > 0 else []
+    
+
     for i in range(0, len(triangle_nodes), 3):
+
         # store into triplet = [ID_1, ID_2, ID_3] the IDs of the vertices which form the triangle
         triplet = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1], triangle_nodes[i+2]]))
         
@@ -809,13 +829,10 @@ def print_mesh_triangles_to_csv(infile, outfile):
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\",\"p_3:0\",\"p_3:1\",\"p_3:2\"", file=csvfile)
+    print(f"p_1,p_2,p_3", file=csvfile)
     for triplet in triplets:
-        # apply node_map to obtain the coordinates of the  vertices in triplet from their IDs
-        p_1 = node_map[triplet[0]]
-        p_2 = node_map[triplet[1]]
-        p_3 = node_map[triplet[2]]
-        print(f"{p_1[0]}, {p_1[1]}, {p_1[2]}, {p_2[0]}, {p_2[1]}, {p_2[2]}, {p_3[0]}, {p_3[1]}, {p_3[2]}", file=csvfile)
+
+        print(f"{triplet[0]},{triplet[1]},{triplet[2]}", file=csvfile)
 
     csvfile.close()
     
