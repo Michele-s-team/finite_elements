@@ -836,6 +836,66 @@ def print_mesh_triangles_to_csv(infile, outfile):
     
 
 
+
+'''
+print the mesh tetrahedra to csv file
+
+Input values: 
+    - 'infile': the .msh file from which the mesh will be read
+    - 'outfile': the path, name and extension of the csv file where the triangles will be stored 
+
+    the .csv file where the tetrahedra will be stored, in the format
+
+    p_1,p_2,p_3,p_4
+    id_p_1_tetrahedron_0,id_p_2_tetrahedron_0,id_p_3_tetrahedron_0,id_p_4_tetrahedron_0
+    id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1
+    ...
+    
+'''
+def print_mesh_tetrahedra_to_csv(infile, outfile):
+
+    # open the .msh file
+    gmsh.open(infile)
+
+    # get the list of components with dimension 2 from the mesh (triangles)
+    tetrahedra = gmsh.model.mesh.getElements(dim=4)
+
+    # Store unique edges from the triangle elements
+    # initialize a 'list' of unique elements, this sets the list to empty
+    quartets = set()
+
+    '''
+    loop over all tetrahedra nodes
+
+    here `tetrahedra_nodes` is, for example [array([10, 11, 12, 13, 11, 13, 12, 10])], where 
+    
+        [10,11,12,13, 11,13,12,10]
+        └ tetra 1  ┘   └ tetra 2 ┘
+    '''
+    tetrahedra_nodes = tetrahedra[2][0] if len(tetrahedra[2]) > 0 else []
+    
+
+    for i in range(0, len(tetrahedra_nodes), 4):
+
+        # store into quartet = [ID_1, ID_2, ID_3, ID_4] the IDs of the vertices which form the triangle
+        quartet = tuple(sorted([tetrahedra_nodes[i], tetrahedra_nodes[i + 1], tetrahedra_nodes[i + 2], tetrahedra_nodes[i + 3]]))
+        
+        # this pushes back the triplet to triplets
+        quartets.update([quartet])
+        
+    
+    # loop through the triplets added before and write the vertices of each triplet to file
+    csvfile = open(outfile, "w")
+    print(f"p_1,p_2,p_3,p_4", file=csvfile)
+    for quartet in quartets:
+
+        print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]}", file=csvfile)
+
+    csvfile.close()
+    
+
+
+
 '''
 print the coordinates of start and end points of line 'line'
 '''
