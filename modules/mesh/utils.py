@@ -701,7 +701,7 @@ def print_mesh_lines_to_csv(infile, outfile):
     for edge in edges:
 
         # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
-        print(f"{edge[0]}, {edge[1]}", file=csvfile)
+        print(f"{edge[0]},{edge[1]}", file=csvfile)
 
     csvfile.close()
 
