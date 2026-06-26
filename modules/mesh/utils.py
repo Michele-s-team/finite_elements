@@ -598,6 +598,45 @@ def difference_on_boundary_circle(f, g, r, R, c):
 
 
 '''
+NOTE: This method is different from input_output.print_mesh_vertices_to_csv. 
+
+print the mesh vertices tags and coordinates to csv file
+Input values: 
+    - `filename`: full path of the csv file
+Returnv alues: 
+    The output csv file is
+    tag,:0,:1,:2
+    tag_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord
+    tag_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord
+    ...
+
+    The tag convention is the same used in mesh.utils.print_mesh_lines_to_csv
+'''
+
+def print_mesh_vertices_to_csv(filename):
+
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+
+    # construct a map which, given the tag of a node, gives its coordinates
+    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    nodes = [[node_tags[i], list(node_coords[3 * i: 3 * (i + 1)])] for i in range(len(node_tags))]
+    print( "nodes = ", nodes )
+
+    csvfile = open(filename, "w")
+    print(f"tag,:0,:1,:2", file=csvfile)
+
+    for node in nodes:
+
+        print(f"{node[0]},{node[1][0]},{node[1][1]},{node[1][2]}", file=csvfile)
+
+    csvfile.close()
+
+
+
+
+'''
 write to csv file 'outfile' the coordinates of the start and end vertices which define the lines (edges) of a mesh
 
 Input values: 
