@@ -625,7 +625,10 @@ def print_mesh_vertices_to_csv(infile, outfile):
     # construct a map which, given the tag of a node, gives its coordinates
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
     nodes = [[node_tags[i], list(node_coords[3 * i: 3 * (i + 1)])] for i in range(len(node_tags))]
-    # print( "nodes = ", nodes )
+
+    # sort nodes in increasing order of `tag`
+    nodes.sort(key=lambda n: n[0])      
+
 
     csvfile = open(outfile, "w")
     print(f"tag,:0,:1,:2", file=csvfile)
