@@ -665,9 +665,9 @@ def print_mesh_edges_to_csv(infile, outfile):
 
     '''
     get the list of components with dimension equal to the mesh dimension: 
-    - for a 1d mesh `components` are edges
-    - for a 2d mesh `components` are triangles
-    - for a 3d mesh `components` are tetrahedre
+        - for a 1d mesh `components` are edges
+        - for a 2d mesh `components` are triangles
+        - for a 3d mesh `components` are tetrahedre
     ''' 
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
