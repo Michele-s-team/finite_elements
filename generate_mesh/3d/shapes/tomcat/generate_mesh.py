@@ -25,14 +25,9 @@ import runtime_arguments_generate_mesh as rarg
 # add '/' to output_directory if it is missing
 
 
-geometry = pygmsh.occ.Geometry()
-model = geometry.__enter__()
+
+mesh_file = os.path.join(rarg.args.output_directory, "mesh.msh")
 
 mesh = meshio.read(os.path.join('/home/fenics/shared/generate_mesh/3d/shapes/tomcat/input', "mesh.stl"))
-meshio.write(os.path.join(rarg.args.output_directory, "mesh.msh"), mesh, file_format="gmsh22") 
+meshio.write(os.path.join(rarg.args.output_directory, "mesh.msh"), mesh) 
 
-
-model.synchronize()
-
-
-model.__exit__()
