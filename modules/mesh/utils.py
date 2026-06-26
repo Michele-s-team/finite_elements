@@ -649,9 +649,9 @@ Input values:
     - 'infile': the .msh file where the mesh is stored
     - 'outfile': the .csv file where the edges will be stored, in the format
 
-    start,end
-    id_p_start_edge_0,id_p_end_edge_0
-    id_p_start_edge_1,id_p_end_edge_1
+    p_1,p_2
+    id_p_1_edge_0,id_p_2_edge_0
+    id_p_1_edge_1,id_p_2_edge_1
     ...
 '''
 
@@ -765,7 +765,7 @@ def print_mesh_edges_to_csv(infile, outfile):
 
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
-    print(f"start,end", file=csvfile)
+    print(f"p_1,p_2", file=csvfile)
     for edge in edges:
 
         print(f"{edge[0]},{edge[1]}", file=csvfile)
