@@ -66,7 +66,7 @@ geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 
-# msh.print_mesh_lines_to_csv(mesh_file, rarg.args.output_directory + '/line_vertices.csv')
+# msh.print_mesh_edges_to_csv(mesh_file, rarg.args.output_directory + '/line_vertices.csv')
 #
 # # create a tetrahedron mesh (containing solid objects such as a ball)
 # tetra_mesh = msh.create_mesh(mesh_from_file, "tetra", False)

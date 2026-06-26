@@ -611,7 +611,7 @@ Returnv alues:
     tag_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord
     ...
 
-    The tag convention is the same used in mesh.utils.print_mesh_lines_to_csv
+    The tag convention is the same used in mesh.utils.print_mesh_edges_to_csv
 '''
 
 def print_mesh_vertices_to_csv(infile, outfile):
@@ -656,7 +656,7 @@ Input values:
 '''
 
 
-def print_mesh_lines_to_csv(infile, outfile):
+def print_mesh_edges_to_csv(infile, outfile):
 
     # open the .msh file
     gmsh.open(infile)
@@ -1567,7 +1567,7 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
     geometry.generate_mesh(dim=2)
     gmsh.write(output_file)
 
-    print_mesh_lines_to_csv(output_file, output_directory + 'line_vertices.csv')
+    print_mesh_edges_to_csv(output_file, output_directory + 'line_vertices.csv')
 
     gmsh.clear()
     geometry.__exit__()
@@ -1628,7 +1628,7 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory_slash, "vertices.csv"))
 
     # print the mesh lines to csv fie
-    print_mesh_lines_to_csv(mesh_file, os.path.join(output_directory_slash, "line_vertices.csv"))
+    print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory_slash, "line_vertices.csv"))
 
 
 

@@ -126,7 +126,7 @@ mesh_from_file = meshio.read(mesh_file)
 msh.full_write(mesh_file, ['tetra', 'triangle'], metadata, output_directory, False)
 
 
-# msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+# msh.print_mesh_edges_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 #
 # # create a tetrahedron mesh in which the solid objects (volumes) will be stored
 # tetra_mesh = msh.create_mesh(mesh_from_file, "tetra", False)

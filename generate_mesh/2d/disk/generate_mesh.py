@@ -52,7 +52,7 @@ model.add_physical(circle_r.curve_loop.curves, "Circle r")
 geometry.generate_mesh(64)
 gmsh.write(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_edges_to_csv(mesh_file, output_directory + 'line_vertices.csv')
 
 mesh_from_file = meshio.read(mesh_file)
 
