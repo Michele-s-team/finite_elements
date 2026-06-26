@@ -824,8 +824,6 @@ def print_mesh_triangles_to_csv(infile, outfile):
         # this pushes back the triplet to triplets
         triplets.update([triplet])
         
-    #print(f'triplets = {triplets}')
-
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
