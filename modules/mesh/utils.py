@@ -616,7 +616,6 @@ def print_mesh_lines_to_csv(infile, outfile):
     gmsh.open(infile)
 
     mesh_dimension = gmsh.model.getDimension()   # highest entity dimension present
-    print(f'mesh dimension = {mesh_dimension}')
 
     '''
     get the list of components with dimension equal to the mesh dimension: 
@@ -627,7 +626,7 @@ def print_mesh_lines_to_csv(infile, outfile):
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
     # construct a map which, given the tag of a node, gives its coordinates
-    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
     # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
     # print( "node map = ", node_map )
 
@@ -636,6 +635,10 @@ def print_mesh_lines_to_csv(infile, outfile):
     edges = set()
 
     if mesh_dimension == 1: 
+
+        # check that mesh components are segments
+        if list(components[0]) != [1]:
+            print(f"{col.Fore.RED}Error: expected linear lines (type 1), got {list(components[0])}{col.Style.RESET_ALL}")
 
         '''
         loop over all edge nodes
@@ -657,6 +660,10 @@ def print_mesh_lines_to_csv(infile, outfile):
 
     elif mesh_dimension == 2:
 
+        # check that the mesh components are  triangles 
+        if list(components[0]) != [2]:
+            print(f"{col.Fore.RED}Error: expected linear triangles (type 2), got {list(components[0])}{col.Style.RESET_ALL}")
+            
         '''
         loop over all triangle nodes
 
@@ -675,9 +682,13 @@ def print_mesh_lines_to_csv(infile, outfile):
 
             # this pushes back the elements pair_12, pair_23, pair_31 to edges
             edges.update([pair_12, pair_23, pair_31])
-            # print( f"pair_12 = {pair_12} pair_23 = {pair_23} pair_31 = {pair_31}" )
 
     elif mesh_dimension == 3:
+
+        # check that the mesh copmonents are tetrahedra
+        if list(components[0]) != [4]:
+            print(f"{col.Fore.RED}Error: expected linear tetrahedra (type 4), got {list(components[0])}{col.Style.RESET_ALL}")
+
 
         '''
         loop over all tetrahedron nodes
@@ -688,8 +699,6 @@ def print_mesh_lines_to_csv(infile, outfile):
             └ tetra 1 ┘ └ tetra 2 ┘
         '''
 
-        print(f'length of component[1] = {len(components[1][0])}')
-        print(f'length of component[2] = {len(components[2][0])}')
 
         component_nodes = components[2][0] if len(components[2]) > 0 else []
 
@@ -706,7 +715,6 @@ def print_mesh_lines_to_csv(infile, outfile):
 
             # this pushes back the elements pair_12, pair_23, pair_31 to edges
             edges.update([pair_12, pair_23, pair_31, pair_41, pair_42, pair_43])
-            print( f"pairs = {[pair_12, pair_23, pair_31, pair_41, pair_42, pair_43]}" )
 
 
     # loop through the edges added before and write the endoints of their lines to file
