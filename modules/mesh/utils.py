@@ -858,7 +858,7 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
     gmsh.open(infile)
 
     # get the list of components with dimension 2 from the mesh (triangles)
-    tetrahedra = gmsh.model.mesh.getElements(dim=4)
+    tetrahedra = gmsh.model.mesh.getElements(dim=3)
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -873,6 +873,8 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
         └ tetra 1  ┘   └ tetra 2 ┘
     '''
     tetrahedra_nodes = tetrahedra[2][0] if len(tetrahedra[2]) > 0 else []
+
+    print(f'tetrahedra_nodes = ')
     
 
     for i in range(0, len(tetrahedra_nodes), 4):
@@ -892,6 +894,7 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
         print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]}", file=csvfile)
 
     csvfile.close()
+
     
 
 
@@ -1713,6 +1716,14 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
         
         # the mesh has dimension > 1 -> print the mesh triangles to csv
         print_mesh_triangles_to_csv(mesh_file, os.path.join(output_directory_slash, "triangles.csv"))
+
+        if mesh.topology().dim() > 2: 
+
+            # the mesh has dimension > 2 -> print the mesh tetrahedra to csv
+            print_mesh_tetrahedra_to_csv(mesh_file, os.path.join(output_directory_slash, "tetrahedra.csv"))
+
+
+
 
     # print mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory_slash, "mesh_metadata.csv"), parameters)
