@@ -697,13 +697,11 @@ def print_mesh_lines_to_csv(infile, outfile):
 
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
-    print(f"\"start:0\",\"start:1\",\"start:2\",\"end:0\",\"end:1\",\"end:2\"", file=csvfile)
+    print(f"start,end", file=csvfile)
     for edge in edges:
-        # apply node_map to obtain the coordinates of the starting vertex in edge from their IDs, and similarly for p_end
-        p_start = node_map[edge[0]]
-        p_end = node_map[edge[1]]
+
         # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
-        print(f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile)
+        print(f"{edge[0]}, {edge[1]}", file=csvfile)
 
     csvfile.close()
 
