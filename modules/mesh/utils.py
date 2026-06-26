@@ -637,7 +637,23 @@ def print_mesh_lines_to_csv(infile, outfile):
 
     if mesh_dimension == 1: 
 
-        pass
+        '''
+        loop over all edge nodes
+
+        here `component_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
+        
+            [10,11, 11,13]
+            └ edge 1 ┘ └ edge 2 ┘
+        '''
+        component_nodes = components[2][0] if len(components[2]) > 0 else []
+
+        for i in range(0, len(component_nodes), 2):
+            
+            # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
+            pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
+  
+            # this pushes back the elements pair_12 to edges
+            edges.update([pair_12])
 
     elif mesh_dimension == 2:
 
