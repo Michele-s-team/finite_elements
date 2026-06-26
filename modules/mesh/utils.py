@@ -604,9 +604,9 @@ Input values:
     - 'infile': the .msh file where the mesh is stored
     - 'outfile': the .csv file where the edges will be stored, in the format
 
-    "start:0","start:1","start:2","end:0","end:1","end:2"
-    p_start_edge_0[0], p_start_edge_0[1], p_start_edge_0[2], p_end_edge_0[0], p_end_edge_0[1], p_end_edge_0[2]
-    p_start_edge_1[0], p_start_edge_1[1], p_start_edge_1[2], p_end_edge_1[0], p_end_edge_1[1], p_end_edge_1[2]
+    start,end
+    id_p_start_edge_0,id_p_end_edge_0
+    id_p_start_edge_1,id_p_end_edge_1
     ...
 '''
 
@@ -626,11 +626,9 @@ def print_mesh_lines_to_csv(infile, outfile):
     ''' 
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
-    print(f' components = {components}')
-
     # construct a map which, given the tag of a node, gives its coordinates
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
     # print( "node map = ", node_map )
 
     # Store unique edges from the triangle elements
@@ -700,7 +698,6 @@ def print_mesh_lines_to_csv(infile, outfile):
     print(f"start,end", file=csvfile)
     for edge in edges:
 
-        # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
         print(f"{edge[0]},{edge[1]}", file=csvfile)
 
     csvfile.close()
