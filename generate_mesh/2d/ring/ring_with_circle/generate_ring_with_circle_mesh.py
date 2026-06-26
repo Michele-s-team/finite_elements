@@ -61,7 +61,7 @@ geometry.generate_mesh(64)
 gmsh.write(mesh_file_name)
 
 # Write the mesh and components to file
-msh.print_mesh_edges_to_csv(mesh_file_name, output_directory + 'line_vertices.csv')
+msh.print_mesh_edges_to_csv(mesh_file_name, output_directory + 'edges.csv')
 
 # Save the line and triangle mesh as usual
 mesh_from_file = meshio.read(mesh_file_name)

@@ -95,7 +95,7 @@ model.add_physical(quarter_rectangle_circle_lines[4:], "quarter_circle")
 geometry.generate_mesh(dim=2)
 gmsh.write(quarter_mesh_msh_file)
 
-# msh.print_mesh_edges_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+# msh.print_mesh_edges_to_csv( mesh_file, output_directory + 'edges.csv' )
 
 gmsh.clear()
 geometry.__exit__()

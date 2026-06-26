@@ -102,7 +102,7 @@ model.add_physical(ellipse_loop.curves, "c")
 geometry.generate_mesh(dim=2)
 gmsh.write(mesh_file)
 
-msh.print_mesh_edges_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_edges_to_csv(mesh_file, output_directory + 'edges.csv')
 
 
 mesh_from_file = meshio.read(mesh_file)

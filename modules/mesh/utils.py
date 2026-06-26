@@ -1514,7 +1514,7 @@ Input values:
 - 'c_r', 'c_R' the centers of the rings
 - 'theta': the angular width of the slice, in radians
 - 'resolution': the mesh resolution
-- 'output_file': the .msh file where the mesh will be stored. The mesh lines will be written in the same folder in line_vertices.csv file
+- 'output_file': the .msh file where the mesh will be stored. The mesh lines will be written in the same folder in edges.csv file
 
 Example of usage:
     msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
@@ -1584,7 +1584,7 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
     geometry.generate_mesh(dim=2)
     gmsh.write(output_file)
 
-    print_mesh_edges_to_csv(output_file, output_directory + 'line_vertices.csv')
+    print_mesh_edges_to_csv(output_file, output_directory + 'edges.csv')
 
     gmsh.clear()
     geometry.__exit__()
@@ -1645,7 +1645,7 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory_slash, "vertices.csv"))
 
     # print the mesh lines to csv fie
-    print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory_slash, "line_vertices.csv"))
+    print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory_slash, "edges.csv"))
 
 
 
