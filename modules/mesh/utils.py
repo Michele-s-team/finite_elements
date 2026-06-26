@@ -1576,21 +1576,21 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     output_directory_slash = io.add_trailing_slash(output_directory)
 
     for component in components:
-        write_mesh_components(mesh_file, output_directory_slash + component + "_mesh.xdmf", component, prune_z)
+        write_mesh_components(mesh_file, os.path.join(output_directory_slash, component + "_mesh.xdmf"), component, prune_z)
 
     # print  mesh vertices to csv file
     mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
-    io.print_mesh_vertices_to_csv(mesh, output_directory_slash + "vertices.csv")
+    io.print_mesh_vertices_to_csv(mesh, os.path.join(output_directory_slash, "vertices.csv"))
 
     # print the mesh lines to csv fie
-    print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
+    print_mesh_lines_to_csv(mesh_file, os.path.join(output_directory_slash, "line_vertices.csv"))
         
     if mesh.topology().dim() > 1:
         # the mesh has dimension > 1 -> print the mesh triangles to csv
-        print_mesh_triangles_to_csv(mesh_file, output_directory_slash + "triangles.csv")
+        print_mesh_triangles_to_csv(mesh_file, os.path.join(output_directory_slash, "triangles.csv"))
 
     # print mesh metadata
-    io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
+    io.write_parameters_to_csv_file(os.path.join(output_directory_slash, "mesh_metadata.csv"), parameters)
 
 
 '''
