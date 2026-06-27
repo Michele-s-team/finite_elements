@@ -31,11 +31,6 @@ mesh_file = output_directory + "mesh.msh"
 metadata = rpam.parameters.copy()
 metadata['file_format'] = 'xdmf'
 
-volume_id = 1
-surface_id = 2
-line_id = 3
-
-
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
@@ -53,14 +48,14 @@ model.synchronize()
 # tag 3d objects
 volumes = gmsh.model.getEntities(dim=3)
 for volume in volumes:
-    gmsh.model.addPhysicalGroup(3, [volume[1]], volume_id)  # Tag 1 for volume
-    gmsh.model.setPhysicalName(3, volume_id, "volume")
+    gmsh.model.addPhysicalGroup(3, [volume[1]], rpam.parameters['volume_id'])  # Tag 1 for volume
+    gmsh.model.setPhysicalName(3, rpam.parameters['volume_id'], "volume")
 
 # tag 2d objects
 boundary_dimension = 2  # for facets in 3D
 boundaries = gmsh.model.getBoundary(volumes, oriented=False)
-gmsh.model.addPhysicalGroup(boundary_dimension, [boundary[1] for boundary in boundaries], surface_id)  # Tag 1 for volume
-gmsh.model.setPhysicalName(boundary_dimension, surface_id, "surface")
+gmsh.model.addPhysicalGroup(boundary_dimension, [boundary[1] for boundary in boundaries], rpam.parameters['surface_id'])  # Tag 1 for volume
+gmsh.model.setPhysicalName(boundary_dimension, rpam.parameters['surface_id'], "surface")
 
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
