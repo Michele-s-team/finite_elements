@@ -15,8 +15,6 @@ import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg
 
-volume_id = 1
-surface_id = 2
 
 # read the tetrahedra
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
@@ -33,8 +31,8 @@ boundary_mesh = BoundaryMesh(lmsh.mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
     xdmf.write(boundary_mesh)
 
-dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
-ds = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=surface_id)  # surface measure
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=lmsh.parameters['volume_id'])  # volume measure
+ds = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['surface_id'])  # surface measure
 # dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
 
