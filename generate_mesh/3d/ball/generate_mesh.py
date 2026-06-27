@@ -47,15 +47,14 @@ model.synchronize()
 
 # tag 3d objects
 volumes = gmsh.model.getEntities(dim=3)
-for volume in volumes:
-    gmsh.model.addPhysicalGroup(3, [volume[1]], rpam.parameters['volume_id'])  # Tag 1 for volume
-    gmsh.model.setPhysicalName(3, rpam.parameters['volume_id'], "volume")
+
+msh.tag_physical_object(volumes,  rpam.parameters['volume_id'], gmsh.model, "volume")
+
 
 # tag 2d objects
-boundary_dimension = 2  # for facets in 3D
 boundaries = gmsh.model.getBoundary(volumes, oriented=False)
-gmsh.model.addPhysicalGroup(boundary_dimension, [boundary[1] for boundary in boundaries], rpam.parameters['surface_id'])  # Tag 1 for volume
-gmsh.model.setPhysicalName(boundary_dimension, rpam.parameters['surface_id'], "surface")
+
+msh.tag_physical_object(boundaries, rpam.parameters['surface_id'], gmsh.model, "surface")
 
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
