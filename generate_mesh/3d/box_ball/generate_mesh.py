@@ -40,17 +40,6 @@ mesh_file =output_directory + "mesh.msh"
 
 gmsh.model.add("my model")
 
-
-volume_id = 1
-boundary_le_id = 2
-boundary_ri_id = 3
-boundary_to_id = 4
-boundary_bo_id = 5
-boundary_fr_id = 6
-boundary_ba_id = 7
-boundary_sphere_id = 8
-
-
 channel = gmsh.model.occ.addBox(0, 0, 0, rpam.parameters["L"][0], rpam.parameters["L"][1], rpam.parameters["L"][2])
 sphere = gmsh.model.occ.addSphere(rpam.parameters["c_r"][0], rpam.parameters["c_r"][1], rpam.parameters["c_r"][2], rpam.parameters["r"])
 fluid = gmsh.model.occ.cut([(3, channel)], [(3, sphere)])
@@ -60,8 +49,8 @@ volumes = gmsh.model.getEntities(dim=3)
 
 assert volumes == fluid[0]
 # these is is the subdomain_id with which the volume [box-sphere] will be read in read_3dmesh_box_ball.py
-gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], volume_id)
-gmsh.model.setPhysicalName(volumes[0][0], volume_id, "volume")
+gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], rpam.parameters['volume_id'])
+gmsh.model.setPhysicalName(volumes[0][0], rpam.parameters['volume_id'], "volume")
 
 surfaces = gmsh.model.occ.getEntities(dim=2)
 
@@ -74,34 +63,34 @@ for surface in surfaces:
 
     if np.isclose(center_of_mass[0], 0):
         # the x coordinate of the center of mass is close to  0 -> I am on boundary_l
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_le_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_le_id'], "boundary_le")
 
     if np.isclose(center_of_mass[0], rpam.parameters["L"][0]):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_ri_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_ri_id'], "boundary_ri")
 
     if np.isclose(center_of_mass[1], 0):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_bo_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_bo_id'], "boundary_bo")
 
     if np.isclose(center_of_mass[1], rpam.parameters["L"][1]):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_to_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_to_id'], "boundary_to")
 
     if np.isclose(center_of_mass[2], 0):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_ba_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_ba_id'], "boundary_ba")
 
     if np.isclose(center_of_mass[2], rpam.parameters["L"][2]):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_fr_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_fr_id'], "boundary_fr")
 
     if (np.allclose(center_of_mass, rpam.parameters["c_r"])):
         # the center of mass is rpam.parameters["c_r"] -> the surface under consideration is the sphere
         obstacles.append(surface[1])  # Save the tag of the sphere surface
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_sphere_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_sphere_id, "sphere")
+        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], rpam.parameters['boundary_sphere_id'])
+        gmsh.model.setPhysicalName(surface[0], rpam.parameters['boundary_sphere_id'], "sphere")
 
 # set the resolution close to the obstacle
 distance = gmsh.model.mesh.field.add("Distance")
