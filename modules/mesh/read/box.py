@@ -14,13 +14,6 @@ import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg
 
-volume_id = 1
-boundary_le_id = 2
-boundary_ri_id = 3
-boundary_to_id = 4
-boundary_bo_id = 5
-boundary_fr_id = 6
-boundary_ba_id = 7
 
 # read the tetrahedra
 cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), (rarg.args.input_directory) + "/tetra_mesh.xdmf")
@@ -36,14 +29,14 @@ boundary_mesh = BoundaryMesh(lmsh.mesh, "exterior")
 with XDMFFile("solution/boundary_mesh.xdmf") as xdmf:
     xdmf.write(boundary_mesh)
 
-dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=volume_id)  # volume measure
+dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=lmsh.parameters['volume_id'])  # volume measure
 
-ds_le = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_le_id)
-ds_ri = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_ri_id)
-ds_to = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_to_id)
-ds_bo = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_bo_id)
-ds_fr = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_fr_id)
-ds_ba = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=boundary_ba_id)
+ds_le = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_le_id'])
+ds_ri = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_ri_id'])
+ds_to = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_to_id'])
+ds_bo = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_bo_id'])
+ds_fr = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_fr_id'])
+ds_ba = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_ba_id'])
 
 ds_leri = ds_le + ds_ri
 ds_tobo = ds_to + ds_bo
