@@ -37,13 +37,6 @@ mesh_file = output_directory + "mesh.msh"
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
-volume_id = 1
-boundary_le_id = 2
-boundary_ri_id = 3
-boundary_to_id = 4
-boundary_bo_id = 5
-boundary_fr_id = 6
-boundary_ba_id = 7
 
 box = model.add_box([0, 0, 0], rpam.parameters["L"], mesh_size=rpam.parameters["resolution"])
 
@@ -52,8 +45,8 @@ model.synchronize()
 # tag 3d objects
 volumes = gmsh.model.getEntities(dim=3)
 for volume in volumes:
-    gmsh.model.addPhysicalGroup(3, [volume[1]], volume_id)  # Tag 1 for volume
-    gmsh.model.setPhysicalName(3, volume_id, "volume")
+    gmsh.model.addPhysicalGroup(3, [volume[1]], rpam.parameters['volume_id'])  # Tag 1 for volume
+    gmsh.model.setPhysicalName(3, rpam.parameters['volume_id'], "volume")
 
 # tag 2d objects
 surfaces = gmsh.model.occ.getEntities(dim=2)
@@ -63,29 +56,23 @@ for surface in surfaces:
     center_of_mass = gmsh.model.occ.getCenterOfMass(surface[0], surface[1])
 
     if np.isclose(center_of_mass[0], 0):
-        # the x coordinate of the center of mass is close to  0 -> I am on boundary_l
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_le_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_le_id, "boundary_le")
+        # the x coordinate of the center of mass is close to  0 -> I am on boundary_
+        msh.tag_physical_object(surface, rpam.parameters['boundary_le_id'], gmsh.model, "boundary_le")
 
     if np.isclose(center_of_mass[0], rpam.parameters["L"][0]):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ri_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_ri_id, "boundary_ri")
+        msh.tag_physical_object(surface, rpam.parameters['boundary_ri_id'], gmsh.model, "boundary_ri")
 
     if np.isclose(center_of_mass[1], 0):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_bo_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_bo_id, "boundary_bo")
+        msh.tag_physical_object(surface, rpam.parameters['boundary_bo_id'], gmsh.model, "boundary_bo")
 
     if np.isclose(center_of_mass[1], rpam.parameters["L"][1]):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_to_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_to_id, "boundary_to")
+        msh.tag_physical_object(surface, rpam.parameters['boundary_to_id'], gmsh.model, "boundary_to")
 
     if np.isclose(center_of_mass[2], 0):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_ba_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_ba_id, "boundary_ba")
+        msh.tag_physical_object(surface, rpam.parameters['boundary_ba_id'], gmsh.model, "boundary_ba")
 
     if np.isclose(center_of_mass[2], rpam.parameters["L"][2]):
-        gmsh.model.addPhysicalGroup(surface[0], [surface[1]], boundary_fr_id)
-        gmsh.model.setPhysicalName(surface[0], boundary_fr_id, "boundary_fr")
+        msh.tag_physical_object(surface, rpam.parameters['boundary_fr_id'], gmsh.model, "boundary_fr")
 
 geometry.generate_mesh(dim=3)
 gmsh.write(mesh_file)
