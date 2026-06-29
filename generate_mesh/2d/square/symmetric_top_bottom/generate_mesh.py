@@ -86,7 +86,7 @@ model.add_physical(half_rectangle_circle_lines[5:], "c")
 geometry.generate_mesh(dim=2)
 gmsh.write(half_mesh_msh_file)
 
-msh.print_mesh_lines_to_csv(half_mesh_msh_file, output_dir + 'line_vertices.csv')
+msh.print_mesh_edges_to_csv(half_mesh_msh_file, output_dir + 'edges.csv')
 
 gmsh.clear()
 geometry.__exit__()

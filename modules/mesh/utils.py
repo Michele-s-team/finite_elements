@@ -598,64 +598,198 @@ def difference_on_boundary_circle(f, g, r, R, c):
 
 
 '''
-write to csv file 'outfile' the coordinates of the start and end vertices which define the lines of the triangles of a 2d mesh stored in the .msh file 'infile'
-the vertices are written in the format
-edge1_start[0], edge1_start[1], edge1_start[2], edge1_end[0], edge1_end[1], edge1_end[2]
-edge2_start[0], edge2_start[1], edge2_start[2], edge2_end[0], edge2_end[1], edge2_end[2]
-...
+NOTE: This method is different from input_output.print_mesh_vertices_to_csv. 
+
+print the mesh vertices tags and coordinates to csv file
+Input values: 
+    - `infile`: full path of the input msh file
+    - `outfile`: full path of the output csv file
+Returnv alues: 
+    The output csv file is
+    tag,:0,:1,:2
+    tag_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord
+    tag_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord
+    ...
+
+    The tag convention is the same used in mesh.utils.print_mesh_edges_to_csv
 '''
 
+def print_mesh_vertices_to_csv(infile, outfile):
 
-def print_mesh_lines_to_csv(infile, outfile):
     # open the .msh file
     gmsh.open(infile)
 
-    # get the list of components with dimension 2 from the mesh (triangles)
-    triangles = gmsh.model.mesh.getElements(dim=2)
-    # print( "triangles = ", triangles )
+    # create the path for the csv file if it does not exist
+    os.makedirs(os.path.dirname(outfile), exist_ok=True)
 
     # construct a map which, given the tag of a node, gives its coordinates
     node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    nodes = [[node_tags[i], list(node_coords[3 * i: 3 * (i + 1)])] for i in range(len(node_tags))]
+
+    # sort nodes in increasing order of `tag`
+    nodes.sort(key=lambda n: n[0])      
+
+
+    csvfile = open(outfile, "w")
+    print(f"tag,:0,:1,:2", file=csvfile)
+
+    for node in nodes:
+
+        print(f"{node[0]},{node[1][0]},{node[1][1]},{node[1][2]}", file=csvfile)
+
+    csvfile.close()
+
+
+
+
+'''
+write to csv file 'outfile' the coordinates of the start and end vertices which define the lines (edges) of a mesh
+
+Input values: 
+    - 'infile': the .msh file where the mesh is stored
+    - 'outfile': the .csv file where the edges will be stored, in the format
+
+    p_1,p_2
+    id_p_1_edge_0,id_p_2_edge_0
+    id_p_1_edge_1,id_p_2_edge_1
+    ...
+'''
+
+
+def print_mesh_edges_to_csv(infile, outfile):
+
+    # open the .msh file
+    gmsh.open(infile)
+
+    mesh_dimension = gmsh.model.getDimension()   # highest entity dimension present
+
+    '''
+    get the list of components with dimension equal to the mesh dimension: 
+        - for a 1d mesh `components` are edges
+        - for a 2d mesh `components` are triangles
+        - for a 3d mesh `components` are tetrahedre
+    ''' 
+    components = gmsh.model.mesh.getElements(dim=mesh_dimension)
+
+    # construct a map which, given the tag of a node, gives its coordinates
+    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
     # print( "node map = ", node_map )
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
     edges = set()
 
-    # loop over all triangle nodes
-    triangle_nodes = triangles[2][0] if len(triangles[2]) > 0 else []
-    for i in range(0, len(triangle_nodes), 3):
-        # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
-        pair_12 = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1]]))
-        pair_23 = tuple(sorted([triangle_nodes[i + 1], triangle_nodes[i + 2]]))
-        pair_31 = tuple(sorted([triangle_nodes[i + 2], triangle_nodes[i]]))
+    if mesh_dimension == 1: 
 
-        # this pushes back the elements pair_12, pair_23, pair_31 to edges
-        edges.update([pair_12, pair_23, pair_31])
-        # print( f"pair_12 = {pair_12} pair_23 = {pair_23} pair_31 = {pair_31}" )
+        # check that mesh components are segments
+        if list(components[0]) != [1]:
+            print(f"{col.Fore.RED}Error: expected linear lines (type 1), got {list(components[0])}{col.Style.RESET_ALL}")
+
+        '''
+        loop over all edge nodes
+
+        here `component_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
+        
+            [10,11, 11,13]
+            └ edge 1 ┘ └ edge 2 ┘
+        '''
+        component_nodes = components[2][0] if len(components[2]) > 0 else []
+
+        for i in range(0, len(component_nodes), 2):
+            
+            # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
+            pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
+  
+            # this pushes back the elements pair_12 to edges
+            edges.update([pair_12])
+
+    elif mesh_dimension == 2:
+
+        # check that the mesh components are  triangles 
+        if list(components[0]) != [2]:
+            print(f"{col.Fore.RED}Error: expected linear triangles (type 2), got {list(components[0])}{col.Style.RESET_ALL}")
+            
+        '''
+        loop over all triangle nodes
+
+        here `component_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
+        
+            [10,11,12, 11,13,12]
+            └ tri 1 ┘ └ tri 2 ┘
+        '''
+        component_nodes = components[2][0] if len(components[2]) > 0 else []
+
+        for i in range(0, len(component_nodes), 3):
+            # store into pair_12 = [ID_1, ID_2] the IDs of the vertices which lie at the extremities of the line in the triangle, and similarly for pair_23, pair_31
+            pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
+            pair_23 = tuple(sorted([component_nodes[i + 1], component_nodes[i + 2]]))
+            pair_31 = tuple(sorted([component_nodes[i + 2], component_nodes[i]]))
+
+            # this pushes back the elements pair_12, pair_23, pair_31 to edges
+            edges.update([pair_12, pair_23, pair_31])
+
+    elif mesh_dimension == 3:
+
+        # check that the mesh copmonents are tetrahedra
+        if list(components[0]) != [4]:
+            print(f"{col.Fore.RED}Error: expected linear tetrahedra (type 4), got {list(components[0])}{col.Style.RESET_ALL}")
+
+
+        '''
+        loop over all tetrahedron nodes
+
+        here `component_nodes` is, for example [array([10, 11, 12, 14, 11, 13, 12, 10])], where 
+        
+            [10,11,12,14, 11,13,12,10]
+            └ tetra 1 ┘ └ tetra 2 ┘
+        '''
+
+
+        component_nodes = components[2][0] if len(components[2]) > 0 else []
+
+        for i in range(0, len(component_nodes), 4):
+
+            pair_12 = tuple(sorted([component_nodes[i], component_nodes[i + 1]]))
+            pair_23 = tuple(sorted([component_nodes[i + 1], component_nodes[i + 2]]))
+            pair_31 = tuple(sorted([component_nodes[i + 2], component_nodes[i]]))
+
+            pair_41 = tuple(sorted([component_nodes[i + 3], component_nodes[i]]))
+            pair_42 = tuple(sorted([component_nodes[i + 3], component_nodes[i + 1]]))
+            pair_43 = tuple(sorted([component_nodes[i + 3], component_nodes[i + 2]]))
+
+
+            # this pushes back the elements pair_12, pair_23, pair_31 to edges
+            edges.update([pair_12, pair_23, pair_31, pair_41, pair_42, pair_43])
+
 
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
-    print(f"\"start:0\",\"start:1\",\"start:2\",\"end:0\",\"end:1\",\"end:2\"", file=csvfile)
+    print(f"p_1,p_2", file=csvfile)
     for edge in edges:
-        # apply node_map to obtain the coordinates of the starting vertex in edge from their IDs, and similarly for p_end
-        p_start = node_map[edge[0]]
-        p_end = node_map[edge[1]]
-        # print( f"\tEdge from {edge[0]} to {edge[1]}: p_start = ({p_start[0]}, {p_start[1]}, {p_start[2]}), "p_end = ({p_end[0]}, {p_end[1]}, {p_end[2]})" )
-        print(f"{p_start[0]}, {p_start[1]}, {p_start[2]},{p_end[0]}, {p_end[1]}, {p_end[2]}", file=csvfile)
+
+        print(f"{edge[0]},{edge[1]}", file=csvfile)
 
     csvfile.close()
 
 
 '''
-print the mesh triangles to csv file. The mesh triangles will be stored in a csvfile in columns, in the format "p_1:0,p_1:1,p_1:2,p_2:0,p_2:1,p_2:2", where p_1, p_2 and p_3 are the vertices of the triangle, and p_1:0 is the x coordinate of p_1, p_1:1 the y coordinate of p_1, ...
+print the mesh triangles to csv file
 
-* Input values: 
+Input values: 
     - 'infile': the .msh file from which the mesh will be read
     - 'outfile': the path, name and extension of the csv file where the triangles will be stored 
+
+    the .csv file where the edges will be stored, in the format
+
+    p_1,p_2,p_3
+    id_p_1_triangle_0,id_p_2_triangle_0,id_p_3_triangle_0
+    id_p_1_triangle_1,id_p_2_triangle_1,id_p_3_triangle_1
+    ...
+    
 '''
 def print_mesh_triangles_to_csv(infile, outfile):
+
     # open the .msh file
     gmsh.open(infile)
 
@@ -663,37 +797,104 @@ def print_mesh_triangles_to_csv(infile, outfile):
     triangles = gmsh.model.mesh.getElements(dim=2)
 
     # construct a map which, given the tag of a node, gives its coordinates
-    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
+    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
     triplets = set()
 
-    # loop over all triangle nodes
+
+    '''
+    loop over all triangle nodes
+
+    here `triangle_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
+    
+        [10,11,12, 11,13,12]
+        └ tri 1 ┘ └ tri 2 ┘
+    '''
     triangle_nodes = triangles[2][0] if len(triangles[2]) > 0 else []
+    
+
     for i in range(0, len(triangle_nodes), 3):
+
         # store into triplet = [ID_1, ID_2, ID_3] the IDs of the vertices which form the triangle
         triplet = tuple(sorted([triangle_nodes[i], triangle_nodes[i + 1], triangle_nodes[i+2]]))
         
         # this pushes back the triplet to triplets
         triplets.update([triplet])
         
-    #print(f'triplets = {triplets}')
-
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"\"p_1:0\",\"p_1:1\",\"p_1:2\",\"p_2:0\",\"p_2:1\",\"p_2:2\",\"p_3:0\",\"p_3:1\",\"p_3:2\"", file=csvfile)
+    print(f"p_1,p_2,p_3", file=csvfile)
     for triplet in triplets:
-        # apply node_map to obtain the coordinates of the  vertices in triplet from their IDs
-        p_1 = node_map[triplet[0]]
-        p_2 = node_map[triplet[1]]
-        p_3 = node_map[triplet[2]]
-        print(f"{p_1[0]}, {p_1[1]}, {p_1[2]}, {p_2[0]}, {p_2[1]}, {p_2[2]}, {p_3[0]}, {p_3[1]}, {p_3[2]}", file=csvfile)
+
+        print(f"{triplet[0]},{triplet[1]},{triplet[2]}", file=csvfile)
 
     csvfile.close()
     
+
+
+
+'''
+print the mesh tetrahedra to csv file
+
+Input values: 
+    - 'infile': the .msh file from which the mesh will be read
+    - 'outfile': the path, name and extension of the csv file where the triangles will be stored 
+
+    the .csv file where the tetrahedra will be stored, in the format
+
+    p_1,p_2,p_3,p_4
+    id_p_1_tetrahedron_0,id_p_2_tetrahedron_0,id_p_3_tetrahedron_0,id_p_4_tetrahedron_0
+    id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1
+    ...
+    
+'''
+def print_mesh_tetrahedra_to_csv(infile, outfile):
+
+    # open the .msh file
+    gmsh.open(infile)
+
+    # get the list of components with dimension 2 from the mesh (triangles)
+    tetrahedra = gmsh.model.mesh.getElements(dim=3)
+
+    # Store unique edges from the triangle elements
+    # initialize a 'list' of unique elements, this sets the list to empty
+    quartets = set()
+
+    '''
+    loop over all tetrahedra nodes
+
+    here `tetrahedra_nodes` is, for example [array([10, 11, 12, 13, 11, 13, 12, 10])], where 
+    
+        [10,11,12,13, 11,13,12,10]
+        └ tetra 1  ┘   └ tetra 2 ┘
+    '''
+    tetrahedra_nodes = tetrahedra[2][0] if len(tetrahedra[2]) > 0 else []
+
+    
+    for i in range(0, len(tetrahedra_nodes), 4):
+
+        # store into quartet = [ID_1, ID_2, ID_3, ID_4] the IDs of the vertices which form the triangle
+        quartet = tuple(sorted([tetrahedra_nodes[i], tetrahedra_nodes[i + 1], tetrahedra_nodes[i + 2], tetrahedra_nodes[i + 3]]))
+        
+        # this pushes back the triplet to triplets
+        quartets.update([quartet])
+        
+    
+    # loop through the triplets added before and write the vertices of each triplet to file
+    csvfile = open(outfile, "w")
+    print(f"p_1,p_2,p_3,p_4", file=csvfile)
+    for quartet in quartets:
+
+        print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]}", file=csvfile)
+
+    csvfile.close()
+
+    
+
 
 
 '''
@@ -1372,7 +1573,7 @@ Input values:
 - 'c_r', 'c_R' the centers of the rings
 - 'theta': the angular width of the slice, in radians
 - 'resolution': the mesh resolution
-- 'output_file': the .msh file where the mesh will be stored. The mesh lines will be written in the same folder in line_vertices.csv file
+- 'output_file': the .msh file where the mesh will be stored. The mesh lines will be written in the same folder in edges.csv file
 
 Example of usage:
     msh.generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, mesh_slice_file)
@@ -1442,7 +1643,7 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
     geometry.generate_mesh(dim=2)
     gmsh.write(output_file)
 
-    print_mesh_lines_to_csv(output_file, output_directory + 'line_vertices.csv')
+    print_mesh_edges_to_csv(output_file, output_directory + 'edges.csv')
 
     gmsh.clear()
     geometry.__exit__()
@@ -1481,12 +1682,12 @@ def deform_mesh(mesh, u):
 '''
 full write of mesh data to file
 Input values: 
-- 'mesh_file': the .msh file where the mesh is stored
-- 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']. 
-    They must be inserted in decreasing order of dimension of the component: for example 'triangle' before 'vertex'
-- 'parameters': a dictionary of mesh parameters
-- 'output_directory': the path where the mesh info will be written
-- 'prune_z': whether the z component should be pruned (true) or not (false)
+    - 'mesh_file': the .msh file where the mesh is stored
+    - 'components': a list of the components of the mesh to be written, e.g., ['tetra', 'triangle', 'line', 'vertex']. 
+        They must be inserted in decreasing order of dimension of the component: for example 'triangle' before 'vertex'
+    - 'parameters': a dictionary of mesh parameters
+    - 'output_directory': the path where the mesh info will be written
+    - 'prune_z': whether the z component should be pruned (true) or not (false)
 
 Example of usage:
     msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], rpam.parameters, output_directory, True)
@@ -1497,21 +1698,33 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     output_directory_slash = io.add_trailing_slash(output_directory)
 
     for component in components:
-        write_mesh_components(mesh_file, output_directory_slash + component + "_mesh.xdmf", component, prune_z)
+        write_mesh_components(mesh_file, os.path.join(output_directory_slash, component + "_mesh.xdmf"), component, prune_z)
 
     # print  mesh vertices to csv file
     mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
-    io.print_mesh_vertices_to_csv(mesh, output_directory_slash + "vertices.csv")
 
-    # print the mesh lines to csv fie
-    print_mesh_lines_to_csv(mesh_file, output_directory_slash + "line_vertices.csv")
-        
+
+    # print the mesh vertices to csv fie
+    print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory_slash, "vertices.csv"))
+
+    # print the mesh edges to csv fie
+    print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory_slash, "edges.csv"))
+
     if mesh.topology().dim() > 1:
+        
         # the mesh has dimension > 1 -> print the mesh triangles to csv
-        print_mesh_triangles_to_csv(mesh_file, output_directory_slash + "triangles.csv")
+        print_mesh_triangles_to_csv(mesh_file, os.path.join(output_directory_slash, "triangles.csv"))
+
+        if mesh.topology().dim() > 2: 
+
+            # the mesh has dimension > 2 -> print the mesh tetrahedra to csv
+            print_mesh_tetrahedra_to_csv(mesh_file, os.path.join(output_directory_slash, "tetrahedra.csv"))
+
+
+
 
     # print mesh metadata
-    io.write_parameters_to_csv_file(output_directory_slash + "mesh_metadata.csv", parameters)
+    io.write_parameters_to_csv_file(os.path.join(output_directory_slash, "mesh_metadata.csv"), parameters)
 
 
 '''

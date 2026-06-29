@@ -80,7 +80,7 @@ model.add_physical( [channel_lines[1]], "B" )
 #
 geometry.generate_mesh( dim=2 )
 gmsh.write( mesh_file )
-msh.print_mesh_lines_to_csv( mesh_file, output_directory + 'line_vertices.csv' )
+msh.print_mesh_edges_to_csv( mesh_file, output_directory + 'edges.csv' )
 
 gmsh.clear()
 geometry.__exit__()

@@ -86,7 +86,7 @@ model.add_physical([unit_lines[1]], 'b')
 geometry.generate_mesh(dim=2)
 gmsh.write(unit_mesh_msh_file)
 
-msh.print_mesh_lines_to_csv(unit_mesh_msh_file, unit_mesh_dir + 'line_vertices.csv')
+msh.print_mesh_edges_to_csv(unit_mesh_msh_file, unit_mesh_dir + 'edges.csv')
 
 gmsh.clear()
 geometry.__exit__()

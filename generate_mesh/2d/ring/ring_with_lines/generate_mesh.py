@@ -125,7 +125,7 @@ gmsh.model.occ.synchronize()
 gmsh.model.mesh.generate(2)
 gmsh.write(mesh_file)
 
-msh.print_mesh_lines_to_csv(mesh_file, output_directory + 'line_vertices.csv')
+msh.print_mesh_edges_to_csv(mesh_file, output_directory + 'edges.csv')
 
 mesh_from_file = meshio.read(mesh_file)
 
