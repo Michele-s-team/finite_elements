@@ -49,8 +49,7 @@ volumes = gmsh.model.getEntities(dim=3)
 
 assert volumes == fluid[0]
 # these is is the subdomain_id with which the volume [box-sphere] will be read in read_3dmesh_box_ball.py
-gmsh.model.addPhysicalGroup(volumes[0][0], [volumes[0][1]], rpam.parameters['volume_id'])
-gmsh.model.setPhysicalName(volumes[0][0], rpam.parameters['volume_id'], "volume")
+msh.tag_physical_object(volumes[0], rpam.parameters['volume_id'], gmsh.model, "volume")
 
 surfaces = gmsh.model.occ.getEntities(dim=2)
 
