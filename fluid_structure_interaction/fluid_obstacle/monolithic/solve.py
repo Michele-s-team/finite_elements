@@ -1,15 +1,13 @@
 """
-This code solves for the dynamics of the Navier Stokes equations with an elastic obstacle which is pinned on part of its boundary on a flat manifold Crank Nicholson discretization scheme, by defining all fields on discontinuous spaces and using the monolithic approach
-
-NOTE: here decompose_u assumes that -pi/2 < theta < pi/2
+This code solves for the dynamics of the Navier Stokes equations with a fluid obstacle on a flat manifold, by defining all fields on discontinuous spaces and using the monolithic approach
 
 run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
 
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/elastic_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_b $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
+
 """
 
 import colorama as col
