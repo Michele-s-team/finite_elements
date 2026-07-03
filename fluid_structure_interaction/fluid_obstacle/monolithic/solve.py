@@ -76,28 +76,6 @@ PETScOptions.set('snes_max_funcs', 1000000)
 
 
 
-
-'''
-# test phi_0_expression() - start
-import decompose_u as dec_u
-
-mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
-
-shape_coordinates = []
-for i in range(len(mesh_0_parameters["shape_coordinates"])):
-    # run through all coordinates of the nodes of the boundary
-
-    coordinate = mesh_0_parameters["shape_coordinates"][i]
-
-    print(f'coordinate = {coordinate}')
-        
-    shape_coordinates.append(dec_u.phi_0_expression()(coordinate))
-
-sys.exit(1)
-# test phi_0_expression() - end
-'''
-
-
 print(f'Generating initial mesh ...')
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
