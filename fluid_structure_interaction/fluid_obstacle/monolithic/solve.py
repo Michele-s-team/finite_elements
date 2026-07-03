@@ -101,59 +101,6 @@ import decompose_u as dec_u
 import variational_problem_u_0 as vp_u_0
 
 
-
-'''
-# test patch fields - start
-print(f'**** Testing patch ... ')
-
-import solution_paths as solpath
-
-
-Q_sigma = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 4, shape=(2, 3))
-sigma = Function(Q_sigma)
-
-class sigma_shape_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = x[0]+x[1]
-        values[1] = x[0]-2 * x[1]
-        values[2] = x[0]+3 *x[1]
-        values[3] = x[0]+x[1]**2
-        values[4] = x[0]+x[1]**3
-        values[5] = x[0]+x[1]**4
-
-    def value_shape(self):
-        return (2, 3)
-    
-class sigma_square_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = x[0]-x[1]
-        values[1] = x[0]-4 * x[1]
-        values[2] = x[0]-3 *x[1]
-        values[3] = x[0]-x[1]**2
-        values[4] = x[0]+2*x[1]**3
-        values[5] = x[0]-2*x[1]**4+1
-
-    def value_shape(self):
-        return (2, 3)
-
-msh.interpolate_dg(sigma, sigma_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
-msh.interpolate_dg(sigma, sigma_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
-
-io.full_print(sigma, 'sigma_not_patched', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
-
-msh.overwrite_interface_dofs(sigma, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
-
-io.full_print(sigma, 'sigma_patched', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
-
-print(f'**** ... done.')
-# test patch fields - end
-
-'''
-
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 # 1. store metadata
