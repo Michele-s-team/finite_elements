@@ -11,9 +11,9 @@ rmsh = importlib.import_module(swi.rmsh)
 the variables for the problem are
     - `v_n`, `v_n_1` : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
-    - 'c_n' = \textrm{c}^n_notes
 a   - 'u_n': u^n in notes
     - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
+    - 'c_n' = \textrm{c}^n_notes
  ll fields are defined from a mixed function space
 '''
 
@@ -23,11 +23,15 @@ a   - 'u_n': u^n in notes
 D_v_n = VectorElement('DG', triangle, 2)
 D_sigma_n = FiniteElement('DG', triangle, 1)
 
-#1.2 elastic body and mesh
-D_u = VectorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
-D_u_dot = VectorElement('DG', triangle, rpam.parameters['u_dot_function_space_degree'])
+#1.2 mesh
+D_u_n = VectorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
+D_u_dot_n = VectorElement('DG', triangle, rpam.parameters['u_dot_function_space_degree'])
 
-element = MixedElement([D_v_n, D_sigma_n, D_u, D_u_dot])
+#1.3 concentration
+D_c_n = FiniteElement('DG', triangle, rpam.parameters['c_function_space_degree'])
+
+
+element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n])
 
 
 
@@ -43,16 +47,16 @@ Q_sigma_n = Q.sub(1).collapse()
 Q_u_n = Q.sub(2).collapse()
 Q_u_dot_n = Q.sub(3).collapse()
 
-Q_rho_el = FunctionSpace(lmsh.mesh[0], 'DG', 1)
-Q_det_F = FunctionSpace(lmsh.mesh[0], 'DG', 1)
-
+Q_c_n = Q.sub(4).collapse()
 
 
 #3 define fields
 
 # 3.1 psi contains all fields
 psi = Function(Q)
-v_n, sigma_n, u_n, u_dot_n = split(psi)
+v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
+
+# sign
 
 
 # 3.2 auxiliary fields
