@@ -255,16 +255,14 @@ import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 fsp = importlib.import_module(swi.fsp)
 
-sys.exit(1)
 
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
+sys.exit(1)
 vp = importlib.import_module(swi.vp)
-import decompose_u as dec_u
-import variational_problem_u_0 as vp_u_0
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
