@@ -15,8 +15,6 @@ the variables for the problem are
     - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
     - 'c_n' = \textrm{c}^n_notes
 
-    - `rho_circle` = `rho_circle`_notes
-    - `rho_square` = `rho_square`_notes
     - `v_lrb` = g_notes
     - `f_circle` = {\textrm{f}^circle}_notes
     - `f_square` = {\textrm{f}^square}_notes
@@ -55,7 +53,7 @@ Q_u_dot_n = Q.sub(3).collapse()
 Q_c_n = Q.sub(4).collapse()
 
 # 2.3 auxiliary function spaces
-Q_rho = FunctionSpace(lmsh.mesh[0], 'DG', 1)
+Q_f = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['f_function_space_degree'])
 
 
 
@@ -71,9 +69,6 @@ v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
 # 3.2 auxiliary fields
 v_n_1 = Function(Q_v_n)
 u_n_1 = Function(Q_u_n)
-
-rho_circle = Function(Q_rho)
-rho_square = Function(Q_rho)
 
 # 3.2.1 fields for BCs
 

@@ -36,23 +36,6 @@ class v_lrb_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-        
-class rho_circle_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = rpam.parameters['rho_circle']
-
-    def value_shape(self):
-        return (1,)
-    
-
-class rho_square_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = rpam.parameters['rho_square']
-
-    def value_shape(self):
-        return (1,)
     
 '''    
 class f_expression(UserExpression):
@@ -68,9 +51,6 @@ msh.interpolate_dg(fsp.f, f_expression())
 '''
 
 msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
-
-msh.interpolate_dg(fsp.rho_circle, rho_circle_expression())
-msh.interpolate_dg(fsp.rho_square, rho_square_expression())
 
 
 
