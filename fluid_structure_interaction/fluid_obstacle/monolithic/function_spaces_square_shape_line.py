@@ -63,6 +63,10 @@ v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
 v_n_1 = Function(Q_v_n)
 u_n_1 = Function(Q_u_n)
 
+# 3.2.1 fields for BCs
+
+v_lrb = Function(Q_v_n) 
+
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n = TestFunctions(Q)

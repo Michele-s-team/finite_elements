@@ -27,29 +27,29 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 
 # 1. define expressions for BCs
 
-class v_l_expression(UserExpression):
+class v_lrb_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['v_l'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        values[0] = 0.0
         values[1] = 0.0
 
     def value_shape(self):
         return (2,)
     
-class v_tb_circle_expression(UserExpression):
+        
+class rho_circle_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 0
-        values[1] = 0
+        values[0] = rpam.parameters['rho_circle']
 
     def value_shape(self):
-        return (2,)
-        
+        return (1,)
+    
 
-class rho_el_expression(UserExpression):
+class rho_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['rho_el']
+        values[0] = rpam.parameters['rho_square']
 
     def value_shape(self):
         return (1,)
@@ -67,11 +67,11 @@ class f_expression(UserExpression):
 msh.interpolate_dg(fsp.f, f_expression())
 '''
 
-msh.interpolate_dg(fsp.v_l, v_l_expression())
-msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
+msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
 
 
-msh.interpolate_dg(fsp.rho_el, rho_el_expression())
+msh.interpolate_dg(fsp.rho_circle, rho_circle_expression())
+msh.interpolate_dg(fsp.rho_square, rho_square_expression())
 
 
 
