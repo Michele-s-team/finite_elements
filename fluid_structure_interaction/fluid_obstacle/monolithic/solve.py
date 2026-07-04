@@ -91,22 +91,12 @@ print(f'... done.')
 import calculus as cal 
 import numpy as np
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 
 Q_u = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'P', 2)
 Q_dyds = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'P', 2)
 
-class dyds_Expression(UserExpression):
 
-    def eval(self, values, x):
-        s = 1 / (2 * np.pi) * cal.atan_quad([rmsh.parameters["b"] * (x[0] - rmsh.parameters["c"][0]), rmsh.parameters["a"] * (x[1] - rmsh.parameters["c"][1])])
-
-        t = cal.ellipse(rmsh.parameters["a"], rmsh.parameters["b"], rmsh.parameters["c"][:2], s)[1]
-
-        values[0] = t[0]
-        values[1] = t[1]
-
-    def value_shape(self):
-        return (2,)
 
 
 
