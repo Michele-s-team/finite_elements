@@ -254,6 +254,9 @@ io.full_print(project(bgeo.n_cur(n_ref, u, dyds), Q_u), 'n_cur', \
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 fsp = importlib.import_module(swi.fsp)
+
+sys.exit(1)
+
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)

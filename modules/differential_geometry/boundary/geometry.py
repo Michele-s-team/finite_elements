@@ -429,7 +429,7 @@ def delta_n_cur(n_ref, u, delta_u, dyds):
     return as_tensor( \
         A * n_ref[delta] * (\
             - delta_u[beta].dx(gamma) * ela.F(u)[beta, zeta] * dyds[gamma] * dyds[zeta] * ela.G(u)[delta, alpha] / B \
-            + ela.G(u)[beta, gamma] * delta_u[gamma].dx(beta) * ela.G(u)[delta, alpha] \ 
+            + ela.G(u)[beta, gamma] * delta_u[gamma].dx(beta) * ela.G(u)[delta, alpha] \
             - ela.G(u)[delta, beta] * delta_u[beta].dx(gamma) * ela.G(u)[gamma, alpha]
             ), \
         (alpha))
