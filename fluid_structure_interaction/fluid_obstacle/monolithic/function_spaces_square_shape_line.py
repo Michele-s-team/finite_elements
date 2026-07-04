@@ -12,12 +12,8 @@ the variables for the problem are
 
     - 'u_n': u^n in notes
     - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
-    - v_n, v_n_1 : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
+    -  v_n, v_n_1 : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
-
-    - 'u_0' = {u_0}_{Decomposition of deformation field}
-    - 'phi_0' = {phi_0}_{Decomposition of deformation field}
-
 all fields are defined from a mixed function space
 '''
 
