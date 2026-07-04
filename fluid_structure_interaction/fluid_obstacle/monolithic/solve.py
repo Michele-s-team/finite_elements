@@ -87,6 +87,10 @@ msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.in
 
 print(f'... done.')
 
+
+sys.exit(1)
+
+
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
