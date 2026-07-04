@@ -29,8 +29,10 @@ import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
 import mesh.utils as msh
+import physics.elasticity as ela
 
-alpha, beta, gamma, i, j, k, l = ufl.indices(7)
+
+alpha, beta, gamma, delta, i, j, k, l = ufl.indices(8)
 
 epsilon = ufl.PermutationSymbol(2)
 
@@ -389,3 +391,19 @@ def calc_tangent_cg2(mesh):
     solve(A, nh.vector(), L)
     
     return nh
+
+'''
+unit normal to a curve in the current configuration expressed in terms of the unit normal in the reference configuration
+Input values: 
+    - 'n_ref': `nu` in (71) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    - 'u': displacement field
+    - 'dyds': tangent to the curve in the reference configuration, defined as in (7) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+Return values: 
+    - 'n_alpha' as defined in (58) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    
+'''
+def n_cur(n_ref, u, dyds):
+
+    A = sqrt((dyds[alpha]*dyds[alpha]) / (ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta]))
+
+    return as_tensor(A * epsilon[alpha, beta] * ela.F(u)[beta, gamma] * epsilon[gamma, delta] * n_ref[delta], (alpha))
