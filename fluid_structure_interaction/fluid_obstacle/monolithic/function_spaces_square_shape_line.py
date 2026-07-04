@@ -11,10 +11,15 @@ rmsh = importlib.import_module(swi.rmsh)
 the variables for the problem are
     - `v_n`, `v_n_1` : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
-a   - 'u_n': u^n in notes
+   - 'u_n': u^n in notes
     - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
     - 'c_n' = \textrm{c}^n_notes
- ll fields are defined from a mixed function space
+
+    - `rho_circle` = `rho_circle`_notes
+    - `rho_square` = `rho_square`_notes
+    - `v_lrb` = g_notes
+    - `f_circle` = {\textrm{f}^circle}_notes
+    - `f_square` = {\textrm{f}^square}_notes
 '''
 
 #1 define elements 
