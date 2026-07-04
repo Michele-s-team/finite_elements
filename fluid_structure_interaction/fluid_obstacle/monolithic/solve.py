@@ -90,6 +90,7 @@ print(f'... done.')
 # test n_cur - start
 import calculus as cal 
 import constants.utils as const
+import differential_geometry.boundary.geometry as bgeo
 import numpy as np
 from scipy.optimize import brentq
 
@@ -97,6 +98,7 @@ rmsh = importlib.import_module(swi.rmsh)
 sh = importlib.import_module(swi.sh)
 import solution_paths as solpath
 
+sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
 
  
 def theta(s):
@@ -209,17 +211,38 @@ class dyds_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]
+        values[1] = -x[1]
+
+    def value_shape(self):
+        return (2,)
 
 
+Q_u = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
 Q_dyds = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
+
+u = Function(Q_u)
 dyds = Function(Q_dyds)
 
 msh.interpolate_dg(dyds, dyds_expression())
+msh.interpolate_dg(u, u_expression())
+
+
+
+n_ref = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label), rmsh.ds_mesh[0]['dS_shape'], interior=True)
 
 io.full_print(dyds, 'dyds', \
     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
+io.full_print(n_ref, 'n_ref', \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
+io.full_print(project(bgeo.n_cur(n_ref, u, dyds), Q_u), 'n_cur', \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 # test n_cur - end
 

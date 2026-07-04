@@ -330,7 +330,7 @@ def field_facet_tangent_normalized(mesh, n, measure,
 
 
 '''
-normal to a curve expressed n term of the reference and current configuration of a curve
+normal to a curve expressed in terms of the reference and current configuration of a curve
 Input values: 
     - 'ys': a two-dimensional vector for the reference curve configuration
     - 'u': a two-dimensional vector for the displacement field between current and reference configuration
