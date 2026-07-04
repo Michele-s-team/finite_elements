@@ -32,7 +32,7 @@ import mesh.utils as msh
 import physics.elasticity as ela
 
 
-alpha, beta, gamma, delta, i, j, k, l = ufl.indices(8)
+alpha, beta, gamma, delta, zeta, i, j, k, l = ufl.indices(9)
 
 epsilon = ufl.PermutationSymbol(2)
 
@@ -408,6 +408,19 @@ def n_cur(n_ref, u, dyds):
 
     return as_tensor(A * ela.G(u)[delta, alpha] * n_ref[delta], (alpha))
 
+
+'''
+variation of `n_cur` with respect to the displacement field
+Input values: 
+    - 'n_ref': `nu` in (71) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    - 'u': displacement field
+    - `delta_u`: variation of `u`
+    - 'dyds': tangent to the curve in the reference configuration, defined as in (7) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+
+Return values: 
+    delta_n_cur[alpha] = L_alpha in Eq. (164) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+'''
+
 def delta_n_cur(n_ref, u, delta_u, dyds):
 
     B = ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta]
@@ -415,8 +428,8 @@ def delta_n_cur(n_ref, u, delta_u, dyds):
 
     return as_tensor( \
         A * n_ref[delta] * (\
-            - delta_u[nu].dx(rho) * ela.F(u)[nu, sigma] * dyds[rho] * dyds[sigma] * ela.G(u)[delta, alpha] / B \
-            + ela.G(u)[kappa, lambda] * delta_u[lambda].dx(kappa) * ela.G(u)[delta, alpha] \ 
-            - ela.G(u)[delta, kappa] * delta_u[kappa].dx(lambda) * ela.G(u)[lambda, alpha]
+            - delta_u[beta].dx(gamma) * ela.F(u)[beta, zeta] * dyds[gamma] * dyds[zeta] * ela.G(u)[delta, alpha] / B \
+            + ela.G(u)[beta, gamma] * delta_u[gamma].dx(beta) * ela.G(u)[delta, alpha] \ 
+            - ela.G(u)[delta, beta] * delta_u[beta].dx(gamma) * ela.G(u)[gamma, alpha]
             ), \
         (alpha))
