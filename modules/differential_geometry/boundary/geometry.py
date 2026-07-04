@@ -399,11 +399,11 @@ Input values:
     - 'u': displacement field
     - 'dyds': tangent to the curve in the reference configuration, defined as in (7) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
 Return values: 
-    - 'n_alpha' as defined in (58) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    - 'n_alpha' as defined in (60) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
     
 '''
 def n_cur(n_ref, u, dyds):
 
-    A = sqrt((dyds[alpha]*dyds[alpha]) / (ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta]))
+    A =  - sqrt((dyds[alpha]*dyds[alpha]) / (ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta])) * ela.detF(u)
 
-    return as_tensor(A * epsilon[alpha, beta] * ela.F(u)[beta, gamma] * epsilon[gamma, delta] * n_ref[delta], (alpha))
+    return as_tensor(A * ela.G(u)[delta, alpha] * n_ref[delta], (alpha))
