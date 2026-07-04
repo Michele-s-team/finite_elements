@@ -87,6 +87,7 @@ msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.in
 
 print(f'... done.')
 
+'''
 # test n_cur - start
 import calculus as cal 
 import constants.utils as const
@@ -148,13 +149,13 @@ else:
 # 
 
 
-'''
-return the parameter `s` of the curve `y(s)` corresponding to a point `y` on the plane
-Input values: 
-    - `y`: the point in the reference configuration
-Return values: 
-    - `s`: the value of the parametric coordinate of the curve `y(s)` such that the point y(s) forms the same polar angle as `y` with respect to `c`
-'''
+
+# return the parameter `s` of the curve `y(s)` corresponding to a point `y` on the plane
+# Input values: 
+#     - `y`: the point in the reference configuration
+# Return values: 
+#     - `s`: the value of the parametric coordinate of the curve `y(s)` such that the point y(s) forms the same polar angle as `y` with respect to `c`
+
 def s_y(y):
 
     # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
@@ -245,9 +246,8 @@ io.full_print(project(bgeo.n_cur(n_ref, u, dyds), Q_u), 'n_cur', \
     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 # test n_cur - end
+'''
 
-
-sys.exit(1)
 
 
 # first load of modules
