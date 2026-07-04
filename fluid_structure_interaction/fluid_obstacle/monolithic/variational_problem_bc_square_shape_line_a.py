@@ -69,7 +69,6 @@ msh.interpolate_dg(fsp.f, f_expression())
 
 msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
 
-
 msh.interpolate_dg(fsp.rho_circle, rho_circle_expression())
 msh.interpolate_dg(fsp.rho_square, rho_square_expression())
 

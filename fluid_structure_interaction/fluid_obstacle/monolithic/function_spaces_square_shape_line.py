@@ -49,6 +49,10 @@ Q_u_dot_n = Q.sub(3).collapse()
 
 Q_c_n = Q.sub(4).collapse()
 
+# 2.3 auxiliary function spaces
+Q_rho = FunctionSpace(lmsh.mesh[0], 'DG', 1)
+
+
 
 #3 define fields
 
@@ -62,6 +66,9 @@ v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
 # 3.2 auxiliary fields
 v_n_1 = Function(Q_v_n)
 u_n_1 = Function(Q_u_n)
+
+rho_circle = Function(Q_rho)
+rho_square = Function(Q_rho)
 
 # 3.2.1 fields for BCs
 
