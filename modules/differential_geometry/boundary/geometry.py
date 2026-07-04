@@ -407,3 +407,16 @@ def n_cur(n_ref, u, dyds):
     A =  - sqrt((dyds[alpha]*dyds[alpha]) / (ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta])) * ela.detF(u)
 
     return as_tensor(A * ela.G(u)[delta, alpha] * n_ref[delta], (alpha))
+
+def delta_n_cur(n_ref, u, delta_u, dyds):
+
+    B = ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta]
+    A =  - sqrt((dyds[alpha]*dyds[alpha]) / B) * ela.detF(u)
+
+    return as_tensor( \
+        A * n_ref[delta] * (\
+            - delta_u[nu].dx(rho) * ela.F(u)[nu, sigma] * dyds[rho] * dyds[sigma] * ela.G(u)[delta, alpha] / B \
+            + ela.G(u)[kappa, lambda] * delta_u[lambda].dx(kappa) * ela.G(u)[delta, alpha] \ 
+            - ela.G(u)[delta, kappa] * delta_u[kappa].dx(lambda) * ela.G(u)[lambda, alpha]
+            ), \
+        (alpha))
