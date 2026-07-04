@@ -18,6 +18,7 @@ the variables for the problem are
     - `v_lrb` = g_notes
     - `f_circle` = {\textrm{f}^circle}_notes
     - `f_square` = {\textrm{f}^square}_notes
+    - `f` = {\textrm{f}}_notes
 '''
 
 #1 define elements 
@@ -70,8 +71,10 @@ v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
 v_n_1 = Function(Q_v_n)
 u_n_1 = Function(Q_u_n)
 
-# 3.2.1 fields for BCs
+f_circle = Function(Q_f)
+f_square = Function(Q_f)
 
+# 3.2.1 fields for BCs
 v_lrb = Function(Q_v_n) 
 
 

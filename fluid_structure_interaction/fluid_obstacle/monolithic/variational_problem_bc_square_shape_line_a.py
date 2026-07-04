@@ -56,6 +56,8 @@ class f_square_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+
 
 
 msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
