@@ -87,26 +87,24 @@ bcs = []
 # 2.1.1 v_n
 
 # natural BC imposed here
+# checked - start
 F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        # checked - start
                                         ( \
                                             (rpam.parameters['rho_circle'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
                                             + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_circle[i] ) * fsp.nu_v_n[i] \
                                             + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_circle'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
                                         ) * ela.detF(fsp.u_n)
-                                        # checked - end
                                         ,
                                         ( \
-                                            rpam.parameters['rho_fluid'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
-                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) * fsp.nu_v_n[i] \
-                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
+                                            (rpam.parameters['rho_square'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
+                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_square[i] ) * fsp.nu_v_n[i] \
+                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
                                         ) * ela.detF(fsp.u_n), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
                                 ) * rmsh.dx_mesh[0]['dx'] \
-# checked - start
         - (\
             msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_circle'])[i, j] ) \
         ) * rmsh.ds_mesh[0]['dS_I_circle'] \
