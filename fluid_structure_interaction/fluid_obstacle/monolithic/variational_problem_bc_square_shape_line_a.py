@@ -65,6 +65,18 @@ msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
 msh.interpolate_dg(fsp.f_circle, f_circle_expression())
 msh.interpolate_dg(fsp.f_square, f_square_expression())
 
+'''
+force per unit length exerted on the boundary of the circle fluid
+Input values: 
+    - `c`: concentration field
+    - `u`: displacement field
+
+Return values: 
+    - \textrm{f}_alpha in fluid-structure interaction/fluid obstacle/notes
+'''
+def f_shape(c, u):
+    
+    return as_tensor(0, (i))
 
 bcs = []
 
