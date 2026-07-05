@@ -96,7 +96,6 @@ bcs = []
 # 2.1.1 v_n
 
 # natural BC imposed here
-# checked - start
 F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
@@ -144,8 +143,8 @@ F_v_n = msh.ufl_conditional_form(
              msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_shape']
          )
 
-# checked - end
 
+# sign
 
 F_sigma_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
