@@ -149,7 +149,10 @@ F_v_n = msh.ufl_conditional_form(
 F_sigma_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        fsp.sigma_n * fsp.nu_sigma_n, 
+                                        # checked - start
+                                        ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n)
+                                        # checked - end
+                                        , 
                                         ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n),
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
