@@ -75,7 +75,7 @@ Return values:
     - \textrm{f}_alpha in fluid-structure interaction/fluid obstacle/notes
 '''
 def f_shape(c, u):
-    
+
     return as_tensor(0, (i))
 
 bcs = []
@@ -116,6 +116,9 @@ F_v_n = msh.ufl_conditional_form(
                     + f_shape(fsp.c_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label))[i] \
                 )* fsp.nu_v_n(sub_mesh_0_label)[i]
         ) * rmsh.ds_mesh[0]['dS_shape'] \
+        + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
+                    msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_shape'] \
+                ) \
 # checked - end
         - (\
             msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] ) \
