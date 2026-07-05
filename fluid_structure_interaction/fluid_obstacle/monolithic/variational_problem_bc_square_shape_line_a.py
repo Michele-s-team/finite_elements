@@ -124,6 +124,7 @@ F_v_n = msh.ufl_conditional_form(
                 bgeo.facet_normal[0](sub_mesh_1_label)[k] * ela.detF(fsp.u_n(sub_mesh_1_label)) * ela.G(fsp.u_n(sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_square'])[i, j] * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.ds_mesh[0]['dS_shape'] \
                 + bgeo.facet_normal[0][k] * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_lr'] \
                 + bgeo.facet_normal[0][k] * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_b'] \
+                + fsp.t_t[i] * fsp.nu_v_n[i] * rmsh.ds_mesh[0]['ds_t'] \
            ) \
 # checked - end
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
