@@ -37,7 +37,6 @@ class v_lrb_expression(UserExpression):
         return (2,)
     
     
-
 class f_shape_expression(UserExpression):
     def eval(self, values, x):
 
@@ -57,6 +56,7 @@ class f_square_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
+
 class t_t_expression(UserExpression):
     def eval(self, values, x):
 
@@ -65,6 +65,15 @@ class t_t_expression(UserExpression):
 
     def value_shape(self):
         return (2,)
+    
+
+class sigma_square_t_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['sigma_square_t']
+
+    def value_shape(self):
+        return (1,)
 
 
 msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
@@ -73,6 +82,7 @@ msh.interpolate_dg(fsp.f_shape, f_shape_expression())
 msh.interpolate_dg(fsp.f_square, f_square_expression())
 
 msh.interpolate_dg(fsp.t_t, t_t_expression())
+msh.interpolate_dg(fsp.sigma_square_t, sigma_square_t_expression())
 
 '''
 force per unit length exerted on the boundary of the shape fluid
