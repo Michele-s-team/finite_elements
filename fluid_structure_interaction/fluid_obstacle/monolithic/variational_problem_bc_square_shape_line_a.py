@@ -78,7 +78,12 @@ bcs = []
 F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        fsp.v_n[i] * fsp.nu_v_n[i], 
+                                        ( \
+                                            (rpam.parameters['rho_circle'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
+                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_circle[i] ) * fsp.nu_v_n[i] \
+                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_circle'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
+                                        ) * ela.detF(fsp.u_n),
+                                        # sign 
                                         ( \
                                             rpam.parameters['rho_fluid'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
                                             + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) * fsp.nu_v_n[i] \
