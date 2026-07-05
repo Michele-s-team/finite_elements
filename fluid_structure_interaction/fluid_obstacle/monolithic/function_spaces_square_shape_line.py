@@ -15,7 +15,7 @@ the variables for the problem are
     - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
     - 'c_n' = \textrm{c}^n_notes
 
-    - `v_lrb` = g_notes
+    - `v_lrb` = {g^n}_notes
     - `f_shape` = {\textrm{f}^circle}_notes
     - `f_square` = {\textrm{f}^square}_notes
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
