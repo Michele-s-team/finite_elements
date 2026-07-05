@@ -157,10 +157,12 @@ F_sigma_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
                                     )  * rmsh.dx_mesh[0]['dx'] \
+    # checked - start
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
-        msh.jump(fsp.sigma_n, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_sigma_n, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_I_square'] + \
-        fsp.sigma_n * fsp.nu_sigma_n * rmsh.ds_mesh[0]['ds_r'] \
+        msh.jump(fsp.sigma_n, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_sigma_n, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_I_shape'] \
     )
+    # checked - end
+
 
 
 
