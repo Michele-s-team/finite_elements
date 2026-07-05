@@ -38,11 +38,11 @@ class v_lrb_expression(UserExpression):
     
     
 
-class f_circle_expression(UserExpression):
+class f_shape_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0.0
-        values[1] = - rpam.parameters['rho_circle'] * rpam.parameters['g']
+        values[1] = - rpam.parameters['rho_shape'] * rpam.parameters['g']
 
     def value_shape(self):
         return (2,)
@@ -69,13 +69,13 @@ class t_t_expression(UserExpression):
 
 msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
 
-msh.interpolate_dg(fsp.f_circle, f_circle_expression())
+msh.interpolate_dg(fsp.f_shape, f_shape_expression())
 msh.interpolate_dg(fsp.f_square, f_square_expression())
 
 msh.interpolate_dg(fsp.t_t, t_t_expression())
 
 '''
-force per unit length exerted on the boundary of the circle fluid
+force per unit length exerted on the boundary of the shape fluid
 Input values: 
     - `c`: concentration field
     - `u`: displacement field
@@ -101,9 +101,9 @@ F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
                                         ( \
-                                            (rpam.parameters['rho_circle'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
-                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_circle[i] ) * fsp.nu_v_n[i] \
-                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_circle'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
+                                            (rpam.parameters['rho_shape'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
+                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_shape[i] ) * fsp.nu_v_n[i] \
+                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_shape'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
                                         ) * ela.detF(fsp.u_n)
                                         ,
                                         ( \
@@ -115,8 +115,8 @@ F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
                                 ) * rmsh.dx_mesh[0]['dx'] \
         - (\
-            msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_circle'])[i, j] ) \
-        ) * rmsh.ds_mesh[0]['dS_I_circle'] \
+            msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_shape'])[i, j] ) \
+        ) * rmsh.ds_mesh[0]['dS_I_shape'] \
         - ( \
                 ( \
                     ela.detF(fsp.u_n(sub_mesh_0_label)) * bgeo.facet_normal[0](sub_mesh_0_label)[k] * ela.G(fsp.u_n(sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_square'])[i, j] \

@@ -16,7 +16,7 @@ the variables for the problem are
     - 'c_n' = \textrm{c}^n_notes
 
     - `v_lrb` = g_notes
-    - `f_circle` = {\textrm{f}^circle}_notes
+    - `f_shape` = {\textrm{f}^circle}_notes
     - `f_square` = {\textrm{f}^square}_notes
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
 '''
@@ -71,7 +71,7 @@ v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
 v_n_1 = Function(Q_v_n)
 u_n_1 = Function(Q_u_n)
 
-f_circle = Function(Q_f)
+f_shape = Function(Q_f)
 f_square = Function(Q_f)
 t_t = Function(Q_f)
 
