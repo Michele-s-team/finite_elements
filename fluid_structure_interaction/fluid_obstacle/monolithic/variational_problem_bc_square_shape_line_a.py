@@ -162,7 +162,7 @@ F_sigma_n = msh.ufl_conditional_form(
 
 
 
-# 2.2 elastic body and mesh
+# 2.2 mesh
 
 # 2.2.1 u_n
 
