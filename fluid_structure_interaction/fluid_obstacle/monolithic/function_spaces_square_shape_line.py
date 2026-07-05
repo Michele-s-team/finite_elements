@@ -18,7 +18,7 @@ the variables for the problem are
     - `v_lrb` = g_notes
     - `f_circle` = {\textrm{f}^circle}_notes
     - `f_square` = {\textrm{f}^square}_notes
-    - `f` = {\textrm{f}}_notes
+    - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
 '''
 
 #1 define elements 
@@ -73,6 +73,7 @@ u_n_1 = Function(Q_u_n)
 
 f_circle = Function(Q_f)
 f_square = Function(Q_f)
+t_t = Function(Q_f)
 
 # 3.2.1 fields for BCs
 v_lrb = Function(Q_v_n) 

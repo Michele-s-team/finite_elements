@@ -57,13 +57,22 @@ class f_square_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
+class t_t_expression(UserExpression):
+    def eval(self, values, x):
 
+        values[0] = 0.0
+        values[1] = 0.0
+
+    def value_shape(self):
+        return (2,)
 
 
 msh.interpolate_dg(fsp.v_lrb, v_lrb_expression())
 
 msh.interpolate_dg(fsp.f_circle, f_circle_expression())
 msh.interpolate_dg(fsp.f_square, f_square_expression())
+
+msh.interpolate_dg(fsp.t_t, t_t_expression())
 
 '''
 force per unit length exerted on the boundary of the circle fluid
