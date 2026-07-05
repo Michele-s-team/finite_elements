@@ -19,6 +19,7 @@ the variables for the problem are
     - `f_shape` = {\textrm{f}^circle}_notes
     - `f_square` = {\textrm{f}^square}_notes
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
+    - `sigma_square_t` = {sigma_{square T}}_notes
 '''
 
 #1 define elements 
@@ -73,11 +74,11 @@ u_n_1 = Function(Q_u_n)
 
 f_shape = Function(Q_f)
 f_square = Function(Q_f)
-t_t = Function(Q_f)
 
 # 3.2.1 fields for BCs
 v_lrb = Function(Q_v_n) 
-
+t_t = Function(Q_f)
+sigma_square_t = Function(Q_sigma_n)
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n = TestFunctions(Q)
