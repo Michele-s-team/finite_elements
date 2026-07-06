@@ -168,14 +168,12 @@ F_sigma_n = msh.ufl_conditional_form(
     )
 
 
-# sign
 
 
 # 2.2 mesh
 
 # 2.2.1 u_n
 
-# checked - start
 F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
@@ -221,8 +219,7 @@ F_u_n = msh.ufl_conditional_form(
             ) * rmsh.ds_mesh[0]['dS_shape'] \
         ) \
 
-# checked - end
-
+# sign
 
 # 2.2.2 u_dot_n
 
