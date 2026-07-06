@@ -236,17 +236,15 @@ def Q(u, u_dot):
 
 # sign
 
+# checked - start
 F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-# checked - start
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
-# checked - end
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
                                 ) * rmsh.dx_mesh[0]['dx'] \
-# checked - start
             + ( msh.jump(fsp.nu_u_dot_n[k], bgeo.facet_normal[0])[i] * msh.average( Q(fsp.u_n, fsp.u_dot_n)[k, i] ) ) * rmsh.ds_mesh[0]['dS_I_shape'] \
             + ( bgeo.facet_normal[0](sub_mesh_0_label)[i] * Q(fsp.u_n(sub_mesh_0_label), fsp.u_dot_n(sub_mesh_0_label))[k, i] * (fsp.nu_u_dot_n(sub_mesh_0_label))[k]) * rmsh.ds_mesh[0]['dS_shape'] \
             + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
