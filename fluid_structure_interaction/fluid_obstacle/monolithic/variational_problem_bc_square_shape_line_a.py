@@ -219,7 +219,6 @@ F_u_n = msh.ufl_conditional_form(
             ) * rmsh.ds_mesh[0]['dS_shape'] \
         ) \
 
-# sign
 
 # 2.2.2 u_dot_n
 
@@ -235,6 +234,7 @@ def Q(u, u_dot):
                                     ela.mu_dot(u, u_dot, rpam.parameters['exponent']))[j, i]), 
     (k, i))
 
+# sign
 
 F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
