@@ -276,4 +276,12 @@ F_u_dot_n = msh.ufl_conditional_form(
         
 # sign
 
+F_c_n = ( \
+        ( (fsp.c_n - fsp.c_n_1)/dt  - ela.G(fsp.u_n)[i, j] * fsp.u_dot_n[j] * fsp.c_n.dx(i) ) * fsp.nu_c_n + \
+        ela.G(fsp.u_n)[k, i] * (fsp.D_c * ela.G(fsp.u_n_1_sq)[beta, alpha] * fsp.c_n.dx(beta) - fsp.v_square_n[alpha] * fsp.c_n) * fsp.nu_c.dx(gamma)              
+    ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
+    + ( ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n * fsp.nu_c ) * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_lrtb'] \
+    + ( - rpam.parameters['k'] / ela.detF(fsp.u_n_1_sq) +  ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n ) * fsp.nu_c * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_shape'] 
+
+
 F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n
