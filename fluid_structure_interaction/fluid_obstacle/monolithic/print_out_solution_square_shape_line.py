@@ -16,6 +16,15 @@ def print_solution(t, step, dt):
 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy = fsp.psi.split( deepcopy=True )
 
+    #2 write to xdmf files
+
+    fi.xdmffile_v_n.write(v_n_dummy, t)
+    fi.xdmffile_sigma_n.write(sigma_n_dummy, t)
+
+    fi.xdmffile_u_n.write(u_n_dummy, t)
+    fi.xdmffile_u_dot_n.write(u_dot_n_dummy, t)
+
+    fi.xdmffile_c_n.write(c_n_dummy, t)
 
 
 

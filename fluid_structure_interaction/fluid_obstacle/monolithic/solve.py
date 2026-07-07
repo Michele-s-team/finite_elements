@@ -348,7 +348,7 @@ for n in range(rpam.parameters['num_steps']):
     # rebuild F with new pressure_scale
     vp = importlib.reload(importlib.import_module(swi.vp))  
 
-    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
 
     print('... done.', flush=True)
 
@@ -367,7 +367,7 @@ for n in range(rpam.parameters['num_steps']):
 
     print('Solving for u_0 ... ')
 
-    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0, parameters=params)
+    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
     print('... done.', flush=True)
 
