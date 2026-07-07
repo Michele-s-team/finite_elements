@@ -158,4 +158,10 @@ class dyds_expression(UserExpression):
 
 msh.interpolate_dg(fsp.dyds, dyds_expression())
 
+# 
+import solution_paths as solpath 
+io.full_print(fsp.dyds, 'dyds', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])    
+# 
+
 
