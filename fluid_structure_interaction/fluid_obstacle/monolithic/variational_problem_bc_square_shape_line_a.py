@@ -291,7 +291,10 @@ F_c_n = msh.ufl_conditional_form(
             msh.jump(fsp.nu_c_n, bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, i] * dif.J_ale(fsp.u_n, fsp.c_n, fsp.v_n, rpam.parameters['D'])[i] ) \
         ) * rmsh.ds_mesh[0]['dS_I_square'] \
         + bgeo.facet_normal[0][k] * ela.G(fsp.u_n)[k, i] * fsp.v_n[i] * fsp.c_n * fsp.nu_c_n * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds'] \
+        + ( \
+            - rpam.parameters['kappa'] \
+            + bgeo.facet_normal[0](sub_mesh_1_label)[k] * ela.detF(fsp.u_n(sub_mesh_1_label)) * ela.G(fsp.u_n(sub_mesh_1_label))[k, i] * fsp.v_n(sub_mesh_1_label)[i] * fsp.c_n(sub_mesh_1_label) \
+        ) * fsp.nu_c_n(sub_mesh_1_label) * rmsh.ds_mesh[0]['dS_shape'] \
 # sign
-
 
 F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_c_n
