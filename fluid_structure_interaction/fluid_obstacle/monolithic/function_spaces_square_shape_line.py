@@ -13,7 +13,7 @@ the variables for the problem are
     - 'sigma_n' = \varsigma^n_notes
     - 'u_n': u^n in notes
     - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
-    - 'c_n' = \textrm{c}^n_notes
+    - 'c_n', 'c_n_1' = \textrm{c}^n_notes, \textrm{c}^{n-1}_notes
 
     - `v_lrb` = {g^n}_notes
     - `f_shape` = {\textrm{f}^circle}_notes
@@ -65,15 +65,17 @@ Q_f = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['f_function_space_
 psi = Function(Q)
 v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
 
-# sign
 
 
 # 3.2 auxiliary fields
 v_n_1 = Function(Q_v_n)
 u_n_1 = Function(Q_u_n)
+c_n_1 = Function(Q_c_n)
 
 f_shape = Function(Q_f)
 f_square = Function(Q_f)
+
+dyds = Function(Q_u_n)
 
 # 3.2.1 fields for BCs
 v_lrb = Function(Q_v_n) 
