@@ -9,6 +9,7 @@ import ufl as ufl
 import continuation as cont
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
+import physics.diffusion as dif
 import physics.fluid_mechanics as flu
 import physics.elasticity as ela
 import parameters.read.solution as rpam
@@ -274,12 +275,20 @@ F_u_dot_n = msh.ufl_conditional_form(
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
         
-# sign
 
-F_c_n = ( \
-        ( (fsp.c_n - fsp.c_n_1)/dt  - ela.G(fsp.u_n)[i, j] * fsp.u_dot_n[j] * fsp.c_n.dx(i) ) * fsp.nu_c_n + \
-        ela.G(fsp.u_n)[k, i] * (fsp.D_c * ela.G(fsp.u_n_1_sq)[beta, alpha] * fsp.c_n.dx(beta) - fsp.v_square_n[alpha] * fsp.c_n) * fsp.nu_c.dx(gamma)              
-    ) * ela.detF(fsp.u_n_1_sq) * rmsh.dx_sub_mesh[0][1] \
+F_c_n = msh.ufl_conditional_form(
+                                        rmsh.lmsh.mesh[0],
+                                        rmsh.sf[0], 
+                                        fsp.c_n * fsp.nu_c_n, 
+                                        ( \
+                                            ( (fsp.c_n - fsp.c_n_1)/dt  - ela.G(fsp.u_n)[i, j] * fsp.u_dot_n[j] * fsp.c_n.dx(i) ) * fsp.nu_c_n \
+                                            - ela.G(fsp.u_n)[k, i] * dif.J_ale(fsp.u_n, fsp.c_n, fsp.v_n, rpam.parameters['D'])[i] * fsp.nu_c_n.dx(k)              
+                                        ) * ela.detF(fsp.u_n), 
+                                        rmsh.lmsh.parameters['sub_mesh_0_0_id'],
+                                        rmsh.lmsh.parameters['sub_mesh_0_1_id']
+                                ) * rmsh.dx_mesh[0]['dx'] \
+# sign
+ * rmsh.dx_sub_mesh[0][1] \
     + ( ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n * fsp.nu_c ) * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_lrtb'] \
     + ( - rpam.parameters['k'] / ela.detF(fsp.u_n_1_sq) +  ela.G(fsp.u_n_1_sq)[gamma, alpha] * bgeo.sub_mesh_facet_normal[0][1][gamma] * fsp.v_square_n[alpha] * fsp.c_n ) * fsp.nu_c * ela.detF(fsp.u_n_1_sq) * rmsh.ds_sub_mesh[0][1]['ds_shape'] 
 
