@@ -20,6 +20,7 @@ the variables for the problem are
     - `f_square` = {\textrm{f}^square}_notes
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
     - `sigma_square_t` = {sigma_{square T}}_notes
+    - `dyds` = {d y_s / ds}_notes for \partial \Omega_O
 '''
 
 #1 define elements 
