@@ -214,7 +214,7 @@ Return values:
 '''
 def f_shape(c, u):
 
-    return as_tensor(0, (i))
+    return as_tensor([0, 0])
 
 bcs = []
 
