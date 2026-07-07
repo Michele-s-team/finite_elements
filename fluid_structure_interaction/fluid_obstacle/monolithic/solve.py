@@ -261,8 +261,8 @@ pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
-sys.exit(1)
 vp = importlib.import_module(swi.vp)
+sys.exit(1)
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
