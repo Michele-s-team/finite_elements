@@ -6,7 +6,6 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import continuation as cont
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.diffusion as dif
@@ -18,6 +17,8 @@ import switch_problem as swi
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
+
 
 i, j, k, l, m = ufl.indices(5)
 
@@ -96,7 +97,7 @@ Return values:
 '''
 def f_shape(c, u):
 
-    return as_tensor(0, (i))
+    return as_tensor([0, 0])
 
 bcs = []
 
