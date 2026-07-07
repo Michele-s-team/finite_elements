@@ -253,16 +253,14 @@ io.full_print(project(bgeo.n_cur(n_ref, u, dyds), Q_u), 'n_cur', \
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
+
 fsp = importlib.import_module(swi.fsp)
-
-
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
-sys.exit(1)
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -314,80 +312,6 @@ fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_d
 #
 '''
 
-'''
-# test deform_function - start
-import calculus as cal 
-import function as fu
-import solution_paths as solpath
-
-Q_f = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
-
-f = Function(Q_f)
-
-class y_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = x[0]
-        values[1] = x[1]
-
-    def value_shape(self):
-        return (2,)
-    
-msh.interpolate_dg(fsp.y, y_expression())
-
-
-theta = np.pi/10
-c = [0.2, 0.2]
-t = [0.04, 0.05]
-
-class phi_0_expression(UserExpression):
-    def eval(self, values, x):
-
-        result = cal.rotation_translation(x, theta, c, t)
-
-        values[0] = result[0]
-        values[1] = result[1]
-
-    def value_shape(self):
-        return (2,)
-
-msh.interpolate_dg(fsp.phi_0, phi_0_expression())
-
-
-print('Solving for u_0 ... ')
-
-vp_u_0 = importlib.reload(vp_u_0) 
-var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
-
-io.full_print(fsp.u_0, 'u_0', \
-                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]) 
-
-print('... done.', flush=True)
-
-
-class f_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = np.cos(2*np.pi*(x[0] + x[1])/rmsh.lmsh.parameters['L'])
-
-    def value_shape(self):
-        return (1,)
-    
-msh.interpolate_dg(f, f_expression())
-
-# setting phi(x) = x + u_0(x), here I check that g(phi(x)) = f(x)
-g = fu.deform_function(f, fsp.u_0)
-
-x = [0.2, 0.2]
-x_p = np.add(x, fsp.u_0(x))
-
-print(f'x = {x}\nx_p = {x_p} \n f(x) = {f(x)} \n g(x_p) = {g(x_p)} \n err = {abs(g(x_p) - f(x))/f(x)}')
-
-
-sys.exit(1)
-# test deform_function - end
-'''
-
 
 
 #3. Time-stepping
@@ -408,6 +332,7 @@ for n in range(rpam.parameters['num_steps']):
 
     print('Solving monolithic problem ... ')
 
+    '''
     if step <= rpam.parameters['n_hold']:
         
         cont.pressure_scale = Constant(0.0)
@@ -418,6 +343,7 @@ for n in range(rpam.parameters['num_steps']):
     
     else:
         cont.pressure_scale = Constant(1.0)
+    '''
         
     # rebuild F with new pressure_scale
     vp = importlib.reload(importlib.import_module(swi.vp))  
@@ -428,10 +354,11 @@ for n in range(rpam.parameters['num_steps']):
 
     #3.3 print BCs, ICs, data such as mesh quality, and decompose the deformation field. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
+
+    '''
     #3.3.1 compute mesh quality
     _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
-
 
     #3.3.2 decompose the deformation field
 
@@ -446,13 +373,14 @@ for n in range(rpam.parameters['num_steps']):
 
     # now that u_0 is known, I set phi_0(y) = y + u_0(y) also in \partial \Omega^y_square
     fsp.phi_0.assign(fsp.y + fsp.u_0)
+    '''
 
     #3.3.3 compure BCs, ICs and data
     pr_bc.print_bcs(step)
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
-
+    '''
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     # if step > 1:
 
@@ -498,9 +426,9 @@ for n in range(rpam.parameters['num_steps']):
         u_0_old.assign(fsp.u_0)
 
 
-        '''         
-        4.1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
-        '''
+                
+        # 4.1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        
 
         msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
         msh.overwrite_interface_dofs(v_n_1_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
@@ -508,18 +436,18 @@ for n in range(rpam.parameters['num_steps']):
         msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 
-        '''
-        4.2
+        
+        # 4.2
 
-        Right before remesh, the deformation field is u_n, which corresponds to phi_n. 
-        We decompose phi_n into 
-            - a part `phi_0(y)` that preserves the elastic energy, which is a comination of a rotation and a rigid translation, 
-            - a part `u'(y)` that cannot be written as a combination of a rotation and a rigid translation. 
+        # Right before remesh, the deformation field is u_n, which corresponds to phi_n. 
+        # We decompose phi_n into 
+        #     - a part `phi_0(y)` that preserves the elastic energy, which is a comination of a rotation and a rigid translation, 
+        #     - a part `u'(y)` that cannot be written as a combination of a rotation and a rigid translation. 
 
-        We trace the coordinates of shape vertices right after remeshing according to phi_0: these will be the coordinates of the new reference configuration of the shape. 
+        # We trace the coordinates of shape vertices right after remeshing according to phi_0: these will be the coordinates of the new reference configuration of the shape. 
 
-        Right after remeshing, the iteration starts with reference coordinates y' = phi_0(y), and with a nonzero deformation u'(phi_0^{-1}(y')) with respect to this reference configuration phi_0. 
-        '''
+        # Right after remeshing, the iteration starts with reference coordinates y' = phi_0(y), and with a nonzero deformation u'(phi_0^{-1}(y')) with respect to this reference configuration phi_0. 
+        
 
         mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
 
@@ -557,13 +485,13 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        '''
-        4.4.1 Transfer the fields
+        
+        # 4.4.1 Transfer the fields
 
-        Given that the transformation reference -> current before right before remeshing, phi_n, is decomposed into phi_0 (A) + u' (B), the field are transferred in two steps
-            A) trasnfer the field with phi_0_old (u_0_0ld)
-            B) set a nonzero deformation u' with respect to the reference coordinates y'
-        '''
+        # Given that the transformation reference -> current before right before remeshing, phi_n, is decomposed into phi_0 (A) + u' (B), the field are transferred in two steps
+        #     A) trasnfer the field with phi_0_old (u_0_0ld)
+        #     B) set a nonzero deformation u' with respect to the reference coordinates y'
+        
 
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
@@ -579,20 +507,19 @@ for n in range(rpam.parameters['num_steps']):
 
         msh.interpolate_dg(fsp.y, fu.identity_expression())
 
+                
+        # phi_0_old(y) = y + u_0_old(y)
+        # y' = phi_0_old(y)
 
-        '''
-            phi_0_old(y) = y + u_0_old(y)
-            y' = phi_0_old(y)
+        # the function phi_n_old_def that satisfies
 
-            the function phi_n_old_def that satisfies
+        # phi_n_old_def(phi_0_old(y)) = phi_n_old(y)
+        # phi_n_old_def(y') = phi_n_old(phi_0_old^{-1}(y'))
 
-            phi_n_old_def(phi_0_old(y)) = phi_n_old(y)
-            phi_n_old_def(y') = phi_n_old(phi_0_old^{-1}(y'))
+        # is constructed as
 
-            is constructed as
-
-            phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
-        '''
+        # phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
+        
 
         phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
         phi_n_old_def.set_allow_extrapolation(True)
@@ -603,19 +530,18 @@ for n in range(rpam.parameters['num_steps']):
         #4.4.1.2.2 set u_dot_input
 
 
-        '''
-            phi_0_old(y) = y + u_0_old(y)
-            y' = phi_0_old(y)
+        # phi_0_old(y) = y + u_0_old(y)
+        # y' = phi_0_old(y)
 
-            the function u_dot_n_old_def that satisfies
+        # the function u_dot_n_old_def that satisfies
 
-            u_dot_n_old_def(phi_0_old(y)) = u_dot_n_old(y)
-            u_dot_n_old_def(y') = u_dot_n_old(phi_0_old^{-1}(y'))
+        # u_dot_n_old_def(phi_0_old(y)) = u_dot_n_old(y)
+        # u_dot_n_old_def(y') = u_dot_n_old(phi_0_old^{-1}(y'))
 
-            is constructed as
+        # is constructed as
 
-            u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
-        '''
+        # u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
+        
 
         u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
         u_dot_n_old_def.set_allow_extrapolation(True)
@@ -634,21 +560,20 @@ for n in range(rpam.parameters['num_steps']):
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
-
+    '''
 
     #5 Update fields
 
     #5.1 unpack the mixed field 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy = fsp.psi.split( deepcopy=True )
 
     #5.2 update fields
     fsp.v_n_1.assign(v_n_dummy)
-
     fsp.u_n_1.assign(u_n_dummy)
-    fsp.u_dot_n_1.assign(u_dot_n_dummy)
+    fsp.c_n_1.assign(c_n_dummy)
 
     #5.3 clean up
-    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
+    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy
 
     #6. print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
