@@ -303,7 +303,7 @@ F_c_n = msh.ufl_conditional_form(
 
 # 2.3 variational problems for curvature computation
 
-F_mu = (\
+F_mu_n = (\
         (fsp.mu_n \
         - (fsp.f[i] + fsp.grad_u_n[i, k] * fsp.f[k]).dx(j) * fsp.f[j] \
         * ( sqrt( dot(fsp.f, fsp.f) / (ela.F(fsp.u_n)[p, q] * ela.F(fsp.u_n)[p, r] * fsp.f[q] * fsp.f[r] ) ) \
@@ -315,10 +315,10 @@ F_mu = (\
         msh.jump(fsp.mu_n, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu_n, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
     )
 
-F_grad_u = ( (fsp.grad_u_n[i, j] - fsp.u_n[i].dx(j)) * fsp.nu_grad_u_n[i, j] ) * rmsh.dx_mesh[0]['dx'] \
+F_grad_u_n = ( (fsp.grad_u_n[i, j] - fsp.u_n[i].dx(j)) * fsp.nu_grad_u_n[i, j] ) * rmsh.dx_mesh[0]['dx'] \
     + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
         msh.jump(fsp.grad_u_n[i, j], bgeo.facet_normal[0])[k] *  msh.jump(fsp.nu_grad_u_n[i, j], bgeo.facet_normal[0])[k] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
     )
 
 
-F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_c_n
+F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_c_n + F_mu_n + F_grad_u_n
