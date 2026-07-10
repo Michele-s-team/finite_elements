@@ -21,6 +21,15 @@ the variables for the problem are
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
     - `sigma_square_t` = {sigma_{square T}}_notes
     - `dyds` = {d y_s / ds}_notes for \partial \Omega_O
+
+    - 'mu_n': the curvature of the shape curve x_s in the current configuration
+    - 'grad_u_n': grad_u_n[i, j] = \partial u_n_i / \partial y_j
+    - f = f_{Curvature} tangent vector to the curve y_s in the reference configuration, extended to the whole domain
+    - e = e_{Curvature}, tangent vector to the curve x_s in the current configuration, extended to the whole domain
+    - nu = nu_{Curvature} unit normal to y_s pointing outwards \Omega_circle^y, extended to the whole domain
+    - n = n_{Curvature} unit normal to x_s pointing inwards \Omega_circle^y, extended to the whole domain
+
+
 '''
 
 #1 define elements 
