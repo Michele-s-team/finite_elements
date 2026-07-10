@@ -565,7 +565,7 @@ for n in range(rpam.parameters['num_steps']):
     #5 Update fields
 
     #5.1 unpack the mixed field 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy = fsp.psi.split( deepcopy=True )
 
     #5.2 update fields
     fsp.v_n_1.assign(v_n_dummy)
@@ -573,7 +573,7 @@ for n in range(rpam.parameters['num_steps']):
     fsp.c_n_1.assign(c_n_dummy)
 
     #5.3 clean up
-    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy
+    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy
 
     #6. print the solution
     if step % rpam.parameters['print_out_stride'] == 0:

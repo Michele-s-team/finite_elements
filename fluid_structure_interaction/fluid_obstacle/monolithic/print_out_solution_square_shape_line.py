@@ -19,7 +19,7 @@ def print_solution(t, step, dt):
 
     #1 unpack the mixed field 
 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy = fsp.psi.split( deepcopy=True )
 
     #2 write to xdmf files
 

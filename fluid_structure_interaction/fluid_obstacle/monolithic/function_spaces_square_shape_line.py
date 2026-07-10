@@ -46,12 +46,12 @@ D_u_dot_n = VectorElement('DG', triangle, rpam.parameters['u_dot_function_space_
 D_c_n = FiniteElement('DG', triangle, rpam.parameters['c_function_space_degree'])
 
 # 1.4 surface tension
-D_mu = FiniteElement('DG', triangle, rpam.parameters['u_function_space_degree'])
-D_grad_u = TensorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
+D_mu_n = FiniteElement('DG', triangle, rpam.parameters['u_function_space_degree'])
+D_grad_u_n = TensorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
 
 
 
-element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n, D_mu, D_grad_u])
+element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n, D_mu_n, D_grad_u_n])
 
 
 
