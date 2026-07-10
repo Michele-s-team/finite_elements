@@ -51,7 +51,7 @@ D_grad_u = TensorElement('DG', triangle, rpam.parameters['u_function_space_degre
 
 
 
-element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n])
+element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n, D_mu, D_grad_u])
 
 
 
