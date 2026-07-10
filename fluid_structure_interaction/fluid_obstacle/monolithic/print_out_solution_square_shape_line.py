@@ -31,6 +31,9 @@ def print_solution(t, step, dt):
 
     fi.xdmffile_c_n.write(c_n_dummy, t)
 
+    fi.xdmffile_mu_n.write(mu_n_dummy, t)
+    fi.xdmffile_grad_u_n.write(grad_u_n_dummy, t)
+
      # 3 write snapshots
 
     # 3.1 reference configuration and deformation fields
@@ -46,6 +49,11 @@ def print_solution(t, step, dt):
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     
     io.full_print(c_n_dummy, 'c_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    io.full_print(mu_n_dummy, 'mu_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    io.full_print(grad_u_n_dummy, 'grad_u_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     
     # 3.2 deformed with u_n
