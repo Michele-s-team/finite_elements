@@ -118,4 +118,4 @@ J_psi = TrialFunction(Q)
 
 # 3.5 function assigner
 
-assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n, Q_c_n])
+assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n, Q_c_n, Q_mu_n, Q_grad_u_n])
