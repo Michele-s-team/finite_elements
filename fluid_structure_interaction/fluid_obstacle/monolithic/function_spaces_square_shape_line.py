@@ -72,6 +72,8 @@ Q_c_n = Q.sub(4).collapse()
 Q_mu_n = Q.sub(5).collapse()
 Q_grad_u_n = Q.sub(6).collapse()
 
+V = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['u_function_space_degree'])
+
 
 # 2.3 auxiliary function spaces
 Q_f = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['f_function_space_degree'])
@@ -100,6 +102,13 @@ dyds = Function(Q_u_n)
 v_lrb = Function(Q_v_n) 
 t_t = Function(Q_f)
 sigma_square_t = Function(Q_sigma_n)
+
+#3.2.3 fields for the curvature computation
+
+f = Function(V)
+nu = Function(V)
+b = Function(Q_grad_u_n)
+
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n = TestFunctions(Q)
