@@ -111,7 +111,7 @@ b = Function(Q_grad_u_n)
 
 
 # 3.3 test functions
-nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n = TestFunctions(Q)
+nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n, nu_mu_n, nu_grad_u_n = TestFunctions(Q)
 
 
 # 3.4 jacobian
@@ -120,7 +120,3 @@ J_psi = TrialFunction(Q)
 # 3.5 function assigner
 
 assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n, Q_c_n])
-
-
-
-
