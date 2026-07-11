@@ -11,6 +11,7 @@ import switch_problem as swi
 fi = importlib.import_module(swi.fi)
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 
 
@@ -54,6 +55,10 @@ def print_solution(t, step, dt):
     io.full_print(mu_n_dummy, 'mu_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     io.full_print(grad_u_n_dummy, 'grad_u_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    # 3.1.1 write additional fields
+    io.full_print(project(vp.f_shape(c_n_dummy, u_n_dummy, mu_n_dummy), fsp.Q_u_n), 'f_shape_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     
     # 3.2 deformed with u_n

@@ -22,8 +22,6 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import continuation as cont
-import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu

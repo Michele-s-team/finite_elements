@@ -89,9 +89,11 @@ msh.interpolate_dg(fsp.sigma_square_t, sigma_square_t_expression())
 
 '''
 force per unit length exerted on the boundary of the shape fluid
+
 Input values: 
     - `c`: concentration field
     - `u`: displacement field
+    - `mu`: mean curvature field
 
 Return values: 
     - \textrm{f}_alpha in fluid-structure interaction/fluid obstacle/notes
