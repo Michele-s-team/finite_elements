@@ -2,6 +2,7 @@ from fenics import *
 import importlib
 import os
 
+import differential_geometry.boundary.geometry as bgeo
 import input_output as io
 import mesh.utils as msh
 import runtime_arguments as rarg
@@ -58,8 +59,17 @@ def print_solution(t, step, dt):
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     
     # 3.1.1 write additional fields
-    io.full_print(project(vp.f_shape(c_n_dummy, u_n_dummy, mu_n_dummy), fsp.Q_u_n), 'f_shape_n_' + str(step), \
-                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    io.full_print(
+        project(
+            vp.f_shape(
+                        c_n_dummy, 
+                        u_n_dummy, 
+                        mu_n_dummy, 
+                        bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](vp.sub_mesh_0_label), rmsh.ds_mesh[0]['dS_shape'], interior=True)
+            ), fsp.Q_u_n), 
+        'f_shape_n_' + str(step),
+        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]
+    )
     
     # 3.2 deformed with u_n
     
