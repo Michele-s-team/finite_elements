@@ -24,6 +24,8 @@ def print_bcs(step):
             step,
             fi.fieldnames_bcs[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_lrb), rmsh.ds_mesh[0]['ds_lr'] + rmsh.ds_mesh[0]['ds_b']):.{rpam.parameters['print_out_digits']}e}",\
+            fi.fieldnames_bcs[2]: \
+            f"{msh.abs_wrt_measure( sqrt((bgeo.facet_normal[0][k] * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * ela.detF(fsp.u_n) - fsp.t_t[i]) * (bgeo.facet_normal[0][l] * ela.G(fsp.u_n)[l, m] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, m] * ela.detF(fsp.u_n)-  - fsp.t_t[i])), rmsh.ds_mesh[0]['ds_t']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_bcs.flush()

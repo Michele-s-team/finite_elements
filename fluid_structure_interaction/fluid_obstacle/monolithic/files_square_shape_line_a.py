@@ -24,8 +24,10 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
     'step', \
-    # BC (112)
+    # Eq. (112)
     '<<|v^n - v_lrb|^2>>_{partial Omega lrb}', \
+    # Eq. (113)
+    '<<||F^n| varsigma^square_{alpha beta} G^n_{gamma beta} nu_gamma - (textrm{t}^n_alpha)|^2>>_{partial Omega t}'
       ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
