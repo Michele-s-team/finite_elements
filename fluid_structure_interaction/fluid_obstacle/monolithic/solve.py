@@ -39,7 +39,7 @@ mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 # set the solver parameters here
-'''params = {'nonlinear_solver': 'newton',
+params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
                   'linear_solver': 'superlu',
@@ -48,9 +48,9 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
                   'maximum_iterations': 1000000,
                   'relaxation_parameter': 0.95,
               }
-          }'''
+          }
 
-
+'''
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
@@ -62,7 +62,7 @@ params = {
         'report': True,
     }
 }
-
+'''
 PETScOptions.clear()
 PETScOptions.set('snes_type', 'newtontr')
 PETScOptions.set('snes_atol', 1e-12)     
@@ -346,7 +346,7 @@ for n in range(rpam.parameters['num_steps']):
     # rebuild F with new pressure_scale
     vp = importlib.reload(importlib.import_module(swi.vp))  
 
-    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
     print('... done.', flush=True)
 
