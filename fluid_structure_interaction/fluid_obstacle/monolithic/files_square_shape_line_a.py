@@ -24,6 +24,7 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
     'step', \
+    # BC (112)
     '<<|v^n - v_lrb|^2>>_{partial Omega lrb}', \
       ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
