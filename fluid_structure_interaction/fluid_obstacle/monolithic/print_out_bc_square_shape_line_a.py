@@ -21,7 +21,9 @@ def print_bcs(step):
 
     fi.writer_bcs.writerows([{
         fi.fieldnames_bcs[0]: \
-            step
+            step,
+            fi.fieldnames_bcs[1]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_lrb), rmsh.ds_mesh[0]['ds_lr'] + rmsh.ds_mesh[0]['ds_b']):.{rpam.parameters['print_out_digits']}e}",\
         }])
 
     fi.csvfile_bcs.flush()
