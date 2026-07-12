@@ -1,0 +1,13 @@
+for an oil droplet in water: 
+
+3d paramerters: 
+
+rho_shape = 800 Kg / m^3 = 8e2 10^3 g / (10^3 mm)^3 = 0.8e-3 g / mm^3
+rho_square = 1000 Kg / m^3 = 1e3 10^3 g / (10^3 mm)^3 = 1e-3 g / mm^3
+
+mu_shape = 50 1e-3 Pa s = 5e-2 Kg / m / s = 5e-2 1e3 g / (1e3 mm) / s = 1e-2 g / mm / s
+mu_square = 1e-3 Pa s = 1e-3 Kg / m / s = 1e-3 1e3 g / (1e3 mm) / s = 1e-3 g / mm / s
+
+sigma = 3e-2 N / m = 3e-2 Kg / s^2 = 3e-2 1e3 g / s^2 = 3e1 g / s^2
+
+g = 10 m / s^2 = 1e1 1e3 mm / s^2 = 1e4 mm / s^2
