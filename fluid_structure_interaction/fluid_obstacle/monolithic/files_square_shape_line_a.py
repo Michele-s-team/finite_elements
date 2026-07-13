@@ -54,7 +54,8 @@ csvfile_data = open(filepath_data, 'a', newline='')
 fieldnames_data = [ \
     'step',
     'u_n_y_min',
-    'u_n_y_max'
+    'u_n_y_max',
+    '<u_n_y>_{dx shape}'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

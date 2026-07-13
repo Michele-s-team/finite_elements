@@ -6,6 +6,7 @@ import importlib
 from fenics import *
 import ufl as ufl
 
+import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -32,6 +33,8 @@ def print_data(step):
             f"{u_n_y_min:.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[2]: \
             f"{u_n_y_max:.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_data[3]: \
+            f"{msh.average_wrt_measure(u_n_dummy[1], rmsh.dx_mesh[0]['dx_shape']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_data.flush()
