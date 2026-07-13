@@ -52,7 +52,9 @@ os.makedirs(os.path.dirname(filepath_data), exist_ok=True)
 
 csvfile_data = open(filepath_data, 'a', newline='')
 fieldnames_data = [ \
-    'step'
+    'step',
+    'u_n_y_min',
+    'u_n_y_max'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
