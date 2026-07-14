@@ -11,3 +11,17 @@ mu_square = 1e-3 Pa s = 1e-3 Kg / m / s = 1e-3 1e3 g / (1e3 mm) / s = 1e-3 g / m
 sigma = 3e-2 N / m = 3e-2 Kg / s^2 = 3e-2 1e3 g / s^2 = 3e1 g / s^2
 
 g = 10 m / s^2 = 1e1 1e3 mm / s^2 = 1e4 mm / s^2
+
+
+
+for a water droplet in air: 
+
+rho_shape = 1000 Kg / m^3 = 1e3 10^3 g / (10^3 mm)^3 = 1e-3 g / mm^3
+mu_shape = 1e-3 Pa s = 1e-3 Kg / m / s = 1e-3 1e3 g / (1e3 mm) / s = 1e-3 g / mm / s
+
+rho_square = 1 Kg / m^3 = 10^3 g / (10^3 mm)^3 = 1e-6 g / mm^3
+mu_square = 1e-5 Pa s = 1e-5 Kg / m / s = 1e-5 1e3 g / (1e3 mm) / s = 1e-5 g / mm / s
+
+sigma = 1e2 1e-3 N / m = 1e-1 Kg / s^2 = 1e-1 (1e3 g) / s^2 = 1e2 g / s^2
+
+g = 10 m / s^2 = 1e1 1e3 mm / s^2 = 1e4 mm / s^2
