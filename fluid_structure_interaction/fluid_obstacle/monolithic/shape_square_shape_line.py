@@ -156,7 +156,40 @@ class dyds_expression(UserExpression):
         return (2,)
     
 
+class f_expression(UserExpression):
+    def eval(self, values, x):
+
+        # obtain the value of the parametric coordinate `s` corresponding to `x`
+        s = s_y(x)
+
+        values[0] = y_s_dy_ds(s)[1][0]
+        values[1] = y_s_dy_ds(s)[1][1]
+
+    def value_shape(self):
+        return (2,)
+    
+
+class nu_expression(UserExpression):
+    def eval(self, values, x):
+
+        # obtain the value of `t` corresponding to `x`
+        s = s_y(x)
+
+        _, d_y_s_ds = y_s_dy_ds(s)
+
+        norm = np.linalg.norm(d_y_s_ds)
+
+        values[0] = d_y_s_ds[1] / norm
+        values[1] = - d_y_s_ds[0] / norm
+
+    def value_shape(self):
+        return (2,)
+    
+
 msh.interpolate_dg(fsp.dyds, dyds_expression())
+msh.interpolate_dg(fsp.f, f_expression())
+msh.interpolate_dg(fsp.nu, nu_expression())
+
 
 '''
 import solution_paths as solpath 

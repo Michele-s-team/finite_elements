@@ -13,6 +13,9 @@ xdmffile_u_dot_n = XDMFFile(os.path.join(rarg.args.output_directory, "u_dot_n.xd
 
 xdmffile_c_n = XDMFFile(os.path.join(rarg.args.output_directory, "c_n.xdmf"))
 
+xdmffile_mu_n = XDMFFile(os.path.join(rarg.args.output_directory, "mu_n.xdmf"))
+xdmffile_grad_u_n = XDMFFile(os.path.join(rarg.args.output_directory, "grad_u_n.xdmf"))
+
 
 # 2 BC file
 filepath_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
@@ -21,6 +24,10 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
     'step', \
+    # Eq. (112)
+    '<<|v^n - v_lrb|^2>>_{partial Omega lrb}', \
+    # Eq. (113)
+    '<<||F^n| varsigma^square_{alpha beta} G^n_{gamma beta} nu_gamma - (textrm{t}^n_alpha)|^2>>_{partial Omega t}'
       ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
@@ -45,7 +52,11 @@ os.makedirs(os.path.dirname(filepath_data), exist_ok=True)
 
 csvfile_data = open(filepath_data, 'a', newline='')
 fieldnames_data = [ \
-    'step'
+    'step',
+    'u_n_y_min',
+    'u_n_y_max',
+    '<u_n_y>_{dx shape}',
+    'mesh_quality'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

@@ -21,6 +21,15 @@ the variables for the problem are
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
     - `sigma_square_t` = {sigma_{square T}}_notes
     - `dyds` = {d y_s / ds}_notes for \partial \Omega_O
+
+    - 'mu_n': the curvature of the shape curve x_s in the current configuration
+    - 'grad_u_n': grad_u_n[i, j] = \partial u_n_i / \partial y_j
+    - f = f_{Curvature} tangent vector to the curve y_s in the reference configuration, extended to the whole domain
+    - e = e_{Curvature}, tangent vector to the curve x_s in the current configuration, extended to the whole domain
+    - nu = nu_{Curvature} unit normal to y_s pointing outwards \Omega_circle^y, extended to the whole domain
+    - n = n_{Curvature} unit normal to x_s pointing inwards \Omega_circle^y, extended to the whole domain
+
+
 '''
 
 #1 define elements 
@@ -36,8 +45,13 @@ D_u_dot_n = VectorElement('DG', triangle, rpam.parameters['u_dot_function_space_
 #1.3 concentration
 D_c_n = FiniteElement('DG', triangle, rpam.parameters['c_function_space_degree'])
 
+# 1.4 surface tension
+D_mu_n = FiniteElement('DG', triangle, rpam.parameters['u_function_space_degree'])
+D_grad_u_n = TensorElement('DG', triangle, rpam.parameters['u_function_space_degree'])
 
-element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n])
+
+
+element = MixedElement([D_v_n, D_sigma_n, D_u_n, D_u_dot_n, D_c_n, D_mu_n, D_grad_u_n])
 
 
 
@@ -55,16 +69,21 @@ Q_u_dot_n = Q.sub(3).collapse()
 
 Q_c_n = Q.sub(4).collapse()
 
+Q_mu_n = Q.sub(5).collapse()
+Q_grad_u_n = Q.sub(6).collapse()
+
+
+
 # 2.3 auxiliary function spaces
+V = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['u_function_space_degree'])
 Q_f = VectorFunctionSpace(lmsh.mesh[0], 'DG', rpam.parameters['f_function_space_degree'])
 
 
-
-#3 define fields
+#3 fields
 
 # 3.1 psi contains all fields
 psi = Function(Q)
-v_n, sigma_n, u_n, u_dot_n, c_n = split(psi)
+v_n, sigma_n, u_n, u_dot_n, c_n, mu_n, grad_u_n = split(psi)
 
 
 
@@ -83,8 +102,15 @@ v_lrb = Function(Q_v_n)
 t_t = Function(Q_f)
 sigma_square_t = Function(Q_sigma_n)
 
+#3.2.3 fields for the curvature computation
+
+f = Function(V)
+nu = Function(V)
+b = Function(Q_grad_u_n)
+
+
 # 3.3 test functions
-nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n = TestFunctions(Q)
+nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n, nu_mu_n, nu_grad_u_n = TestFunctions(Q)
 
 
 # 3.4 jacobian
@@ -92,8 +118,4 @@ J_psi = TrialFunction(Q)
 
 # 3.5 function assigner
 
-assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n, Q_c_n])
-
-
-
-
+assigner = FunctionAssigner(Q, [Q_v_n, Q_sigma_n, Q_u_n, Q_u_dot_n, Q_c_n, Q_mu_n, Q_grad_u_n])

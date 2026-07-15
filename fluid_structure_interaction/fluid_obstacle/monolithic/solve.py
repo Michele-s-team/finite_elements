@@ -10,7 +10,6 @@ Examples:
 
 """
 
-import colorama as col
 import dolfin
 from fenics import *
 import gc
@@ -22,8 +21,6 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import continuation as cont
-import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
@@ -41,7 +38,7 @@ mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 # set the solver parameters here
-'''params = {'nonlinear_solver': 'newton',
+params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
                   'linear_solver': 'superlu',
@@ -50,9 +47,9 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
                   'maximum_iterations': 1000000,
                   'relaxation_parameter': 0.95,
               }
-          }'''
+          }
 
-
+'''
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
@@ -64,7 +61,7 @@ params = {
         'report': True,
     }
 }
-
+'''
 PETScOptions.clear()
 PETScOptions.set('snes_type', 'newtontr')
 PETScOptions.set('snes_atol', 1e-12)     
@@ -348,18 +345,18 @@ for n in range(rpam.parameters['num_steps']):
     # rebuild F with new pressure_scale
     vp = importlib.reload(importlib.import_module(swi.vp))  
 
-    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi)
+    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
     print('... done.', flush=True)
 
     #3.3 print BCs, ICs, data such as mesh quality, and decompose the deformation field. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
 
-    '''
     #3.3.1 compute mesh quality
-    _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
+    _, _, u_n_dummy_mesh_quality, _, _, _, _ = fsp.psi.split( deepcopy=True )
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
-
+    
+    '''
     #3.3.2 decompose the deformation field
 
     dec_u = importlib.reload(dec_u) 
@@ -565,7 +562,7 @@ for n in range(rpam.parameters['num_steps']):
     #5 Update fields
 
     #5.1 unpack the mixed field 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy = fsp.psi.split( deepcopy=True )
 
     #5.2 update fields
     fsp.v_n_1.assign(v_n_dummy)
@@ -573,7 +570,7 @@ for n in range(rpam.parameters['num_steps']):
     fsp.c_n_1.assign(c_n_dummy)
 
     #5.3 clean up
-    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy
+    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy
 
     #6. print the solution
     if step % rpam.parameters['print_out_stride'] == 0:

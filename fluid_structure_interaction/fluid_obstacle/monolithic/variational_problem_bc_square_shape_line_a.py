@@ -20,7 +20,8 @@ rmsh = importlib.import_module(swi.rmsh)
 sh = importlib.import_module(swi.sh)
 
 
-i, j, k, l, m = ufl.indices(5)
+i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
+
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
@@ -88,16 +89,19 @@ msh.interpolate_dg(fsp.sigma_square_t, sigma_square_t_expression())
 
 '''
 force per unit length exerted on the boundary of the shape fluid
+
 Input values: 
     - `c`: concentration field
     - `u`: displacement field
+    - `mu`: mean curvature field
+    - 'n': normal in the reference configuration, pointing outside the shape, equal to `nu` in fluid-structure interaction/fluid obstacle/notes
 
 Return values: 
     - \textrm{f}_alpha in fluid-structure interaction/fluid obstacle/notes
 '''
-def f_shape(c, u):
-
-    return as_tensor([0, 0])
+def f_shape(c, u, mu, n):
+    return as_tensor(- 2 * rpam.parameters['sigma'] * mu * ela.detF(u) * ela.G(u)[k, i] * n[k]
+, (i))
 
 bcs = []
 
@@ -131,7 +135,7 @@ F_v_n = msh.ufl_conditional_form(
         - ( \
                 ( \
                     ela.detF(fsp.u_n(sub_mesh_0_label)) * bgeo.facet_normal[0](sub_mesh_0_label)[k] * ela.G(fsp.u_n(sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_square'])[i, j] \
-                    + f_shape(fsp.c_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label))[i] \
+                    + f_shape(fsp.c_n(sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](sub_mesh_0_label))[i] \
                 )* fsp.nu_v_n(sub_mesh_0_label)[i]
         ) * rmsh.ds_mesh[0]['dS_shape'] \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
@@ -299,6 +303,25 @@ F_c_n = msh.ufl_conditional_form(
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
             msh.jump(fsp.c_n, bgeo.facet_normal[0])[i] * msh.jump(fsp.nu_c_n, bgeo.facet_normal[0])[i] * rmsh.ds_mesh[0]['dS_I_square'] \
         )
-# sign
 
-F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_c_n
+# 2.3 variational problems for curvature computation
+
+F_mu_n = (\
+        (fsp.mu_n \
+        - (fsp.f[i] + fsp.grad_u_n[i, k] * fsp.f[k]).dx(j) * fsp.f[j] \
+        * ( sqrt( dot(fsp.f, fsp.f) / (ela.F(fsp.u_n)[p, q] * ela.F(fsp.u_n)[p, r] * fsp.f[q] * fsp.f[r] ) ) \
+        * bgeo.epsilon[i, s] * ela.F(fsp.u_n)[s, t] * bgeo.epsilon[t, u] * fsp.nu[u] )  \
+        / (2.0 * (fsp.f[m] + fsp.grad_u_n[m, n] * fsp.f[n]) * (fsp.f[m] + fsp.grad_u_n[m, o] * fsp.f[o]) ) \
+        ) * fsp.nu_mu_n \
+    ) * rmsh.dx_mesh[0]['dx'] \
+    + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+        msh.jump(fsp.mu_n, bgeo.facet_normal[0])[i] *  msh.jump(fsp.nu_mu_n, bgeo.facet_normal[0])[i] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
+    )
+
+F_grad_u_n = ( (fsp.grad_u_n[i, j] - fsp.u_n[i].dx(j)) * fsp.nu_grad_u_n[i, j] ) * rmsh.dx_mesh[0]['dx'] \
+    + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
+        msh.jump(fsp.grad_u_n[i, j], bgeo.facet_normal[0])[k] *  msh.jump(fsp.nu_grad_u_n[i, j], bgeo.facet_normal[0])[k] * (rmsh.ds_mesh[0]['dS_I_shape'] + rmsh.ds_mesh[0]['dS_I_square'] + rmsh.ds_mesh[0]['dS_shape']) \
+    )
+
+
+F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_c_n + F_mu_n + F_grad_u_n

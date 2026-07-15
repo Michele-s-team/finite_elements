@@ -2,6 +2,7 @@ from fenics import *
 import importlib
 import os
 
+import differential_geometry.boundary.geometry as bgeo
 import input_output as io
 import mesh.utils as msh
 import runtime_arguments as rarg
@@ -11,6 +12,7 @@ import switch_problem as swi
 fi = importlib.import_module(swi.fi)
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+vp = importlib.import_module(swi.vp)
 
 
 
@@ -19,7 +21,7 @@ def print_solution(t, step, dt):
 
     #1 unpack the mixed field 
 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy = fsp.psi.split( deepcopy=True )
 
     #2 write to xdmf files
 
@@ -30,6 +32,9 @@ def print_solution(t, step, dt):
     fi.xdmffile_u_dot_n.write(u_dot_n_dummy, t)
 
     fi.xdmffile_c_n.write(c_n_dummy, t)
+
+    fi.xdmffile_mu_n.write(mu_n_dummy, t)
+    fi.xdmffile_grad_u_n.write(grad_u_n_dummy, t)
 
      # 3 write snapshots
 
@@ -48,11 +53,32 @@ def print_solution(t, step, dt):
     io.full_print(c_n_dummy, 'c_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     
+    io.full_print(mu_n_dummy, 'mu_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    io.full_print(grad_u_n_dummy, 'grad_u_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    # 3.1.1 write additional fields
+    io.full_print(
+        project(
+            vp.f_shape(
+                        c_n_dummy, 
+                        u_n_dummy, 
+                        mu_n_dummy, 
+                        bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](vp.sub_mesh_0_label), rmsh.ds_mesh[0]['dS_shape'], interior=True)
+            ), fsp.Q_u_n), 
+        'f_shape_n_' + str(step),
+        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]
+    )
+    
     # 3.2 deformed with u_n
     
     io.full_print_deformed(v_n_dummy, u_n_dummy, 'v_n_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     io.full_print_deformed(sigma_n_dummy, u_n_dummy, 'sigma_n_' + str(step), \
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    io.full_print_deformed(mu_n_dummy, u_n_dummy, 'mu_n_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 
