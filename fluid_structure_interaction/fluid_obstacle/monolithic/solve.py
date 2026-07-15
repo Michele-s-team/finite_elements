@@ -208,10 +208,10 @@ for n in range(rpam.parameters['num_steps']):
     var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
     print('... done.', flush=True)
-    '''
+    
     # now that u_0 is known, I set phi_0(y) = y + u_0(y) also in \partial \Omega^y_square
     fsp.phi_0.assign(fsp.y + fsp.u_0)
-    '''
+    
 
     #3.3.3 compure BCs, ICs and data
     pr_bc.print_bcs(step)
