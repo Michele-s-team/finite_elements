@@ -22,6 +22,10 @@ the variables for the problem are
     - `sigma_square_t` = {sigma_{square T}}_notes
     - `dyds` = {d y_s / ds}_notes for \partial \Omega_O
 
+    - 'u_0' = {u_0}_{Decomposition of deformation field}
+    - 'phi_0' = {phi_0}_{Decomposition of deformation field}
+
+
     - 'mu_n': the curvature of the shape curve x_s in the current configuration
     - 'grad_u_n': grad_u_n[i, j] = \partial u_n_i / \partial y_j
     - f = f_{Curvature} tangent vector to the curve y_s in the reference configuration, extended to the whole domain
@@ -102,6 +106,10 @@ v_lrb = Function(Q_v_n)
 t_t = Function(Q_f)
 sigma_square_t = Function(Q_sigma_n)
 
+phi_0 = Function(Q_u_n)
+u_0 = Function(Q_u_n)
+
+
 #3.2.3 fields for the curvature computation
 
 f = Function(V)
@@ -116,10 +124,12 @@ y.set_allow_extrapolation(True)
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n, nu_mu_n, nu_grad_u_n = TestFunctions(Q)
+nu_u_0 = TestFunction(Q_u_n)
 
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
+J_u_0 = TrialFunction(Q_u_n)
 
 # 3.5 function assigner
 
