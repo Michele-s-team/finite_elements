@@ -218,6 +218,8 @@ for n in range(rpam.parameters['num_steps']):
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
+    # sign add u_0
+
     '''
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     # if step > 1:
