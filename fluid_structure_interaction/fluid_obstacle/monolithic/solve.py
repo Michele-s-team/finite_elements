@@ -84,168 +84,6 @@ msh.generate_square_shape_line_mesh(mesh_parameters['shape_coordinates'], os.pat
 
 print(f'... done.')
 
-'''
-# test n_cur - start
-import calculus as cal 
-import constants.utils as const
-import differential_geometry.boundary.geometry as bgeo
-import numpy as np
-from scipy.optimize import brentq
-
-rmsh = importlib.import_module(swi.rmsh)
-sh = importlib.import_module(swi.sh)
-import solution_paths as solpath
-
-sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
-
- 
-def theta(s):
-    return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ])
-
-
-
-
-# s_0 is the value of the curvilinear coordinate at which the polar angle of y(s) with respect to c is 0
-theta_0 = theta(0)
-# print(f'*** theta(0) = {theta_0 * const.rad_to_deg}')
-
-# 1. Determine  s_0
-# 1.1
-
-if (abs(theta_0) < const.epsilon) or (abs(theta_0 - 2*np.pi) < const.epsilon):
-    # here s_0 = 1
-
-    theta_0 = 0
-
-    # print(f'** Setting s_0 = 1')
-
-    s_0 = 1
-
-else:
-    # theta_0 != 0 -> need to solve for s_0
-
-    # print(f'** Solving for s_0 ... ')
-
-    # 1.1 find two values of s, s_0_L and s_0_R, that bracket s_0, by looking for a pair of values of s, s_i and s_i_plus_1 such that theta(s_i_plus_1) < theta(s_i). This is done by dividing the interval 0 < s < 1 into ~ N_scan interals. Note that N_scan needs to be large enough to resolve the root. 
-    for i_s in range(rpam.parameters['N_scan']+1):
-        
-        if theta((i_s+1)/(rpam.parameters['N_scan']-1)) < theta(i_s/(rpam.parameters['N_scan']-1)): 
-            break
-
-    s_0_L = i_s/(rpam.parameters["N_scan"]-1)
-    s_0_R = (i_s+1)/(rpam.parameters["N_scan"]-1)
-
-    # print(f's_0 lies betwee {s_0_L} and {s_0_R}')
-
-    # 1.2 solve for s_0 by using s_0_L and s_0_R
-    s_0 = brentq(lambda s:  np.arctan((sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1]) / (sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0])), a=s_0_L, b=s_0_R)
-
-    # print(f's_0 = {s_0}\t theta(s_0) = {theta(s_0)}')
-
-    # print(f'... done. ')
-# 
-
-
-
-# return the parameter `s` of the curve `y(s)` corresponding to a point `y` on the plane
-# Input values: 
-#     - `y`: the point in the reference configuration
-# Return values: 
-#     - `s`: the value of the parametric coordinate of the curve `y(s)` such that the point y(s) forms the same polar angle as `y` with respect to `c`
-
-def s_y(y):
-
-    # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
-    theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
-
-    if (abs(theta_y) < const.epsilon) or (abs(theta_y - 2.0 * np.pi) < const.epsilon): 
-        # theta_y takes the special values 0 or 2 pi -> set directly s = s_0
-
-        s = s_0
-
-    else:
-        # theta_y is not equal to 0 nor to 2 pi -> solve for s
-
-        if 0 < theta_y <= theta_0:
-            
-            # 0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
-            
-
-            s_L = s_0 + const.epsilon
-            s_R = 1 + const.epsilon
-            
-            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-                            
-            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1 + const.epsilon)}', flush=True)
-
-        else:
-            # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
-
-            if theta(0 + const.epsilon) < theta_y: 
-
-                s_L = 0 + const.epsilon
-
-            else:
-
-                s_L = 0
-
-            s_R = s_0 - const.epsilon
-
-            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-
-    # print(f'\t s = {s}')
-
-    return s
-
-
-class dyds_expression(UserExpression):
-    def eval(self, values, x):
-
-        # obtain the value of the parametric coordinate `s` corresponding to `x`
-        s = s_y(x)
-
-        values[0] = sh.y_s_dy_ds(s)[1][0]
-        values[1] = sh.y_s_dy_ds(s)[1][1]
-
-    def value_shape(self):
-        return (2,)
-    
-class u_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = x[0]
-        values[1] = x[1]
-
-    def value_shape(self):
-        return (2,)
-
-
-Q_u = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
-Q_dyds = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', 2)
-
-u = Function(Q_u)
-dyds = Function(Q_dyds)
-
-msh.interpolate_dg(dyds, dyds_expression())
-msh.interpolate_dg(u, u_expression())
-
-
-
-n_ref = bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](sub_mesh_0_label), rmsh.ds_mesh[0]['dS_shape'], interior=True)
-
-io.full_print(dyds, 'dyds', \
-    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
-
-io.full_print(n_ref, 'n_ref', \
-    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
-
-io.full_print(project(bgeo.n_cur(n_ref, u, dyds), Q_u), 'n_cur', \
-    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
-
-# test n_cur - end
-'''
-
-
 
 # first load of modules
 import differential_geometry.manifold.geometry as geo
@@ -257,7 +95,10 @@ pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 vp = importlib.import_module(swi.vp)
+import decompose_u as dec_u
+import variational_problem_u_0 as vp_u_0
 
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
@@ -356,7 +197,7 @@ for n in range(rpam.parameters['num_steps']):
     _, _, u_n_dummy_mesh_quality, _, _, _, _ = fsp.psi.split( deepcopy=True )
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
     
-    '''
+    
     #3.3.2 decompose the deformation field
 
     dec_u = importlib.reload(dec_u) 
@@ -367,7 +208,7 @@ for n in range(rpam.parameters['num_steps']):
     var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
 
     print('... done.', flush=True)
-
+    '''
     # now that u_0 is known, I set phi_0(y) = y + u_0(y) also in \partial \Omega^y_square
     fsp.phi_0.assign(fsp.y + fsp.u_0)
     '''

@@ -107,6 +107,11 @@ sigma_square_t = Function(Q_sigma_n)
 f = Function(V)
 nu = Function(V)
 b = Function(Q_grad_u_n)
+# y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
+y = Function(Q_u_n)
+
+y.set_allow_extrapolation(True)
+
 
 
 # 3.3 test functions
