@@ -55,7 +55,8 @@ fieldnames_data = [ \
     'step',
     'u_n_y_min',
     'u_n_y_max',
-    '<u_n_y>_{dx shape}'
+    '<u_n_y>_{dx shape}',
+    'mesh_quality'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

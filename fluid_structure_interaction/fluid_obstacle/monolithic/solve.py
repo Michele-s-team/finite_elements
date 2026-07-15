@@ -10,7 +10,6 @@ Examples:
 
 """
 
-import colorama as col
 import dolfin
 from fenics import *
 import gc
@@ -353,11 +352,11 @@ for n in range(rpam.parameters['num_steps']):
     #3.3 print BCs, ICs, data such as mesh quality, and decompose the deformation field. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
 
-    '''
     #3.3.1 compute mesh quality
-    _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
+    _, _, u_n_dummy_mesh_quality, _, _, _, _ = fsp.psi.split( deepcopy=True )
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
-
+    
+    '''
     #3.3.2 decompose the deformation field
 
     dec_u = importlib.reload(dec_u) 
