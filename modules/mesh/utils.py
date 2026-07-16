@@ -3158,6 +3158,10 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
 
     region_ids = (shape_id, square_id)
 
+    '''
+    sf_f_values[cell_id] = value of the MeshFunction `sf_f` on cell `cell_id`
+    sf_g_values[cell_id] = value of the MeshFunction `sf_g` on cell `cell_id`
+    '''
     sf_f_values = sf_f.array()
     sf_g_values = sf_g.array()
 
