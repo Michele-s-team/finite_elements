@@ -347,7 +347,7 @@ for n in range(rpam.parameters['num_steps']):
         
         # sign add u_0
 
-
+    '''
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
         msh.transfer(v_n_old, fsp.v_input, u_0_old)
