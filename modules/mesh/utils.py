@@ -3134,6 +3134,10 @@ def transfer_dg(f, g, u, cf_f, cf_g):
     '''
     map each DOF of g to the cell of g's mesh that owns it: for a DG space
     every DOF belongs to exactly one cell
+
+    Here
+
+    g_dofmap.cell_dofs(cell.index()) = [ID of 1st DOF sitting on cell `cell`, ID of 2nd DOF sitting on cell `cell`, ... ]
     '''
     g_dofmap = Q_g.dofmap()
     dof_to_cell = np.empty(Q_g.dim(), dtype=np.int64)
