@@ -3112,6 +3112,18 @@ def transfer_dg(f, g, u, cf_f, cf_g):
     g_mesh = Q_g.mesh()
     g_dim = g_mesh.geometry().dim()
 
+
+    '''
+    g_dof_coordinates_all stores the coordinates of the points where DOFs sit. Because the field 'g' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
+    For example, dof_coordinates is of the form ->
+        row 0:  [x0, y0]   ← this corresponds to g[0] at DOF point 0
+        row 1:  [x0, y0]   ← this corresponds to g[1] at DOF point 0
+        ...
+        row value_size  [x1, y1]   ← this corresponds to g[0] at DOF point 1
+        row value_size+1 [x1, y1]   ← this corresponds to g[1] at DOF point 1
+        ...
+        
+    '''
     g_dof_coordinates_all = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
 
     '''
