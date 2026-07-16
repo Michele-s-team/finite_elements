@@ -3133,7 +3133,7 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
     '''
     g_dof_coordinates = g_dof_coordinates_all[::g_value_size]
 
-    print(f'DOF coordinates = {g_dof_coordinates}')
+    print(f'g DOF coordinates = {np.array2string(g_dof_coordinates, threshold=np.inf)}', flush=True)
 
     '''
     map each DOF of g to the cell of g's mesh that owns it: for a DG space
@@ -3153,7 +3153,7 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
     for cell in cells(g_mesh):
         dof_to_cell[g_dofmap.cell_dofs(cell.index())] = cell.index()
 
-    print(f'DOF to cell = {dof_to_cell}')
+    print(f'DOF to cell = {np.array2string(dof_to_cell, threshold=np.inf)}', flush=True)
 
 
     region_ids = (shape_id, square_id)
