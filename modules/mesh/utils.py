@@ -3219,7 +3219,7 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
             print(f'Error: no cells have been found!\n x = {x}')
 
         for j in range(g_value_size):
-            # run through all components of the field f and write them into g
+            # run through all components of the field f and write `value`, i.e., the value of `f` on the DOF under consideration, into g
 
             g.vector()[g_value_size * i + j] = values[j]
             
