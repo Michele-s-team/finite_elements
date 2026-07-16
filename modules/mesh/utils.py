@@ -3084,6 +3084,88 @@ def transfer(f, g, u):
 
 
 '''
+DG-safe version of `transfer`. Plain point evaluation f_def(x) picks an
+arbitrary containing cell when x lies on a facet/vertex, destroying the jump
+across the interface. Here each g-DOF is evaluated with eval_cell, on the
+cell of f_def's mesh that belongs to the same subdomain as the cell of g's
+mesh owning that DOF.
+Input values:
+    - 'f': function on mesh A
+    - 'g': function on mesh B
+    - 'u': displacement field, defined on mesh A
+    - 'cf_f': cell MeshFunction with subdomain markers on mesh A
+    - 'cf_g': cell MeshFunction with subdomain markers on mesh B
+'''
+def transfer_dg(f, g, u, cf_f, cf_g):
+
+    f_def = fu.deform_function(f, u)
+    f_def.set_allow_extrapolation(True)
+
+    mesh_f = f_def.function_space().mesh()
+    tree_f = mesh_f.bounding_box_tree()
+
+    Q_g = g.function_space()
+
+    g_value_shape = Q_g.ufl_element().value_shape()
+    g_value_size = int(np.prod(g_value_shape))
+
+    g_mesh = Q_g.mesh()
+    g_dim = g_mesh.geometry().dim()
+
+    g_dof_coordinates_all = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
+
+    '''
+    subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    '''
+    g_dof_coordinates = g_dof_coordinates_all[::g_value_size]
+
+    '''
+    map each DOF of g to the cell of g's mesh that owns it: for a DG space
+    every DOF belongs to exactly one cell
+    '''
+    g_dofmap = Q_g.dofmap()
+    dof_to_cell = np.empty(Q_g.dim(), dtype=np.int64)
+    for cell in cells(g_mesh):
+        dof_to_cell[g_dofmap.cell_dofs(cell.index())] = cell.index()
+
+    cf_f_values = cf_f.array()
+    cf_g_values = cf_g.array()
+
+    values = np.empty(g_value_size)
+
+    # write the values of f into g
+    for i in range(len(g_dof_coordinates)):
+        # run through all unique DOF coordinates
+
+        x = g_dof_coordinates[i]
+
+        # subdomain marker of the g-cell that owns this DOF
+        marker = cf_g_values[dof_to_cell[g_value_size * i]]
+
+        # all cells of f_def's mesh whose closure contains x
+        candidate_cells = tree_f.compute_entity_collisions(Point(*x))
+
+        # among the candidates, pick the one in the same subdomain
+        cell_index = -1
+        for c in candidate_cells:
+            if cf_f_values[c] == marker:
+                cell_index = c
+                break
+
+        if cell_index >= 0:
+            f_def.eval_cell(values, x, Cell(mesh_f, cell_index))
+        else:
+            # x lies outside f_def's mesh or outside the matching subdomain
+            # (e.g. tiny boundary-discretization mismatch after remeshing)
+            # -> fall back to plain evaluation with extrapolation
+            values[:] = np.atleast_1d(f_def(x))
+
+        for j in range(g_value_size):
+            # run through all components of the field f and write them into g
+
+            g.vector()[g_value_size * i + j] = values[j]
+
+'''
 given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
 
 Input values: 
