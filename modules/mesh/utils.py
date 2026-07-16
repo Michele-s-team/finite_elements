@@ -3181,7 +3181,6 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
         '''
         DOF_region_tag = sf_g_values[dof_to_cell[g_value_size * i]]
 
-        # sign
 
         # all cells of f_def's mesh whose closure contains x
         candidate_f_cells = tree_f.compute_entity_collisions(Point(*x))
@@ -3208,10 +3207,16 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
             print(f'wrote into values = {values}')
 
         else:
+
+            # sign
+
+
             # x lies outside f_def's mesh or outside the matching region
             # (e.g. tiny boundary-discretization mismatch after remeshing)
             # -> fall back to plain evaluation with extrapolation
             values[:] = np.atleast_1d(f_def(x))
+
+            print(f'Error: no cells have been found!\n x = {x}')
 
         for j in range(g_value_size):
             # run through all components of the field f and write them into g
