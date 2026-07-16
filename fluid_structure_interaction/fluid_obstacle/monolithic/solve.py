@@ -276,7 +276,6 @@ for n in range(rpam.parameters['num_steps']):
         phi_0_old.assign(fsp.phi_0)
         u_0_old.assign(fsp.u_0)
 
-        # sign add u_0
 
 
         '''
@@ -295,10 +294,12 @@ for n in range(rpam.parameters['num_steps']):
 
         # Right before remesh, the deformation field is u_n, which corresponds to phi_n. 
         # We decompose phi_n into 
-        #     - a part `phi_0(y)` that preserves the elastic energy, which is a comination of a rotation and a rigid translation, 
+        #     - a part `phi_0(y)` which is a comination of a rotation and a rigid translation, 
         #     - a part `u'(y)` that cannot be written as a combination of a rotation and a rigid translation. 
 
         # We trace the coordinates of shape vertices right after remeshing according to phi_0: these will be the coordinates of the new reference configuration of the shape. 
+
+
 
         # Right after remeshing, the iteration starts with reference coordinates y' = phi_0(y), and with a nonzero deformation u'(phi_0^{-1}(y')) with respect to this reference configuration phi_0. 
         
@@ -312,17 +313,15 @@ for n in range(rpam.parameters['num_steps']):
             coordinate = mesh_0_parameters["shape_coordinates"][i]
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
-            # shape_coordinates.append(np.add(
-            #                             coordinate,
-            #                             fsp.u_0(coordinate)
-            #                             ).tolist()
-            #                     )
               
             shape_coordinates.append((dec_u.phi_0_expression()(coordinate)).tolist())
 
         #4.2.1 generate the mesh with the new shape_coordinates
 
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+        # sign add u_0
+
 
         #4.3 reload modules so everything is updated according to the mesh change
 
