@@ -121,7 +121,7 @@ f = Function(fsp.Q_sigma_n)
 class f_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 1.0
+        values[0] = 1.0 + x[0]**2 + 2*x[1]**2
 
     def value_shape(self):
         return (1,)
@@ -129,7 +129,7 @@ class f_shape_expression(UserExpression):
 class f_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 2.0
+        values[0] =  2.0 - x[0]**2 - x[1]**2
 
     def value_shape(self):
         return (1,)
