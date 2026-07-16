@@ -3092,10 +3092,8 @@ Input values:
     - 'u': displacement field, defined on mesh A
     - 'sf_f': cell MeshFunction ("size_t") marking the triangles of mesh A 
     - 'sf_g': cell MeshFunction ("size_t") marking the triangles of mesh B
-    - 'shape_id': tag with which the shape region is marked in sf_f and sf_g 
-    - 'square_id': tag with which the square region is marked in sf_f and sf_g 
 '''
-def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
+def transfer_dg(f, g, u, sf_f, sf_g):
 
     f_def = fu.deform_function(f, u)
     f_def.set_allow_extrapolation(True)
@@ -3151,9 +3149,6 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
         dof_to_cell[g_dofmap.cell_dofs(cell.index())] = cell.index()
 
     print(f'DOF to cell = {np.array2string(dof_to_cell, threshold=np.inf)}', flush=True)
-
-
-    region_ids = (shape_id, square_id)
 
     '''
     sf_f_values[cell_id] = value of the MeshFunction `sf_f` on cell `cell_id`

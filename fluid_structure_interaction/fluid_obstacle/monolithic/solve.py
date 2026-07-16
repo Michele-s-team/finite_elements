@@ -206,9 +206,7 @@ msh.transfer_dg(f,
                 g, 
                 u_0_old,
                 sf_old, 
-                rmsh.sf[0], 
-                rmsh.lmsh.parameters["sub_mesh_0_0_id"], 
-                rmsh.lmsh.parameters["sub_mesh_0_1_id"])
+                rmsh.sf[0])
 
 
 io.full_print(g, 'g', \
