@@ -251,6 +251,30 @@ for n in range(rpam.parameters['num_steps']):
         phi_0_old = Function(fsp.Q_u_n)
         u_0_old = Function(fsp.Q_u_n)
 
+        # test transfer_dg - start
+        f = Function(fsp.Q_sigma_n)
+
+        class f_shape_expression(UserExpression):
+            def eval(self, values, x):
+
+                values[0] = 1.0
+
+            def value_shape(self):
+                return (1,)
+            
+        class f_square_expression(UserExpression):
+            def eval(self, values, x):
+
+                values[0] = 2.0
+
+            def value_shape(self):
+                return (1,)
+            
+
+        msh.interpolate_dg(f, f_shape_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
+        msh.interpolate_dg(f, f_square_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_1_id'])
+        # test transfer_dg - end
+
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field 
@@ -348,15 +372,24 @@ for n in range(rpam.parameters['num_steps']):
         # sign add u_0
 
         # test transfer_dg - start
+        import solution_paths as solpath
+
+        g = Function(fsp.Q_sigma_n)
 
         print(f'Transfering DG ... ')
-        msh.transfer_dg(sigma_n_old, 
-                        fsp.sigma_input, 
+        msh.transfer_dg(f, 
+                        g, 
                         u_0_old,
                         sf_old, 
                         rmsh.sf[0], 
                         rmsh.lmsh.parameters["sub_mesh_0_0_id"], 
                         rmsh.lmsh.parameters["sub_mesh_0_1_id"])
+        
+
+        io.full_print(f, 'f', \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+        io.full_print(g, 'g', \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
         
         print(f'... done.')
 
