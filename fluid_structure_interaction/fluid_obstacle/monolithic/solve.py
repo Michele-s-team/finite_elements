@@ -252,6 +252,8 @@ for n in range(rpam.parameters['num_steps']):
         u_0_old = Function(fsp.Q_u_n)
 
         # test transfer_dg - start
+        import solution_paths as solpath
+
         f = Function(fsp.Q_sigma_n)
 
         class f_shape_expression(UserExpression):
@@ -273,6 +275,10 @@ for n in range(rpam.parameters['num_steps']):
 
         msh.interpolate_dg(f, f_shape_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
         msh.interpolate_dg(f, f_square_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_1_id'])
+
+
+        io.full_print(f, 'f', \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
         # test transfer_dg - end
 
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
@@ -372,7 +378,6 @@ for n in range(rpam.parameters['num_steps']):
         # sign add u_0
 
         # test transfer_dg - start
-        import solution_paths as solpath
 
         g = Function(fsp.Q_sigma_n)
 
@@ -386,8 +391,6 @@ for n in range(rpam.parameters['num_steps']):
                         rmsh.lmsh.parameters["sub_mesh_0_1_id"])
         
 
-        io.full_print(f, 'f', \
-                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
         io.full_print(g, 'g', \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
         
