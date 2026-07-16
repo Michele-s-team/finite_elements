@@ -3165,6 +3165,9 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
     sf_f_values = sf_f.array()
     sf_g_values = sf_g.array()
 
+    '''
+    values is an array whose length is the number of components of the `f` 
+    '''
     values = np.empty(g_value_size)
 
     # write the values of f into g
@@ -3195,7 +3198,15 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
                 break
 
         if cell_index >= 0:
+            '''
+            a cell whose region tag is the same as   `DOF_region_tag` has been found -> write into `values` the value of `f_def` corresponding to cell `cell_index`
+            f_def may be discontinuous across cells, and here its value relative to cell `cell_index` is used
+            '''
+
             f_def.eval_cell(values, x, Cell(mesh_f, cell_index))
+
+            print(f'wrote into values = {values}')
+
         else:
             # x lies outside f_def's mesh or outside the matching region
             # (e.g. tiny boundary-discretization mismatch after remeshing)
