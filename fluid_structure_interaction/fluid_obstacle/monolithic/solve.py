@@ -10,6 +10,7 @@ Examples:
 
 """
 
+import colorama as col
 import dolfin
 from fenics import *
 import gc
@@ -218,9 +219,8 @@ for n in range(rpam.parameters['num_steps']):
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
-    # sign add u_0
 
-    '''
+    
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     # if step > 1:
 
@@ -239,8 +239,14 @@ for n in range(rpam.parameters['num_steps']):
         sigma_n_old = Function(fsp.Q_sigma_n)
 
         u_n_old = Function(fsp.Q_u_n)
+        u_n_1_old = Function(fsp.Q_u_n)
         u_dot_n_old = Function(fsp.Q_u_dot_n)
         u_dot_n_1_old = Function(fsp.Q_u_dot_n)
+
+        c_n_old = Function(fsp.Q_sigma_n)
+        c_n_1_old = Function(fsp.Q_sigma_n)
+
+        mu_n_old = Function(fsp.Q_mu_n)
 
         phi_n_old = Function(fsp.Q_u_n)
         phi_0_old = Function(fsp.Q_u_n)
@@ -249,7 +255,7 @@ for n in range(rpam.parameters['num_steps']):
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field 
-        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, _ = fsp.psi.split( deepcopy=True )
 
         # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
@@ -258,14 +264,22 @@ for n in range(rpam.parameters['num_steps']):
         sigma_n_old.assign(sigma_n_dummy)
 
         u_n_old.assign(u_n_dummy)
+        u_n_1_old.assign(fsp.u_n_1)
         u_dot_n_old.assign(u_dot_n_dummy)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
+
+        c_n_old.assign(c_n_dummy)
+
+        mu_n_old.assign(mu_n_dummy)
 
         phi_n_old.assign(project(fsp.y + u_n_dummy, fsp.Q_u_n))
         phi_0_old.assign(fsp.phi_0)
         u_0_old.assign(fsp.u_0)
 
+        # sign add u_0
 
+
+        '''
                 
         # 4.1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
         
@@ -275,7 +289,7 @@ for n in range(rpam.parameters['num_steps']):
 
         msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
-
+        '''
         
         # 4.2
 
