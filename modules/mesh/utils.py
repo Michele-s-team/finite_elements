@@ -3181,11 +3181,13 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
         # sign
 
         # all cells of f_def's mesh whose closure contains x
-        candidate_cells = tree_f.compute_entity_collisions(Point(*x))
+        candidate_f_cells = tree_f.compute_entity_collisions(Point(*x))
+
+        print(f'candidate_f_cells = {candidate_f_cells}')
 
         # among the candidates, pick one lying in the same region
         cell_index = -1
-        for c in candidate_cells:
+        for c in candidate_f_cells:
             if sf_f_values[c] == DOF_id:
                 cell_index = c
                 break
