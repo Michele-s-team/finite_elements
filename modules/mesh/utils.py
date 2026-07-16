@@ -3185,7 +3185,7 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
         # all cells of f_def's mesh whose closure contains x
         candidate_f_cells = tree_f.compute_entity_collisions(Point(*x))
 
-        print(f'candidate_f_cells = {candidate_f_cells}')
+        # print(f'candidate_f_cells = {candidate_f_cells}')
 
         '''
         run through `candidate_f_cells` and stop as soon as one finds a cell whose region tag is the same as   `DOF_region_tag`
@@ -3204,19 +3204,38 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
 
             f_def.eval_cell(values, x, Cell(mesh_f, cell_index))
 
-            print(f'wrote into values = {values}')
+            # print(f'wrote into values = {values}')
 
         else:
 
             # sign
 
+            # x is contained in no cell of the matching region: the deformed old mesh and the new mesh mismatch by a tiny amount at the boundaries (solver tolerance / coordinate round-trip). Extrapolate from the nearest cell OF THE MATCHING REGION, so the evaluation stays on the correct side of the interface
 
-            # x lies outside f_def's mesh or outside the matching region
-            # (e.g. tiny boundary-discretization mismatch after remeshing)
-            # -> fall back to plain evaluation with extrapolation
-            values[:] = np.atleast_1d(f_def(x))
+            distance_min = np.inf
 
-            print(f'Error: no cells have been found!\n x = {x}')
+            for c in cells(mesh_f):
+                # run through all cells in `mesh_f`
+
+                if sf_f_values[c.index()] == DOF_region_tag:
+                    # the cell under consideration has the same region tag as `DOF_region_tag`
+
+                    distance = c.distance(Point(*x))
+
+                    if distance < distance_min:
+
+                        distance_min = distance
+                        cell_index_nearest = c.index()
+
+            '''
+            at the end of the loop `distance_min` is the distance to the closes cell to the DOF under consideration which has tag `DOF_region_tag`, and `cell_index_nearest` is the index of such cell
+
+            write into `values` the DOF of `f_def` computed on `x`: f_def may be discontinuous across cells, and here its value relative to cell `cell_index_nearest` is used
+            '''
+
+            f_def.eval_cell(values, x, Cell(mesh_f, cell_index_nearest))
+
+            print(f'Warning: transfer_dg fallback at x = {x}, tag = {DOF_region_tag}, extrapolated from cell at distance {distance_min:e}', flush=True)
 
         for j in range(g_value_size):
             # run through all components of the field f and write `value`, i.e., the value of `f` on the DOF under consideration, into g
