@@ -320,7 +320,6 @@ for n in range(rpam.parameters['num_steps']):
 
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
-        # sign add u_0
 
 
         #4.3 reload modules so everything is updated according to the mesh change
@@ -331,6 +330,7 @@ for n in range(rpam.parameters['num_steps']):
         importlib.reload(bgeo)
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
+        sh = importlib.reload(sh)
         pr_bc = importlib.reload(pr_bc)
         pr_ic = importlib.reload(pr_ic)
         pr_da = importlib.reload(pr_da)
@@ -345,6 +345,8 @@ for n in range(rpam.parameters['num_steps']):
         #     A) trasnfer the field with phi_0_old (u_0_0ld)
         #     B) set a nonzero deformation u' with respect to the reference coordinates y'
         
+        # sign add u_0
+
 
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
