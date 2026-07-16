@@ -3083,20 +3083,17 @@ def transfer(f, g, u):
         g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
 
 '''
-DG-safe version of `transfer`. Plain point evaluation f_def(x) picks an
-arbitrary containing cell when x lies on a facet/vertex, destroying the jump
-across the shape interface. Here each g-DOF is evaluated with eval_cell, on
-the cell of f_def's mesh that belongs to the same region (shape or square)
-as the cell of g's mesh owning that DOF.
+given a DG field f (scalar, vector, or tensor) on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a DG field g (same type as f) on mesh B, set g equal to f
+This method is extends `transfter` to DG fields. 
 
 Input values:
     - 'f': function on mesh A
     - 'g': function on mesh B
     - 'u': displacement field, defined on mesh A
-    - 'sf_f': cell MeshFunction ("size_t") marking the triangles of mesh A (e.g. rmsh.sf[0] before remeshing)
-    - 'sf_g': cell MeshFunction ("size_t") marking the triangles of mesh B (e.g. rmsh.sf[0] after remeshing)
-    - 'shape_id': tag with which the shape region is marked in sf_f and sf_g (e.g. lmsh.parameters['sub_mesh_0_0_id'])
-    - 'square_id': tag with which the square region is marked in sf_f and sf_g (e.g. lmsh.parameters['sub_mesh_0_1_id'])
+    - 'sf_f': cell MeshFunction ("size_t") marking the triangles of mesh A 
+    - 'sf_g': cell MeshFunction ("size_t") marking the triangles of mesh B
+    - 'shape_id': tag with which the shape region is marked in sf_f and sf_g 
+    - 'square_id': tag with which the square region is marked in sf_f and sf_g 
 '''
 def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
 
