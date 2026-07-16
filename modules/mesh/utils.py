@@ -3176,7 +3176,7 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
         '''
         given the DOF under consideration, store into `DOF_id` the value of the MeshFunction `sf_g` on the cell to which the DOF belongs
         '''
-        DOF_id = sf_g_values[dof_to_cell[g_value_size * i]]
+        DOF_region_tag = sf_g_values[dof_to_cell[g_value_size * i]]
 
         # sign
 
@@ -3185,10 +3185,12 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
 
         print(f'candidate_f_cells = {candidate_f_cells}')
 
-        # among the candidates, pick one lying in the same region
+        '''
+        run through `candidate_f_cells` and stop as soon as one finds a cell whose region tag is the same as   `DOF_region_tag`
+        '''
         cell_index = -1
         for c in candidate_f_cells:
-            if sf_f_values[c] == DOF_id:
+            if sf_f_values[c] == DOF_region_tag:
                 cell_index = c
                 break
 
