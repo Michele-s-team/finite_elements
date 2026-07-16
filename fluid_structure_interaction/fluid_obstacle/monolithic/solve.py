@@ -221,8 +221,8 @@ for n in range(rpam.parameters['num_steps']):
 
 
     
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    # if step > 1:
+    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    if True:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 
@@ -274,6 +274,8 @@ for n in range(rpam.parameters['num_steps']):
         phi_0_old.assign(fsp.phi_0)
         u_0_old.assign(fsp.u_0)
 
+        #4.1.1.2.3 store the marker function of the old mesh (the reference keeps the old MeshFunction and its mesh alive through the module reloads)
+        sf_old = rmsh.sf[0]
 
 
         '''
@@ -344,6 +346,25 @@ for n in range(rpam.parameters['num_steps']):
         #     B) set a nonzero deformation u' with respect to the reference coordinates y'
         
         # sign add u_0
+
+        # test transfer_dg - start
+
+        print(f'Transfering DG ... ')
+        msh.transfer_dg(sigma_n_old, 
+                        fsp.sigma_input, 
+                        u_0_old,
+                        sf_old, 
+                        rmsh.sf[0], 
+                        rmsh.lmsh.parameters["sub_mesh_0_0_id"], 
+                        rmsh.lmsh.parameters["sub_mesh_0_1_id"])
+        
+        print(f'... done.')
+
+        sys.exit(1)
+        #  test transfer_dg - end
+
+
+
 
     '''
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
