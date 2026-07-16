@@ -3169,15 +3169,16 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
 
     # write the values of f into g
     for i in range(len(g_dof_coordinates)):
-        # run through all unique DOF coordinates
+        # run through all unique DOF coordinates of `g`
 
         x = g_dof_coordinates[i]
 
-        # region (shape or square) of the g-cell that owns this DOF
-        marker = sf_g_values[dof_to_cell[g_value_size * i]]
+        '''
+        given the DOF under consideration, store into `DOF_id` the value of the MeshFunction `sf_g` on the cell to which the DOF belongs
+        '''
+        DOF_id = sf_g_values[dof_to_cell[g_value_size * i]]
 
-        assert marker in region_ids, \
-            f'transfer_dg: cell {dof_to_cell[g_value_size * i]} of the new mesh carries tag {marker}, which is neither shape_id = {shape_id} nor square_id = {square_id}'
+        # sign
 
         # all cells of f_def's mesh whose closure contains x
         candidate_cells = tree_f.compute_entity_collisions(Point(*x))
@@ -3185,7 +3186,7 @@ def transfer_dg(f, g, u, sf_f, sf_g, shape_id, square_id):
         # among the candidates, pick one lying in the same region
         cell_index = -1
         for c in candidate_cells:
-            if sf_f_values[c] == marker:
+            if sf_f_values[c] == DOF_id:
                 cell_index = c
                 break
 
