@@ -241,7 +241,6 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old = Function(fsp.Q_u_n)
         u_n_1_old = Function(fsp.Q_u_n)
         u_dot_n_old = Function(fsp.Q_u_dot_n)
-        u_dot_n_1_old = Function(fsp.Q_u_dot_n)
 
         c_n_old = Function(fsp.Q_sigma_n)
         c_n_1_old = Function(fsp.Q_sigma_n)
@@ -266,7 +265,6 @@ for n in range(rpam.parameters['num_steps']):
         u_n_old.assign(u_n_dummy)
         u_n_1_old.assign(fsp.u_n_1)
         u_dot_n_old.assign(u_dot_n_dummy)
-        u_dot_n_1_old.assign(fsp.u_dot_n_1)
 
         c_n_old.assign(c_n_dummy)
 
