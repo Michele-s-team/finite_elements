@@ -113,11 +113,10 @@ import solution_paths as solpath
 
 
 theta = np.pi/8.0
-t = [0.2,-1.0]
+t = [0.5,-1.0]
 c = [5.0, 5.0]
 
 f = Function(fsp.Q_sigma_n)
-g = Function(fsp.Q_sigma_n)
 
 class f_shape_expression(UserExpression):
     def eval(self, values, x):
@@ -162,23 +161,58 @@ print('... done.', flush=True)
 io.full_print(fsp.u_0, 'u_0', \
         solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
-
 io.full_print(f, 'f', \
         solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 
-# print(f'Transfering DG ... ')
-# msh.transfer_dg(f, 
-#                 g, 
-#                 u_0_old,
-#                 sf_old, 
-#                 rmsh.sf[0], 
-#                 rmsh.lmsh.parameters["sub_mesh_0_0_id"], 
-#                 rmsh.lmsh.parameters["sub_mesh_0_1_id"])
+u_0_old = Function(fsp.Q_u_n)
+u_0_old.assign(fsp.u_0)
+sf_old = rmsh.sf[0]
+
+# ---- remesh ---- 
+
+mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
+shape_coordinates = []
+for i in range(len(mesh_0_parameters["shape_coordinates"])):
+    # run through all coordinates of the nodes of the boundary
+
+    coordinate = mesh_0_parameters["shape_coordinates"][i]
+
+    # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
+        
+    shape_coordinates.append((phi_0_expression()(coordinate)).tolist())
+
+#4.2.1 generate the mesh with the new shape_coordinates
+
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+importlib.reload(geo)
+importlib.reload(rmsh.lmsh)
+importlib.reload(bgeo)
+fsp = importlib.reload(fsp)
+rmsh = importlib.reload(rmsh)
+sh = importlib.reload(sh)
+pr_bc = importlib.reload(pr_bc)
+pr_ic = importlib.reload(pr_ic)
+pr_da = importlib.reload(pr_da)
+pr_sol = importlib.reload(pr_sol)
+
+g = Function(fsp.Q_sigma_n)
 
 
-# io.full_print(g, 'g', \
-#         solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+print(f'Transfering DG ... ')
+msh.transfer_dg(f, 
+                g, 
+                u_0_old,
+                sf_old, 
+                rmsh.sf[0], 
+                rmsh.lmsh.parameters["sub_mesh_0_0_id"], 
+                rmsh.lmsh.parameters["sub_mesh_0_1_id"])
+
+
+io.full_print(g, 'g', \
+        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
 
 print(f'... done.\n----------\n----------\n----------\n----------\n----------')
 
