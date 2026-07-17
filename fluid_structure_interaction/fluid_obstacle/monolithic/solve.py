@@ -340,8 +340,8 @@ for n in range(rpam.parameters['num_steps']):
 
 
     
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    # if True:
+    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    if True:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 
@@ -538,7 +538,7 @@ for n in range(rpam.parameters['num_steps']):
     
         # 4.4.2 write the profiles of fields right after remeshing into the mixed field psi
         
-        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input, fsp.c_input, fsp.mu_input, fsp.grad_u_n_input])
+        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input, fsp.c_input, fsp.mu_input, fsp.grad_u_input])
 
 
         #4.4.3 clean up
