@@ -533,9 +533,7 @@ for n in range(rpam.parameters['num_steps']):
         #4.4.1.3 transfer the fields for the post-processing problem
 
         msh.transfer_dg(mu_n_old, fsp.mu_input, u_0_old, sf_old, rmsh.sf[0])
-
         fsp.grad_u_input.assign(project(as_tensor(fsp.u_input[alpha].dx(beta), (alpha, beta)), fsp.Q_grad_u_n))
-
 
     
         # 4.4.2 write the profiles of fields right after remeshing into the mixed field psi
