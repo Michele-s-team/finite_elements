@@ -12,7 +12,7 @@ the variables for the problem are
     - `v_n`, `v_n_1` : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
     - 'u_n', 'u_n_1: u^n, u^{n-1} in notes
-    - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
+    - 'u_dot_n': \dot{u}^n in notes
     - 'c_n', 'c_n_1' = \textrm{c}^n_notes, \textrm{c}^{n-1}_notes
 
     - `v_lrb` = {g^n}_notes
