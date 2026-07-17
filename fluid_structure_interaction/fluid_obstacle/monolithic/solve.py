@@ -22,6 +22,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import function as fu
 import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
@@ -472,9 +473,8 @@ for n in range(rpam.parameters['num_steps']):
         msh.transfer_dg(c_n_old, fsp.c_input, u_0_old, sf_old, rmsh.sf[0])
         msh.transfer_dg(c_n_1_old, fsp.c_n_1, u_0_old, sf_old, rmsh.sf[0])
 
-        # sign add u_0
 
-    '''
+    
         #4.4.1.2 Step B): set the initial u'
 
         #4.4.1.2.1 set u_input
@@ -501,6 +501,9 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (15) in 'Decomposition of deformation field' 
         fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
 
+    # sign add u_0
+
+    '''
         #4.4.1.2.2 set u_dot_input
 
 
