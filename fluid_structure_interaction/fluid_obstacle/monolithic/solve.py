@@ -501,9 +501,8 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (15) in 'Decomposition of deformation field' 
         fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
 
-    # sign add u_0
 
-    '''
+    
         #4.4.1.2.2 set u_dot_input
 
 
@@ -526,9 +525,13 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (16) in 'Decomposition of deformation field' 
         fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
 
+    # sign add u_0
+
+    '''
         # 4.4.2 write the profiles of fields right after remeshing into the mixed field psi
         
         fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
+
 
         #4.4.3 clean up
 
