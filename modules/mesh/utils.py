@@ -3128,7 +3128,7 @@ def transfer_dg(f, g, u, sf_f, sf_g):
     '''
     g_dof_coordinates = g_dof_coordinates_all[::g_value_size]
 
-    print(f'g DOF coordinates = {np.array2string(g_dof_coordinates, threshold=np.inf)}', flush=True)
+    # print(f'g DOF coordinates = {np.array2string(g_dof_coordinates, threshold=np.inf)}', flush=True)
 
     '''
     map each DOF of g to the cell of g's mesh that owns it: for a DG space
@@ -3148,7 +3148,7 @@ def transfer_dg(f, g, u, sf_f, sf_g):
     for cell in cells(g_mesh):
         dof_to_cell[g_dofmap.cell_dofs(cell.index())] = cell.index()
 
-    print(f'DOF to cell = {np.array2string(dof_to_cell, threshold=np.inf)}', flush=True)
+    # print(f'DOF to cell = {np.array2string(dof_to_cell, threshold=np.inf)}', flush=True)
 
     '''
     sf_f_values[cell_id] = value of the MeshFunction `sf_f` on cell `cell_id`
@@ -3227,7 +3227,7 @@ def transfer_dg(f, g, u, sf_f, sf_g):
 
             f_def.eval_cell(values, x, Cell(mesh_f, cell_index_nearest))
 
-            print(f'Warning: transfer_dg fallback at x = {x}, tag = {DOF_region_tag}, extrapolated from cell at distance {distance_min:e}', flush=True)
+            # print(f'Warning: transfer_dg fallback at x = {x}, tag = {DOF_region_tag}, extrapolated from cell at distance {distance_min:e}', flush=True)
 
         for j in range(g_value_size):
             # run through all components of the field f and write `value`, i.e., the value of `f` on the DOF under consideration, into g
