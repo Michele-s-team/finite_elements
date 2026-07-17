@@ -48,8 +48,8 @@ params = {'nonlinear_solver': 'newton',
                   'linear_solver': 'superlu',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
+                  'maximum_iterations': 1000,
+                #   'relaxation_parameter': 0.95,
               }
           }
 
@@ -340,8 +340,8 @@ for n in range(rpam.parameters['num_steps']):
 
 
     
-    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if True:
+    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    # if True:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 
