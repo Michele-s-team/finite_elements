@@ -461,21 +461,20 @@ for n in range(rpam.parameters['num_steps']):
         #     A) trasnfer the field with phi_0_old (u_0_0ld)
         #     B) set a nonzero deformation u' with respect to the reference coordinates y'
         
-        # sign add u_0
 
-
-
-
-
-    '''
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
-        msh.transfer(v_n_old, fsp.v_input, u_0_old)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
+        msh.transfer_dg(v_n_old, fsp.v_input, u_0_old, sf_old, rmsh.sf[0])
+        msh.transfer_dg(v_n_1_old, fsp.v_n_1, u_0_old, sf_old, rmsh.sf[0])
 
-        msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
+        msh.transfer_dg(sigma_n_old, fsp.sigma_input, u_0_old, sf_old, rmsh.sf[0])
 
+        msh.transfer_dg(c_n_old, fsp.c_input, u_0_old, sf_old, rmsh.sf[0])
+        msh.transfer_dg(c_n_1_old, fsp.c_n_1, u_0_old, sf_old, rmsh.sf[0])
 
+        # sign add u_0
+
+    '''
         #4.4.1.2 Step B): set the initial u'
 
         #4.4.1.2.1 set u_input
