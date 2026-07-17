@@ -104,7 +104,7 @@ import variational_problem_u_0 as vp_u_0
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-
+'''
 # test transfer_dg - start
 
 import calculus as cal
@@ -215,7 +215,7 @@ io.full_print(g, 'g', \
 print(f'... done.\n----------\n----------\n----------\n----------\n----------')
 
 #  test transfer_dg - end
-
+'''
 
 
 # 1. store metadata
