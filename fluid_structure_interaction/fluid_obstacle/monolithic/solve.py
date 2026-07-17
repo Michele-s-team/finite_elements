@@ -104,6 +104,120 @@ import variational_problem_u_0 as vp_u_0
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
+
+# test transfer_dg - start
+
+import calculus as cal
+import numpy as np
+import solution_paths as solpath
+
+
+theta = np.pi/8.0
+t = [0.5,-1.0]
+c = [5.0, 5.0]
+
+f = Function(fsp.Q_sigma_n)
+
+class f_shape_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 1.0 + x[0]**2 + 2*x[1]**2
+
+    def value_shape(self):
+        return (1,)
+    
+class f_square_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] =  2.0 - x[0]**2 - x[1]**2
+
+    def value_shape(self):
+        return (1,)
+    
+
+msh.interpolate_dg(f, f_shape_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(f, f_square_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_1_id'])
+
+
+class phi_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        result = cal.rotation_translation(x, theta, c, t)
+
+        values[0] = result[0]
+        values[1] = result[1]
+
+    def value_shape(self):
+        return (2,)
+
+msh.interpolate_dg(fsp.phi_0, phi_0_expression(), rmsh.sf[0], rmsh.parameters['sub_mesh_0_0_id'])
+
+print('Solving for u_0 ... ')
+
+var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0)
+
+print('... done.', flush=True)
+
+io.full_print(fsp.u_0, 'u_0', \
+        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
+io.full_print(f, 'f', \
+        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
+
+u_0_old = Function(fsp.Q_u_n)
+u_0_old.assign(fsp.u_0)
+sf_old = rmsh.sf[0]
+
+# ---- remesh ---- 
+
+mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
+shape_coordinates = []
+for i in range(len(mesh_0_parameters["shape_coordinates"])):
+    # run through all coordinates of the nodes of the boundary
+
+    coordinate = mesh_0_parameters["shape_coordinates"][i]
+
+    # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
+        
+    shape_coordinates.append((phi_0_expression()(coordinate)).tolist())
+
+#4.2.1 generate the mesh with the new shape_coordinates
+
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+importlib.reload(geo)
+importlib.reload(rmsh.lmsh)
+importlib.reload(bgeo)
+fsp = importlib.reload(fsp)
+rmsh = importlib.reload(rmsh)
+sh = importlib.reload(sh)
+pr_bc = importlib.reload(pr_bc)
+pr_ic = importlib.reload(pr_ic)
+pr_da = importlib.reload(pr_da)
+pr_sol = importlib.reload(pr_sol)
+
+g = Function(fsp.Q_sigma_n)
+
+
+print(f'Transfering DG ... ')
+msh.transfer_dg(f, 
+                g, 
+                u_0_old,
+                sf_old, 
+                rmsh.sf[0])
+
+
+io.full_print(g, 'g', \
+        solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
+print(f'... done.\n----------\n----------\n----------\n----------\n----------')
+
+#  test transfer_dg - end
+
+
+
 # 1. store metadata
 
 # 1.1 store mesh metadata
@@ -222,7 +336,7 @@ for n in range(rpam.parameters['num_steps']):
 
     
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    # if step > 1:
+    # if True:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 
@@ -251,6 +365,8 @@ for n in range(rpam.parameters['num_steps']):
         phi_0_old = Function(fsp.Q_u_n)
         u_0_old = Function(fsp.Q_u_n)
 
+   
+
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field 
@@ -274,6 +390,8 @@ for n in range(rpam.parameters['num_steps']):
         phi_0_old.assign(fsp.phi_0)
         u_0_old.assign(fsp.u_0)
 
+        #4.1.1.2.3 store the marker function of the old mesh (the reference keeps the old MeshFunction and its mesh alive through the module reloads)
+        sf_old = rmsh.sf[0]
 
 
         '''
@@ -344,6 +462,10 @@ for n in range(rpam.parameters['num_steps']):
         #     B) set a nonzero deformation u' with respect to the reference coordinates y'
         
         # sign add u_0
+
+
+
+
 
     '''
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)

@@ -109,6 +109,17 @@ sigma_square_t = Function(Q_sigma_n)
 phi_0 = Function(Q_u_n)
 u_0 = Function(Q_u_n)
 
+# 3.2.1 fields to store initial condition read from file
+
+v_input = Function(Q_v_n)
+sigma_input = Function(Q_sigma_n)
+u_input = Function(Q_u_n)
+u_dot_input = Function(Q_u_dot_n)
+c_input = Function(Q_c_n)
+mu_input = Function(Q_mu_n)
+grad_u_input = Function(Q_grad_u_n)
+
+
 
 #3.2.3 fields for the curvature computation
 
