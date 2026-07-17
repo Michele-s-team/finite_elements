@@ -17,6 +17,8 @@ import gc
 import importlib
 import os
 import sys
+import ufl as ufl
+
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
@@ -73,6 +75,8 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
+
+alpha, beta = ufl.indices(2)
 
 
 print(f'Generating initial mesh ...')
@@ -525,22 +529,30 @@ for n in range(rpam.parameters['num_steps']):
         #  This implements Eq. (16) in 'Decomposition of deformation field' 
         fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
 
-    # sign add u_0
 
-    '''
+        #4.4.1.3 transfer the fields for the post-processing problem
+
+        msh.transfer_dg(mu_n_old, fsp.mu_input, u_0_old, sf_old, rmsh.sf[0])
+
+        fsp.grad_u_input.assign(project(as_tensor(fsp.u_input[alpha].dx(beta), (alpha, beta)), fsp.Q_grad_u_n))
+
+
+    
         # 4.4.2 write the profiles of fields right after remeshing into the mixed field psi
         
-        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
+        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input, fsp.c_input, fsp.mu_input, fsp.grad_u_n_input])
 
 
         #4.4.3 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, phi_n_old, phi_0_old, u_0_old
+        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, c_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
-    '''
+    
+    # sign add u_0
+
 
     #5 Update fields
 
