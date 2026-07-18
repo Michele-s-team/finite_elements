@@ -208,6 +208,7 @@ F_u_n = msh.ufl_conditional_form(
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_mesh[0]['ds'] \
         ) \
         + rpam.parameters['alpha_ellipse']/rmsh.r_mesh[0] * (\
+            # constraint on normal motion
             ( \
                 ( \
                    ( ( fsp.u_n(sub_mesh_1_label)[i] - fsp.u_n_1(sub_mesh_1_label)[i] ) *  bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] ) \
@@ -215,10 +216,11 @@ F_u_n = msh.ufl_conditional_form(
                 ) \
                 * (fsp.nu_u_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] )
             ) * rmsh.ds_mesh[0]['dS_shape'] \
+            # constraint on uniform node distribution
             + ( \
                 ( \
-                    1.0 / sqrt(bgeo.t_cur(fsp.f, fsp.grad_u_n(sub_mesh_1_label))[i] * bgeo.t_cur(fsp.f, fsp.grad_u_n(sub_mesh_1_label))[i]) \
-                    * bgeo.t_cur(fsp.f, fsp.grad_u_n(sub_mesh_1_label))[m] * bgeo.t_cur(fsp.f, fsp.grad_u_n(sub_mesh_1_label))[m].dx(p) * fsp.f[p]
+                    1.0 / sqrt(bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i]) \
+                    * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[m] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[m].dx(p) * fsp.f(sub_mesh_1_label)[p]
                 ) \
                 * (fsp.nu_u_n(sub_mesh_1_label)[q] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[q] )
             ) * rmsh.ds_mesh[0]['dS_shape']
