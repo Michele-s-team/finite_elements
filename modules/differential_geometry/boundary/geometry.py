@@ -433,3 +433,17 @@ def delta_n_cur(n_ref, u, delta_u, dyds):
             - ela.G(u)[delta, beta] * delta_u[beta].dx(gamma) * ela.G(u)[gamma, alpha]
             ), \
         (alpha))
+
+
+'''
+tangent to a curve in the current configuration expressed in terms of the tangent in the reference configuration
+Input values: 
+    - 't_ref': the tangent to the curve in the reference configuration, d y_s / ds
+    - 'u': displacement field
+
+Return values: 
+    - the tangent to the curve in the current configuration, d x_s / ds
+'''
+def t_cur(t_ref, u):
+
+    return as_tensor(t_ref[alpha] + u[alpha].dx(beta) * t_ref[beta], (alpha))
