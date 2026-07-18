@@ -217,10 +217,10 @@ F_u_n = msh.ufl_conditional_form(
             ) * rmsh.ds_mesh[0]['dS_shape'] \
             + ( \
                 ( \
-                    1.0 / sqrt(bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i]) \
-                    * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[m] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[m].dx(p) * fsp.f(sub_mesh_1_label)[p]
+                    1.0 / sqrt(bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[i] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[i]) \
+                    * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[m] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[m].dx(p) * bgeo.facet_tangent[0](sub_mesh_0_label)[p]
                 ) \
-                * (fsp.nu_u_n(sub_mesh_1_label)[q] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[q] )
+                * (fsp.nu_u_n(sub_mesh_1_label)[q] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[q] )
             ) * rmsh.ds_mesh[0]['dS_shape']
         )
 
@@ -276,9 +276,9 @@ F_u_dot_n = msh.ufl_conditional_form(
                 + ( \
                     ( \
                         ( fsp.u_dot_n(sub_mesh_1_label)[i] - ( fsp.u_n(sub_mesh_1_label)[i] - fsp.u_n_1(sub_mesh_1_label)[i] ) / dt ) \
-                        * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i] \
+                        * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[i] \
                     ) \
-                    * ( fsp.nu_u_dot_n(sub_mesh_1_label)[q] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[q] ) \
+                    * ( fsp.nu_u_dot_n(sub_mesh_1_label)[q] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[q] ) \
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
         
