@@ -264,18 +264,21 @@ F_u_dot_n = msh.ufl_conditional_form(
                 + ( fsp.u_dot_n[i] * fsp.nu_u_dot_n[i] ) * rmsh.ds_mesh[0]['ds'] \
             ) \
             + rpam.parameters['alpha_ellipse']/rmsh.r_mesh[0] * (\
-            ( \
+                # normal component: kinematic coupling
                 ( \
-                   fsp.u_dot_n(sub_mesh_1_label)[i] \
-                    - ( fsp.v_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                ) \
-                * ( fsp.nu_u_dot_n(sub_mesh_1_label)[i] \
-                   - ( \
-                        ( fsp.nu_v_n(sub_mesh_1_label)[k] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                        + ( fsp.v_n(sub_mesh_1_label)[k] * bgeo.delta_n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.nu_u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                        + ( fsp.v_n(sub_mesh_1_label)[k] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.delta_n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.nu_u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                     ) \
-                    )
+                    ( \
+                        fsp.u_dot_n(sub_mesh_1_label)[i] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
+                        - fsp.v_n(sub_mesh_1_label)[i] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
+                    ) \
+                    * ( fsp.nu_u_dot_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] ) \
+                ) * rmsh.ds_mesh[0]['dS_shape'] \
+                # tangential component: consistency with the discrete motion of u_n
+                + ( \
+                    ( \
+                        ( fsp.u_dot_n(sub_mesh_1_label)[i] - ( fsp.u_n(sub_mesh_1_label)[i] - fsp.u_n_1(sub_mesh_1_label)[i] ) / dt ) \
+                        * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i] \
+                    ) \
+                    * ( fsp.nu_u_dot_n(sub_mesh_1_label)[q] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[q] ) \
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
         
