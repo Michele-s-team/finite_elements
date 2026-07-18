@@ -215,6 +215,16 @@ F_u_n = msh.ufl_conditional_form(
                 ) \
                 * (fsp.nu_u_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] )
             ) * rmsh.ds_mesh[0]['dS_shape'] \
+            + ( \
+                ( \
+                1.0 / sqrt((fsp.f[i] + fsp.grad_u_n[i, k] * fsp.f[k]) * (fsp.f[i] + fsp.grad_u_n[i, l] * fsp.f[l])) \
+                * (fsp.f[m] + fsp.grad_u_n[m, n] * fsp.f[n]) \
+                * (fsp.f[m] + fsp.grad_u_n[m, o] * fsp.f[o]).dx(p) \
+                * fsp.f[p]
+                ) \
+                * ( \
+                0 )
+            ) * rmsh.ds_mesh[0]['dS_shape']
         )
 
 
