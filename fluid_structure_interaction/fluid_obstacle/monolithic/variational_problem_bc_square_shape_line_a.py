@@ -220,7 +220,7 @@ F_u_n = msh.ufl_conditional_form(
                     1.0 / sqrt(bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[i]) \
                     * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[m] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[m].dx(p) * fsp.f(sub_mesh_1_label)[p]
                 ) \
-                * (fsp.nu_u_n(sub_mesh_1_label)[q] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[q] )
+                * (fsp.nu_u_n(sub_mesh_1_label)[q] * bgeo.t_cur(fsp.f(sub_mesh_1_label), fsp.grad_u_n(sub_mesh_1_label))[q] )
             ) * rmsh.ds_mesh[0]['dS_shape']
         )
 
