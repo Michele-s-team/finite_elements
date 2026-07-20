@@ -6,6 +6,7 @@ import importlib
 from fenics import *
 import ufl as ufl
 
+import physics.elasticity as ela
 import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -22,11 +23,6 @@ def print_data(step):
 
     v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy = fsp.psi.split( deepcopy=True )
 
-
-    u_n_y = u_n_dummy.sub(1, deepcopy=True)
-    u_n_y_min = u_n_y.vector().min()
-    u_n_y_max = u_n_y.vector().max()
-
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
             step,\
@@ -35,6 +31,8 @@ def print_data(step):
         fi.fieldnames_data[2]: \
             f"{[msh.average_wrt_measure(fsp.y[i] + u_n_dummy[i], rmsh.dx_mesh[0]['dx_shape']) for i in range(2)]}",\
         fi.fieldnames_data[3]: \
+            f"{assemble(ela.detF(u_n_dummy) * rmsh.dx_mesh[0]['dx_shape']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_data[4]: \
             f"{msh_qu.quality:.{rpam.parameters['print_out_digits']}e}",
 
         }])
