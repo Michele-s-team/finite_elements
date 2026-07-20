@@ -116,23 +116,23 @@ F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
                                         ( \
-                                            (rpam.parameters['rho_shape'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
-                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_shape[i] ) * fsp.nu_v_n[i] \
-                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_shape'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
+                                            ( rpam.parameters['rho_shape'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) \
+                                            + dt * (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - dt * fsp.f_shape[i] ) * fsp.nu_v_n[i] \
+                                            + dt * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_shape'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
                                         ) * ela.detF(fsp.u_n)
                                         ,
                                         ( \
-                                            (rpam.parameters['rho_square'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
-                                            + (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - fsp.f_square[i] ) * fsp.nu_v_n[i] \
-                                            + ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
+                                            ( rpam.parameters['rho_square'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) \
+                                            + dt * (fsp.v_n[k] - fsp.u_dot_n[k]) * ela.G(fsp.u_n)[j, k] * (fsp.v_n[i]).dx(j) ) - dt * fsp.f_square[i] ) * fsp.nu_v_n[i] \
+                                            + dt * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * (fsp.nu_v_n[i]).dx(k) \
                                         ) * ela.detF(fsp.u_n), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
                                 ) * rmsh.dx_mesh[0]['dx'] \
-        - (\
+        - dt * ( \
             msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_shape'])[i, j] ) \
         ) * rmsh.ds_mesh[0]['dS_I_shape'] \
-        - ( \
+        - dt * ( \
                 ( \
                     ela.detF(fsp.u_n(sub_mesh_0_label)) * bgeo.facet_normal[0](sub_mesh_0_label)[k] * ela.G(fsp.u_n(sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_square'])[i, j] \
                     + f_shape(fsp.c_n(sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](sub_mesh_0_label))[i] \
@@ -141,10 +141,10 @@ F_v_n = msh.ufl_conditional_form(
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
                     msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_shape'] \
                 ) \
-        - (\
+        - dt * ( \
             msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] ) \
         ) * rmsh.ds_mesh[0]['dS_I_square'] \
-        - ( \
+        - dt * ( \
                 bgeo.facet_normal[0](sub_mesh_1_label)[k] * ela.detF(fsp.u_n(sub_mesh_1_label)) * ela.G(fsp.u_n(sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(sub_mesh_1_label), fsp.sigma_n(sub_mesh_1_label), fsp.u_n(sub_mesh_1_label), rpam.parameters['mu_square'])[i, j] * fsp.nu_v_n(sub_mesh_1_label)[i] * rmsh.ds_mesh[0]['dS_shape'] \
                 + bgeo.facet_normal[0][k] * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_lr'] \
                 + bgeo.facet_normal[0][k] * ela.G(fsp.u_n)[k, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_square'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_b'] \
@@ -210,19 +210,18 @@ F_u_n = msh.ufl_conditional_form(
         + rpam.parameters['alpha_ellipse']/rmsh.r_mesh[0] * (\
             ( \
                 ( \
-                   fsp.u_n(sub_mesh_1_label)[i] \
-                    - ( \
-                        fsp.u_n_1(sub_mesh_1_label)[i] + ( fsp.v_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] * dt  \
-                    ) \
+                   ( ( fsp.u_n(sub_mesh_1_label)[i] - fsp.u_n_1(sub_mesh_1_label)[i] ) *  bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] ) \
+                   - ( ( fsp.v_n(sub_mesh_1_label)[i] * dt * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] ) ) \
                 ) \
-                * ( fsp.nu_u_n(sub_mesh_1_label)[i] \
-                   - ( \
-                        ( fsp.nu_v_n(sub_mesh_1_label)[k] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                        + ( fsp.v_n(sub_mesh_1_label)[k] * bgeo.delta_n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.nu_u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                        + ( fsp.v_n(sub_mesh_1_label)[k] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.delta_n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.nu_u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                     ) * dt \
-                )
+                * (fsp.nu_u_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] )
             ) * rmsh.ds_mesh[0]['dS_shape'] \
+            + ( \
+                ( \
+                    1.0 / sqrt(bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[i] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[i]) \
+                    * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[j] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[j].dx(k) * bgeo.facet_tangent[0](sub_mesh_0_label)[k]
+                ) \
+                * (fsp.nu_u_n(sub_mesh_1_label)[l] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[l] )
+            ) * rmsh.ds_mesh[0]['dS_shape']
         )
 
 
@@ -265,18 +264,21 @@ F_u_dot_n = msh.ufl_conditional_form(
                 + ( fsp.u_dot_n[i] * fsp.nu_u_dot_n[i] ) * rmsh.ds_mesh[0]['ds'] \
             ) \
             + rpam.parameters['alpha_ellipse']/rmsh.r_mesh[0] * (\
-            ( \
+                # normal component: kinematic coupling
                 ( \
-                   fsp.u_dot_n(sub_mesh_1_label)[i] \
-                    - ( fsp.v_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                ) \
-                * ( fsp.nu_u_dot_n(sub_mesh_1_label)[i] \
-                   - ( \
-                        ( fsp.nu_v_n(sub_mesh_1_label)[k] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                        + ( fsp.v_n(sub_mesh_1_label)[k] * bgeo.delta_n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.nu_u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                        + ( fsp.v_n(sub_mesh_1_label)[k] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[k] ) * bgeo.delta_n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.nu_u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
-                     ) \
-                    )
+                    ( \
+                        fsp.u_dot_n(sub_mesh_1_label)[i] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
+                        - fsp.v_n(sub_mesh_1_label)[i] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[i] \
+                    ) \
+                    * ( fsp.nu_u_dot_n(sub_mesh_1_label)[j] * bgeo.n_cur(bgeo.facet_normal[0](sub_mesh_0_label), fsp.u_n(sub_mesh_1_label), fsp.dyds(sub_mesh_1_label))[j] ) \
+                ) * rmsh.ds_mesh[0]['dS_shape'] \
+                # tangential component: consistency with the discrete motion of u_n
+                + ( \
+                    ( \
+                        ( fsp.u_dot_n(sub_mesh_1_label)[i] - ( fsp.u_n(sub_mesh_1_label)[i] - fsp.u_n_1(sub_mesh_1_label)[i] ) / dt ) \
+                        * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[i] \
+                    ) \
+                    * ( fsp.nu_u_dot_n(sub_mesh_1_label)[q] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), fsp.grad_u_n(sub_mesh_1_label))[q] ) \
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
         

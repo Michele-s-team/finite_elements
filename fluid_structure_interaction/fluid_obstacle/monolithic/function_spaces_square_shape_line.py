@@ -12,7 +12,7 @@ the variables for the problem are
     - `v_n`, `v_n_1` : \textrm{v}^n_notes, \textrm{v}^{n-1}_notes
     - 'sigma_n' = \varsigma^n_notes
     - 'u_n', 'u_n_1: u^n, u^{n-1} in notes
-    - 'u_dot_n', 'u_dot_n_1': \dot{u}^n, \dot{u}^{n-1} in notes
+    - 'u_dot_n': \dot{u}^n in notes
     - 'c_n', 'c_n_1' = \textrm{c}^n_notes, \textrm{c}^{n-1}_notes
 
     - `v_lrb` = {g^n}_notes
@@ -21,6 +21,10 @@ the variables for the problem are
     - `t_t` = {\textrm{t}^n}_notes (traction on ds_t)
     - `sigma_square_t` = {sigma_{square T}}_notes
     - `dyds` = {d y_s / ds}_notes for \partial \Omega_O
+
+    - 'u_0' = {u_0}_{Decomposition of deformation field}
+    - 'phi_0' = {phi_0}_{Decomposition of deformation field}
+
 
     - 'mu_n': the curvature of the shape curve x_s in the current configuration
     - 'grad_u_n': grad_u_n[i, j] = \partial u_n_i / \partial y_j
@@ -102,19 +106,41 @@ v_lrb = Function(Q_v_n)
 t_t = Function(Q_f)
 sigma_square_t = Function(Q_sigma_n)
 
+phi_0 = Function(Q_u_n)
+u_0 = Function(Q_u_n)
+
+# 3.2.1 fields to store initial condition read from file
+
+v_input = Function(Q_v_n)
+sigma_input = Function(Q_sigma_n)
+u_input = Function(Q_u_n)
+u_dot_input = Function(Q_u_dot_n)
+c_input = Function(Q_c_n)
+mu_input = Function(Q_mu_n)
+grad_u_input = Function(Q_grad_u_n)
+
+
+
 #3.2.3 fields for the curvature computation
 
 f = Function(V)
 nu = Function(V)
 b = Function(Q_grad_u_n)
+# y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i
+y = Function(Q_u_n)
+
+y.set_allow_extrapolation(True)
+
 
 
 # 3.3 test functions
 nu_v_n, nu_sigma_n, nu_u_n, nu_u_dot_n, nu_c_n, nu_mu_n, nu_grad_u_n = TestFunctions(Q)
+nu_u_0 = TestFunction(Q_u_n)
 
 
 # 3.4 jacobian
 J_psi = TrialFunction(Q)
+J_u_0 = TrialFunction(Q_u_n)
 
 # 3.5 function assigner
 

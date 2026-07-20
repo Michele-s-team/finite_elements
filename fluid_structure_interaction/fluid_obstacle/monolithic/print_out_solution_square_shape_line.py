@@ -71,7 +71,7 @@ def print_solution(t, step, dt):
         solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]
     )
     
-    # 3.2 deformed with u_n
+    # 3.2.1 deformed with u_n
     
     io.full_print_deformed(v_n_dummy, u_n_dummy, 'v_n_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
@@ -80,6 +80,23 @@ def print_solution(t, step, dt):
     
     io.full_print_deformed(mu_n_dummy, u_n_dummy, 'mu_n_' + str(step), \
                            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    # 3.2.2 deformed with u_0
+
+    io.full_print_deformed(v_n_dummy, fsp.u_0, 'v_0_n_' + str(step), \
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    io.full_print_deformed(sigma_n_dummy, fsp.u_0, 'sigma_0_n_' + str(step), \
+                           solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
+    # 3.5 phi_0
+    io.full_print(fsp.phi_0, 'phi_0_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+    
+    # 3.6 u_0
+    io.full_print(fsp.u_0, 'u_0_n_' + str(step), \
+                solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+ 
 
 
     #4. Write the deformed mesh to file
@@ -92,6 +109,16 @@ def print_solution(t, step, dt):
 
     io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step) + '.csv')
     io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step) + '.csv')
+
+
+    # 4.2 write the mesh deformed according to u_0
+    deformed_mesh_0 = msh.deform_mesh(rmsh.lmsh.mesh[0], fsp.u_0)
+
+    with XDMFFile(solpath.snapshots_path + 'mesh_0_n_' + str(step) + '.xdmf') as xdmf:
+        xdmf.write(deformed_mesh_0)
+
+    io.print_mesh_vertices_to_csv(deformed_mesh_0, solpath.snapshots_csv_path + 'vertex_mesh_0_n_' + str(step) + '.csv')
+    io.print_mesh_lines_to_csv(deformed_mesh_0, solpath.snapshots_csv_path + 'line_mesh_0_n_' + str(step) + '.csv')
 
 
     # 5 write shape vertices 

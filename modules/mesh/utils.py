@@ -3082,7 +3082,158 @@ def transfer(f, g, u):
 
         g.vector()[g_value_size * i + j] = np.atleast_1d(f_def(g_dof_coordinates[i]))[j]
 
+'''
+given a DG field f (scalar, vector, or tensor) on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a DG field g (same type as f) on mesh B, set g equal to f
+This method is extends `transfter` to DG fields. 
 
+Input values:
+    - 'f': function on mesh A
+    - 'g': function on mesh B
+    - 'u': displacement field, defined on mesh A
+    - 'sf_f': cell MeshFunction ("size_t") marking the triangles of mesh A 
+    - 'sf_g': cell MeshFunction ("size_t") marking the triangles of mesh B
+'''
+def transfer_dg(f, g, u, sf_f, sf_g):
+
+    f_def = fu.deform_function(f, u)
+    f_def.set_allow_extrapolation(True)
+
+    mesh_f = f_def.function_space().mesh()
+    tree_f = mesh_f.bounding_box_tree()
+
+    Q_g = g.function_space()
+
+    g_value_shape = Q_g.ufl_element().value_shape()
+    g_value_size = int(np.prod(g_value_shape))
+
+    g_mesh = Q_g.mesh()
+    g_dim = g_mesh.geometry().dim()
+
+
+    '''
+    g_dof_coordinates_all stores the coordinates of the points where DOFs sit. Because the field 'g' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
+    For example, dof_coordinates is of the form ->
+        row 0:  [x0, y0]   ← this corresponds to g[0] at DOF point 0
+        row 1:  [x0, y0]   ← this corresponds to g[1] at DOF point 0
+        ...
+        row value_size  [x1, y1]   ← this corresponds to g[0] at DOF point 1
+        row value_size+1 [x1, y1]   ← this corresponds to g[1] at DOF point 1
+        ...
+        
+    '''
+    g_dof_coordinates_all = Q_g.tabulate_dof_coordinates().reshape(-1, g_dim)
+
+    '''
+    subsample coordinates by skipping repeats (one physical point per value_size DOFs)
+    '''
+    g_dof_coordinates = g_dof_coordinates_all[::g_value_size]
+
+    # print(f'g DOF coordinates = {np.array2string(g_dof_coordinates, threshold=np.inf)}', flush=True)
+
+    '''
+    map each DOF of g to the cell of g's mesh that owns it: for a DG space
+    every DOF belongs to exactly one cell
+
+    Here
+
+    g_dofmap.cell_dofs(cell.index()) = 
+        [ID of 1st DOF sitting on cell `cell`, 
+        ID of 2nd DOF sitting on cell `cell`, 
+        ... ]
+
+    dof_to_cell[ID of DOF] = index of the cell to which DOF belongs
+    '''
+    g_dofmap = Q_g.dofmap()
+    dof_to_cell = np.empty(Q_g.dim(), dtype=np.int64)
+    for cell in cells(g_mesh):
+        dof_to_cell[g_dofmap.cell_dofs(cell.index())] = cell.index()
+
+    # print(f'DOF to cell = {np.array2string(dof_to_cell, threshold=np.inf)}', flush=True)
+
+    '''
+    sf_f_values[cell_id] = value of the MeshFunction `sf_f` on cell `cell_id`
+    sf_g_values[cell_id] = value of the MeshFunction `sf_g` on cell `cell_id`
+    '''
+    sf_f_values = sf_f.array()
+    sf_g_values = sf_g.array()
+
+    '''
+    values is an array whose length is the number of components of the `f` 
+    '''
+    values = np.empty(g_value_size)
+
+    # write the values of f into g
+    for i in range(len(g_dof_coordinates)):
+        # run through all unique DOF coordinates of `g`
+
+        x = g_dof_coordinates[i]
+
+        '''
+        given the DOF under consideration, store into `DOF_id` the value of the MeshFunction `sf_g` on the cell to which the DOF belongs
+        '''
+        DOF_region_tag = sf_g_values[dof_to_cell[g_value_size * i]]
+
+
+        # all cells of f_def's mesh whose closure contains x
+        candidate_f_cells = tree_f.compute_entity_collisions(Point(*x))
+
+        # print(f'candidate_f_cells = {candidate_f_cells}')
+
+        '''
+        run through `candidate_f_cells` and stop as soon as one finds a cell whose region tag is the same as   `DOF_region_tag`
+        '''
+        cell_index = -1
+        for c in candidate_f_cells:
+            if sf_f_values[c] == DOF_region_tag:
+                cell_index = c
+                break
+
+        if cell_index >= 0:
+            '''
+            a cell whose region tag is the same as   `DOF_region_tag` has been found -> write into `values` the value of `f_def` corresponding to cell `cell_index`
+            f_def may be discontinuous across cells, and here its value relative to cell `cell_index` is used
+            '''
+
+            f_def.eval_cell(values, x, Cell(mesh_f, cell_index))
+
+            # print(f'wrote into values = {values}')
+
+        else:
+
+            # sign
+
+            # x is contained in no cell of the matching region: the deformed old mesh and the new mesh mismatch by a tiny amount at the boundaries (solver tolerance / coordinate round-trip). Extrapolate from the nearest cell OF THE MATCHING REGION, so the evaluation stays on the correct side of the interface
+
+            distance_min = np.inf
+
+            for c in cells(mesh_f):
+                # run through all cells in `mesh_f`
+
+                if sf_f_values[c.index()] == DOF_region_tag:
+                    # the cell under consideration has the same region tag as `DOF_region_tag`
+
+                    distance = c.distance(Point(*x))
+
+                    if distance < distance_min:
+
+                        distance_min = distance
+                        cell_index_nearest = c.index()
+
+            '''
+            at the end of the loop `distance_min` is the distance to the closes cell to the DOF under consideration which has tag `DOF_region_tag`, and `cell_index_nearest` is the index of such cell
+
+            write into `values` the DOF of `f_def` computed on `x`: f_def may be discontinuous across cells, and here its value relative to cell `cell_index_nearest` is used
+            '''
+
+            f_def.eval_cell(values, x, Cell(mesh_f, cell_index_nearest))
+
+            # print(f'Warning: transfer_dg fallback at x = {x}, tag = {DOF_region_tag}, extrapolated from cell at distance {distance_min:e}', flush=True)
+
+        for j in range(g_value_size):
+            # run through all components of the field f and write `value`, i.e., the value of `f` on the DOF under consideration, into g
+
+            g.vector()[g_value_size * i + j] = values[j]
+            
 '''
 given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
 

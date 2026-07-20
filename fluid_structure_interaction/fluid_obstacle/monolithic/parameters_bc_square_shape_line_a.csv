@@ -1,3 +1,2 @@
-rho_shape,mu_shape,rho_square,mu_square,g,sigma_square_t,sigma,D,kappa,T,num_steps,exponent,alpha,alpha_ellipse,u_function_space_degree,u_dot_function_space_degree,c_function_space_degree,f_function_space_degree,print_out_stride,print_out_digits
-1e-3,1e-3,1e-6,1e-5,1e4,0,1e2,1.0,0,1e0,1000,3,1e5,1e5,1,1,2,2,1,6
-,,,,,,,,,,,,,,,,,
+rho_shape,mu_shape,rho_square,mu_square,g,sigma_square_t,sigma,D,kappa,T,num_steps,exponent,alpha,alpha_ellipse,u_function_space_degree,u_dot_function_space_degree,c_function_space_degree,f_function_space_degree,mesh_quality_threshold,N_scan,print_out_stride,print_out_digits
+1e-3,1e-3,1e-6,1e-5,1e4,0,7e1,1.0,0,8e-2,160,3,1e4,1e4,1,1,2,2,0.6,128,1,6

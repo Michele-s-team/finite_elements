@@ -16,6 +16,8 @@ xdmffile_c_n = XDMFFile(os.path.join(rarg.args.output_directory, "c_n.xdmf"))
 xdmffile_mu_n = XDMFFile(os.path.join(rarg.args.output_directory, "mu_n.xdmf"))
 xdmffile_grad_u_n = XDMFFile(os.path.join(rarg.args.output_directory, "grad_u_n.xdmf"))
 
+xdmffile_u_0 = XDMFFile(os.path.join(rarg.args.output_directory, "u_0.xdmf"))
+
 
 # 2 BC file
 filepath_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
