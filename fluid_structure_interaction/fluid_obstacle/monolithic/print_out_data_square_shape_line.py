@@ -31,13 +31,12 @@ def print_data(step):
         fi.fieldnames_data[0]: \
             step,\
         fi.fieldnames_data[1]: \
-            f"{u_n_y_min:.{rpam.parameters['print_out_digits']}e}",\
-        fi.fieldnames_data[2]: \
-            f"{u_n_y_max:.{rpam.parameters['print_out_digits']}e}",\
-        fi.fieldnames_data[3]: \
             f"{msh.average_wrt_measure(u_n_dummy[1], rmsh.dx_mesh[0]['dx_shape']):.{rpam.parameters['print_out_digits']}e}",\
-        fi.fieldnames_data[4]: \
+        fi.fieldnames_data[2]: \
+            f"{[msh.average_wrt_measure(fsp.y[i] + u_n_dummy[i], rmsh.dx_mesh[0]['dx_shape']) for i in range(2)]}",\
+        fi.fieldnames_data[3]: \
             f"{msh_qu.quality:.{rpam.parameters['print_out_digits']}e}",
+
         }])
 
     fi.csvfile_data.flush()
