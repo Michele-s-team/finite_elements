@@ -151,23 +151,8 @@ def s_y(y):
 
             s_R = s_0 - rpam.parameters['epsilon_shape']
 
-            try: 
+            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
 
-                s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-
-            except ValueError:
-
-                print(f'Error 2: \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
-
-                s_R = s_0
-
-                try: 
-
-                    s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-
-                except ValueError:
-
-                    print(f'Error 2.1: \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
 
 
 
