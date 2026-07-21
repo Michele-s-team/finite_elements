@@ -119,9 +119,25 @@ def s_y(y):
             s_L = s_0 + const.epsilon
             s_R = 1 + const.epsilon
             
-            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-                            
-            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1 + const.epsilon)}', flush=True)
+            try: 
+
+                s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+
+            except ValueError:
+
+                print(f'Error 1: \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
+
+                s_L = s_0 + const.epsilon
+                s_R = 1 - const.epsilon
+                
+                try: 
+
+                    s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+
+                except ValueError:
+
+                    print(f'Error 1.1: \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
+
 
         else:
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
