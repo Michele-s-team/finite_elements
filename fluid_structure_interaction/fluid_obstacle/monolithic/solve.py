@@ -8,6 +8,10 @@ Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/fluid_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line_a $MESH_PATH $SOLUTION_PATH
 
+    
+Notes: 
+    - the finer the mesh, the better mass is conserved over time
+    - to prevent the code from crashing, do not let the time iteration run for too long without remeshing. Consider remeshing at every step
 """
 
 import colorama as col
