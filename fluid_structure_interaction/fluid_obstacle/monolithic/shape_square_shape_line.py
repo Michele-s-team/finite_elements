@@ -8,6 +8,7 @@ from scipy.optimize import brentq
 
 
 import calculus as cal
+import constants.utils as const
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -118,25 +119,9 @@ def s_y(y):
             s_L = s_0 + rpam.parameters['epsilon_shape']
             s_R = 1 + rpam.parameters['epsilon_shape']
             
-            try: 
-
-                s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-
-            except ValueError:
-
-                print(f'Error 1: \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
-
-                s_L = s_0 + rpam.parameters['epsilon_shape']
-                s_R = 1 - rpam.parameters['epsilon_shape']
-                
-                try: 
-
-                    s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-
-                except ValueError:
-
-                    print(f'Error 1.1: \n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_L)}\n\ttheta_R = {theta(s_R)}', flush=True)
-
+            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+                            
+            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+rpam.parameters['epsilon_shape'])}\n\ttheta_R = {theta(1 + rpam.parameters['epsilon_shape'])}', flush=True)
 
         else:
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
@@ -152,10 +137,6 @@ def s_y(y):
             s_R = s_0 - rpam.parameters['epsilon_shape']
 
             s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
-
-
-
-
 
     # print(f'\t s = {s}')
 
