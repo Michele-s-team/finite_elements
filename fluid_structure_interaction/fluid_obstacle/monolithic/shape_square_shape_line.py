@@ -58,7 +58,7 @@ theta_0 = theta(0)
 # 1. Determine  s_0
 # 1.1
 
-if (abs(theta_0) < const.epsilon) or (abs(theta_0 - 2*np.pi) < const.epsilon):
+if (abs(theta_0) < rpam.parameters['epsilon_shape']) or (abs(theta_0 - 2*np.pi) < rpam.parameters['epsilon_shape']):
     # here s_0 = 1
 
     theta_0 = 0
@@ -103,7 +103,7 @@ def s_y(y):
     # the polar angle that `y` forms with respect to `c``, theta_y is in [0, 2 pi]
     theta_y = cal.atan_quad([ y[0] - rmsh.parameters['c'][0], y[1] - rmsh.parameters['c'][1] ])
 
-    if (abs(theta_y) < const.epsilon) or (abs(theta_y - 2.0 * np.pi) < const.epsilon): 
+    if (abs(theta_y) < rpam.parameters['epsilon_shape']) or (abs(theta_y - 2.0 * np.pi) < rpam.parameters['epsilon_shape']): 
         # theta_y takes the special values 0 or 2 pi -> set directly s = s_0
 
         s = s_0
@@ -116,25 +116,25 @@ def s_y(y):
             # 0 < theta_y <= theta_0: the solution s must lie in the interval s_0 < s <= 1.0. 
             
 
-            s_L = s_0 + const.epsilon
-            s_R = 1 + const.epsilon
+            s_L = s_0 + rpam.parameters['epsilon_shape']
+            s_R = 1 + rpam.parameters['epsilon_shape']
             
             s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
                             
-            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+const.epsilon)}\n\ttheta_R = {theta(1 + const.epsilon)}', flush=True)
+            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+rpam.parameters['epsilon_shape'])}\n\ttheta_R = {theta(1 + rpam.parameters['epsilon_shape'])}', flush=True)
 
         else:
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
 
-            if theta(0 + const.epsilon) < theta_y: 
+            if theta(0 + rpam.parameters['epsilon_shape']) < theta_y: 
 
-                s_L = 0 + const.epsilon
+                s_L = 0 + rpam.parameters['epsilon_shape']
 
             else:
 
                 s_L = 0
 
-            s_R = s_0 - const.epsilon
+            s_R = s_0 - rpam.parameters['epsilon_shape']
 
             s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
 
