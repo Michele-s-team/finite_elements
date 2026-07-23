@@ -270,22 +270,11 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
         ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) \
         * rmsh.ds_sub_mesh[1]['ds'] \
-        #this term constrains H=0  on the boundary left and right
-        # +((geo.H(fsp.psi_n_12, fsp.nu_n_12)) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) \
-        # * rmsh.ds_sub_mesh[1]['ds'] \
-        #X^1(0)=0 on left??  bc derived on Pierre notes
+        #X^1(0)=0
         + (\
-              ((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0]) * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-              + ((fsp.X_ref[1] + fsp.U_n_12[1]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 1]) * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
-        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']\
-        + (\
-        # # this implements BC (75), \nabla w=0. I removed this as we already set w=0 above a membrane with no flow. 
-            #  (fsp.w_bar.dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] *(fsp.nu_w_bar.dx(j)) \
-        # this implements BC (79)
-            +   (fsp.U_n_12[1].dx(i)) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.nu_U_n_12[1].dx(j))
-        # ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_r']    )
-        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds'] #changed ds_r into ds\
-        #for psi''=0 left and righ, added on 11/06/2026    
+              (fsp.X_ref[0] + fsp.U_n_12[0]) * (fsp.nu_U_n_12[0] )\
+        ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_l']\
+        #  
         +(fsp.mu_n_12.dx(i))* geo.g_c(fsp.psi_n_12, fsp.nu_n_12)[i,j]* (fsp.nu_mu_n_12.dx(j))* bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds'])
 
 # total functional for the mixed problem
