@@ -15,6 +15,5 @@ cmd.set_gauge('monge')
 
 i, j, k, l = ufl.indices( 4 )
 
-bc_pp_tau = []
 
 F_pp_tau = phys.lhs_force_balance_equation(rpam.parameters["kappa"], fsp.omega, fsp.mu, fsp.sigma, fsp.tau) * fsp.nu_tau * geo.sqrt_detg(fsp.omega) * rmsh.dx

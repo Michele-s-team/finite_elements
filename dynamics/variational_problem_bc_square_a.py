@@ -18,8 +18,21 @@ cmd.set_gauge('monge')
 i, j, k, l = ufl.indices( 4 )
 
 
+# CHANGE PARAMETERS HERE
+# T = 0.001
+# kappa = 1.0
+# rho = 1.0
+# eta = 1.0
+# v_bar_l_const = 1.0
+# N = 10
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
+
+# boundary_profile_w_bar = 0.0
+# r_profile_phi = 0.0
+# boundary_profile_z = 0.0
+# Nitche's parameter
+# alpha = 1e4
 
 
 class TangentVelocityExpression( UserExpression ):
@@ -82,12 +95,20 @@ class grad_circle_Expression( UserExpression ):
         return (1,)
 
 
+# CHANGE PARAMETERS HERE
+
+# Define expressions used in variational forms
+# Deltat = Constant( dt )
+# kappa = Constant( kappa )
+# rho = Constant( rho )
 
 # the values of \partial_i z = omega_i on the circle and on the square, to be used in the boundary conditions (BCs) imposed with Nitche's method, in F_N
 grad_circle = interpolate( grad_circle_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 grad_square = interpolate( grad_square_Expression( element=fsp.Q_z_n.ufl_element() ), fsp.Q_z_n )
 
+# CHANGE PARAMETERS HERE
 l_profile_v_bar = Expression( ('v_bar_l_const', '0'), v_bar_l_const=rpam.parameters['v_bar_l_const'], element=fsp.Q_v_n.ufl_element() )
+# CHANGE PARAMETERS HERE
 
 # boundary conditions (BCs)
 # BCs for v_bar
@@ -101,9 +122,11 @@ bc_w_bar_circle = DirichletBC( fsp.Q.sub( 1 ), Constant( rpam.parameters['bounda
 # BC for phi
 bc_phi = DirichletBC( fsp.Q.sub( 2 ), Constant( rpam.parameters['r_profile_phi'] ), rmsh.boundary_r )
 
+# CHANGE PARAMETERS HERE
 # BCs for z^{n-1/2}
 bc_z_circle = DirichletBC( fsp.Q.sub( 5 ), Expression( 'boundary_profile_z', element=fsp.Q.sub( 5 ).ufl_element(), boundary_profile_z=rpam.parameters['boundary_profile_z'] ), rmsh.boundary_circle )
 bc_z_square = DirichletBC( fsp.Q.sub( 5 ), Expression( 'boundary_profile_z', element=fsp.Q.sub( 5 ).ufl_element(), boundary_profile_z=rpam.parameters['boundary_profile_z'] ), rmsh.boundary_square )
+# CHANGE PARAMETERS HERE
 
 
 # all BCs

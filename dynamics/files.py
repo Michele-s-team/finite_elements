@@ -1,7 +1,5 @@
 from fenics import *
 
-import csv
-import os
 import runtime_arguments as rarg
 
 
@@ -31,21 +29,4 @@ xdmffile_dFdl.parameters.update( {"functions_share_mesh": True, "rewrite_functio
 
 xdmffile_dFds = XDMFFile( (rarg.args.output_directory) + '/dFds.xdmf' )
 xdmffile_dFds.parameters.update( {"functions_share_mesh": True, "rewrite_function_mesh": False} )
-
-
-
-# 4 data file
-filepath_data = os.path.join(rarg.args.output_directory, 'data.csv')
-os.makedirs(os.path.dirname(filepath_data), exist_ok=True)
-
-csvfile_data = open(filepath_data, 'a', newline='')
-fieldnames_data = [ \
-    'step',
-    '<(n^{n-1/2}_i \overline{v}^i)^2>^{n-1/2}_{partial Omega O}',
-    '<(nabla_i v^i - 2 w H)^2>^{n-1/2}_{Omega}',
-    '< 1 >^{n-1/2}_{Omega}'
-    ]
-writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
-writer_data.writeheader()
-
 

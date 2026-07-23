@@ -1,28 +1,3 @@
-'''
-Input/output utilities for reading and writing FEniCS fields, meshes, and
-parameters.
-
-Provides standalone helpers for:
-  - Writing fields (scalar/vector/tensor) to file: print_to_csvfile (DOF
-    values, continuous or DG spaces), print_nodal_values_to_csvfile,
-    xdmf_print, and full_print / full_print_deformed (combined XDMF, HDF5,
-    and CSV output).
-  - Reading fields back from CSV (read_dg_field_from_csv_file,
-    read_scalar_from_csvfile).
-  - Exporting mesh geometry to CSV: vertices, triangles, and edges
-    (print_mesh_vertices_to_csv, print_mesh_triangles_to_csv,
-    print_mesh_lines_to_csv).
-  - Reading and writing parameter sets to/from CSV
-    (read_parameter[s]_from_csv_file, write_parameters_to_csv_file) and
-    parsing strings into typed values (string_to_value,
-    read_function_expresssion).
-  - Dictionary helpers (merge_dictionaries, max_dictionary) and small
-    utilities (pad, add_trailing_slash, count_files, field_type).
-  - Colored / formatted terminal output for test reporting
-    (check_print, check_string, print_star_box).
-'''
-
-
 import ast
 import colorama as col
 import csv
@@ -31,11 +6,11 @@ import glob
 import importlib
 import numpy as np
 import os
-import pandas as pd
 import shutil
 import sys
 
 import function as fu
+
 msh = importlib.import_module('mesh.utils')
 
 number_of_decimals = 2
@@ -536,21 +511,17 @@ def full_print(f, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_
 '''
 print on a target mesh a field (scalar, vector or tensor) defined on a source mesh, where the source and target mesh are related by a deformation field
 Input values: 
-    * Mandatory:
-        - 'f': the field
-        - 'u': the deformation field, defined on the source mesh
-        - 'path_xdmf_file' the path of the xdmf file
-        - 'path_h5_file' the path of the h5 file
-        - 'path_csv_file' the path of the csv file
-        - 'path_csv_nodal_value_file' the path of the csv file where the nodal values of the field will be written 
-     * Optional:
-        - 'mesh_function': a mesh function that tags mesh region, needed to plot fields on discontinuous spaces
+    - 'f': the field
+    - 'u': the deformation field, defined on the source mesh
+    - 'path_xdmf_file' the path of the xdmf file
+    - 'path_h5_file' the path of the h5 file
+    - 'path_csv_file' the path of the csv file
+    - 'path_csv_nodal_value_file' the path of the csv file where the nodal values of the field will be written 
 '''
-def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh_function=None):
+def full_print_deformed(f, u, field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file):
 
     f_def = fu.deform_function(f, u)
-
-    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file, mesh_function=mesh_function)
+    full_print(f_def, 'def_' + field_name, path_xdmf_file, path_h5_file, path_csv_file, path_csv_nodal_value_file)
 
 
 '''
@@ -831,72 +802,3 @@ def read_function_expresssion(function_string):
         return [eval(expr, env) for expr in parts]
 
     return f
-
-
-'''
-read a DG field (scalar, vector or tensor) from file. This works only if the field has been written to csv file with the method `print_to_csvfile` 
-Input values; 
-    - 'filepath': path, filename and extension of the csv file
-    - 'f': the field in which the result will be written
-'''
-def read_dg_field_from_csv_file(filepath, f):
-
-    print(f'path = {filepath}')
-
-    # function space, value_shape, value_size and mesh relative to the field 'f'
-    Q          = f.function_space()
-    value_shape = Q.ufl_element().value_shape()
-    value_size  = int(np.prod(value_shape)) if value_shape else 1
-    mesh        = Q.mesh()
-
-    # read the csv file and store it in a pandas data frame
-    f_data = pd.read_csv(filepath)
-
-    # match column names used in print_to_csvfile
-    column_names = ['f'] if value_size == 1 else [f'f:{j}' for j in range(value_size)]
-
-    # vector of DOF values of the field 'f'
-    f_values  = f.vector().get_local()
-
-
-    row_idx = 0
-    for cell in cells(mesh):
-        # loop through cells in the mesh
-
-        '''
-        cell_dofs contains the IDs of the DOFs that are contained into 'cell', it has the structure
-        [
-            id_f_0_on_DOF_0, 
-            id_f_0_on_ DOF_1,
-            ...,
-            id_f_0_on_DOF_{n_nodes-1},
-
-            id_f_1_on_DOF_0, 
-            id_f_1_on_ DOF_1,
-            ...,
-            id_f_1_on_DOF_{n_nodes-1},
-
-            ...
-        ]
-        where the pattern is repeated value_size times, i.e., one for each component of 'f', and n_nodes = [number of DOFs in the cell] / [value_size]. In other words, 
-        cell_dofs[j * n_nodes + i] = [index in f.values().get_local() corresponding to the j-th component of the tensor 'f' sitting on ith DOF in the cell 'cell']
-        '''
-        cell_dofs = Q.dofmap().cell_dofs(cell.index())
-
-        n_nodes   = len(cell_dofs) // value_size
-
-        for i in range(n_nodes):
-            # loop through nodes in `cell`
-
-            for j in range(value_size):
-                # loop through components of `f`
-
-                # write into f_values the value of the field by extracting the row and column in f_data, i.e., in the csv file, following the same structure in which the field has been written to csv file by `print_to_csvfile`
-                f_values[cell_dofs[j * n_nodes + i]] = f_data.iloc[row_idx][column_names[j]]
-
-            row_idx += 1
-
-    # write f_values into f.vector
-    f.vector()[:] = f_values
-    f.vector().apply('insert')
-

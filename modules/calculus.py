@@ -1,23 +1,3 @@
-'''
-Calculs utilities for finite-element computations.
-
-Provides standalone helpers for:
-  - Parametric curves (line, circle, circle_arc, ellipse, ellipse_arc),
-    each returning [position, derivative] over t in [0, 1].
-  - Curvilinear integrals along curves and over mesh internal facets
-    (curve_integral_*, curve_integral_dS).
-  - Surface integrals over planar regions: rectangles, disks, rings,
-    ellipses, polygons (surface_integral_*).
-  - 3D surface/volume integrals over spheres, balls, and boxes.
-  - Rotations and coordinate transforms (R, R_z, dRddtheta,
-    polar_to_cartesian, rotation_translation).
-  - Geometric tests and queries (point_on_line, point_on_segment,
-    point_in_box, line_on_axis, line_is_radial, mirror_point_line,
-    polygon_length, min/max distances).
-
-Depends on numpy, scipy, shapely, and FEniCS
-'''
-
 
 from fenics import *
 import numpy as np
@@ -27,7 +7,6 @@ from shapely.geometry import Polygon
 from shapely.ops import triangulate
 import sys
 
-import constants.utils as const
 
 small_number = 1e-3
 
@@ -642,23 +621,6 @@ def dRddtheta(theta):
 
 
 '''
-given a point, returns the point rotated with respect to a point and translated
-Input values: 
-    - `p` = [p_x, p_y], the coordinates of the point
-    - `theta`: the rotation angle
-    - `c`: the rotation center
-    - `t`: the translation vector
-Return values: 
-    - t + c + R(theta).(x-c)
-'''
-
-def rotation_translation(p, theta, c, t):
-
-    return np.add(t, np.add(c, R(theta).dot(np.subtract(p, c))))
-
-
-
-'''
 given a rectangle with its bottom-left corner at the origin and a point inscribed in it, return the minimal distance between the point and the rectangle boundary
 Input values: 
 - 'L', 'h': the length and  height of the rectangle
@@ -728,32 +690,6 @@ def point_on_line(point, line):
 
     return np.isclose(num / den, 0, rtol=small_number)
 
-
-
-'''
-returns True of a points lie on a sexment, and False otherwise
-Input values: 
-    * Mandatory: 
-        - 'p': [p_x, p_y], the coordinates of the point
-        - 'p_1', 'p_2': the coordinates of the poitns that define the segment, defined as 'p'
-    * Optional
-        - 'tol': the length tolerance used to determine the result
-        
-Return values; 
-    - 'True' if 'p' lies on the segment, 'False' otherwise
-'''
-
-def point_on_segment(p, p_1, p_2, tol=const.epsilon):
-
-    d = p_2 - p_1
-    L = np.linalg.norm(d)
-
-    if L < tol:
-        return np.linalg.norm(p - p_1) < tol
-    
-    t = np.dot(p - p_1, d) / L
-
-    return ( np.linalg.norm(p - p_1 - t * d/L) < tol * L ) and ( - tol * L  <= t <= L * (1 + tol))
 
 '''
 mirrors a point with respect to the symmetry axis given by a line

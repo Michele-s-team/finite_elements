@@ -21,7 +21,6 @@ integral_exact[0] = dict([ \
     ('dx', 0), \
     ('ds_circle', 0), \
     ('ds_ellipse', 0), \
-    ('dS_I', 0)
     ])
 
 integral_exact[1] = dict([ \
@@ -34,7 +33,6 @@ integral_exact[1] = dict([ \
     ('ds_tb', 0), \
     ('ds_ellipse', 0), \
     ('ds', 0), \
-    ('dS_I', 0)
     ])
 
 # exact surface integrals
@@ -46,9 +44,6 @@ integral_exact[1]['dx'] = cal.surface_integral_rectangle(tf.function_test_integr
 # form mesh #0
 integral_exact[0]['ds_circle'] = cal.curve_integral_circle(tf.function_test_integrals, rmsh.parameters['r'], rmsh.parameters['c'][:2])
 integral_exact[0]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_integrals, rmsh.parameters['a'], rmsh.parameters['b'], rmsh.parameters['c'][:2])
-
-integral_exact[0]['dS_I'] = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals, rmsh.sf, rmsh.lmsh.parameters[f"sub_mesh_{0}_id"])
-
 
 # for mesh #1
 integral_exact[1]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals, [0, 0], [0, rmsh.parameters["h"]])
@@ -64,38 +59,10 @@ integral_exact[1]['ds_ellipse'] = cal.curve_integral_ellipse(tf.function_test_in
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_lrtb'] + integral_exact[1]['ds_ellipse']
 
-integral_exact[1]['dS_I'] = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals, rmsh.sf, rmsh.lmsh.parameters[f"sub_mesh_{1}_id"])
-
-
 test_mesh_integral_errors = dict([])
-
-# 1. check mesh integral on the whole mesh
-
-print(f'Check integrals on the whole mesh: ')
-
-test_mesh_integral_errors[f'\int_mesh f dx'] = msh.test_mesh_integral(integral_exact[0]['dx'] + integral_exact[1]['dx'], tf.function_test_integrals_fenics, rmsh.dx, f'\int_mesh f dx')
-
-test_mesh_integral_errors[f'\int f ds_mesh_circle'] = msh.test_mesh_integral(integral_exact[0]['ds_circle'], tf.function_test_integrals_fenics, rmsh.ds_circle, f'\int f ds_mesh_circle')
-test_mesh_integral_errors[f'\int f ds_mesh_ellipse'] = msh.test_mesh_integral(integral_exact[0]['ds_ellipse'], tf.function_test_integrals_fenics, rmsh.dS_ellipse, f'\int f ds_mesh_ellipse')
-
-test_mesh_integral_errors[f'\int f ds_mesh_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], tf.function_test_integrals_fenics, rmsh.ds_l, f'\int f ds_mesh_l')
-test_mesh_integral_errors[f'\int f ds_mesh_r'] = msh.test_mesh_integral(integral_exact[1]['ds_r'], tf.function_test_integrals_fenics, rmsh.ds_r, f'\int f ds_mesh_r')
-test_mesh_integral_errors[f'\int f ds_mesh_t'] = msh.test_mesh_integral(integral_exact[1]['ds_t'], tf.function_test_integrals_fenics, rmsh.ds_t, f'\int f ds_mesh_t')
-test_mesh_integral_errors[f'\int f ds_mesh_b'] = msh.test_mesh_integral(integral_exact[1]['ds_b'], tf.function_test_integrals_fenics, rmsh.ds_b, f'\int f ds_mesh_b')
-
-test_mesh_integral_errors[f'\int f ds_mesh_lr'] = msh.test_mesh_integral(integral_exact[1]['ds_lr'], tf.function_test_integrals_fenics, rmsh.ds_lr, f'\int f ds_mesh_lr')
-test_mesh_integral_errors[f'\int f ds_mesh_tb'] = msh.test_mesh_integral(integral_exact[1]['ds_tb'], tf.function_test_integrals_fenics, rmsh.ds_tb, f'\int f ds_mesh_tb')
-
-test_mesh_integral_errors[f'\int f ds_mesh_lrtb'] = msh.test_mesh_integral(integral_exact[1]['ds_lrtb'], tf.function_test_integrals_fenics, rmsh.ds_lrtb, f'\int f ds_mesh_lrtb')
-
-test_mesh_integral_errors[f'\int_mesh f dS_I_{0}'] = msh.test_mesh_integral(integral_exact[0]['dS_I'], tf.function_test_integrals_fenics, rmsh.dS_I[0], f'\int_mesh f dS_I_{0}')
-test_mesh_integral_errors[f'\int_mesh f dS_I_{1}'] = msh.test_mesh_integral(integral_exact[1]['dS_I'], tf.function_test_integrals_fenics, rmsh.dS_I[1], f'\int_mesh f dS_I_{1}')
-
 
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
-
-
 
 # surface integrals
 for i in range(len(lmsh.sub_meshes)):

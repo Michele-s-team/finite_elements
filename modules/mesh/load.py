@@ -17,6 +17,15 @@ if "n_meshes" not in parameters:
     # read the sub_meshes and generate their functions tagging cells and vertices
     sub_meshes, sf_sub_meshes, mf_sub_meshes = msh.read_sub_meshes(mesh, sf, parameters, rarg.args.input_directory)
 
+    print("Loaded submeshes =", len(sub_meshes))
+
+    for i, sm in enumerate(sub_meshes):
+        print(
+            "submesh", i,
+            "dim =", sm.topology().dim(),
+            "vertices =", sm.num_vertices()
+        )
+
 else: 
     # there are multiple meshes -> read all of them 
 

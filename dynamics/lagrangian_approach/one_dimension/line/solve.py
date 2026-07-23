@@ -12,9 +12,22 @@ Examples:
 
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/line/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/1d/line/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/lagrangian_approach/one_dimension/line/solution"; rm -rf $SOLUTION_PATH; python3 solve.py line_b $MESH_PATH $SOLUTION_PATH
+    
+the  fields in this problem are 
+    - v_bar == v^{bar}_{Lagrangian approach}
+    - w_bar == w^{bar}_{Lagrangian approach}
+    - phi == \phi_{Lagrangian approach}
+    - v_n == v^{n}_{Lagrangian approach}
+    - w_n == w^{n}_{Lagrangian approach}
+    - u_n_12[alpha] == X^{n-1/2, alpha}_{Lagrangian approach} - X_ref^alpha
+    - X_ref^alpha is the manifold in the reference configuration 
+    - nu_n_12 == nu^{n-1/2}_{Lagrangian approach}
+    - psi_n_12 == psi^{n-1/2}_{Lagrangian approach}
+    - mu_n_12 == mu^{n-1/2}_{Lagrangian approach}
 '''
 
 
+import colorama as col
 from fenics import *
 import importlib
 import dolfin
@@ -25,10 +38,12 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import function as fu
 import function_spaces as fsp
+import input_output as io
 import parameters.read.solution as rpam
+import runtime_arguments as rarg
 import switch_problem as swi
-import variational_problem.utils as var_pr
 
 
 prout_bc = importlib.import_module(swi.pr_bc)
@@ -40,29 +55,13 @@ vp = importlib.import_module(swi.vp)
 set_log_level(20)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
-params = {
-    'nonlinear_solver': 'snes',
-    'snes_solver': {
-        'linear_solver': 'superlu',
-        'line_search': 'bt',  # backtracking line search
-        'absolute_tolerance': 1e-6,
-        'relative_tolerance': 1e-6,
-        'maximum_iterations': 1000000,
-        'report': True,
-    }
-}
-
-PETScOptions.clear()
-PETScOptions.set('snes_type', 'newtontr')
-PETScOptions.set('snes_atol', 1e-12)  
-PETScOptions.set('snes_rtol', 1e-12) 
-PETScOptions.set('snes_stol', 1e-8)   
-PETScOptions.set('snes_max_it', 100000)
-PETScOptions.set('snes_monitor')
-PETScOptions.set('snes_max_funcs', 1000000)       
+print("Input diredtory = ", rarg.args.input_directory)
+print("Output diredtory = ", rarg.args.output_directory)
+print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh:.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 fsp.sigma_n_32.interpolate( vp.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
+
 
 #Option 1: set initial profiles
 
@@ -105,7 +104,39 @@ for step in range(rpam.parameters['N']):
     vp = importlib.import_module(swi.vp)
 
     # solve the variational problem
-    var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
+    J = derivative( vp.F, fsp.psi, fsp.J_psi )
+    problem = NonlinearVariationalProblem( vp.F, fsp.psi, vp.bcs, J )
+    solver = NonlinearVariationalSolver( problem )
+
+
+    params = {
+        'nonlinear_solver': 'snes',
+        'snes_solver': {
+            'linear_solver': 'superlu',
+            'line_search': 'bt',  # backtracking line search
+            'absolute_tolerance': 1e-6,
+            'relative_tolerance': 1e-6,
+            'maximum_iterations': 1000000,
+            'report': True,
+        }
+    }
+
+    PETScOptions.clear()
+    PETScOptions.set('snes_type', 'newtontr')
+    PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
+    PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
+    PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
+    PETScOptions.set('snes_max_it', 100000)
+    PETScOptions.set('snes_monitor')
+    PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
+    # PETScOptions.set('snes_test_jacobian', '')  # This will check if Jacobian is wrong
+    # PETScOptions.set('snes_test_jacobian_display', '')
+
+    solver.parameters.update(params)
+
+    
+    solver.solve()
+
 
     #update previous solution:
     #get the solution and write it to file
@@ -128,6 +159,7 @@ for step in range(rpam.parameters['N']):
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     fsp.u_n_32.assign( u_n_12_output )
+
 
 
 prout_bc.csvfile_bcs.close()

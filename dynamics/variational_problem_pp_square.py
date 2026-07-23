@@ -17,9 +17,6 @@ cmd.set_gauge('monge')
 
 i, j, k, l = ufl.indices(4)
 
-bcs_tau = []
-bcs_d = []
-
 # post-processing variational functional
 F_pp_tau = ( \
                        - rpam.parameters['rho'] * (fsp.w_bar - fsp.w_n_1) \

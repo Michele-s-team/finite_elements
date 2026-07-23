@@ -1,6 +1,8 @@
+import dolfin
 from fenics import *
 
 import mesh.load as lmsh
+import differential_geometry.boundary.geometry as bgeo
 
 
 # Define function spaces

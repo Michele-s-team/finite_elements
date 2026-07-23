@@ -3,6 +3,12 @@ from fenics import *
 import mesh.load as lmsh
 import parameters.read.solution as rpam
 
+
+'''import the periodic bc for left and right'''
+from periodic_bc import PeriodicBoundary
+
+
+
 '''
 the variables for the problem are
 1) for the membrane: 
@@ -46,7 +52,35 @@ P_psi_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree
 P_mu_n_12 = FiniteElement( 'P', interval, rpam.parameters['function_space_degree_mem'] )
 
 element_mem = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_U_n_12, P_nu_n_12, P_psi_n_12, P_mu_n_12] )
+
+
+
+
+
+'''periodic boundary condition are passed onto the membrane function space through 'constrained_domain'. '''
+pbc = PeriodicBoundary()
+# Q_mem = FunctionSpace(lmsh.sub_meshes[1], element_mem,  constrained_domain=pbc)
 Q_mem = FunctionSpace(lmsh.sub_meshes[1], element_mem)
+
+
+
+
+
+
+
+''' define finite elements for the free surface '''
+P_u_fs = VectorElement('P', interval, rpam.parameters['function_space_degree_mem'], dim=2)
+P_u_dot_fs = VectorElement('P', interval, rpam.parameters['function_space_degree_mem'], dim=2)
+
+''' define mixed elements '''
+element_fs = MixedElement([P_u_fs, P_u_dot_fs])
+
+'''define function spaces '''
+Q_fs = FunctionSpace(lmsh.sub_meshes[2], element_fs,constrained_domain=pbc)
+
+
+
+
 
 # collapsed function spaces
 Q_v_bar = Q_mem.sub(0).collapse()
@@ -203,3 +237,46 @@ nu_v_fl_bar = TestFunction(Q_v_fl_bar)
 nu_phi_fl = TestFunction(Q_phi_fl)
 
 V_fl =  (v_fl_n_1 + v_fl_bar) / 2.0
+
+
+
+
+
+
+'''4) free surface fields'''
+''' define collapsed spaces '''
+Q_u_fs = Q_fs.sub(0).collapse()
+Q_u_fs_dot = Q_fs.sub(1).collapse()
+
+'''define the jacobian '''
+J_fs = TrialFunction(Q_fs)  #used for the Newton,s method, just numerical
+
+'''define solutions field '''
+psi_fs = Function(Q_fs) #vector that contains all free surface unknowns
+
+'''test functions'''
+nu_eta, nu_eta_dot = TestFunctions(Q_fs)  #test functions, used in the weak formulation, like in the membrane
+
+'''define previous timestep fields'''
+U_bottom_1 = Function(Q_u_fs)
+U_bottom_2 = Function(Q_u_fs)
+
+U_dot_bottom_1 = Function(Q_u_fs_dot)
+U_dot_bottom_2 = Function(Q_u_fs_dot)
+
+'''output fields'''
+u_fs_output = Function(Q_u_fs)
+u_fs_dot_output = Function(Q_u_fs_dot)
+
+'''split the unknowns'''
+u_fs, u_fs_dot = split(psi_fs)
+
+''' assigner'''
+assigner_fs = FunctionAssigner(Q_fs,[Q_u_fs, Q_u_fs_dot])
+
+u_fs_on_mesh = Function(Q_u)
+u_fs_dot_on_mesh = Function(Q_u_dot)
+
+
+u_fs_on_mesh_fs     = Function(Q_u_fs)      # free surface displacement living on sub_mesh[2]
+u_fs_dot_on_mesh_fs = Function(Q_u_fs_dot)  # free surface velocity living on sub_mesh[2]

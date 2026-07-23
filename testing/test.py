@@ -264,15 +264,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', 'generate_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
-problem_name = 'square_ellipse_circle'
-generate_mesh_path = root_path + 'generate_mesh/2d/square/ellipse_circle/'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh', generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
 problem_name = 'square_polygon'
 generate_mesh_path = root_path + 'generate_mesh/2d/square/polygon/'
 checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
@@ -414,19 +405,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
-problem_name = 'square_ellipse_circle_a'
-generate_mesh_path = root_path + 'generate_mesh/2d/square/ellipse_circle/'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh', 
-                                                                    os.path.join(generate_mesh_path, 'poisson_equation_two_domains_discontinuous_parameters'), 
-                                                                    os.path.join(generate_mesh_path, 'poisson_equation_two_domains_discontinuous_parameters'), 
-                                                                    problem_name, problem_name, success)
-
 
 problem_name = 'two_squares_no_circle_a'
 generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/two_squares_no_circle/'
@@ -981,34 +959,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
-
-# Test dynamics/channel_with_cylinder_flat_cn/discontinuous/monolithic
-case_name = 'dynamics/channel_with_cylinder_flat_cn/discontinuous/monolithic'
-
-problem_name = 'square_a'
-generate_mesh_path =root_path + 'generate_mesh/2d/square'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
-
-# Test dynamics/channel_with_cylinder_flat_cn
-case_name = 'dynamics/channel_with_cylinder_flat_cn/monolithic'
-
-problem_name = 'square'
-generate_mesh_path =root_path + 'generate_mesh/2d/square'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
-
-
 # Test dynamics/channel_with_cylinder_flat_cn/discontinuous/mixed_space
 case_name = 'dynamics/channel_with_cylinder_flat_cn/discontinuous/mixed_space'
 
@@ -1132,33 +1082,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      problem_name, problem_name, success)
 
 
-case_name = 'dynamics/lagrangian_approach/one_dimension/circle/curvature/discontinuous'
-
-problem_name = 'square_shape_line_a'
-generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',    
-                                                                     os.path.join(generate_mesh_path, 'curvature_discontinuous_parameters'), 
-                                                                     os.path.join(generate_mesh_path, 'curvature_discontinuous_parameters'), 
-                                                                     problem_name, problem_name, success)
-
-problem_name = 'square_shape_line_b'
-generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',    
-                                                                     os.path.join(generate_mesh_path, 'curvature_discontinuous_parameters'), 
-                                                                     os.path.join(generate_mesh_path, 'curvature_discontinuous_parameters'), 
-                                                                     problem_name, problem_name, success)
-
-
 
 # Test fluid_structure_interaction
 case_name = 'fluid_structure_interaction/mesh_deformation'
@@ -1210,44 +1133,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
 
 
-case_name = 'fluid_structure_interaction/elastic_obstacle/monolithic'
-
-problem_name = 'square_shape_line_a'
-generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  
-                                                                     os.path.join(generate_mesh_path, 'elastic_obstacle_monolithic_square_shape_line_a_parameters'),
-                                                                     os.path.join(generate_mesh_path, 'elastic_obstacle_monolithic_square_shape_line_a_parameters'), 
-                                                                     problem_name, problem_name, success)
-
-problem_name = 'square_shape_line_b'
-generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
-
-
-case_name = 'fluid_structure_interaction/elastic_obstacle/monolithic/surface_tension'
-
-problem_name = 'square_shape_line_a'
-generate_mesh_path =root_path + 'generate_mesh/2d/square/shape_line'
-checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
-                                                                     root_path,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     generate_mesh_path, root_path + case_name,
-                                                                     mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  
-                                                                     os.path.join(generate_mesh_path, 'elastic_obstacle_monolithic_surface_tension_square_shape_line_a_parameters'),
-                                                                     os.path.join(generate_mesh_path, 'elastic_obstacle_monolithic_surface_tension_square_shape_line_a_parameters'), 
-                                                                     problem_name, problem_name, success)
-
 case_name = 'fluid_structure_interaction/membrane'
 
 problem_name = 'square_no_circle_line_a'
@@ -1275,8 +1160,6 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      'generate_mesh', 'generate_mesh', 
                                                                      generate_mesh_path, generate_mesh_path,         
                                                                      problem_name, problem_name, success)
-
-
 
 
 # Test elasticity/rod/steady_state

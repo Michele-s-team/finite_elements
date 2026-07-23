@@ -1,26 +1,3 @@
-'''
-Boundary geometry for finite-element computations.
-
-This module deals with geometric quantities defined on manifold boundaries:
- it provides boundary normals and tangents both as
-UFL-level objects and as smooth (CG2) field representations that can be
-plotted.
-
-  - FacetTangent: unit boundary tangent of a 2D mesh, obtained by rotating
-    FacetNormal by pi/2.
-  - facet_normal_sub_meshes, facet_tangent_sub_meshes: build boundary
-    normals/tangents for each sub-mesh of a parent mesh.
-  - field_facet_normal: project a facet normal onto a smooth CG2 field
-    (non-normalized), over a boundary (ds) or interior-facet (dS) measure.
-  - field_facet_normal_normalized, field_facet_tangent_normalized: smooth,
-    Euclidean-normalized boundary normal and tangent fields
-  - calc_tangent_cg2: smooth (non-normalized) boundary tangent field.
- 
-On import, the module also constructs module-level facet_normal,
-facet_tangent, and their sub-mesh counterparts for the mesh(es) loaded in
-mesh.load, handling both the single-mesh and multi-mesh cases.
-'''
-
 from fenics import *
 import numpy as np
 import ufl as ufl
@@ -272,60 +249,6 @@ def field_facet_normal_normalized(mesh, n, measure,
     n_smooth.vector().apply("insert")
     
     return n_smooth
-
-
-'''
-tangent to a manifold boundary, normalized according to the Euclidean metric, which can be plotted as a field
-Input values: 
-    * Mandatory:
-        - 'mesh': the mesh of which the normal is to be computed
-        - 'n': the normal, e.g., FacetNormal(mesh) or FacetNormal(mesh)('+') ...
-        - 'measure': the measure of 'mesh' which defines the curve of which the tangent will be computed
-    * Optional:
-        - 'norm_threshold': the threshold for normalization of the normal. Entries of the normal whose norm is smaller than norm_threshold will be normalized by norm unity (these entries are irrelevant, because they live outside `measure`). 
-Return values: 
-    - 'n_smooth': the facet normal as a smooth field, norma
- '''
-def field_facet_tangent_normalized(mesh, n, measure,
-                        interior=False,
-                        norm_threshold = const.vector_norm_threshold):
-    
-    # obtain the smooth, normalized normal
-    n_smooth = field_facet_normal_normalized(mesh, n, measure, interior, norm_threshold)
-
-    '''
-    n_vector has the form
-    [n_DOF_0_x, n_DOF_0_y, n_DOF_1_x, n_DOF_1_y, ...]
-    '''
-    n_vector = n_smooth.vector().get_local()
-
-    '''
-    after reshaping n_vector has the form
-    [
-        [n_DOF_0_x, n_DOF_0_y], 
-        [n_DOF_1_x, n_DOF_1_y,],
-    ...]
-    '''
-
-    n_vector = n_vector.reshape(-1, 2)
-
-
-    '''
-    take the 0-th and first column of n_vector, n_vector[:, 0] and n_vector[:, 1], respectively, change the sign of the 1th column and stack the two columns to obtain the tangent
-    '''
-    t_vector = np.stack([-n_vector[:, 1], n_vector[:, 0]], axis=1)
-
-
-    # allocate a new vector for the smooth tangent
-    t_smooth = n_smooth.copy()
-
-    # write into `t_smooth` t_vector flattened
-    t_smooth.vector().set_local(t_vector.reshape(-1))
-    
-    t_smooth.vector().apply("insert")
-
-    return t_smooth
-
 
 '''
 normal to a curve expressed n term of the reference and current configuration of a curve

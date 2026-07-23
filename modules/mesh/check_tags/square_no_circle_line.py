@@ -55,9 +55,14 @@ integral_exact[1] = dict([ \
     ('ds_l', 0)
 ])
 
+integral_exact[2] = dict([
+    ('dx', 0),
+    ('ds_l', 0)
+])
 # exact surface integrals
 integral_exact[0]['dx'] = cal.surface_integral_rectangle(function_test_integrals, [0, 0], [rmsh.parameters['L'], rmsh.parameters['h']])
 integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, 0.0, rmsh.parameters['L'])
+integral_exact[2]['dx'] = cal.curve_integral_line(function_test_integrals,0.0,rmsh.parameters['L'])
 
 # exact line integrals
 # form mesh #0
@@ -76,6 +81,11 @@ integral_exact[1]['ds_l'] = function_test_integrals(0)
 integral_exact[1]['ds_r'] = function_test_integrals(rmsh.parameters['L'])
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r']
+
+integral_exact[2]['ds_l'] = function_test_integrals(0)
+integral_exact[2]['ds_r'] = function_test_integrals(rmsh.parameters['L'])
+
+integral_exact[2]['ds'] = (integral_exact[2]['ds_l']+ integral_exact[2]['ds_r'])
 
 test_mesh_integral_errors = dict([])
 

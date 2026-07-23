@@ -33,7 +33,7 @@ ds_sub_mesh[0] = dict([ \
     ('ds_l', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_l_id"])), \
     ('ds_r', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"sub_mesh_{1}_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_b_id"])), \
+    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"sub_mesh_{2}_id"])), \
     ])
 
 ds_sub_mesh[0]['ds_lr'] = ds_sub_mesh[0]['ds_l'] + ds_sub_mesh[0]['ds_r']

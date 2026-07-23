@@ -35,7 +35,6 @@ sys.path.append(module_path)
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
-import variational_problem.utils as var_pr
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
@@ -47,6 +46,12 @@ dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadr
 print("Input diredtory = ", rarg.args.input_directory)
 print("Output diredtory = ", rarg.args.output_directory)
 print(f"Radius of mesh cell = {col.Fore.BLUE}{rmsh.r_mesh}{col.Style.RESET_ALL}")
+
+# solve the variational problem
+J = derivative(vp.F, fsp.phi, fsp.J_phi)
+problem = NonlinearVariationalProblem(vp.F, fsp.phi, vp.bcs, J)
+solver = NonlinearVariationalSolver(problem)
+
 
 # to solve with SNES
 params = {
@@ -69,7 +74,8 @@ PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
 PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 
-# solve the variational problem
-var_pr.solve_vp(vp.F, fsp.phi, vp.bcs, fsp.J_phi, parameters=params)
+solver.parameters.update(params)
+
+solver.solve()
 
 prout_bc = importlib.import_module(swi.prout_bc)

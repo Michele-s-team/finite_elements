@@ -14,16 +14,9 @@ from fenics import *
 import importlib
 import os
 
-import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg
-
-
-# read parameters for the mesh ensemble
-
-parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, "mesh_metadata.csv"))
-
 
 # read quantities for meshes
 
