@@ -23,8 +23,7 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 
 csvfile = open(filename_data, 'a', newline='' )
 fieldnames = [ \
-    'dT/dt_L',\
-    'dT/dt_R',\
+    '(dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0)'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -32,18 +31,20 @@ writer.writeheader()
 
 # this function prints out some useful data
 def print_data():
+
+    dTdt_L = assemble( ( \
+                rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
+                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * fsp.v_n[j] ).dx(i)
+            ) * rmsh.dx)
+
+    dTdt_R = (assemble( ( \
+                            bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, fsp.sigma_n_12, rpam.parameters['mu'])[i, j]
+                        ) * rmsh.ds) \
+                        - assemble( ( rpam.parameters['mu']/2.0 * (fsp.v_n[i].dx(j) + fsp.v_n[j].dx(i)) * (fsp.v_n[j].dx(i) + fsp.v_n[i].dx(j)) ) * rmsh.dx))
     
     writer.writerows( [{ \
         fieldnames[0]: \
-            assemble( ( \
-                rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
-                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * fsp.v_n[j] ).dx(i)
-            ) * rmsh.dx), \
-        fieldnames[1]: \
-            assemble( ( \
-                bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, fsp.sigma_n_12, rpam.parameters['mu'])[i, j]
-            ) * rmsh.ds) \
-            - assemble( ( rpam.parameters['mu']/2.0 * (fsp.v_n[i].dx(j) + fsp.v_n[j].dx(i)) * (fsp.v_n[j].dx(i) + fsp.v_n[i].dx(j)) ) * rmsh.dx), \
+            (dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0)
         }] )
 
     csvfile.flush()
