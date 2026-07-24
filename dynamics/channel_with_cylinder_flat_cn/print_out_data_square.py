@@ -42,7 +42,8 @@ def print_data():
         fieldnames[1]: \
             assemble( ( \
                 bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, fsp.sigma_n_12, rpam.parameters['mu'])[i, j]
-            ) * rmsh.ds), \
+            ) * rmsh.ds) \
+            - assemble( ( rpam.parameters['mu']/2.0 * (fsp.v_n[i].dx(j) + fsp.v_n[j].dx(i)) * (fsp.v_n[j].dx(i) + fsp.v_n[i].dx(j)) ) * rmsh.dx), \
         }] )
 
     csvfile.flush()
