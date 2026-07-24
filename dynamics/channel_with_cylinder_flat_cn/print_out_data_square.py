@@ -24,7 +24,9 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 csvfile = open(filename_data, 'a', newline='' )
 fieldnames = [ \
     'step',
-    '(dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0)'
+    'dTdt_L',
+    'dTdt_R',
+    '(dTdt_L - dTdt_R)/|(dTdt_L + dTdt_R)/2.0|'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -47,7 +49,11 @@ def print_data(step):
         fieldnames[0]: \
             step,\
         fieldnames[1]: \
-            (dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0),\
+            dTdt_L,\
+        fieldnames[2]: \
+            dTdt_R,\
+        fieldnames[3]: \
+            (dTdt_L - dTdt_R)/abs((dTdt_L + dTdt_R)/2.0),\
         }] )
 
     csvfile.flush()
