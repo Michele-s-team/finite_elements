@@ -34,6 +34,7 @@ import print_out_solution as pr_sol
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_da = importlib.import_module(swi.prout_da)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
@@ -76,6 +77,7 @@ for n in range(rpam.parameters['num_steps']):
     var_pr.solve_vp(vp.F3, fsp.v_n, [], fsp.J_v_n)
 
     pr_bc.print_bcs()
+    pr_da.print_data()
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
