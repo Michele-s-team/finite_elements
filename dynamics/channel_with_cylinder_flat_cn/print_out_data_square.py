@@ -4,6 +4,7 @@ from fenics import *
 import os
 import ufl as ufl
 
+import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
 import parameters.read.solution as rpam
 import physics.fluid_mechanics as flu
@@ -22,7 +23,8 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 
 csvfile = open(filename_data, 'a', newline='' )
 fieldnames = [ \
-    'dE/dt',\
+    'dT/dt_L',\
+    'dT/dt_R',\
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
@@ -37,6 +39,10 @@ def print_data():
                 rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
                 + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * fsp.v_n[j] ).dx(i)
             ) * rmsh.dx), \
+        fieldnames[1]: \
+            assemble( ( \
+                bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, fsp.sigma_n_12, rpam.parameters['mu'])[i, j]
+            ) * rmsh.ds), \
         }] )
 
     csvfile.flush()
