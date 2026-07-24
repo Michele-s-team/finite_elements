@@ -38,7 +38,7 @@ def print_data(step):
 
     dTdt_L = assemble( ( \
                 rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega)[i, j] * fsp.v_n_1[j])/vp.dt \
-                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * geo.g(fsp.omega)[j, k] * fsp.v_n[j] ).dx(i)
+                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * geo.g(fsp.omega)[j, k] * fsp.v_n[k] ).dx(i)
             ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx)
 
     dTdt_R = (assemble(  \
