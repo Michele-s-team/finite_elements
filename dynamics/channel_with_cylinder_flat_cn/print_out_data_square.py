@@ -4,9 +4,8 @@ from fenics import *
 import os
 import ufl as ufl
 
-import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
-import differential_geometry.manifold.geometry as geo
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -33,7 +32,10 @@ def print_data():
     
     writer.writerows( [{ \
         fieldnames[0]: \
-            (0), \
+            assemble( ( \
+                rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
+                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * fsp.v_n[j] ).dx(i)
+            ) * rmsh.dx), \
         }] )
 
     csvfile.flush()
