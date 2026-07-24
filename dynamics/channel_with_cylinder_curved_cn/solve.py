@@ -28,6 +28,7 @@ import variational_problem.utils as var_pr
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_da = importlib.import_module(swi.prout_da)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
@@ -78,6 +79,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
     pr_bc.print_bcs()
+    pr_da.print_data(step)
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
