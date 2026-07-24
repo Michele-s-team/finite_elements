@@ -35,13 +35,17 @@ writer.writeheader()
 # this function prints out some useful data
 def print_data(step):
 
+    # I estimate sigma_n from sigma_n_12 by adding the estimated increment across dt/2
+    sigma_n = fsp.sigma_n_12 + (fsp.sigma_n_12 - fsp.sigma_n_32) * vp.dt/2.0
+
+
     dTdt_L = assemble( ( \
                 rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
                 + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * fsp.v_n[j] ).dx(i)
             ) * rmsh.dx)
 
     dTdt_R = (assemble( ( \
-                            bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, fsp.sigma_n_12, rpam.parameters['mu'])[i, j]
+                            bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, sigma_n, rpam.parameters['mu'])[i, j]
                         ) * rmsh.ds) \
                         - assemble( ( rpam.parameters['mu']/2.0 * (fsp.v_n[i].dx(j) + fsp.v_n[j].dx(i)) * (fsp.v_n[j].dx(i) + fsp.v_n[i].dx(j)) ) * rmsh.dx))
     
