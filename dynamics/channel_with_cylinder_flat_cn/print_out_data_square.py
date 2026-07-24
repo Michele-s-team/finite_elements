@@ -23,6 +23,7 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 
 csvfile = open(filename_data, 'a', newline='' )
 fieldnames = [ \
+    'step',
     '(dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0)'
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
@@ -30,7 +31,7 @@ writer.writeheader()
 
 
 # this function prints out some useful data
-def print_data():
+def print_data(step):
 
     dTdt_L = assemble( ( \
                 rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
@@ -44,7 +45,9 @@ def print_data():
     
     writer.writerows( [{ \
         fieldnames[0]: \
-            (dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0)
+            step,\
+        fieldnames[1]: \
+            (dTdt_L - dTdt_R)/((dTdt_L + dTdt_R)/2.0),\
         }] )
 
     csvfile.flush()

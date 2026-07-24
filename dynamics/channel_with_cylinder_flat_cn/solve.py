@@ -77,7 +77,7 @@ for n in range(rpam.parameters['num_steps']):
     var_pr.solve_vp(vp.F3, fsp.v_n, [], fsp.J_v_n)
 
     pr_bc.print_bcs()
-    pr_da.print_data()
+    pr_da.print_data(step)
 
     # obtain fsp.sigma_n from fsp.phi by using the definition of fsp.phi
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
