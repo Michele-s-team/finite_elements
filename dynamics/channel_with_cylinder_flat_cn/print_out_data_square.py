@@ -6,6 +6,7 @@ import ufl as ufl
 
 import function_spaces as fsp
 import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -21,7 +22,7 @@ os.makedirs(os.path.dirname(filename_data), exist_ok=True)
 
 csvfile = open(filename_data, 'a', newline='' )
 fieldnames = [ \
-    'T',\
+    'dE/dt',\
     ]
 writer = csv.DictWriter( csvfile, fieldnames=fieldnames )
 writer.writeheader()
