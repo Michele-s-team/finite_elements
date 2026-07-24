@@ -5,6 +5,7 @@ import os
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
+import differential_geometry.manifold.geometry as geo
 import function_spaces as fsp
 import parameters.read.solution as rpam
 import physics.fluid_mechanics as flu
@@ -36,14 +37,14 @@ writer.writeheader()
 def print_data(step):
 
     dTdt_L = assemble( ( \
-                rpam.parameters['rho']/2.0 * (fsp.v_n[i] * fsp.v_n[i] - fsp.v_n_1[i] * fsp.v_n_1[i])/vp.dt \
-                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * fsp.v_n[j] ).dx(i)
-            ) * rmsh.dx)
+                rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega)[i, j] * fsp.v_n_1[j])/vp.dt \
+                + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * geo.g(fsp.omega)[j, k] * fsp.v_n[j] ).dx(i)
+            ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx)
 
     dTdt_R = (assemble( ( \
                             bgeo.facet_normal[i] * fsp.v_n[j] * flu.sigma(fsp.v_n, fsp.sigma_n_12, rpam.parameters['mu'])[i, j]
                         ) * rmsh.ds) \
-                        - assemble( ( rpam.parameters['mu']/2.0 * (fsp.v_n[i].dx(j) + fsp.v_n[j].dx(i)) * (fsp.v_n[j].dx(i) + fsp.v_n[i].dx(j)) ) * rmsh.dx))
+                        - assemble( ( rpam.parameters['mu']/2.0 * (fsp.v_n[i].dx(j) + fsp.v_n[j].dx(i)) * (fsp.v_n[j].dx(i) + fsp.v_n[i].dx(j)) ) * geo.sqrt_detg( fsp.omega ) * rmsh.dx))
     
     writer.writerows( [{ \
         fieldnames[0]: \
