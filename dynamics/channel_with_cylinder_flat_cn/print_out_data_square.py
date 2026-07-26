@@ -36,7 +36,7 @@ writer.writeheader()
 def print_data(step):
 
     # I estimate sigma_n from sigma_n_12 by adding the estimated increment across dt/2
-    sigma_n = fsp.sigma_n_12 + (fsp.sigma_n_12 - fsp.sigma_n_32) * vp.dt/2.0
+    sigma_n = fsp.sigma_n_12 + (fsp.sigma_n_12 - fsp.sigma_n_32)/2.0
 
 
     dTdt_L = assemble( ( \
