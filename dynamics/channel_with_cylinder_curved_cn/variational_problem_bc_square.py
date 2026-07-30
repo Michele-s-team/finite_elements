@@ -30,14 +30,14 @@ class TangentVelocityExpression( UserExpression ):
 
 class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 2 * x[1] * (rmsh.parameters["h"] - x[1]) / rmsh.parameters["h"]**2 * (x[1] - rmsh.parameters["h"] / 24) / rmsh.parameters["h"]
+        values[0] = 2 * x[1] * (rmsh.parameters['h'] - x[1])/rmsh.parameters['h']**2 * (x[1] - rmsh.parameters['h']/24.0) /rmsh.parameters['h']
     def value_shape(self):
         return (1,)
 
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = np.cos( 2.0 * np.pi * x[0] )
-        values[1] = x[1]
+        values[0] = - (rmsh.parameters['h']**2 - 50 * rmsh.parameters['h'] * x[1] + 72 * x[1]**2)/(12.0 * rmsh.parameters['h']**3) 
+        values[1] = 0
 
     def value_shape(self):
         return (2,)
