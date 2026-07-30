@@ -8,6 +8,38 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/solution"; SOLUTION_PATH="/home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square $MESH_PATH $SOLUTION_PATH
 
+    
+
+
+To reproduce air flow with  obstacle (figure 9):
+-        - select  variational_problem_bc_obstacle
+-        - set L = 2.2
+-        - set c_r = [0.2, h/2, 0]
+-        - set outflow = 'near(x[0], 2.2)
+-        - set c_r = [0.2, h/2]
+-        - set cylinder = 'on_boundary && x[0]>0.1 && x[0]<0.3 && x[1]>0.05 && x[1]<0.41-0.05'
+-        - set
+-                * rho = 1.293e-2
+-                * mu = 1.85e-7
+-                * v0 = 1e-4
+-                * v_l = 1e2 * v0
+-        - set v__profile_l = Expression(('4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2) * v_l', '0'), degree=2, v_l=v_l, h=rmsh.h)
+-        - set
+-                class ManifoldExpression( UserExpression ):
+-                    def eval(self, values, x):
+-                        values[0] = 2 * x[1] * (rmsh.h - x[1]) / rmsh.h**2 * (x[1] - rmsh.h / 24) / rmsh.h
+-                    def value_shape(self):
+-                        return (1,)
+-
+-                class OmegaExpression( UserExpression ):
+-                    def eval(self, values, x):
+-                        values[0] = 0
+-                        values[1] = -((rmsh.h**2) - 50.0*rmsh.h*x[1] + 72.0*((x[1])**2))/(12.0*rmsh.h**3)
+-                    def value_shape(self):
+-                        return (2,)
+-        - run with
+-            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_square_mesh.py 0.05 $SOLUTION_PATH
+-            * clear; clear; SOLUTION_PATH="solution"; rm -rf $SOLUTION_PATH; mkdir -p /home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/$SOLUTION_PATH/snapshots/csv/nodal_values; python3 solve.py /home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/mesh/solution /home/fenics/shared/dynamics/channel_with_cylinder_curved_cn/$SOLUTION_PATH  128 128
 """
 
 import dolfin
