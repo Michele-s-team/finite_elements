@@ -45,6 +45,7 @@ To reproduce air flow with  obstacle (figure 9):
 import dolfin
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -52,7 +53,9 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import function_spaces as fsp
+import input_output as io
 import parameters.read.solution as rpam
+import runtime_arguments as rarg
 import switch_problem as swi
 import print_out_solution as pr_sol
 import variational_problem.utils as var_pr
@@ -63,6 +66,15 @@ pr_bc = importlib.import_module(swi.prout_bc)
 pr_da = importlib.import_module(swi.prout_da)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
+
+# 1.1 store mesh metadata
+mesh_metadata = rmsh.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
+
+# 1.2 store solution metadata
+solution_metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'solution_metadata.csv'), solution_metadata)
+
 
 
 # set the initial profiles
