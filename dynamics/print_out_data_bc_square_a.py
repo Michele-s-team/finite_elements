@@ -53,7 +53,7 @@ def print_data(step):
         fi.fieldnames_data[1]: \
             f'{sqrt(assemble((fsp.v_bar[i] * geo.g( fsp.omega_n_12 )[i, j] * (bgeo.n_circle( fsp.omega_n_12 ))[j])**2 * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * (1.0 / rmsh.parameters["r"]) * rmsh.ds_circle)):.{rpam.parameters["print_out_digits"]}e}', \
         fi.fieldnames_data[2]: \
-            f'{sqrt(assemble( (geo.Nabla_v( fsp.v_n, fsp.omega_n_12 )[i, i] - 2 * fsp.mu_n_12 * fsp.w_n_n )**2 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
+            f'{sqrt(assemble( (geo.Nabla_v( fsp.v_n, fsp.omega_n_12 )[i, i] - 2 * fsp.mu_n_12 * fsp.w_n )**2 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
         fi.fieldnames_data[3]: \
             f'{sqrt(assemble( 1 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}'   
         }])
