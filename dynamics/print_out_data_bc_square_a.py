@@ -55,7 +55,13 @@ def print_data(step):
         fi.fieldnames_data[2]: \
             f'{sqrt(assemble( (geo.Nabla_v( fsp.v_n, fsp.omega_n_12 )[i, i] - 2 * fsp.mu_n_12 * fsp.w_n )**2 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
         fi.fieldnames_data[3]: \
-            f'{sqrt(assemble( 1 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}'   
+            f'{sqrt(assemble( 1 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
+        fi.fieldnames_data[4]: \
+            dTdt_L,\
+        fi.fieldnames_data[5]: \
+            dTdt_R,\
+        fi.fieldnames_data[6]: \
+            (dTdt_L - dTdt_R)/abs((dTdt_L + dTdt_R)/2.0)
         }])
 
     fi.csvfile_data.flush()
