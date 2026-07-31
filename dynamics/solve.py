@@ -129,6 +129,7 @@ for step in range(rpam.parameters['N']):
     fsp.sigma_n_32.assign(fsp.sigma_n_12)
 
     fsp.z_n_32.assign( z_n_12_output )
+    fsp.omega_n_32.assign(fsp.omega_n_12)
 
 
 

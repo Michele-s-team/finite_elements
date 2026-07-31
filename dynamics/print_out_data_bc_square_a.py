@@ -24,7 +24,7 @@ i, j, k = ufl.indices(3)
 
 def print_data(step):
 
-     # I estimate sigma_n from sigma_n_12 by adding the estimated increment across dt/2
+     # I estimate sigma_n, omega_n, omega_n_1 from sigma_n_12, omega_n_12, omega_n_32 by adding the estimated increment across dt/2
     sigma_n = fsp.sigma_n_12 + (fsp.sigma_n_12 - fsp.sigma_n_32)/2.0
     omega_n = fsp.omega_n_12 + (fsp.omega_n_12 - fsp.omega_n_32)/2.0
     omega_n_1 = fsp.omega_n_32 + (fsp.omega_n_12 - fsp.omega_n_32)/2.0

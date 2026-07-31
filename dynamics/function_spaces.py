@@ -65,6 +65,10 @@ sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
 sigma_n_12_output = Function( Q_phi )
 z_n_32 = Function( Q_z_n )
+omega_n_32 = Function(Q_omega_n)
+omega_n = Function(Q_omega_n)
+omega_n_1 = Function(Q_omega_n)
+
 
 tau_n_12 = Function(Q_tau)
 d = Function( Q_d )
