@@ -43,7 +43,10 @@ fieldnames_data = [ \
     'step',
     '<(n^{n-1/2}_i \overline{v}^i)^2>^{n-1/2}_{partial Omega O}',
     '<(nabla_i v^i - 2 w H)^2>^{n-1/2}_{Omega}',
-    '< 1 >^{n-1/2}_{Omega}'
+    '< 1 >^{n-1/2}_{Omega}',
+    'dTdt_L',
+    'dTdt_R',
+    '(dTdt_L - dTdt_R)/|(dTdt_L + dTdt_R)/2.0|'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
