@@ -26,18 +26,20 @@ def print_data(step):
 
      # I estimate sigma_n from sigma_n_12 by adding the estimated increment across dt/2
     sigma_n = fsp.sigma_n_12 + (fsp.sigma_n_12 - fsp.sigma_n_32)/2.0
+    omega_n = fsp.omega_n_12 + (fsp.omega_n_12 - fsp.omega_n_32)/2.0
+    omega_n_1 = fsp.omega_n_32 + (fsp.omega_n_12 - fsp.omega_n_32)/2.0
     
     dTdt_L = assemble( ( \
-                    rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega_n_12)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega_n_12)[i, j] * fsp.v_n_1[j])/vp.dt \
-                    + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * geo.g(fsp.omega_n_12)[j, k] * fsp.v_n[k] ).dx(i)
+                    rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega_n_1)[i, j] * fsp.v_n_1[j])/vp.dt \
+                    + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * geo.g(fsp.omega_n)[j, k] * fsp.v_n[k] ).dx(i)
                 ) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)
     
     dTdt_R = (assemble(  \
-                                bgeo.n_lr( fsp.omega_n_12 )[i] * fsp.v_n[j] * ( sigma_n * geo.g(fsp.omega_n_12)[i, j] + 2 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n_12 )[i, j] )  * bgeo.sqrt_deth_lr( fsp.omega_n_12 ) * rmsh.ds_lr \
-                                + bgeo.n_tb( fsp.omega_n_12 )[i] * fsp.v_n[j] * ( sigma_n * geo.g(fsp.omega_n_12)[i, j] + 2 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n_12 )[i, j] )  * bgeo.sqrt_deth_tb( fsp.omega_n_12 ) * rmsh.ds_tb \
-                                + bgeo.n_circle( fsp.omega_n_12 )[i] * fsp.v_n[j] * ( sigma_n * geo.g(fsp.omega_n_12)[i, j] + 2 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n_12 )[i, j] )  * bgeo.sqrt_deth_circle( fsp.omega_n_12, rmsh.parameters["c_r"] ) * ( 1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
+                                bgeo.n_lr( fsp.omega_n )[i] * fsp.v_n[j] * ( sigma_n * geo.g(fsp.omega_n)[i, j] + 2 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n )[i, j] )  * bgeo.sqrt_deth_lr( fsp.omega_n ) * rmsh.ds_lr \
+                                + bgeo.n_tb( fsp.omega_n )[i] * fsp.v_n[j] * ( sigma_n * geo.g(fsp.omega_n)[i, j] + 2 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n )[i, j] )  * bgeo.sqrt_deth_tb( fsp.omega_n ) * rmsh.ds_tb \
+                                + bgeo.n_circle( fsp.omega_n )[i] * fsp.v_n[j] * ( sigma_n * geo.g(fsp.omega_n)[i, j] + 2 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n )[i, j] )  * bgeo.sqrt_deth_circle( fsp.omega_n, rmsh.parameters["c_r"] ) * ( 1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
                             ) \
-                            - assemble( ( 2.0 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n_12)[j, i] * geo.d_c(fsp.v_n, fsp.w_n, fsp.omega_n_12)[i, j] ) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx))
+                            - assemble( ( 2.0 * rpam.parameters['mu'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n)[j, i] * geo.d_c(fsp.v_n, fsp.w_n, fsp.omega_n)[i, j] ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx))
 
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
