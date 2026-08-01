@@ -49,7 +49,9 @@ fieldnames_data = [ \
     'dTdt_L',
     'dTdt_R',
     '(dTdt_L - dTdt_R)/|(dTdt_L + dTdt_R)/2.0|',
-    'E'
+    'E',
+    '<n^{n-1/2}_i \overline{v}^i>^{n-1/2}_{partial Omega}',
+    '<2 w H>^{n-1/2}_{Omega}',
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

@@ -36,6 +36,14 @@ def print_data(step):
     E = assemble( ( \
                     rpam.parameters['rho']/2.0 * fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] + 2 * rpam.parameters['kappa'] * fsp.mu_n**2
                 ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx)
+
+    continuity_equation_L = assemble(  \
+                                bgeo.n_lr( fsp.omega_n )[i] * fsp.v_n[j] * geo.g(fsp.omega_n)[i, j]  * bgeo.sqrt_deth_lr( fsp.omega_n ) * rmsh.ds_lr \
+                                + bgeo.n_tb( fsp.omega_n )[i] * fsp.v_n[j] * geo.g(fsp.omega_n)[i, j] * bgeo.sqrt_deth_tb( fsp.omega_n ) * rmsh.ds_tb \
+                                + bgeo.n_circle( fsp.omega_n )[i] * fsp.v_n[j] * geo.g(fsp.omega_n)[i, j] * bgeo.sqrt_deth_circle( fsp.omega_n, rmsh.parameters["c_r"] ) * ( 1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
+                            )
+
+    continuity_equation_R = assemble( ( 2 * fsp.mu_n * fsp.w_n ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx )
     
     dTdt_L = assemble( ( \
                     rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega_n_1)[i, j] * fsp.v_n_1[j])/vp.dt \
@@ -71,7 +79,11 @@ def print_data(step):
         fi.fieldnames_data[8]: \
             (dTdt_L - dTdt_R)/abs((dTdt_L + dTdt_R)/2.0),\
         fi.fieldnames_data[9]: \
-            E
+            E,\
+        fi.fieldnames_data[10]: \
+            continuity_equation_L,\
+        fi.fieldnames_data[11]: \
+            continuity_equation_R
         }])
 
     fi.csvfile_data.flush()
