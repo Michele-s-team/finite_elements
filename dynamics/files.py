@@ -49,6 +49,7 @@ fieldnames_data = [ \
     'dTdt_L',
     'dTdt_R',
     '(dTdt_L - dTdt_R)/|(dTdt_L + dTdt_R)/2.0|',
+    'E'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

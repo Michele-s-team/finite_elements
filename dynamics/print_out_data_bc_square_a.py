@@ -32,6 +32,10 @@ def print_data(step):
 
     fsp.mu_n = fsp.mu_n_12 + (fsp.mu_n_12 - fsp.mu_n_32)/2.0
     fsp.mu_n_1 = fsp.mu_n_32 + (fsp.mu_n_12 - fsp.mu_n_32)/2.0
+
+    E = assemble( ( \
+                    rpam.parameters['rho']/2.0 * fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] + 2 * rpam.parameters['kappa'] * fsp.mu_n**2
+                ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx)
     
     dTdt_L = assemble( ( \
                     rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega_n_1)[i, j] * fsp.v_n_1[j])/vp.dt \
@@ -65,7 +69,9 @@ def print_data(step):
         fi.fieldnames_data[7]: \
             dTdt_R,\
         fi.fieldnames_data[8]: \
-            (dTdt_L - dTdt_R)/abs((dTdt_L + dTdt_R)/2.0)
+            (dTdt_L - dTdt_R)/abs((dTdt_L + dTdt_R)/2.0),\
+        fi.fieldnames_data[9]: \
+            E
         }])
 
     fi.csvfile_data.flush()
