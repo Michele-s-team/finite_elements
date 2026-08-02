@@ -21,7 +21,7 @@ i, j, k = ufl.indices(3)
 
 def print_data(step):
 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, c_n_dummy, mu_n_dummy, grad_u_n_dummy = fsp.psi.split( deepcopy=True )
+    v_n_dummy, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
 
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
