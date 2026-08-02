@@ -2277,6 +2277,14 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
 
+    '''
+    # This allows for setting space-dependent mesh resolution 
+    gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 0)
+    gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
+    gmsh.option.setNumber("Mesh.MeshSizeExtendFromBoundary", 0)
+    '''
+
+
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
