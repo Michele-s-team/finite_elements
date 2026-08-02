@@ -58,7 +58,8 @@ fieldnames_data = [ \
     '<u_n_y>_shape',
     '<y>_shape',
     'shape_volume',
-    'mesh_quality'
+    'mesh_quality',
+    '<v^n>_{Omega circle}'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()

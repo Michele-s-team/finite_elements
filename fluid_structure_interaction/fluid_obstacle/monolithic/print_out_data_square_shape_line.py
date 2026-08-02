@@ -33,7 +33,9 @@ def print_data(step):
         fi.fieldnames_data[3]: \
             f"{assemble(ela.detF(u_n_dummy) * rmsh.dx_mesh[0]['dx_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[4]: \
-            f"{msh_qu.quality:.{rpam.parameters['print_out_digits']}e}",
+            f"{msh_qu.quality:.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_data[5]: \
+            f"{[assemble(v_n_dummy[i] * ela.detF(u_n_dummy) * rmsh.dx_mesh[0]['dx_shape']) / assemble(ela.detF(u_n_dummy) * rmsh.dx_mesh[0]['dx_shape']) for i in range(len(v_n_dummy))]}",\
 
         }])
 
