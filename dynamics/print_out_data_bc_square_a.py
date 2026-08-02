@@ -24,6 +24,41 @@ i, j, k = ufl.indices(3)
 
 def print_data(step):
 
+     # I estimate sigma_n, omega_n, omega_n_1 from sigma_n_12, omega_n_12, omega_n_32 by adding the estimated increment across dt/2
+    fsp.sigma_n = fsp.sigma_n_12 + (fsp.sigma_n_12 - fsp.sigma_n_32)/2.0
+
+    fsp.omega_n = fsp.omega_n_12 + (fsp.omega_n_12 - fsp.omega_n_32)/2.0
+    fsp.omega_n_1 = fsp.omega_n_32 + (fsp.omega_n_12 - fsp.omega_n_32)/2.0
+
+    fsp.mu_n = fsp.mu_n_12 + (fsp.mu_n_12 - fsp.mu_n_32)/2.0
+    fsp.mu_n_1 = fsp.mu_n_32 + (fsp.mu_n_12 - fsp.mu_n_32)/2.0
+
+    E = assemble( ( \
+                    rpam.parameters['rho']/2.0 * fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] + 2 * rpam.parameters['kappa'] * fsp.mu_n**2
+                ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx)
+
+    continuity_equation_L = assemble(  \
+                                bgeo.n_lr( fsp.omega_n )[i] * fsp.v_n[j] * geo.g(fsp.omega_n)[i, j]  * bgeo.sqrt_deth_lr( fsp.omega_n ) * rmsh.ds_lr \
+                                + bgeo.n_tb( fsp.omega_n )[i] * fsp.v_n[j] * geo.g(fsp.omega_n)[i, j] * bgeo.sqrt_deth_tb( fsp.omega_n ) * rmsh.ds_tb \
+                                + bgeo.n_circle( fsp.omega_n )[i] * fsp.v_n[j] * geo.g(fsp.omega_n)[i, j] * bgeo.sqrt_deth_circle( fsp.omega_n, rmsh.parameters["c_r"] ) * ( 1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
+                            )
+
+    continuity_equation_R = assemble( ( 2 * fsp.mu_n * fsp.w_n ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx )
+    
+    dTdt_L = assemble( ( \
+                    rpam.parameters['rho']/2.0 * (fsp.v_n[i] * geo.g(fsp.omega_n)[i, j] * fsp.v_n[j] - fsp.v_n_1[i] * geo.g(fsp.omega_n_1)[i, j] * fsp.v_n_1[j])/vp.dt \
+                    + fsp.v_n[i] * ( rpam.parameters['rho']/2.0 * fsp.v_n[j] * geo.g(fsp.omega_n)[j, k] * fsp.v_n[k] ).dx(i) \
+                    + 2 * rpam.parameters['kappa'] * (fsp.mu_n**2 - fsp.mu_n_1**2)/vp.dt \
+                    + fsp.v_n[i] * ( 2 * rpam.parameters['kappa'] * fsp.mu_n**2 ).dx(i) \
+                ) * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)
+    
+    dTdt_R = (assemble(  \
+                                bgeo.n_lr( fsp.omega_n )[i] * fsp.v_n[j] * ( fsp.sigma_n * geo.g(fsp.omega_n)[i, j] + 2 * rpam.parameters['eta'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n )[i, j] )  * bgeo.sqrt_deth_lr( fsp.omega_n ) * rmsh.ds_lr \
+                                + bgeo.n_tb( fsp.omega_n )[i] * fsp.v_n[j] * ( fsp.sigma_n * geo.g(fsp.omega_n)[i, j] + 2 * rpam.parameters['eta'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n )[i, j] )  * bgeo.sqrt_deth_tb( fsp.omega_n ) * rmsh.ds_tb \
+                                + bgeo.n_circle( fsp.omega_n )[i] * fsp.v_n[j] * ( fsp.sigma_n * geo.g(fsp.omega_n)[i, j] + 2 * rpam.parameters['eta'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n )[i, j] )  * bgeo.sqrt_deth_circle( fsp.omega_n, rmsh.parameters["c_r"] ) * ( 1.0 / rmsh.parameters["r"]) * rmsh.ds_circle \
+                            ) \
+                            - assemble( ( 2.0 * rpam.parameters['eta'] * geo.d(fsp.v_n, fsp.w_n, fsp.omega_n)[j, i] * geo.d_c(fsp.v_n, fsp.w_n, fsp.omega_n)[i, j] ) * geo.sqrt_detg( fsp.omega_n ) * rmsh.dx))
+
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
             f"{step:.{rpam.parameters['print_out_digits']}e}",\
@@ -32,7 +67,23 @@ def print_data(step):
         fi.fieldnames_data[2]: \
             f'{sqrt(assemble( (geo.Nabla_v( fsp.v_n, fsp.omega_n_12 )[i, i] - 2 * fsp.mu_n_12 * fsp.w_n )**2 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
         fi.fieldnames_data[3]: \
-            f'{sqrt(assemble( 1 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}'   
+            f'{sqrt(assemble( (geo.Nabla_v( fsp.v_n, fsp.omega_n_12 )[i, i] )**2 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
+        fi.fieldnames_data[4]: \
+            f'{sqrt(assemble( ( 2 * fsp.mu_n_12 * fsp.w_n )**2 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
+        fi.fieldnames_data[5]: \
+            f'{sqrt(assemble( 1 * geo.sqrt_detg( fsp.omega_n_12 ) * rmsh.dx)):.{rpam.parameters["print_out_digits"]}e}', \
+        fi.fieldnames_data[6]: \
+            dTdt_L,\
+        fi.fieldnames_data[7]: \
+            dTdt_R,\
+        fi.fieldnames_data[8]: \
+            (dTdt_L - dTdt_R)/abs((dTdt_L + dTdt_R)/2.0),\
+        fi.fieldnames_data[9]: \
+            E,\
+        fi.fieldnames_data[10]: \
+            continuity_equation_L,\
+        fi.fieldnames_data[11]: \
+            continuity_equation_R
         }])
 
     fi.csvfile_data.flush()

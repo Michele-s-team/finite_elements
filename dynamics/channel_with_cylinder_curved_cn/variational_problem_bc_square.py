@@ -30,14 +30,14 @@ class TangentVelocityExpression( UserExpression ):
 
 class ManifoldExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = 2 * x[1] * (rmsh.parameters["h"] - x[1]) / rmsh.parameters["h"]**2 * (x[1] - rmsh.parameters["h"] / 24) / rmsh.parameters["h"]
+        values[0] = 2 * x[1] * (rmsh.parameters['h'] - x[1])/rmsh.parameters['h']**2 * (x[1] - rmsh.parameters['h']/24.0) /rmsh.parameters['h']
     def value_shape(self):
         return (1,)
 
 class OmegaExpression( UserExpression ):
     def eval(self, values, x):
-        values[0] = np.cos( 2.0 * np.pi * x[0] )
-        values[1] = x[1]
+        values[0] = 0
+        values[1] = - (rmsh.parameters['h']**2 - 50 * rmsh.parameters['h'] * x[1] + 72 * x[1]**2)/(12.0 * rmsh.parameters['h']**3) 
 
     def value_shape(self):
         return (2,)
@@ -63,7 +63,7 @@ class NormalVelocityExpression( UserExpression ):
         return (1,)
 
 
-v__profile_l = Expression( ('v_l * 4.0*1.5*x[1]*(0.41 - x[1]) / pow(h, 2)', '0'), degree=2, h=rmsh.parameters["h"], v_l=rpam.parameters['v_l'] )
+v__profile_l = Expression( ('v_l * 4.0*1.5*x[1]*(h - x[1]) / pow(h, 2)', '0'), degree=2, h=rmsh.parameters["h"], v_l=rpam.parameters['v_l'] )
 
 bc_v__inflow = DirichletBC( fsp.Q_v, v__profile_l, rmsh.boundary_l )
 bc_v__walls = DirichletBC( fsp.Q_v, Constant( (0, 0) ), rmsh.boundary_tb )
