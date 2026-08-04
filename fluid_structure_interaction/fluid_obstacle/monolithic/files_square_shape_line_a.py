@@ -29,7 +29,9 @@ fieldnames_bcs = [ \
     # Eq. (112)
     '<<|v^n - v_lrb|^2>>_{partial Omega lrb}', \
     # Eq. (113)
-    '<<||F^n| varsigma^square_{alpha beta} G^n_{gamma beta} nu_gamma - (textrm{t}^n_alpha)|^2>>_{partial Omega t}'
+    '<<||F^n| varsigma^square_{alpha beta} G^n_{gamma beta} nu_gamma - (textrm{t}^n_alpha)|^2>>_{partial Omega t}', \
+    # Eq. (122)
+    '<<[v^n_i]_j [v^n_i]_j>>_{partial Omega circle}'
       ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
