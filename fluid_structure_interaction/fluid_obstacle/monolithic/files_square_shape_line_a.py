@@ -26,6 +26,8 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
     'step', \
+    # Eq. (108)
+    '<<(\sigma^shape_{ij} G^n_{kj} nu_k - (sigma^square_{ij} G^n_{kj} nu_k  + 1/|F^n| f^i)) (\sigma^shape_{il} G^n_{ml} nu_m - (sigma^square_{il} G^n_{ml} nu_m  + 1/|F^n| f^i))>>_{partial Omega circle}', \
     # Eq. (112)
     '<<|v^n - v_lrb|^2>>_{partial Omega lrb}', \
     # Eq. (113)
