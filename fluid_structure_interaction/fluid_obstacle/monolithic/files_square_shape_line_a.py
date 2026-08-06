@@ -35,7 +35,9 @@ fieldnames_bcs = [ \
     # Eq. (122)
     '<<[v^n_i]_j [v^n_i]_j>>_{partial Omega circle}' , \
     # Eq. (114)
-    '<<|sigma^n - sigma_{square t}|^2>>_{partial Omega t}'
+    '<<|sigma^n - sigma_{square t}|^2>>_{partial Omega t}' ,\
+    # Eq. (95)
+    '<<|u^n|^2>>_{partial Omega square}' 
     ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
