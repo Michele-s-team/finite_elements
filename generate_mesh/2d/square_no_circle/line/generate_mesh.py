@@ -52,17 +52,12 @@ h    = rpam.parameters["h"]
 n    = rpam.parameters["n"]
 
 
-# cosine shape function: same convention as stokes_FEM.py
+# cosine shape function
 def cosine_y(x):
     return h + A * np.cos(n*np.pi* x/ lmda )
 
-# -----------------------------------------------------------------------
-# Build the cosine spline for the top boundary (sub_mesh_1)
-# following the exact same pattern as stokes_FEM.py:
-#   - add a dense list of gmsh points along the curve
-#   - connect them with a single addSpline
-# -----------------------------------------------------------------------
-nPoints = 3000  # number of discretisation points, same as stokes_FEM.py
+
+nPoints = 3000  # number of discretisation point
 
 # left endpoint  (x=0)
 p_top_start = gmsh.model.geo.addPoint(0, cosine_y(0), 0)
@@ -102,7 +97,7 @@ surface_domain = gmsh.model.geo.addPlaneSurface([loop])
 gmsh.model.geo.synchronize()
 
 # -----------------------------------------------------------------------
-# Physical groups – using geo kernel (consistent with stokes_FEM.py)
+# Physical groups – using geo kernel
 # -----------------------------------------------------------------------
 print(f"DEBUG: spline_top={spline_top}, line_12={line_12}, line_23={line_23}, line_41={line_41}")
 
@@ -132,10 +127,7 @@ print(f"DEBUG: Physical group IDs:")
 print(f"  sub_mesh_0_id (surface):      {rpam.parameters['sub_mesh_0_id']}")
 print(f"  sub_mesh_1_id (cosine spline): {rpam.parameters['sub_mesh_1_id']}")
 
-# -----------------------------------------------------------------------
-# Mesh size field – following stokes_FEM.py pattern:
-#   Distance from the cosine curve → Threshold → Min → background
-# -----------------------------------------------------------------------
+
 gmsh.model.geo.synchronize()
 
 dist_field = gmsh.model.mesh.field.add("Distance")

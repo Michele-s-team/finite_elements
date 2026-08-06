@@ -69,23 +69,7 @@ class U_n_12_0_Expression( UserExpression ):
     def value_shape(self):
         return (2,)
     
-# class psi_n_12_0_Expression(UserExpression):
 
-#     def eval(self, values, x):
-
-#         A = 0
-#         # lmda = rmsh.parameters['lmda']
-#         # n = rmsh.parameters['n']
-
-#         dydx = -(4*np.pi*A) * np.sin(4*np.pi*x[0])
-
-#         values[0] = np.arctan(dydx)
-
-#     def value_shape(self):
-#         return (1,)
-
-
-# expressions for the boundary conditions
 class v_bar_l_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = rpam.parameters['v_bar_l'][0]
@@ -106,20 +90,8 @@ fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 
 fsp.v_bar_l.interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
-# fsp.psi_n_12_0.interpolate(psi_n_12_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ) )
 
 
-# boundary conditions
-'''I want to add periodic boundary condition left and right, removing the clamped boundary conditions.
-fenics periodic bc: u(0,y) = u(L,y) for membrane, mesh and fluid at the same time.
-I removed all the boundaries here because periodic BCs are NOT implemented using Dirichlet bc.
-Instead, they are implemented directly at the function-space level by identifying degrees of freedom (DOFs) on the left and right boundary
-
-Implementation:
- created a new .py file called periodic_bc.py, The class inherits from SubDomain and defines which boundary is the "master" boundary,
-and how the opposite boundary maps onto it.
- modify the function_spaces.py, put a constrained_domain into the Q_mem (see function_spaces.py)
-'''
 
 
 bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
@@ -137,7 +109,7 @@ bc_psi_r = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1]
 # bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 #BCs
-bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_w_bar_r,bc_psi_l, bc_psi_r ]
+bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_psi_l, bc_psi_r ]
 
 
 
@@ -275,7 +247,10 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
               (fsp.X_ref[0] + fsp.U_n_12[0]) * (fsp.nu_U_n_12[0] )\
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_l']\
         #  
-        +(fsp.mu_n_12.dx(i))* geo.g_c(fsp.psi_n_12, fsp.nu_n_12)[i,j]* (fsp.nu_mu_n_12.dx(j))* bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds'])
+        +(fsp.mu_n_12.dx(i))* geo.g_c(fsp.psi_n_12, fsp.nu_n_12)[i,j]* (fsp.nu_mu_n_12.dx(j))* bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds']\
+        #added, derivative with respect to x(0) of the tension=0 on left and right (moving membrane)
+        # +(fsp.phi.dx(0)) * (fsp.nu_phi.dx(0)) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']
+        )
 
 # total functional for the mixed problem
 F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N

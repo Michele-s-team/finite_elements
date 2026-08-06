@@ -58,3 +58,4 @@ xdmffile_v_fl_n      = _xdmf(os.path.join(rarg.args.output_directory, 'v_fl_n.xd
 xdmffile_v_fl_bar    = _xdmf(os.path.join(rarg.args.output_directory, 'v_bar_fl.xdmf'))
 xdmffile_sigma_fl    = _xdmf(os.path.join(rarg.args.output_directory, 'sigma_fl_n_12.xdmf'))
 xdmffile_phi_fl      = _xdmf(os.path.join(rarg.args.output_directory, 'phi_fl.xdmf'))
+xdmffile_sigma_fl_tensor = _xdmf(os.path.join(rarg.args.output_directory, 'sigma_fl_tensor.xdmf'))

@@ -1,6 +1,8 @@
 from fenics import *
 
-
+import importlib
+import ufl as ufl
+import numpy as np
 import csv
 import files as fi
 import function_spaces as fsp
@@ -103,6 +105,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_v_fl_bar.write(fsp.v_fl_bar, t)
     fi.xdmffile_sigma_fl.write(fsp.sigma_fl_n_12, t - dt / 2.0)
     fi.xdmffile_phi_fl.write(fsp.phi_fl, t)
+    fi.xdmffile_sigma_fl_tensor.write(fsp.var_tensor_sigma_fl,t)
 
     io.full_print_deformed(fsp.v_fl_bar, fsp.u_n, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
