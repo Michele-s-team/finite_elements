@@ -45,16 +45,16 @@ normal_vector = bgeo.field_facet_normal_normalized(rmsh.lmsh.sub_meshes[0],bgeo.
 
 # # BCs
 # 1) for step 1  inject velocity at top boundary downward using cosine profile and the normal vector.
-bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar,Constant(-0.1)*normal_vector,rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["sub_mesh_1_id"])
+bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar,Constant(-1)*normal_vector,rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["sub_mesh_1_id"])
 bc_v_fl_bar_0_l = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0),rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"])
 bc_v_fl_bar_0_r = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0),rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["line_sub_mesh_0_r_id"])
 
 bc_v_fl_bar = [bc_v_fl_bar_0_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
 
 # 2) for step 2
-bc_phi_fl_b = DirichletBC(fsp.Q_phi_fl, Constant(0.0),rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["sub_mesh_2_id"])
+# bc_phi_fl_b = DirichletBC(fsp.Q_phi_fl, Constant(0.0),rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["sub_mesh_2_id"])
 
-bc_phi_fl = [bc_phi_fl_b]
+# bc_phi_fl = [bc_phi_fl_b]
 
 # step 1 for v_fl_bar
 F_v_fl_bar = ( \
@@ -86,8 +86,8 @@ F_phi_fl = ( \
                     - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)) * ela.G(fsp.u_n_1)[delta, alpha] * (fsp.nu_phi_fl.dx(delta)) \
                     - (rpam.parameters['rho_fluid'] / dt) * (ela.G(fsp.u_n_1)[beta, alpha] * (fsp.v_fl_bar[alpha]).dx(beta)) * fsp.nu_phi_fl \
                     ) * ela.detF(fsp.u_n_1) * rmsh.dx_sub_mesh[0]  + \
-                        (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.sub_mesh_facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_r'] +\
                         (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.sub_mesh_facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_l']+\
+                        (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.sub_mesh_facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_r']+\
                         (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.sub_mesh_facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_b']
 
 

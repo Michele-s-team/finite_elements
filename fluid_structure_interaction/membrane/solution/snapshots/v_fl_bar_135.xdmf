@@ -4,8 +4,8 @@
   <Domain>
     <Grid Name="TimeSeries" GridType="Collection" CollectionType="Temporal">
       <Grid Name="mesh" GridType="Uniform">
-        <Topology NumberOfElements="256" TopologyType="Triangle" NodesPerElement="3">
-          <DataItem Dimensions="256 3" NumberType="UInt" Format="HDF">v_fl_bar_135.h5:/Mesh/0/mesh/topology</DataItem>
+        <Topology NumberOfElements="250" TopologyType="Triangle" NodesPerElement="3">
+          <DataItem Dimensions="250 3" NumberType="UInt" Format="HDF">v_fl_bar_135.h5:/Mesh/0/mesh/topology</DataItem>
         </Topology>
         <Geometry GeometryType="XY">
           <DataItem Dimensions="155 2" Format="HDF">v_fl_bar_135.h5:/Mesh/0/mesh/geometry</DataItem>

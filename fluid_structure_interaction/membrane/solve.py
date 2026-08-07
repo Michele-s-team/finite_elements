@@ -105,7 +105,6 @@ xdmffile_sigma_fl_tensor.parameters["rewrite_function_mesh"] = False
 
 t = 0
 step = 0
-n_bottom = Constant((0.0, -1.0))
 
 
 save_initial_frame = True
