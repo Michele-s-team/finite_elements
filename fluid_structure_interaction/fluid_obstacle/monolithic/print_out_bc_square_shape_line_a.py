@@ -40,7 +40,9 @@ def print_bcs(step):
             fi.fieldnames_bcs[5]: \
             f"{msh.abs_wrt_measure(fsp.sigma_n - fsp.sigma_square_t, rmsh.ds_mesh[0]['ds_t']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[6]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}",\
+            fi.fieldnames_bcs[7]: \
+            f"{msh.abs_wrt_measure(( ( ( fsp.u_n(vp.sub_mesh_1_label)[i] - fsp.u_n_1(vp.sub_mesh_1_label)[i] ) *  bgeo.n_cur(bgeo.facet_normal[0](vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_1_label), fsp.dyds(vp.sub_mesh_1_label))[i] ) - ( ( fsp.v_n(vp.sub_mesh_1_label)[i] * vp.dt * bgeo.n_cur(bgeo.facet_normal[0](vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_1_label), fsp.dyds(vp.sub_mesh_1_label))[i] ) ) ), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_bcs.flush()
