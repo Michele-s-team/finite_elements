@@ -78,7 +78,7 @@ F_v_fl_bar = ( \
                                                                                ela.G(fsp.u_n_1)[delta, 0] * ela.G(fsp.u_n_1)[gamma, 0] * (fsp.V_fl[1].dx(gamma)) * fsp.nu_v_fl_bar[1] 
                                                                             ) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_lr']
                                         #added 6August, derivative with respect to 1st component of the second v_fl_bar component
-            + rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.v_fl_bar[1].dx(0)) * fsp.nu_v_fl_bar[1] ) * rmsh.ds_sub_mesh[0]['ds_lr']
+            + rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.v_fl_bar[1].dx(0)) * fsp.nu_v_fl_bar[1].dx(0) ) * rmsh.ds_sub_mesh[0]['ds_lr']
             )
 
 # step 2 for phi
