@@ -43,7 +43,9 @@ fieldnames_bcs = [ \
     # Eq. (97)
     '<<|dot{u}^n|^2>>_{partial Omega square}',\
     # Eq. (98) projected on n_cur
-    '<<((dot{u}^n - v^n) . n_cur)^2>>_{partial Omega shape}' 
+    '<<((dot{u}^n - v^n) . n_cur)^2>>_{partial Omega shape}',\
+    # Eq. (99)
+    '<<[u^n_i]_j [u^n_i]_j>>_{partial Omega circle}'
     ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
