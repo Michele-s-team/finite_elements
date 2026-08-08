@@ -52,7 +52,9 @@ def print_bcs(step):
             fi.fieldnames_bcs[11]: \
             f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[12]: \
-            f"{msh.abs_wrt_measure(ela.G(fsp.u_n)[k, i] * (-bgeo.facet_normal[0][k]) * ( -rpam.parameters['D']*ela.G(fsp.u_n)[j, i]*(fsp.c_n.dx(j)) ), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.abs_wrt_measure(ela.G(fsp.u_n)[k, i] * (-bgeo.facet_normal[0][k]) * ( -rpam.parameters['D']*ela.G(fsp.u_n)[j, i]*(fsp.c_n.dx(j)) ), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}",\
+            fi.fieldnames_bcs[13]: \
+            f"{msh.abs_wrt_measure(ela.detF(fsp.u_n(vp.sub_mesh_1_label)) * ela.G(fsp.u_n(vp.sub_mesh_1_label))[k, i] * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k] * ( -rpam.parameters['D']*ela.G(fsp.u_n(vp.sub_mesh_1_label))[j, i]*(fsp.c_n(vp.sub_mesh_1_label).dx(j)) ) - rpam.parameters['kappa'], rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_bcs.flush()
