@@ -47,7 +47,10 @@ fieldnames_bcs = [ \
     # Eq. (99)
     '<<[u^n_i]_j [u^n_i]_j>>_{partial Omega circle}',\
     # Eq. (100)
-    '<<[dot{u}^n_i]_j [dot{u}^n_i]_j>>_{partial Omega circle}'
+    '<<[dot{u}^n_i]_j [dot{u}^n_i]_j>>_{partial Omega circle}',\
+    # Eq. (124)
+    '<<G^n_{gamma alpha} nu_gamma (-D G^n_{beta alpha} partial c^n / partial y_beta)>>_{partial Omega square}',\
+
     ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
