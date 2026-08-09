@@ -65,8 +65,10 @@ os.makedirs(os.path.dirname(filepath_ics), exist_ok=True)
 csvfile_ics = open(filepath_ics, 'a', newline='')
 fieldnames_ics = [ \
     'step',\
-    # Continuity of v^n in \Omega shape
-    '<<[v^n_i]_j [v^n_i]_j>>_{Omega circle}'
+    # continuity of v^n in \Omega shape
+    '<<[v^n_i]_j [v^n_i]_j>>_{Omega shape}',\
+    # continuity of sigma^n in \Omega shape
+    '<<[sigma^n]_i [sigma^n]_i>>_{Omega shape}'
      ]
 writer_ics = csv.DictWriter(csvfile_ics, fieldnames=fieldnames_ics)
 writer_ics.writeheader()
