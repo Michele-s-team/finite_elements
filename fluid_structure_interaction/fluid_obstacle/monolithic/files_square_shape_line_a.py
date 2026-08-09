@@ -50,7 +50,8 @@ fieldnames_bcs = [ \
     '<<[dot{u}^n_i]_j [dot{u}^n_i]_j>>_{partial Omega circle}',\
     # Eq. (124)
     '<<G^n_{gamma alpha} nu_gamma (-D G^n_{beta alpha} partial c^n / partial y_beta)>>_{partial Omega square}',\
-
+    # Eq. (125)
+    '<<|F^n| G^n_{gamma alpha} nu_gamma (-D G^n_{beta alpha} partial c^n / partial y_beta ) - kappa >>_{partial Omega shape}'
     ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
@@ -63,7 +64,9 @@ os.makedirs(os.path.dirname(filepath_ics), exist_ok=True)
 
 csvfile_ics = open(filepath_ics, 'a', newline='')
 fieldnames_ics = [ \
-    'step'
+    'step',\
+    # Continuity of v^n in \Omega shape
+    '<<[v^n_i]_j [v^n_i]_j>>_{Omega circle}'
      ]
 writer_ics = csv.DictWriter(csvfile_ics, fieldnames=fieldnames_ics)
 writer_ics.writeheader()

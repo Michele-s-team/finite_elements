@@ -23,7 +23,9 @@ def print_ics(step):
 
     fi.writer_ics.writerows([{
         fi.fieldnames_ics[0]: \
-            step
+            step,\
+        fi.fieldnames_ics[1]: \
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_shape']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_ics.flush()
