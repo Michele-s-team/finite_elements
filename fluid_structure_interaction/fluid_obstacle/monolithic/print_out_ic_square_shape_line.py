@@ -27,6 +27,8 @@ def print_ics(step):
         fi.fieldnames_ics[1]: \
             f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_ics[2]: \
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_ics[3]: \
             f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.sigma_n, bgeo.facet_normal[0])[i] * msh.jump(fsp.sigma_n, bgeo.facet_normal[0])[i]), rmsh.ds_mesh[0]['dS_I_shape']):.{rpam.parameters['print_out_digits']}e}"
         }])
 

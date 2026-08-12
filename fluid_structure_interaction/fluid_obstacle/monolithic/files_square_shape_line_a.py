@@ -67,8 +67,10 @@ fieldnames_ics = [ \
     'step',\
     # continuity of v^n in \Omega shape
     '<<[v^n_i]_j [v^n_i]_j>>_{Omega shape}',\
+    # continuity of v^n in \Omega square
+    '<<[v^n_i]_j [v^n_i]_j>>_{Omega square}',\
     # continuity of sigma^n in \Omega shape
-    '<<[sigma^n]_i [sigma^n]_i>>_{Omega shape}'
+    '<<[sigma^n]_i [sigma^n]_i>>_{Omega shape}',\
      ]
 writer_ics = csv.DictWriter(csvfile_ics, fieldnames=fieldnames_ics)
 writer_ics.writeheader()
