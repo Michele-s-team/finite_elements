@@ -117,11 +117,26 @@ def s_y(y):
             
 
             s_L = s_0 + rpam.parameters['epsilon_shape']
-            s_R = 1 + rpam.parameters['epsilon_shape']
             
-            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+            try: 
+
+                s_R = 1 + rpam.parameters['epsilon_shape']
+
+                s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+
+            except ValueError:
                             
-            # print(f'Case I\n\ts_0 = {s_0}\n\ttheta_y = {theta_y} \n\ttheta_L = {theta(s_0+rpam.parameters['epsilon_shape'])}\n\ttheta_R = {theta(1 + rpam.parameters['epsilon_shape'])}', flush=True)
+                print(f'Case 1. Error with brentq: theta_0 = {theta_0}, s_0 = {s_0}, s_L = {s_L}, s_R = {s_R}, objective_function(s_L) = {theta(s_L) - theta_y}, objective_function(s_R) = {theta(s_R) - theta_y}', flush=True)
+
+                s_R = 1 
+
+                try: 
+
+                    s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+
+                except ValueError:
+
+                    print(f'Case 1.1 Error with brentq: theta_0 = {theta_0}, s_0 = {s_0}, s_L = {s_L}, s_R = {s_R}, objective_function(s_L) = {theta(s_L) - theta_y}, objective_function(s_R) = {theta(s_R) - theta_y}', flush=True)
 
         else:
             # theta_0 <= theta_y < 2 pi,  the solution s must lie in the interval 0 <= s < s_0
