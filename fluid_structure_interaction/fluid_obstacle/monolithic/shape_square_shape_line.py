@@ -149,9 +149,16 @@ def s_y(y):
 
                 s_L = 0
 
-            s_R = s_0 - rpam.parameters['epsilon_shape']
 
-            s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+            try: 
+
+                s_R = s_0 - rpam.parameters['epsilon_shape']
+
+                s = brentq(lambda s: theta(s) - theta_y, a=s_L, b=s_R)
+
+            except ValueError:
+
+                print(f'Case 2. Error with brentq: theta_0 = {theta_0}, s_0 = {s_0}, s_L = {s_L}, s_R = {s_R}, objective_function(s_L) = {theta(s_L) - theta_y}, objective_function(s_R) = {theta(s_R) - theta_y}', flush=True)
 
     # print(f'\t s = {s}')
 
