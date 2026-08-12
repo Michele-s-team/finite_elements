@@ -99,7 +99,9 @@ fieldnames_data = [ \
     '<y>_shape',
     'shape_volume',
     'mesh_quality',
-    '<v^n>_{Omega circle}'
+    '<v^n>_{Omega shape}',
+    '<|f_fluid|>_{partial Omega shape}',
+    '<|f_shape|>_{partial Omega shape}'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
