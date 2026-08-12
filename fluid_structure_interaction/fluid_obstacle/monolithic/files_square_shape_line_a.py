@@ -76,7 +76,11 @@ fieldnames_ics = [ \
     # continuity of u^n in \Omega shape
     '<<[u^n_i]_j [u^n_i]_j>>_{Omega shape}',\
     # continuity of u^n in \Omega square
-    '<<[u^n_i]_j [u^n_i]_j>>_{Omega square}'
+    '<<[u^n_i]_j [u^n_i]_j>>_{Omega square}',\
+    # continuity of dot{u}^n in \Omega shape
+    '<<[dot{u}^n_i]_j [dot{u}^n_i]_j>>_{Omega shape}',\
+    # continuity of dot{u}^n in \Omega square
+    '<<[dot{u}^n_i]_j [dot{u}^n_i]_j>>_{Omega square}'
      ]
 writer_ics = csv.DictWriter(csvfile_ics, fieldnames=fieldnames_ics)
 writer_ics.writeheader()

@@ -35,7 +35,11 @@ def print_ics(step):
         fi.fieldnames_ics[5]: \
             f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_ics[6]: \
-            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_ics[7]: \
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_shape']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_ics[8]: \
+            f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_I_square']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_ics.flush()
