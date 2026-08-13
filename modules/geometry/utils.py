@@ -61,7 +61,7 @@ Return values:
 
 def aspect_ratio(polygon_coordinates):
 
-    coord_x = [polygon_coordinates[i, 0] for i in range(len(polygon_coordinates))]
-    coord_y = [polygon_coordinates[i, 1] for i in range(len(polygon_coordinates))]
+    coord_x = [polygon_coordinates[i][0] for i in range(len(polygon_coordinates))]
+    coord_y = [polygon_coordinates[i][1] for i in range(len(polygon_coordinates))]
 
     return (np.max(coord_y) - np.min(coord_y))/(np.max(coord_x) - np.min(coord_x))
