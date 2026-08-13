@@ -1,3 +1,4 @@
+import csv
 from fenics import *
 import importlib
 import os
@@ -5,6 +6,7 @@ import os
 import differential_geometry.boundary.geometry as bgeo
 import input_output as io
 import mesh.utils as msh
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
@@ -12,6 +14,7 @@ import switch_problem as swi
 fi = importlib.import_module(swi.fi)
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 vp = importlib.import_module(swi.vp)
 
 
@@ -36,7 +39,8 @@ def print_solution(t, step, dt):
     fi.xdmffile_mu_n.write(mu_n_dummy, t)
     fi.xdmffile_grad_u_n.write(grad_u_n_dummy, t)
 
-     # 3 write snapshots
+    # 3 write snapshots
+    
 
     # 3.1 reference configuration and deformation fields
     io.full_print(v_n_dummy, 'v_n_' + str(step), \
@@ -57,8 +61,11 @@ def print_solution(t, step, dt):
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
     io.full_print(grad_u_n_dummy, 'grad_u_n_' + str(step), \
                 solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
+
     
-    # 3.1.1 write additional fields
+    # 3.1.1 write additional fields 
+
+    # 3.1.1.1 write f_shape
     io.full_print(
         project(
             vp.f_shape(
@@ -70,6 +77,16 @@ def print_solution(t, step, dt):
         'f_shape_n_' + str(step),
         solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]
     )
+
+    # 3.1.1.2 write the cspline
+
+    tab_cspline = [[float(sh.cspline[0](alpha/rpam.parameters['n_points_output_cspline'])), float(sh.cspline[1](alpha/rpam.parameters['n_points_output_cspline']))] for alpha in range(rpam.parameters['n_points_output_cspline']) ]
+
+    with open(os.path.join(solpath.snapshots_csv_path, f'cspline_n_{step}.csv'), 'w', newline='') as cspline_file:
+        writer = csv.writer(cspline_file)
+        writer.writerow([':0',':1'])          # header
+        writer.writerows(tab_cspline)        # one point per row
+
     
     # 3.2.1 deformed with u_n
     
