@@ -23,6 +23,7 @@ import switch_problem as swi
 fi = importlib.import_module(swi.fi)
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+sh = importlib.import_module(swi.sh)
 vp = importlib.import_module(swi.vp)
 
 i, j, k = ufl.indices(3)
@@ -49,6 +50,9 @@ def print_data(step):
         shape_coordinates.append(np.add(coordinate, u_n_dummy(coordinate)).tolist())
 
 
+    tab_cspline = [[float(sh.cspline[0](alpha/rpam.parameters['n_points_output_cspline'])), float(sh.cspline[1](alpha/rpam.parameters['n_points_output_cspline']))] for alpha in range(rpam.parameters['n_points_output_cspline']) ]
+
+
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
             step,\
@@ -67,7 +71,9 @@ def print_data(step):
         fi.fieldnames_data[7]: \
             f"{msh.average_wrt_measure(geo.ufl_norm(vp.f_shape(fsp.c_n(vp.sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[8]: \
-            f"{geo_u.aspect_ratio(shape_coordinates) - 1:.{rpam.parameters['print_out_digits']}e}"
+            f"{geo_u.aspect_ratio(shape_coordinates) - 1:.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_data[9]: \
+            f"{tab_cspline}"
         }])
 
     fi.csvfile_data.flush()
