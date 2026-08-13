@@ -29,19 +29,6 @@ i, j, k = ufl.indices(3)
 
 
 
-mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
-
-_, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
-
-shape_coordinates = []
-for alpha in range(len(mesh_0_parameters["shape_coordinates"])):
-    # run through all coordinates of the nodes of the boundary
-
-    coordinate = mesh_0_parameters["shape_coordinates"][alpha]
-
-    # print(f'coordinate = {coordinate}, u_n(coord) = {u_n_dummy(coordinate)}')        
-    shape_coordinates.append(np.add(coordinate, u_n_dummy(coordinate)).tolist())
-
 
 
 def f_fluid():
@@ -49,7 +36,18 @@ def f_fluid():
 
 def print_data(step):
 
+    mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
     v_n_dummy, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
+
+    # compute the shape coordinates displaced with u_n in order to obtain the aspect ratio of the shape in the current configuration
+    shape_coordinates = []
+    for alpha in range(len(mesh_0_parameters["shape_coordinates"])):
+        # run through all coordinates of the nodes of the boundary
+
+        coordinate = mesh_0_parameters["shape_coordinates"][alpha]
+        shape_coordinates.append(np.add(coordinate, u_n_dummy(coordinate)).tolist())
+
 
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
