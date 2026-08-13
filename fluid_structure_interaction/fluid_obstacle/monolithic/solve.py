@@ -113,6 +113,9 @@ import variational_problem_u_0 as vp_u_0
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
+
+
+
 '''
 # test transfer_dg - start
 
