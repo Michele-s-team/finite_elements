@@ -113,6 +113,26 @@ import variational_problem_u_0 as vp_u_0
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
+
+# test - start
+import numpy as np 
+
+mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
+
+shape_coordinates = []
+for i in range(len(mesh_0_parameters["shape_coordinates"])):
+    # run through all coordinates of the nodes of the boundary
+
+    coordinate = mesh_0_parameters["shape_coordinates"][i]
+
+    # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
+        
+    shape_coordinates.append(np.add(coordinate, fsp.u_n(coordinate)))
+
+
+# test - end
+
 '''
 # test transfer_dg - start
 
