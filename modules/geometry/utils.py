@@ -48,3 +48,20 @@ Return values:
 def in_polygon(x, polygon_coordinates):
 
     return Path(polygon_coordinates).contains_points([x])[0]
+
+
+'''
+compute the aspect ratio of a polygon in two dimensions
+Input values: 
+    - `polygon_coordinates`: [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] the coordinates of the points of the polygon (the last point is not equal to the first)
+
+Return values: 
+    - the aspect ratio ([maximal y coordinate] - [minimal y coordinate])/([maximal x coordinate] - [minimal x coordinate])
+'''
+
+def aspect_ratio(polygon_coordinates):
+
+    coord_x = [polygon_coordinates[i, 0] for i in range(len(polygon_coordinates))]
+    coord_y = [polygon_coordinates[i, 1] for i in range(len(polygon_coordinates))]
+
+    return (np.max(coord_y) - np.min(coord_y))/(np.max(coord_x) - np.min(coord_x))
