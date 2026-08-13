@@ -119,12 +119,12 @@ import numpy as np
 
 mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
 
+_, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
 
 shape_coordinates = []
 for i in range(len(mesh_0_parameters["shape_coordinates"])):
     # run through all coordinates of the nodes of the boundary
 
-    _, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
 
     coordinate = mesh_0_parameters["shape_coordinates"][i]
 
