@@ -114,25 +114,7 @@ import variational_problem_u_0 as vp_u_0
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 
-# test - start
-import numpy as np 
 
-mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
-
-_, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
-
-shape_coordinates = []
-for i in range(len(mesh_0_parameters["shape_coordinates"])):
-    # run through all coordinates of the nodes of the boundary
-
-
-    coordinate = mesh_0_parameters["shape_coordinates"][i]
-
-    # print(f'coordinate = {coordinate}, u_n(coord) = {u_n_dummy(coordinate)}')        
-    shape_coordinates.append(np.add(coordinate, u_n_dummy(coordinate)).tolist())
-
-print(f'shape_coordinates = {shape_coordinates}')
-# test - end
 
 '''
 # test transfer_dg - start

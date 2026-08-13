@@ -4,14 +4,19 @@ this module prints some useful data (mean displacement of the elastic body, pres
 
 import importlib
 from fenics import *
+import numpy as np 
+import os
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
+import geometry.utils as geo_u
+import input_output as io
 import physics.elasticity as ela
 import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import runtime_arguments as rarg
 import physics.fluid_mechanics as flu
 import switch_problem as swi
 
@@ -21,6 +26,22 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 i, j, k = ufl.indices(3)
+
+
+
+mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
+
+_, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
+
+shape_coordinates = []
+for alpha in range(len(mesh_0_parameters["shape_coordinates"])):
+    # run through all coordinates of the nodes of the boundary
+
+    coordinate = mesh_0_parameters["shape_coordinates"][alpha]
+
+    # print(f'coordinate = {coordinate}, u_n(coord) = {u_n_dummy(coordinate)}')        
+    shape_coordinates.append(np.add(coordinate, u_n_dummy(coordinate)).tolist())
+
 
 
 def f_fluid():
@@ -46,7 +67,9 @@ def print_data(step):
         fi.fieldnames_data[6]: \
             f"{msh.average_wrt_measure(geo.ufl_norm(f_fluid()), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[7]: \
-            f"{msh.average_wrt_measure(geo.ufl_norm(vp.f_shape(fsp.c_n(vp.sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.average_wrt_measure(geo.ufl_norm(vp.f_shape(fsp.c_n(vp.sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_data[8]: \
+            f"{geo_u.aspect_ratio(shape_coordinates) - 1:.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_data.flush()
