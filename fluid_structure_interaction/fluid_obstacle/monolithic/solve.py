@@ -124,13 +124,14 @@ shape_coordinates = []
 for i in range(len(mesh_0_parameters["shape_coordinates"])):
     # run through all coordinates of the nodes of the boundary
 
+    _, _, u_n_dummy, _, _, _, _ = fsp.psi.split( deepcopy=True )
+
     coordinate = mesh_0_parameters["shape_coordinates"][i]
 
-    # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
-        
-    shape_coordinates.append(np.add(coordinate, fsp.u_n(coordinate)))
+    # print(f'coordinate = {coordinate}, u_n(coord) = {u_n_dummy(coordinate)}')        
+    shape_coordinates.append(np.add(coordinate, u_n_dummy(coordinate)).tolist())
 
-
+print(f'shape_coordinates = {shape_coordinates}')
 # test - end
 
 '''
