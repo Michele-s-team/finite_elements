@@ -29,8 +29,10 @@ import constants.utils as const
 import differential_geometry.manifold.geometry as geo
 import mesh.load as lmsh
 import mesh.utils as msh
+import physics.elasticity as ela
 
-alpha, beta, gamma, i, j, k, l = ufl.indices(7)
+
+alpha, beta, gamma, delta, zeta, i, j, k, l = ufl.indices(9)
 
 epsilon = ufl.PermutationSymbol(2)
 
@@ -328,7 +330,7 @@ def field_facet_tangent_normalized(mesh, n, measure,
 
 
 '''
-normal to a curve expressed n term of the reference and current configuration of a curve
+normal to a curve expressed in terms of the reference and current configuration of a curve
 Input values: 
     - 'ys': a two-dimensional vector for the reference curve configuration
     - 'u': a two-dimensional vector for the displacement field between current and reference configuration
@@ -389,3 +391,59 @@ def calc_tangent_cg2(mesh):
     solve(A, nh.vector(), L)
     
     return nh
+
+'''
+unit normal to a curve in the current configuration expressed in terms of the unit normal in the reference configuration
+Input values: 
+    - 'n_ref': `nu` in (71) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    - 'u': displacement field
+    - 'dyds': tangent to the curve in the reference configuration, defined as in (7) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+Return values: 
+    - 'n_alpha' as defined in (60) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    
+'''
+def n_cur(n_ref, u, dyds):
+
+    A =  - sqrt((dyds[alpha]*dyds[alpha]) / (ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta])) * ela.detF(u)
+
+    return as_tensor(A * ela.G(u)[delta, alpha] * n_ref[delta], (alpha))
+
+
+'''
+variation of `n_cur` with respect to the displacement field
+Input values: 
+    - 'n_ref': `nu` in (71) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+    - 'u': displacement field
+    - `delta_u`: variation of `u`
+    - 'dyds': tangent to the curve in the reference configuration, defined as in (7) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+
+Return values: 
+    delta_n_cur[alpha] = L_alpha in Eq. (164) of fluid_structure_interaction/Channel flow with fluid obstacle/Notes/
+'''
+
+def delta_n_cur(n_ref, u, delta_u, dyds):
+
+    B = ela.F(u)[beta, gamma] * ela.F(u)[beta, delta] * dyds[gamma] * dyds[delta]
+    A =  - sqrt((dyds[alpha]*dyds[alpha]) / B) * ela.detF(u)
+
+    return as_tensor( \
+        A * n_ref[delta] * (\
+            - delta_u[beta].dx(gamma) * ela.F(u)[beta, zeta] * dyds[gamma] * dyds[zeta] * ela.G(u)[delta, alpha] / B \
+            + ela.G(u)[beta, gamma] * delta_u[gamma].dx(beta) * ela.G(u)[delta, alpha] \
+            - ela.G(u)[delta, beta] * delta_u[beta].dx(gamma) * ela.G(u)[gamma, alpha]
+            ), \
+        (alpha))
+
+
+'''
+tangent to a curve in the current configuration expressed in terms of the tangent in the reference configuration
+Input values: 
+    - 't_ref': the tangent to the curve in the reference configuration, d y_s / ds
+    - 'grad_u': gradient of the displacement field, grad_u[alpha, beta] = partial u_alpha / partial y_beta
+
+Return values: 
+    - the tangent to the curve in the current configuration, d x_s / ds
+'''
+def t_cur(t_ref, grad_u):
+
+    return as_tensor(t_ref[alpha] + grad_u[alpha, beta] * t_ref[beta], (alpha))

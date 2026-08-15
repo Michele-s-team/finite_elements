@@ -3,7 +3,6 @@ import importlib
 import ufl as ufl
 
 import function_spaces as fsp
-import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 import parameters.read.solution as rpam
 import switch_problem as swi

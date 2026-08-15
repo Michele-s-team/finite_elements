@@ -24,6 +24,19 @@ def dFdl(sigma, n):
     return as_tensor(- sigma[alpha, beta] * n[beta], (alpha))
 
 '''
+viscous part of the stress tensor (i.e. stress tensor without the pressure part) of a fluid living on a flat manifold with dimension d
+Input values: 
+    - 'v': the fluid velocity (a d-dimensional vector)
+    - 'eta': the fluid viscosity
+
+Return values:  
+    - sigma_no_pressure[alpha][beta] = eta (\partial_beta v_alpha + \partial_alpha v_beta)
+'''
+def sigma_no_pressure(v, eta):
+    return(as_tensor(eta * (v[alpha].dx(beta) + v[beta].dx(alpha)),(alpha, beta)))
+
+
+'''
 stress tensor of a fluid living on a flat manifold with dimension d
 Input values: 
     - 'v': the fluid velocity (a d-dimensional vector)
@@ -34,7 +47,10 @@ Return values:
     - sigma[alpha][beta] = s \delta_{alpha beta} + eta (\partial_beta v_alpha + \partial_alpha v_beta)
 '''
 def sigma(v, s, eta):
-    return(as_tensor(s * ufl.Identity(len(v))[alpha, beta] + eta * (v[alpha].dx(beta) + v[beta].dx(alpha)),(alpha, beta)))
+    return(as_tensor(s * ufl.Identity(len(v))[alpha, beta] + sigma_no_pressure(v, eta)[alpha, beta],(alpha, beta)))
+
+
+
 
 '''
 stress tensor of a fluid living on a flat domain which is deformed according to the ALE (arbitrary Lagrangian Eulerian) method. Note that the coordinates given as input of this method are the reference-configuration coordinates
