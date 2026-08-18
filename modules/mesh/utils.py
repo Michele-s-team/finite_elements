@@ -1909,6 +1909,15 @@ def write_mesh(mesh, output_file, map=None):
 
 '''
 write a mesh to a `.msh` file
+
+Input values: 
+    * Mandatory: 
+        - `mesh`: the mesh
+        - `filename`: path and filename with `.msh` extension where the mesh will be written
+    * Optinal:
+        - 'vertex_function`: a mesh function that tags mesh vertices
+        - `cell_function`: a mesh function taht tags mesh cells
+
 '''
 def write_line_mesh_to_msh(mesh, filename,
                  vertex_function=None,
