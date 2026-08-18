@@ -1280,31 +1280,6 @@ def print_mesh_element_types(mesh):
 
 
 '''
-Print the lines of a mesh
-Input values 
-- 'mesh': the mesh, a <meshio mesh object>
-'''
-
-
-def print_mesh_lines(mesh):
-    print('Cell lines: ')
-
-    for j in range(len(mesh.cells)):
-        # loop through  blocks of lines
-
-        if mesh.cells[j].type == "line":
-            print(f'\tLine block {mesh.cells[j].data}')
-
-            # loop through the lines in  block  mesh.cells[j].data
-            for i in range(len(mesh.cells[j].data)):
-                # obtain the extremal point of each line
-                vertex_1 = mesh.points[mesh.cells[j].data[i][0]]
-                vertex_2 = mesh.points[mesh.cells[j].data[i][1]]
-
-                print(f"\t\tLine: {i}:\n\t\t\t{vertex_1}\n\t\t\t{vertex_2}")
-
-
-'''
 print information (element types, triangles, vertices) on a mesh
 Input values: 
 - 'mesh': the mesh, a <meshio mesh object>
