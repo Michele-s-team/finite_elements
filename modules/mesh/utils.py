@@ -1716,9 +1716,6 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
             # the mesh has dimension > 2 -> print the mesh tetrahedra to csv
             print_mesh_tetrahedra_to_csv(mesh_file, os.path.join(output_directory_slash, "tetrahedra.csv"))
 
-
-
-
     # print mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory_slash, "mesh_metadata.csv"), parameters)
 
