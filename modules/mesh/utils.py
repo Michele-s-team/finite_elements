@@ -601,10 +601,12 @@ def difference_on_boundary_circle(f, g, r, R, c):
 NOTE: This method is different from input_output.print_mesh_vertices_to_csv. 
 
 print the mesh vertices tags and coordinates to csv file
+
 Input values: 
     - `infile`: full path of the input msh file
     - `outfile`: full path of the output csv file
-Returnv alues: 
+
+    Return values: 
     The output csv file is
     tag,:0,:1,:2
     tag_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord
@@ -615,6 +617,9 @@ Returnv alues:
 '''
 
 def print_mesh_vertices_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -639,6 +644,9 @@ def print_mesh_vertices_to_csv(infile, outfile):
 
     csvfile.close()
 
+    # finalize gmsh
+    gmsh.finalize()
+
 
 
 
@@ -655,8 +663,10 @@ Input values:
     ...
 '''
 
-
 def print_mesh_edges_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -772,6 +782,8 @@ def print_mesh_edges_to_csv(infile, outfile):
 
     csvfile.close()
 
+    # finalize gmsh
+    gmsh.finalize()
 
 '''
 print the mesh triangles to csv file
@@ -789,6 +801,9 @@ Input values:
     
 '''
 def print_mesh_triangles_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -834,7 +849,8 @@ def print_mesh_triangles_to_csv(infile, outfile):
 
     csvfile.close()
     
-
+    # finalize gmsh
+    gmsh.finalize()
 
 
 '''
@@ -853,6 +869,9 @@ Input values:
     
 '''
 def print_mesh_tetrahedra_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -893,6 +912,8 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
 
     csvfile.close()
 
+    # finalize gmsh
+    gmsh.finalize()
     
 
 
@@ -2182,19 +2203,29 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
             print(f"{col.Fore.RED}{'Error: middle vertex is not one of the mesh vertices!'}{col.Style.RESET_ALL}")
 
     if output_directory is not None:
+
         '''
         write the mesh lines and vertices to .h5 files: 
         one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
         '''
+
+        mesh_file = os.path.join(output_directory, 'mesh.msh')
+
         write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
         write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
 
-        io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
-
-        write_line_mesh_to_msh(mesh, os.path.join(output_directory, 'mesh.msh'),
+        # write the mesh to .msh file
+        write_line_mesh_to_msh(mesh, mesh_file,
                                 vertex_function=vertex_function,
                                 cell_function=cell_function
                             )
+
+        # print the mesh vertices to csv fie
+        print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory, "vertices.csv"))
+        
+        # print the mesh edges to csv fie
+        print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory, "edges.csv"))
+        
 
         # print mesh metadata
         if metadata is not None:
