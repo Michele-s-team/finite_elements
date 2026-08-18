@@ -2148,18 +2148,6 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         mesh = IntervalMeshCoordinates(coordinates)
 
-    '''
-    # check - start
- 
-    # get all vertex coordinates, sorted by x position
-    coords = mesh.coordinates()  # shape (N, 1)
-    coords_sorted = coords[np.argsort(coords[:, 0])]
-
-    for i in range(len(coords_sorted)-1):
-        print(f'delta {i}: x = {np.linalg.norm(np.subtract(coords[i+1],coords[i]))}')
-
-    # check - end
-    '''
 
     # create a function for the lines
     cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
