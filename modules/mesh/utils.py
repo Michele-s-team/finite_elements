@@ -1908,6 +1908,71 @@ def write_mesh(mesh, output_file, map=None):
 
 
 '''
+write a mesh to a `.msh` file
+'''
+def write_line_mesh_to_msh(mesh, filename,
+                 vertex_function=None,
+                 cell_function=None):
+
+    # vertex coordinates: dolfin gives (N, 1) for a 1D mesh; meshio wants (N, 3)
+    coordinates = mesh.coordinates()                      # shape (N, 1)
+
+    print(f'coordinates = {coordinates}')
+    points = np.zeros((coordinates.shape[0], 3))
+    print(f'points bef = {points}')
+    points[:, 0] = coordinates[:, 0]                       # x in first column, y=z=0
+    print(f'points aft = {points}')
+
+    # connectivity: each interval cell is a pair of vertex indices
+    cells = mesh.cells().astype(np.uint64)                             # shape (n_intervals, 2)
+
+    print(f'cells = {cells}')
+    cell_blocks = [("line", cells)]
+
+    physical_entities = []
+    
+    if cell_function is not None:
+
+        physical_entities.append(cell_function.array().astype(np.uint64))
+
+    else:
+
+        physical_entities.append(np.zeros((len(cells)), dtype=np.uint64))
+
+    vertex_tags = vertex_function.array().astype(np.uint64) 
+
+    print(f'vertex_tags = {vertex_tags}')
+
+    tagged_ids = np.nonzero(vertex_tags)[0]
+    print(f'tagged_ids = {tagged_ids}')
+
+    if len(tagged_ids > 0):
+
+
+        vertex_cells = tagged_ids.reshape(-1, 1).astype(np.uint64)
+        print(f'vertex_cells = {vertex_cells}')
+
+        cell_blocks.append(('vertex', vertex_cells))
+        physical_entities.append(vertex_tags[tagged_ids])
+
+    print("coords of tagged =", points[tagged_ids, 0])
+    print("tags of tagged   =", vertex_tags[tagged_ids])
+    
+        
+    meshio.write_points_cells(
+        filename,
+        points,
+        cell_blocks,
+        cell_data={"gmsh:physical": physical_entities},
+        file_format="gmsh22",
+        binary=False
+    )
+
+    m = meshio.read(filename)
+    # print("data = ", m.cell_data_dict.get("gmsh:physical", "NO PHYSICAL DATA"))
+    print("vertex physical:", m.cell_data_dict["gmsh:physical"].get("vertex", "NONE"))
+
+'''
 this method generates a submesh from a parent mesh
 Input values:
 - 'parent_mesh_path': the path where the field triangle_mesh.xdmf and line_mesh.xdmf are stored
@@ -2003,10 +2068,10 @@ Input values:
         - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
         - 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
         - 'vertex_m_id': the id of the middle vertex in the mesh
-        - 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
     * Optional:
         - 'metadata': the mesh metadata to write in the output directory
         - 'coordinates': a set of coordinates [x_0, x_1, ...]. If provided, the line mesh will have vertices sitting at these coordinates only
+        - 'output_directory': the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
 
 Return values: 
     - 'mesh': the one-dimensional mesh
@@ -2085,6 +2150,11 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
         write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
 
         io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+
+        write_line_mesh_to_msh(mesh, os.path.join(output_directory, 'mesh.msh'),
+                                vertex_function=vertex_function,
+                                cell_function=cell_function
+                            )
 
         # print mesh metadata
         if metadata is not None:
