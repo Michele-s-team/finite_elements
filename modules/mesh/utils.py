@@ -3881,3 +3881,16 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 
     f.vector().set_local(f_values)
     f.vector().apply("insert")
+
+'''
+clear gmsh and geometry if gmsh is initialized
+
+Inpuf values: 
+    - `geometry`: gmsh's geometry object
+'''
+def clear_gmsh(geometry):
+
+    if gmsh.isInitialized():
+        
+        gmsh.clear()
+        geometry.__exit__()
