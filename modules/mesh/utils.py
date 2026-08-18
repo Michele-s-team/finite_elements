@@ -1923,51 +1923,91 @@ def write_line_mesh_to_msh(mesh, filename,
                  vertex_function=None,
                  cell_function=None):
 
-    # vertex coordinates: dolfin gives (N, 1) for a 1D mesh; meshio wants (N, 3)
+    '''
+    vertex coordinates: dolfin gives (N, 1) for a 1D mesh; meshio wants (N, 3)
+        coordinates = [[x_vertex_0], [x_vertex_1], .... ]
+    '''
     coordinates = mesh.coordinates()                      # shape (N, 1)
 
-    print(f'coordinates = {coordinates}')
+    # print(f'coordinates = {coordinates}')
+    '''
+    create an array `points` filled with zero three-dimensional coordinates, and then fill their x component with the x- values in `vertex_coordinates`
+    points = [
+        [x_vertex_0, 0, 0],
+        [x_vertex_1, 0, 0],
+        ...
+    ]
+    '''
     points = np.zeros((coordinates.shape[0], 3))
-    print(f'points bef = {points}')
+    # print(f'points bef = {points}')
     points[:, 0] = coordinates[:, 0]                       # x in first column, y=z=0
-    print(f'points aft = {points}')
+    # print(f'points aft = {points}')
 
-    # connectivity: each interval cell is a pair of vertex indices
+    '''
+    connectivity: each interval cell is a pair of vertex indices
+    cells = [
+        [0, 1], 
+        [1, 2], 
+        ...
+    ]
+    '''
     cells = mesh.cells().astype(np.uint64)                             # shape (n_intervals, 2)
 
-    print(f'cells = {cells}')
+    # print(f'cells = {cells}')
     cell_blocks = [("line", cells)]
 
+    '''
+    `physical entities` stores the entities to which physical tags are assigned
+    For example:
+        physical_entities = [array([1, 1, 1 ..., 1], dtype=uint64), array([2, 4, 3], dtype=uint64)]
+    where the first array are cells (tagged with `1`) and the second are three vertices, tagged with `2`, `4` and `3`
+    '''
     physical_entities = []
-    
+
+
     if cell_function is not None:
+        # a `cell_function has been provided -> write its tags into `physical_entities`
 
         physical_entities.append(cell_function.array().astype(np.uint64))
 
     else:
+        # no `cell_function` has been provided -> sett `physical_entities` to an array with length equal to the length of `cells` and all filled with 0
 
         physical_entities.append(np.zeros((len(cells)), dtype=np.uint64))
 
+    '''
+    vertex_tags = [tag_vertex_0, tag_vertex_1, ...]
+    '''
     vertex_tags = vertex_function.array().astype(np.uint64) 
 
-    print(f'vertex_tags = {vertex_tags}')
+    # print(f'vertex_tags = {vertex_tags}')
 
+    '''
+    tagged_ids contains the positions of the vertices in `vertex_tags` that have a nonzero tag. For example, if `vertex_tags` = [1, 0, 0, 3], then `taggd_ids` = [0, 3]
+    '''
     tagged_ids = np.nonzero(vertex_tags)[0]
-    print(f'tagged_ids = {tagged_ids}')
+    # print(f'tagged_ids = {tagged_ids}')
 
     if len(tagged_ids > 0):
 
-
+        '''
+        reshape tagged_ids in column format and append it to cell_blocks: they are thus interpreted as a cell block with a single vertex
+        '''
         vertex_cells = tagged_ids.reshape(-1, 1).astype(np.uint64)
-        print(f'vertex_cells = {vertex_cells}')
+        # print(f'vertex_cells = {vertex_cells}')
 
         cell_blocks.append(('vertex', vertex_cells))
+        '''
+        append the corresponding tags of the tagged vertices to `physical_entities`
+        '''
         physical_entities.append(vertex_tags[tagged_ids])
 
-    print("coords of tagged =", points[tagged_ids, 0])
-    print("tags of tagged   =", vertex_tags[tagged_ids])
+    # print("coords of tagged =", points[tagged_ids, 0])
+    # print("tags of tagged   =", vertex_tags[tagged_ids])
     
-        
+    '''
+    write the mesh to .msh file by using the tag lists  built above
+    '''
     meshio.write_points_cells(
         filename,
         points,
@@ -1977,9 +2017,9 @@ def write_line_mesh_to_msh(mesh, filename,
         binary=False
     )
 
-    m = meshio.read(filename)
+    # m = meshio.read(filename)
     # print("data = ", m.cell_data_dict.get("gmsh:physical", "NO PHYSICAL DATA"))
-    print("vertex physical:", m.cell_data_dict["gmsh:physical"].get("vertex", "NONE"))
+    # print("vertex physical:", m.cell_data_dict["gmsh:physical"].get("vertex", "NONE"))
 
 '''
 this method generates a submesh from a parent mesh
