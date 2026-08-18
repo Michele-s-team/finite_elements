@@ -177,4 +177,4 @@ if n_vertices_on_circle != N:
 #print overall mesh metadata
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-model.__exit__()
+msh.clear_gmsh(geometry)
