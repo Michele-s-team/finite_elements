@@ -24,19 +24,47 @@ i, j, k, l, alpha, beta = ufl.indices( 6 )
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
-# reference configuration of the manifold, a straight line which coincides with the mesh line
+# reference configuration of the manifold, membrane starts from a curved configuration. 
+
 class X_ref_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
-        values[1] = values[1] = rmsh.parameters['h'] 
-        # A = rmsh.parameters['A']
-        # n = rmsh.parameters['n']
-        # q = n*np.pi/rmsh.parameters['lmda']
+        # values[1] =  rmsh.parameters['h'] 
+        A = rmsh.parameters['A']
+        n = rmsh.parameters['n']
+        h = rmsh.parameters['h']
 
-        # values[1] = rmsh.parameters['h'] + 0.01*np.cos(4*np.pi*x[0])
+        values[1] = h+A*np.cos(n*np.pi*values[0])
 
     def value_shape(self):
         return (2,)
+
+#
+class psi_n_12_0_Expression(UserExpression):
+
+    def eval(self, values, x):
+        values[0] = np.arctan(
+            rmsh.parameters["A"]* rmsh.parameters["n"]* np.pi* np.sin(rmsh.parameters["n"]*np.pi*x[0]))
+
+    def value_shape(self):
+        return ()
+
+class nu_n_12_0_Expression(UserExpression):
+
+    def eval(self, values, x):
+        A = rmsh.parameters['A']
+        n = rmsh.parameters['n']
+
+        dydx = -A*n*np.pi*np.sin(n *np.pi*x[0])
+
+        values[0] =np.sqrt(1.0 + dydx**2)
+
+    def value_shape(self):
+        return ()
+    
+
+
+
 
 # expressions for the initial conditions
 class v_n_0_Expression( UserExpression ):
@@ -54,12 +82,16 @@ class sigma_n_32_0_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class nu_n_12_0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 1
 
-    def value_shape(self):
-        return (1,)
+# class nu_n_12_0_Expression( UserExpression ):
+#     def eval(self, values, x):
+#         values[0] = 1
+
+#     def value_shape(self):
+#         return (1,)
+
+    
+    
     
 class U_n_12_0_Expression( UserExpression ):
     def eval(self, values, x):
@@ -68,6 +100,7 @@ class U_n_12_0_Expression( UserExpression ):
 
     def value_shape(self):
         return (2,)
+
     
 
 class v_bar_l_Expression( UserExpression ):
@@ -84,12 +117,61 @@ class v_bar_r_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
         
-        
-        
-fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
+
+
 
 fsp.v_bar_l.interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+
+
+for x in [0.0, 0.125, 0.1875, 0.3125, 0.375, 0.625, 0.6875, 0.8125, 0.875, 1.0]:
+    A = rmsh.parameters['A']
+    n = rmsh.parameters['n']
+    dydx = -A*n*np.pi*np.sin(n*np.pi*x)
+
+    nu = np.sqrt(1.0 + dydx**2)
+
+    psi = -np.arctan(A*n*np.pi*np.sin(n*np.pi*x))
+
+    tx = nu*np.cos(psi)
+    ty = nu*np.sin(psi)
+
+    print(
+        "x =", x,
+        "Xref' =", (1.0, dydx),
+        "e =", (tx, ty)
+    )
+
+print("U0:")
+print("  norm =", norm(fsp.U_n_12_0))
+
+print("nu0:")
+print("  min =", fsp.nu_n_12_0.vector().min())
+print("  max =", fsp.nu_n_12_0.vector().max())
+
+print("psi0:")
+print("  min =", fsp.psi_n_12_0.vector().min())
+print("  max =", fsp.psi_n_12_0.vector().max())
+
+print("mu0:")
+print("  min =", fsp.mu_n_12_0.vector().min())
+print("  max =", fsp.mu_n_12_0.vector().max())
+
+print("v_n0 norm =", norm(fsp.v_n_0))
+print("w_n0 norm =", norm(fsp.w_n_0))
+print("phi0 norm =", norm(fsp.phi_0))
+
+H0 = project(
+    geo.H(fsp.psi_n_12_0, fsp.nu_n_12_0),
+    fsp.Q_mu_n_12
+)
+
+print("H0 min/max =",
+      H0.vector().min(),
+      H0.vector().max())
+
+print("||H0|| =",
+      norm(H0))
 
 
 
@@ -98,18 +180,18 @@ bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.lmsh.mf_sub_meshes[
 bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 
-bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-bc_w_bar_r = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+# bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+# bc_w_bar_r = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
-bc_psi_l = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-bc_psi_r = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+# bc_psi_l = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+# bc_psi_r = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 
-# bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-# bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 #BCs
-bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_psi_l, bc_psi_r ]
+bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_U_n_12_l, bc_U_n_12_0_r]
 
 
 
@@ -240,17 +322,19 @@ F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
-        ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) \
-        * rmsh.ds_sub_mesh[1]['ds'] \
+        # ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) \
+        # * rmsh.ds_sub_mesh[1]['ds'] \
         #X^1(0)=0
         + (\
               (fsp.X_ref[0] + fsp.U_n_12[0]) * (fsp.nu_U_n_12[0] )\
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_l']\
         #  
-        +(fsp.mu_n_12.dx(i))* geo.g_c(fsp.psi_n_12, fsp.nu_n_12)[i,j]* (fsp.nu_mu_n_12.dx(j))* bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds']\
+        # +(fsp.mu_n_12.dx(i))* geo.g_c(fsp.psi_n_12, fsp.nu_n_12)[i,j]* (fsp.nu_mu_n_12.dx(j))* bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds']\
         #added, derivative with respect to x(0) of the tension=0 on left and right (moving membrane)
-        # +(fsp.phi.dx(0)) * (fsp.nu_phi.dx(0)) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']
+        # +(fsp.phi.dx(0)) * (fsp.nu_phi) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']
         )
 
 # total functional for the mixed problem
-F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N
+# F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N
+
+F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12  + F_mu_n_12) + F_N

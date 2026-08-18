@@ -6,6 +6,8 @@ import importlib
 import numpy as np
 import math
 import ufl
+import command as cmd
+
 
 i, j, k, l = ufl.indices(4)
 
@@ -218,7 +220,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
     
     # compute the height of the mesh rectangle 
     h = (msh.compute_size(Q_mesh.mesh()))[1]
-    
+
 
     # Get DOF coordinates for the mesh function space
     mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
@@ -307,15 +309,17 @@ def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
     # Evaluate at each unique coordinate
     for i in range(num_unique_points):
         coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
-        
         # val = f_mesh([coord[0], h])
-
+        A = 0.01
+        n = 4
         x = coord[0]
-        y =  0.01*np.cos(4*np.pi*coord[0])
+        y =  A*np.cos(n*np.pi*coord[0])
+
+
 
         f_mesh.set_allow_extrapolation(True)
         val = f_mesh([x, y])
-        val = f_mesh([coord[0], h])
+        val = f_mesh([coord[0], y])
 
         
         if value_size == 1:

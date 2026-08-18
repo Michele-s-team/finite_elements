@@ -191,8 +191,13 @@ for vertex in vertices(mesh_temp):
     point = vertex.point()
     x, y = point.x(), point.y()
     y_cos = h + A * math.cos(n * math.pi * x / lmda)
-    if math.isclose(y, y_cos, abs_tol=rpam.parameters["resolution"] * 1e-3):
+    if math.isclose(y, y_cos, abs_tol= 1e-3):
         top_edge_vertices.append(x)
+
+top_edge_vertices = sorted(list(set(top_edge_vertices)))
+print("Top EDGE VERTICES:")
+print(top_edge_vertices)
+print("NUMBER OF Top VERTICES =", len(top_edge_vertices))
 
 ''' create a list of the vertices in mesh_2d which lies on the bottom edge-analogus to the top membrane '''
 bottom_edge_vertices = []
