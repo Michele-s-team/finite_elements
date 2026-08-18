@@ -2012,7 +2012,10 @@ def write_line_mesh_to_msh(mesh, filename,
         filename,
         points,
         cell_blocks,
-        cell_data={"gmsh:physical": physical_entities},
+        cell_data={
+            "gmsh:physical": physical_entities,
+            "gmsh:geometrical": [np.zeros_like(a) for a in physical_entities]
+        },
         file_format="gmsh22",
         binary=False
     )
