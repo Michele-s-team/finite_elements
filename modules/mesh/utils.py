@@ -691,7 +691,7 @@ def print_mesh_edges_to_csv(infile, outfile):
 
         here `component_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
         
-            [10,11, 11,13]
+            [10,   11,    11,     13]
             └ edge 1 ┘ └ edge 2 ┘
         '''
         component_nodes = components[2][0] if len(components[2]) > 0 else []
