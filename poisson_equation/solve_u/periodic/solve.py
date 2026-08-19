@@ -13,8 +13,8 @@ from fenics import *
 import importlib
 import sys
 
-import runtime_arguments as rarg
 import switch_problem as swi
+import variational_problem.utils as var_pr
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
@@ -24,13 +24,6 @@ fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-
-print(
-    f'Input directory = {rarg.args.input_directory}\nOutput directory = {rarg.args.output_directory}')
-
-J = derivative(vp.F, fsp.u, fsp.J_u)
-problem = NonlinearVariationalProblem(vp.F, fsp.u, vp.bcs, J)
-solver = NonlinearVariationalSolver(problem)
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
@@ -43,16 +36,12 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
-solver.parameters.update(params)
-
-J_pp = derivative(vp.F_pp, fsp.hess_u, fsp.J_hess_u)
-problem_pp = NonlinearVariationalProblem(vp.F_pp, fsp.hess_u, [], J_pp)
-solver_pp = NonlinearVariationalSolver(problem_pp)
 
 # solve original problem
-solver.solve()
-# solve pp problem
-solver_pp.solve()
+var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
+
+# solve post-processing problem
+var_pr.solve_vp(vp.F_pp, fsp.hess_u, vp.bcs_pp, fsp.J_hess_u)
 
 prout_bc = importlib.import_module(swi.prout_bc)
 

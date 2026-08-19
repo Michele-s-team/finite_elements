@@ -62,6 +62,7 @@ fsp.hess_u_exact.interpolate(
 # import a Dirichlet boundary condition on the left vertex, the BC on the right vertex is given by periodicity
 bc_u_l = DirichletBC(fsp.Q, fsp.u_exact, rmsh.vf, rmsh.parameters['vertex_l_id'])
 bcs = [bc_u_l]
+bcs_pp = []
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
