@@ -11,8 +11,9 @@ Examples:
 
 from fenics import *
 import importlib
-import runtime_arguments as rarg
 import sys
+
+import runtime_arguments as rarg
 import switch_problem as swi
 
 # add the path where to find the shared modules
