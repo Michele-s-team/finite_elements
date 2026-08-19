@@ -58,6 +58,7 @@ def print_solution_msh(t, step):
 
 # print the solution of the fluid problem
 def print_solution_fl(t, step, dt):
+    
     io.full_print(fsp.v_, 'v_bar_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.v_n, 'v_n_' + str(step), \
