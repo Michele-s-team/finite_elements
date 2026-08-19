@@ -645,7 +645,7 @@ def print_mesh_vertices_to_csv(infile, outfile):
     csvfile.close()
 
     # finalize gmsh
-    gmsh.finalize()
+    clear_gmsh()
 
 
 
@@ -783,7 +783,7 @@ def print_mesh_edges_to_csv(infile, outfile):
     csvfile.close()
 
     # finalize gmsh
-    gmsh.finalize()
+    clear_gmsh()
 
 '''
 print the mesh triangles to csv file
@@ -850,7 +850,7 @@ def print_mesh_triangles_to_csv(infile, outfile):
     csvfile.close()
     
     # finalize gmsh
-    gmsh.finalize()
+    clear_gmsh()
 
 
 '''
@@ -913,7 +913,7 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
     csvfile.close()
 
     # finalize gmsh
-    gmsh.finalize()
+    clear_gmsh()
     
 
 
@@ -1641,8 +1641,7 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
     print_mesh_edges_to_csv(output_file, output_directory + 'edges.csv')
 
-    gmsh.clear()
-    geometry.__exit__()
+    clear_gmsh()
 
 
 """
