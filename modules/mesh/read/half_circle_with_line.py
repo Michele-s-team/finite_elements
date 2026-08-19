@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -47,7 +48,6 @@ dp_line_in_end = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id
 
 ds = ds_line + ds_arc
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.half_circle_with_line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

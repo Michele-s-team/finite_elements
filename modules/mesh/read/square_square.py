@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -60,8 +61,6 @@ ds_sub_mesh[1]['out_tb'] = ds_sub_mesh[1]['out_t'] + ds_sub_mesh[1]['out_b']
 ds_sub_mesh[1]['out_lrtb'] = ds_sub_mesh[1]['out_lr'] + ds_sub_mesh[1]['out_tb']
 
 
-
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_square')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

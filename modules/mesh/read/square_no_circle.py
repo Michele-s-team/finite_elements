@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -24,7 +25,6 @@ ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds = ds_lr + ds_tb
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_no_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

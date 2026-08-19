@@ -4,6 +4,7 @@ This code reads the 3d mesh generated from generate_mesh.py and it creates dvs a
 
 import dolfin
 from fenics import *
+import importlib
 import sys
 
 # add the path where to find the shared modules
@@ -35,8 +36,6 @@ dx = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=lmsh.parame
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['surface_id'])  # surface measure
 # dS_custom = Measure("dS", domain=lmsh.mesh, subdomain_data=sf)    # Point measure for points in the mesh
 
-
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.ball')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
