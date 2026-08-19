@@ -4,8 +4,11 @@ import dolfin
 from fenics import *
 import importlib
 import numpy as np
+import pandas as pd
 import math
+from scipy.spatial import cKDTree
 import ufl
+
 
 i, j, k, l = ufl.indices(4)
 
@@ -41,9 +44,7 @@ def set_from_list(f, list):
 
 
 def set_from_file(f, filename, constraint=None, tol=1e-12):
-    import numpy as np
-    import pandas as pd
-    from scipy.spatial import cKDTree
+
 
     mesh = f.function_space().mesh()
     gdim = mesh.geometry().dim()
