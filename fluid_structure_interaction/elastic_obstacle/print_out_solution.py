@@ -1,7 +1,5 @@
 from fenics import *
 
-import csv
-
 import physics.elasticity as ela
 import files as fi
 import function_spaces as fsp
