@@ -13,6 +13,10 @@ from fenics import *
 import importlib
 import sys
 
+# add the path where to find the shared modules
+module_path = '/home/fenics/shared/modules'
+sys.path.append(module_path)
+
 import switch_problem as swi
 import variational_problem.utils as var_pr
 
