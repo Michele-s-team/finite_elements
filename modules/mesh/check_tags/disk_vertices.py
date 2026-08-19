@@ -27,13 +27,13 @@ integral_exact_ds = cal.curve_integral_circle(tf.function_test_integrals, rmsh.p
 integral_exact_dS = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals)
 
 # exact integrals over vertices
-integral_exact_dp = []
+integral_exact_dP = []
 circle_coordinates = []
 
 for i in range(rmsh.parameters['N']):
 
     circle_coordinates.append(cal.R(i * delta_theta).dot([rmsh.parameters['r'], 0]))
-    integral_exact_dp.append(tf.function_test_integrals(circle_coordinates[i]))
+    integral_exact_dP.append(tf.function_test_integrals(circle_coordinates[i]))
 
 
 test_mesh_integral_errors = dict([])
@@ -45,7 +45,7 @@ test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_d
 test_mesh_integral_errors['\int f dS'] = msh.test_mesh_integral(integral_exact_dS, tf.function_test_integrals_fenics, rmsh.dS, '\int f dS')
 
 for i in range(rmsh.parameters['N']):
-    test_mesh_integral_errors[f'\int f dp_{i}'] = msh.test_mesh_integral(integral_exact_dp[i], tf.function_test_integrals_fenics, rmsh.dp[i], f'\int f dp_{i}')
+    test_mesh_integral_errors[f'\int f dP_{i}'] = msh.test_mesh_integral(integral_exact_dP[i], tf.function_test_integrals_fenics, rmsh.dP[i], f'\int f dP_{i}')
 
 # print to file the residuals of the tests of the mesh integrals
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'test_integral_errors.csv'), test_mesh_integral_errors)

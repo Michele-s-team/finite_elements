@@ -29,9 +29,9 @@ ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters[
 dS = Measure("dS", domain=lmsh.mesh)
 
 # define vertex measure
-dp = []
+dP = []
 for i in range(parameters['N']):
-    dp.append(Measure("dP", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_0_id'] + i))
+    dP.append(Measure("dP", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters['vertex_0_id'] + i))
 
 
 check_mesh_module = importlib.import_module('mesh.check_tags.disk_vertices')
