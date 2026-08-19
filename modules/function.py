@@ -113,11 +113,13 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
 
 '''
 read a field stored in a csv file
+
 Input values: 
-- 'file_path': the path to the csv file, including folder, namefile and extension
-- 'u': the field where the read values will be stored
-- 'type': the type of field to be read, e.g., 'scalar' or 'vector'. In this method, the number of components of the vector needs not match the dimension of the mesh
+    - 'file_path': the path to the csv file, including folder, namefile and extension
+    - 'u': the field where the read values will be stored
+    - 'type': the type of field to be read, e.g., 'scalar' or 'vector'. In this method, the number of components of the vector needs not match the dimension of the mesh
 '''
+
 def read_from_file(file_path, u):
 
     u_dummy = Function(u.function_space())
