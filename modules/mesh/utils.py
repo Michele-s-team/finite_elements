@@ -2661,7 +2661,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
 
      
-        model.__exit__()
+        clear_gmsh(geometry)
 
 
         # now shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
@@ -2699,7 +2699,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         #print overall mesh metadata
         io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-        model.__exit__()
+        clear_gmsh(geometry)
 
 
 '''
