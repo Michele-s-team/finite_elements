@@ -69,4 +69,4 @@ mesh_from_file = meshio.read(mesh_file_name)
 msh.full_write(mesh_file_name, ['triangle', 'line'], metadata, output_directory, True)
 
 # Clean up
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()

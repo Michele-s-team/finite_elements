@@ -80,4 +80,4 @@ gmsh.write(mesh_file)
 mesh_from_file = meshio.read(mesh_file)
 msh.full_write(mesh_file, ['tetra', 'triangle'], metadata, output_directory, False)
 
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()

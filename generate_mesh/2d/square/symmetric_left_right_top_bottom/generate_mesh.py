@@ -97,7 +97,7 @@ gmsh.write(quarter_mesh_msh_file)
 
 # msh.print_mesh_edges_to_csv( mesh_file, output_directory + 'edges.csv' )
 
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()
 '''
 mesh_from_file = meshio.read(output_dir + '/quarter_mesh.msh')
 line_mesh = msh.create_mesh(mesh_from_file, "line", prune_z=True)

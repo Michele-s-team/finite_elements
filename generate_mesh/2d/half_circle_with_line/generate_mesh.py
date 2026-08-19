@@ -114,4 +114,4 @@ gmsh.write(mesh_file)
 
 msh.full_write(mesh_file, ['triangle', 'line', 'vertex'], metadata, output_directory, True)
 
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()

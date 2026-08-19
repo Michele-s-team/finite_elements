@@ -188,4 +188,4 @@ msh.sorted_boundary_points(
     [rpam.parameters['circle_loop_id']],
     os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'))
 
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()

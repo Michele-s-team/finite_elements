@@ -88,7 +88,7 @@ gmsh.write(unit_mesh_msh_file)
 
 msh.print_mesh_edges_to_csv(unit_mesh_msh_file, unit_mesh_dir + 'edges.csv')
 
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()
 
 surface_id = 1
 l_edge_id = 2

@@ -2361,7 +2361,7 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
         os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
 
 
-    model.__exit__()
+    clear_gmsh()
 
 
 '''
@@ -2661,7 +2661,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
 
      
-        clear_gmsh(geometry)
+        clear_gmsh()
 
 
         # now shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
@@ -2699,7 +2699,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         #print overall mesh metadata
         io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-        clear_gmsh(geometry)
+        clear_gmsh()
 
 
 '''
@@ -3884,13 +3884,9 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 
 '''
 clear gmsh and geometry if gmsh is initialized
-
-Inpuf values: 
-    - `geometry`: gmsh's geometry object
 '''
-def clear_gmsh(geometry):
+def clear_gmsh():
 
     if gmsh.isInitialized():
         
-        gmsh.clear()
-        geometry.__exit__()
+        gmsh.finalize()

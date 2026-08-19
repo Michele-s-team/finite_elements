@@ -125,7 +125,7 @@ msh.sorted_boundary_points(
 
 
 
-msh.clear_gmsh(geometry)
+msh.clear_gmsh()
 
 # ========================================================================
 # Generate submesh for the top edge from the 2D mesh and save it in .h5 format
