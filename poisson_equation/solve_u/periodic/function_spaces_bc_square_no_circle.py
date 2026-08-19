@@ -2,11 +2,11 @@ from fenics import *
 import importlib
 
 import mesh.load as lmsh
+import parameters.read.solution as rpam
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-function_space_degree = 4
 
 '''
 This enforces periodic boundary conditions which map the right edge into the left edge, and the top edge into the left edge
@@ -40,9 +40,9 @@ class PeriodicBoundary(SubDomain):
 periodic_boundary = PeriodicBoundary()
 
 
-Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
-V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree, constrained_domain=periodic_boundary)
-T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(rmsh.lmsh.mesh.topology().dim(), rmsh.lmsh.mesh.topology().dim()), constrained_domain=periodic_boundary)
+Q = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary)
+V = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], constrained_domain=periodic_boundary)
+T = TensorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], shape=(rmsh.lmsh.mesh.topology().dim(), rmsh.lmsh.mesh.topology().dim()), constrained_domain=periodic_boundary)
 
 # Define variational problem
 u = Function(Q)
