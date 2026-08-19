@@ -43,7 +43,16 @@ def set_from_list(f, list):
         f.vector()[i] = list[i][0]
 
 
-def set_from_file(f, filename, constraint=None, tol=1e-12):
+'''
+set a field from the data contained in a csv file
+Input values: 
+    * Mandatory: 
+        - `f`: the field (scalar, vector, tensor)
+        - `filename`: the path, filename and extension of the csv file
+    * Optional: 
+        - `tol`: the tolerance used to find the nearest CSV node for each DOF coordinate
+'''
+def set_from_file(f, filename, tol=1e-12):
 
 
     mesh = f.function_space().mesh()
@@ -107,8 +116,6 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
     # Assign to function vector
     f.vector()[:] = reordered
 
-    if constraint is not None:
-        constraint.apply(f.vector())
 
 
 '''
