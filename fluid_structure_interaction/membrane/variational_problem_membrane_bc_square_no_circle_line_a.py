@@ -43,8 +43,7 @@ class X_ref_Expression(UserExpression):
 class psi_n_12_0_Expression(UserExpression):
 
     def eval(self, values, x):
-        values[0] = np.arctan(
-            rmsh.parameters["A"]* rmsh.parameters["n"]* np.pi* np.sin(rmsh.parameters["n"]*np.pi*x[0]))
+        values[0] = np.arctan(-1* rmsh.parameters["A"]* rmsh.parameters["n"]* np.pi* np.sin(rmsh.parameters["n"]*np.pi*x[0]))
 
     def value_shape(self):
         return ()
@@ -64,8 +63,6 @@ class nu_n_12_0_Expression(UserExpression):
     
 
 
-
-
 # expressions for the initial conditions
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
@@ -74,13 +71,13 @@ class v_n_0_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
 
-class sigma_n_32_0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_n_12_0']
-        # values[0] = 0
+# class sigma_n_32_0_Expression( UserExpression ):
+#     def eval(self, values, x):
+#         values[0] = rpam.parameters['sigma_n_12_0']
+#         # values[0] = 0
 
-    def value_shape(self):
-        return (1,)
+#     def value_shape(self):
+#         return (1,)
 
 
 # class nu_n_12_0_Expression( UserExpression ):
@@ -136,11 +133,7 @@ for x in [0.0, 0.125, 0.1875, 0.3125, 0.375, 0.625, 0.6875, 0.8125, 0.875, 1.0]:
     tx = nu*np.cos(psi)
     ty = nu*np.sin(psi)
 
-    print(
-        "x =", x,
-        "Xref' =", (1.0, dydx),
-        "e =", (tx, ty)
-    )
+    print("x =", x,"Xref' =", (1.0, dydx),"e =", (tx, ty))
 
 print("U0:")
 print("  norm =", norm(fsp.U_n_12_0))
@@ -160,19 +153,22 @@ print("  max =", fsp.mu_n_12_0.vector().max())
 print("v_n0 norm =", norm(fsp.v_n_0))
 print("w_n0 norm =", norm(fsp.w_n_0))
 print("phi0 norm =", norm(fsp.phi_0))
-
 H0 = project(
     geo.H(fsp.psi_n_12_0, fsp.nu_n_12_0),
     fsp.Q_mu_n_12
 )
 
-print("H0 min/max =",
-      H0.vector().min(),
-      H0.vector().max())
+Hx0 = project(
+    H0,
+    fsp.Q_mu_n_12
+)
 
-print("||H0|| =",
-      norm(H0))
+print("Hx min/max =",
+      Hx0.vector().min(),
+      Hx0.vector().max())
 
+print("Hx(0) =", Hx0(0.0))
+print("Hx(1) =", Hx0(1.0))
 
 
 
@@ -180,18 +176,20 @@ bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.lmsh.mf_sub_meshes[
 bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 
-# bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-# bc_w_bar_r = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
-
-# bc_psi_l = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-# bc_psi_r = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_w_bar_r = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 
-bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
-bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+
+bc_psi_l = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+bc_psi_r = DirichletBC(fsp.Q_mem.sub(7), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
+
+
+# bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_l_id'])
+# bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[1], rmsh.parameters['vertex_sub_mesh_1_r_id'])
 
 #BCs
-bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_U_n_12_l, bc_U_n_12_0_r]
+bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_psi_l, bc_psi_r, bc_w_bar_l, bc_w_bar_r]
 
 
 
@@ -322,19 +320,19 @@ F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
         # this term constrains mu_n_12 = H(omega_n_12) on the boundary
-        # ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12) \
-        # * rmsh.ds_sub_mesh[1]['ds'] \
+        # ((geo.H(fsp.psi_n_12, fsp.nu_n_12) - fsp.mu_n_12) * fsp.nu_mu_n_12) * bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds'] \
         #X^1(0)=0
         + (\
               (fsp.X_ref[0] + fsp.U_n_12[0]) * (fsp.nu_U_n_12[0] )\
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_l']\
         #  
-        # +(fsp.mu_n_12.dx(i))* geo.g_c(fsp.psi_n_12, fsp.nu_n_12)[i,j]* (fsp.nu_mu_n_12.dx(j))* bgeo.sqrt_deth_lr(fsp.psi_n_12)* rmsh.ds_sub_mesh[1]['ds']\
+        #  + fsp.psi_n_12.dx(0).dx(0)* fsp.nu_psi_n_12.dx(0).dx(0)*bgeo.sqrt_deth_lr(fsp.psi_n_12)* (rmsh.ds_sub_mesh[1]['ds'])
         #added, derivative with respect to x(0) of the tension=0 on left and right (moving membrane)
-        # +(fsp.phi.dx(0)) * (fsp.nu_phi) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']
+        +(fsp.phi.dx(0)) * (fsp.nu_phi.dx(0)) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']
         )
+
 
 # total functional for the mixed problem
 # F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
-F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12  + F_mu_n_12) + F_N
+F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_mu_n_12 ) +F_N

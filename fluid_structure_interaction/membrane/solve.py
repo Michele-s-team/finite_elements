@@ -25,6 +25,7 @@ import physics.utils as phys
 import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
+import differential_geometry.manifold.geometry as geo
 
 import print_out_solution as pr_sol
 
@@ -52,14 +53,13 @@ PETScOptions.set('snes_stol', 1e-8)
 PETScOptions.set('snes_max_it', 1000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 100000)    
-rmsh = importlib.import_module(swi.rmsh)
-# 3) fluid problem
-vp_fluid = importlib.import_module(swi.vp_fluid)
 
-pr_bc = importlib.import_module(swi.prout_bc)
-dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
-print("Input directory", rarg.args.input_directory)
-print("Output directory", rarg.args.output_directory)
+
+
+rmsh = importlib.import_module(swi.rmsh)
+
+
+
 
 # 1) membrane problem
 fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
@@ -67,7 +67,6 @@ fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
 
 
 # 2) mesh problem
@@ -81,14 +80,39 @@ fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
 
-# 1) for the membrane
+
+# 3) fluid problem
+vp_fluid = importlib.import_module(swi.vp_fluid)
+
+pr_bc = importlib.import_module(swi.prout_bc)
+dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
+print("Input directory", rarg.args.input_directory)
+print("Output directory", rarg.args.output_directory)
+# fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
+
+
+
+# 1) for the membrane, initial profiles
 fsp.v_bar_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_n_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
+
 fsp.nu_n_12_0.interpolate( vp_membrane.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
+
+fsp.psi_n_12_0.interpolate(vp_membrane.psi_n_12_0_Expression(element=fsp.Q_psi_n_12.ufl_element()))
+
 fsp.U_n_12_0.interpolate( vp_membrane.U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
 
-fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_fl_n_12_Expression(element=fsp.Q_phi_fl.ufl_element()))
-fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+H0 = project(geo.H(fsp.psi_n_12_0,fsp.nu_n_12_0),fsp.Q_mu_n_12)
+fsp.mu_n_12_0.assign(H0)
+
+
+# 2) for the mesh
+# 3) for the fluid
+# I removed the initialization values for sigma 
+# fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_fl_n_12_Expression(element=fsp.Q_phi_fl.ufl_element()))
+# fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+
+
 
 fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.U_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
@@ -113,6 +137,16 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
+
+    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']),fsp.Q_var_tensor_sigma_fl))
+    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
+
+    if step % rpam.parameters['print_out_stride'] == 0:
+        neg_sigma_fl_tensor = project( fsp.var_tensor_sigma_fl, fsp.Q_var_tensor_sigma_fl)
+        xdmffile_sigma_fl_tensor.write(neg_sigma_fl_tensor, t)
+
+    
+
     # --- fluid solve ---
     vp_fluid = importlib.reload(vp_fluid)
     var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
@@ -125,17 +159,29 @@ for n in range(rpam.parameters['N']):
             pr_sol.print_solution(0.0, 0, dt)
         continue
 
+    psi_xx = project(
+        fsp.psi_n_12_0.dx(0).dx(0),
+        fsp.Q_psi_n_12
+    )
+
+    print("psi_xx min/max =",
+        psi_xx.vector().min(),
+        psi_xx.vector().max())
+
+    print("psi element =", fsp.Q_psi_n_12.ufl_element())
+    print("psi degree  =", fsp.Q_psi_n_12.ufl_element().degree())
+
+    psi_xx = project(
+        fsp.psi_n_12_0.dx(0).dx(0),
+        fsp.Q_psi_n_12
+    )
+
+    print("psi_xx(0) =", psi_xx(0.0))
+    print("psi_xx(1) =", psi_xx(1.0))
+
 
 
     # --- membrane solve ---
-    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n, fsp.sigma_fl_n_32, fsp.u_n, rpam.parameters['eta_fluid']),fsp.Q_var_tensor_sigma_fl))
-    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
-
-    if step % rpam.parameters['print_out_stride'] == 0:
-        neg_sigma_fl_tensor = project( fsp.var_tensor_sigma_fl, fsp.Q_var_tensor_sigma_fl)
-        xdmffile_sigma_fl_tensor.write(neg_sigma_fl_tensor, t)
-
-    
 
     print('Solving membrane problem ...', flush=True)
     vp_membrane = importlib.reload(vp_membrane)
@@ -161,13 +207,13 @@ for n in range(rpam.parameters['N']):
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
 
-    # --- update fluid  ---
+    # update fluid 
     fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
     fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
     fsp.v_fl_n_1.assign(fsp.v_fl_n)
     fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
-    # --- update membrane histories ---
+    # update membrane 
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(v_n_output)
     fsp.w_n_1.assign(w_n_output)
@@ -179,13 +225,11 @@ for n in range(rpam.parameters['N']):
         pr_sol.print_solution(t, step, dt)
     print(f'\t{(100.0 * (t / rpam.parameters["T"]))} %', flush=True)
 
-    print("||phi_fl|| =", norm(fsp.phi_fl))
-    print("||sigma_fl_n_32|| =", norm(fsp.sigma_fl_n_32))
-    print("||u_n|| =", norm(fsp.u_n))
-    print("||u_dot_n|| =", norm(fsp.u_dot_n))
 
 
 print("||u_dot_n|| =", norm(fsp.u_n))
 print("max u_dot =", fsp.u_n.vector().max())
 print("min u_dot =", fsp.u_n.vector().min())
+
+
 u_vec = U_n_12_output.vector().get_local()

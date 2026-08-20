@@ -310,7 +310,7 @@ def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
     for i in range(num_unique_points):
         coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
         # val = f_mesh([coord[0], h])
-        A = 0.01
+        A = 0.05
         n = 4
         x = coord[0]
         y =  A*np.cos(n*np.pi*coord[0])
