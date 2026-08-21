@@ -53,43 +53,6 @@ import variational_problem.utils as var_pr
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-# test function/set_from_file - start
-import function as fu
-import input_output as io
-import os
-import numpy as np
-import solution_paths as solpath
-
-class u_Expression(UserExpression):
-    def eval(self, values, x):
-        # test case 1
-        values[0] = 2.0 * x[0]**2
-        values[1] = 4.0 * np.cos(x[1])
-
-    def value_shape(self):
-            return (2,)
-
-
-
-u = Function(fsp.V)
-u.interpolate(u_Expression(element=fsp.V.ufl_element()))
-
-
-
-io.full_print(u, 'u_out', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path)
-
-
-fu.set_from_file(u, os.path.join(solpath.csv_files_path, 'u_out.csv'))
-
-io.full_print(u, 'u_in', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path)
-# test function/set_from_file - end
-
-
-
-
-
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
