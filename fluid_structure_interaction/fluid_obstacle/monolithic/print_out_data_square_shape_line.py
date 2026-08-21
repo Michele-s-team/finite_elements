@@ -67,7 +67,9 @@ def print_data(step):
         fi.fieldnames_data[7]: \
             f"{msh.average_wrt_measure(geo.ufl_norm(vp.f_shape(fsp.c_n(vp.sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[8]: \
-            f"{geo_u.aspect_ratio(shape_coordinates) - 1:.{rpam.parameters['print_out_digits']}e}"
+            f"{geo_u.aspect_ratio(shape_coordinates) - 1:.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_data[9]: \
+            rmsh.parameters['c']
         }])
 
     fi.csvfile_data.flush()

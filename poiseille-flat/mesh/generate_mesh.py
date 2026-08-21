@@ -82,8 +82,7 @@ geometry.generate_mesh( dim=2 )
 gmsh.write( mesh_file )
 msh.print_mesh_edges_to_csv( mesh_file, output_directory + 'edges.csv' )
 
-gmsh.clear()
-geometry.__exit__()
+msh.clear_gmsh()
 
 mesh_from_file = meshio.read( mesh_file )
 

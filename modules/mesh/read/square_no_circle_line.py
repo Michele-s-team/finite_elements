@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -47,7 +48,6 @@ ds_sub_mesh[1] = dict([ \
     ('ds', Measure("ds", domain=lmsh.sub_meshes[1], subdomain_data=lmsh.mf_sub_meshes[1]))
 ])
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_no_circle_line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

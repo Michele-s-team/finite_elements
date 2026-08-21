@@ -337,13 +337,14 @@ def print_nodal_values_to_csvfile(f, filename):
 
 '''
 print the coordinates of the vertices of a mesh to csv file
+
 Input values: 
-- 'mesh' <dolfin.Mesh>: the mesh
-- 'outfile': path of the csv file
+    - 'mesh' <dolfin.Mesh>: the mesh
+    - 'outfile': path of the csv file
 '''
 
-
 def print_mesh_vertices_to_csv(mesh, filename):
+
     # a dummy function space of order 1 used to tabulated the vertices
     Q = FunctionSpace(mesh, 'CG', 1)
     coordinates = Q.tabulate_dof_coordinates()

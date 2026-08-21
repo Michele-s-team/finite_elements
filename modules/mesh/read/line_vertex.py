@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 import sys
 
 # add the path where to find the shared modules
@@ -30,7 +31,6 @@ ds_m = Measure("dS", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameter
 ds_lr = Measure("ds", domain=lmsh.mesh)
 
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

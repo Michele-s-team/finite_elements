@@ -76,4 +76,4 @@ mesh_from_file = meshio.read(mesh_file)
 
 msh.full_write(mesh_file, ['tetra', 'triangle'], metadata, output_directory, False)
 
-model.__exit__()
+msh.clear_gmsh()

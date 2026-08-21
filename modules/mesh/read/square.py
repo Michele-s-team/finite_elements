@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import calculus as calc
 import input_output as io
@@ -31,7 +32,6 @@ ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 ds = ds_square + ds_circle
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

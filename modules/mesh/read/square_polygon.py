@@ -1,5 +1,6 @@
 import colorama as col
 from fenics import *
+import importlib
 import os
 
 import calculus as cal
@@ -57,7 +58,6 @@ ds_square = ds_lr + ds_tb
 ds_l_tb_poly = ds_l + ds_t + ds_b + ds_poly
 ds = ds_square + ds_poly
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_polygon')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

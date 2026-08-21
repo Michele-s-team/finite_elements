@@ -601,10 +601,12 @@ def difference_on_boundary_circle(f, g, r, R, c):
 NOTE: This method is different from input_output.print_mesh_vertices_to_csv. 
 
 print the mesh vertices tags and coordinates to csv file
+
 Input values: 
     - `infile`: full path of the input msh file
     - `outfile`: full path of the output csv file
-Returnv alues: 
+
+    Return values: 
     The output csv file is
     tag,:0,:1,:2
     tag_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord
@@ -615,6 +617,9 @@ Returnv alues:
 '''
 
 def print_mesh_vertices_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -639,6 +644,9 @@ def print_mesh_vertices_to_csv(infile, outfile):
 
     csvfile.close()
 
+    # finalize gmsh
+    clear_gmsh()
+
 
 
 
@@ -655,8 +663,10 @@ Input values:
     ...
 '''
 
-
 def print_mesh_edges_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -691,7 +701,7 @@ def print_mesh_edges_to_csv(infile, outfile):
 
         here `component_nodes` is, for example [array([10, 11, 12, 11, 13, 12])], where 
         
-            [10,11, 11,13]
+            [10,   11,    11,     13]
             └ edge 1 ┘ └ edge 2 ┘
         '''
         component_nodes = components[2][0] if len(components[2]) > 0 else []
@@ -772,6 +782,8 @@ def print_mesh_edges_to_csv(infile, outfile):
 
     csvfile.close()
 
+    # finalize gmsh
+    clear_gmsh()
 
 '''
 print the mesh triangles to csv file
@@ -789,6 +801,9 @@ Input values:
     
 '''
 def print_mesh_triangles_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -834,7 +849,8 @@ def print_mesh_triangles_to_csv(infile, outfile):
 
     csvfile.close()
     
-
+    # finalize gmsh
+    clear_gmsh()
 
 
 '''
@@ -853,6 +869,9 @@ Input values:
     
 '''
 def print_mesh_tetrahedra_to_csv(infile, outfile):
+
+    # initialize gmsh
+    gmsh.initialize()
 
     # open the .msh file
     gmsh.open(infile)
@@ -893,6 +912,8 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
 
     csvfile.close()
 
+    # finalize gmsh
+    clear_gmsh()
     
 
 
@@ -1280,31 +1301,6 @@ def print_mesh_element_types(mesh):
 
 
 '''
-Print the lines of a mesh
-Input values 
-- 'mesh': the mesh, a <meshio mesh object>
-'''
-
-
-def print_mesh_lines(mesh):
-    print('Cell lines: ')
-
-    for j in range(len(mesh.cells)):
-        # loop through  blocks of lines
-
-        if mesh.cells[j].type == "line":
-            print(f'\tLine block {mesh.cells[j].data}')
-
-            # loop through the lines in  block  mesh.cells[j].data
-            for i in range(len(mesh.cells[j].data)):
-                # obtain the extremal point of each line
-                vertex_1 = mesh.points[mesh.cells[j].data[i][0]]
-                vertex_2 = mesh.points[mesh.cells[j].data[i][1]]
-
-                print(f"\t\tLine: {i}:\n\t\t\t{vertex_1}\n\t\t\t{vertex_2}")
-
-
-'''
 print information (element types, triangles, vertices) on a mesh
 Input values: 
 - 'mesh': the mesh, a <meshio mesh object>
@@ -1645,8 +1641,7 @@ def generate_mesh_ring_slice(r, R, c_r, c_R, theta, resolution, output_file):
 
     print_mesh_edges_to_csv(output_file, output_directory + 'edges.csv')
 
-    gmsh.clear()
-    geometry.__exit__()
+    clear_gmsh()
 
 
 """
@@ -1719,9 +1714,6 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
             # the mesh has dimension > 2 -> print the mesh tetrahedra to csv
             print_mesh_tetrahedra_to_csv(mesh_file, os.path.join(output_directory_slash, "tetrahedra.csv"))
-
-
-
 
     # print mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory_slash, "mesh_metadata.csv"), parameters)
@@ -1933,6 +1925,123 @@ def write_mesh(mesh, output_file, map=None):
 
 
 '''
+write a mesh to a `.msh` file
+
+Input values: 
+    * Mandatory: 
+        - `mesh`: the mesh
+        - `filename`: path and filename with `.msh` extension where the mesh will be written
+    * Optinal:
+        - 'vertex_function`: a mesh function that tags mesh vertices
+        - `cell_function`: a mesh function taht tags mesh cells
+
+'''
+def write_line_mesh_to_msh(mesh, filename,
+                 vertex_function=None,
+                 cell_function=None):
+
+    '''
+    vertex coordinates: dolfin gives (N, 1) for a 1D mesh; meshio wants (N, 3)
+        coordinates = [[x_vertex_0], [x_vertex_1], .... ]
+    '''
+    coordinates = mesh.coordinates()                      # shape (N, 1)
+
+    # print(f'coordinates = {coordinates}')
+    '''
+    create an array `points` filled with zero three-dimensional coordinates, and then fill their x component with the x- values in `vertex_coordinates`
+    points = [
+        [x_vertex_0, 0, 0],
+        [x_vertex_1, 0, 0],
+        ...
+    ]
+    '''
+    points = np.zeros((coordinates.shape[0], 3))
+    # print(f'points bef = {points}')
+    points[:, 0] = coordinates[:, 0]                       # x in first column, y=z=0
+    # print(f'points aft = {points}')
+
+    '''
+    connectivity: each interval cell is a pair of vertex indices
+    cells = [
+        [0, 1], 
+        [1, 2], 
+        ...
+    ]
+    '''
+    cells = mesh.cells().astype(np.uint64)                             # shape (n_intervals, 2)
+
+    # print(f'cells = {cells}')
+    cell_blocks = [("line", cells)]
+
+    '''
+    `physical entities` stores the entities to which physical tags are assigned
+    For example:
+        physical_entities = [array([1, 1, 1 ..., 1], dtype=uint64), array([2, 4, 3], dtype=uint64)]
+    where the first array are cells (tagged with `1`) and the second are three vertices, tagged with `2`, `4` and `3`
+    '''
+    physical_entities = []
+
+
+    if cell_function is not None:
+        # a `cell_function has been provided -> write its tags into `physical_entities`
+
+        physical_entities.append(cell_function.array().astype(np.uint64))
+
+    else:
+        # no `cell_function` has been provided -> sett `physical_entities` to an array with length equal to the length of `cells` and all filled with 0
+
+        physical_entities.append(np.zeros((len(cells)), dtype=np.uint64))
+
+    '''
+    vertex_tags = [tag_vertex_0, tag_vertex_1, ...]
+    '''
+    vertex_tags = vertex_function.array().astype(np.uint64) 
+
+    # print(f'vertex_tags = {vertex_tags}')
+
+    '''
+    tagged_ids contains the positions of the vertices in `vertex_tags` that have a nonzero tag. For example, if `vertex_tags` = [1, 0, 0, 3], then `taggd_ids` = [0, 3]
+    '''
+    tagged_ids = np.nonzero(vertex_tags)[0]
+    # print(f'tagged_ids = {tagged_ids}')
+
+    if len(tagged_ids > 0):
+
+        '''
+        reshape tagged_ids in column format and append it to cell_blocks: they are thus interpreted as a cell block with a single vertex
+        '''
+        vertex_cells = tagged_ids.reshape(-1, 1).astype(np.uint64)
+        # print(f'vertex_cells = {vertex_cells}')
+
+        cell_blocks.append(('vertex', vertex_cells))
+        '''
+        append the corresponding tags of the tagged vertices to `physical_entities`
+        '''
+        physical_entities.append(vertex_tags[tagged_ids])
+
+    # print("coords of tagged =", points[tagged_ids, 0])
+    # print("tags of tagged   =", vertex_tags[tagged_ids])
+    
+    '''
+    write the mesh to .msh file by using the tag lists  built above
+    '''
+    meshio.write_points_cells(
+        filename,
+        points,
+        cell_blocks,
+        cell_data={
+            "gmsh:physical": physical_entities,
+            "gmsh:geometrical": [np.zeros_like(a) for a in physical_entities]
+        },
+        file_format="gmsh22",
+        binary=False
+    )
+
+    # m = meshio.read(filename)
+    # print("data = ", m.cell_data_dict.get("gmsh:physical", "NO PHYSICAL DATA"))
+    # print("vertex physical:", m.cell_data_dict["gmsh:physical"].get("vertex", "NONE"))
+
+'''
 this method generates a submesh from a parent mesh
 Input values:
 - 'parent_mesh_path': the path where the field triangle_mesh.xdmf and line_mesh.xdmf are stored
@@ -2028,10 +2137,10 @@ Input values:
         - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
         - 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
         - 'vertex_m_id': the id of the middle vertex in the mesh
-        - 'output_directory' [optional]: the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
     * Optional:
         - 'metadata': the mesh metadata to write in the output directory
         - 'coordinates': a set of coordinates [x_0, x_1, ...]. If provided, the line mesh will have vertices sitting at these coordinates only
+        - 'output_directory': the path where the mesh will be written. In that path this method will write the mesh component, vertices and, if metadata != None, the mesh metadata
 
 Return values: 
     - 'mesh': the one-dimensional mesh
@@ -2056,18 +2165,6 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         mesh = IntervalMeshCoordinates(coordinates)
 
-    '''
-    # check - start
- 
-    # get all vertex coordinates, sorted by x position
-    coords = mesh.coordinates()  # shape (N, 1)
-    coords_sorted = coords[np.argsort(coords[:, 0])]
-
-    for i in range(len(coords_sorted)-1):
-        print(f'delta {i}: x = {np.linalg.norm(np.subtract(coords[i+1],coords[i]))}')
-
-    # check - end
-    '''
 
     # create a function for the lines
     cell_function = MeshFunction("size_t", mesh, mesh.topology().dim())
@@ -2102,14 +2199,29 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
             print(f"{col.Fore.RED}{'Error: middle vertex is not one of the mesh vertices!'}{col.Style.RESET_ALL}")
 
     if output_directory is not None:
+
         '''
         write the mesh lines and vertices to .h5 files: 
         one needs to write them to .h5 file rather than to .xdmf file because only .h5 file can be properly read later on
         '''
+
+        mesh_file = os.path.join(output_directory, 'mesh.msh')
+
         write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
         write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
 
-        io.print_mesh_vertices_to_csv(mesh, output_directory + "vertices.csv")
+        # write the mesh to .msh file
+        write_line_mesh_to_msh(mesh, mesh_file,
+                                vertex_function=vertex_function,
+                                cell_function=cell_function
+                            )
+
+        # print the mesh vertices to csv fie
+        print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory, "vertices.csv"))
+        
+        # print the mesh edges to csv fie
+        print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory, "edges.csv"))
+        
 
         # print mesh metadata
         if metadata is not None:
@@ -2248,7 +2360,7 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
         os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
 
 
-    model.__exit__()
+    clear_gmsh()
 
 
 '''
@@ -2548,7 +2660,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
 
      
-        model.__exit__()
+        clear_gmsh()
 
 
         # now shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
@@ -2586,7 +2698,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
         #print overall mesh metadata
         io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
 
-        model.__exit__()
+        clear_gmsh()
 
 
 '''
@@ -3768,3 +3880,12 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 
     f.vector().set_local(f_values)
     f.vector().apply("insert")
+
+'''
+clear gmsh and geometry if gmsh is initialized
+'''
+def clear_gmsh():
+
+    if gmsh.isInitialized():
+        
+        gmsh.finalize()

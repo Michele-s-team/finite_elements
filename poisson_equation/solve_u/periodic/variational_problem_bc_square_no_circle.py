@@ -90,6 +90,7 @@ fsp.hess_u_exact.interpolate(
 bc_u_l = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_l)
 bc_u_t = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_t)
 bcs = [bc_u_l, bc_u_t]
+bcs_pp = []
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \

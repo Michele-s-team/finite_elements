@@ -36,4 +36,4 @@ meshio.write(os.path.join(rarg.args.output_directory, "mesh.msh"), mesh)
 msh.print_mesh_vertices_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "vertices.csv"))
 msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "triangles.csv"))
 
-model.__exit__()
+msh.clear_gmsh()

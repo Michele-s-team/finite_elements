@@ -1,6 +1,6 @@
 from fenics import *
+import importlib
 
-import calculus as calc
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
@@ -36,7 +36,6 @@ ds_tb = ds_t + ds_b
 
 ds = ds_lr + ds_tb
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_half_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

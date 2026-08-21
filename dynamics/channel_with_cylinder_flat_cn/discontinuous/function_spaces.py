@@ -41,7 +41,7 @@ sigma_n_32 = Function(Q_sigma)
 phi = Function(Q_sigma)
 
 f = Function(Q_f)
-tau = Function(Q_f)
+tau = Function(Q_tau)
 
 # velocity profiles for the BCs
 v_l = Function(Q_v_)

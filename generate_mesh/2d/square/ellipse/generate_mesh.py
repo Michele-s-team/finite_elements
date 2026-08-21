@@ -128,5 +128,4 @@ msh.sorted_boundary_points(
     os.path.join(output_directory, 'boundary_points_id_' + str(ellipse_id) + '.csv'))
 
 
-gmsh.clear()
-geometry.__exit__()
+msh.clear_gmsh()

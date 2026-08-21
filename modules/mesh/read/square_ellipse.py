@@ -1,5 +1,6 @@
 import colorama as col
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -40,7 +41,6 @@ ds_square = ds_lr + ds_tb
 ds_l_tb_ellipse = ds_l + ds_t + ds_b + ds_ellipse
 ds = ds_square + ds_ellipse
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.square_ellipse')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

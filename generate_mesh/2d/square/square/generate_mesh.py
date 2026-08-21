@@ -143,4 +143,4 @@ msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'in'), rpam.parameters["sub_mesh_0_id"])
 msh.generate_sub_mesh(output_directory, os.path.join(output_directory, 'sub_meshes', 'out'), rpam.parameters["sub_mesh_1_id"])
 
-model.__exit__()
+msh.clear_gmsh()

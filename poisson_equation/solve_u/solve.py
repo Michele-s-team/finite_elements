@@ -53,6 +53,7 @@ import variational_problem.utils as var_pr
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
+
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':

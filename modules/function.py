@@ -4,8 +4,11 @@ import dolfin
 from fenics import *
 import importlib
 import numpy as np
+import pandas as pd
 import math
+from scipy.spatial import cKDTree
 import ufl
+
 
 i, j, k, l = ufl.indices(4)
 
@@ -40,10 +43,17 @@ def set_from_list(f, list):
         f.vector()[i] = list[i][0]
 
 
-def set_from_file(f, filename, constraint=None, tol=1e-12):
-    import numpy as np
-    import pandas as pd
-    from scipy.spatial import cKDTree
+'''
+set a field from the data contained in a csv file
+Input values: 
+    * Mandatory: 
+        - `f`: the field (scalar, vector, tensor)
+        - `filename`: the path, filename and extension of the csv file
+    * Optional: 
+        - `tol`: the tolerance used to find the nearest CSV node for each DOF coordinate
+'''
+def set_from_file(f, filename, tol=1e-12):
+
 
     mesh = f.function_space().mesh()
     gdim = mesh.geometry().dim()
@@ -106,17 +116,17 @@ def set_from_file(f, filename, constraint=None, tol=1e-12):
     # Assign to function vector
     f.vector()[:] = reordered
 
-    if constraint is not None:
-        constraint.apply(f.vector())
 
 
 '''
 read a field stored in a csv file
+
 Input values: 
-- 'file_path': the path to the csv file, including folder, namefile and extension
-- 'u': the field where the read values will be stored
-- 'type': the type of field to be read, e.g., 'scalar' or 'vector'. In this method, the number of components of the vector needs not match the dimension of the mesh
+    - 'file_path': the path to the csv file, including folder, namefile and extension
+    - 'u': the field where the read values will be stored
+    - 'type': the type of field to be read, e.g., 'scalar' or 'vector'. In this method, the number of components of the vector needs not match the dimension of the mesh
 '''
+
 def read_from_file(file_path, u):
 
     u_dummy = Function(u.function_space())

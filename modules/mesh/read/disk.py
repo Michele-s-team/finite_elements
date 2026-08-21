@@ -1,4 +1,5 @@
 from fenics import *
+import importlib
 
 import input_output as io
 import mesh.load as lmsh
@@ -22,7 +23,6 @@ dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
 ds = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
 dS = Measure("dS", domain=lmsh.mesh)
 
-import importlib
 check_mesh_module = importlib.import_module('mesh.check_tags.disk')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
