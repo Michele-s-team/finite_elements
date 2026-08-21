@@ -19,24 +19,9 @@ r_mesh = lmsh.mesh.hmin()
 
 parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
 
-
-# CHANGE PARAMETERS HERE
-# r = 1
 c_r = [0, 0]
 c_1 = [parameters["r"], 0]
 c_2 = [-parameters["r"], 0]
-# c_3 = [r / 2, -r / 8]
-# c_4 = [-r / 2, -r / 8]
-#
-# p_1_id = 1
-# p_2_id = 2
-# p_3_id = 6
-# p_4_id = 7
-# line_12_id = 3
-# arc_21_id = 4
-# surface_id = 5
-# line_34_id = 8
-# CHANGE PARAMETERS HERE
 
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters["surface_id"])
