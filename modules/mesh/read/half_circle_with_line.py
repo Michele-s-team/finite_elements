@@ -37,8 +37,6 @@ check_mesh_module = importlib.import_module('mesh.check_tags.half_circle_with_li
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
-# CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
 boundary_line  = 'near(x[1], 0.0)'
 boundary_arc = f'on_boundary && ((x[1] < 0.0) || (near(x[0], {c_1[0]}) || near(x[0], {c_2[0]})))'
-# CHANGE PARAMETERS HERE
