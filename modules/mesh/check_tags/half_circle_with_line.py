@@ -28,7 +28,7 @@ integral_exact_dp2 = tf.function_test_integrals([-rmsh.parameters["r"], 0])
 test_mesh_integral_errors = dict([])
 
 test_mesh_integral_errors['\int dx f'] = msh.test_mesh_integral(integral_exact_dx, tf.function_test_integrals_fenics, rmsh.dx, '\int dx f')
-test_mesh_integral_errors['\int dp f_{p_1}'] = msh.test_mesh_integral(integral_exact_dp1, tf.function_test_integrals_fenics, rmsh.dp_line_in_start, '\int dp f_{p_1}')
+test_mesh_integral_errors['\int dp f_{p_1}'] = msh.test_mesh_integral(integral_exact_dp1, tf.function_test_integrals_fenics, rmsh.dP_line_in_start, '\int dp f_{p_1}')
 test_mesh_integral_errors['\int dp f_{p_2}'] = msh.test_mesh_integral(integral_exact_dp2, tf.function_test_integrals_fenics, rmsh.dp_line_in_end, '\int dp f_{p_2}')
 test_mesh_integral_errors['\int dl f_{line_12}'] = msh.test_mesh_integral(integral_exact_dline_12, tf.function_test_integrals_fenics, rmsh.ds_line, '\int dl f_{line_12}')
 test_mesh_integral_errors['\int dl f_{arc_21}'] = msh.test_mesh_integral(integral_exact_darc_21, tf.function_test_integrals_fenics, rmsh.ds_arc, '\int dl f_{arc_21}')
