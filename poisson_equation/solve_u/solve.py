@@ -57,17 +57,32 @@ vp = importlib.import_module(swi.vp)
 import function as fu
 import input_output as io
 import os
+import numpy as np
 import solution_paths as solpath
 
-u_in = Function(fsp.Q)
+class u_Expression(UserExpression):
+    def eval(self, values, x):
+        # test case 1
+        values[0] = 2.0 * x[0]**2
+        values[1] = 4.0 * np.cos(x[1])
 
-io.full_print(fsp.u_exact, 'u_out', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+    def value_shape(self):
+            return (2,)
+
+
+
+u = Function(fsp.V)
+u.interpolate(u_Expression(element=fsp.V.ufl_element()))
+
+
+
+io.full_print(u, 'u_out', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 
 
-fu.set_from_file(u_in, os.path.join(solpath.csv_files_path, 'u_out.csv'))
+fu.set_from_file(u, os.path.join(solpath.csv_files_path, 'u_out.csv'))
 
-io.full_print(u_in, 'u_in', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+io.full_print(u, 'u_in', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 # test function/set_from_file - end
 
