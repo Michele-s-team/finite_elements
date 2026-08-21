@@ -54,10 +54,20 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 # test function/set_from_file - start
+import function as fu
 import input_output as io
+import os
 import solution_paths as solpath
 
-io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+u_in = Function(fsp.Q)
+
+io.full_print(fsp.u_exact, 'u_out', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+
+
+fu.set_from_file(u_in, os.path.join(solpath.csv_files_path, 'u_out.csv'))
+
+io.full_print(u_in, 'u_in', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path)
 # test function/set_from_file - end
 
