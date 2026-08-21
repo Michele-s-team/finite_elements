@@ -26,7 +26,7 @@ c_2 = [-parameters["r"], 0]
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=vf, subdomain_id=parameters["surface_id"])
 ds_line = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["line_12_id"])
-ds_line_in = Measure("dS", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["line_34_id"])
+dS_line_in = Measure("dS", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["line_34_id"])
 ds_arc = Measure("ds", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=parameters["arc_21_id"])
 dp_line_in_start = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["p_1_id"])
 dp_line_in_end = Measure("dP", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters["p_2_id"])
