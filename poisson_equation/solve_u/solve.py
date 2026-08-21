@@ -53,6 +53,19 @@ import variational_problem.utils as var_pr
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
+# test function/set_from_file - start
+import input_output as io
+import solution_paths as solpath
+
+io.full_print(fsp.u_exact, 'u_exact', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+              solpath.nodal_values_path)
+# test function/set_from_file - end
+
+
+
+
+
+
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
