@@ -32,7 +32,7 @@ dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 # set the solver parameters here
 # parameters with Netwon method
-'''
+
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
@@ -43,10 +43,10 @@ params = {'nonlinear_solver': 'newton',
                   'relaxation_parameter': 0.95,
               }
           }
-'''
+
 
 # parameters with SNES method
-# 
+'''
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
@@ -67,7 +67,7 @@ PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
 PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
-# 
+'''
 
 
 rmsh = importlib.import_module(swi.rmsh)
