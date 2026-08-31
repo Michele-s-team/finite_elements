@@ -4013,21 +4013,15 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     tag_physical_object(lines[N_lines+2], parameters["line_sub_mesh_0_l_id"], gmsh.model, "line_l")
 
 
-    sys.exit(1)
 
     # add 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
-    # DEBUG: Print what surface entities we have
-    print(f"DEBUG: Surface entities: {surfaces}")
 
-    gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], parameters["sub_mesh_0_id"])
-    gmsh.model.setPhysicalName(surfaces[0][0], parameters["sub_mesh_0_id"], "sub_mesh_0")
+    # gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], parameters["sub_mesh_0_id"])
+    # gmsh.model.setPhysicalName(surfaces[0][0], parameters["sub_mesh_0_id"], "sub_mesh_0")
+    tag_physical_object(surfaces[0], parameters["sub_mesh_0_id"], gmsh.model, "sub_mesh_0")
 
-    # DEBUG: Print the physical group IDs we're using
-    print(f"DEBUG: Physical group IDs:")
-    print(f"  sub_mesh_0_id (surface): {parameters['sub_mesh_0_id']}")
-    print(f"  sub_mesh_1_id (line_34): {parameters['sub_mesh_1_id']}")
 
     # set the resolution close to the obstacle
     distance = gmsh.model.mesh.field.add("Distance")
@@ -4066,21 +4060,34 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     print("Generating H5 sub_mesh for top edge from 2D mesh...")
 
-    # Read the generated 2D mesh from the triangle component file
-    mesh_temp = Mesh()
-    with XDMFFile(os.path.join(output_directory,  "triangle_mesh.xdmf")) as infile:
-        infile.read(mesh_temp)
+    if curve_coordinates == []:
+        # curve_coordinates is empty -> the top edge of the mesh has been filled with vertices by the meshing algorithm, and these vertices lie on a line -> fetch these vertices by inspecting the mesh and write them into top_edge_vertices
+
+        # Read the generated 2D mesh from the triangle component file
+        mesh_temp = Mesh()
+        with XDMFFile(os.path.join(output_directory,  "triangle_mesh.xdmf")) as infile:
+            infile.read(mesh_temp)
 
 
-    # create a list of the vertices in mesh_2d which lie on the top edge
-    top_edge_vertices = []
-    for vertex in vertices(mesh_temp):
-        point = vertex.point()
-        if math.isclose(point.y(), parameters["h"]):
-            top_edge_vertices.append(point.x())
+        # create a list of the vertices in mesh_2d which lie on the top edge
+        top_edge_vertices = []
+        for vertex in vertices(mesh_temp):
+            point = vertex.point()
+            if math.isclose(point.y(), parameters["h"]):
+                top_edge_vertices.append(point.x())
 
-    # Sort vertices by x-coordinate and remove duplicates
-    top_edge_vertices = sorted(list(set(top_edge_vertices)))
+        # Sort vertices by x-coordinate and remove duplicates
+        top_edge_vertices = sorted(list(set(top_edge_vertices)))
+
+    else:
+        # curve_coordinates is not empty -> the top edge of the mesh is given by len(curve_coordinates)+2 vertices -> write these into top_edge_vertices
+
+        top_edge_vertices = curve_coordinates
+        top_edge_vertices.insert(0, [0, parameters['h']])
+        top_edge_vertices.append([parameters['L'], parameters['h']])
+
+        print(f'top edge vertices = {top_edge_vertices}')
+        sys.exit(1)
 
     print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
 
