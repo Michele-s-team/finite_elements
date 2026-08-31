@@ -5,6 +5,7 @@ import gmsh
 import math
 import meshio
 import numpy as np
+from operator import itemgetter
 import os
 import pygmsh
 import shutil
@@ -4096,6 +4097,9 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
 
     print(f'curve coordinates lr = {curve_coordinates_lr}')
 
+
+
+
     # create a list of the vertices in mesh_2d which lie on the top edge
     top_edge_vertices = []
     segment_vertices = [[] for _ in range(len(curve_coordinates_lr) - 1)]
@@ -4109,28 +4113,43 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
         # if math.isclose(vertex_coordinates.y(), parameters["h"]):
         #     top_edge_vertices.append(vertex_coordinates.x())
 
-    # Sort vertices by x-coordinate and remove duplicates
-    # top_edge_vertices = sorted(list(set(top_edge_vertices)))
 
+    # convert `segment_vertices` to list
     segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
+    '''
+    sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - curve_coordinates_lr[i]).(curve_coordinates_lr[i+1]-curve_coordinates_lr[i]), 
+    i.e. the projection of segment_vertex[i][j] - curve_coordinates_lr[i] along the segment which goes from curve_coordinates_lr[i] to curve_coordinates_lr[i+1]. 
+    This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
+    '''
+    segment_vertices_projection = [
+        [np.dot(np.subtract(segment_vertex, curve_coordinates_lr[i]), np.subtract(curve_coordinates_lr[i+1], curve_coordinates_lr[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
+        ]
+
+    for i in range(len(segment_vertices)):
+        order = np.argsort(segment_vertices_projection[i])
+        segment_vertices[i] = [segment_vertices[i][j] for j in order]
+
     print(f'segment vertices = {segment_vertices}')
-
-    sys.exit(1)
-
+    print(f'segment vertices projection = {segment_vertices_projection}')
 
 
     print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
 
-    top_edge_arclength = [0]
-    arclength = 0
-    for i in range(1, len(top_edge_vertices)):
-        arclength += np.linalg.norm(np.subtract(top_edge_vertices[i], top_edge_vertices[i-1]))
-        top_edge_arclength.append(arclength)
+    arc_length_table = [0]
+    arc_length = 0
+    for segment in segment_vertices:
 
-    print(f'top_edge_arclength = {top_edge_arclength}')
+        for i in range(1, len(segment)):
+
+            arc_length += np.linalg.norm(np.subtract(segment[i], segment[i-1]))
+            arc_length_table.append(arc_length)
+
+    print(f'top_edge_arclength = {arc_length_table}')
+
+    sys.exit(1)
 
     # Create a proper 1D IntervalMesh using the actual vertex positions
-    if len(top_edge_arclength) >= 2:
+    if len(arc_length_table) >= 2:
 
         N_intervals = len(top_edge_vertices) - 1
 
@@ -4140,8 +4159,8 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
 
         sub_mesh_1_metadata = dict([])
         sub_mesh_1_metadata['x_l'] = 0.0
-        sub_mesh_1_metadata['x_r'] = top_edge_arclength[-1]
-        sub_mesh_1_metadata['coordinates'] = top_edge_arclength
+        sub_mesh_1_metadata['x_r'] = arc_length_table[-1]
+        sub_mesh_1_metadata['coordinates'] = arc_length_table
         sub_mesh_1_metadata['resolution'] = parameters['resolution']
         sub_mesh_1_metadata['line_id'] = parameters['sub_mesh_1_id']
         sub_mesh_1_metadata['vertex_l_id'] = parameters['vertex_sub_mesh_1_l_id']
@@ -4152,7 +4171,7 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
         genereate_line_mesh(0.0, sub_mesh_1_metadata['x_r'], N_intervals,
                                 parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
                                 output_directory=sub_mesh_1_output_directory, metadata=sub_mesh_1_metadata,
-                                coordinates=top_edge_arclength)
+                                coordinates=arc_length_table)
 
 
         print("...done!")
