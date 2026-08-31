@@ -3973,11 +3973,11 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
     gmsh.model.geo.synchronize()
 
+    N_lines = len(curve_lines)
 
-
-    line_b = gmsh.model.geo.addLine(p_rb, p_lb)
-    line_r = gmsh.model.geo.addLine(p_rt, p_rb)
     line_t = curve_lines
+    line_r = gmsh.model.geo.addLine(p_rt, p_rb)
+    line_b = gmsh.model.geo.addLine(p_rb, p_lb)
     line_l = gmsh.model.geo.addLine(p_lb, p_lt)
     gmsh.model.geo.synchronize()
 
@@ -3996,20 +3996,24 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
 
     # square lines
-    gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], parameters["line_sub_mesh_0_b_id"])
-    gmsh.model.setPhysicalName(lines[0][0], parameters["line_sub_mesh_0_b_id"], "line_12")
+    # gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], parameters["line_sub_mesh_0_b_id"])
+    # gmsh.model.setPhysicalName(lines[0][0], parameters["line_sub_mesh_0_b_id"], "line_12")
+    tag_physical_object([lines[i] for i in range(N_lines)], parameters["sub_mesh_1_id"], gmsh.model, "lines_t")
 
-    gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], parameters["line_sub_mesh_0_r_id"])
-    gmsh.model.setPhysicalName(lines[1][0], parameters["line_sub_mesh_0_r_id"], "line_23")
+    # gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], parameters["line_sub_mesh_0_r_id"])
+    # gmsh.model.setPhysicalName(lines[1][0], parameters["line_sub_mesh_0_r_id"], "line_23")
+    tag_physical_object(lines[N_lines], parameters["line_sub_mesh_0_r_id"], gmsh.model, "line_r")
 
-    # gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], parameters["line_sub_mesh_0_t_id"])
-    # gmsh.model.setPhysicalName(lines[2][0], parameters["line_sub_mesh_0_t_id"], "line_34")
+    # gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], parameters["sub_mesh_1_id"])
+    # gmsh.model.setPhysicalName(lines[2][0], parameters["sub_mesh_1_id"], "sub_mesh_1")
+    tag_physical_object(lines[N_lines+1], parameters["line_sub_mesh_0_b_id"], gmsh.model, "line_b")
 
-    gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], parameters["sub_mesh_1_id"])
-    gmsh.model.setPhysicalName(lines[2][0], parameters["sub_mesh_1_id"], "sub_mesh_1")
+    # gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], parameters["line_sub_mesh_0_l_id"])
+    # gmsh.model.setPhysicalName(lines[3][0], parameters["line_sub_mesh_0_l_id"], "line_41")
+    tag_physical_object(lines[N_lines+2], parameters["line_sub_mesh_0_l_id"], gmsh.model, "line_l")
 
-    gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], parameters["line_sub_mesh_0_l_id"])
-    gmsh.model.setPhysicalName(lines[3][0], parameters["line_sub_mesh_0_l_id"], "line_41")
+
+    sys.exit(1)
 
     # add 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
