@@ -30,7 +30,7 @@ print(f'parameter_directory: {rarg.args.parameter_directory}\noutput_directory: 
 output_directory = io.add_trailing_slash(rarg.args.output_directory)
 
 warnings.filterwarnings("ignore")
-gmsh.initialize()
+msh.initialize_gmsh()
 
 # write into metadata the file format wich which the mesh will be written
 metadata = rpam.parameters.copy()

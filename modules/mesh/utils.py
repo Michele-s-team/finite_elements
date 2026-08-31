@@ -67,7 +67,7 @@ def read_mesh_h5(filename, mesh_name='mesh'):
     mesh = Mesh()
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
         infile.read(mesh, mesh_name, False)
-        
+
     return mesh
 
 
@@ -625,7 +625,7 @@ Input values:
 def print_mesh_vertices_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -672,7 +672,7 @@ Input values:
 def print_mesh_edges_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -809,7 +809,7 @@ Input values:
 def print_mesh_triangles_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -877,7 +877,7 @@ Input values:
 def print_mesh_tetrahedra_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
