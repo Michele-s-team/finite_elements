@@ -29,7 +29,7 @@ def create_mesh(mesh, cell_type, prune_z=False):
     out_mesh = meshio.Mesh(
         points=points, cells={cell_type: cells}, cell_data={"name_to_read": [cell_data]}
     )
-    
+
     return out_mesh
 
 
@@ -79,6 +79,7 @@ Return values:
 
 
 def read_mesh(filename):
+    
     # detect format from file extension
     if filename.endswith('.h5'):
         file_format = "h5"
