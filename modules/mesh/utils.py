@@ -3895,12 +3895,10 @@ Input values:
     * Mandatory:
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
-    * Optional:
-        - 'curve_coordinates' (`[]` by default): a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ..., [p_{N-3}_x, p_{N-3}_y]] of the points defining the curve
-            Note: the first ans last point of `curve_coordinates` must be different from the top-left and top-right point of the square. The size of `curve_coordinates` is N-2, and the top side of the mesh is composed of `N` vertices and `N-1` edges. 
+        - 'curve_coordinates' (`[]` by default): a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
+            Note: the first ans last point of `curve_coordinates` must be equal to the from the top-left and top-right point of the square. If they are not, an error is thrown. 
 '''
-def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_directory,
-                                        curve_coordinates = [],
+def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_directory, curve_coordinates,
                                         epsilon = const.epsilon):
 
     # remove the output directory it it already exists, and create it from scratch

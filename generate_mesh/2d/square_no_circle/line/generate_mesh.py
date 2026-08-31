@@ -37,4 +37,4 @@ elif rpam.parameters['curve_format'] == 'parametric':
     curve_coordinates = [curve_parametric_form(i/(rpam.parameters['N']-1)) for i in range(rpam.parameters['N'])]
 
 msh.generate_square_no_circle_curve_mesh(rarg.args.parameter_directory, rarg.args.output_directory,
-                                         curve_coordinates=curve_coordinates)
+                                         curve_coordinates)
