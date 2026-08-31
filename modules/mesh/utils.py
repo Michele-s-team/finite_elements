@@ -63,9 +63,11 @@ Return values:
 
 
 def read_mesh_h5(filename, mesh_name='mesh'):
+
     mesh = Mesh()
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
         infile.read(mesh, mesh_name, False)
+        
     return mesh
 
 
@@ -79,7 +81,7 @@ Return values:
 
 
 def read_mesh(filename):
-    
+
     # detect format from file extension
     if filename.endswith('.h5'):
         file_format = "h5"
