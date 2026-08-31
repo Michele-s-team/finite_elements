@@ -22,12 +22,14 @@ alpha = ufl.indices(1)
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
+
     cells = mesh.get_cells_type(cell_type)
     cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
     points = mesh.points[:, :2] if prune_z else mesh.points
     out_mesh = meshio.Mesh(
         points=points, cells={cell_type: cells}, cell_data={"name_to_read": [cell_data]}
     )
+    
     return out_mesh
 
 
@@ -101,6 +103,7 @@ if 'prune_z' = true (false), the z component will be removed from the mesh
 
 
 def write_mesh_components(infile, outfile, component_type, prune_z):
+
     mesh_from_file = meshio.read(infile)
     # print(f'type of mesh_from_file  = {type(mesh_from_file)}')
     component_mesh = create_mesh(mesh_from_file, component_type, prune_z)
@@ -1690,6 +1693,7 @@ Example of usage:
 
 
 def full_write(mesh_file, components, parameters, output_directory, prune_z):
+
     output_directory_slash = io.add_trailing_slash(output_directory)
 
     for component in components:
