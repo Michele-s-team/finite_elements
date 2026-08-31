@@ -3922,6 +3922,14 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     metadata['file_format'] = 'xdmf'
 
 
+    # check that no point in `curve_coordinates` coincides with the top-left nor with the top-right vertex of the rectangle
+    for coordinate in curve_coordinates:
+        if (np.linalg.norm(np.subtract(coordinate, [0, parameters['h']])) < epsilon) or (np.linalg.norm(np.subtract(coordinate, [parameters['L'], parameters['h']])) < epsilon):
+
+            print(f"{col.Fore.RED}{'Error: some points in curve_coordinates coincide with the top-left or top-rigth vertex of the rectangle!'}{col.Style.RESET_ALL}")
+            sys.exit()
+
+
     # add outer rectangle
     p_1 = gmsh.model.geo.addPoint(0, 0, 0)
     p_2 = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
