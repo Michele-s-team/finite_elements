@@ -2214,8 +2214,8 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         mesh_file = os.path.join(output_directory, 'mesh.msh')
 
-        write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
-        write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
+        write_mesh_components_h5(mesh, os.path.join(output_directory, "line_mesh.h5"), cell_function, "cf")
+        write_mesh_components_h5(mesh, os.path.join(output_directory, "vertex_mesh.h5"), vertex_function, "vf")
 
         # write the mesh to .msh file
         write_line_mesh_to_msh(mesh, mesh_file,
@@ -4144,9 +4144,8 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
             arc_length += np.linalg.norm(np.subtract(segment[i], segment[i-1]))
             arc_length_table.append(arc_length)
 
-    print(f'top_edge_arclength = {arc_length_table}')
+    print(f'arclength table = {arc_length_table}')
 
-    sys.exit(1)
 
     # Create a proper 1D IntervalMesh using the actual vertex positions
     if len(arc_length_table) >= 2:
@@ -4168,16 +4167,18 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
         sub_mesh_1_metadata['file_format'] = 'h5'
 
         # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
-        genereate_line_mesh(0.0, sub_mesh_1_metadata['x_r'], N_intervals,
+        genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
                                 parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
-                                output_directory=sub_mesh_1_output_directory, metadata=sub_mesh_1_metadata,
+                                output_directory=sub_mesh_1_output_directory, 
+                                metadata=sub_mesh_1_metadata,
                                 coordinates=arc_length_table)
 
 
-        print("...done!")
+        print("...done.")
         
     else:
         print("Error: Not enough vertices found on top edge")
+
 
 '''
 initialize gmsh if gmsh has not been already initialized
