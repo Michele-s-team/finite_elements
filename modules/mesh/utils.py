@@ -2232,7 +2232,7 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         # print mesh metadata
         if metadata is not None:
-            io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), metadata)
 
     return mesh, cell_function, vertex_function
 
