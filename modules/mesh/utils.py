@@ -4055,6 +4055,16 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         print("Error: Not enough vertices found on top edge")
 
 '''
+initialize gmsh if gmsh has not been already initialized
+'''
+def initialize_gmsh():
+
+    if (gmsh.isInitialized() == False):
+        
+        gmsh.initialize()
+
+
+'''
 clear gmsh and geometry if gmsh is initialized
 '''
 def clear_gmsh():
