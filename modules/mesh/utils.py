@@ -3923,15 +3923,13 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
 
-    # remove spurious entities in mesh_metadata
+    # remove spurious entities in mesh_metadata 
     if parameters['curve_format'] == 'parametric':
 
         if 'curve_coordinates' in parameters:
             del metadata['curve_coordinates']
-            
-    elif parameters['curve_format'] == 'coordinates':
-
-        metadata['curve_coordinates'] = curve_coordinates
+                           
+    if parameters['curve_format'] == 'coordinates':
 
         if 'curve_parametric_form' in parameters:
             del metadata['curve_parametric_form']
@@ -3939,21 +3937,24 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
         if 'N' in parameters:
             del metadata['N']
 
+    metadata['curve_coordinates'] = curve_coordinates
 
-    # check that no point in `curve_coordinates` coincides with the top-left nor with the top-right vertex of the rectangle
-    for coordinate in curve_coordinates:
-        if (np.linalg.norm(np.subtract(coordinate, [0, parameters['h']])) < epsilon) or (np.linalg.norm(np.subtract(coordinate, [parameters['L'], parameters['h']])) < epsilon):
 
-            print(f"{col.Fore.RED}{'Error: some points in curve_coordinates coincide with the top-left or top-rigth vertex of the rectangle!'}{col.Style.RESET_ALL}")
+    # check that the first and last point in `curve_coordinates` coincide with the top-left nor with the top-right vertex of the rectangle
+    if (np.linalg.norm(np.subtract(curve_coordinates[0], [0, parameters['h']])) > epsilon) or (np.linalg.norm(np.subtract(curve_coordinates[-1], [parameters['L'], parameters['h']])) > epsilon):
+
+            print(f"{col.Fore.RED}{'Error: first and last point in  curve_coordinates do not coincide with the top-left or top-rigth vertex of the rectangle!'}{col.Style.RESET_ALL}")
             sys.exit()
 
 
     #1. add rectangle vertices
+
     p_lb = gmsh.model.geo.addPoint(0, 0, 0)
     p_rb = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
     p_rt = gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0)
     p_lt = gmsh.model.geo.addPoint(0, parameters["h"], 0)
     gmsh.model.geo.synchronize()
+
 
     #2. add curve vertices
 
@@ -3961,7 +3962,7 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     gmsh.model.geo.synchronize()
 
     curve_lines = []
-    for i in range(len(curve_coordinates)):
+    for i in range(1, len(curve_coordinates)-1):
 
         curve_points.append(gmsh.model.geo.addPoint(curve_coordinates[i][0], curve_coordinates[i][1], 0))
         gmsh.model.geo.synchronize()
@@ -4069,30 +4070,19 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
                     sub_mesh_1_vertices.append(v.point().array()[:2])
                     added.append(v.index())
 
-    print(f'sub_mesh_1_vertices = {sub_mesh_1_vertices}')
-    print(f'len sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
-
-
-
-    curve_coordinates_lr = [[0, parameters['h']], *curve_coordinates, [parameters['L'], parameters['h']]]
-
-    print(f'curve coordinates lr = {curve_coordinates_lr}')
-
-
+    # print(f'sub_mesh_1_vertices = {sub_mesh_1_vertices}')
+    # print(f'len sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
 
 
     # create a list of the vertices in mesh_2d which lie on the top edge
     top_edge_vertices = []
-    segment_vertices = [[] for _ in range(len(curve_coordinates_lr) - 1)]
+    segment_vertices = [[] for _ in range(len(curve_coordinates) - 1)]
     for vertex in sub_mesh_1_vertices:
 
-        for i in range(len(curve_coordinates_lr)-1):
-            if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates_lr[i]), np.array(curve_coordinates_lr[i+1])):
+        for i in range(len(curve_coordinates)-1):
+            if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates[i]), np.array(curve_coordinates[i+1])):
 
                 segment_vertices[i].append(vertex)
-
-        # if math.isclose(vertex_coordinates.y(), parameters["h"]):
-        #     top_edge_vertices.append(vertex_coordinates.x())
 
 
     # convert `segment_vertices` to list
@@ -4103,18 +4093,16 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
     '''
     segment_vertices_projection = [
-        [np.dot(np.subtract(segment_vertex, curve_coordinates_lr[i]), np.subtract(curve_coordinates_lr[i+1], curve_coordinates_lr[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
+        [np.dot(np.subtract(segment_vertex, curve_coordinates[i]), np.subtract(curve_coordinates[i+1], curve_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
         ]
 
     for i in range(len(segment_vertices)):
         order = np.argsort(segment_vertices_projection[i])
         segment_vertices[i] = [segment_vertices[i][j] for j in order]
 
-    print(f'segment vertices = {segment_vertices}')
-    print(f'segment vertices projection = {segment_vertices_projection}')
-
-
-    print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
+    # print(f'segment vertices = {segment_vertices}')
+    # print(f'segment vertices projection = {segment_vertices_projection}')
+    # print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
 
     arc_length_table = [0]
     arc_length = 0
@@ -4125,7 +4113,7 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
             arc_length += np.linalg.norm(np.subtract(segment[i], segment[i-1]))
             arc_length_table.append(arc_length)
 
-    print(f'arclength table = {arc_length_table}')
+    # print(f'arclength table = {arc_length_table}')
 
 
     # Create a proper 1D IntervalMesh using the actual vertex positions
