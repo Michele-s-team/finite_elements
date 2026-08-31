@@ -3895,8 +3895,7 @@ Input values:
     * Mandatory:
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
-        - 'curve_coordinates' (`[]` by default): a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
-            Note: the first ans last point of `curve_coordinates` must be equal to the from the top-left and top-right point of the square. If they are not, an error is thrown. 
+        - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
 '''
 def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_directory, curve_coordinates,
                                         epsilon = const.epsilon):
@@ -3938,19 +3937,12 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     metadata['curve_coordinates'] = curve_coordinates
 
 
-    # check that the first and last point in `curve_coordinates` coincide with the top-left nor with the top-right vertex of the rectangle
-    if (np.linalg.norm(np.subtract(curve_coordinates[0], [0, parameters['h']])) > epsilon) or (np.linalg.norm(np.subtract(curve_coordinates[-1], [parameters['L'], parameters['h']])) > epsilon):
-
-            print(f"{col.Fore.RED}{'Error: first and last point in  curve_coordinates do not coincide with the top-left or top-rigth vertex of the rectangle!'}{col.Style.RESET_ALL}")
-            sys.exit()
-
-
     #1. add rectangle vertices
 
     p_lb = gmsh.model.geo.addPoint(0, 0, 0)
     p_rb = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
-    p_rt = gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0)
-    p_lt = gmsh.model.geo.addPoint(0, parameters["h"], 0)
+    p_rt = gmsh.model.geo.addPoint(curve_coordinates[-1][0], curve_coordinates[-1][1], 0)
+    p_lt = gmsh.model.geo.addPoint(curve_coordinates[0][0], curve_coordinates[0][1], 0)
     gmsh.model.geo.synchronize()
 
 
@@ -4014,7 +4006,7 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
     gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
     gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(parameters["L"], parameters["h"]))
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(max([curve_coordinates[i][0] for i in range(len(curve_coordinates))]), max([curve_coordinates[i][1] for i in range(len(curve_coordinates))])))
 
     gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
