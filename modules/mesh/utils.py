@@ -3893,13 +3893,15 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 generate a mesh given by a square whose top edge is an arbitrary curve
 Input values: 
     * Mandatory:
-        - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ..., [p_{N-3}_x, p_{N-3}_y]] of the points defining the curve
-            Note: the first ans last point of `curve_coordinates` must be different from the top-left and top-right point of the square. The size of `curve_coordinates` is N-2, and the top side of the mesh is composed of `N` vertices and `N-1` edges. 
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
+    * Optional:
+        - 'curve_coordinates' (`[]` by default): a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ..., [p_{N-3}_x, p_{N-3}_y]] of the points defining the curve
+        Note: the first ans last point of `curve_coordinates` must be different from the top-left and top-right point of the square. The size of `curve_coordinates` is N-2, and the top side of the mesh is composed of `N` vertices and `N-1` edges. 
 '''
-def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_directory, output_directory,
-                                    epsilon = const.epsilon):
+def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_directory,
+                                        curve_coordinates = [],
+                                        epsilon = const.epsilon):
 
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
@@ -4087,14 +4089,21 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         top_edge_vertices.append([parameters['L'], parameters['h']])
 
         print(f'top edge vertices = {top_edge_vertices}')
-        sys.exit(1)
 
     print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
 
-    # Create a proper 1D IntervalMesh using the actual vertex positions
-    if len(top_edge_vertices) >= 2:
+    top_edge_arclength = [0]
+    arclength = 0
+    for i in range(1, len(top_edge_vertices)):
+        arclength += np.linalg.norm(np.subtract(top_edge_vertices[i], top_edge_vertices[i-1]))
+        top_edge_arclength.append(arclength)
 
-        num_intervals = len(top_edge_vertices) - 1
+    print(f'top_edge_arclength = {top_edge_arclength}')
+
+    # Create a proper 1D IntervalMesh using the actual vertex positions
+    if len(top_edge_arclength) >= 2:
+
+        N_intervals = len(top_edge_vertices) - 1
 
         # Create output directory for submesh
         sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_meshes', '1')
@@ -4102,8 +4111,8 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
         sub_mesh_1_metadata = dict([])
         sub_mesh_1_metadata['x_l'] = 0.0
-        sub_mesh_1_metadata['x_r'] = parameters['L']
-        sub_mesh_1_metadata['coordinates'] = top_edge_vertices
+        sub_mesh_1_metadata['x_r'] = top_edge_arclength[-1]
+        sub_mesh_1_metadata['coordinates'] = top_edge_arclength
         sub_mesh_1_metadata['resolution'] = parameters['resolution']
         sub_mesh_1_metadata['line_id'] = parameters['sub_mesh_1_id']
         sub_mesh_1_metadata['vertex_l_id'] = parameters['vertex_sub_mesh_1_l_id']
@@ -4111,10 +4120,10 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         sub_mesh_1_metadata['file_format'] = 'h5'
 
         # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
-        genereate_line_mesh(0.0, parameters['L'], num_intervals,
+        genereate_line_mesh(0.0, sub_mesh_1_metadata['x_r'], N_intervals,
                                 parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
                                 output_directory=sub_mesh_1_output_directory, metadata=sub_mesh_1_metadata,
-                                coordinates=top_edge_vertices)
+                                coordinates=top_edge_arclength)
 
 
         print("...done!")
