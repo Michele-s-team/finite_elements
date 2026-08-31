@@ -2383,7 +2383,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     os.makedirs(output_directory)
 
     geometry = pygmsh.occ.Geometry()
-    model = geometry.__enter__()
+    geometry.__enter__()
 
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
@@ -3986,7 +3986,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     gmsh.write(mesh_file)
 
-    msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+    full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
     # print the boundary points of the boundaries given by the top line (sub_mesh 1)
     sorted_boundary_points(
@@ -4007,7 +4007,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     # Read the generated 2D mesh from the triangle component file
     mesh_temp = Mesh()
-    with XDMFFile(output_directory + "triangle_mesh.xdmf") as infile:
+    with XDMFFile(os.path.join(output_directory,  "triangle_mesh.xdmf")) as infile:
         infile.read(mesh_temp)
 
 
