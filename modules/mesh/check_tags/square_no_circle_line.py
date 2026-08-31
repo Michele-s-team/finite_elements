@@ -18,8 +18,6 @@ print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
 r_test = 0.345
-
-
 # CHANGE PARAMETERS HERE
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
