@@ -4036,7 +4036,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         num_intervals = len(top_edge_vertices) - 1
 
         # Create output directory for submesh
-        sub_mesh_1_output_directory = output_directory + "sub_meshes/1/"
+        sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_meshes', '1')
         os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
 
         sub_mesh_1_metadata = dict([])
