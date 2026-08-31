@@ -4062,33 +4062,39 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
 
     print("Generating H5 sub_mesh for top edge from 2D mesh...")
 
-    if curve_coordinates == []:
-        # curve_coordinates is empty -> the top edge of the mesh has been filled with vertices by the meshing algorithm, and these vertices lie on a line -> fetch these vertices by inspecting the mesh and write them into top_edge_vertices
 
-        # Read the generated 2D mesh from the triangle component file
-        mesh_temp = Mesh()
-        with XDMFFile(os.path.join(output_directory,  "triangle_mesh.xdmf")) as infile:
-            infile.read(mesh_temp)
+    # Read the generated 2D mesh from the triangle component file
+    mesh = Mesh()
+    with XDMFFile(os.path.join(output_directory,  "triangle_mesh.xdmf")) as infile:
+        infile.read(mesh)
 
+    curve_coordinates_lr = [[0, parameters['h']], *curve_coordinates, [parameters['L'], parameters['h']]]
 
-        # create a list of the vertices in mesh_2d which lie on the top edge
-        top_edge_vertices = []
-        for vertex in vertices(mesh_temp):
-            point = vertex.point()
-            if math.isclose(point.y(), parameters["h"]):
-                top_edge_vertices.append(point.x())
+    print(f'curve coordinates lr = {curve_coordinates_lr}')
 
-        # Sort vertices by x-coordinate and remove duplicates
-        top_edge_vertices = sorted(list(set(top_edge_vertices)))
+    # create a list of the vertices in mesh_2d which lie on the top edge
+    top_edge_vertices = []
+    segment_vertices = [[] for _ in range(len(curve_coordinates_lr) - 1)]
+    for vertex in vertices(mesh):
 
-    else:
-        # curve_coordinates is not empty -> the top edge of the mesh is given by len(curve_coordinates)+2 vertices -> write these into top_edge_vertices
+        # vertex_coordinates = [vertex_x_coordinate, vertex_y_coordinate]
+        vertex_coordinates = vertex.point().array()[:2]
 
-        top_edge_vertices = curve_coordinates
-        top_edge_vertices.insert(0, [0, parameters['h']])
-        top_edge_vertices.append([parameters['L'], parameters['h']])
+        for i in range(len(curve_coordinates_lr)-1):
+            if cal.point_on_segment(np.array(vertex_coordinates), np.array(curve_coordinates_lr[i]), np.array(curve_coordinates_lr[i+1])):
 
-        print(f'top edge vertices = {top_edge_vertices}')
+                segment_vertices[i].append(vertex_coordinates)
+
+        # if math.isclose(vertex_coordinates.y(), parameters["h"]):
+        #     top_edge_vertices.append(vertex_coordinates.x())
+
+    # Sort vertices by x-coordinate and remove duplicates
+    # top_edge_vertices = sorted(list(set(top_edge_vertices)))
+
+    print(f'segment vertices = {segment_vertices}')
+
+    sys.exit(1)
+
 
     print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
 
