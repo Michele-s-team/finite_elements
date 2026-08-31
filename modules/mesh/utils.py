@@ -3921,6 +3921,22 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
 
+    # remove spurious entities in mesh_metadata
+    if parameters['curve_format'] == 'parametric':
+
+        if 'curve_coordinates' in parameters:
+            del metadata['curve_coordinates']
+            
+    elif parameters['curve_format'] == 'coordinates':
+
+        metadata['curve_coordinates'] = curve_coordinates
+
+        if 'curve_parametric_form' in parameters:
+            del metadata['curve_parametric_form']
+            
+        if 'N' in parameters:
+            del metadata['N']
+
 
     # check that no point in `curve_coordinates` coincides with the top-left nor with the top-right vertex of the rectangle
     for coordinate in curve_coordinates:
