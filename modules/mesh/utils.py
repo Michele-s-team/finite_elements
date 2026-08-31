@@ -3899,7 +3899,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     os.makedirs(output_directory)
 
     geometry = pygmsh.occ.Geometry()
-    model = geometry.__enter__()
+    geometry.__enter__()
 
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
