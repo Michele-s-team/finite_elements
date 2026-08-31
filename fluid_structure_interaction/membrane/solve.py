@@ -70,6 +70,10 @@ PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluati
 # 
 
 
+print(f'Generating initial mesh ...')
+
+print(f'... done.')
+
 rmsh = importlib.import_module(swi.rmsh)
 
 # test calls of problems
