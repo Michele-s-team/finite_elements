@@ -170,11 +170,10 @@ def read_mesh_components_h5(mesh, dim, filename, name_to_read):
 '''
 Given a mesh written in a file, read its components stored into the file and return the collection of components
 Input values: 
-- 'mesh': the mesh to read the components from
-- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
-- 'filename': the name of the file (either .h5 or .xdmf) where the components of the mesh are stored
+    - 'mesh': the mesh to read the components from
+    - 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+    - 'filename': the name of the file (either .h5 or .xdmf) where the components of the mesh are stored
 '''
-
 
 def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
     # detect format from file extension
@@ -4062,11 +4061,36 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
 
     print("Generating H5 sub_mesh for top edge from 2D mesh...")
 
+    mesh, _ = read_from_file(output_directory)
 
-    # Read the generated 2D mesh from the triangle component file
-    mesh = Mesh()
-    with XDMFFile(os.path.join(output_directory,  "triangle_mesh.xdmf")) as infile:
-        infile.read(mesh)
+    '''
+    read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
+    '''
+    # read the line mesh
+    mf = read_mesh_components(mesh, 1,  os.path.join(output_directory, "line_mesh.xdmf"))
+
+    sub_mesh_1_vertices = []
+    added = []
+
+    for edge in edges(mesh):
+        # run through all mesh edges
+
+        if mf[edge] == parameters['sub_mesh_1_id']:
+            # `edge` has been tagged with `sub_mesh_1_id`
+
+            for v in vertices(edge):
+                # run through the vertices of `edge`
+
+                if v.index() not in added:
+                    # if `v` has not been already added to `sub_mesh_1_vertices`, add it and update `added` in order to add the same vertex twice in the future
+
+                    sub_mesh_1_vertices.append(v.point().array()[:2])
+                    added.append(v.index())
+
+    print(f'sub_mesh_1_vertices = {sub_mesh_1_vertices}')
+    print(f'len sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
+
+
 
     curve_coordinates_lr = [[0, parameters['h']], *curve_coordinates, [parameters['L'], parameters['h']]]
 
@@ -4075,15 +4099,12 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     # create a list of the vertices in mesh_2d which lie on the top edge
     top_edge_vertices = []
     segment_vertices = [[] for _ in range(len(curve_coordinates_lr) - 1)]
-    for vertex in vertices(mesh):
-
-        # vertex_coordinates = [vertex_x_coordinate, vertex_y_coordinate]
-        vertex_coordinates = vertex.point().array()[:2]
+    for vertex in sub_mesh_1_vertices:
 
         for i in range(len(curve_coordinates_lr)-1):
-            if cal.point_on_segment(np.array(vertex_coordinates), np.array(curve_coordinates_lr[i]), np.array(curve_coordinates_lr[i+1])):
+            if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates_lr[i]), np.array(curve_coordinates_lr[i+1])):
 
-                segment_vertices[i].append(vertex_coordinates)
+                segment_vertices[i].append(vertex)
 
         # if math.isclose(vertex_coordinates.y(), parameters["h"]):
         #     top_edge_vertices.append(vertex_coordinates.x())
@@ -4091,9 +4112,11 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     # Sort vertices by x-coordinate and remove duplicates
     # top_edge_vertices = sorted(list(set(top_edge_vertices)))
 
+    segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
     print(f'segment vertices = {segment_vertices}')
 
     sys.exit(1)
+
 
 
     print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
