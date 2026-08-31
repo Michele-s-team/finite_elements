@@ -3946,27 +3946,53 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             sys.exit()
 
 
-    # add outer rectangle
-    p_1 = gmsh.model.geo.addPoint(0, 0, 0)
-    p_2 = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
-    p_3 = gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0)
-    p_4 = gmsh.model.geo.addPoint(0, parameters["h"], 0)
+    #1. add rectangle vertices
+    p_lb = gmsh.model.geo.addPoint(0, 0, 0)
+    p_rb = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
+    p_rt = gmsh.model.geo.addPoint(parameters["L"], parameters["h"], 0)
+    p_lt = gmsh.model.geo.addPoint(0, parameters["h"], 0)
     gmsh.model.geo.synchronize()
 
-    line_12 = gmsh.model.geo.addLine(p_1, p_2)
-    line_23 = gmsh.model.geo.addLine(p_2, p_3)
-    line_34 = gmsh.model.geo.addLine(p_3, p_4)
-    line_41 = gmsh.model.geo.addLine(p_4, p_1)
+    #2. add curve vertices
+
+    curve_points = [p_lt]
     gmsh.model.geo.synchronize()
 
-    loop = gmsh.model.geo.addCurveLoop([line_12, line_23, line_34, line_41])
+    curve_lines = []
+    for i in range(len(curve_coordinates)):
+
+        curve_points.append(gmsh.model.geo.addPoint(curve_coordinates[i][0], curve_coordinates[i][1], 0))
+        gmsh.model.geo.synchronize()
+
+        curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
+        gmsh.model.geo.synchronize()
+
+    curve_points.append(p_rt)
     gmsh.model.geo.synchronize()
 
-    surface_square = gmsh.model.geo.addPlaneSurface([loop])
+    curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
+    gmsh.model.geo.synchronize()
+
+
+
+    line_b = gmsh.model.geo.addLine(p_rb, p_lb)
+    line_r = gmsh.model.geo.addLine(p_rt, p_rb)
+    line_t = curve_lines
+    line_l = gmsh.model.geo.addLine(p_lb, p_lt)
+    gmsh.model.geo.synchronize()
+
+
+    loop = gmsh.model.geo.addCurveLoop([*line_t, line_r, line_b, line_l])
+    gmsh.model.geo.synchronize()
+
+
+
+    gmsh.model.geo.addPlaneSurface([loop])
     gmsh.model.geo.synchronize()
 
     # add 1-dimensional objects
     lines = gmsh.model.getEntities(dim=1)
+    # sign
 
 
     # square lines
