@@ -5,7 +5,6 @@ import gmsh
 import math
 import meshio
 import numpy as np
-from operator import itemgetter
 import os
 import pygmsh
 import shutil
