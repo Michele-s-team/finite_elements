@@ -9,6 +9,7 @@ import pandas as pd
 from scipy.spatial import cKDTree
 import ufl
 
+import calculus as cal
 import constants.utils as const
 import input_output as io
 
@@ -291,13 +292,17 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
 
         coordinate = dof_coordinates[node * num_components]
 
-        for i in range(len(sub_mesh_vertices)):
+        for i in range(1, len(sub_mesh_vertices)):
             # run through `sub_mesh_vertices` to find whether `node` belongs to the sub mesh
 
-            if np.linalg.norm(np.subtract(coordinate, sub_mesh_vertices[i])) < tol: 
+            if cal.point_on_segment(np.array(coordinate), np.array(sub_mesh_vertices[i-1]), np.array(sub_mesh_vertices[i]), tol):
                 #  `node` belongs to the sub mesh and it corresponds to the i-th value of the arc length in    `arc_length_tab`
 
-                u_sub_mesh_value = np.array(u_sub_mesh(arc_length_tab[i]), dtype=float).flatten()
+                # arc length at the DOF = cumulative length up to v_{i-1} + distance along this segment
+                s = arc_length_tab[i-1] + np.linalg.norm(
+                        np.subtract(coordinate, sub_mesh_vertices[i-1]))
+
+                u_sub_mesh_value = np.array(u_sub_mesh(s), dtype=float).flatten()
 
                 for j in range(num_components):
 
