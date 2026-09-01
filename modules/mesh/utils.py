@@ -3955,6 +3955,14 @@ Input values:
 def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_directory, output_directory, 
                                         epsilon = const.epsilon):
 
+    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
+    parameters = io.read_parameters_from_csv_file(parameters_file_path)
+
+    if (np.isclose(curve_coordinates[0][0], 0, epsilon) == False) or (np.isclose(curve_coordinates[-1][0], parameters['L'], epsilon) == False): 
+
+        print(f"{col.Fore.RED}{'Error: x component of first and last curve_coordinates do not coincide with 0 and L!!'}{col.Style.RESET_ALL}")
+        sys.exit(1)
+
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
     os.makedirs(output_directory)
@@ -3969,8 +3977,6 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_mesh_1')
     mesh_file = os.path.join(output_directory, "mesh.msh")
 
-    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
-    parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
