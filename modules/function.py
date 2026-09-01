@@ -294,14 +294,16 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
             # run through `sub_mesh_vertices` to find whether `node` belongs to the sub mesh
 
             if cal.point_on_segment(np.array(coordinate), np.array(sub_mesh_vertices[i-1]), np.array(sub_mesh_vertices[i]), tol):
-                #  `node` belongs to the sub mesh and it corresponds to the i-th value of the arc length in    `arc_length_tab`
+                #  `node` lies on the segment in between two verices in `sub_mesh_vertices` -> it belongs to the sub mesh 
 
                 # arc length at the DOF = cumulative length up to v_{i-1} + distance along this segment
                 s = arc_length_tab[i-1] + np.linalg.norm(
                         np.subtract(coordinate, sub_mesh_vertices[i-1]))
 
+                # compute u_sub_mesh at the arc length `s`
                 u_sub_mesh_value = np.array(u_sub_mesh(s), dtype=float).flatten()
 
+                # assign the compute value of `u_sub_mesh` to u_mesh_values
                 for j in range(num_components):
 
                     u_mesh_values[num_components*node + j] = u_sub_mesh_value[j]
@@ -309,7 +311,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
                 break
 
                
-    # Set the values in the function
+    # set the values in u_mesh
     u_mesh.vector().set_local(u_mesh_values)
     u_mesh.vector().apply("insert")
         
