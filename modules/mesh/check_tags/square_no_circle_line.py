@@ -23,11 +23,11 @@ r_test = 0.345
 # CHANGE PARAMETERS HERE
 
 # `boundary_coordinates` is a list containing the vertices of the full boudnary of the mesh
-boundary_cooordinates = rmsh.parameters['curve_coordinates']
-boundary_cooordinates.insert(0, [0, 0])
-boundary_cooordinates.append([rmsh.parameters['L'], 0])
+full_boundary_cooordinates = rmsh.parameters['curve_coordinates']
+full_boundary_cooordinates.insert(0, [0, 0])
+full_boundary_cooordinates.append([rmsh.parameters['L'], 0])
 
-print(f'boundary_coordinates = {boundary_cooordinates}')
+print(f'boundary_coordinates = {full_boundary_cooordinates}')
 
 # function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
 def function_test_integrals(x):
@@ -63,7 +63,7 @@ integral_exact[1] = dict([ \
 ])
 
 # exact surface integrals
-integral_exact[0]['dx'] = cal.surface_integral_polygon(function_test_integrals, boundary_cooordinates)
+integral_exact[0]['dx'] = cal.surface_integral_polygon(function_test_integrals, full_boundary_cooordinates)
 integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, 0.0, sub_mesh_1_parameters['x_r'])
 
 # exact line integrals
