@@ -3893,11 +3893,13 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 generate a mesh given by a square whose top edge is an arbitrary curve
 Input values: 
     * Mandatory:
+        - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
-        - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
+    * Optional:
+        -  `epsilon` (const.epsilon): the tolerance with which distances are assessed in the method 
 '''
-def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_directory, curve_coordinates,
+def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_directory, output_directory, 
                                         epsilon = const.epsilon):
 
     # remove the output directory it it already exists, and create it from scratch
@@ -4063,81 +4065,104 @@ def generate_square_no_circle_curve_mesh(mesh_parameters_directory, output_direc
     # print(f'sub_mesh_1_vertices = {sub_mesh_1_vertices}')
     # print(f'len sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
 
+    if len(sub_mesh_1_vertices) != len(curve_coordinates):
+        # the meshing algorithm has inserted additional vertices in between the vertices of `curve_coordinates` -> call again `generate_square_no_circle_curve_mesh` with a new `curve_coordinates` which contains these vertices
 
-    # create a list of the vertices in mesh_2d which lie on the top edge
-    top_edge_vertices = []
-    segment_vertices = [[] for _ in range(len(curve_coordinates) - 1)]
-    for vertex in sub_mesh_1_vertices:
+        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on curve does not match the number of vertices of the 1d mesh. Recalculating curve_coordinates ...'}{col.Style.RESET_ALL}")
+        print(f'\tNumber of vertices on curve = {len(curve_coordinates)}\n\tNumber of vertices on line = {len(sub_mesh_1_vertices)}')
 
-        for i in range(len(curve_coordinates)-1):
-            if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates[i]), np.array(curve_coordinates[i+1])):
+        '''
+        build `segment_vertices`: 
+        segment_vertices[i] = [list of mesh vertices tagged with ID `sub_mesh_1_id` and which lie in between curve_coordinates[i] and curve_coordinates[i+1]
+        '''
+        top_edge_vertices = []
+        segment_vertices = [[] for _ in range(len(curve_coordinates) - 1)]
+        for vertex in sub_mesh_1_vertices:
+    
+            for i in range(len(curve_coordinates)-1):
+                if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates[i]), np.array(curve_coordinates[i+1])):
+    
+                    segment_vertices[i].append(vertex)
+    
+    
+        # convert `segment_vertices` to list
+        segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
+        
+        '''
+        sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - curve_coordinates_lr[i]).(curve_coordinates_lr[i+1]-curve_coordinates_lr[i]), 
+        i.e. the projection of segment_vertex[i][j] - curve_coordinates_lr[i] along the segment which goes from curve_coordinates_lr[i] to curve_coordinates_lr[i+1]. 
+        This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
+        '''
+        segment_vertices_projection = [
+            [np.dot(np.subtract(segment_vertex, curve_coordinates[i]), np.subtract(curve_coordinates[i+1], curve_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
+            ]
+    
+        for i in range(len(segment_vertices)):
+            order = np.argsort(segment_vertices_projection[i])
+            segment_vertices[i] = [segment_vertices[i][j] for j in order]
 
-                segment_vertices[i].append(vertex)
+        '''
+        build `new_curve_coordinates` which contains the vertices inserted by the meshing algorithm
+        '''
+        new_curve_coordinates = [segment_vertices[0][0]]
+        for i in range(len(segment_vertices)):
+            for j in range(1, len(segment_vertices[i])):
+
+                new_curve_coordinates.append(segment_vertices[i][j])
+
+        print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
+
+        print(f'lengh new_curve_coordinates = {len(new_curve_coordinates)}')
+        print(f'lengh sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
+     
+        clear_gmsh()
+
+        # now new_curve_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new_curve_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
+        generate_square_no_circle_curve_mesh(new_curve_coordinates, mesh_parameters_directory, output_directory, epsilon)
+
+    else:
+        # the meshing algorithm did not insert additional vertices with respect to `curve_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
 
 
-    # convert `segment_vertices` to list
-    segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
-    '''
-    sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - curve_coordinates_lr[i]).(curve_coordinates_lr[i+1]-curve_coordinates_lr[i]), 
-    i.e. the projection of segment_vertex[i][j] - curve_coordinates_lr[i] along the segment which goes from curve_coordinates_lr[i] to curve_coordinates_lr[i+1]. 
-    This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
-    '''
-    segment_vertices_projection = [
-        [np.dot(np.subtract(segment_vertex, curve_coordinates[i]), np.subtract(curve_coordinates[i+1], curve_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
-        ]
+        arc_length_table = [0]
+        arc_length = 0
 
-    for i in range(len(segment_vertices)):
-        order = np.argsort(segment_vertices_projection[i])
-        segment_vertices[i] = [segment_vertices[i][j] for j in order]
+        for i in range(1, len(curve_coordinates)):
 
-    # print(f'segment vertices = {segment_vertices}')
-    # print(f'segment vertices projection = {segment_vertices_projection}')
-    # print(f"Found {len(top_edge_vertices)} unique vertices on top edge")
-
-    arc_length_table = [0]
-    arc_length = 0
-    for segment in segment_vertices:
-
-        for i in range(1, len(segment)):
-
-            arc_length += np.linalg.norm(np.subtract(segment[i], segment[i-1]))
+            arc_length += np.linalg.norm(np.subtract(curve_coordinates[i], curve_coordinates[i-1]))
             arc_length_table.append(arc_length)
 
-    # print(f'arclength table = {arc_length_table}')
+        # print(f'arclength table = {arc_length_table}')
 
 
-    # Create a proper 1D IntervalMesh using the actual vertex positions
-    if len(arc_length_table) >= 2:
+        # Create a proper 1D IntervalMesh using the actual vertex positions
+        if len(arc_length_table) >= 2:
 
-        N_intervals = len(top_edge_vertices) - 1
+            N_intervals = len(curve_coordinates) - 1
 
-        # Create output directory for submesh
-        sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_meshes', '1')
-        os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
+            # Create output directory for submesh
+            sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_meshes', '1')
+            os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
 
-        sub_mesh_1_metadata = dict([])
-        sub_mesh_1_metadata['x_l'] = 0.0
-        sub_mesh_1_metadata['x_r'] = arc_length_table[-1]
-        sub_mesh_1_metadata['coordinates'] = arc_length_table
-        sub_mesh_1_metadata['resolution'] = parameters['resolution']
-        sub_mesh_1_metadata['line_id'] = parameters['sub_mesh_1_id']
-        sub_mesh_1_metadata['vertex_l_id'] = parameters['vertex_sub_mesh_1_l_id']
-        sub_mesh_1_metadata['vertex_r_id'] = parameters['vertex_sub_mesh_1_r_id']
-        sub_mesh_1_metadata['file_format'] = 'h5'
+            sub_mesh_1_metadata = dict([])
+            sub_mesh_1_metadata['x_l'] = 0.0
+            sub_mesh_1_metadata['x_r'] = arc_length_table[-1]
+            sub_mesh_1_metadata['coordinates'] = arc_length_table
+            sub_mesh_1_metadata['resolution'] = parameters['resolution']
+            sub_mesh_1_metadata['line_id'] = parameters['sub_mesh_1_id']
+            sub_mesh_1_metadata['vertex_l_id'] = parameters['vertex_sub_mesh_1_l_id']
+            sub_mesh_1_metadata['vertex_r_id'] = parameters['vertex_sub_mesh_1_r_id']
+            sub_mesh_1_metadata['file_format'] = 'h5'
 
-        # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
-        genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
-                                parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
-                                output_directory=sub_mesh_1_output_directory, 
-                                metadata=sub_mesh_1_metadata,
-                                coordinates=arc_length_table)
-
+            # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
+            genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
+                                    parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
+                                    output_directory=sub_mesh_1_output_directory, 
+                                    metadata=sub_mesh_1_metadata,
+                                    coordinates=arc_length_table)
 
         print("...done.")
         
-    else:
-        print("Error: Not enough vertices found on top edge")
-
 
 '''
 initialize gmsh if gmsh has not been already initialized
