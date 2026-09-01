@@ -6,11 +6,11 @@ import importlib
 import numpy as np
 import os
 import pandas as pd
-import math
 from scipy.spatial import cKDTree
 import ufl
 
 import constants.utils as const
+import input_output as io
 
 
 i, j, k, l = ufl.indices(4)
@@ -232,44 +232,31 @@ Input values:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path, sub_mesh_id,
+def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
                               tol=const.epsilon):
 
-    print(f'Called transfer_sub_mesh_to_mesh with mesh_path = {mesh_path}, sub_mesh_id = {sub_mesh_id}')
 
 
     Q_mesh = u_mesh.function_space()
-    mesh, _ = msh.read_from_file(mesh_path)
     
-
     '''
     read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
+    `sub_mesh_vertices` is an ordered list of the coordinates of the vertices in the mesh which belong to the sub mesh 
     '''
-    # read the line mesh
-    mf = msh.read_mesh_components(mesh, 1,  os.path.join(mesh_path, 'line_mesh.xdmf'))
+    mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
+    sub_mesh_vertices = mesh_parameters['curve_coordinates']
 
-    sub_mesh_vertices = []
-    added = []
+    '''
+    compute the arc length along  the sub mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
+    '''
+    arc_length = 0
+    arc_length_tab = [0]
+    for i in range(1, len(sub_mesh_vertices)):
 
-    for edge in edges(mesh):
-        # run through all `mesh` edges
+        arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i], sub_mesh_vertices[i-1]))
+        arc_length_tab.append(arc_length)
 
-        if mf[edge] == sub_mesh_id:
-            # `edge` has been tagged with `sub_mesh_1_id`
-
-            for v in vertices(edge):
-                # run through the vertices of `edge`
-
-                if v.index() not in added:
-                    # if `v` has not been already added to `sub_mesh_vertices`, add it and update `added` in order to add the same vertex twice in the future
-
-                    sub_mesh_vertices.append(v.point().array()[:2])
-                    added.append(v.index())
-
-    sub_mesh_vertices = [sub_mesh_vertex.tolist() for sub_mesh_vertex in sub_mesh_vertices]
-
-    print(f'sub mesh vertices = {sub_mesh_vertices}')
-
+    
     # Get DOF coordinates for the mesh function space
     mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
     
@@ -298,6 +285,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path, sub_mesh_id,
     # Process each unique point
     for i in range(num_unique_points):
         # run through mesh_coordinates with step num_components
+
         mesh_coord = mesh_coordinates[i * num_components]
 
         '''
@@ -305,8 +293,9 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path, sub_mesh_id,
         If `on_sub_mesh` is True then `mesh_coord` lies in the sub_mesh, and if it is False it does not. 
         '''
         on_sub_mesh = False
-        for vertex in sub_mesh_vertices:
-            if np.linalg.norm(np.subtract(mesh_coord, vertex)) < tol: 
+        for sub_mesh_vertex_position in range(len(sub_mesh_vertices)):
+
+            if np.linalg.norm(np.subtract(mesh_coord, sub_mesh_vertices[sub_mesh_vertex_position])) < tol: 
 
                 on_sub_mesh = True
                 break
@@ -315,7 +304,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path, sub_mesh_id,
             # `mesh_coord` lies on the sub mesh 
 
             # Evaluate the sub_mesh function at x-coordinate
-            value = u_sub_mesh(mesh_coord[0])
+            value = u_sub_mesh(arc_length_tab[sub_mesh_vertex_position])
             
             if num_components == 1:
                 # Scalar field - direct assignment
