@@ -4,10 +4,13 @@ import dolfin
 from fenics import *
 import importlib
 import numpy as np
+import os
 import pandas as pd
 import math
 from scipy.spatial import cKDTree
 import ufl
+
+import constants.utils as const
 
 
 i, j, k, l = ufl.indices(4)
@@ -217,21 +220,55 @@ def deform_function(f, u):
 
 
 '''
-
 given a rectangular mesh and a sub mesh given by its top edge, transfer the values of a field (scalar, vector or tensor) defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
 Input values:
-    - 'u_sub_mesh': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
-    - 'u_mesh': the field defined on the mesh
+    * Mandatory: 
+        - 'u_sub_mesh': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
+        - 'u_mesh': the field defined on the mesh
+        - 'mesh_path': the path where the mesh is stored
+        - 'sub_mesh_id': the ID with which the sub_mesh has been tagged in the mesh 
+
+    * Optional:
+        - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
+def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path, sub_mesh_id,
+                              tol=const.epsilon):
+
+    print(f'Called transfer_sub_mesh_to_mesh with mesh_path = {mesh_path}, sub_mesh_id = {sub_mesh_id}')
 
 
     Q_mesh = u_mesh.function_space()
+    mesh, _ = msh.read_from_file(mesh_path)
     
-    # compute the height of the mesh rectangle 
-    h = (msh.compute_size(Q_mesh.mesh()))[1]
-    
+
+    '''
+    read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
+    '''
+    # read the line mesh
+    mf = msh.read_mesh_components(mesh, 1,  os.path.join(mesh_path, 'line_mesh.xdmf'))
+
+    sub_mesh_vertices = []
+    added = []
+
+    for edge in edges(mesh):
+        # run through all `mesh` edges
+
+        if mf[edge] == sub_mesh_id:
+            # `edge` has been tagged with `sub_mesh_1_id`
+
+            for v in vertices(edge):
+                # run through the vertices of `edge`
+
+                if v.index() not in added:
+                    # if `v` has not been already added to `sub_mesh_vertices`, add it and update `added` in order to add the same vertex twice in the future
+
+                    sub_mesh_vertices.append(v.point().array()[:2])
+                    added.append(v.index())
+
+    sub_mesh_vertices = [sub_mesh_vertex.tolist() for sub_mesh_vertex in sub_mesh_vertices]
+
+    print(f'sub mesh vertices = {sub_mesh_vertices}')
 
     # Get DOF coordinates for the mesh function space
     mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
@@ -262,9 +299,21 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
     for i in range(num_unique_points):
         # run through mesh_coordinates with step num_components
         mesh_coord = mesh_coordinates[i * num_components]
+
+        '''
+        check if `mesh_coord` lies on the sub mesh by running through all vertices in sub_mesh_vertices and checking if any of those coincides within tol with `mesh_coord. 
+        If `on_sub_mesh` is True then `mesh_coord` lies in the sub_mesh, and if it is False it does not. 
+        '''
+        on_sub_mesh = False
+        for vertex in sub_mesh_vertices:
+            if np.linalg.norm(np.subtract(mesh_coord, vertex)) < tol: 
+
+                on_sub_mesh = True
+                break
         
-        # Check if this point is on the edge y = h
-        if math.isclose(mesh_coord[1], h):
+        if on_sub_mesh:
+            # `mesh_coord` lies on the sub mesh 
+
             # Evaluate the sub_mesh function at x-coordinate
             value = u_sub_mesh(mesh_coord[0])
             
