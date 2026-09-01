@@ -2781,7 +2781,7 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                 elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
                     '''
-                    the sub_mesh under consideration has dimension 1 -> it is a line: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
+                    the sub_mesh under consideration has dimension 1 -> it is a one-dimensional manifold: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
                     I would obtain a one-dimensional mesh embedded in two-dimensional space, thus in fact a two-dimensional mesh, which is not what I want : I want a truly one-dimensional mesh. 
                     -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
                     '''
@@ -2789,6 +2789,9 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     # create the one-dimensional submesh from the facet function 'mf_mesh' and the id which identifies the sub_mesh under consideration: first extract the coordinates of the points in the one-dimensional submesh and store them into x_coordinates
                     sub_mesh_vertices = []
 
+                    '''
+                    1. run through all facets of `mesh`, find the facets tagged with sub_mesh_{p}_id, consider the vertices belonging to each facet, and pick the vertex with x coordinate equal to 0 -> store it in the first entry of `sub_mesh_vertices`
+                    '''
                     stop = False
                     for facet in facets(mesh):
 
@@ -2809,7 +2812,13 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                     print(f'sub mesh vertices = {sub_mesh_vertices}\n\t coord = {sub_mesh_vertices[0].point().array()}')
 
-                                    
+
+                    '''
+                    2. given the last entry of `sub_mesh_vertices`, iterate through all edges in `mesh`, find an edge that has one of its vertices coinciding with the last added vertces in `sub_mesh_vertices`, add it to `sub_mesh_vertices` and keep going until no more vertices are found. 
+                    As a result, `sub_mesh_vertices` will contain a properly ordered list of vertices connected along the one-dimensional manifold above
+                    `added` is a boolean list used to keep track of the vertices already added, in order not to add doubles. 
+                    '''   
+
                     added = [sub_mesh_vertices[0].index()]
                     keep_going = True
                     while keep_going:
@@ -2837,9 +2846,14 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                                     keep_going = True
 
+
                             
                     print(f'sub mesh vertices = {[sub_mesh_vertices[i].point().array()[:2].tolist() for i in range(len(sub_mesh_vertices))]}')
-                    # then remove duplicates from x_coordinates and sort it 
+
+                    '''
+                    3. compute the arc length along the one-dimensional manifold, store the cumulative arc length at each vertex of it in `line_mesh_coordinates`: these will be the one-dimensional coordinates of the line, 1d mesh that will be generated. 
+                    Thi 1d mesh is obtained by lying flat the one-dimensional manifold above. 
+                    '''
                     line_mesh_coordinates = [0]
                     arc_length = 0
                     for i in range(1, len(sub_mesh_vertices)):
