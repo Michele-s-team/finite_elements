@@ -89,7 +89,6 @@ test_mesh_integral_errors = dict([])
 # 2. check mesh integral in the sub_meshes
 print(f'Check integrals on the sub_meshes: ')
 
-# sign
 # surface integrals
 for i in range(len(lmsh.sub_meshes)):
     test_mesh_integral_errors[f'\int_sub_mesh_{i} f dx'] = msh.test_mesh_integral(integral_exact[i]['dx'], function_test_integrals_fenics[i], rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx')
