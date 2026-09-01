@@ -4,9 +4,10 @@ import importlib
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
+import os
 import runtime_arguments as rarg
 
-parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, "mesh_metadata.csv"))
 
 
 # read the triangles
@@ -52,26 +53,4 @@ check_mesh_module = importlib.import_module('mesh.check_tags.square_no_circle_li
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
-# Define boundaries: it is important that these boundaries are defined in the right order, because a definition may call a preceeding one
 
-boundary = [''] * len(lmsh.sub_meshes)
-
-# sub_mesh 0
-boundary[0] = dict([ \
-    ('l', f'near(x[0], {0})'), \
-    ('r', f'near(x[0], {parameters["L"]})'), \
-    ('t', f'near(x[1], {parameters["h"]})'), \
-    ('b', f'near(x[1], {0})') \
-    ])
-
-boundary[0]['lr'] = f"({boundary[0]['l']}) || ({boundary[0]['r']})"
-boundary[0]['tb'] = f"({boundary[0]['t']}) || ({boundary[0]['b']})"
-
-boundary[0]['lrtb'] = f"({boundary[0]['lr']}) || ({boundary[0]['tb']})"
-
-# sub_mesh 1
-boundary[1] = dict([ \
-    ('l', f'near(x[0], {0})'), \
-    ('r', f'near(x[0], {parameters["L"]})') \
-    ])
-boundary[1]['lr'] = f"({boundary[1]['l']}) || ({boundary[1]['r']})"

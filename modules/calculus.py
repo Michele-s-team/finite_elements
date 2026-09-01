@@ -219,6 +219,8 @@ def curve_integral_polygon(f, polygon_coordinates, open=False):
     if open == False:
         # the polygon is closed -> add the integral over the segment that closes the polygon loop
         result = curve_integral_line(f, polygon_coordinates[-1], polygon_coordinates[0])
+    else:
+        result = 0
 
     # add the integrals over the other segments
     for i in range(len(polygon_coordinates)-1):
