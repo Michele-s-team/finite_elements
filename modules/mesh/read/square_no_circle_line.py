@@ -9,6 +9,8 @@ import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, "mesh_metadata.csv"))
 
+print(f"@@@@@ parameters = {parameters}")
+
 
 # read the triangles
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")

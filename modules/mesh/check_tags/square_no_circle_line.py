@@ -23,7 +23,7 @@ r_test = 0.345
 # CHANGE PARAMETERS HERE
 
 # `boundary_coordinates` is a list containing the vertices of the full boudnary of the mesh
-full_boundary_cooordinates = rmsh.parameters['curve_coordinates']
+full_boundary_cooordinates = list(rmsh.parameters['curve_coordinates'])
 full_boundary_cooordinates.insert(0, [0, 0])
 full_boundary_cooordinates.append([rmsh.parameters['L'], 0])
 
@@ -69,6 +69,8 @@ integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, 0.0, 
 # exact line integrals
 # form mesh #0
 integral_exact[0]['ds_l'] = cal.curve_integral_line(function_test_integrals, [0, 0], rmsh.parameters['curve_coordinates'][0])
+print(f'integral exact 0 = {integral_exact[0]["ds_l"]}\n coord 0 = {rmsh.parameters["curve_coordinates"]}')
+
 integral_exact[0]['ds_r'] = cal.curve_integral_line(function_test_integrals, rmsh.parameters['curve_coordinates'][-1], [rmsh.parameters['L'], 0])
 integral_exact[0]['ds_t'] = cal.curve_integral_polygon(function_test_integrals, rmsh.parameters['curve_coordinates'], 
                                                        open=True)
