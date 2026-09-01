@@ -9,7 +9,6 @@ import runtime_arguments as rarg
 
 parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, "mesh_metadata.csv"))
 
-print(f"@@@@@ parameters = {parameters}")
 
 
 # read the triangles
