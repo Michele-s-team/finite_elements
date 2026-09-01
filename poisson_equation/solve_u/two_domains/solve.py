@@ -38,12 +38,13 @@ class u_1_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = x[0]**2
+        values[1] = x[0]**3
 
     def value_shape(self):
-        return (1,)
+        return (2,)
 
-Q_0 = FunctionSpace(lmsh.sub_meshes[0], 'P', 2)
-Q_1 = FunctionSpace(lmsh.sub_meshes[1], 'P', 2)
+Q_0 = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_1 = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', 2, dim=2)
 
 u_0 = Function(Q_0)
 u_1 = Function(Q_1)
