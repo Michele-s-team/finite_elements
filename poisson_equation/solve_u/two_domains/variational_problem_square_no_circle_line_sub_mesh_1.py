@@ -16,7 +16,7 @@ i, j = ufl.indices(2)
 class u_exact_sub_mesh_1_expression(UserExpression):
     def eval(self, values, x):
         # test case 1
-        values[0] = 1 + x[0]**2 + 2 * (rmsh.parameters['h'])**2
+        values[0] = 1 + x[0]**2 + 2 * (rmsh.parameters['curve_coordinates'][0][1])**2
 
     def value_shape(self):
         return (1,)
