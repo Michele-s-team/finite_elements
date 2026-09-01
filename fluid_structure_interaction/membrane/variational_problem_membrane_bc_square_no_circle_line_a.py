@@ -28,7 +28,7 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 class X_ref_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
-        values[1] = rmsh.parameters['h']
+        values[1] = rmsh.parameters['curve_coordinates'][0][1]
 
     def value_shape(self):
         return (2,)
