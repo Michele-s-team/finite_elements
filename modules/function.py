@@ -249,7 +249,6 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
     '''
     compute the arc length along  the sub mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
     '''
-    # move to module
     arc_length = 0
     arc_length_tab = [0]
     for i in range(1, len(sub_mesh_vertices)):
