@@ -28,8 +28,11 @@ vp = ['','']
 # test transfer_sub_mesh_to_mesh - start
 import function as fu
 import input_output as io
+import mesh.load as lmsh
 import runtime_arguments as rarg
 import solution_paths as solpath
+
+
 
 class u_1_expression(UserExpression):
     def eval(self, values, x):
@@ -39,10 +42,13 @@ class u_1_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
-u_0 = Function(fsp.Q[0])
-u_1 = Function(fsp.Q[1])
+Q_0 = FunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_1 = FunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 
-u_1.interpolate(u_1_expression(element=fsp.Q[1].ufl_element()))
+u_0 = Function(Q_0)
+u_1 = Function(Q_1)
+
+u_1.interpolate(u_1_expression(element=Q_1.ufl_element()))
 
 
 fu.transfer_sub_mesh_to_mesh(u_1, u_0, rarg.args.input_directory)
