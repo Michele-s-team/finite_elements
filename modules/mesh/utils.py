@@ -3954,6 +3954,8 @@ generate a mesh given by a square whose top edge is an arbitrary curve
 Input values: 
     * Mandatory:
         - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
+        Note: 
+        It must be curve_coordinates[0][0] = 0, curve_coordinates[-1][0] = parameters['L']. If not, an error is thrown. 
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional:
