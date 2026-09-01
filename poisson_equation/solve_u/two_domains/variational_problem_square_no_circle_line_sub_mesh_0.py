@@ -67,7 +67,7 @@ fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_expression(element=fsp.Q[0].uf
 # force reload vp to update bc[0], because u_1_on_0 has changed
 fsp.v.interpolate(v_Expression(element=fsp.Q[1].ufl_element()))
 # set u_1_on_0 to be equal to v = u[1]**2 + cos(2 pi (x[0] - h))**2 on the top edge of sub_mesh[1]
-fu.transfer_sub_mesh_to_mesh(fsp.v, fsp.u_1_on_0, rarg.args.input_directory, rmsh.parameters['sub_mesh_1_id'])
+fu.transfer_sub_mesh_to_mesh(fsp.v, fsp.u_1_on_0, rarg.args.input_directory)
 
 bcs = [ \
     DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \

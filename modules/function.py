@@ -258,8 +258,7 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
         arc_length_tab.append(arc_length)
 
     
-    # Get DOF coordinates for the mesh function space
-    mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
+
     
     # Determine the value shape (scalar, vector, or tensor)
     value_shape = Q_mesh.ufl_element().value_shape()
@@ -275,54 +274,41 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
     else:
         # Tensor field (e.g., 2x2 matrix has 4 components)
         num_components = int(np.prod(value_shape))
-    
-    # For vector spaces, coordinates are repeated for each component
-    # We need to evaluate only at unique coordinates
-    num_unique_points = len(mesh_coordinates) // num_components
+
+    # Get DOF coordinates for the mesh function space
+    dof_coordinates = Q_mesh.tabulate_dof_coordinates()
+    n_dofs = Q_mesh.dim()
+    n_nodes = n_dofs // num_components
+
     
     # Create list to store all DOF values (using list for efficiency with extend)
-    all_values = []
+    u_mesh_values = np.zeros(n_dofs)
+
     
     # Process each unique point
-    for i in range(num_unique_points):
+    for node in range(n_nodes):
         # run through mesh_coordinates with step num_components
 
-        mesh_coord = mesh_coordinates[i * num_components]
+        coordinate = dof_coordinates[node * num_components]
 
-        '''
-        check if `mesh_coord` lies on the sub mesh by running through all vertices in sub_mesh_vertices and checking if any of those coincides within tol with `mesh_coord. 
-        If `on_sub_mesh` is True then `mesh_coord` lies in the sub_mesh, and if it is False it does not. 
-        '''
-        on_sub_mesh = False
-        for sub_mesh_vertex_position in range(len(sub_mesh_vertices)):
+        for i in range(len(sub_mesh_vertices)):
+            # run through `sub_mesh_vertices` to find whether `node` belongs to the sub mesh
 
-            if np.linalg.norm(np.subtract(mesh_coord, sub_mesh_vertices[sub_mesh_vertex_position])) < tol: 
+            if np.linalg.norm(np.subtract(coordinate, sub_mesh_vertices[i])) < tol: 
+                #  `node` belongs to the sub mesh and it corresponds to the i-th value of the arc length in    `arc_length_tab`
 
-                on_sub_mesh = True
+                u_sub_mesh_value = np.array(u_sub_mesh(arc_length_tab[i]), dtype=float).flatten()
+
+                for j in range(num_components):
+
+                    u_mesh_values[num_components*node + j] = u_sub_mesh_value[j]
+
                 break
-        
-        if on_sub_mesh:
-            # `mesh_coord` lies on the sub mesh 
 
-            # Evaluate the sub_mesh function at x-coordinate
-            value = u_sub_mesh(arc_length_tab[sub_mesh_vertex_position])
-            
-            if num_components == 1:
-                # Scalar field - direct assignment
-                all_values.append(value)
-            else:
-                # Vector or tensor field
-                # Extend with all components at once (interleaved ordering)
-                all_values.extend(np.array(value, dtype=float).flatten())
-        else:
-            # Point not on edge - add zeros
-            if num_components == 1:
-                all_values.append(0.0)
-            else:
-                all_values.extend([0.0] * num_components)
-    
+               
     # Set the values in the function
-    u_mesh.vector()[:] = np.array(all_values)
+    u_mesh.vector().set_local(u_mesh_values)
+    u_mesh.vector().apply("insert")
         
 
 
