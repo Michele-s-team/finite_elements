@@ -4229,6 +4229,14 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
                                     metadata=sub_mesh_1_metadata,
                                     coordinates=arc_length_table)
 
+
+            # add x_l, x_r to  `metadata` and write it to file 
+            metadata['x_l'] = sub_mesh_1_metadata['x_l']
+            metadata['x_r'] = sub_mesh_1_metadata['x_r']
+            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), metadata)
+
+
+
         print("...done.")
         
 
