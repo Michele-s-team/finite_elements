@@ -2787,17 +2787,70 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     '''
 
                     # create the one-dimensional submesh from the facet function 'mf_mesh' and the id which identifies the sub_mesh under consideration: first extract the coordinates of the points in the one-dimensional submesh and store them into x_coordinates
-                    line_mesh_coordinates = []
-                    for facet in facets(mesh):
-                        if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
-                            for vertex in vertices(facet):
-                                line_mesh_coordinates.append(vertex.point().x())
+                    sub_mesh_vertices = []
 
+                    stop = False
+                    for facet in facets(mesh):
+
+                        if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
+
+                            for vertex in vertices(facet):
+
+                                if np.isclose(vertex.point().array()[0], 0):
+
+                                    sub_mesh_vertices.append(vertex)
+                                    stop = True
+                                    break
+
+                        if stop:
+
+                            break
+
+
+                    print(f'sub mesh vertices = {sub_mesh_vertices}\n\t coord = {sub_mesh_vertices[0].point().array()}')
+
+                                    
+                    added = [sub_mesh_vertices[0].index()]
+                    keep_going = True
+                    while keep_going:
+
+                        keep_going = False
+
+                        for facet in facets(mesh):
+
+                            if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
+
+                                facet_vertices = list(vertices(facet))
+
+                                if (facet_vertices[0].index() == sub_mesh_vertices[-1].index()) and (facet_vertices[1].index() not in added):
+
+                                    sub_mesh_vertices.append(facet_vertices[1])
+                                    added.append(facet_vertices[1].index())
+
+                                    keep_going = True
+
+
+                                elif (facet_vertices[1].index() == sub_mesh_vertices[-1].index()) and (facet_vertices[0].index() not in added):
+
+                                    sub_mesh_vertices.append(facet_vertices[0])
+                                    added.append(facet_vertices[0].index())
+
+                                    keep_going = True
+
+                            
+                    print(f'sub mesh vertices = {[sub_mesh_vertices[i].point().array()[:2].tolist() for i in range(len(sub_mesh_vertices))]}')
                     # then remove duplicates from x_coordinates and sort it 
-                    line_mesh_coordinates = sorted(list(set(line_mesh_coordinates)))  
+                    line_mesh_coordinates = [0]
+                    arc_length = 0
+                    for i in range(1, len(sub_mesh_vertices)):
+
+                        arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i].point().array()[:2], sub_mesh_vertices[i-1].point().array()[:2])) 
+                        line_mesh_coordinates.append(arc_length)     
+
+                    print(f'line mesh coordinates = {line_mesh_coordinates}')
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
-                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], None,
+                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, line_mesh_coordinates[-1], None,
                                                                                         mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],
                                                                                         coordinates=line_mesh_coordinates)
                     
