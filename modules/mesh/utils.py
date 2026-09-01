@@ -2810,9 +2810,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                             break
 
 
-                    print(f'sub mesh vertices = {sub_mesh_vertices}\n\t coord = {sub_mesh_vertices[0].point().array()}')
-
-
                     '''
                     2. given the last entry of `sub_mesh_vertices`, iterate through all edges in `mesh`, find an edge that has one of its vertices coinciding with the last added vertces in `sub_mesh_vertices`, add it to `sub_mesh_vertices` and keep going until no more vertices are found. 
                     As a result, `sub_mesh_vertices` will contain a properly ordered list of vertices connected along the one-dimensional manifold above
@@ -2847,9 +2844,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                                     keep_going = True
 
 
-                            
-                    print(f'sub mesh vertices = {[sub_mesh_vertices[i].point().array()[:2].tolist() for i in range(len(sub_mesh_vertices))]}')
-
                     '''
                     3. compute the arc length along the one-dimensional manifold, store the cumulative arc length at each vertex of it in `line_mesh_coordinates`: these will be the one-dimensional coordinates of the line, 1d mesh that will be generated. 
                     Thi 1d mesh is obtained by lying flat the one-dimensional manifold above. 
@@ -2861,7 +2855,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                         arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i].point().array()[:2], sub_mesh_vertices[i-1].point().array()[:2])) 
                         line_mesh_coordinates.append(arc_length)     
 
-                    print(f'line mesh coordinates = {line_mesh_coordinates}')
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
                     sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, line_mesh_coordinates[-1], None,

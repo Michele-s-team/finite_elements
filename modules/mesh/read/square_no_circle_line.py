@@ -16,12 +16,8 @@ sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.i
 # read the lines
 mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
-
 # r_mesh[i] is the radius of the smallest cell in sub_meshes[i]
 r_mesh =  [lmsh.sub_meshes[i].hmin() for i in range(len(lmsh.sub_meshes))]
-
-print(f'r_mesh = {r_mesh}')
-
 
 # create line and surface elements for sub_meshes
 dx_sub_mesh = []
