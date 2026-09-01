@@ -221,13 +221,12 @@ def deform_function(f, u):
 
 
 '''
-given a rectangular mesh and a sub mesh given by its top edge, transfer the values of a field (scalar, vector or tensor) defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
+given a rectangular mesh and a sub mesh given by its top edge (which can be any one-dimensional manifold, not necessarily a line), transfer the values of a field (scalar, vector or tensor) defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
 Input values:
     * Mandatory: 
         - 'u_sub_mesh': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
         - 'u_mesh': the field defined on the mesh
         - 'mesh_path': the path where the mesh is stored
-        - 'sub_mesh_id': the ID with which the sub_mesh has been tagged in the mesh 
 
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
