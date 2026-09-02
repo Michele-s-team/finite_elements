@@ -211,6 +211,7 @@ for n in range(rpam.parameters['N']):
     step += 1
 
     #3.2 solve variational problems
+    
     #3.2.1 solve membrane problem 
     print('Solving membrane problem ...', flush=True)
    
@@ -276,10 +277,58 @@ for n in range(rpam.parameters['N']):
 
     #sign
 
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    if True:
+        
         #4. remesh (the mesh quality got below mesh_quality_threshold)
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
+
+        #4.1 transfer fields
+
+        #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
+
+        # 4.1.1.1 _old fields for membrane
+        v_n_old = Function(fsp.Q_v_n)
+        w_n_old = Function(fsp.Q_w_n)
+        sigma_n_12_old = Function(fsp.Q_phi)
+        U_n_12_old = Function(fsp.Q_U_n_12)
+        nu_n_12_old = Function(fsp.Q_nu_n_12)
+        psi_n_12_old = Function(fsp.Q_psi_n_12)
+
+        # 4.1.1.2 _old for mesh
+        u_n_old = Function(fsp.Q_u)
+        u_dot_n_old = Function(fsp.Q_u_dot)
+
+        # 4.1.1.3 _old fields for fluid
+        v_fl_n_old = Function(fsp.Q_v_fl)
+        sigma_fl_n_12_old = Function(fsp.Q_phi_fl)
+
+
+        #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+
+        #4.1.2.1 unpack the mixed field for membrane
+        _, _, _, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, _ = fsp.psi_mem.split(deepcopy=True)
+
+
+        # 4.1.2.2 write into the _old fields
+
+        # 4.1.2.2.1 write into membrane fields
+        v_n_old.assign(v_n_dummy)
+        w_n_old.assign(w_n_dummy)
+        sigma_n_12_old.assign(fsp.sigma_n_12)
+        U_n_12_old.assign(U_n_12_dummy)
+        nu_n_12_old.assign(nu_n_12_dummy)
+        psi_n_12_old.assign(psi_n_12_dummy)
+
+        # 4.1.2.2.1 write into mesh fields
+        u_n_old.assign(fsp.u_n)
+        u_dot_n_old.assign(fsp.u_dot_n)
+
+        # 4.1.2.2.3 write into fluid fields
+        v_fl_n_old.assign(fsp.v_fl_n)
+        sigma_fl_n_12_old.assign(fsp.sigma_fl_n_12)
+
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
