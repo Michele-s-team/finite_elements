@@ -28,6 +28,46 @@ import variational_problem.utils as var_pr
 
 import print_out_solution as pr_sol
 
+'''
+# test transfer_mesh_to_sub_mesh - start 
+import function as fu
+import input_output as io
+import mesh.load as lmsh
+import runtime_arguments as rarg
+import solution_paths as solpath
+
+
+
+class u_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]**2-x[1]
+        values[1] = x[0]**3-x[1]
+        values[2] = x[0]**4-x[1]
+        values[3] = x[0]**5-x[1]
+
+    def value_shape(self):
+        return (2,2)
+
+Q_0 = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', 2, shape=(2,2))
+Q_1 = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', 2, shape=(2,2))
+
+u_0 = Function(Q_0)
+u_1 = Function(Q_1)
+
+u_0.interpolate(u_0_expression(element=Q_0.ufl_element()))
+
+
+fu.transfer_mesh_to_sub_mesh(u_0, u_1, rarg.args.input_directory)
+
+io.full_print(u_0, 'u_0_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+# test transfer_mesh_to_sub_mesh - end
+'''
+
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 # set the solver parameters here
@@ -79,7 +119,7 @@ rmsh = importlib.import_module(swi.rmsh)
 # test calls of problems
 # 1) membrane problem
 fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
-fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
+fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
@@ -87,10 +127,10 @@ vp_membrane = importlib.import_module(swi.vp_membrane)
 # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
 # a) project U_n_12
 v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
-fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
+fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 # b) project U_dot_n_12
 fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
+fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
 
@@ -145,7 +185,7 @@ for n in range(rpam.parameters['N']):
    
     # project from sub_mesh[0] onto sub_mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
     fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
-    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
+    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
     
 
     vp_membrane = importlib.import_module(swi.vp_membrane)
@@ -162,10 +202,10 @@ for n in range(rpam.parameters['N']):
     # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
     # a) project U_n_12
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
-    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
+    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
     # b) project U_dot_n_12
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
+    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
     vp_mesh = importlib.reload(vp_mesh)
 

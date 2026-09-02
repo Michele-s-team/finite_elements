@@ -6,6 +6,7 @@ import ufl as ufl
 import differential_geometry.boundary.geometry as bgeo
 import function as fu
 import function_spaces as fsp
+import runtime_arguments as rarg
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -18,7 +19,7 @@ class u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         
         # test case 1
-        values[0] = (1 + x[0]**2 + 2 * x[1]**2) * np.cos(2 * np.pi * x[1] / rmsh.parameters['h'])
+        values[0] = (1 + x[0]**2 + 2 * x[1]**2) * np.cos(2 * np.pi * x[1] / rmsh.parameters['curve_coordinates'][0][1])
     
     def value_shape(self):
         return (1,)
@@ -28,8 +29,8 @@ class grad_u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         
         # test case 1
-        values[0] = 2 * x[0] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['h'])
-        values[1] = 4 * x[1] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['h']) - (2 * np.pi * (1 + x[0]**2 + 2 * x[1]**2) * np.sin((2 * np.pi * x[1]) / rmsh.parameters['h'])) / rmsh.parameters['h']
+        values[0] = 2 * x[0] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1])
+        values[1] = 4 * x[1] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1]) - (2 * np.pi * (1 + x[0]**2 + 2 * x[1]**2) * np.sin((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1])) / rmsh.parameters['curve_coordinates'][0][1]
 
     def value_shape(self):
         return (2,)
@@ -39,7 +40,7 @@ class laplacian_u_exact_sub_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         
         # test case 1
-        values[0] = -((2 * ((-3 * rmsh.parameters['h']**2 + 2 * np.pi**2 * (1 + x[0]**2 + 2 * x[1]**2)) * np.cos((2 * np.pi * x[1]) / rmsh.parameters['h']) + 8 * rmsh.parameters['h'] * np.pi * x[1] * np.sin((2 * np.pi * x[1]) / rmsh.parameters['h']))) / rmsh.parameters['h']**2)
+        values[0] = -((2 * ((-3 * rmsh.parameters['curve_coordinates'][0][1]**2 + 2 * np.pi**2 * (1 + x[0]**2 + 2 * x[1]**2)) * np.cos((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1]) + 8 * rmsh.parameters['curve_coordinates'][0][1] * np.pi * x[1] * np.sin((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1]))) / rmsh.parameters['curve_coordinates'][0][1]**2)
 
     def value_shape(self):
         return (1,)
@@ -66,7 +67,7 @@ fsp.f[0].interpolate(laplacian_u_exact_sub_mesh_0_expression(element=fsp.Q[0].uf
 # force reload vp to update bc[0], because u_1_on_0 has changed
 fsp.v.interpolate(v_Expression(element=fsp.Q[1].ufl_element()))
 # set u_1_on_0 to be equal to v = u[1]**2 + cos(2 pi (x[0] - h))**2 on the top edge of sub_mesh[1]
-fu.transfer_sub_mesh_to_mesh(fsp.v, fsp.u_1_on_0)
+fu.transfer_sub_mesh_to_mesh(fsp.v, fsp.u_1_on_0, rarg.args.input_directory)
 
 bcs = [ \
     DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"]), \

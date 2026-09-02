@@ -34,6 +34,6 @@ elif rpam.parameters['curve_format'] == 'parametric':
     #  the curve is a given, parametric geometrical curve, and it is provided in terms of the parameters of this curve
 
     curve_parametric_form = io.read_function_expresssion(rpam.parameters['curve_parametric_form'])
-    curve_coordinates = [curve_parametric_form(i/rpam.parameters['N']) for i in range(rpam.parameters['N'])]
+    curve_coordinates = [curve_parametric_form(i/(rpam.parameters['N']-1)) for i in range(rpam.parameters['N'])]
 
 msh.generate_square_no_circle_curve_mesh(curve_coordinates, rarg.args.parameter_directory, rarg.args.output_directory)
