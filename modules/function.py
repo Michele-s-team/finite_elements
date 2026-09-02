@@ -318,19 +318,23 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
 
 
 '''
-transfer on a sub mesh a function defined on a mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge. 
+transfer on a sub mesh a function defined on a mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge and it needs not be a straight line. 
 Input values: 
     - 'f_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
     - 'f_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
-    - 'h': the height of the rectangle mesh 
 '''
-def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
+def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh):
+
+    Q_sub_mesh = f_sub_mesh.function_space()
+
+
     # Get DOF coordinates
-    sub_mesh_dim = f_sub_mesh.function_space().mesh().geometry().dim()
-    dof_coords_sub_mesh = f_sub_mesh.function_space().tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
+
+    sub_mesh_dim = Q_sub_mesh.mesh().geometry().dim()
+    dof_coords_sub_mesh = Q_sub_mesh.tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
     
     # Get value shape
-    element = f_sub_mesh.function_space().ufl_element()
+    element = Q_sub_mesh.ufl_element()
     value_shape = element.value_shape()
     
     if len(value_shape) == 0:
