@@ -40,13 +40,13 @@ import solution_paths as solpath
 class u_0_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = x[0]**2-x[1]**2
+        values[0] = x[0]**2-x[1]
 
     def value_shape(self):
         return (1)
 
-Q_0 = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
-Q_1 = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
+Q_0 = FunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_1 = FunctionSpace(lmsh.sub_meshes[1], 'P', 2)
 
 u_0 = Function(Q_0)
 u_1 = Function(Q_1)
@@ -197,10 +197,10 @@ for n in range(rpam.parameters['N']):
     # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
     # a) project U_n_12
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
-    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
+    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
     # b) project U_dot_n_12
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
+    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
     vp_mesh = importlib.reload(vp_mesh)
 
