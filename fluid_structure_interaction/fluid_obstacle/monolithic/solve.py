@@ -544,7 +544,6 @@ for n in range(rpam.parameters['num_steps']):
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
     
-    # sign add u_0
 
 
     #5 Update fields
