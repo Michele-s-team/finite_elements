@@ -22,5 +22,5 @@ def print_data(step):
             
     }])
 
-    fi.csvfile_bcs.flush()
+    fi.csvfile_data.flush()
 
