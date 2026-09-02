@@ -321,14 +321,14 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
 transfer on a sub mesh a function defined on a mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge and it needs not be a straight line. 
 Input values: 
     * Mandatory:
-        - 'f_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
-        - 'f_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
+        - 'u_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
+        - 'u_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, mesh_path, tol = const.epsilon):
+def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon):
 
-    Q_sub_mesh = f_sub_mesh.function_space()
+    Q_sub_mesh = u_sub_mesh.function_space()
 
     '''
     read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
@@ -348,43 +348,45 @@ def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, mesh_path, tol = const.epsilon
         arc_length_tab.append(arc_length)
 
 
-    # Get DOF coordinates
-    sub_mesh_dim = Q_sub_mesh.mesh().geometry().dim()
-    dof_coords_sub_mesh = Q_sub_mesh.tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
+    # Determine the value shape (scalar, vector, or tensor)
+    value_shape = Q_sub_mesh.ufl_element().value_shape()
+    value_rank = len(value_shape)
     
-    # Get value shape
-    sub_mesh_element = Q_sub_mesh.ufl_element()
-    value_shape = sub_mesh_element.value_shape()
-    
-    if len(value_shape) == 0:
-        value_size = 1
-    elif len(value_shape) == 1:
-        value_size = value_shape[0]
+    # Calculate total number of components
+    if value_rank == 0:
+        # Scalar field
+        num_components = 1
+    elif value_rank == 1:
+        # Vector field
+        num_components = value_shape[0]
     else:
-        value_size = np.prod(value_shape)
-    
-    # For tensor/vector spaces, coordinates are repeated for each component
-    # We need to evaluate only at unique coordinates
-    sub_mesh_num_unique_points = len(dof_coords_sub_mesh) // value_size
-    
-    # Create flat array to store all DOF values
-    all_values = []
+        # Tensor field (e.g., 2x2 matrix has 4 components)
+        num_components = int(np.prod(value_shape))
+
+    # Get DOF coordinates
+    dof_coordinates = Q_sub_mesh.tabulate_dof_coordinates()
+    n_dofs = Q_sub_mesh.dim()
+    n_nodes = n_dofs // num_components
+
+    # Create list to store all DOF values (using list for efficiency with extend)
+    u_sub_mesh_values = np.zeros(n_dofs)
+
     
     # Evaluate at each unique coordinate
-    for i in range(sub_mesh_num_unique_points):
+    for node in range(n_nodes):
 
-        coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
+        coordinate = dof_coordinates[node * num_components]  # Take first occurrence of each unique point
 
         '''
         convert `coord[0]` into an arclength along the mesh: find the pair of entries in `arc_length_tab` that bracked coord[0]
         '''
 
-        print(f'* coord[0] = {coord[0]}')
+        print(f'* coordinate[0] = {coordinate[0]}')
 
         for j in range(len(arc_length_tab)-1):
 
-            if (coord[0] > arc_length_tab[j] - tol) and  (coord[0] < arc_length_tab[j+1] + tol):
-                # `coord[0]` falls within arc_length_tab[j] and arc_length_tab[j+1] -> break the loop and store j
+            if (coordinate[0] > arc_length_tab[j] - tol) and  (coordinate[0] < arc_length_tab[j+1] + tol):
+                # `coordinate[0]` falls within arc_length_tab[j] and arc_length_tab[j+1] -> break the loop and store j
                 break
 
         '''
@@ -392,18 +394,19 @@ def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, mesh_path, tol = const.epsilon
         '''
         print(f'* j = {j}')
 
-        # sign
-        value = f_mesh([coord[0], h])
+        mesh_coordinate = np.add(sub_mesh_vertices[j], np.multiply((coordinate[0] - arc_length_tab[j])/(arc_length_tab[j+1] - arc_length_tab[j]), np.subtract(sub_mesh_vertices[j+1], sub_mesh_vertices[j])))
+
+        u_mesh_value = np.array(u_mesh(mesh_coordinate), dtype=float).flatten()
         
-        if value_size == 1:
-            all_values.append(value)
-        else:
-            # val is already the full tensor (4 components for 2x2)
-            all_values.extend(np.array(value).flatten())
+        # assign the compute value of `u_sub_mesh` to u_mesh_values
+        for j in range(num_components):
+
+            u_sub_mesh_values[num_components*node + j] = u_mesh_value[j]
                 
     
-    # Assign to the submesh function
-    f_sub_mesh.vector()[:] = np.array(all_values)
+    # set the values in u_mesh
+    u_sub_mesh.vector().set_local(u_sub_mesh_values)
+    u_sub_mesh.vector().apply("insert")
     
     
 
