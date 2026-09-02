@@ -381,7 +381,7 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
         convert `coord[0]` into an arclength along the mesh: find the pair of entries in `arc_length_tab` that bracked coord[0]
         '''
 
-        print(f'* coordinate[0] = {coordinate[0]}')
+        # print(f'* coordinate[0] = {coordinate[0]}')
 
         for j in range(len(arc_length_tab)-1):
 
@@ -392,7 +392,7 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
         '''
         the loop above returns j such that arc_length_tab[j] < coord[0] < arc_length_tab[j+1]
         '''
-        print(f'* j = {j}')
+        # print(f'* j = {j}')
 
         mesh_coordinate = np.add(sub_mesh_vertices[j], np.multiply((coordinate[0] - arc_length_tab[j])/(arc_length_tab[j+1] - arc_length_tab[j]), np.subtract(sub_mesh_vertices[j+1], sub_mesh_vertices[j])))
 

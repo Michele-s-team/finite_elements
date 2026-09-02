@@ -28,6 +28,41 @@ import variational_problem.utils as var_pr
 
 import print_out_solution as pr_sol
 
+# test transfer_mesh_to_sub_mesh - start 
+import function as fu
+import input_output as io
+import mesh.load as lmsh
+import runtime_arguments as rarg
+import solution_paths as solpath
+
+
+
+class u_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]**2-x[1]**2
+
+    def value_shape(self):
+        return (1)
+
+Q_0 = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
+Q_1 = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', 2)
+
+u_0 = Function(Q_0)
+u_1 = Function(Q_1)
+
+u_0.interpolate(u_0_expression(element=Q_0.ufl_element()))
+
+
+fu.transfer_mesh_to_sub_mesh(u_0, u_1, rarg.args.input_directory)
+
+io.full_print(u_0, 'u_0_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+# test transfer_mesh_to_sub_mesh - end
+
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 # set the solver parameters here
