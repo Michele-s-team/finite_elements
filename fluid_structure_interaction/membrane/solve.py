@@ -143,6 +143,7 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 
 
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_da = importlib.import_module(swi.prout_da)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
@@ -238,8 +239,9 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
     
 
-
+    # print BCs and useful data
     pr_bc.print_bcs(step)
+    pr_da.print_data(step)
 
     
     # update the fields

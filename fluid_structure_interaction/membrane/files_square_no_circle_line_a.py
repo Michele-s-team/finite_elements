@@ -74,3 +74,18 @@ fieldnames_bcs = [ \
 
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
+
+
+# 3. data file
+
+# create the path for the csv file if it does not exist
+filepath_data = os.path.join(rarg.args.output_directory, 'data.csv')
+os.makedirs(os.path.dirname(filepath_data), exist_ok=True)
+
+csvfile_data = open(filepath_data, 'a', newline='')
+fieldnames_data = [ \
+    'step' 
+    ]
+
+writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
+writer_data.writeheader()

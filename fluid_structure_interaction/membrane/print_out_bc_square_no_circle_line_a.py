@@ -1,4 +1,3 @@
-import csv
 import importlib
 from fenics import *
 import os
