@@ -372,18 +372,25 @@ def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, mesh_path, tol = const.epsilon
     
     # Evaluate at each unique coordinate
     for i in range(sub_mesh_num_unique_points):
+
         coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
 
         '''
         convert `coord[0]` into an arclength along the mesh: find the pair of entries in `arc_length_tab` that bracked coord[0]
         '''
 
-        for j in range(1, len(arc_length_tab)):
+        print(f'* coord[0] = {coord[0]}')
 
-            if (coord[0] > arc_length_tab[j-1] - tol) and  (coord[0] < arc_length_tab[j] + tol):
-                # `coord[0]` falls within arc_length_tab[j-1] and arc_length_tab[j] -> break the loop and store j
+        for j in range(len(arc_length_tab)-1):
+
+            if (coord[0] > arc_length_tab[j] - tol) and  (coord[0] < arc_length_tab[j+1] + tol):
+                # `coord[0]` falls within arc_length_tab[j] and arc_length_tab[j+1] -> break the loop and store j
                 break
 
+        '''
+        the loop above returns j such that arc_length_tab[j] < coord[0] < arc_length_tab[j+1]
+        '''
+        print(f'* j = {j}')
 
         # sign
         value = f_mesh([coord[0], h])
