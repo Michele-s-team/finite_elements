@@ -328,6 +328,10 @@ Input values:
 '''
 def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon):
 
+    # this is needed in case `u_mesh` is evaluated at point slightly outside its mesh
+    u_mesh.set_allow_extrapolation(True)
+
+
     Q_sub_mesh = u_sub_mesh.function_space()
 
     '''
