@@ -11,6 +11,7 @@ import colorama as col
 import dolfin
 from fenics import *
 import importlib
+import numpy as np
 import os
 import sys
 
@@ -279,7 +280,7 @@ for n in range(rpam.parameters['N']):
 
     # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     if True:
-        
+
         #4. remesh (the mesh quality got below mesh_quality_threshold)
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
@@ -330,6 +331,23 @@ for n in range(rpam.parameters['N']):
         sigma_fl_n_12_old.assign(fsp.sigma_fl_n_12)
 
 
+        # 4.2 build the new mesh 
+
+        mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, 'mesh_metadata.csv')) 
+
+        curve_coordinates = []
+        for i in range(len(mesh_parameters["curve_coordinates"])):
+            # run through all coordinates of the nodes of the boundary
+
+            coordinate = mesh_parameters["curve_coordinates"][i]
+
+            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_n
+              
+            curve_coordinates.append(np.add(coordinate, fsp.u_n(coordinate).tolist()).tolist())
+
+        #4.2.1 generate the mesh with the new curve_coordinates
+
+        msh.generate_square_no_circle_curve_mesh(curve_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
