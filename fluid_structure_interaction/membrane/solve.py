@@ -126,6 +126,9 @@ msh.generate_square_no_circle_curve_mesh(mesh_parameters['curve_coordinates'], o
 print(f'... done.')
 
 # first load of modules
+import differential_geometry.manifold.geometry as geo
+import differential_geometry.boundary.geometry as bgeo
+
 import function_spaces as fsp
 
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -276,7 +279,6 @@ for n in range(rpam.parameters['N']):
     pr_bc.print_bcs(step)
     pr_da.print_data(step)
 
-    #sign
 
     # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     if True:
@@ -350,6 +352,35 @@ for n in range(rpam.parameters['N']):
         msh.generate_square_no_circle_curve_mesh(curve_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
+
+
+        #4.3 reload modules so everything is updated according to the mesh change
+        
+        # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
+        importlib.reload(geo)
+        importlib.reload(rmsh.lmsh)
+        importlib.reload(bgeo)
+        importlib.reload(fsp)
+        rmsh = importlib.reload(rmsh)
+        pr_bc = importlib.reload(pr_bc)
+        pr_da = importlib.reload(pr_da)
+        pr_sol = importlib.reload(pr_sol)
+
+
+        #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
+
+        # 4.4.1 transfer membrane fields
+
+        #sign
+
+        # 4.4.2 set mesh fields
+        fsp.u_n.assign(Constant((0, 0)))
+        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+
+        # 4.4.3 transfer fluid fields
+        msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
+        msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
+
 
 
 
