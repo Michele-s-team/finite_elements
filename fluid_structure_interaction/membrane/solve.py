@@ -28,6 +28,7 @@ import variational_problem.utils as var_pr
 
 import print_out_solution as pr_sol
 
+'''
 # test transfer_mesh_to_sub_mesh - start 
 import function as fu
 import input_output as io
@@ -65,6 +66,7 @@ io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
                   solpath.nodal_values_path)
 
 # test transfer_mesh_to_sub_mesh - end
+'''
 
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
