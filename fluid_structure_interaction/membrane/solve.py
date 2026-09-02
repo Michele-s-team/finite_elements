@@ -7,9 +7,11 @@ run with:
 Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/membrane/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_line_a $MESH_PATH $SOLUTION_PATH
 """
+import colorama as col
 import dolfin
 from fenics import *
 import importlib
+import os
 import sys
 
 # add the path where to find the shared modules
@@ -19,14 +21,14 @@ sys.path.append(module_path)
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import physics.fluid_mechanics as flu
 import function as fu
-import function_spaces as fsp
+import input_output as io
+import mesh.utils as msh
+import mesh_quality as msh_qu
 import parameters.read.solution as rpam
 import physics.utils as phys
 import runtime_arguments as rarg
 import switch_problem as swi
 import variational_problem.utils as var_pr
-
-import print_out_solution as pr_sol
 
 fi = importlib.import_module(swi.fi)
 
@@ -71,6 +73,8 @@ io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
 # test transfer_mesh_to_sub_mesh - end
 '''
 
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
+
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
 # set the solver parameters here
@@ -114,22 +118,36 @@ PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluati
 
 
 print(f'Generating initial mesh ...')
+# generate the mesh with the curve given by curve_coordinates and write into its mesh_metadata
+
+msh.generate_square_no_circle_curve_mesh(mesh_parameters['curve_coordinates'], os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 print(f'... done.')
 
+# first load of modules
+import function_spaces as fsp
+
+pr_bc = importlib.import_module(swi.prout_bc)
+pr_da = importlib.import_module(swi.prout_da)
+pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 
 # test calls of problems
-# 1) membrane problem
+
+# 1. membrane problem
 fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
 fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-# 2) mesh problem
+fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression(element=fsp.Q_psi_n_12.ufl_element()))
+
+
+# 2. mesh problem
 # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
 # a) project U_n_12
 v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
+
 fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 # b) project U_dot_n_12
 fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
@@ -137,62 +155,69 @@ fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.i
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
 
-
-# 3) fluid problem
+# 3. fluid problem
 vp_fluid = importlib.import_module(swi.vp_fluid)
-
-
-pr_bc = importlib.import_module(swi.prout_bc)
-pr_da = importlib.import_module(swi.prout_da)
 
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
-print("Input directory", rarg.args.input_directory)
-print("Output directory", rarg.args.output_directory)
 
-fsp.sigma_n_32.interpolate( vp_membrane.sigma_n_32_0_Expression( element=fsp.Q_psi_n_12.ufl_element() ))
+# 1. store metadata
+
+# 1.1 store mesh metadata
+mesh_metadata = rmsh.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'mesh_metadata.csv'), mesh_metadata)
+
+# 1.2 store solution metadata
+solution_metadata = rpam.parameters.copy()
+io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'solution_metadata.csv'), solution_metadata)
 
 
-#Option 1: set initial profiles
-# 1) for the membrane
+#2. set the initial profiles
+
+
+#2.1 set from expressions
+
+# 2.1.1 for the membrane
 fsp.v_bar_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_n_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
 fsp.nu_n_12_0.interpolate( vp_membrane.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
 fsp.U_n_12_0.interpolate( vp_membrane.U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
-# 2) for the mesh
-# 3) for the fluid
+# 2.1.2 for the mesh
+# 2.1.3 for the fluid
 # fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v.ufl_element()))
 # fsp.v_n_2.assign(fsp.v_n_1)
 fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_fl_n_12_Expression(element=fsp.Q_phi_fl.ufl_element()))
 fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
-
-#Option 2:read initial profiles by reading them from file
-
-
 fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.U_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
 
+'''
+#2.2 read initial profiles by reading them from file
+'''
+
+#3. Time-stepping
+
 print("Starting time iteration ...", flush=True)
-# Time-stepping
+
 t = 0
 step = 0
+
 for n in range(rpam.parameters['N']):
 
-    # Update current time
+    #3.1 update current time
+
     t += dt
     step += 1
 
-    # step 1): update theta and omega
+    #3.2 solve variational problems
+    #3.2.1 solve membrane problem 
     print('Solving membrane problem ...', flush=True)
-   
-
    
     # project from sub_mesh[0] onto sub_mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
     fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
     fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
     
-
     vp_membrane = importlib.import_module(swi.vp_membrane)
 
     var_pr.solve_vp(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, fsp.J_psi_mem, parameters=params)
@@ -200,8 +225,8 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
 
 
+    #3.2.2 solve mesh problem
 
-    # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
     
     # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
@@ -220,28 +245,47 @@ for n in range(rpam.parameters['N']):
 
     print('... done.', flush=True)
 
-    
 
-    # step 3: solve fluid problem
+    # 3.2.3 solve fluid problem
+
     print('Solving fluid problem ...', flush=True)
 
     vp_fluid = importlib.reload(vp_fluid)
 
-    # step 3.1
+    # step 3.2.3.1: approximate velocity step
     var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
 
-    # Step 3.2: surface_tension correction step
+    # Step 3.2.3.2: surface_tension correction step
     var_pr.solve_vp(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, fsp.J_phi_fl, parameters=params)
 
-    # step 3.3
+    # step 3.2.3.3: velocity 
     var_pr.solve_vp(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], fsp.J_v_fl_n, parameters=params)
 
     print('... done.', flush=True)
     
 
-    # print BCs and useful data
+    #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
+
+    #3.3.1 compute mesh quality
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0], fsp.u_n))
+
+
+    #3.3.3 compure BCs and data
     pr_bc.print_bcs(step)
     pr_da.print_data(step)
+
+    #sign
+
+    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+        #4. remesh (the mesh quality got below mesh_quality_threshold)
+
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
+
+
+        print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
+
+
+
 
     
     # update the fields

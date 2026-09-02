@@ -11,5 +11,6 @@ if rarg.args.problem == 'square_no_circle_line_a':
     vp_pp = 'variational_problem_pp_square_no_circle_line_a'
     prout_bc = 'print_out_bc_square_no_circle_line_a'
     prout_da = 'print_out_data_square_no_circle_line_a'
+    prout_sol = 'print_out_solution_square_no_circle_line_a'
 
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')

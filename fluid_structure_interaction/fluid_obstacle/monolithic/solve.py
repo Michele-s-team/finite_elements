@@ -84,7 +84,7 @@ alpha, beta = ufl.indices(2)
 
 
 print(f'Generating initial mesh ...')
-# # coordinates of the shape when the shape lies flat (theta_ref = 0)
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
 # shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
 # shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
