@@ -2,9 +2,8 @@ from fenics import *
 
 
 import csv
-import files as fi
 import function_spaces as fsp
-import function as fu
+import importlib
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
@@ -12,18 +11,9 @@ import os
 import solution_paths as solpath
 
 import runtime_arguments as rarg
+import switch_problem as swi
 
-# create the path for the csv file if it does not exist
-filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
-os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
-
-csvfile = open(filename_theta_omega, 'a', newline='')
-fieldnames = [ \
-    "theta", \
-    "omega", \
-    ]
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
+fi = importlib.import_module(swi.fi)
 
 
 def print_solution(t, step, dt):

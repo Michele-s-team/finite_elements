@@ -3,6 +3,7 @@ import colorama as col
 import runtime_arguments as rarg
 
 if rarg.args.problem == 'square_no_circle_line_a':
+    fi = 'files_square_no_circle_line_a'
     rmsh = 'mesh.read.square_no_circle_line'
     vp_membrane = 'variational_problem_membrane_bc_square_no_circle_line_a'
     vp_mesh = 'variational_problem_mesh_bc_square_no_circle_line_a'

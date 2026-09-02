@@ -28,6 +28,9 @@ import variational_problem.utils as var_pr
 
 import print_out_solution as pr_sol
 
+fi = importlib.import_module(swi.fi)
+
+
 '''
 # test transfer_mesh_to_sub_mesh - start 
 import function as fu
@@ -174,6 +177,7 @@ print("Starting time iteration ...", flush=True)
 t = 0
 step = 0
 for n in range(rpam.parameters['N']):
+
     # Update current time
     t += dt
     step += 1
@@ -235,7 +239,7 @@ for n in range(rpam.parameters['N']):
     
 
 
-    pr_bc.print_bcs()
+    pr_bc.print_bcs(step)
 
     
     # update the fields
@@ -274,6 +278,7 @@ for n in range(rpam.parameters['N']):
 
     print(f'\t{(100.0 * (t / rpam.parameters["T"]))} %', flush=True)
     
-    
 
 print("... done.", flush=True)
+
+fi.csvfile_bcs.close()
