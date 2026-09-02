@@ -31,7 +31,7 @@ xdmffile_phi_fl = XDMFFile( os.path.join(rarg.args.output_directory , 'phi_fl.xd
 
 
 # create the path for the csv file if it does not exist
-filepath_bcs = os.path.join(rarg.args.output_directory + 'bcs.csv')
+filepath_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
 os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
