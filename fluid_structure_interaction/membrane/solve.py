@@ -33,6 +33,77 @@ import variational_problem.utils as var_pr
 
 fi = importlib.import_module(swi.fi)
 
+'''
+# test transfer sub mesh to sub mesh - start
+import function as fu
+import solution_paths as solpath
+
+
+# read the mesh
+path_a = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_a'
+path_b = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_b'
+
+parameters_a = io.read_parameters_from_csv_file(os.path.join(path_a, "mesh_metadata.csv"))
+parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
+
+
+mesh_a, sf_a = msh.read_from_file(path_a, 'xdmf')
+mesh_b, sf_b = msh.read_from_file(path_b, 'xdmf')
+
+print(f'number of vertices = {mesh_a.num_vertices()} {mesh_b.num_vertices()}')
+
+
+# read the sub_meshes and generate their functions tagging cells and vertices
+sub_meshes_a, sf_sub_meshes_a, mf_sub_meshes_a = msh.read_sub_meshes(mesh_a, sf_a, parameters_a, path_a)
+sub_meshes_b, sf_sub_meshes_b, mf_sub_meshes_b = msh.read_sub_meshes(mesh_b, sf_b, parameters_b, path_b)
+
+class u_a_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]**2
+        values[1] = x[0]**3
+        values[2] = x[0]**2-1
+        values[3] = x[0]**2-2
+
+
+    def value_shape(self):
+        return (4,)
+    
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+        values[1] = - x[0] * (x[0]-1)
+
+
+    def value_shape(self):
+        return (2,)
+
+Q_u_a = TensorFunctionSpace(sub_meshes_a[1], 'P', 2, shape=(2,2))
+Q_u_b = TensorFunctionSpace(sub_meshes_b[1], 'P', 2, shape=(2,2))
+
+Q_u = VectorFunctionSpace(sub_meshes_a[0], 'P', 2)
+
+u = Function(Q_u)
+u_a = Function(Q_u_a)
+u_b = Function(Q_u_b)
+
+u.interpolate(u_expression(element=Q_u.ufl_element()))
+u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
+
+fu.transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, path_a)
+
+io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+
+# test transfer sub mesh to sub mesh - end
+
+'''
 
 '''
 # test transfer_mesh_to_sub_mesh - start 
