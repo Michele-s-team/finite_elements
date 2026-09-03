@@ -33,6 +33,30 @@ import variational_problem.utils as var_pr
 
 fi = importlib.import_module(swi.fi)
 
+# test transfer sub mesh to sub mesh - start
+
+# read the mesh
+path_a = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_a'
+path_b = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_b'
+
+parameters_a = io.read_parameters_from_csv_file(os.path.join(path_a, "mesh_metadata.csv"))
+parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
+
+
+mesh_a, sf_a = msh.read_from_file(path_a, 'xdmf')
+mesh_b, sf_b = msh.read_from_file(path_b, 'xdmf')
+
+print(f'number of vertices = {mesh_a.num_vertices()} {mesh_b.num_vertices()}')
+
+
+# read the sub_meshes and generate their functions tagging cells and vertices
+sub_meshes_a, sf_sub_meshes_a, mf_sub_meshes_a = msh.read_sub_meshes(mesh_a, sf_a, parameters_a, path_a)
+sub_meshes_b, sf_sub_meshes_b, mf_sub_meshes_b = msh.read_sub_meshes(mesh_b, sf_b, parameters_b, path_b)
+
+sys.exit(1)
+
+# test transfer sub mesh to sub mesh - end
+
 
 '''
 # test transfer_mesh_to_sub_mesh - start 
