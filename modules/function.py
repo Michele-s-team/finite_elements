@@ -413,9 +413,14 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
     u_sub_mesh.vector().apply("insert")
     
     
-
-def transfer_sub_mesh_to_sub_mesh(u_sub_mesh_a, u_sub_mesh_b, mesh_path,
-                              tol=const.epsilon):
+'''
+given a sub mesh a and a sub mesh b obtained from a by means of a displacement field, transfer a field (scalar, vector, tensor) on sub mesh a onto sub mesh b
+Input values: 
+    - `u_sub_mesh_a`: the field on sub mesh a
+    - `u_sub_mesh_b`: the field on sub mesh b
+    - `U`: the displacement field that relates sub mesh a to sub mesh b. Given an arc length value `s_a` on sub mesh a, U(s_a) = [point on sub mesh be corresponding to `s_a`]
+'''
+def transfer_sub_mesh_to_sub_mesh(u_sub_mesh_a, u_sub_mesh_b, U):
 
     pass
 
