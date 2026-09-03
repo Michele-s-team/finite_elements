@@ -424,9 +424,9 @@ Input values:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
 def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon):
+    
 
     Q_b = u_b.function_space()
-
 
     '''
     read all vertices in mesh a which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `vertices_a`
@@ -479,6 +479,8 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon)
     dof_coordinates_b = Q_b.tabulate_dof_coordinates()
     n_dofs_b = Q_b.dim()
     n_nodes_b = n_dofs_b // num_components
+
+    print(f'*** sanity check: {abs(arc_length_a_to_b_tab[-1] - max(dof_coordinates_b[:, 0]))}')
 
 
     # Create list to store all DOF values (using list for efficiency with extend)
