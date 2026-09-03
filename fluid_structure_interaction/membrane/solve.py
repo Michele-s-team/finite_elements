@@ -93,6 +93,8 @@ io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath
                   solpath.nodal_values_path)
 io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
+io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
 
 
 sys.exit(1)
