@@ -34,6 +34,7 @@ import variational_problem.utils as var_pr
 fi = importlib.import_module(swi.fi)
 
 # test transfer sub mesh to sub mesh - start
+import function as fu
 import solution_paths as solpath
 
 
@@ -86,10 +87,13 @@ u_b = Function(Q_u_b)
 u.interpolate(u_expression(element=Q_u.ufl_element()))
 u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
 
-io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-                  solpath.nodal_values_path)
+fu.transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, path_a)
+
 io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
+io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
 
 sys.exit(1)
 # test transfer sub mesh to sub mesh - end
