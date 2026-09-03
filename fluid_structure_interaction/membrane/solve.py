@@ -33,6 +33,7 @@ import variational_problem.utils as var_pr
 
 fi = importlib.import_module(swi.fi)
 
+'''
 # test transfer sub mesh to sub mesh - start
 import function as fu
 import solution_paths as solpath
@@ -100,9 +101,9 @@ io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
                   solpath.nodal_values_path)
 
 
-sys.exit(1)
 # test transfer sub mesh to sub mesh - end
 
+'''
 
 '''
 # test transfer_mesh_to_sub_mesh - start 
