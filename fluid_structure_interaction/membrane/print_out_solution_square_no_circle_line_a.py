@@ -10,15 +10,18 @@ import mesh.utils as msh
 import os
 import solution_paths as solpath
 
-import runtime_arguments as rarg
+import parameters.read.solution as rpam
 import switch_problem as swi
 
+cu = importlib.import_module(swi.cu)
 fi = importlib.import_module(swi.fi)
 
 
 def print_solution(t, step, dt):
-    
-    # 1) membrane problem
+
+    # 1. write fields 
+
+    # 1.1 membrane problem
     v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
 
     fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_dummy, fsp.Q_phi ) )
@@ -60,7 +63,8 @@ def print_solution(t, step, dt):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
 
-    # 2) mesh problem
+    # 1.2 mesh problem
+
     io.full_print(fsp.u_n, 'u_n_' + str(step + 1), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.u_dot_n, 'u_dot_n_' + str(step + 1), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
@@ -78,7 +82,7 @@ def print_solution(t, step, dt):
 
 
 
-    # 3) fluid problem
+    # 1.3 fluid problem
     io.full_print(fsp.v_fl_bar, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.v_fl_n, 'v_fl_n_' + str(step + 1), \
@@ -88,7 +92,8 @@ def print_solution(t, step, dt):
     io.full_print(fsp.phi_fl, 'phi_fl_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
-    # include the snapshot in xdmf files
+
+    # 2. include snapshots in xdmf files
     fi.xdmffile_v_fl_n.write(fsp.v_fl_n, t)
     fi.xdmffile_v_fl_bar.write(fsp.v_fl_bar, t)
     fi.xdmffile_sigma_fl.write(fsp.sigma_fl_n_12, t - dt / 2.0)
@@ -103,5 +108,23 @@ def print_solution(t, step, dt):
     io.full_print_deformed(fsp.phi_fl, fsp.u_n, 'phi_fl_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
+
+    # 3. write the curve
+
+    tab_cspline = [
+        [
+            float(cu.cspline[0](cu.arc_length_tab[-1] * alpha/(rpam.parameters['n_points_output_cspline']-1))), 
+            float(cu.cspline[1](cu.arc_length_tab[-1] * alpha/(rpam.parameters['n_points_output_cspline']-1)))
+            ] 
+        for alpha in range(rpam.parameters['n_points_output_cspline']) 
+        ]
+
+    with open(os.path.join(solpath.snapshots_csv_path, f'cspline_n_{step}.csv'), 'w', newline='') as cspline_file:
+
+        writer = csv.writer(cspline_file)
+        writer.writerow([':0',':1'])  
+        writer.writerows(tab_cspline)       
+
+    
 
 
