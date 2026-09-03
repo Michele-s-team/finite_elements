@@ -419,7 +419,7 @@ Input values:
     * Mandatory:
         - `u_sub_mesh_a`: the field on sub mesh a
         - `u_sub_mesh_b`: the field on sub mesh b
-        - `U`: the displacement field that relates sub mesh a to sub mesh b. Given an arc length value `s_a` on sub mesh a, U(s_a) = [point on sub mesh be corresponding to `s_a`]
+        - `u`: the deformation field that relates  mesh a to sub mesh b
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
