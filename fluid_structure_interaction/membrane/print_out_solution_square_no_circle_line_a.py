@@ -74,15 +74,6 @@ def print_solution(t, step, dt):
     fi.xdmffile_u_n.write(fsp.u_n, t)
     fi.xdmffile_u_dot_n.write(fsp.u_dot_n, t)
 
-    # Write the deformed mesh to file
-    deformed_mesh = msh.deform_mesh(lmsh.sub_meshes[0], fsp.u_n)
-    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step + 1) + '.xdmf') as xdmf:
-        xdmf.write(deformed_mesh)
-    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step + 1) + '.csv')
-    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step + 1) + '.csv')
-
-
-
     # 1.3 fluid problem
     io.full_print(fsp.v_fl_bar, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
@@ -134,8 +125,8 @@ def print_solution(t, step, dt):
     with XDMFFile(os.path.join(solpath.snapshots_path, 'mesh_n_' + str(step + 1) + '.xdmf')) as xdmf:
         xdmf.write(deformed_mesh)
 
-    io.print_mesh_vertices_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'vertex_mesh_n_' + str(step) + '.csv'))
-    io.print_mesh_lines_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'line_mesh_n_' + str(step) + '.csv'))
+    io.print_mesh_vertices_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'vertex_mesh_n_' + str(step + 1) + '.csv'))
+    io.print_mesh_lines_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'line_mesh_n_' + str(step + 1) + '.csv'))
       
 
     
