@@ -1,2 +1,2 @@
-kappa,rho,rho_fluid,eta_fluid,eta,sigma_n_12_0,sigma_fl_n_12_0_b,T,N,function_space_degree_mem,v_bar_l,v_bar_r,v_fl_bar_b_const,alpha,exponent,quadrature_degree,print_out_stride,code,problem,print_out_digits
-1e-3,1,1,1e-5,1e-3,0,-1.0,1e1,100000,2,[0],[0],1e-2,1e3,3,4,100,/Users/michelecastellana/Documents/finite_elements/fluid_structure_interaction/membrane/solve.py,square_no_circle_line_a,4
+kappa,rho,rho_fluid,eta_fluid,eta,sigma_n_12_0,sigma_fl_n_12_0_b,T,N,function_space_degree_mem,v_bar_l,v_bar_r,v_fl_bar_b_const,alpha,exponent,quadrature_degree,print_out_stride,code,problem,print_out_digits,mesh_quality_threshold
+1e-3,1,1,1e-5,1e-3,0,-1.0,1e1,100000,2,[0],[0],1e-2,1e3,3,4,100,/Users/michelecastellana/Documents/finite_elements/fluid_structure_interaction/membrane/solve.py,square_no_circle_line_a,4,0.7

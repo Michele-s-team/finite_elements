@@ -746,8 +746,6 @@ Return values:
 '''
 def read_parameters_from_csv_file(file_path, print_out=False):
 
-    print(f'Reading parameters from {file_path}...',flush=True)
-
     file = open(file_path, newline='')
 
     reader = csv.reader(file)
@@ -759,7 +757,6 @@ def read_parameters_from_csv_file(file_path, print_out=False):
     # print(f'parameter_values: {[string_to_value(parameter_value) for parameter_value in parameter_values]}')
 
     file.close()
-    print('... close.',flush=True)
 
     result = dict([(parameter_name, string_to_value(parameter_value)) for parameter_name, parameter_value in zip(parameter_names, parameter_values)])
     if print_out:
