@@ -1728,20 +1728,21 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 '''
 Given a parent mesh and a submesh of it, and function mf_parent which identifies facets on the parent mesh, 
 this method returns the function which identifies the facet markers on the  sub_mesh, with the same ids as in the parent mesh
+
 Input values: 
-- 'parent': the parent mesh
-- 'submesh': the submesh of the parent mesh
-- 'mf_parent': the function which identifies facets on the parent mesh
+    - 'parent': the parent mesh
+    - 'submesh': the submesh of the parent mesh
+    - 'mf_parent': the function which identifies facets on the parent mesh
 Return values
-- 'mf_submesh': the function which identifies facets on a submesh of the parent mesh
+    - 'mf_submesh': the function which identifies facets on a submesh of the parent mesh
 
 Example of usage: 
     mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
     submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
     mf_submesh_out = transfer_facet_tags_to_sub_mesh(lmsh.mesh, submesh_out, mf)
     
-Then you can create a ds on the submesh with 
-    ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
+    Then you can create a ds on the submesh with 
+        ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
 '''
 
 
