@@ -10,6 +10,7 @@ Examples:
 import colorama as col
 import dolfin
 from fenics import *
+import gc
 import importlib
 import numpy as np
 import os
@@ -470,6 +471,11 @@ for n in range(rpam.parameters['N']):
         # 4.4.3 transfer fluid fields
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
         msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
+
+        #4.5 clean up
+
+        del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, sigma_n_12_old, u_n_old, u_dot_n_old, v_fl_n_old, sigma_fl_n_12_old
+        gc.collect()
 
         #sign
 
