@@ -414,6 +414,10 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
     
     
 
+def transfer_sub_mesh_to_sub_mesh(u_sub_mesh_a, u_sub_mesh_b, mesh_path,
+                              tol=const.epsilon):
+
+    pass
 
 '''
 Compute the average between left and right side ('+' and '-') of a field on an internal mesh domain
