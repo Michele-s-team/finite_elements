@@ -1,3 +1,3 @@
 L,curve_format,curve_coordinates,curve_parametric_form,N,resolution,n_sub_meshes,sub_mesh_0_dim,sub_mesh_1_dim,sub_mesh_0_id,sub_mesh_1_id,line_sub_mesh_0_l_id,line_sub_mesh_0_r_id,line_sub_mesh_0_b_id,vertex_sub_mesh_1_l_id,vertex_sub_mesh_1_r_id
-1.0,parametric,"[[0,0.2],[1,0.2]]","[0.5+1.0/sqrt(2.0)*cos(-3*pi/2*t+5*pi/4),(0.2+0.5)+1.0/sqrt(2.0)*sin(-3*pi/2*t+5*pi/4)]",20,0.1,2,2,1,1,2,3,4,6,7,8
+1.0,coordinates,"[[0,0.2],[1,0.2]]","[0.5+1.0/sqrt(2.0)*cos(-3*pi/2*t+5*pi/4),(0.2+0.5)+1.0/sqrt(2.0)*sin(-3*pi/2*t+5*pi/4)]",20,0.05,2,2,1,1,2,3,4,6,7,8
 ,,,,

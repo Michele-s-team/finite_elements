@@ -297,7 +297,7 @@ for n in range(rpam.parameters['N']):
     fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
     fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
     
-    vp_membrane = importlib.import_module(swi.vp_membrane)
+    vp_membrane = importlib.reload(importlib.import_module(swi.vp_membrane))  
 
     var_pr.solve_vp(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, fsp.J_psi_mem, parameters=params)
 
@@ -316,7 +316,7 @@ for n in range(rpam.parameters['N']):
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
     fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
-    vp_mesh = importlib.reload(vp_mesh)
+    vp_mesh = importlib.reload(importlib.import_module(swi.vp_mesh))  
 
     # solve for u_n and u_dot_n
     var_pr.solve_vp(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_msh, fsp.J_u, parameters=params)
@@ -329,7 +329,7 @@ for n in range(rpam.parameters['N']):
 
     print('Solving fluid problem ...', flush=True)
 
-    vp_fluid = importlib.reload(vp_fluid)
+    vp_fluid = importlib.reload(importlib.import_module(swi.vp_fluid))  
 
     # step 3.2.3.1: approximate velocity step
     var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
