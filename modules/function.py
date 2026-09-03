@@ -423,41 +423,38 @@ Input values:
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_sub_mesh_to_sub_mesh(u_a, u_b, mesh_a_path, u, tol = const.epsilon):
+def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, tol = const.epsilon):
+
+    Q_a = u_a.function_space()
+    mesh_a = Q_a.mesh()
+    vertices_a = mesh_a.coordinate()
 
     Q_b = u_b.function_space()
 
-    '''
-    read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
-    `sub_mesh_a_vertices` is an ordered list of the coordinates of the vertices in the mesh_a which belong to the sub mesh 
-    '''
-    mesh_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
-    sub_mesh_a_vertices = mesh_a_parameters['curve_coordinates']
-
 
     '''
-    compute the arc length along sub mesh a: arc_length_a_tab[i] = [cumulative arc length along the sub mesh a curve obtained from its beginning until sub_mesh_a_vertices[i] included]
+    compute the arc length along sub mesh a: arc_length_a_tab[i] = [cumulative arc length along the sub mesh a curve obtained from its beginning until vertices_a[i] included]
     '''
     arc_length_a = 0
     arc_length_a_tab = [0]
-    for i in range(1, len(sub_mesh_a_vertices)):
+    for i in range(1, len(vertices_a)):
 
-        arc_length_a += np.linalg.norm(np.subtract(sub_mesh_a_vertices[i], sub_mesh_a_vertices[i-1]))
+        arc_length_a += np.linalg.norm(np.subtract(vertices_a[i], vertices_a[i-1]))
         arc_length_a_tab.append(arc_length_a)
 
 
     '''
     compute the arc length along sub mesh a, deformed onto sub mesh b: arc_length_b_tab[i] = [cumulative arc length along the sub mesh a curve deformed into b, obtained from its beginning until sub_mesh_vertices_a[i] included]
     '''
-    arc_length_b = 0
-    arc_length_b_tab = [0]
-    for i in range(1, len(sub_mesh_a_vertices)):
+    arc_length_a_to_b = 0
+    arc_length_a_to_b_tab = [0]
+    for i in range(1, len(vertices_a)):
 
-        arc_length_b += np.linalg.norm(np.subtract(
-            np.add(sub_mesh_a_vertices[i], u(sub_mesh_a_vertices[i])), 
-            np.add(sub_mesh_a_vertices[i+1], u(sub_mesh_a_vertices[i+1]))
+        arc_length_a_to_b += np.linalg.norm(np.subtract(
+            np.add(vertices_a[i], u(vertices_a[i])), 
+            np.add(vertices_a[i+1], u(vertices_a[i+1]))
             ))
-        arc_length_b_tab.append(arc_length_b)
+        arc_length_a_to_b_tab.append(arc_length_a_to_b)
 
 
     # Determine the value shape (scalar, vector, or tensor)
@@ -476,29 +473,29 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, mesh_a_path, u, tol = const.epsilon)
         num_components = int(np.prod(value_shape))
 
     # Get DOF coordinates
-    dof_coordinates = Q_b.tabulate_dof_coordinates()
-    n_dofs = Q_b.dim()
-    n_nodes = n_dofs // num_components
+    dof_coordinates_b = Q_b.tabulate_dof_coordinates()
+    n_dofs_b = Q_b.dim()
+    n_nodes_b = n_dofs_b // num_components
+
 
     # Create list to store all DOF values (using list for efficiency with extend)
-    u_b_values = np.zeros(n_dofs)
-
+    u_b_values = np.zeros(n_dofs_b)
 
     # Evaluate at each unique coordinate
-    for node in range(n_nodes):
+    for node in range(n_nodes_b):
 
         # Take first occurrence of each unique point along b
-        coordinate_b = dof_coordinates[node * num_components]  
+        coordinate_b = dof_coordinates_b[node * num_components]  
 
         '''
-        convert `coord[0]` into an arclength along sub mesh a by taking into account the deformation field that brings a into b: find the pair of entries in `arc_length_b_tab` that bracked coord[0]
+        convert `coordinate_b[0]` into an arclength along a by taking into account the deformation field `u` that brings a into b: find the pair of entries in `arc_length_a_to_b_tab` that bracked coordinate_b[0]
         '''
 
         # print(f'* coordinate[0] = {coordinate[0]}')
 
-        for j in range(len(arc_length_b_tab)-1):
+        for j in range(len(arc_length_a_to_b_tab)-1):
 
-            if (coordinate_b[0] > arc_length_b_tab[j] - tol) and  (coordinate_b[0] < arc_length_b_tab[j+1] + tol):
+            if (coordinate_b[0] > arc_length_a_to_b_tab[j] - tol) and  (coordinate_b[0] < arc_length_a_to_b_tab[j+1] + tol):
                 # `coordinate[0]` falls within arc_length_b_tab[j] and arc_length_b_tab[j+1] -> break the loop and store j
                 break
 
@@ -507,7 +504,7 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, mesh_a_path, u, tol = const.epsilon)
         '''
         # print(f'* j = {j}')
 
-        coordinate_a = arc_length_a_tab[j] + (coordinate_b - arc_length_b_tab[j]) / (arc_length_b_tab[j+1] - arc_length_b_tab[j]) * (arc_length_a_tab[j+1] - arc_length_a_tab[j])
+        coordinate_a = arc_length_a_tab[j] + (coordinate_b - arc_length_a_to_b_tab[j]) / (arc_length_a_to_b_tab[j+1] - arc_length_a_to_b_tab[j]) * (arc_length_a_tab[j+1] - arc_length_a_tab[j])
 
         u_a_value = np.array(u_a(coordinate_a), dtype=float).flatten()
         
