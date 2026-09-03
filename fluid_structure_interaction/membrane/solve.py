@@ -60,10 +60,11 @@ class u_a_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = x[0]**2
+        values[1] = x[0]**3
 
 
     def value_shape(self):
-        return (1,)
+        return (2,)
     
 class u_expression(UserExpression):
     def eval(self, values, x):
@@ -75,8 +76,8 @@ class u_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-Q_u_a = FunctionSpace(sub_meshes_a[1], 'P', 2)
-Q_u_b = FunctionSpace(sub_meshes_b[1], 'P', 2)
+Q_u_a = VectorFunctionSpace(sub_meshes_a[1], 'P', 2, dim=2)
+Q_u_b = VectorFunctionSpace(sub_meshes_b[1], 'P', 2, dim=2)
 
 Q_u = VectorFunctionSpace(sub_meshes_a[0], 'P', 2)
 
