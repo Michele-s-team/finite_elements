@@ -120,7 +120,7 @@ def print_solution(t, step, dt):
         for alpha in range(rpam.parameters['n_points_output_cspline']) 
         ]
 
-    with open(os.path.join(solpath.snapshots_csv_path, f'cspline_n_{step}.csv'), 'w', newline='') as cspline_file:
+    with open(os.path.join(solpath.snapshots_csv_path, f'cspline_n_{step + 1}.csv'), 'w', newline='') as cspline_file:
 
         writer = csv.writer(cspline_file)
         writer.writerow([':0',':1'])  
@@ -131,7 +131,7 @@ def print_solution(t, step, dt):
 
     deformed_mesh = msh.deform_mesh(rmsh.lmsh.sub_meshes[0], fsp.u_n)
 
-    with XDMFFile(os.path.join(solpath.snapshots_path, 'mesh_n_' + str(step+1) + '.xdmf')) as xdmf:
+    with XDMFFile(os.path.join(solpath.snapshots_path, 'mesh_n_' + str(step + 1) + '.xdmf')) as xdmf:
         xdmf.write(deformed_mesh)
 
     io.print_mesh_vertices_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'vertex_mesh_n_' + str(step) + '.csv'))
