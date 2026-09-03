@@ -398,6 +398,8 @@ for n in range(rpam.parameters['N']):
         v_fl_n_1_old = Function(fsp.Q_v_fl)
         v_fl_n_2_old = Function(fsp.Q_v_fl)
 
+        phi_fl_old = Function(fsp.Q_phi_fl)
+
         sigma_fl_n_12_old = Function(fsp.Q_phi_fl)
         sigma_fl_n_32_old = Function(fsp.Q_phi_fl)
 
@@ -441,6 +443,8 @@ for n in range(rpam.parameters['N']):
         v_fl_n_old.assign(fsp.v_fl_n)
         v_fl_n_1_old.assign(fsp.v_fl_n_1)
         v_fl_n_2_old.assign(fsp.v_fl_n_2)
+
+        phi_fl_old.assign(fsp.phi_fl)
 
         sigma_fl_n_12_old.assign(fsp.sigma_fl_n_12)
         sigma_fl_n_32_old.assign(fsp.sigma_fl_n_32)
@@ -520,6 +524,8 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_old)
         msh.transfer(v_fl_n_2_old, fsp.v_fl_n_2, u_n_old)
 
+        msh.transfer(phi_fl_old, fsp.phi_fl, u_n_old)
+
         msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
         msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_old)
 
@@ -559,11 +565,10 @@ for n in range(rpam.parameters['N']):
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
     
     # 3) update the fluid problem
-    fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
-
     fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
     fsp.v_fl_n_1.assign(fsp.v_fl_n)
 
+    fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
     fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
     if step % rpam.parameters['print_out_stride'] == 0:
