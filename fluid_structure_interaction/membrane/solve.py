@@ -433,8 +433,6 @@ for n in range(rpam.parameters['N']):
 
         msh.generate_square_no_circle_curve_mesh(curve_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
-        print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
-
 
         #4.3 reload modules so everything is updated according to the mesh change
         
@@ -477,12 +475,16 @@ for n in range(rpam.parameters['N']):
         del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, sigma_n_12_old, u_n_old, u_dot_n_old, v_fl_n_old, sigma_fl_n_12_old
         gc.collect()
 
+        print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
+
+
         #sign
 
 
     
-    # update the fields
-    # 1) update the membrane problem 
+    # 5. update  fields
+    
+    # 5.1 update the membrane problem 
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
 
     fsp.v_n_2.assign( fsp.v_n_1 )
