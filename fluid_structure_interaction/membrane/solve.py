@@ -209,6 +209,8 @@ pr_bc = importlib.import_module(swi.prout_bc)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
+cu = importlib.import_module(swi.cu)
+
 
 # test calls of problems
 
@@ -483,6 +485,8 @@ for n in range(rpam.parameters['N']):
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
         pr_sol = importlib.reload(pr_sol)
+        cu = importlib.reload(cu)
+
 
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
