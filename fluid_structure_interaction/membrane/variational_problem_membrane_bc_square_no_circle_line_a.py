@@ -29,8 +29,10 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 class X_ref_Expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = cu.X_ref_s_dXref_ds(x[0])[0][0]
-        values[1] = cu.X_ref_s_dXref_ds(x[0])[0][1]
+        X, _ = cu.X_ref_s_dXref_ds(x[0])
+
+        values[0] = X[0]
+        values[1] = X[1]
 
     def value_shape(self):
         return (2,)
