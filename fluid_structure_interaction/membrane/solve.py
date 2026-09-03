@@ -34,6 +34,8 @@ import variational_problem.utils as var_pr
 fi = importlib.import_module(swi.fi)
 
 # test transfer sub mesh to sub mesh - start
+import solution_paths as solpath
+
 
 # read the mesh
 path_a = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_a'
@@ -53,8 +55,43 @@ print(f'number of vertices = {mesh_a.num_vertices()} {mesh_b.num_vertices()}')
 sub_meshes_a, sf_sub_meshes_a, mf_sub_meshes_a = msh.read_sub_meshes(mesh_a, sf_a, parameters_a, path_a)
 sub_meshes_b, sf_sub_meshes_b, mf_sub_meshes_b = msh.read_sub_meshes(mesh_b, sf_b, parameters_b, path_b)
 
-sys.exit(1)
+class u_a_expression(UserExpression):
+    def eval(self, values, x):
 
+        values[0] = x[0]**2
+
+
+    def value_shape(self):
+        return (1,)
+    
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+        values[1] = - x[0] * (x[0]-1)
+
+
+    def value_shape(self):
+        return (2,)
+
+Q_u_a = FunctionSpace(sub_meshes_a[1], 'P', 2)
+Q_u_b = FunctionSpace(sub_meshes_b[1], 'P', 2)
+
+Q_u = VectorFunctionSpace(sub_meshes_a[0], 'P', 2)
+
+u = Function(Q_u)
+u_a = Function(Q_u_a)
+u_b = Function(Q_u_b)
+
+u.interpolate(u_expression(element=Q_u.ufl_element()))
+u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
+
+io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+sys.exit(1)
 # test transfer sub mesh to sub mesh - end
 
 
