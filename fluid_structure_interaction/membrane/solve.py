@@ -146,6 +146,8 @@ io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
 '''
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
+pre_remesh_path = os.path.join(rarg.args.input_directory, '../solution_pre_remesh')
+os.system(f'rm -rf {pre_remesh_path}')
 
 dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 
@@ -363,12 +365,17 @@ for n in range(rpam.parameters['N']):
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
         # 4.1.1.1 _old fields for membrane
+        v_bar_old = Function(fsp.Q_v_bar)
+        w_bar_old = Function(fsp.Q_w_bar)
+        phi_old = Function(fsp.Q_phi)
         v_n_old = Function(fsp.Q_v_n)
         w_n_old = Function(fsp.Q_w_n)
-        sigma_n_12_old = Function(fsp.Q_phi)
         U_n_12_old = Function(fsp.Q_U_n_12)
         nu_n_12_old = Function(fsp.Q_nu_n_12)
         psi_n_12_old = Function(fsp.Q_psi_n_12)
+        mu_n_12_old = Function(fsp.Q_mu_n_12)
+
+        sigma_n_12_old = Function(fsp.Q_phi)
 
         # 4.1.1.2 _old for mesh
         u_n_old = Function(fsp.Q_u)
@@ -419,6 +426,9 @@ for n in range(rpam.parameters['N']):
             curve_coordinates.append(np.add(coordinate, fsp.u_n(coordinate).tolist()).tolist())
 
         #4.2.1 generate the mesh with the new curve_coordinates
+        
+        # store the mesh before remeshing in `pre_remesh_path`, this will be needed for transferring fields
+        os.system(f'rm -rf {pre_remesh_path}; mkdir -p {pre_remesh_path}; cp -r {rarg.args.input_directory}/. {pre_remesh_path}')
 
         msh.generate_square_no_circle_curve_mesh(curve_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
@@ -443,6 +453,17 @@ for n in range(rpam.parameters['N']):
         # 4.4.1 transfer membrane fields
 
         #sign
+        fu.transfer_sub_mesh_to_sub_mesh(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_sub_mesh_to_sub_mesh(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
+
+        fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
 
         # 4.4.2 set mesh fields
         fsp.u_n.assign(Constant((0, 0)))

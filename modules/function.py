@@ -417,9 +417,10 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
 given a sub mesh a and a sub mesh b obtained from a by means of a displacement field, transfer a field (scalar, vector, tensor) on sub mesh a onto sub mesh b
 Input values: 
     * Mandatory:
-        - `u_sub_mesh_a`: the field on sub mesh a
-        - `u_sub_mesh_b`: the field on sub mesh b
+        - `u_a`: the field on sub mesh a
+        - `u_b`: the field on sub mesh b
         - `u`: the deformation field that relates  mesh a to sub mesh b
+        - `mesh_a_path`: the path of the mesh of `u_a`
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
@@ -481,7 +482,7 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon)
     n_dofs_b = Q_b.dim()
     n_nodes_b = n_dofs_b // num_components
 
-    print(f'*** sanity check: {abs(arc_length_a_to_b_tab[-1] - max(dof_coordinates_b[:, 0]))}')
+    # print(f'*** sanity check: {abs(arc_length_a_to_b_tab[-1] - max(dof_coordinates_b[:, 0]))}')
 
 
     # Create list to store all DOF values (using list for efficiency with extend)
