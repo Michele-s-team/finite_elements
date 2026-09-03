@@ -14,6 +14,7 @@ import mesh.load as lmsh
 import parameters.read.solution as rpam
 import switch_problem as swi
 
+cu = importlib.import_module(swi.cu)
 rmsh = importlib.import_module(swi.rmsh)
 
 cmd.set_gauge('arc_length')
@@ -27,8 +28,9 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 # reference configuration of the manifold, a straight line which coincides with the mesh line
 class X_ref_Expression(UserExpression):
     def eval(self, values, x):
-        values[0] = x[0]
-        values[1] = rmsh.parameters['curve_coordinates'][0][1]
+
+        values[0] = cu.X_ref_s_dXref_ds(x[0])[0][0]
+        values[1] = cu.X_ref_s_dXref_ds(x[0])[0][1]
 
     def value_shape(self):
         return (2,)
