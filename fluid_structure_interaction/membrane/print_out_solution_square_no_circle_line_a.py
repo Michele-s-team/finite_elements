@@ -15,6 +15,7 @@ import switch_problem as swi
 
 cu = importlib.import_module(swi.cu)
 fi = importlib.import_module(swi.fi)
+rmsh = importlib.import_module(swi.rmsh)
 
 
 def print_solution(t, step, dt):
@@ -123,7 +124,19 @@ def print_solution(t, step, dt):
 
         writer = csv.writer(cspline_file)
         writer.writerow([':0',':1'])  
-        writer.writerows(tab_cspline)       
+        writer.writerows(tab_cspline) 
+
+
+    #4. Write the deformed mesh to file
+
+    deformed_mesh = msh.deform_mesh(rmsh.lmsh.sub_meshes[0], fsp.u_n)
+
+    with XDMFFile(os.path.join(solpath.snapshots_path, 'mesh_n_' + str(step) + '.xdmf')) as xdmf:
+        xdmf.write(deformed_mesh)
+
+    io.print_mesh_vertices_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'vertex_mesh_n_' + str(step) + '.csv'))
+    io.print_mesh_lines_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'line_mesh_n_' + str(step) + '.csv'))
+      
 
     
 
