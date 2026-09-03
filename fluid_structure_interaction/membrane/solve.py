@@ -451,8 +451,6 @@ for n in range(rpam.parameters['N']):
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 4.4.1 transfer membrane fields
-
-        #sign
         fu.transfer_sub_mesh_to_sub_mesh(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
         fu.transfer_sub_mesh_to_sub_mesh(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
         fu.transfer_sub_mesh_to_sub_mesh(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
@@ -473,8 +471,7 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
         msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
 
-
-
+        #sign
 
 
     
