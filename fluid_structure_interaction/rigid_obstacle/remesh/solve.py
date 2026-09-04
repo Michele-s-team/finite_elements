@@ -245,10 +245,28 @@ for n in range(rpam.parameters["num_steps"]):
 
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
-        # sign
 
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
+        # sign
+
+        # 
+        '''
+        phi_n_1(y) = y + u_n_1(y)
+        
+        y' = phi_n_1(y)
+
+        the function v_n_1_def that satisfies
+
+        v_n_1_def(phi_n_1(y)) = v_n_1_old(y)
+        v_n_1_def(y') = v_n_1_old(phi_n_1^{-1}(y'))
+
+        is constructed as
+
+        v_n_1_def = fu.deform_function(v_n_1_old, u_n_1)
+        '''
+
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
+        # 
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
         msh.transfer(v__old, fsp.v_, u_n_old)
