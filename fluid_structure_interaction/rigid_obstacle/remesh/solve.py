@@ -250,9 +250,11 @@ for n in range(rpam.parameters["num_steps"]):
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
         # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + fsp.u_n_1(y)
         fsp.v_n_1 = fu.deform_function(v_n_1_old, fsp.u_n_1)
+
+        # this returns `fsp.v_n_2` such that fsp.v_n_2(y') =  v_n_2_old(phi_n_2^{-1}(y')), where phi_n_2(y) = y + fsp.u_n_2(y)
+        fsp.v_n_2 = fu.deform_function(v_n_2_old, fsp.u_n_2)
         # sign
 
-        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
         msh.transfer(v__old, fsp.v_, u_n_old)
 
