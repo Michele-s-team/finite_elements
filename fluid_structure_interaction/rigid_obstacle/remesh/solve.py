@@ -256,11 +256,15 @@ for n in range(rpam.parameters["num_steps"]):
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
+
+        # this returns `fsp.sigma_n_12` such that fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12^{-1}(y')), where phi_n_12(y) = y + fsp.u_n_12(y)
+        fsp.sigma_n_12 = fu.deform_function(sigma_n_12_old, fsp.u_n_12)     
+     
+        # this returns `fsp.sigma_n_32` such that fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32^{-1}(y')), where phi_n_32(y) = y + fsp.u_n_32(y)
+        fsp.sigma_n_32 = fu.deform_function(sigma_n_32_old, fsp.u_n_32)
         # sign
 
-        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
-        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
-
+     
         msh.transfer(phi_old, fsp.phi, u_n_old)
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
