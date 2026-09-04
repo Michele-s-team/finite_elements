@@ -249,16 +249,16 @@ for n in range(rpam.parameters["num_steps"]):
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 6.1 transfer fluid fields
-        fsp.v_n.assign(fu.deform_function(v_n_old, fsp.u_n))
+        fsp.v_n.assign(fu.deform_function(v_n_old, u_n_old))
 
-        # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + fsp.u_n_1(y)
-        fsp.v_n_1.assign(fu.deform_function(v_n_1_old, fsp.u_n_1))
+        # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + u_n_1_old(y)
+        fsp.v_n_1.assign(fu.deform_function(v_n_1_old, u_n_1_old))
 
-        # this returns `fsp.v_n_2` such that fsp.v_n_2(y') =  v_n_2_old(phi_n_2^{-1}(y')), where phi_n_2(y) = y + fsp.u_n_2(y)
-        fsp.v_n_2.assign(fu.deform_function(v_n_2_old, fsp.u_n_2))
+        # this returns `fsp.v_n_2` such that fsp.v_n_2(y') =  v_n_2_old(phi_n_2^{-1}(y')), where phi_n_2(y) = y + u_n_2_old(y)
+        fsp.v_n_2.assign(fu.deform_function(v_n_2_old, u_n_2_old))
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        fsp.v_.assign(fu.deform_function(v__old, fsp.u_n))
+        fsp.v_.assign(fu.deform_function(v__old, u_n_old))
 
         # this returns `fsp.sigma_n_12` such that fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12^{-1}(y')), where phi_n_12(y) = y + fsp.u_n_12(y)
         fsp.sigma_n_12.assign(fu.deform_function(sigma_n_12_old, fsp.u_n_12)) 
@@ -278,31 +278,31 @@ for n in range(rpam.parameters["num_steps"]):
 
         '''
         g(y') = u_n_1_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        g = fu.deform_function(u_n_1_old, fsp.u_n)
+        g = fu.deform_function(u_n_1_old, u_n_old)
 
         h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        h = fu.deform_function(u_n_old, fsp.u_n)
+        h = fu.deform_function(u_n_old, u_n_old)
         '''
         fsp.u_n_1.assign(
-             fu.deform_function(u_n_1_old, fsp.u_n) - fu.deform_function(u_n_old, fsp.u_n)
+             fu.deform_function(u_n_1_old, u_n_old) - fu.deform_function(u_n_old, u_n_old)
         )
 
         '''
         g(y') = u_n_2_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        g = fu.deform_function(u_n_2_old, fsp.u_n)
+        g = fu.deform_function(u_n_2_old, u_n_old)
 
         h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        h = fu.deform_function(u_n_old, fsp.u_n)
+        h = fu.deform_function(u_n_old, u_n_old)
         '''
         fsp.u_n_2.assign(
-            fu.deform_function(u_n_2_old, fsp.u_n) - fu.deform_function(u_n_old, fsp.u_n)
+            fu.deform_function(u_n_2_old, u_n_old) - fu.deform_function(u_n_old, u_n_old)
         )
 
         # 6.2.2 transfer u_dot
 
-        fsp.u_dot_n.assign(fu.deform_function(u_dot_n_old, fsp.u_n))
-        fsp.u_dot_n_1.assign(fu.deform_function(u_dot_n_1_old, fsp.u_n))
-        fsp.u_dot_n_2.assign(fu.deform_function(u_dot_n_2_old, fsp.u_n))
+        fsp.u_dot_n.assign(fu.deform_function(u_dot_n_old, u_n_old))
+        fsp.u_dot_n_1.assign(fu.deform_function(u_dot_n_1_old, u_n_old))
+        fsp.u_dot_n_2.assign(fu.deform_function(u_dot_n_2_old, u_n_old))
 
         # sign
 
