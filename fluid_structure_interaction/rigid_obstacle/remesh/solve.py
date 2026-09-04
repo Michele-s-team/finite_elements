@@ -253,10 +253,10 @@ for n in range(rpam.parameters["num_steps"]):
 
         # this returns `fsp.v_n_2` such that fsp.v_n_2(y') =  v_n_2_old(phi_n_2^{-1}(y')), where phi_n_2(y) = y + fsp.u_n_2(y)
         fsp.v_n_2 = fu.deform_function(v_n_2_old, fsp.u_n_2)
-        # sign
 
-
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
+        # sign
 
         msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
         msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
