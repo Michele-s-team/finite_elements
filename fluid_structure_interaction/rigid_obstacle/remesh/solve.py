@@ -296,10 +296,8 @@ for n in range(rpam.parameters["num_steps"]):
             fu.deform_function(u_n_2_old, fsp.u_n) - fu.deform_function(u_n_old, fsp.u_n)
         )
 
+        fsp.u_dot_n.assign(fu.deform_function(u_dot_n_old, fsp.u_n))
         # sign
-
-        # msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
-
 
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
         msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
