@@ -30,7 +30,20 @@ writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
 
 
-# 2. file for data
+# 2. file for theta omega
+
+# create the path for the data csv file if it does not exist
+theta_omega_filename = os.path.join(rarg.args.output_directory, 'theta_omega.csv')
+os.makedirs(os.path.dirname(theta_omega_filename), exist_ok=True)
+
+csvfile_theta_omega = open(theta_omega_filename, 'a', newline='')
+theta_omega_fieldnames = [ "theta", "omega" ]
+theta_omega_writer = csv.DictWriter(csvfile_theta_omega, fieldnames=theta_omega_fieldnames)
+theta_omega_writer.writeheader()
+
+
+
+# 3. file for data
 
 # create the path for the csv file if it does not exist
 filename_data = os.path.join(rarg.args.output_directory, 'data.csv')
@@ -44,3 +57,4 @@ fieldnames_data = [ \
 
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
+

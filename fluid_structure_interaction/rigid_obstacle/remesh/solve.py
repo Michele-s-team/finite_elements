@@ -393,6 +393,6 @@ for n in range(rpam.parameters["num_steps"]):
 print("... done.", flush=True)
 
 
-pr_sol.theta_omega_csvfile.close()
+fi.csvfile_theta_omega.close()
 fi.csvfile_bcs.close()
 fi.csvfile_data.close()
