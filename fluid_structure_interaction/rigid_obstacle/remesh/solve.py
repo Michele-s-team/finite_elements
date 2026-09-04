@@ -203,6 +203,10 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_1_old = Function(fsp.Q_u_dot)
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
+        u_a = Function(fsp.Q_u)
+        u_b = Function(fsp.Q_u)
+
+
 
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
         v_n_old.assign(fsp.v_n)
@@ -283,9 +287,10 @@ for n in range(rpam.parameters["num_steps"]):
         h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
         h = fu.deform_function(u_n_old, u_n_old)
         '''
-        fsp.u_n_1.assign(
-             fu.deform_function(u_n_1_old, u_n_old) - fu.deform_function(u_n_old, u_n_old)
-        )
+
+        fu.deform_project_function(u_n_1_old, u_a, u_n_old)
+        fu.deform_project_function(u_n_old, u_b, u_n_old)
+        fsp.u_n_1.assign(u_a - u_b)
 
         '''
         g(y') = u_n_2_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
@@ -294,9 +299,10 @@ for n in range(rpam.parameters["num_steps"]):
         h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
         h = fu.deform_function(u_n_old, u_n_old)
         '''
-        fsp.u_n_2.assign(
-            fu.deform_function(u_n_2_old, u_n_old) - fu.deform_function(u_n_old, u_n_old)
-        )
+
+        fu.deform_project_function(u_n_2_old, u_a, u_n_old)
+        fu.deform_project_function(u_n_old, u_b, u_n_old)
+        fsp.u_n_2.assign(u_a - u_b)
 
         # 6.2.2 transfer u_dot
 
@@ -317,6 +323,7 @@ for n in range(rpam.parameters["num_steps"]):
         del phi_old
         del u_n_old, u_n_1_old, u_n_2_old
         del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
+        del u_a, u_b
 
         gc.collect()
 
