@@ -45,20 +45,6 @@ remesh_fieldnames = [ "remesh_step", "phi", "mesh_quality_before_remesh"]
 remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
 remesh_writer.writeheader()
 
-
-def print_remesh(step, phi, mesh_quality_before_remesh):
-
-    remesh_writer.writerows([{ \
-        remesh_fieldnames[0]: \
-            step, 
-        remesh_fieldnames[1]: \
-            phi, 
-        remesh_fieldnames[2]: \
-            mesh_quality_before_remesh, 
-    }])
-    remesh_csvfile.flush()
-    
-
 def print_solution(step):
 
     # 1) print theta and omega

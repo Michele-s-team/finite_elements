@@ -24,6 +24,7 @@ sys.path.append(module_path)
 import calculus as cal
 import function as fu
 import input_output as io
+import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -117,6 +118,7 @@ ap_shape = importlib.import_module(swi.ap_shape)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_da = importlib.import_module(swi.prout_da)
 
 importlib.reload(geo)
 importlib.reload(rmsh.lmsh)
@@ -124,6 +126,7 @@ importlib.reload(bgeo)
 fsp = importlib.reload(fsp)
 rmsh = importlib.reload(rmsh)
 pr_bc = importlib.reload(pr_bc)
+pr_da = importlib.reload(pr_da)
 
 
 # Time-stepping
@@ -176,12 +179,16 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
+
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
+
     pr_bc.print_bcs(step)
+    pr_da.print_data(step)
 
-    mesh_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
 
-    if  mesh_quality < rpam.parameters['mesh_quality_threshold']:
-        # the mesh quality got below the threshold -> remesh 
+    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+
+        #  mesh quality got below the threshold -> remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
@@ -263,6 +270,7 @@ for n in range(rpam.parameters["num_steps"]):
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
+        pr_da = importlib.reload(pr_da)
 
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
@@ -332,9 +340,7 @@ for n in range(rpam.parameters["num_steps"]):
         fu.deform_project_function(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
         fu.deform_project_function(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)
 
-        #7. call print_remesh to print out the remeshing info
 
-        pr_sol.print_remesh(step, theta_ref, mesh_quality)
 
         # 8 clean up
     
@@ -390,3 +396,4 @@ print("... done.", flush=True)
 pr_sol.theta_omega_csvfile.close()
 pr_sol.remesh_csvfile.close()
 fi.csvfile_bcs.close()
+fi.csvfile_data.close()

@@ -5,8 +5,10 @@ import ufl as ufl
 
 import runtime_arguments as rarg
 
+# 1. file for BCs
+
 # create the path for the csv file if it does not exist
-filename_bcs = rarg.args.output_directory + '/bcs.csv'
+filename_bcs = os.path.join(rarg.args.output_directory, 'bcs.csv')
 os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
 
 csvfile_bcs = open(filename_bcs, 'a', newline='')
@@ -26,3 +28,19 @@ fieldnames_bcs = [ \
 
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
+
+
+# 2. file for data
+
+# create the path for the csv file if it does not exist
+filename_data = os.path.join(rarg.args.output_directory, 'data.csv')
+os.makedirs(os.path.dirname(filename_data), exist_ok=True)
+
+csvfile_data = open(filename_data, 'a', newline='')
+fieldnames_data = [ \
+    'step', \
+    'mesh_quality'
+    ]
+
+writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
+writer_data.writeheader()

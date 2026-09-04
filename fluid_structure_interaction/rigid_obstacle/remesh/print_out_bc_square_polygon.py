@@ -1,4 +1,3 @@
-import csv
 import importlib
 from fenics import *
 import os
@@ -11,7 +10,6 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
-import runtime_arguments as rarg
 import switch_problem as swi
 
 fi = importlib.import_module(swi.fi)
