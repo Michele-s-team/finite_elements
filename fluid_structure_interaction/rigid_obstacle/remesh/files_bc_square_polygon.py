@@ -1,0 +1,28 @@
+import csv
+from fenics import *
+import os
+import ufl as ufl
+
+import runtime_arguments as rarg
+
+# create the path for the csv file if it does not exist
+filename_bcs = rarg.args.output_directory + '/bcs.csv'
+os.makedirs(os.path.dirname(filename_bcs), exist_ok=True)
+
+csvfile_bcs = open(filename_bcs, 'a', newline='')
+fieldnames_bcs = [ \
+    'step', \
+    '<<(u^n_i - u_shape_i)(u^n_i - u_shape_i)>>_polygon', \
+    '<<(u^n_i - u_square_i)(u^n_i - u_square_i)>>_square', \
+    '<<(u_dot^n_i - u_dot_shape_i)(u_dot^n_i - u_dot_shape_i)>>_polygon', \
+    '<<(u_dot^n_i - u_dot_square_i)(u_dot^n_i - u_dot_square_i)>>_square', \
+    '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
+    '<<v_bar^i v_bar_i>>_{tb}', \
+    '<<(polygon_profile_v_bar^i - v_bar^i)(v__profile_polygon - v_bar_i)>>_polygon', \
+    '<<\mu G^{n-1}_{j1} \partial_j V_i>>_r', \
+    '<<(G^{n-1}_{ji} nu_j G^{n-1}_{li} \partial_l phi)^2>>_{l + tb + polygon}' ,\
+    '<<phi^2>>_r'
+    ]
+
+writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
+writer_bcs.writeheader()

@@ -112,6 +112,7 @@ import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module(swi.rmsh)
 
+fi = importlib.import_module(swi.fi)
 ap_shape = importlib.import_module(swi.ap_shape)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
@@ -175,7 +176,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
-    pr_bc.print_bcs()
+    pr_bc.print_bcs(step)
 
     mesh_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
 
@@ -386,6 +387,6 @@ for n in range(rpam.parameters["num_steps"]):
 print("... done.", flush=True)
 
 
-
 pr_sol.theta_omega_csvfile.close()
 pr_sol.remesh_csvfile.close()
+fi.csvfile_bcs.close()
