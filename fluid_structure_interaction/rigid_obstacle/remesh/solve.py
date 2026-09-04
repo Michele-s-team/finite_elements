@@ -130,6 +130,7 @@ print("Starting time iteration ...", flush=True)
 t = 0
 step = 0
 for n in range(rpam.parameters["num_steps"]):
+    
     # Update current time
     t += dt
     step += 1
