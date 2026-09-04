@@ -252,19 +252,19 @@ for n in range(rpam.parameters["num_steps"]):
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
 
         # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + fsp.u_n_1(y)
-        fsp.v_n_1 = fu.deform_function(v_n_1_old, fsp.u_n_1)
+        fsp.v_n_1.assign(fu.deform_function(v_n_1_old, fsp.u_n_1))
 
         # this returns `fsp.v_n_2` such that fsp.v_n_2(y') =  v_n_2_old(phi_n_2^{-1}(y')), where phi_n_2(y) = y + fsp.u_n_2(y)
-        fsp.v_n_2 = fu.deform_function(v_n_2_old, fsp.u_n_2)
+        fsp.v_n_2.assign(fu.deform_function(v_n_2_old, fsp.u_n_2))
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
 
         # this returns `fsp.sigma_n_12` such that fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12^{-1}(y')), where phi_n_12(y) = y + fsp.u_n_12(y)
-        fsp.sigma_n_12 = fu.deform_function(sigma_n_12_old, fsp.u_n_12)     
+        fsp.sigma_n_12.assign(fu.deform_function(sigma_n_12_old, fsp.u_n_12)) 
      
         # this returns `fsp.sigma_n_32` such that fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32^{-1}(y')), where phi_n_32(y) = y + fsp.u_n_32(y)
-        fsp.sigma_n_32 = fu.deform_function(sigma_n_32_old, fsp.u_n_32)
+        fsp.sigma_n_32.assign(fu.deform_function(sigma_n_32_old, fsp.u_n_32))
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_old, fsp.phi, u_n_old)
@@ -298,7 +298,9 @@ for n in range(rpam.parameters["num_steps"]):
 
         # sign
 
-        msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+        # msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+
+
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
         msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
 
