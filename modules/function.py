@@ -159,12 +159,11 @@ def read_from_file(file_path, u):
 '''
 given a function space and its mesh, return a function space on the deformed mesh, deformed according to a displacement field
 Input values:
-- 'Q': the function space
-- 'u': the displacement field
+    - 'Q': the function space
+    - 'u': the displacement field
 Return values:
-- the new function space on the deformed mesh
+    - the new function space on the deformed mesh
 '''
-
 
 def deform_function_space(Q, u):
     
@@ -203,10 +202,10 @@ def copy_function_values(f_in, f_out):
 
 '''
 given a field defined on a mesh and a deformation field of the mesh, return the field defined and interpolated on the deformed mesh
+
 Input values: 
     - 'f': the field (scalar, vector or tensor)
     - 'u': the deformation field, defined on the mesh of f
-
 '''
 def deform_function(f, u):
 
