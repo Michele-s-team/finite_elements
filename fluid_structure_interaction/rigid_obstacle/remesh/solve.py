@@ -300,13 +300,8 @@ for n in range(rpam.parameters["num_steps"]):
 
         # 6.2.2 transfer u_dot
 
-        # fsp.u_dot_n.assign(fu.deform_function(u_dot_n_old, u_n_old))
         fu.deform_project_function(u_dot_n_old, fsp.u_dot_n, u_n_old)
-
-        # fsp.u_dot_n_1.assign(fu.deform_function(u_dot_n_1_old, u_n_old))
         fu.deform_project_function(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
-
-        # fsp.u_dot_n_2.assign(fu.deform_function(u_dot_n_2_old, u_n_old))
         fu.deform_project_function(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)
 
         #7. call print_remesh to print out the remeshing info
