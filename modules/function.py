@@ -206,6 +206,9 @@ given a field defined on a mesh and a deformation field of the mesh, return the 
 Input values: 
     - 'f': the field (scalar, vector or tensor)
     - 'u': the deformation field, defined on the mesh of f
+
+Return values:
+    - 'g' such that g(y') =  f(phi^{-1}(y')), where phi(y) = y + u(y)
 '''
 def deform_function(f, u):
 
