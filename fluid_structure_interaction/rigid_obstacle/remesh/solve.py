@@ -262,10 +262,12 @@ for n in range(rpam.parameters["num_steps"]):
      
         # this returns `fsp.sigma_n_32` such that fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32^{-1}(y')), where phi_n_32(y) = y + fsp.u_n_32(y)
         fsp.sigma_n_32 = fu.deform_function(sigma_n_32_old, fsp.u_n_32)
+
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        msh.transfer(phi_old, fsp.phi, u_n_old)
+
         # sign
 
-     
-        msh.transfer(phi_old, fsp.phi, u_n_old)
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n.assign(Constant((0, 0)))
