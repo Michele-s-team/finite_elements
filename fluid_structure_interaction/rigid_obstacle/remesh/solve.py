@@ -263,13 +263,13 @@ for n in range(rpam.parameters["num_steps"]):
         # fsp.v_.assign(fu.deform_function(v__old, u_n_old))
         fu.deform_project_function(v__old, fsp.v_, u_n_old)
 
-        # this returns `fsp.sigma_n_12` such that fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12^{-1}(y')), where phi_n_12(y) = y + fsp.u_n_12(y)
-        # fsp.sigma_n_12.assign(fu.deform_function(sigma_n_12_old, fsp.u_n_12)) 
-        fu.deform_project_function(sigma_n_12_old, fsp.sigma_n_12, fsp.u_n_12)
+        # this returns `fsp.sigma_n_12` such that fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12^{-1}(y')), where phi_n_12(y) = y + u_n_12_old(y)
+        # fsp.sigma_n_12.assign(fu.deform_function(sigma_n_12_old, u_n_12_old)) 
+        fu.deform_project_function(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
 
-        # this returns `fsp.sigma_n_32` such that fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32^{-1}(y')), where phi_n_32(y) = y + fsp.u_n_32(y)
-        # fsp.sigma_n_32.assign(fu.deform_function(sigma_n_32_old, fsp.u_n_32))
-        fu.deform_project_function(sigma_n_32_old, fsp.sigma_n_32, fsp.u_n_32)
+        # this returns `fsp.sigma_n_32` such that fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32^{-1}(y')), where phi_n_32(y) = y + u_n_32_old(y)
+        # fsp.sigma_n_32.assign(fu.deform_function(sigma_n_32_old, u_n_32_old))
+        fu.deform_project_function(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         # fsp.phi.assign(fu.deform_function(phi_old, u_n_old)) 
