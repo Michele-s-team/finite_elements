@@ -601,3 +601,18 @@ class identity_expression(UserExpression):
         
     def value_shape(self):
         return (2,)
+
+'''
+given a function `f` defined on a mesh and a function `g` defined on a mesh whose domain is obtained form the mesh of `f` with a deformation field `u`, deform `f` with `u` and write the result in `g`
+
+Input values: 
+    - `f`: the input function
+    - `g`: the output function
+    - `u`: the deformation field
+'''
+def deform_project_function(f, g, u):
+
+    h = deform_function(f, u)
+    h.set_allow_extrapolation(True)
+
+    g.assign(project(h, g.function_space()))
