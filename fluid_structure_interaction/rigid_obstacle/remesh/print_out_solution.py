@@ -36,15 +36,6 @@ theta_omega_writer = csv.DictWriter(theta_omega_csvfile, fieldnames=theta_omega_
 theta_omega_writer.writeheader()
 
 
-# create the path for the mesh csv file if it does not exist
-remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
-os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
-
-remesh_csvfile = open(remesh_filename, 'a', newline='')
-remesh_fieldnames = [ "remesh_step", "phi", "mesh_quality_before_remesh"]
-remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
-remesh_writer.writeheader()
-
 def print_solution(step):
 
     # 1) print theta and omega

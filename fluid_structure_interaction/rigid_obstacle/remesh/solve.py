@@ -394,6 +394,5 @@ print("... done.", flush=True)
 
 
 pr_sol.theta_omega_csvfile.close()
-pr_sol.remesh_csvfile.close()
 fi.csvfile_bcs.close()
 fi.csvfile_data.close()
