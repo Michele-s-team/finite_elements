@@ -273,10 +273,30 @@ for n in range(rpam.parameters["num_steps"]):
         # 6.2 transfer mesh fields
 
         fsp.u_n.assign(Constant((0, 0)))
-        # sign
 
-        fsp.u_n_1.assign(Constant((0, 0)))
-        fsp.u_n_2.assign(Constant((0, 0)))
+        '''
+        g(y') = u_n_1_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
+        g = fu.deform_function(u_n_1_old, fsp.u_n)
+
+        h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
+        h = fu.deform_function(u_n_old, fsp.u_n)
+        '''
+        fsp.u_n_1.assign(
+             fu.deform_function(u_n_1_old, fsp.u_n) - fu.deform_function(u_n_old, fsp.u_n)
+        )
+
+        '''
+        g(y') = u_n_2_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
+        g = fu.deform_function(u_n_2_old, fsp.u_n)
+
+        h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
+        h = fu.deform_function(u_n_old, fsp.u_n)
+        '''
+        fsp.u_n_2.assign(
+            fu.deform_function(u_n_2_old, fsp.u_n) - fu.deform_function(u_n_old, fsp.u_n)
+        )
+
+        # sign
 
         msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
