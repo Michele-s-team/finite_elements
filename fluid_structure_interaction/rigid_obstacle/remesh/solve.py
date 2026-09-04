@@ -245,6 +245,8 @@ for n in range(rpam.parameters["num_steps"]):
 
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
+        # sign
+
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
