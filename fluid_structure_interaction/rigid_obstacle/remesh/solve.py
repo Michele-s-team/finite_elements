@@ -8,6 +8,7 @@ Examples:
     clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
 """
 
+import colorama as col
 import dolfin
 from fenics import *
 import gc
@@ -181,9 +182,13 @@ for n in range(rpam.parameters["num_steps"]):
     if  mesh_quality < rpam.parameters['mesh_quality_threshold']:
         # the mesh quality got below the threshold -> remesh 
 
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
+
+
         # 1.transfer fields
 
         # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
+
         v_n_old = Function(fsp.Q_v)
         v_n_1_old = Function(fsp.Q_v)
         v_n_2_old = Function(fsp.Q_v)
@@ -203,8 +208,11 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_1_old = Function(fsp.Q_u_dot)
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
-        u_a = Function(fsp.Q_u)
-        u_b = Function(fsp.Q_u)
+
+        # 1.2 define auxiliary fields for the transfer
+
+        u_n_12_old = Function(fsp.Q_u)
+        u_n_32_old = Function(fsp.Q_u)
 
 
 
@@ -227,6 +235,12 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_old.assign(fsp.u_dot_n)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
+
+        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - start
+        u_n_12_old.assign((fsp.u_n + fsp.u_n_1)/2.0)
+        u_n_32_old.assign((fsp.u_n_1 + fsp.u_n_2)/2.0)
+        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - end
+
 
         #2. set the new rotation angle of the polygon for the reference configuration 
         theta_ref = fsp.theta_n
@@ -252,7 +266,14 @@ for n in range(rpam.parameters["num_steps"]):
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        # 6.1 transfer fluid fields
+        # 6.1 define auxiliary fields on the new mesh, which are needed for the transfer 
+
+        u_a = Function(fsp.Q_u)
+        u_b = Function(fsp.Q_u)
+
+        # 6.2 do the transfer 
+
+        # 6.2.1 transfer fluid fields
         fu.deform_project_function(v_n_old, fsp.v_n, u_n_old)
 
         # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + u_n_1_old(y)
@@ -274,9 +295,9 @@ for n in range(rpam.parameters["num_steps"]):
         fu.deform_project_function(phi_old, fsp.phi, u_n_old)
 
 
-        # 6.2 transfer mesh fields
+        # 6.2.2 transfer mesh fields
 
-        # 6.2.1 transfer u 
+        # 6.2.2.1 transfer u 
 
         fsp.u_n.assign(Constant((0, 0)))
 
@@ -304,7 +325,7 @@ for n in range(rpam.parameters["num_steps"]):
         fu.deform_project_function(u_n_old, u_b, u_n_old)
         fsp.u_n_2.assign(u_a - u_b)
 
-        # 6.2.2 transfer u_dot
+        # 6.2.2.2 transfer u_dot
 
         fu.deform_project_function(u_dot_n_old, fsp.u_dot_n, u_n_old)
         fu.deform_project_function(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
@@ -323,11 +344,11 @@ for n in range(rpam.parameters["num_steps"]):
         del phi_old
         del u_n_old, u_n_1_old, u_n_2_old
         del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
-        del u_a, u_b
+        del u_a, u_b, u_n_12_old, u_n_32_old
 
         gc.collect()
 
-        print(f'**** ... done. ')
+        print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
     
 
     
