@@ -272,6 +272,8 @@ for n in range(rpam.parameters["num_steps"]):
 
         # 6.2 transfer mesh fields
 
+        # 6.2.1 transfer u 
+
         fsp.u_n.assign(Constant((0, 0)))
 
         '''
@@ -295,6 +297,8 @@ for n in range(rpam.parameters["num_steps"]):
         fsp.u_n_2.assign(
             fu.deform_function(u_n_2_old, fsp.u_n) - fu.deform_function(u_n_old, fsp.u_n)
         )
+
+        # 6.2.2 transfer u_dot
 
         fsp.u_dot_n.assign(fu.deform_function(u_dot_n_old, fsp.u_n))
         fsp.u_dot_n_1.assign(fu.deform_function(u_dot_n_1_old, fsp.u_n))
