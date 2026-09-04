@@ -247,7 +247,10 @@ for n in range(rpam.parameters["num_steps"]):
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
+        # 6.1 transfer fluid fields
+
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
+
         # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + fsp.u_n_1(y)
         fsp.v_n_1 = fu.deform_function(v_n_1_old, fsp.u_n_1)
 
@@ -266,11 +269,12 @@ for n in range(rpam.parameters["num_steps"]):
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_old, fsp.phi, u_n_old)
 
+
+        # 6.2 transfer mesh fields
+
+        fsp.u_n.assign(Constant((0, 0)))
         # sign
 
-
-        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
-        fsp.u_n.assign(Constant((0, 0)))
         fsp.u_n_1.assign(Constant((0, 0)))
         fsp.u_n_2.assign(Constant((0, 0)))
 
