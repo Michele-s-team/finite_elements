@@ -468,12 +468,10 @@ for n in range(rpam.parameters['N']):
         mu_n_12_old = Function(fsp.Q_mu)
 
 
-
         # 1.1.5 M
 
         c_n_old = Function(fsp.Q_c)
         c_n_1_old = Function(fsp.Q_c)
-
 
         
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
@@ -572,9 +570,8 @@ for n in range(rpam.parameters['N']):
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
-
-        #6. reset cleanly solver parameters 
-
+        
+        #sign
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
