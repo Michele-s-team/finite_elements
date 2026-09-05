@@ -271,31 +271,31 @@ for n in range(rpam.parameters["num_steps"]):
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
 
-        # sign
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 6.1 do the transfer 
 
         # 6.1.1 transfer fluid fields
-        fu.deform_project_function(v_n_old, fsp.v_n, u_n_old)
+        # set fsp.v_n(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(v_n_old, fsp.v_n, u_n_old)
 
-        # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + u_n_1_old(y)
-        fu.deform_project_function(v_n_1_old, fsp.v_n_1, u_n_1_old)
+        # set fsp.v_n_1(y') =  v_n_1_old(phi_n_1_old^{-1}(y')), where phi_n_1_old(y) = y + u_n_1_old(y)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_1_old)
 
-        # this returns `fsp.v_n_2` such that fsp.v_n_2(y') =  v_n_2_old(phi_n_2^{-1}(y')), where phi_n_2(y) = y + u_n_2_old(y)
-        fu.deform_project_function(v_n_2_old, fsp.v_n_2, u_n_2_old)
-
-        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        fu.deform_project_function(v__old, fsp.v_, u_n_old)
-
-        # this returns `fsp.sigma_n_12` such that fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12^{-1}(y')), where phi_n_12(y) = y + u_n_12_old(y)
-        fu.deform_project_function(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
-
-        # this returns `fsp.sigma_n_32` such that fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32^{-1}(y')), where phi_n_32(y) = y + u_n_32_old(y)
-        fu.deform_project_function(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old)
+        # set fsp.v_n_2(y') =  v_n_2_old(phi_n_2_old^{-1}(y')), where phi_n_2_old(y) = y + u_n_2_old(y)
+        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_2_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        fu.deform_project_function(phi_old, fsp.phi, u_n_old)
+        msh.transfer(v__old, fsp.v_, u_n_old)
+
+        # set fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12_old^{-1}(y')), where phi_n_12_old(y) = y + u_n_12_old(y)
+        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
+
+        # set fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32_old^{-1}(y')), where phi_n_32_old(y) = y + u_n_32_old(y)
+        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old)
+
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        msh.transfer(phi_old, fsp.phi, u_n_old)
 
 
         # 6.1.2 transfer mesh fields
@@ -303,6 +303,7 @@ for n in range(rpam.parameters["num_steps"]):
         # 6.1.2.1 transfer u 
 
         fsp.u_n.assign(Constant((0, 0)))
+        # sign
 
         '''
         g(y') = u_n_1_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
