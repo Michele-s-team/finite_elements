@@ -336,9 +336,9 @@ for n in range(rpam.parameters["num_steps"]):
 
 
 
-        # 8 clean up
+        # 6.2 clean up
     
-        # delete the _old functions
+        # 6.2.1 delete the _old functions
         del v_n_old, v_n_1_old, v_n_2_old
         del v__old
         del sigma_n_12_old, sigma_n_32_old
@@ -354,18 +354,19 @@ for n in range(rpam.parameters["num_steps"]):
 
     
     #update the fields
-    # 1)
+
+    # 1. update theta and omega
     fsp.theta_n_1 = fsp.theta_n
     fsp.omega_n_1 = fsp.omega_n
 
-    # 2)
+    # 2. update mesh fields
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(fsp.u_n)
 
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
 
-    # 3)
+    # 3. update fluid fields
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
