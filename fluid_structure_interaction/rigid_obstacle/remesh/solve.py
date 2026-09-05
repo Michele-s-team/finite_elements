@@ -187,11 +187,9 @@ for n in range(rpam.parameters["num_steps"]):
 
 
     if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-
         #  mesh quality got below the threshold -> remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
-
 
         # 1.transfer fields
 
@@ -225,6 +223,7 @@ for n in range(rpam.parameters["num_steps"]):
 
 
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+
         v_n_old.assign(fsp.v_n)
         v_n_1_old.assign(fsp.v_n_1)
         v_n_2_old.assign(fsp.v_n_2)
@@ -272,17 +271,12 @@ for n in range(rpam.parameters["num_steps"]):
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
 
-
+        # sign
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        # 6.1 define auxiliary fields on the new mesh, which are needed for the transfer 
+        # 6.1 do the transfer 
 
-        u_a = Function(fsp.Q_u)
-        u_b = Function(fsp.Q_u)
-
-        # 6.2 do the transfer 
-
-        # 6.2.1 transfer fluid fields
+        # 6.1.1 transfer fluid fields
         fu.deform_project_function(v_n_old, fsp.v_n, u_n_old)
 
         # this returns `fsp.v_n_1` such that fsp.v_n_1(y') =  v_n_1_old(phi_n_1^{-1}(y')), where phi_n_1(y) = y + u_n_1_old(y)
@@ -304,9 +298,9 @@ for n in range(rpam.parameters["num_steps"]):
         fu.deform_project_function(phi_old, fsp.phi, u_n_old)
 
 
-        # 6.2.2 transfer mesh fields
+        # 6.1.2 transfer mesh fields
 
-        # 6.2.2.1 transfer u 
+        # 6.1.2.1 transfer u 
 
         fsp.u_n.assign(Constant((0, 0)))
 
@@ -334,7 +328,7 @@ for n in range(rpam.parameters["num_steps"]):
         fu.deform_project_function(u_n_old, u_b, u_n_old)
         fsp.u_n_2.assign(u_a - u_b)
 
-        # 6.2.2.2 transfer u_dot
+        # 6.1.2.2 transfer u_dot
 
         fu.deform_project_function(u_dot_n_old, fsp.u_dot_n, u_n_old)
         fu.deform_project_function(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
