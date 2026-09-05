@@ -271,6 +271,11 @@ for n in range(rpam.parameters["num_steps"]):
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
 
+        # 5.1 define auxiliary fields on the new mesh, needed for the transfer
+        u_a = Function(fsp.Q_u)
+        u_b = Function(fsp.Q_u)
+
+
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 6.1 do the transfer 
