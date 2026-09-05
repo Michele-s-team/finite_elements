@@ -571,17 +571,18 @@ for n in range(rpam.parameters['N']):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
         
-        #sign
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 7.1 fluid in disk
         msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
-        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_di_old)
-        msh.transfer(v_di_n_2_old, fsp.v_disk_n_2, u_n_di_old)
+        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_1_di_old)
+        msh.transfer(v_di_n_2_old, fsp.v_disk_n_2, u_n_2_di_old)
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
 
+        # sign
         msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_di_old)
         msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_di_old)
 
