@@ -3235,10 +3235,14 @@ def tag_physical_object(object, id, model,
 
 '''
 given a field f (scalar, vector, or tensor) on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a field g (same type as f) on mesh B, set g equal to f
+
 Input values: 
     - 'f': function on mesh A
     - 'g': function on mesh B
     - 'u': displacement field, defined on mesh A
+
+Return values: 
+    Nothing is returned, the result is written into `g`. After this method is called, g is such that g(y') = f(phi^{-1}(y')), where phi(y) = y + u(y)
 '''
 def transfer(f, g, u):
 

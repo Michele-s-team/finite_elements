@@ -8,6 +8,7 @@ Examples:
     clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/remesh/solution"; rm -rf $MESH_PATH; mkdir $MESH_PATH; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
 """
 
+import colorama as col
 import dolfin
 from fenics import *
 import gc
@@ -21,7 +22,9 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import calculus as cal
+import function as fu
 import input_output as io
+import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -110,10 +113,12 @@ import differential_geometry.boundary.geometry as bgeo
 import differential_geometry.manifold.geometry as geo
 rmsh = importlib.import_module(swi.rmsh)
 
+fi = importlib.import_module(swi.fi)
 ap_shape = importlib.import_module(swi.ap_shape)
 vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_da = importlib.import_module(swi.prout_da)
 
 importlib.reload(geo)
 importlib.reload(rmsh.lmsh)
@@ -121,6 +126,7 @@ importlib.reload(bgeo)
 fsp = importlib.reload(fsp)
 rmsh = importlib.reload(rmsh)
 pr_bc = importlib.reload(pr_bc)
+pr_da = importlib.reload(pr_da)
 
 
 # Time-stepping
@@ -129,6 +135,7 @@ print("Starting time iteration ...", flush=True)
 t = 0
 step = 0
 for n in range(rpam.parameters["num_steps"]):
+
     # Update current time
     t += dt
     step += 1
@@ -172,16 +179,22 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
-    pr_bc.print_bcs()
 
-    mesh_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
 
-    if  mesh_quality < rpam.parameters['mesh_quality_threshold']:
-        # the mesh quality got below the threshold -> remesh 
+    pr_bc.print_bcs(step)
+    pr_da.print_data(step)
+
+
+    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+        #  mesh quality got below the threshold -> remesh 
+
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
         # 1.transfer fields
 
         # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
+
         v_n_old = Function(fsp.Q_v)
         v_n_1_old = Function(fsp.Q_v)
         v_n_2_old = Function(fsp.Q_v)
@@ -202,7 +215,15 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
 
+        # 1.2 define auxiliary fields for the transfer
+
+        u_n_12_old = Function(fsp.Q_u)
+        u_n_32_old = Function(fsp.Q_u)
+
+
+
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
+
         v_n_old.assign(fsp.v_n)
         v_n_1_old.assign(fsp.v_n_1)
         v_n_2_old.assign(fsp.v_n_2)
@@ -221,6 +242,12 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_old.assign(fsp.u_dot_n)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
+
+        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - start
+        u_n_12_old.assign((fsp.u_n + fsp.u_n_1)/2.0)
+        u_n_32_old.assign((fsp.u_n_1 + fsp.u_n_2)/2.0)
+        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - end
+
 
         #2. set the new rotation angle of the polygon for the reference configuration 
         theta_ref = fsp.theta_n
@@ -242,63 +269,109 @@ for n in range(rpam.parameters["num_steps"]):
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
+        pr_da = importlib.reload(pr_da)
+
+        # 5.1 define auxiliary fields on the new mesh, needed for the transfer
+        u_a = Function(fsp.Q_u)
+        u_b = Function(fsp.Q_u)
 
 
         #6. transfer the values stored in the _old fields to the fields defined on the new mesh
-        msh.transfer(v_n_old, fsp.v_n, u_n_old)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
-        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
+        # 6.1 do the transfer 
+
+        # 6.1.1 transfer fluid fields
+        # set fsp.v_n(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(v_n_old, fsp.v_n, u_n_old)
+
+        # set fsp.v_n_1(y') =  v_n_1_old(phi_n_1_old^{-1}(y')), where phi_n_1_old(y) = y + u_n_1_old(y)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_1_old)
+
+        # set fsp.v_n_2(y') =  v_n_2_old(phi_n_2_old^{-1}(y')), where phi_n_2_old(y) = y + u_n_2_old(y)
+        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_2_old)
+
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
 
-        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
-        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
+        # set fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12_old^{-1}(y')), where phi_n_12_old(y) = y + u_n_12_old(y)
+        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
 
+        # set fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32_old^{-1}(y')), where phi_n_32_old(y) = y + u_n_32_old(y)
+        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old)
+
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_old, fsp.phi, u_n_old)
 
-        # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+
+        # 6.1.2 transfer mesh fields
+
+        # 6.1.2.1 transfer u 
+
         fsp.u_n.assign(Constant((0, 0)))
-        fsp.u_n_1.assign(Constant((0, 0)))
-        fsp.u_n_2.assign(Constant((0, 0)))
 
+        # set u_a(y') =  u_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_1_old, u_a, u_n_old)
+
+        # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_old, u_b, u_n_old)
+             
+        fsp.u_n_1.assign(u_a - u_b)
+
+
+        # set u_a(y') =  u_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_2_old, u_a, u_n_old)
+
+        # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_old, u_b, u_n_old)
+
+        fsp.u_n_2.assign(u_a - u_b)
+
+
+
+        # 6.1.2.2 transfer u_dot
+
+        # set fsp.u_dot_n(y') =  u_dot_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+
+        # set fsp.u_dot_n_1(y') =  u_dot_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
-        msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)   
+
+        # set fsp.u_dot_n_2(y') =  u_dot_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)
 
 
-        #7. call print_remesh to print out the remeshing info
 
-        pr_sol.print_remesh(step, theta_ref, mesh_quality)
-
-        # 8 clean up
+        # 6.2 clean up
     
-        # delete the _old functions
+        # 6.2.1 delete the _old functions
         del v_n_old, v_n_1_old, v_n_2_old
         del v__old
         del sigma_n_12_old, sigma_n_32_old
         del phi_old
         del u_n_old, u_n_1_old, u_n_2_old
         del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
+        del u_a, u_b, u_n_12_old, u_n_32_old
 
         gc.collect()
 
-        print(f'**** ... done. ')
+        print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
     
 
     
     #update the fields
-    # 1)
+
+    # 1. update theta and omega
     fsp.theta_n_1 = fsp.theta_n
     fsp.omega_n_1 = fsp.omega_n
 
-    # 2)
+    # 2. update mesh fields
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(fsp.u_n)
 
     fsp.u_dot_n_2.assign(fsp.u_dot_n_1)
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
 
-    # 3)
+    # 3. update fluid fields
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
@@ -320,6 +393,6 @@ for n in range(rpam.parameters["num_steps"]):
 print("... done.", flush=True)
 
 
-
-pr_sol.theta_omega_csvfile.close()
-pr_sol.remesh_csvfile.close()
+fi.csvfile_theta_omega.close()
+fi.csvfile_bcs.close()
+fi.csvfile_data.close()
