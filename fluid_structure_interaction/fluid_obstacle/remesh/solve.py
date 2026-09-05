@@ -399,11 +399,9 @@ for n in range(rpam.parameters['N']):
     if mesh_quality < rpam.parameters['mesh_quality_threshold']:
     # if False:
     # if step % 5 == True:
+        # mesh quality got below the threshold -> remesh 
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
-
-
-        # the mesh quality got below the threshold -> remesh 
         
         # 1.transfer fields
 
