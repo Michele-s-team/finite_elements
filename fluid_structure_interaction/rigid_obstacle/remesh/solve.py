@@ -303,31 +303,26 @@ for n in range(rpam.parameters["num_steps"]):
         # 6.1.2.1 transfer u 
 
         fsp.u_n.assign(Constant((0, 0)))
-        # sign
 
-        '''
-        g(y') = u_n_1_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        g = fu.deform_function(u_n_1_old, u_n_old)
+        # set u_a(y') =  u_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_1_old, u_a, u_n_old)
 
-        h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        h = fu.deform_function(u_n_old, u_n_old)
-        '''
-
-        fu.deform_project_function(u_n_1_old, u_a, u_n_old)
-        fu.deform_project_function(u_n_old, u_b, u_n_old)
+        # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_old, u_b, u_n_old)
+             
         fsp.u_n_1.assign(u_a - u_b)
 
-        '''
-        g(y') = u_n_2_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        g = fu.deform_function(u_n_2_old, u_n_old)
 
-        h(y') = u_n_old(phi_n^{-1}(y')) where phi_n(y) = y + u_n(y)
-        h = fu.deform_function(u_n_old, u_n_old)
-        '''
+        # set u_a(y') =  u_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_2_old, u_a, u_n_old)
 
-        fu.deform_project_function(u_n_2_old, u_a, u_n_old)
-        fu.deform_project_function(u_n_old, u_b, u_n_old)
+        # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_old, u_b, u_n_old)
+
         fsp.u_n_2.assign(u_a - u_b)
+
+        # sign
+
 
         # 6.1.2.2 transfer u_dot
 
