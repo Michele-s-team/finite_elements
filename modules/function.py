@@ -416,7 +416,7 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
     
     
 '''
-given a sub mesh a and a sub mesh b obtained from a by means of a displacement field, transfer a field (scalar, vector, tensor) on sub mesh a onto sub mesh b
+given a sub mesh a, and a sub mesh b obtained from a by means of a displacement field, transfer a field (scalar, vector, tensor) on sub mesh a onto sub mesh b
 Input values: 
     * Mandatory:
         - `u_a`: the field on sub mesh a
