@@ -656,10 +656,12 @@ for n in range(rpam.parameters['N']):
 
         fsp.u_n_1_sq.assign(u_a_sq - u_b_sq)
 
+
+        msh.transfer(u_n_2_sq_old, u_a_sq, u_n_sq_old)
+        msh.transfer(u_n_sq_old, u_b_sq, u_n_sq_old)
+        
+        fsp.u_n_2_sq.assign(u_a_sq - u_b_sq)
         # sign
-
-
-        fsp.u_n_2_sq.assign(Constant((0, 0)))
 
         # 7.3.2.1 transfer u_dot
 
