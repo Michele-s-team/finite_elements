@@ -670,13 +670,13 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
         msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
 
-        # sign
 
 
         # 7.4 I
 
         # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
+        # sign
         fsp.U_n_32.assign(Constant((0, 0)))
 
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
