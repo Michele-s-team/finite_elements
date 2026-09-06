@@ -4014,13 +4014,35 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     mesh_metadata['curve_coordinates'] = curve_coordinates
 
+
     # write metadata for mesh 0
+
     mesh_0_metadata = {}
     mesh_0_metadata['L'] = parameters['L']
     mesh_0_metadata['resolution'] = parameters['resolution']
     mesh_0_metadata['curve_format'] = parameters['curve_format']
+
+    # if the curve derives from a parametric form, write N and the parametric function
+    if parameters['curve_format'] == 'parametric':
+            mesh_0_metadata['curve_parametric_form'] = parameters['curve_parametric_form']
+            mesh_0_metadata['N'] = parameters['N']
+       
     mesh_0_metadata['curve_coordinates'] = curve_coordinates
-    
+
+    mesh_0_metadata['mesh_0_id'] = parameters['mesh_0_id']
+    mesh_0_metadata['mesh_1_id'] = parameters['mesh_1_id']
+    mesh_0_metadata['line_l_id'] = parameters['line_l_id']
+    mesh_0_metadata['line_r_id'] = parameters['line_r_id']
+    mesh_0_metadata['line_b_id'] = parameters['line_b_id']
+
+    mesh_0_metadata['file_format'] = 'xdmf'
+
+
+    # write metadata for mesh 1
+
+    mesh_1_metadata = {}
+
+
 
 
     #1. add rectangle vertices
@@ -4074,13 +4096,13 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     # square lines
     tag_physical_object([lines[i] for i in range(N_lines)], parameters["sub_mesh_1_id"], gmsh.model, "lines_t")
-    tag_physical_object(lines[N_lines], parameters["line_sub_mesh_0_r_id"], gmsh.model, "line_r")
-    tag_physical_object(lines[N_lines+1], parameters["line_sub_mesh_0_b_id"], gmsh.model, "line_b")
-    tag_physical_object(lines[N_lines+2], parameters["line_sub_mesh_0_l_id"], gmsh.model, "line_l")
+    tag_physical_object(lines[N_lines], parameters["line_r_id"], gmsh.model, "line_r")
+    tag_physical_object(lines[N_lines+1], parameters["line_b_id"], gmsh.model, "line_b")
+    tag_physical_object(lines[N_lines+2], parameters["line_l_id"], gmsh.model, "line_l")
 
     # tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
-    tag_physical_object(surfaces[0], parameters["sub_mesh_0_id"], gmsh.model, "sub_mesh_0")
+    tag_physical_object(surfaces[0], parameters["mesh_0_id"], gmsh.model, "mesh_0")
 
 
     # set the resolution close to the obstacle
@@ -4134,7 +4156,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     for edge in edges(mesh):
         # run through all mesh edges
 
-        if mf[edge] == parameters['sub_mesh_1_id']:
+        if mf[edge] == parameters['mesh_1_id']:
             # `edge` has been tagged with `sub_mesh_1_id`
 
             for v in vertices(edge):
@@ -4159,7 +4181,6 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         build `segment_vertices`: 
         segment_vertices[i] = [list of mesh vertices tagged with ID `sub_mesh_1_id` and which lie in between curve_coordinates[i] and curve_coordinates[i+1]
         '''
-        top_edge_vertices = []
         segment_vertices = [[] for _ in range(len(curve_coordinates) - 1)]
         for vertex in sub_mesh_1_vertices:
     
@@ -4228,27 +4249,26 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             output_directory_mesh_1 = os.path.join(output_directory, 'sub_meshes', '1')
             os.makedirs(output_directory_mesh_1, exist_ok=True)
 
-            sub_mesh_1_metadata = dict([])
-            sub_mesh_1_metadata['x_l'] = 0.0
-            sub_mesh_1_metadata['x_r'] = arc_length_table[-1]
-            sub_mesh_1_metadata['coordinates'] = arc_length_table
-            sub_mesh_1_metadata['resolution'] = parameters['resolution']
-            sub_mesh_1_metadata['line_id'] = parameters['sub_mesh_1_id']
-            sub_mesh_1_metadata['vertex_l_id'] = parameters['vertex_sub_mesh_1_l_id']
-            sub_mesh_1_metadata['vertex_r_id'] = parameters['vertex_sub_mesh_1_r_id']
-            sub_mesh_1_metadata['file_format'] = 'h5'
+            mesh_1_metadata['x_l'] = 0.0
+            mesh_1_metadata['x_r'] = arc_length_table[-1]
+            mesh_1_metadata['coordinates'] = arc_length_table
+            mesh_1_metadata['resolution'] = parameters['resolution']
+            mesh_1_metadata['line_id'] = parameters['mesh_1_id']
+            mesh_1_metadata['vertex_l_id'] = parameters['vertex_mesh_1_l_id']
+            mesh_1_metadata['vertex_r_id'] = parameters['vertex_mesh_1_r_id']
+            mesh_1_metadata['file_format'] = 'h5'
 
             # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
             genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
                                     parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
                                     output_directory=output_directory_mesh_1, 
-                                    metadata=sub_mesh_1_metadata,
+                                    metadata=mesh_1_metadata,
                                     coordinates=arc_length_table)
 
 
             # add x_l, x_r to  `metadata` and write it to file 
-            mesh_metadata['x_l'] = sub_mesh_1_metadata['x_l']
-            mesh_metadata['x_r'] = sub_mesh_1_metadata['x_r']
+            mesh_metadata['x_l'] = mesh_1_metadata['x_l']
+            mesh_metadata['x_r'] = mesh_1_metadata['x_r']
             io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), mesh_metadata)
 
 
