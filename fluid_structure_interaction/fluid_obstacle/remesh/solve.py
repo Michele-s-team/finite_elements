@@ -410,12 +410,10 @@ for n in range(rpam.parameters['N']):
         # 1.1.1 disk fluid
         v_di_n_old = Function(fsp.Q_v_disk)
         v_di_n_1_old = Function(fsp.Q_v_disk)
-        v_di_n_2_old = Function(fsp.Q_v_disk)
 
         v_di__old = Function(fsp.Q_v__disk)
 
         sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
-        sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
 
         phi_disk_old = Function(fsp.Q_phi_disk)
         omega_disk_old = Function(fsp.Q_omega_disk)
@@ -424,12 +422,10 @@ for n in range(rpam.parameters['N']):
         # 1.1.2 square fluid
         v_sq_n_old = Function(fsp.Q_v_square)
         v_sq_n_1_old = Function(fsp.Q_v_square)
-        v_sq_n_2_old = Function(fsp.Q_v_square)
 
         v_sq__old = Function(fsp.Q_v__square)
 
         sigma_sq_n_12_old = Function(fsp.Q_sigma_square)
-        sigma_sq_n_32_old = Function(fsp.Q_sigma_square)
 
         phi_sq_old = Function(fsp.Q_sigma_square)
 
@@ -439,26 +435,21 @@ for n in range(rpam.parameters['N']):
         # 1.1.3.1 disk
         u_n_di_old = Function(fsp.Q_u_di)
         u_n_1_di_old = Function(fsp.Q_u_di)
-        u_n_2_di_old = Function(fsp.Q_u_di)
 
         u_n_di_dot_old = Function(fsp.Q_u_di_dot)
         u_n_1_di_dot_old = Function(fsp.Q_u_di_dot)
-        u_n_2_di_dot_old = Function(fsp.Q_u_di_dot)
 
         # 1.1.3.2 square
         u_n_sq_old = Function(fsp.Q_u_sq)
         u_n_1_sq_old = Function(fsp.Q_u_sq)
-        u_n_2_sq_old = Function(fsp.Q_u_sq)
 
         u_n_sq_dot_old = Function(fsp.Q_u_sq_dot)
         u_n_1_sq_dot_old = Function(fsp.Q_u_sq_dot)
-        u_n_2_sq_dot_old = Function(fsp.Q_u_sq_dot)
 
 
         # 1.1.4 I
 
         U_n_12_old = Function(fsp.Q_U)
-        U_n_32_old = Function(fsp.Q_U)
 
         # ys_U_n_12_old = ys + fsp.U_n_12 (both addednds are intended as before remeshing)
         ys_U_n_12_old = Function(fsp.Q_U)
@@ -472,7 +463,6 @@ for n in range(rpam.parameters['N']):
         # 1.1.5 M
 
         c_n_old = Function(fsp.Q_c)
-        c_n_1_old = Function(fsp.Q_c)
 
         
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
@@ -481,12 +471,10 @@ for n in range(rpam.parameters['N']):
 
         v_di_n_old.assign(fsp.v_disk_n)
         v_di_n_1_old.assign(fsp.v_disk_n_1)
-        v_di_n_2_old.assign(fsp.v_disk_n_2)
 
         v_di__old.assign(fsp.v_disk__)
 
         sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
-        sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
         phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
         phi_disk_old.assign(phi_disk_output)
@@ -496,12 +484,10 @@ for n in range(rpam.parameters['N']):
 
         v_sq_n_old.assign(fsp.v_square_n)
         v_sq_n_1_old.assign(fsp.v_square_n_1)
-        v_sq_n_2_old.assign(fsp.v_square_n_2)
 
         v_sq__old.assign(fsp.v_square__)
 
         sigma_sq_n_12_old.assign(fsp.sigma_square_n_12)
-        sigma_sq_n_32_old.assign(fsp.sigma_square_n_32)
 
         phi_sq_old.assign(fsp.phi_square)
         
@@ -511,26 +497,21 @@ for n in range(rpam.parameters['N']):
 
         u_n_di_old.assign(fsp.u_n_di)
         u_n_1_di_old.assign(fsp.u_n_1_di)
-        u_n_2_di_old.assign(fsp.u_n_2_di)
 
         u_n_di_dot_old.assign(fsp.u_n_di_dot)
         u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
-        u_n_2_di_dot_old.assign(fsp.u_n_2_di_dot)
 
         # 1.2.3.2 square
 
         u_n_sq_old.assign(fsp.u_n_sq)
         u_n_1_sq_old.assign(fsp.u_n_1_sq)
-        u_n_2_sq_old.assign(fsp.u_n_2_sq)
 
         u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
         u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
-        u_n_2_sq_dot_old.assign(fsp.u_n_2_sq_dot)
 
         # 1.2.4 D
 
         U_n_12_old.assign(fsp.U_n_12)
-        U_n_32_old.assign(fsp.U_n_32)
 
         ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
 
@@ -543,7 +524,6 @@ for n in range(rpam.parameters['N']):
         # 1.2.5 M
 
         c_n_old.assign(fsp.c_n)
-        c_n_1_old.assign(fsp.c_n_1)
 
 
         #3. trace the coordinates of shape vertices according to the deformation field U_n_12: these will be the coordinates of the new reference configuration of the shape
@@ -585,13 +565,11 @@ for n in range(rpam.parameters['N']):
         # 7.1 fluid in disk
         msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
         msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_1_di_old)
-        msh.transfer(v_di_n_2_old, fsp.v_disk_n_2, u_n_2_di_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
 
         msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_12_di_old)
-        msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_32_di_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_disk_old, fsp.phi_disk_aux, u_n_di_old)
@@ -603,14 +581,12 @@ for n in range(rpam.parameters['N']):
         # 7.2 fluid in square
         msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
         msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_1_sq_old)
-        msh.transfer(v_sq_n_2_old, fsp.v_square_n_2, u_n_2_sq_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
 
 
         msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_12_sq_old)
-        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_32_sq_old)
 
         
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
@@ -630,18 +606,10 @@ for n in range(rpam.parameters['N']):
 
         fsp.u_n_1_di.assign(u_a_di - u_b_di)
 
-
-        msh.transfer(u_n_2_di_old, u_a_di, u_n_di_old)
-        msh.transfer(u_n_di_old, u_b_di, u_n_di_old)
-        
-        fsp.u_n_2_di.assign(u_a_di - u_b_di)
-
-
         # 7.3.1.2 transfer u_dot
 
         msh.transfer(u_n_di_dot_old, fsp.u_n_di_dot, u_n_di_old)
         msh.transfer(u_n_1_di_dot_old, fsp.u_n_1_di_dot, u_n_di_old)
-        msh.transfer(u_n_2_di_dot_old, fsp.u_n_2_di_dot, u_n_di_old)   
 
         # 7.3.2 square
 
@@ -658,27 +626,17 @@ for n in range(rpam.parameters['N']):
         fsp.u_n_1_sq.assign(u_a_sq - u_b_sq)
 
 
-        msh.transfer(u_n_2_sq_old, u_a_sq, u_n_sq_old)
-        msh.transfer(u_n_sq_old, u_b_sq, u_n_sq_old)
-        
-        fsp.u_n_2_sq.assign(u_a_sq - u_b_sq)
-
         # 7.3.2.1 transfer u_dot
-
 
         msh.transfer(u_n_sq_dot_old, fsp.u_n_sq_dot, u_n_sq_old)
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
-        msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
-
-
 
         # 7.4 I
 
         # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
         # sign
-        fsp.U_n_32.assign(Constant((0, 0)))
-
+  
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
      
@@ -700,7 +658,6 @@ for n in range(rpam.parameters['N']):
 
         # 7.5 M
         msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
-        msh.transfer(c_n_1_old, fsp.c_n_1, u_n_sq_old)
 
 
         #8. call print_remesh to print out the remeshing info
@@ -711,21 +668,21 @@ for n in range(rpam.parameters['N']):
         #9 clean up
 
         # 9.1 disk and square fluid
-        del v_di_n_old, v_di_n_1_old, v_di_n_2_old, v_sq_n_old, v_sq_n_1_old, v_sq_n_2_old
+        del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
-        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
+        del sigma_di_n_12_old, sigma_sq_n_12_old
         del phi_disk_old, omega_disk_old
 
         # 9.2 D
-        del u_n_di_old, u_n_1_di_old, u_n_2_di_old, u_n_sq_old, u_n_1_sq_old, u_n_2_sq_old
-        del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
+        del u_n_di_old, u_n_1_di_old, u_n_sq_old, u_n_1_sq_old
+        del u_n_di_dot_old, u_n_1_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old
         del u_a_di, u_b_di, u_a_sq, u_b_sq
 
         # 9.3 I
-        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
+        del U_n_12_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
 
         # 9.4 M
-        del c_n_old, c_n_1_old
+        del c_n_old
 
         gc.collect()
         
