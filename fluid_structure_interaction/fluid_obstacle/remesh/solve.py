@@ -460,6 +460,7 @@ for n in range(rpam.parameters['N']):
         U_n_12_old = Function(fsp.Q_U)
         U_n_32_old = Function(fsp.Q_U)
 
+        # ys_U_n_12_old = ys + fsp.U_n_12 (both addednds are intended as before remeshing)
         ys_U_n_12_old = Function(fsp.Q_U)
 
         nu_n_12_old = Function(fsp.Q_nu)
