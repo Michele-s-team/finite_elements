@@ -570,7 +570,14 @@ for n in range(rpam.parameters['N']):
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
-        
+
+        # 5.1 auxiliary fields needed to transafer fields
+
+        u_a_di = Function(fsp.Q_u_di)
+        u_b_di = Function(fsp.Q_u_di)
+
+        u_a_sq = Function(fsp.Q_u_sq)
+        u_b_sq = Function(fsp.Q_u_sq)
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
@@ -615,9 +622,13 @@ for n in range(rpam.parameters['N']):
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
+
+        msh.transfer(u_n_1_di_old, u_a_di, u_n_di_old)
+        msh.transfer(u_n_di_old, u_b_di, u_n_di_old)
+
+        fsp.u_n_1_di.assign(u_a_di - u_b_di)
         # sign
 
-        fsp.u_n_1_di.assign(Constant((0, 0)))
         fsp.u_n_2_di.assign(Constant((0, 0)))
 
         msh.transfer(u_n_di_dot_old, fsp.u_n_di_dot, u_n_di_old)
