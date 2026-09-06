@@ -639,10 +639,11 @@ for n in range(rpam.parameters['N']):
         # 7.3.1.2 transfer u_dot
 
         msh.transfer(u_n_di_dot_old, fsp.u_n_di_dot, u_n_di_old)
-        # sign
-
         msh.transfer(u_n_1_di_dot_old, fsp.u_n_1_di_dot, u_n_di_old)
         msh.transfer(u_n_2_di_dot_old, fsp.u_n_2_di_dot, u_n_di_old)   
+
+        # sign
+
 
         # 7.3.2 square
 
