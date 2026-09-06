@@ -646,11 +646,12 @@ for n in range(rpam.parameters['N']):
 
         # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
-        # sign
   
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
-     
+
+        # sign
+
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
         msh.transfer_1d(ys_U_n_12_old, fsp.ys)
 
