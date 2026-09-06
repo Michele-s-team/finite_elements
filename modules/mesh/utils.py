@@ -2414,10 +2414,10 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             sys.exit()
 
 
-    # mesh A will be stored in output_directory_square_mesh
+    # mesh A will be stored in output_directory_mesh_0
     output_directory_mesh_0 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_0'))
     os.mkdir(output_directory_mesh_0)
-    # mesh B will be stored in output_directory_line_mesh
+    # mesh B will be stored in output_directory_mesh_1
     output_directory_mesh_1 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_1'))
     os.mkdir(output_directory_mesh_1)
 
