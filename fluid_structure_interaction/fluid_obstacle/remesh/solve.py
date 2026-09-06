@@ -642,15 +642,27 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_1_di_dot_old, fsp.u_n_1_di_dot, u_n_di_old)
         msh.transfer(u_n_2_di_dot_old, fsp.u_n_2_di_dot, u_n_di_old)   
 
-        # sign
-
-
         # 7.3.2 square
+
+        # 7.3.2.1 transfer u 
+
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_sq.assign(Constant((0, 0)))
-        fsp.u_n_1_sq.assign(Constant((0, 0)))
+
+
+        msh.transfer(u_n_1_sq_old, u_a_sq, u_n_sq_old)
+        msh.transfer(u_n_sq_old, u_b_sq, u_n_sq_old)
+
+        fsp.u_n_1_sq.assign(u_a_sq - u_b_sq)
+
+        # sign
+
+
         fsp.u_n_2_sq.assign(Constant((0, 0)))
+
+        # 7.3.2.1 transfer u_dot
+
 
         msh.transfer(u_n_sq_dot_old, fsp.u_n_sq_dot, u_n_sq_old)
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
