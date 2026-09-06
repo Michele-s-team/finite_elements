@@ -612,10 +612,11 @@ for n in range(rpam.parameters['N']):
 
         # 7.3.1 disk
 
-        # sign
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
+        # sign
+
         fsp.u_n_1_di.assign(Constant((0, 0)))
         fsp.u_n_2_di.assign(Constant((0, 0)))
 
