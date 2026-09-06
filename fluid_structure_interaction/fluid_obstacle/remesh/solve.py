@@ -596,18 +596,23 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
         msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_1_sq_old)
         msh.transfer(v_sq_n_2_old, fsp.v_square_n_2, u_n_2_sq_old)
-        # sign
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
 
-        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_sq_old)
-        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
 
+        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_12_sq_old)
+        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_32_sq_old)
+
+        
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_sq_old, fsp.phi_square, u_n_sq_old)
 
         # 7.3 D
 
         # 7.3.1 disk
+
+        # sign
 
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
