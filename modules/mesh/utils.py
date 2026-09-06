@@ -4095,7 +4095,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     lines = gmsh.model.getEntities(dim=1)
 
     # square lines
-    tag_physical_object([lines[i] for i in range(N_lines)], parameters["sub_mesh_1_id"], gmsh.model, "lines_t")
+    tag_physical_object([lines[i] for i in range(N_lines)], parameters["mesh_1_id"], gmsh.model, "lines_t")
     tag_physical_object(lines[N_lines], parameters["line_r_id"], gmsh.model, "line_r")
     tag_physical_object(lines[N_lines+1], parameters["line_b_id"], gmsh.model, "line_b")
     tag_physical_object(lines[N_lines+2], parameters["line_l_id"], gmsh.model, "line_l")
@@ -4123,16 +4123,14 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     gmsh.write(mesh_0_file)
 
-    full_write(mesh_0_file, ['triangle', 'line'], mesh_metadata, output_directory, True)
+    full_write(mesh_0_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
 
-    # print the boundary points of the boundaries given by the top line (sub_mesh 1)
+    # print the boundary points of the boundaries given by the top curve (sub_mesh 1)
     sorted_boundary_points(
-        read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
-        output_directory, 
-        [parameters['sub_mesh_1_id']],
-        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['sub_mesh_1_id']) + '.csv'))
-
-
+        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+        output_directory_mesh_0, 
+        [parameters['mesh_1_id']],
+        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
 
     clear_gmsh()
 
