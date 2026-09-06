@@ -3431,7 +3431,6 @@ given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (
 Input values: 
     - 'f': the field to be read. Note that this method will do f.set_allow_extrapolation(True)
     - 'g': the field to be written in
-
 '''
 
 def transfer_1d(f, g):
