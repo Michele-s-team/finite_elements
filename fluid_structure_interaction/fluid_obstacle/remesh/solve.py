@@ -446,6 +446,11 @@ for n in range(rpam.parameters['N']):
         u_n_sq_dot_old = Function(fsp.Q_u_sq_dot)
         u_n_1_sq_dot_old = Function(fsp.Q_u_sq_dot)
 
+        # 1.1.3.3 auxiliary fields needed for the transfer
+
+        u_n_12_di_old = Function(fsp.Q_u_di)
+        u_n_12_sq_old = Function(fsp.Q_u_sq)
+
 
         # 1.1.4 I
 
@@ -501,6 +506,9 @@ for n in range(rpam.parameters['N']):
         u_n_di_dot_old.assign(fsp.u_n_di_dot)
         u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
 
+        u_n_12_di_old.assign((u_n_di_old + u_n_1_di_old)/2.0)
+
+
         # 1.2.3.2 square
 
         u_n_sq_old.assign(fsp.u_n_sq)
@@ -508,6 +516,9 @@ for n in range(rpam.parameters['N']):
 
         u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
         u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
+
+        u_n_12_sq_old.assign((u_n_sq_old + u_n_1_sq_old)/2.0)
+
 
         # 1.2.4 D
 
