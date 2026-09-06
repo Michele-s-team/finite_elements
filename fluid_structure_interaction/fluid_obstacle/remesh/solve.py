@@ -719,6 +719,7 @@ for n in range(rpam.parameters['N']):
         # 9.2 D
         del u_n_di_old, u_n_1_di_old, u_n_2_di_old, u_n_sq_old, u_n_1_sq_old, u_n_2_sq_old
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
+        del u_a_di, u_b_di, u_a_sq, u_b_sq
 
         # 9.3 I
         del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
