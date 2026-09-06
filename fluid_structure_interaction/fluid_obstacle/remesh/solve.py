@@ -506,7 +506,7 @@ for n in range(rpam.parameters['N']):
         u_n_di_dot_old.assign(fsp.u_n_di_dot)
         u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
 
-        u_n_12_di_old.assign((u_n_di_old + u_n_1_di_old)/2.0)
+        u_n_12_di_old.assign((fsp.u_n_di + fsp.u_n_1_di)/2.0)
 
 
         # 1.2.3.2 square
@@ -517,7 +517,7 @@ for n in range(rpam.parameters['N']):
         u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
         u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
 
-        u_n_12_sq_old.assign((u_n_sq_old + u_n_1_sq_old)/2.0)
+        u_n_12_sq_old.assign((fsp.u_n_sq + fsp.u_n_1_sq)/2.0)
 
 
         # 1.2.4 D
