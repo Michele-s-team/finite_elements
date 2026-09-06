@@ -3986,28 +3986,41 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
 
-    sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_mesh_1')
-    mesh_file = os.path.join(output_directory, "mesh.msh")
+
+    output_directory_mesh_0 = os.path.join(output_directory, 'mesh_0')
+    os.mkdir(output_directory_mesh_0)
+
+    output_directory_mesh_1 = os.path.join(output_directory, 'mesh_1')
+    os.mkdir(output_directory_mesh_1)
+
+    mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
 
-    metadata = parameters.copy()
-    metadata['file_format'] = 'xdmf'
+    mesh_metadata = parameters.copy()
 
     # remove spurious entities in mesh_metadata 
     if parameters['curve_format'] == 'parametric':
 
         if 'curve_coordinates' in parameters:
-            del metadata['curve_coordinates']
+            del mesh_metadata['curve_coordinates']
                            
     if parameters['curve_format'] == 'coordinates':
 
         if 'curve_parametric_form' in parameters:
-            del metadata['curve_parametric_form']
+            del mesh_metadata['curve_parametric_form']
             
         if 'N' in parameters:
-            del metadata['N']
+            del mesh_metadata['N']
 
-    metadata['curve_coordinates'] = curve_coordinates
+    mesh_metadata['curve_coordinates'] = curve_coordinates
+
+    # write metadata for mesh 0
+    mesh_0_metadata = {}
+    mesh_0_metadata['L'] = parameters['L']
+    mesh_0_metadata['resolution'] = parameters['resolution']
+    mesh_0_metadata['curve_format'] = parameters['curve_format']
+    mesh_0_metadata['curve_coordinates'] = curve_coordinates
+    
 
 
     #1. add rectangle vertices
@@ -4086,9 +4099,9 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.model.occ.synchronize()
     gmsh.model.mesh.generate(2)
 
-    gmsh.write(mesh_file)
+    gmsh.write(mesh_0_file)
 
-    full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+    full_write(mesh_0_file, ['triangle', 'line'], mesh_metadata, output_directory, True)
 
     # print the boundary points of the boundaries given by the top line (sub_mesh 1)
     sorted_boundary_points(
@@ -4212,8 +4225,8 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             N_intervals = len(curve_coordinates) - 1
 
             # Create output directory for submesh
-            sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_meshes', '1')
-            os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
+            output_directory_mesh_1 = os.path.join(output_directory, 'sub_meshes', '1')
+            os.makedirs(output_directory_mesh_1, exist_ok=True)
 
             sub_mesh_1_metadata = dict([])
             sub_mesh_1_metadata['x_l'] = 0.0
@@ -4228,15 +4241,15 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
             genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
                                     parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
-                                    output_directory=sub_mesh_1_output_directory, 
+                                    output_directory=output_directory_mesh_1, 
                                     metadata=sub_mesh_1_metadata,
                                     coordinates=arc_length_table)
 
 
             # add x_l, x_r to  `metadata` and write it to file 
-            metadata['x_l'] = sub_mesh_1_metadata['x_l']
-            metadata['x_r'] = sub_mesh_1_metadata['x_r']
-            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), metadata)
+            mesh_metadata['x_l'] = sub_mesh_1_metadata['x_l']
+            mesh_metadata['x_r'] = sub_mesh_1_metadata['x_r']
+            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), mesh_metadata)
 
 
 
