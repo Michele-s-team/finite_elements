@@ -316,6 +316,7 @@ t = 0
 step = 0
 
 for n in range(rpam.parameters['N']):
+    
     # Update current time
     t += dt
     step += 1
