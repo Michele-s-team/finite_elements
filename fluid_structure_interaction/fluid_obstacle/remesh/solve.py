@@ -119,14 +119,16 @@ class u_a_expression(UserExpression):
 
         values[0] = x[0]**2
         values[1] = x[0]**3
+        values[2] = x[0]**4
+        values[3] = x[0]**5
 
     def value_shape(self):
-        return (2,)
+        return (2,2)
     
 
 
-Q_u_a = VectorFunctionSpace(mesh_a[1], 'P', 2, dim=2)
-Q_u_b = VectorFunctionSpace(mesh_b[1], 'P', 2, dim=2)
+Q_u_a = TensorFunctionSpace(mesh_a[1], 'P', 2, shape=(2,2))
+Q_u_b = TensorFunctionSpace(mesh_b[1], 'P', 2, shape=(2,2))
 
 
 u_a = Function(Q_u_a)
