@@ -37,10 +37,10 @@ mf[1] = msh.read_mesh_components(lmsh.mesh[1], (lmsh.mesh[1]).topology().dim() -
 
 
 
-# r_mesh[i] is the radius of the smallest cell in sub_meshes[i]
+# r_mesh[i] is the radius of the smallest cell in mesh[i]
 r_mesh =  [lmsh.mesh[i].hmin() for i in range(len(lmsh.mesh))]
 
-# create line and surface elements for sub_meshes
+# create line and surface elements for meshes
 dx_mesh = []
 ds_mesh = [None] * lmsh.parameters['n_meshes']
 
