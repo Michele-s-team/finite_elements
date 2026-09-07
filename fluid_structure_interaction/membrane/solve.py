@@ -107,7 +107,7 @@ io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
 '''
 
 '''
-# test transfer_mesh_to_sub_mesh - start 
+# test transfer_2d_to_1d_curve - start 
 import function as fu
 import input_output as io
 import mesh.load as lmsh
@@ -136,14 +136,14 @@ u_1 = Function(Q_1)
 u_0.interpolate(u_0_expression(element=Q_0.ufl_element()))
 
 
-fu.transfer_mesh_to_sub_mesh(u_0, u_1, rarg.args.input_directory)
+fu.transfer_2d_to_1d_curve(u_0, u_1, rarg.args.input_directory)
 
 io.full_print(u_0, 'u_0_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 
-# test transfer_mesh_to_sub_mesh - end
+# test transfer_2d_to_1d_curve - end
 '''
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
@@ -216,7 +216,7 @@ cu = importlib.import_module(swi.cu)
 
 # 1. membrane problem
 fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
-fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
+fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
@@ -297,7 +297,7 @@ for n in range(rpam.parameters['N']):
    
     # project from sub_mesh[0] onto sub_mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
     fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
-    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
+    fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
     
     vp_membrane = importlib.reload(importlib.import_module(swi.vp_membrane))  
 
