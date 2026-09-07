@@ -316,7 +316,7 @@ t = 0
 step = 0
 
 for n in range(rpam.parameters['N']):
-    
+
     # Update current time
     t += dt
     step += 1
@@ -502,6 +502,9 @@ for n in range(rpam.parameters['N']):
     # if False:
     # if step % 5 == True:
         # mesh quality got below the threshold -> remesh 
+
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
+
 
         mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
         
@@ -806,7 +809,7 @@ for n in range(rpam.parameters['N']):
 
         gc.collect()
         
-        print(f'**** ... done. ')
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
 
     
