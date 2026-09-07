@@ -759,17 +759,20 @@ for n in range(rpam.parameters['N']):
 
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
         fu.transfer_1d_to_1d_curve(ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
-        # sign
-
       
         # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
 
-        msh.transfer_1d(nu_n_12_old, fsp.nu_n_12_input)
-        msh.transfer_1d(dpsi_n_12_old, fsp.dpsi_n_12_input)
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        fu.transfer_1d_to_1d_curve(dpsi_n_12_old, fsp.dpsi_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
 
         fsp.assigner_nu_and_dpsi.assign(fsp.nu_and_dpsi_n_12, [fsp.nu_n_12_input, fsp.dpsi_n_12_input])
 
         # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
+
+        # sign
+
         msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
 
 
