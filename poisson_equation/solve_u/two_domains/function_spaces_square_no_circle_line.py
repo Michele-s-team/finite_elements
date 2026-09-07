@@ -10,10 +10,10 @@ function_space_degree = 4
 
 Q, V, T = [], [], []
 u, nu_u, f, grad_u, J_u, u_exact, hess_u, nu_hess_u, hess_u_exact, J_hess_u = [], [], [], [], [], [], [], [], [], []
-for i in range(len(lmsh.sub_meshes)):
-    Q.append(FunctionSpace(lmsh.sub_meshes[i], 'P', function_space_degree))
-    V.append(VectorFunctionSpace(lmsh.sub_meshes[i], 'P', function_space_degree))
-    T.append(TensorFunctionSpace(lmsh.sub_meshes[i], 'P', function_space_degree, shape=(lmsh.sub_meshes[i].topology().dim(), lmsh.sub_meshes[i].topology().dim())))
+for i in range(len(lmsh.mesh)):
+    Q.append(FunctionSpace(lmsh.mesh[i], 'P', function_space_degree))
+    V.append(VectorFunctionSpace(lmsh.mesh[i], 'P', function_space_degree))
+    T.append(TensorFunctionSpace(lmsh.mesh[i], 'P', function_space_degree, shape=(lmsh.mesh[i].topology().dim(), lmsh.mesh[i].topology().dim())))
 
     # Define variational problem
     u.append(Function(Q[i]))
