@@ -67,7 +67,7 @@ fsp.f[0].interpolate(laplacian_u_exact_mesh_0_expression(element=fsp.Q[0].ufl_el
 # force reload vp to update bc[0], because u_1_on_0 has changed
 fsp.v.interpolate(v_Expression(element=fsp.Q[1].ufl_element()))
 # set u_1_on_0 to be equal to v = u[1]**2 + cos(2 pi (x[0] - h))**2 on the top edge of mesh[0]
-fu.transfer_sub_mesh_to_mesh(fsp.v, fsp.u_1_on_0, rarg.args.input_directory)
+fu.transfer_1d_to_2d_curve(fsp.v, fsp.u_1_on_0, rarg.args.input_directory)
 
 bcs = [ \
     DirichletBC(fsp.Q[0], fsp.u_exact[0], rmsh.mf[0], rmsh.parameters["line_l_id"]), \

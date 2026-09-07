@@ -27,7 +27,7 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = ['','']
 
 '''
-# test transfer_sub_mesh_to_mesh - start
+# test transfer_1d_to_2d_curve - start
 import function as fu
 import input_output as io
 import mesh.load as lmsh
@@ -56,13 +56,13 @@ u_1 = Function(Q_1)
 u_1.interpolate(u_1_expression(element=Q_1.ufl_element()))
 
 
-fu.transfer_sub_mesh_to_mesh(u_1, u_0, rarg.args.input_directory)
+fu.transfer_1d_to_2d_curve(u_1, u_0, rarg.args.input_directory)
 
 io.full_print(u_0, 'u_0_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-# test transfer_sub_mesh_to_mesh - end
+# test transfer_1d_to_2d_curve - end
 '''
 
 

@@ -228,10 +228,10 @@ fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression(element=fsp.Q_psi
 # a) project U_n_12
 v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
 
-fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
+fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 # b) project U_dot_n_12
 fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
+fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
 
@@ -313,10 +313,10 @@ for n in range(rpam.parameters['N']):
     # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
     # a) project U_n_12
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
-    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
+    fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
     # b) project U_dot_n_12
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
+    fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
     vp_mesh = importlib.reload(importlib.import_module(swi.vp_mesh))  
 
