@@ -45,7 +45,7 @@ class FunctionTestIntegrals(UserExpression):
 Q_test = []
 function_test_integrals_fenics = []
 for p in range(len(lmsh.mesh)):
-    Q_test.append(FunctionSpace(lmsh.sub_meshes[p], 'P', 2))
+    Q_test.append(FunctionSpace(lmsh.mesh[p], 'P', 2))
     function_test_integrals_fenics.append(Function(Q_test[p]))
     function_test_integrals_fenics[p].interpolate(FunctionTestIntegrals(element=Q_test[p].ufl_element()))
 
