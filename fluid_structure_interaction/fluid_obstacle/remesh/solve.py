@@ -756,11 +756,10 @@ for n in range(rpam.parameters['N']):
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
 
-        # sign
 
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
-        msh.transfer_1d(ys_U_n_12_old, fsp.ys)
-        # fu.transfer_1d_to_1d_curve(ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        fu.transfer_1d_to_1d_curve(ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        # sign
 
       
         # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
