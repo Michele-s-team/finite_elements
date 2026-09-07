@@ -35,7 +35,7 @@ import variational_problem.utils as var_pr
 fi = importlib.import_module(swi.fi)
 
 '''
-# test transfer sub mesh to sub mesh - start
+# test transfer 1d mesh to 1d mesh - start
 import function as fu
 import solution_paths as solpath
 
@@ -47,16 +47,20 @@ path_b = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_b'
 parameters_a = io.read_parameters_from_csv_file(os.path.join(path_a, "mesh_metadata.csv"))
 parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
 
+mesh_a = [None]*2
+mesh_b = [None]*2
+sf_a = [None]*2
+sf_b = [None]*2
 
-mesh_a, sf_a = msh.read_from_file(path_a, 'xdmf')
-mesh_b, sf_b = msh.read_from_file(path_b, 'xdmf')
+mesh_a[0], sf_a[0] = msh.read_from_file(os.path.join(path_a, f'mesh_{0}'), 'xdmf')
+mesh_a[1], sf_a[1] = msh.read_from_file(os.path.join(path_a, f'mesh_{1}'), 'h5')
 
-print(f'number of vertices = {mesh_a.num_vertices()} {mesh_b.num_vertices()}')
+mesh_b[0], sf_b[0] = msh.read_from_file(os.path.join(path_b, f'mesh_{0}'), 'xdmf')
+mesh_b[1], sf_b[1] = msh.read_from_file(os.path.join(path_b, f'mesh_{1}'), 'h5')
+
+print(f'number of vertices = {mesh_a[0].num_vertices()} {mesh_b[0].num_vertices()}')
 
 
-# read the sub_meshes and generate their functions tagging cells and vertices
-sub_meshes_a, sf_sub_meshes_a, mf_sub_meshes_a = msh.read_sub_meshes(mesh_a, sf_a, parameters_a, path_a)
-sub_meshes_b, sf_sub_meshes_b, mf_sub_meshes_b = msh.read_sub_meshes(mesh_b, sf_b, parameters_b, path_b)
 
 class u_a_expression(UserExpression):
     def eval(self, values, x):
@@ -80,10 +84,10 @@ class u_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-Q_u_a = TensorFunctionSpace(sub_meshes_a[1], 'P', 2, shape=(2,2))
-Q_u_b = TensorFunctionSpace(sub_meshes_b[1], 'P', 2, shape=(2,2))
+Q_u_a = TensorFunctionSpace(mesh_a[1], 'P', 2, shape=(2,2))
+Q_u_b = TensorFunctionSpace(mesh_b[1], 'P', 2, shape=(2,2))
 
-Q_u = VectorFunctionSpace(sub_meshes_a[0], 'P', 2)
+Q_u = VectorFunctionSpace(mesh_a[0], 'P', 2)
 
 u = Function(Q_u)
 u_a = Function(Q_u_a)
@@ -101,11 +105,9 @@ io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
 io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 
-
-# test transfer sub mesh to sub mesh - end
+# test transfer 1d mesh to 1d mesh - end
 
 '''
-
 '''
 # test transfer_2d_to_1d_curve - start 
 import function as fu
