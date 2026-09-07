@@ -65,11 +65,11 @@ integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, lmsh.
 
 # exact line integrals
 # form mesh #0
-integral_exact[0]['ds_l'] = cal.curve_integral_line(function_test_integrals, [0, 0], rmsh.mesh_parameters[0]['curve_coordinates'][0])
-integral_exact[0]['ds_r'] = cal.curve_integral_line(function_test_integrals, rmsh.mesh_parameters[0]['curve_coordinates'][-1], [rmsh.mesh_parameters[0]['L'], 0])
-integral_exact[0]['ds_t'] = cal.curve_integral_polygon(function_test_integrals, rmsh.mesh_parameters[0]['curve_coordinates'], 
+integral_exact[0]['ds_l'] = cal.curve_integral_line(function_test_integrals, [0, 0], lmsh.mesh_parameters[0]['curve_coordinates'][0])
+integral_exact[0]['ds_r'] = cal.curve_integral_line(function_test_integrals, lmsh.mesh_parameters[0]['curve_coordinates'][-1], [lmsh.mesh_parameters[0]['L'], 0])
+integral_exact[0]['ds_t'] = cal.curve_integral_polygon(function_test_integrals, lmsh.mesh_parameters[0]['curve_coordinates'], 
                                                        open=True)
-integral_exact[0]['ds_b'] = cal.curve_integral_line(function_test_integrals, [0, 0], [rmsh.mesh_parameters[0]['L'], 0])
+integral_exact[0]['ds_b'] = cal.curve_integral_line(function_test_integrals, [0, 0], [lmsh.mesh_parameters[0]['L'], 0])
 
 integral_exact[0]['ds_lr'] = integral_exact[0]['ds_l'] + integral_exact[0]['ds_r']
 integral_exact[0]['ds_tb'] = integral_exact[0]['ds_t'] + integral_exact[0]['ds_b']
