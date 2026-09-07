@@ -413,17 +413,17 @@ def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
     
     
 '''
-given a sub mesh a, and a sub mesh b obtained from a by means of a displacement field, transfer a field (scalar, vector, tensor) on sub mesh a onto sub mesh b
+given a 1d mesh a (obtained by laying flat the top edge (curve) of a 2d mesh a), and a 1d mesh b (obtained by laying flat the top edge (curve) of 2d mesh b), where 1d mesh b is obtained from 1d mesh a by means of a displacement field, transfer a field (scalar, vector, tensor) on 1d mesh a onto 1d mesh b
 Input values: 
     * Mandatory:
-        - `u_a`: the field on sub mesh a
-        - `u_b`: the field on sub mesh b
-        - `u`: the deformation field that relates  mesh a to sub mesh b
+        - `u_a`: the field on 1d mesh a
+        - `u_b`: the field on 1d mesh b
+        - `u`: the deformation field that relates 2d mesh a to 2d mesh b
         - `mesh_a_path`: the path of the mesh of `u_a`
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, 
+def transfer_1d_mesh_to_1d_mesh(u_a, u_b, u, mesh_a_path, 
                                   tol = const.epsilon):
     
     u_a.set_allow_extrapolation(True)
@@ -432,33 +432,33 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path,
     Q_b = u_b.function_space()
 
     '''
-    read all vertices in mesh a which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `vertices_a`
-    `vertices_a` is an ordered list of the coordinates of the vertices in  mesh a which belong to the sub mesh 
+    read all vertices in mesh a which belong to edges tagged with ID 'mesh_1_id' and store them into `mesh_2d_a_vertices`
+    `mesh_2d_a_vertices` is an ordered list of the coordinates of the vertices in 2d mesh a which belong to the 1d mesh a
     '''
-    mesh_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
-    mesh_a_vertices = mesh_a_parameters['curve_coordinates']
+    mesh_2d_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
+    mesh_2d_a_vertices = mesh_2d_a_parameters['curve_coordinates']
 
     '''
-    compute the arc length along sub mesh a: arc_length_a_tab[i] = [cumulative arc length along the sub mesh a curve obtained from its beginning until vertices_a[i] included]
+    compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]
     '''
     arc_length_a = 0
     arc_length_a_tab = [0]
-    for i in range(1, len(mesh_a_vertices)):
+    for i in range(1, len(mesh_2d_a_vertices)):
 
-        arc_length_a += np.linalg.norm(np.subtract(mesh_a_vertices[i], mesh_a_vertices[i-1]))
+        arc_length_a += np.linalg.norm(np.subtract(mesh_2d_a_vertices[i], mesh_2d_a_vertices[i-1]))
         arc_length_a_tab.append(arc_length_a)
 
 
     '''
-    compute the arc length along sub mesh a, deformed onto sub mesh b: arc_length_b_tab[i] = [cumulative arc length along the sub mesh a curve deformed into b, obtained from its beginning until sub_mesh_mesh_a_vertices[i] included]
+    compute the arc length along 1d mesh a, deformed onto 1d mesh b: arc_length_b_tab[i] = [cumulative arc length along the 1d mesh a curve deformed into b, obtained from its beginning until mesh_2d_a_vertices[i] included]
     '''
     arc_length_a_to_b = 0
     arc_length_a_to_b_tab = [0]
-    for i in range(1, len(mesh_a_vertices)):
+    for i in range(1, len(mesh_2d_a_vertices)):
 
         arc_length_a_to_b += np.linalg.norm(np.subtract(
-            np.add(mesh_a_vertices[i], u(mesh_a_vertices[i])), 
-            np.add(mesh_a_vertices[i-1], u(mesh_a_vertices[i-1]))
+            np.add(mesh_2d_a_vertices[i], u(mesh_2d_a_vertices[i])), 
+            np.add(mesh_2d_a_vertices[i-1], u(mesh_2d_a_vertices[i-1]))
             ))
         arc_length_a_to_b_tab.append(arc_length_a_to_b)
 
@@ -516,7 +516,7 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path,
 
         u_a_value = np.array(u_a(coordinate_a), dtype=float).flatten()
         
-        # assign the compute value of `u_sub_mesh` to u_mesh_values
+        # assign the compute value of `u_a` to `u_b_values`
         for j in range(num_components):
 
             u_b_values[num_components*node + j] = u_a_value[j]
