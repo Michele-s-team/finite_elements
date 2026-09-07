@@ -67,7 +67,7 @@ class u_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0.1*x[0]
-        values[1] = 0.1*x[1]
+        values[1] = 0.5*x[1]*x[0]
 
     def value_shape(self):
         return (2,)
