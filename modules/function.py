@@ -423,7 +423,8 @@ Input values:
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon):
+def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, 
+                                  tol = const.epsilon):
     
     u_a.set_allow_extrapolation(True)
     u.set_allow_extrapolation(True)
