@@ -504,9 +504,6 @@ for n in range(rpam.parameters['N']):
         # mesh quality got below the threshold -> remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
-
-
-        mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
         
         # 1.transfer fields
 
@@ -644,10 +641,10 @@ for n in range(rpam.parameters['N']):
 
         #3. trace the coordinates of shape vertices according to the deformation field U_n_12: these will be the coordinates of the new reference configuration of the shape
         shape_coordinates = []
-        for i in range(len(mesh_1_parameters["coordinates"])-1):
+        for i in range(len((rmsh.lmsh.mesh_parameters[1])["coordinates"])-1):
             # run through all coordinates of the nodes of mesh[1]
 
-            coordinate = mesh_1_parameters["coordinates"][i]
+            coordinate = (rmsh.lmsh.mesh_parameters[1])["coordinates"][i]
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
             shape_coordinates.append(np.add(
