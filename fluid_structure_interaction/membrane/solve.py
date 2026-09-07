@@ -35,7 +35,7 @@ import variational_problem.utils as var_pr
 fi = importlib.import_module(swi.fi)
 
 '''
-# test transfer 1d mesh to 1d mesh - start
+# test transfer_1d_to_1d_curve - start
 import function as fu
 import solution_paths as solpath
 
@@ -96,7 +96,7 @@ u_b = Function(Q_u_b)
 u.interpolate(u_expression(element=Q_u.ufl_element()))
 u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
 
-fu.transfer_1d_mesh_to_1d_mesh(u_a, u_b, u, path_a)
+fu.transfer_1d_to_1d_curve(u_a, u_b, u, path_a)
 
 io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -105,7 +105,7 @@ io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
 io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 
-# test transfer 1d mesh to 1d mesh - end
+# test transfer_1d_to_1d_curve - end
 
 '''
 '''
@@ -494,25 +494,25 @@ for n in range(rpam.parameters['N']):
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 4.4.1 transfer membrane fields
-        fu.transfer_1d_mesh_to_1d_mesh(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
 
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
 
 
-        fu.transfer_1d_mesh_to_1d_mesh(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(v_n_2_old, fsp.v_n_2, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(w_n_1_old, fsp.w_n_1, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
-        fu.transfer_1d_mesh_to_1d_mesh(U_n_32_old, fsp.U_n_32, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_2_old, fsp.v_n_2, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(w_n_1_old, fsp.w_n_1, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(U_n_32_old, fsp.U_n_32, u_n_old, pre_remesh_path)
 
 
 

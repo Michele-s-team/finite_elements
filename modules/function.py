@@ -423,7 +423,7 @@ Input values:
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_1d_mesh_to_1d_mesh(u_a, u_b, u, mesh_a_path, 
+def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
                                   tol = const.epsilon):
     
     u_a.set_allow_extrapolation(True)
