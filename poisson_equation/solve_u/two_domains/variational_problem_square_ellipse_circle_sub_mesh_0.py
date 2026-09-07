@@ -4,9 +4,9 @@ import numpy as np
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
-import function_spaces as fsp
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)

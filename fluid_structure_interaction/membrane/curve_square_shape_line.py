@@ -11,7 +11,7 @@ rmsh = importlib.import_module(swi.rmsh)
 curve_coordinates = np.array(rmsh.parameters['curve_coordinates'])
 
 '''
-compute the arc length along the sub mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until curve_coordinates[i] included]
+compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until curve_coordinates[i] included]
 '''
 arc_length = 0
 arc_length_tab = [0]
