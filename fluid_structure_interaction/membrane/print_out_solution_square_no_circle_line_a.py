@@ -5,7 +5,6 @@ import csv
 import function_spaces as fsp
 import importlib
 import input_output as io
-import mesh.load as lmsh
 import mesh.utils as msh
 import os
 import solution_paths as solpath
@@ -120,7 +119,7 @@ def print_solution(t, step, dt):
 
     #4. Write the deformed mesh to file
 
-    deformed_mesh = msh.deform_mesh(rmsh.lmsh.sub_meshes[0], fsp.u_n)
+    deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh[0], fsp.u_n)
 
     with XDMFFile(os.path.join(solpath.snapshots_path, 'mesh_n_' + str(step + 1) + '.xdmf')) as xdmf:
         xdmf.write(deformed_mesh)
