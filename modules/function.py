@@ -422,9 +422,11 @@ Input values:
         - `mesh_a_path`: the path of the mesh of `u_a`
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
+        - 'close' (False): if `True`, the coordinates 'shape_coordinates' in mesh_a_path/'mesh_metadata.csv' represent a closed polygon but they do not include the last point (which coincides with the first) -> the last point is added by the method
 '''
 def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
-                                  tol = const.epsilon):
+                                  tol=const.epsilon,
+                                  closed=False):
     
     u_a.set_allow_extrapolation(True)
     u.set_allow_extrapolation(True)

@@ -51,6 +51,14 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
+# test transfer_1d_to_1d_curve - start
+shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
+shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+sys.exit(1)
+# test transfer_1d_to_1d_curve - end
+
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
