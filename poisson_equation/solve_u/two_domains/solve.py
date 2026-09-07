@@ -26,6 +26,7 @@ import variational_problem.utils as var_pr
 rmsh = importlib.import_module(swi.rmsh)
 vp = ['','']
 
+
 '''
 # test transfer_1d_to_2d_curve - start
 import function as fu
@@ -47,8 +48,8 @@ class u_1_expression(UserExpression):
     def value_shape(self):
         return (2, 2)
 
-Q_0 = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', 2, shape=(2,2))
-Q_1 = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', 2, shape=(2,2))
+Q_0 = TensorFunctionSpace(lmsh.mesh[0], 'P', 2, shape=(2,2))
+Q_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', 2, shape=(2,2))
 
 u_0 = Function(Q_0)
 u_1 = Function(Q_1)
@@ -62,9 +63,10 @@ io.full_print(u_0, 'u_0_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
                   solpath.nodal_values_path)
 io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
+sys.exit(1)
 # test transfer_1d_to_2d_curve - end
-'''
 
+'''
 
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
