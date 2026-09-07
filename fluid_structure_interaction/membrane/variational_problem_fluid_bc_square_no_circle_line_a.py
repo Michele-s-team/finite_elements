@@ -21,6 +21,7 @@ dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 # expressions for initial conditions
 class sigma_fl_n_12_Expression(UserExpression):
     def eval(self, values, x):
+
         values[0] = rpam.parameters['sigma_fl_n_12_0_b']
 
     def value_shape(self):
@@ -29,6 +30,7 @@ class sigma_fl_n_12_Expression(UserExpression):
 # expressions for boundary conditions
 class v_fl_bar_b_Expression(UserExpression):
     def eval(self, values, x):
+        
         values[0] = 0
         values[1] = rpam.parameters['v_fl_bar_b_const']* 4.0 * 1.5 * x[0]/2 * (rmsh.parameters['L'] - x[0]/2) / (rmsh.parameters['L']**2)
 
