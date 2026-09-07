@@ -348,7 +348,7 @@ for n in range(rpam.parameters['N']):
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
     #3.3.1 compute mesh quality
-    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0], fsp.u_n))
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], fsp.u_n))
 
 
     #3.3.3 compure BCs and data
