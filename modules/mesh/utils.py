@@ -2902,7 +2902,7 @@ Input values:
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
+def transfer_2d_to_1d_shape(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
 
     # 1. initialize 
     # mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
