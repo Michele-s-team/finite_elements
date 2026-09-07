@@ -2895,7 +2895,7 @@ Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obt
 Input values: 
     * Mandatory:
         - 'f_2d': the field on the 2d mesh
-        - 'f_1d': the field on the 2d mesh
+        - 'f_1d': the field on the 1d mesh
         - 'mesh_2d': the 2d mesh is stored
         - 'mf_mesh_2d': a function on 'mesh_2d' that tags its facets
         - 'shape_coordinates' : [[p_0_x, p_0_y], [p_1_x, p_1_y], ... ] the coordinates of the vertices of the shape in 'mesh_2d'
