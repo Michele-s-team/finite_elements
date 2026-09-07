@@ -440,6 +440,9 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     mesh_2d_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
     mesh_2d_a_vertices = mesh_2d_a_parameters['shape_coordinates']
 
+    if closed:
+        mesh_2d_a_vertices.append(mesh_2d_a_vertices[0])
+
     '''
     compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]
     '''

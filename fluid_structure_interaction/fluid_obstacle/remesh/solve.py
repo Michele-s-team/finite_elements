@@ -134,7 +134,8 @@ u_b = Function(Q_u_b)
 
 u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
 
-fu.transfer_1d_to_1d_curve(u_a, u_b, u, os.path.join(path_a, 'mesh_0'))
+fu.transfer_1d_to_1d_curve(u_a, u_b, u, os.path.join(path_a, 'mesh_0'),
+                           closed=True)
 
 io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
