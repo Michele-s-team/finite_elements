@@ -129,8 +129,8 @@ class u_0_expression(UserExpression):
     def value_shape(self):
         return (2,2)
 
-Q_0 = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', 2, shape=(2,2))
-Q_1 = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', 2, shape=(2,2))
+Q_0 = TensorFunctionSpace(lmsh.mesh[0], 'P', 2, shape=(2,2))
+Q_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', 2, shape=(2,2))
 
 u_0 = Function(Q_0)
 u_1 = Function(Q_1)
