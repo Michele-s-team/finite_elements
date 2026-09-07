@@ -21,19 +21,19 @@ import mesh.utils as msh
 import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
-curve_coordinates = None
+shape_coordinates = None
 
 if rpam.parameters['curve_format'] == 'coordinates':
-    # the  curve is provided directly as a sequence of coordinates of the curve points -> set curve_coordinates to these coordinates
+    # the  curve is provided directly as a sequence of coordinates of the curve points -> set shape_coordinates to these coordinates
 
     print('The curve is provided as a set of coordinates.')
 
-    curve_coordinates = rpam.parameters['curve_coordinates']
+    shape_coordinates = rpam.parameters['shape_coordinates']
 
 elif rpam.parameters['curve_format'] == 'parametric':
     #  the curve is a given, parametric geometrical curve, and it is provided in terms of the parameters of this curve
 
     curve_parametric_form = io.read_function_expresssion(rpam.parameters['curve_parametric_form'])
-    curve_coordinates = [curve_parametric_form(i/(rpam.parameters['N']-1)) for i in range(rpam.parameters['N'])]
+    shape_coordinates = [curve_parametric_form(i/(rpam.parameters['N']-1)) for i in range(rpam.parameters['N'])]
 
-msh.generate_square_no_circle_curve_mesh(curve_coordinates, rarg.args.parameter_directory, rarg.args.output_directory)
+msh.generate_square_no_circle_curve_mesh(shape_coordinates, rarg.args.parameter_directory, rarg.args.output_directory)

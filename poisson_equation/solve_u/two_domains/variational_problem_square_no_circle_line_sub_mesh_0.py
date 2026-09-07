@@ -19,7 +19,7 @@ class u_exact_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         
         # test case 1
-        values[0] = (1 + x[0]**2 + 2 * x[1]**2) * np.cos(2 * np.pi * x[1] / rmsh.parameters['curve_coordinates'][0][1])
+        values[0] = (1 + x[0]**2 + 2 * x[1]**2) * np.cos(2 * np.pi * x[1] / rmsh.parameters['shape_coordinates'][0][1])
     
     def value_shape(self):
         return (1,)
@@ -29,8 +29,8 @@ class grad_u_exact_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         
         # test case 1
-        values[0] = 2 * x[0] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1])
-        values[1] = 4 * x[1] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1]) - (2 * np.pi * (1 + x[0]**2 + 2 * x[1]**2) * np.sin((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1])) / rmsh.parameters['curve_coordinates'][0][1]
+        values[0] = 2 * x[0] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['shape_coordinates'][0][1])
+        values[1] = 4 * x[1] * np.cos((2 * np.pi * x[1]) / rmsh.parameters['shape_coordinates'][0][1]) - (2 * np.pi * (1 + x[0]**2 + 2 * x[1]**2) * np.sin((2 * np.pi * x[1]) / rmsh.parameters['shape_coordinates'][0][1])) / rmsh.parameters['shape_coordinates'][0][1]
 
     def value_shape(self):
         return (2,)
@@ -40,7 +40,7 @@ class laplacian_u_exact_mesh_0_expression(UserExpression):
     def eval(self, values, x):
         
         # test case 1
-        values[0] = -((2 * ((-3 * rmsh.parameters['curve_coordinates'][0][1]**2 + 2 * np.pi**2 * (1 + x[0]**2 + 2 * x[1]**2)) * np.cos((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1]) + 8 * rmsh.parameters['curve_coordinates'][0][1] * np.pi * x[1] * np.sin((2 * np.pi * x[1]) / rmsh.parameters['curve_coordinates'][0][1]))) / rmsh.parameters['curve_coordinates'][0][1]**2)
+        values[0] = -((2 * ((-3 * rmsh.parameters['shape_coordinates'][0][1]**2 + 2 * np.pi**2 * (1 + x[0]**2 + 2 * x[1]**2)) * np.cos((2 * np.pi * x[1]) / rmsh.parameters['shape_coordinates'][0][1]) + 8 * rmsh.parameters['shape_coordinates'][0][1] * np.pi * x[1] * np.sin((2 * np.pi * x[1]) / rmsh.parameters['shape_coordinates'][0][1]))) / rmsh.parameters['shape_coordinates'][0][1]**2)
 
     def value_shape(self):
         return (1,)

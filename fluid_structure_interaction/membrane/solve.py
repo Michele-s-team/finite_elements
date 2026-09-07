@@ -195,9 +195,9 @@ PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluati
 
 
 print(f'Generating initial mesh ...')
-# generate the mesh with the curve given by curve_coordinates and write into its mesh_metadata
+# generate the mesh with the curve given by shape_coordinates and write into its mesh_metadata
 
-msh.generate_square_no_circle_curve_mesh(mesh_parameters['curve_coordinates'], os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+msh.generate_square_no_circle_curve_mesh(mesh_parameters['shape_coordinates'], os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 print(f'... done.')
 
@@ -458,22 +458,22 @@ for n in range(rpam.parameters['N']):
 
         mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, 'mesh_metadata.csv')) 
 
-        curve_coordinates = []
-        for i in range(len(mesh_parameters["curve_coordinates"])):
+        shape_coordinates = []
+        for i in range(len(mesh_parameters["shape_coordinates"])):
             # run through all coordinates of the nodes of the boundary
 
-            coordinate = mesh_parameters["curve_coordinates"][i]
+            coordinate = mesh_parameters["shape_coordinates"][i]
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_n
               
-            curve_coordinates.append(np.add(coordinate, fsp.u_n(coordinate).tolist()).tolist())
+            shape_coordinates.append(np.add(coordinate, fsp.u_n(coordinate).tolist()).tolist())
 
-        #4.2.1 generate the mesh with the new curve_coordinates
+        #4.2.1 generate the mesh with the new shape_coordinates
         
         # store the mesh before remeshing in `pre_remesh_path`, this will be needed for transferring fields
         os.system(f'rm -rf {pre_remesh_path}; mkdir -p {pre_remesh_path}; cp -r {rarg.args.input_directory}/. {pre_remesh_path}')
 
-        msh.generate_square_no_circle_curve_mesh(curve_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+        msh.generate_square_no_circle_curve_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 
         #4.3 reload modules so everything is updated according to the mesh change

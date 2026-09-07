@@ -15,7 +15,7 @@ print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 
 # `boundary_coordinates` is a list containing the vertices of the full boudnary of the mesh
-full_boundary_cooordinates = list(rmsh.parameters['curve_coordinates'])
+full_boundary_cooordinates = list(rmsh.parameters['shape_coordinates'])
 full_boundary_cooordinates.insert(0, [0, 0])
 full_boundary_cooordinates.append([rmsh.parameters['L'], 0])
 
@@ -35,9 +35,9 @@ integral_exact[1]['dx'] = cal.curve_integral_line(tf.function_test_integrals[1],
 
 # exact line integrals
 # form mesh #0
-integral_exact[0]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], lmsh.mesh_parameters[0]['curve_coordinates'][0])
-integral_exact[0]['ds_r'] = cal.curve_integral_line(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['curve_coordinates'][-1], [lmsh.mesh_parameters[0]['L'], 0])
-integral_exact[0]['ds_t'] = cal.curve_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['curve_coordinates'], 
+integral_exact[0]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], lmsh.mesh_parameters[0]['shape_coordinates'][0])
+integral_exact[0]['ds_r'] = cal.curve_integral_line(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'][-1], [lmsh.mesh_parameters[0]['L'], 0])
+integral_exact[0]['ds_t'] = cal.curve_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['shape_coordinates'], 
                                                        open=True)
 integral_exact[0]['ds_b'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], 0])
 
