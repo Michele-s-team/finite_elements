@@ -104,7 +104,7 @@ for i in range(len(shape_coordinates_a)):
 msh.generate_square_shape_line_mesh(shape_coordinates_b, os.path.join(rarg.args.input_directory, '../'), path_b)
 
 # 
-'''
+
 parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
 
 
@@ -119,27 +119,22 @@ class u_a_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = x[0]**2
-        values[1] = x[0]**3
-        values[2] = x[0]**2-1
-        values[3] = x[0]**2-2
-
 
     def value_shape(self):
-        return (4,)
+        return (1,)
     
 
 
-Q_u_a = TensorFunctionSpace(mesh_a[1], 'P', 2, shape=(2,2))
-Q_u_b = TensorFunctionSpace(mesh_b[1], 'P', 2, shape=(2,2))
+Q_u_a = FunctionSpace(mesh_a[1], 'P', 2)
+Q_u_b = FunctionSpace(mesh_b[1], 'P', 2)
 
 
-u = Function(Q_u)
 u_a = Function(Q_u_a)
 u_b = Function(Q_u_b)
 
 u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
 
-fu.transfer_1d_to_1d_curve(u_a, u_b, u, path_a)
+fu.transfer_1d_to_1d_curve(u_a, u_b, u, os.path.join(path_a, 'mesh_0'))
 
 io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -147,7 +142,7 @@ io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
                   solpath.nodal_values_path)
 io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
-'''
+
 
 sys.exit(0)
 # test transfer_1d_to_1d_curve - end
