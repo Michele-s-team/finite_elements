@@ -46,7 +46,7 @@ P_psi_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree
 P_mu_n_12 = FiniteElement( 'P', interval, rpam.parameters['function_space_degree_mem'] )
 
 element_mem = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_U_n_12, P_nu_n_12, P_psi_n_12, P_mu_n_12] )
-Q_mem = FunctionSpace(lmsh.sub_meshes[1], element_mem)
+Q_mem = FunctionSpace(lmsh.mesh[1], element_mem)
 
 # collapsed function spaces
 Q_v_bar = Q_mem.sub(0).collapse()
@@ -60,28 +60,28 @@ Q_psi_n_12 = Q_mem.sub(7).collapse()
 Q_mu_n_12 = Q_mem.sub(8).collapse()
 
 # function space for the X field
-Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
+Q_X = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
 # function space to store the time derivative of U_n_12
-Q_U_dot_n_12 = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
+Q_U_dot_n_12 = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
 # tensor function space to project the stress tensor of the fluid mesh on the membrane mesh
-Q_var_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+Q_var_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
 
 
 
 # 2) for the fictitious elastic body: 
-Q_u = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
-Q_u_dot = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_u = VectorFunctionSpace(lmsh.mesh[0], 'P', 1)
+Q_u_dot = VectorFunctionSpace(lmsh.mesh[0], 'P', 1)
 
 
 
 # 3) for the fluid:   
-Q_v_fl = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
-Q_v_fl_bar = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
-Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_v_fl = VectorFunctionSpace(lmsh.mesh[0], 'P', 2)
+Q_v_fl_bar = VectorFunctionSpace(lmsh.mesh[0], 'P', 2)
+Q_phi_fl = FunctionSpace(lmsh.mesh[0], 'P', 1)
   
-Q_var_tensor_sigma_fl = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+Q_var_tensor_sigma_fl = TensorFunctionSpace(lmsh.mesh[0], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
 
 
 
