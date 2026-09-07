@@ -413,7 +413,7 @@ def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
     
     
 '''
-given a 1d mesh a (obtained by laying flat the top edge (curve) of a 2d mesh a), and a 1d mesh b (obtained by laying flat the top edge (curve) of 2d mesh b), where 1d mesh b is obtained from 1d mesh a by means of a displacement field, transfer a field (scalar, vector, tensor) on 1d mesh a onto 1d mesh b
+given a 1d mesh a (obtained by laying flat the top edge (curve), or an internal shape of a 2d mesh a), and a 1d mesh b (obtained by laying flat the top edge (curve), or an internal shape of 2d mesh b), where 1d mesh b is obtained from 1d mesh a by means of a displacement field, this method transfers a field (scalar, vector, tensor) on 1d mesh a onto 1d mesh b
 Input values: 
     * Mandatory:
         - `u_a`: the field on 1d mesh a
@@ -422,9 +422,11 @@ Input values:
         - `mesh_a_path`: the path of the mesh of `u_a`
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
+        - 'close' (False): This needs to be set to `True` if the shape internal to the 2d mesh a is a closed polygon. In fact, in this case the shape coordinates 'shape_coordinates' in mesh_a_path/'mesh_metadata.csv' represent a closed polygon but they do not include the last point of the polygon (which coincides with the first). If `close == True`, the first point in `shape_coordinates` is appended at the end of `shape_coordinates` by the method. This is needed for the transfer to be made correctly. 
 '''
 def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
-                                  tol = const.epsilon):
+                                  tol=const.epsilon,
+                                  closed=False):
     
     u_a.set_allow_extrapolation(True)
     u.set_allow_extrapolation(True)
@@ -437,6 +439,9 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     '''
     mesh_2d_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
     mesh_2d_a_vertices = mesh_2d_a_parameters['shape_coordinates']
+
+    if closed:
+        mesh_2d_a_vertices.append(mesh_2d_a_vertices[0])
 
     '''
     compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]

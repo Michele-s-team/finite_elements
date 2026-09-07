@@ -51,6 +51,105 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
+'''
+# test transfer_1d_to_1d_curve - start
+import function as fu
+import solution_paths as solpath
+
+path_a = '/home/fenics/shared/generate_mesh/2d/square/shape_line/solution_a'
+path_b = '/home/fenics/shared/generate_mesh/2d/square/shape_line/solution_b'
+
+mesh_a = [None]*2
+mesh_b = [None]*2
+sf_a = [None]*2
+sf_b = [None]*2
+
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0.1*x[0]
+        values[1] = 0.5*x[1]*x[0]
+
+    def value_shape(self):
+        return (2,)
+
+
+
+shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
+shape_coordinates_a = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+msh.generate_square_shape_line_mesh(shape_coordinates_a, os.path.join(rarg.args.input_directory, '../'), path_a)
+
+mesh_a[0], sf_a[0] = msh.read_from_file(os.path.join(path_a, f'mesh_{0}'), 'xdmf')
+mesh_a[1], sf_a[1] = msh.read_from_file(os.path.join(path_a, f'mesh_{1}'), 'h5')
+
+parameters_a = io.read_parameters_from_csv_file(os.path.join(path_a, "mesh_metadata.csv"))
+
+Q_u = VectorFunctionSpace(mesh_a[0], 'P', 2)
+u = Function(Q_u)
+u.interpolate(u_expression(element=Q_u.ufl_element()))
+
+
+shape_coordinates_b = []
+for i in range(len(shape_coordinates_a)):
+    # run through all coordinates of the nodes of mesh[1]
+
+    coordinate = shape_coordinates_a[i]
+
+    # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
+    shape_coordinates_b.append(np.add(
+                                coordinate,
+                                u(coordinate)
+                                ).tolist()
+                        )   
+
+msh.generate_square_shape_line_mesh(shape_coordinates_b, os.path.join(rarg.args.input_directory, '../'), path_b)
+
+
+parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
+
+
+mesh_b[0], sf_b[0] = msh.read_from_file(os.path.join(path_b, f'mesh_{0}'), 'xdmf')
+mesh_b[1], sf_b[1] = msh.read_from_file(os.path.join(path_b, f'mesh_{1}'), 'h5')
+
+print(f'number of vertices = {mesh_a[0].num_vertices()} {mesh_b[0].num_vertices()}')
+
+
+
+class u_a_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]**2
+        values[1] = x[0]**3
+        values[2] = x[0]**4
+        values[3] = x[0]**5
+
+    def value_shape(self):
+        return (2,2)
+    
+
+
+Q_u_a = TensorFunctionSpace(mesh_a[1], 'P', 2, shape=(2,2))
+Q_u_b = TensorFunctionSpace(mesh_b[1], 'P', 2, shape=(2,2))
+
+
+u_a = Function(Q_u_a)
+u_b = Function(Q_u_b)
+
+u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
+
+fu.transfer_1d_to_1d_curve(u_a, u_b, u, os.path.join(path_a, 'mesh_0'),
+                           closed=True)
+
+io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+
+# test transfer_1d_to_1d_curve - end
+'''
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
