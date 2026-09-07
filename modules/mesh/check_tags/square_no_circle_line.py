@@ -1,12 +1,11 @@
 import colorama as col
 from fenics import *
 import importlib
-import numpy as np
 
 import calculus as cal
-import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.load as lmsh
+import mesh.test_function as tf
 import mesh.utils as msh
 import runtime_arguments as rarg
 
@@ -15,39 +14,12 @@ rmsh = importlib.import_module('mesh.read.square_no_circle_line')
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 
-# CHANGE PARAMETERS HERE
-c_test = [0.3, 0.76]
-r_test = 0.345
-# CHANGE PARAMETERS HERE
+
 
 # `boundary_coordinates` is a list containing the vertices of the full boudnary of the mesh
 full_boundary_cooordinates = list(rmsh.parameters['curve_coordinates'])
 full_boundary_cooordinates.insert(0, [0, 0])
 full_boundary_cooordinates.append([rmsh.parameters['L'], 0])
-
-
-# function_test_integrals_fenics is a function of two variables, that will be used to test whether the boundary elements ds_circle, ds_inflow, ds_outflow, .. are defined correclty . This will be done by computing an integral of f_test_ds over these boundary terms and comparing with the exact result
-def function_test_integrals(x):
-    return (np.cos(geo.np.linalg.norm(np.subtract(x, c_test)) - r_test) ** 2.0)
-    # return 1
-
-
-# analytical expression for a  scalar function used to test the ds
-class FunctionTestIntegrals(UserExpression):
-    def eval(self, values, x):
-        values[0] = function_test_integrals(x)
-
-    def value_shape(self):
-        return (1,)
-
-
-# construct function spaces and function_test_integrals_fenics for all sub meshes
-Q_test = []
-function_test_integrals_fenics = []
-for p in range(len(lmsh.mesh)):
-    Q_test.append(FunctionSpace(lmsh.mesh[p], 'P', 2))
-    function_test_integrals_fenics.append(Function(Q_test[p]))
-    function_test_integrals_fenics[p].interpolate(FunctionTestIntegrals(element=Q_test[p].ufl_element()))
 
 integral_exact = [''] * len(lmsh.mesh)
 integral_exact[0] = dict([ \
@@ -60,16 +32,16 @@ integral_exact[1] = dict([ \
 ])
 
 # exact surface integrals
-integral_exact[0]['dx'] = cal.surface_integral_polygon(function_test_integrals, full_boundary_cooordinates)
-integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, lmsh.mesh_parameters[1]['x_l'], lmsh.mesh_parameters[1]['x_r'])
+integral_exact[0]['dx'] = cal.surface_integral_polygon(tf.function_test_integrals[0], full_boundary_cooordinates)
+integral_exact[1]['dx'] = cal.curve_integral_line(tf.function_test_integrals[1], lmsh.mesh_parameters[1]['x_l'], lmsh.mesh_parameters[1]['x_r'])
 
 # exact line integrals
 # form mesh #0
-integral_exact[0]['ds_l'] = cal.curve_integral_line(function_test_integrals, [0, 0], lmsh.mesh_parameters[0]['curve_coordinates'][0])
-integral_exact[0]['ds_r'] = cal.curve_integral_line(function_test_integrals, lmsh.mesh_parameters[0]['curve_coordinates'][-1], [lmsh.mesh_parameters[0]['L'], 0])
-integral_exact[0]['ds_t'] = cal.curve_integral_polygon(function_test_integrals, lmsh.mesh_parameters[0]['curve_coordinates'], 
+integral_exact[0]['ds_l'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], lmsh.mesh_parameters[0]['curve_coordinates'][0])
+integral_exact[0]['ds_r'] = cal.curve_integral_line(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['curve_coordinates'][-1], [lmsh.mesh_parameters[0]['L'], 0])
+integral_exact[0]['ds_t'] = cal.curve_integral_polygon(tf.function_test_integrals[0], lmsh.mesh_parameters[0]['curve_coordinates'], 
                                                        open=True)
-integral_exact[0]['ds_b'] = cal.curve_integral_line(function_test_integrals, [0, 0], [lmsh.mesh_parameters[0]['L'], 0])
+integral_exact[0]['ds_b'] = cal.curve_integral_line(tf.function_test_integrals[0], [0, 0], [lmsh.mesh_parameters[0]['L'], 0])
 
 integral_exact[0]['ds_lr'] = integral_exact[0]['ds_l'] + integral_exact[0]['ds_r']
 integral_exact[0]['ds_tb'] = integral_exact[0]['ds_t'] + integral_exact[0]['ds_b']
@@ -77,8 +49,8 @@ integral_exact[0]['ds_tb'] = integral_exact[0]['ds_t'] + integral_exact[0]['ds_b
 integral_exact[0]['ds'] = integral_exact[0]['ds_lr'] + integral_exact[0]['ds_tb']
 
 # for mesh #1
-integral_exact[1]['ds_l'] = function_test_integrals(0)
-integral_exact[1]['ds_r'] = function_test_integrals(lmsh.mesh_parameters[1]['x_r'])
+integral_exact[1]['ds_l'] = (tf.function_test_integrals[1])(lmsh.mesh_parameters[1]['x_l'])
+integral_exact[1]['ds_r'] = (tf.function_test_integrals[1])(lmsh.mesh_parameters[1]['x_r'])
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r']
 
