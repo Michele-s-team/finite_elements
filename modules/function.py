@@ -246,7 +246,7 @@ def transfer_1d_to_2d_curve(u_1d, u_2d, mesh_path,
     `sub_mesh_vertices` is an ordered list of the coordinates of the vertices in the mesh which belong to the sub mesh 
     '''
     mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
-    mesh_1d_vertices = mesh_parameters['curve_coordinates']
+    mesh_1d_vertices = mesh_parameters['shape_coordinates']
 
     '''
     compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
@@ -341,7 +341,7 @@ def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
     `mesh_vertices` is an ordered list of the coordinates of the vertices in the 2d mesh which belong to the 1d mesh 
     '''
     mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
-    mesh_1d_vertices = mesh_parameters['curve_coordinates']
+    mesh_1d_vertices = mesh_parameters['shape_coordinates']
 
     '''
     compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until mesh_1d_vertices included]
@@ -436,7 +436,7 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     `mesh_2d_a_vertices` is an ordered list of the coordinates of the vertices in 2d mesh a which belong to the 1d mesh a
     '''
     mesh_2d_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
-    mesh_2d_a_vertices = mesh_2d_a_parameters['curve_coordinates']
+    mesh_2d_a_vertices = mesh_2d_a_parameters['shape_coordinates']
 
     '''
     compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]

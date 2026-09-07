@@ -3956,23 +3956,23 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 generate a mesh given by a square whose top edge is an arbitrary curve
 Input values: 
     * Mandatory:
-        - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
+        - 'shape_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
         Note: 
-        It must be curve_coordinates[0][0] = 0, curve_coordinates[-1][0] = parameters['L']. If not, an error is thrown. 
+        It must be shape_coordinates[0][0] = 0, shape_coordinates[-1][0] = parameters['L']. If not, an error is thrown. 
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional:
         -  `epsilon` (const.epsilon): the tolerance with which distances are assessed in the method 
 '''
-def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_directory, output_directory, 
+def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_directory, output_directory, 
                                         epsilon = const.epsilon):
 
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
-    if (np.isclose(curve_coordinates[0][0], 0, epsilon) == False) or (np.isclose(curve_coordinates[-1][0], parameters['L'], epsilon) == False): 
+    if (np.isclose(shape_coordinates[0][0], 0, epsilon) == False) or (np.isclose(shape_coordinates[-1][0], parameters['L'], epsilon) == False): 
 
-        print(f"{col.Fore.RED}{'Error: x component of first and last curve_coordinates do not coincide with 0 and L!!'}{col.Style.RESET_ALL}")
+        print(f"{col.Fore.RED}{'Error: x component of first and last shape_coordinates do not coincide with 0 and L!!'}{col.Style.RESET_ALL}")
         sys.exit(1)
 
     # remove the output directory it it already exists, and create it from scratch
@@ -4001,8 +4001,8 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     # remove spurious entities in mesh_metadata 
     if parameters['curve_format'] == 'parametric':
 
-        if 'curve_coordinates' in parameters:
-            del mesh_metadata['curve_coordinates']
+        if 'shape_coordinates' in parameters:
+            del mesh_metadata['shape_coordinates']
                            
     if parameters['curve_format'] == 'coordinates':
 
@@ -4012,7 +4012,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         if 'N' in parameters:
             del mesh_metadata['N']
 
-    mesh_metadata['curve_coordinates'] = curve_coordinates
+    mesh_metadata['shape_coordinates'] = shape_coordinates
 
 
     # write metadata for mesh 0
@@ -4027,7 +4027,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             mesh_0_metadata['curve_parametric_form'] = parameters['curve_parametric_form']
             mesh_0_metadata['N'] = parameters['N']
        
-    mesh_0_metadata['curve_coordinates'] = curve_coordinates
+    mesh_0_metadata['shape_coordinates'] = shape_coordinates
 
     mesh_0_metadata['mesh_0_id'] = parameters['mesh_0_id']
     mesh_0_metadata['mesh_1_id'] = parameters['mesh_1_id']
@@ -4049,8 +4049,8 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     p_lb = gmsh.model.geo.addPoint(0, 0, 0)
     p_rb = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
-    p_rt = gmsh.model.geo.addPoint(curve_coordinates[-1][0], curve_coordinates[-1][1], 0)
-    p_lt = gmsh.model.geo.addPoint(curve_coordinates[0][0], curve_coordinates[0][1], 0)
+    p_rt = gmsh.model.geo.addPoint(shape_coordinates[-1][0], shape_coordinates[-1][1], 0)
+    p_lt = gmsh.model.geo.addPoint(shape_coordinates[0][0], shape_coordinates[0][1], 0)
     gmsh.model.geo.synchronize()
 
 
@@ -4060,9 +4060,9 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.model.geo.synchronize()
 
     curve_lines = []
-    for i in range(1, len(curve_coordinates)-1):
+    for i in range(1, len(shape_coordinates)-1):
 
-        curve_points.append(gmsh.model.geo.addPoint(curve_coordinates[i][0], curve_coordinates[i][1], 0))
+        curve_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
         gmsh.model.geo.synchronize()
 
         curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
@@ -4114,7 +4114,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
     gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
     gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(max([curve_coordinates[i][0] for i in range(len(curve_coordinates))]), max([curve_coordinates[i][1] for i in range(len(curve_coordinates))])))
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(max([shape_coordinates[i][0] for i in range(len(shape_coordinates))]), max([shape_coordinates[i][1] for i in range(len(shape_coordinates))])))
 
     gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
@@ -4169,21 +4169,21 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     # print(f'mesh_1_vertices = {mesh_1_vertices}')
     # print(f'len mesh_1_vertices = {len(mesh_1_vertices)}')
 
-    if len(mesh_1_vertices) != len(curve_coordinates):
-        # the meshing algorithm has inserted additional vertices in between the vertices of `curve_coordinates` -> call again `generate_square_no_circle_curve_mesh` with a new `curve_coordinates` which contains these vertices
+    if len(mesh_1_vertices) != len(shape_coordinates):
+        # the meshing algorithm has inserted additional vertices in between the vertices of `shape_coordinates` -> call again `generate_square_no_circle_curve_mesh` with a new `shape_coordinates` which contains these vertices
 
-        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on curve does not match the number of vertices of the 1d mesh. Recalculating curve_coordinates ...'}{col.Style.RESET_ALL}")
-        print(f'\tNumber of vertices on curve = {len(curve_coordinates)}\n\tNumber of vertices on line = {len(mesh_1_vertices)}')
+        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on curve does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
+        print(f'\tNumber of vertices on curve = {len(shape_coordinates)}\n\tNumber of vertices on line = {len(mesh_1_vertices)}')
 
         '''
         build `segment_vertices`: 
-        segment_vertices[i] = [list of mesh vertices tagged with ID `mesh_1_id` and which lie in between curve_coordinates[i] and curve_coordinates[i+1]
+        segment_vertices[i] = [list of mesh vertices tagged with ID `mesh_1_id` and which lie in between shape_coordinates[i] and shape_coordinates[i+1]
         '''
-        segment_vertices = [[] for _ in range(len(curve_coordinates) - 1)]
+        segment_vertices = [[] for _ in range(len(shape_coordinates) - 1)]
         for vertex in mesh_1_vertices:
     
-            for i in range(len(curve_coordinates)-1):
-                if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates[i]), np.array(curve_coordinates[i+1])):
+            for i in range(len(shape_coordinates)-1):
+                if cal.point_on_segment(np.array(vertex), np.array(shape_coordinates[i]), np.array(shape_coordinates[i+1])):
     
                     segment_vertices[i].append(vertex)
     
@@ -4192,12 +4192,12 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
         
         '''
-        sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - curve_coordinates_lr[i]).(curve_coordinates_lr[i+1]-curve_coordinates_lr[i]), 
-        i.e. the projection of segment_vertex[i][j] - curve_coordinates_lr[i] along the segment which goes from curve_coordinates_lr[i] to curve_coordinates_lr[i+1]. 
+        sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - shape_coordinates_lr[i]).(shape_coordinates_lr[i+1]-shape_coordinates_lr[i]), 
+        i.e. the projection of segment_vertex[i][j] - shape_coordinates_lr[i] along the segment which goes from shape_coordinates_lr[i] to shape_coordinates_lr[i+1]. 
         This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
         '''
         segment_vertices_projection = [
-            [np.dot(np.subtract(segment_vertex, curve_coordinates[i]), np.subtract(curve_coordinates[i+1], curve_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
+            [np.dot(np.subtract(segment_vertex, shape_coordinates[i]), np.subtract(shape_coordinates[i+1], shape_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
             ]
     
         for i in range(len(segment_vertices)):
@@ -4205,33 +4205,33 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             segment_vertices[i] = [segment_vertices[i][j] for j in order]
 
         '''
-        build `new_curve_coordinates` which contains the vertices inserted by the meshing algorithm
+        build `new_shape_coordinates` which contains the vertices inserted by the meshing algorithm
         '''
-        new_curve_coordinates = [segment_vertices[0][0]]
+        new_shape_coordinates = [segment_vertices[0][0]]
         for i in range(len(segment_vertices)):
             for j in range(1, len(segment_vertices[i])):
 
-                new_curve_coordinates.append(segment_vertices[i][j])
+                new_shape_coordinates.append(segment_vertices[i][j])
 
         print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
 
-        # print(f'lengh new_curve_coordinates = {len(new_curve_coordinates)}')
+        # print(f'lengh new_shape_coordinates = {len(new_shape_coordinates)}')
         # print(f'lengh sub_mesh_1_vertices = {len(mesh_1_vertices)}')
      
         clear_gmsh()
 
-        # now new_curve_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new_curve_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
-        generate_square_no_circle_curve_mesh(new_curve_coordinates, mesh_parameters_directory, output_directory, epsilon)
+        # now new_shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new_shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
+        generate_square_no_circle_curve_mesh(new_shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
 
     else:
-        # the meshing algorithm did not insert additional vertices with respect to `curve_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
+        # the meshing algorithm did not insert additional vertices with respect to `shape_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
 
         arc_length_table = [0]
         arc_length = 0
 
-        for i in range(1, len(curve_coordinates)):
+        for i in range(1, len(shape_coordinates)):
 
-            arc_length += np.linalg.norm(np.subtract(curve_coordinates[i], curve_coordinates[i-1]))
+            arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
             arc_length_table.append(arc_length)
 
         # print(f'arclength table = {arc_length_table}')
@@ -4240,7 +4240,7 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         # Create a proper 1D IntervalMesh using the actual vertex positions
         if len(arc_length_table) >= 2:
 
-            N_intervals = len(curve_coordinates) - 1
+            N_intervals = len(shape_coordinates) - 1
 
             # Create output directory for submesh
             output_directory_mesh_1 = os.path.join(output_directory, 'mesh_1')
