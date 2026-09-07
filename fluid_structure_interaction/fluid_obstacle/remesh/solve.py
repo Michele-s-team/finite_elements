@@ -29,6 +29,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import constants.utils as const
+import function as fu
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -41,7 +42,8 @@ import variational_problem.utils as var_pr
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
-
+pre_remesh_path = os.path.join(rarg.args.input_directory, '../solution_pre_remesh')
+os.system(f'rm -rf {pre_remesh_path}')
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
@@ -552,6 +554,11 @@ for n in range(rpam.parameters['N']):
                                 )   
 
         #4. generate the mesh with the new shape_coordinates
+
+        # store the mesh before remeshing in `pre_remesh_path`, this will be needed for transferring fields
+        os.system(f'rm -rf {pre_remesh_path}; mkdir -p {pre_remesh_path}; cp -r {rarg.args.input_directory}/. {pre_remesh_path}')
+        
+
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 
@@ -654,6 +661,7 @@ for n in range(rpam.parameters['N']):
 
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
         msh.transfer_1d(ys_U_n_12_old, fsp.ys)
+        # fu.transfer_1d_to_1d_curve(ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
 
       
         # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
