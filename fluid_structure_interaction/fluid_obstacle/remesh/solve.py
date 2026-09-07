@@ -51,6 +51,7 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
+'''
 # test transfer_1d_to_1d_curve - start
 import function as fu
 import solution_paths as solpath
@@ -147,9 +148,8 @@ io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
                   solpath.nodal_values_path)
 
 
-sys.exit(0)
 # test transfer_1d_to_1d_curve - end
-
+'''
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
