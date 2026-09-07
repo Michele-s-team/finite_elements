@@ -771,11 +771,10 @@ for n in range(rpam.parameters['N']):
 
         # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+
         # sign
-
-        msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
-
-
 
         # 7.5 M
         msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
