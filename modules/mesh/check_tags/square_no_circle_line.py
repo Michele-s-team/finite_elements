@@ -14,8 +14,6 @@ rmsh = importlib.import_module('mesh.read.square_no_circle_line')
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
 
-
-
 # `boundary_coordinates` is a list containing the vertices of the full boudnary of the mesh
 full_boundary_cooordinates = list(rmsh.parameters['curve_coordinates'])
 full_boundary_cooordinates.insert(0, [0, 0])
