@@ -61,23 +61,23 @@ print(f'Check integrals on meshes: ')
 
 # surface integrals
 for i in range(len(lmsh.mesh)):
-    test_mesh_integral_errors[f'\int_mesh_{i} f dx'] = msh.test_mesh_integral(integral_exact[i]['dx'], function_test_integrals_fenics[i], rmsh.dx_mesh[i], f'\int_mesh_{i} f dx')
+    test_mesh_integral_errors[f'\int_mesh_{i} f dx'] = msh.test_mesh_integral(integral_exact[i]['dx'], tf.function_test_integrals_fenics[i], rmsh.dx_mesh[i], f'\int_mesh_{i} f dx')
 
 # line intergrals
 # for mesh #0
-test_mesh_integral_errors[f'\int f ds_mesh_{0}_l'] = msh.test_mesh_integral(integral_exact[0]['ds_l'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_l'], f'\int f ds_mesh_{0}_l')
-test_mesh_integral_errors[f'\int f ds_mesh_{0}_r'] = msh.test_mesh_integral(integral_exact[0]['ds_r'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_r'], f'\int f ds_mesh_{0}_r')
-test_mesh_integral_errors[f'\int f ds_mesh_{0}_t'] = msh.test_mesh_integral(integral_exact[0]['ds_t'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_t'], f'\int f ds_mesh_{0}_t')
-test_mesh_integral_errors[f'\int f ds_mesh_{0}_b'] = msh.test_mesh_integral(integral_exact[0]['ds_b'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_b'], f'\int f ds_mesh_{0}_b')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}_l'] = msh.test_mesh_integral(integral_exact[0]['ds_l'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_l'], f'\int f ds_mesh_{0}_l')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}_r'] = msh.test_mesh_integral(integral_exact[0]['ds_r'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_r'], f'\int f ds_mesh_{0}_r')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}_t'] = msh.test_mesh_integral(integral_exact[0]['ds_t'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_t'], f'\int f ds_mesh_{0}_t')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}_b'] = msh.test_mesh_integral(integral_exact[0]['ds_b'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_b'], f'\int f ds_mesh_{0}_b')
 
-test_mesh_integral_errors[f'\int f ds_mesh_{0}_lr'] = msh.test_mesh_integral(integral_exact[0]['ds_lr'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_lr'], f'\int f ds_mesh_{0}_lr')
-test_mesh_integral_errors[f'\int f ds_mesh_{0}_tb'] = msh.test_mesh_integral(integral_exact[0]['ds_tb'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_tb'], f'\int f ds_mesh_{0}_tb')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}_lr'] = msh.test_mesh_integral(integral_exact[0]['ds_lr'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_lr'], f'\int f ds_mesh_{0}_lr')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}_tb'] = msh.test_mesh_integral(integral_exact[0]['ds_tb'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_tb'], f'\int f ds_mesh_{0}_tb')
 
-test_mesh_integral_errors[f'\int f ds_mesh_{0}'] = msh.test_mesh_integral(integral_exact[0]['ds'], function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds'], f'\int f ds_mesh_{0}')
+test_mesh_integral_errors[f'\int f ds_mesh_{0}'] = msh.test_mesh_integral(integral_exact[0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds'], f'\int f ds_mesh_{0}')
 
 # for mesh #1
-test_mesh_integral_errors[f'\int f ds_mesh_{1}_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_l'], f'\int f ds_mesh_{1}_l')
-test_mesh_integral_errors[f'\int f ds_mesh_{1}_r'] = msh.test_mesh_integral(integral_exact[1]['ds_r'], function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_r'], f'\int f ds_mesh_{1}_r')
+test_mesh_integral_errors[f'\int f ds_mesh_{1}_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], tf.function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_l'], f'\int f ds_mesh_{1}_l')
+test_mesh_integral_errors[f'\int f ds_mesh_{1}_r'] = msh.test_mesh_integral(integral_exact[1]['ds_r'], tf.function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_r'], f'\int f ds_mesh_{1}_r')
 
 # print to file the residuals of the tests of the mesh integrals
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
