@@ -35,7 +35,7 @@ import variational_problem.utils as var_pr
 fi = importlib.import_module(swi.fi)
 
 '''
-# test transfer sub mesh to sub mesh - start
+# test transfer_1d_to_1d_curve - start
 import function as fu
 import solution_paths as solpath
 
@@ -47,16 +47,20 @@ path_b = '/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution_b'
 parameters_a = io.read_parameters_from_csv_file(os.path.join(path_a, "mesh_metadata.csv"))
 parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
 
+mesh_a = [None]*2
+mesh_b = [None]*2
+sf_a = [None]*2
+sf_b = [None]*2
 
-mesh_a, sf_a = msh.read_from_file(path_a, 'xdmf')
-mesh_b, sf_b = msh.read_from_file(path_b, 'xdmf')
+mesh_a[0], sf_a[0] = msh.read_from_file(os.path.join(path_a, f'mesh_{0}'), 'xdmf')
+mesh_a[1], sf_a[1] = msh.read_from_file(os.path.join(path_a, f'mesh_{1}'), 'h5')
 
-print(f'number of vertices = {mesh_a.num_vertices()} {mesh_b.num_vertices()}')
+mesh_b[0], sf_b[0] = msh.read_from_file(os.path.join(path_b, f'mesh_{0}'), 'xdmf')
+mesh_b[1], sf_b[1] = msh.read_from_file(os.path.join(path_b, f'mesh_{1}'), 'h5')
+
+print(f'number of vertices = {mesh_a[0].num_vertices()} {mesh_b[0].num_vertices()}')
 
 
-# read the sub_meshes and generate their functions tagging cells and vertices
-sub_meshes_a, sf_sub_meshes_a, mf_sub_meshes_a = msh.read_sub_meshes(mesh_a, sf_a, parameters_a, path_a)
-sub_meshes_b, sf_sub_meshes_b, mf_sub_meshes_b = msh.read_sub_meshes(mesh_b, sf_b, parameters_b, path_b)
 
 class u_a_expression(UserExpression):
     def eval(self, values, x):
@@ -80,10 +84,10 @@ class u_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-Q_u_a = TensorFunctionSpace(sub_meshes_a[1], 'P', 2, shape=(2,2))
-Q_u_b = TensorFunctionSpace(sub_meshes_b[1], 'P', 2, shape=(2,2))
+Q_u_a = TensorFunctionSpace(mesh_a[1], 'P', 2, shape=(2,2))
+Q_u_b = TensorFunctionSpace(mesh_b[1], 'P', 2, shape=(2,2))
 
-Q_u = VectorFunctionSpace(sub_meshes_a[0], 'P', 2)
+Q_u = VectorFunctionSpace(mesh_a[0], 'P', 2)
 
 u = Function(Q_u)
 u_a = Function(Q_u_a)
@@ -92,7 +96,7 @@ u_b = Function(Q_u_b)
 u.interpolate(u_expression(element=Q_u.ufl_element()))
 u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
 
-fu.transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, path_a)
+fu.transfer_1d_to_1d_curve(u_a, u_b, u, path_a)
 
 io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
@@ -101,13 +105,11 @@ io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, sol
 io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 
-
-# test transfer sub mesh to sub mesh - end
-
-'''
+# test transfer_1d_to_1d_curve - end
 
 '''
-# test transfer_mesh_to_sub_mesh - start 
+'''
+# test transfer_2d_to_1d_curve - start 
 import function as fu
 import input_output as io
 import mesh.load as lmsh
@@ -127,8 +129,8 @@ class u_0_expression(UserExpression):
     def value_shape(self):
         return (2,2)
 
-Q_0 = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', 2, shape=(2,2))
-Q_1 = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', 2, shape=(2,2))
+Q_0 = TensorFunctionSpace(lmsh.mesh[0], 'P', 2, shape=(2,2))
+Q_1 = TensorFunctionSpace(lmsh.mesh[1], 'P', 2, shape=(2,2))
 
 u_0 = Function(Q_0)
 u_1 = Function(Q_1)
@@ -136,14 +138,14 @@ u_1 = Function(Q_1)
 u_0.interpolate(u_0_expression(element=Q_0.ufl_element()))
 
 
-fu.transfer_mesh_to_sub_mesh(u_0, u_1, rarg.args.input_directory)
+fu.transfer_2d_to_1d_curve(u_0, u_1, rarg.args.input_directory)
 
 io.full_print(u_0, 'u_0_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 io.full_print(u_1, 'u_1_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
                   solpath.nodal_values_path)
 
-# test transfer_mesh_to_sub_mesh - end
+# test transfer_2d_to_1d_curve - end
 '''
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
@@ -193,9 +195,9 @@ PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluati
 
 
 print(f'Generating initial mesh ...')
-# generate the mesh with the curve given by curve_coordinates and write into its mesh_metadata
+# generate the mesh with the curve given by shape_coordinates and write into its mesh_metadata
 
-msh.generate_square_no_circle_curve_mesh(mesh_parameters['curve_coordinates'], os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+msh.generate_square_no_circle_curve_mesh(mesh_parameters['shape_coordinates'], os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 print(f'... done.')
 
@@ -216,7 +218,7 @@ cu = importlib.import_module(swi.cu)
 
 # 1. membrane problem
 fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
-fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
+fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
@@ -224,14 +226,14 @@ fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression(element=fsp.Q_psi
 
 
 # 2. mesh problem
-# project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
+# project field U_n_12 and its time derivative from mesh[0] onto mesh[1] in order to set BCs for the mesh problem
 # a) project U_n_12
 v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
 
-fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
+fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 # b) project U_dot_n_12
 fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
+fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
 
@@ -295,9 +297,9 @@ for n in range(rpam.parameters['N']):
     #3.2.1 solve membrane problem 
     print('Solving membrane problem ...', flush=True)
    
-    # project from sub_mesh[0] onto sub_mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
+    # project from mesh[0] onto mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
     fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
-    fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
+    fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
     
     vp_membrane = importlib.reload(importlib.import_module(swi.vp_membrane))  
 
@@ -310,13 +312,13 @@ for n in range(rpam.parameters['N']):
 
     print('Solving mesh problem ...', flush=True)
     
-    # project field U_n_12 and its time derivative from sub_mesh[0] onto sub_mesh[1] in order to set BCs for the mesh problem
+    # project field U_n_12 and its time derivative from mesh[1] onto mesh[0] in order to set BCs for the mesh problem
     # a) project U_n_12
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
-    fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
+    fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
     # b) project U_dot_n_12
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
-    fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
+    fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
     vp_mesh = importlib.reload(importlib.import_module(swi.vp_mesh))  
 
@@ -348,7 +350,7 @@ for n in range(rpam.parameters['N']):
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
     #3.3.1 compute mesh quality
-    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0], fsp.u_n))
+    msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], fsp.u_n))
 
 
     #3.3.3 compure BCs and data
@@ -456,22 +458,22 @@ for n in range(rpam.parameters['N']):
 
         mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, 'mesh_metadata.csv')) 
 
-        curve_coordinates = []
-        for i in range(len(mesh_parameters["curve_coordinates"])):
+        shape_coordinates = []
+        for i in range(len(mesh_parameters["shape_coordinates"])):
             # run through all coordinates of the nodes of the boundary
 
-            coordinate = mesh_parameters["curve_coordinates"][i]
+            coordinate = mesh_parameters["shape_coordinates"][i]
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_n
               
-            curve_coordinates.append(np.add(coordinate, fsp.u_n(coordinate).tolist()).tolist())
+            shape_coordinates.append(np.add(coordinate, fsp.u_n(coordinate).tolist()).tolist())
 
-        #4.2.1 generate the mesh with the new curve_coordinates
+        #4.2.1 generate the mesh with the new shape_coordinates
         
         # store the mesh before remeshing in `pre_remesh_path`, this will be needed for transferring fields
         os.system(f'rm -rf {pre_remesh_path}; mkdir -p {pre_remesh_path}; cp -r {rarg.args.input_directory}/. {pre_remesh_path}')
 
-        msh.generate_square_no_circle_curve_mesh(curve_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+        msh.generate_square_no_circle_curve_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 
         #4.3 reload modules so everything is updated according to the mesh change
@@ -492,25 +494,25 @@ for n in range(rpam.parameters['N']):
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 4.4.1 transfer membrane fields
-        fu.transfer_sub_mesh_to_sub_mesh(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
 
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
 
 
-        fu.transfer_sub_mesh_to_sub_mesh(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(v_n_2_old, fsp.v_n_2, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(w_n_1_old, fsp.w_n_1, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
-        fu.transfer_sub_mesh_to_sub_mesh(U_n_32_old, fsp.U_n_32, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_2_old, fsp.v_n_2, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(w_n_1_old, fsp.w_n_1, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(U_n_32_old, fsp.U_n_32, u_n_old, pre_remesh_path)
 
 
 

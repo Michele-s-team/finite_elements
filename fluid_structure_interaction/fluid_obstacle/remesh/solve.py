@@ -29,6 +29,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import constants.utils as const
+import function as fu
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
@@ -41,7 +42,8 @@ import variational_problem.utils as var_pr
 dolfin.parameters["form_compiler"]["quadrature_degree"] = 10
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
-
+pre_remesh_path = os.path.join(rarg.args.input_directory, '../solution_pre_remesh')
+os.system(f'rm -rf {pre_remesh_path}')
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
@@ -49,6 +51,105 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 metadata = rpam.parameters.copy()
 io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, "solution_metadata.csv"), metadata)
 
+'''
+# test transfer_1d_to_1d_curve - start
+import function as fu
+import solution_paths as solpath
+
+path_a = '/home/fenics/shared/generate_mesh/2d/square/shape_line/solution_a'
+path_b = '/home/fenics/shared/generate_mesh/2d/square/shape_line/solution_b'
+
+mesh_a = [None]*2
+mesh_b = [None]*2
+sf_a = [None]*2
+sf_b = [None]*2
+
+class u_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0.1*x[0]
+        values[1] = 0.5*x[1]*x[0]
+
+    def value_shape(self):
+        return (2,)
+
+
+
+shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
+shape_coordinates_a = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+msh.generate_square_shape_line_mesh(shape_coordinates_a, os.path.join(rarg.args.input_directory, '../'), path_a)
+
+mesh_a[0], sf_a[0] = msh.read_from_file(os.path.join(path_a, f'mesh_{0}'), 'xdmf')
+mesh_a[1], sf_a[1] = msh.read_from_file(os.path.join(path_a, f'mesh_{1}'), 'h5')
+
+parameters_a = io.read_parameters_from_csv_file(os.path.join(path_a, "mesh_metadata.csv"))
+
+Q_u = VectorFunctionSpace(mesh_a[0], 'P', 2)
+u = Function(Q_u)
+u.interpolate(u_expression(element=Q_u.ufl_element()))
+
+
+shape_coordinates_b = []
+for i in range(len(shape_coordinates_a)):
+    # run through all coordinates of the nodes of mesh[1]
+
+    coordinate = shape_coordinates_a[i]
+
+    # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
+    shape_coordinates_b.append(np.add(
+                                coordinate,
+                                u(coordinate)
+                                ).tolist()
+                        )   
+
+msh.generate_square_shape_line_mesh(shape_coordinates_b, os.path.join(rarg.args.input_directory, '../'), path_b)
+
+
+parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
+
+
+mesh_b[0], sf_b[0] = msh.read_from_file(os.path.join(path_b, f'mesh_{0}'), 'xdmf')
+mesh_b[1], sf_b[1] = msh.read_from_file(os.path.join(path_b, f'mesh_{1}'), 'h5')
+
+print(f'number of vertices = {mesh_a[0].num_vertices()} {mesh_b[0].num_vertices()}')
+
+
+
+class u_a_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = x[0]**2
+        values[1] = x[0]**3
+        values[2] = x[0]**4
+        values[3] = x[0]**5
+
+    def value_shape(self):
+        return (2,2)
+    
+
+
+Q_u_a = TensorFunctionSpace(mesh_a[1], 'P', 2, shape=(2,2))
+Q_u_b = TensorFunctionSpace(mesh_b[1], 'P', 2, shape=(2,2))
+
+
+u_a = Function(Q_u_a)
+u_b = Function(Q_u_b)
+
+u_a.interpolate(u_a_expression(element=Q_u_a.ufl_element()))
+
+fu.transfer_1d_to_1d_curve(u_a, u_b, u, os.path.join(path_a, 'mesh_0'),
+                           closed=True)
+
+io.full_print(u, 'u_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_a, 'u_a_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+io.full_print(u_b, 'u_b_test', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
+                  solpath.nodal_values_path)
+
+
+# test transfer_1d_to_1d_curve - end
+'''
 
 # Use a minimal FEniCS params dict — let PETSc options take over
 params = {
@@ -215,6 +316,7 @@ t = 0
 step = 0
 
 for n in range(rpam.parameters['N']):
+
     # Update current time
     t += dt
     step += 1
@@ -228,7 +330,7 @@ for n in range(rpam.parameters['N']):
     print('Solving I problem ...', flush=True)
 
     # project v_square_n_1 of the fluid in the square onto (mesh[1]): this velocity will be used in vp_I to make I move
-    msh.transfer_2d_to_1d(fsp.v_disk_n_1, fsp.v_disk_n_1_0_0_on_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
+    msh.transfer_2d_to_1d_shape(fsp.v_disk_n_1, fsp.v_disk_n_1_0_0_on_1, rmsh.lmsh.mesh[0], rmsh.mf[0], rmsh.lmsh.mesh_parameters[0]['shape_coordinates'], rmsh.lmsh.parameters['shape_id'])
 
     vp_I = importlib.reload(vp_I)
 
@@ -399,11 +501,9 @@ for n in range(rpam.parameters['N']):
     if mesh_quality < rpam.parameters['mesh_quality_threshold']:
     # if False:
     # if step % 5 == True:
+        # mesh quality got below the threshold -> remesh 
 
-        mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{1}', 'mesh_metadata.csv')) 
-
-
-        # the mesh quality got below the threshold -> remesh 
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
         
         # 1.transfer fields
 
@@ -412,12 +512,10 @@ for n in range(rpam.parameters['N']):
         # 1.1.1 disk fluid
         v_di_n_old = Function(fsp.Q_v_disk)
         v_di_n_1_old = Function(fsp.Q_v_disk)
-        v_di_n_2_old = Function(fsp.Q_v_disk)
 
         v_di__old = Function(fsp.Q_v__disk)
 
         sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
-        sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
 
         phi_disk_old = Function(fsp.Q_phi_disk)
         omega_disk_old = Function(fsp.Q_omega_disk)
@@ -426,12 +524,10 @@ for n in range(rpam.parameters['N']):
         # 1.1.2 square fluid
         v_sq_n_old = Function(fsp.Q_v_square)
         v_sq_n_1_old = Function(fsp.Q_v_square)
-        v_sq_n_2_old = Function(fsp.Q_v_square)
 
         v_sq__old = Function(fsp.Q_v__square)
 
         sigma_sq_n_12_old = Function(fsp.Q_sigma_square)
-        sigma_sq_n_32_old = Function(fsp.Q_sigma_square)
 
         phi_sq_old = Function(fsp.Q_sigma_square)
 
@@ -441,27 +537,28 @@ for n in range(rpam.parameters['N']):
         # 1.1.3.1 disk
         u_n_di_old = Function(fsp.Q_u_di)
         u_n_1_di_old = Function(fsp.Q_u_di)
-        u_n_2_di_old = Function(fsp.Q_u_di)
 
         u_n_di_dot_old = Function(fsp.Q_u_di_dot)
         u_n_1_di_dot_old = Function(fsp.Q_u_di_dot)
-        u_n_2_di_dot_old = Function(fsp.Q_u_di_dot)
 
         # 1.1.3.2 square
         u_n_sq_old = Function(fsp.Q_u_sq)
         u_n_1_sq_old = Function(fsp.Q_u_sq)
-        u_n_2_sq_old = Function(fsp.Q_u_sq)
 
         u_n_sq_dot_old = Function(fsp.Q_u_sq_dot)
         u_n_1_sq_dot_old = Function(fsp.Q_u_sq_dot)
-        u_n_2_sq_dot_old = Function(fsp.Q_u_sq_dot)
+
+        # 1.1.3.3 auxiliary fields needed for the transfer
+
+        u_n_12_di_old = Function(fsp.Q_u_di)
+        u_n_12_sq_old = Function(fsp.Q_u_sq)
 
 
         # 1.1.4 I
 
         U_n_12_old = Function(fsp.Q_U)
-        U_n_32_old = Function(fsp.Q_U)
 
+        # ys_U_n_12_old = ys + fsp.U_n_12 (both addednds are intended as before remeshing)
         ys_U_n_12_old = Function(fsp.Q_U)
 
         nu_n_12_old = Function(fsp.Q_nu)
@@ -470,12 +567,9 @@ for n in range(rpam.parameters['N']):
         mu_n_12_old = Function(fsp.Q_mu)
 
 
-
         # 1.1.5 M
 
         c_n_old = Function(fsp.Q_c)
-        c_n_1_old = Function(fsp.Q_c)
-
 
         
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
@@ -484,12 +578,10 @@ for n in range(rpam.parameters['N']):
 
         v_di_n_old.assign(fsp.v_disk_n)
         v_di_n_1_old.assign(fsp.v_disk_n_1)
-        v_di_n_2_old.assign(fsp.v_disk_n_2)
 
         v_di__old.assign(fsp.v_disk__)
 
         sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
-        sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
         phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
         phi_disk_old.assign(phi_disk_output)
@@ -499,12 +591,10 @@ for n in range(rpam.parameters['N']):
 
         v_sq_n_old.assign(fsp.v_square_n)
         v_sq_n_1_old.assign(fsp.v_square_n_1)
-        v_sq_n_2_old.assign(fsp.v_square_n_2)
 
         v_sq__old.assign(fsp.v_square__)
 
         sigma_sq_n_12_old.assign(fsp.sigma_square_n_12)
-        sigma_sq_n_32_old.assign(fsp.sigma_square_n_32)
 
         phi_sq_old.assign(fsp.phi_square)
         
@@ -514,26 +604,27 @@ for n in range(rpam.parameters['N']):
 
         u_n_di_old.assign(fsp.u_n_di)
         u_n_1_di_old.assign(fsp.u_n_1_di)
-        u_n_2_di_old.assign(fsp.u_n_2_di)
 
         u_n_di_dot_old.assign(fsp.u_n_di_dot)
         u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
-        u_n_2_di_dot_old.assign(fsp.u_n_2_di_dot)
+
+        u_n_12_di_old.assign((fsp.u_n_di + fsp.u_n_1_di)/2.0)
+
 
         # 1.2.3.2 square
 
         u_n_sq_old.assign(fsp.u_n_sq)
         u_n_1_sq_old.assign(fsp.u_n_1_sq)
-        u_n_2_sq_old.assign(fsp.u_n_2_sq)
 
         u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
         u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
-        u_n_2_sq_dot_old.assign(fsp.u_n_2_sq_dot)
+
+        u_n_12_sq_old.assign((fsp.u_n_sq + fsp.u_n_1_sq)/2.0)
+
 
         # 1.2.4 D
 
         U_n_12_old.assign(fsp.U_n_12)
-        U_n_32_old.assign(fsp.U_n_32)
 
         ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
 
@@ -546,15 +637,14 @@ for n in range(rpam.parameters['N']):
         # 1.2.5 M
 
         c_n_old.assign(fsp.c_n)
-        c_n_1_old.assign(fsp.c_n_1)
 
 
         #3. trace the coordinates of shape vertices according to the deformation field U_n_12: these will be the coordinates of the new reference configuration of the shape
         shape_coordinates = []
-        for i in range(len(mesh_1_parameters["coordinates"])-1):
+        for i in range(len((rmsh.lmsh.mesh_parameters[1])["coordinates"])-1):
             # run through all coordinates of the nodes of mesh[1]
 
-            coordinate = mesh_1_parameters["coordinates"][i]
+            coordinate = (rmsh.lmsh.mesh_parameters[1])["coordinates"][i]
 
             # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field
             shape_coordinates.append(np.add(
@@ -564,6 +654,11 @@ for n in range(rpam.parameters['N']):
                                 )   
 
         #4. generate the mesh with the new shape_coordinates
+
+        # store the mesh before remeshing in `pre_remesh_path`, this will be needed for transferring fields
+        os.system(f'rm -rf {pre_remesh_path}; mkdir -p {pre_remesh_path}; cp -r {rarg.args.input_directory}/. {pre_remesh_path}')
+        
+
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 
@@ -575,89 +670,114 @@ for n in range(rpam.parameters['N']):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
 
-        #6. reset cleanly solver parameters 
+        # 5.1 auxiliary fields needed to transafer fields
 
+        u_a_di = Function(fsp.Q_u_di)
+        u_b_di = Function(fsp.Q_u_di)
+
+        u_a_sq = Function(fsp.Q_u_sq)
+        u_b_sq = Function(fsp.Q_u_sq)
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 7.1 fluid in disk
         msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
-        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_di_old)
-        msh.transfer(v_di_n_2_old, fsp.v_disk_n_2, u_n_di_old)
+        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_1_di_old)
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
 
-        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_di_old)
-        msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_di_old)
+        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_12_di_old)
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_disk_old, fsp.phi_disk_aux, u_n_di_old)
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(omega_disk_old, fsp.omega_disk_aux, u_n_di_old)
         fsp.assigner_phi_omega_disk.assign(fsp.phi_omega_disk, [fsp.phi_disk_aux, fsp.omega_disk_aux])
 
+
         # 7.2 fluid in square
         msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
-        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_sq_old)
-        msh.transfer(v_sq_n_2_old, fsp.v_square_n_2, u_n_sq_old)
+        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_1_sq_old)
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
 
-        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_sq_old)
-        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
 
+        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_12_sq_old)
+
+        
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_sq_old, fsp.phi_square, u_n_sq_old)
 
         # 7.3 D
 
         # 7.3.1 disk
 
+        # 7.3.1.1 transfer u 
+
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
-        fsp.u_n_1_di.assign(Constant((0, 0)))
-        fsp.u_n_2_di.assign(Constant((0, 0)))
+
+        msh.transfer(u_n_1_di_old, u_a_di, u_n_di_old)
+        msh.transfer(u_n_di_old, u_b_di, u_n_di_old)
+
+        fsp.u_n_1_di.assign(u_a_di - u_b_di)
+
+        # 7.3.1.2 transfer u_dot
 
         msh.transfer(u_n_di_dot_old, fsp.u_n_di_dot, u_n_di_old)
         msh.transfer(u_n_1_di_dot_old, fsp.u_n_1_di_dot, u_n_di_old)
-        msh.transfer(u_n_2_di_dot_old, fsp.u_n_2_di_dot, u_n_di_old)   
 
         # 7.3.2 square
 
+        # 7.3.2.1 transfer u 
+
+
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_sq.assign(Constant((0, 0)))
-        fsp.u_n_1_sq.assign(Constant((0, 0)))
-        fsp.u_n_2_sq.assign(Constant((0, 0)))
+
+
+        msh.transfer(u_n_1_sq_old, u_a_sq, u_n_sq_old)
+        msh.transfer(u_n_sq_old, u_b_sq, u_n_sq_old)
+
+        fsp.u_n_1_sq.assign(u_a_sq - u_b_sq)
+
+
+        # 7.3.2.1 transfer u_dot
 
         msh.transfer(u_n_sq_dot_old, fsp.u_n_sq_dot, u_n_sq_old)
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
-        msh.transfer(u_n_2_sq_dot_old, fsp.u_n_2_sq_dot, u_n_sq_old)   
 
         # 7.4 I
 
         # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.U_n_12.assign(Constant((0, 0)))
-        fsp.U_n_32.assign(Constant((0, 0)))
-
+  
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
-     
-        # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
-        msh.transfer_1d(ys_U_n_12_old, fsp.ys)
 
+
+        # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
+        fu.transfer_1d_to_1d_curve(ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
       
         # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
 
-        msh.transfer_1d(nu_n_12_old, fsp.nu_n_12_input)
-        msh.transfer_1d(dpsi_n_12_old, fsp.dpsi_n_12_input)
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        fu.transfer_1d_to_1d_curve(dpsi_n_12_old, fsp.dpsi_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
 
         fsp.assigner_nu_and_dpsi.assign(fsp.nu_and_dpsi_n_12, [fsp.nu_n_12_input, fsp.dpsi_n_12_input])
 
         # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
-        msh.transfer_1d(mu_n_12_old, fsp.mu_n_12)
 
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
+        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
 
 
         # 7.5 M
         msh.transfer(c_n_old, fsp.c_n, u_n_sq_old)
-        msh.transfer(c_n_1_old, fsp.c_n_1, u_n_sq_old)
 
 
         #8. call print_remesh to print out the remeshing info
@@ -668,24 +788,25 @@ for n in range(rpam.parameters['N']):
         #9 clean up
 
         # 9.1 disk and square fluid
-        del v_di_n_old, v_di_n_1_old, v_di_n_2_old, v_sq_n_old, v_sq_n_1_old, v_sq_n_2_old
+        del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
-        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
+        del sigma_di_n_12_old, sigma_sq_n_12_old
         del phi_disk_old, omega_disk_old
 
         # 9.2 D
-        del u_n_di_old, u_n_1_di_old, u_n_2_di_old, u_n_sq_old, u_n_1_sq_old, u_n_2_sq_old
-        del u_n_di_dot_old, u_n_1_di_dot_old, u_n_2_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old, u_n_2_sq_dot_old
+        del u_n_di_old, u_n_1_di_old, u_n_sq_old, u_n_1_sq_old
+        del u_n_di_dot_old, u_n_1_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old
+        del u_a_di, u_b_di, u_a_sq, u_b_sq
 
         # 9.3 I
-        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
+        del U_n_12_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
 
         # 9.4 M
-        del c_n_old, c_n_1_old
+        del c_n_old
 
         gc.collect()
         
-        print(f'**** ... done. ')
+        print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
 
     

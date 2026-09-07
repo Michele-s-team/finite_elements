@@ -2414,10 +2414,10 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             sys.exit()
 
 
-    # mesh A will be stored in output_directory_square_mesh
+    # mesh A will be stored in output_directory_mesh_0
     output_directory_mesh_0 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_0'))
     os.mkdir(output_directory_mesh_0)
-    # mesh B will be stored in output_directory_line_mesh
+    # mesh B will be stored in output_directory_mesh_1
     output_directory_mesh_1 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_1'))
     os.mkdir(output_directory_mesh_1)
 
@@ -2895,14 +2895,14 @@ Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obt
 Input values: 
     * Mandatory:
         - 'f_2d': the field on the 2d mesh
-        - 'f_1d': the field on the 2d mesh
+        - 'f_1d': the field on the 1d mesh
         - 'mesh_2d': the 2d mesh is stored
         - 'mf_mesh_2d': a function on 'mesh_2d' that tags its facets
         - 'shape_coordinates' : [[p_0_x, p_0_y], [p_1_x, p_1_y], ... ] the coordinates of the vertices of the shape in 'mesh_2d'
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
+def transfer_2d_to_1d_shape(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
 
     # 1. initialize 
     # mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
@@ -3431,7 +3431,6 @@ given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (
 Input values: 
     - 'f': the field to be read. Note that this method will do f.set_allow_extrapolation(True)
     - 'g': the field to be written in
-
 '''
 
 def transfer_1d(f, g):
@@ -3957,23 +3956,23 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 generate a mesh given by a square whose top edge is an arbitrary curve
 Input values: 
     * Mandatory:
-        - 'curve_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
+        - 'shape_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
         Note: 
-        It must be curve_coordinates[0][0] = 0, curve_coordinates[-1][0] = parameters['L']. If not, an error is thrown. 
+        It must be shape_coordinates[0][0] = 0, shape_coordinates[-1][0] = parameters['L']. If not, an error is thrown. 
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional:
         -  `epsilon` (const.epsilon): the tolerance with which distances are assessed in the method 
 '''
-def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_directory, output_directory, 
+def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_directory, output_directory, 
                                         epsilon = const.epsilon):
 
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
-    if (np.isclose(curve_coordinates[0][0], 0, epsilon) == False) or (np.isclose(curve_coordinates[-1][0], parameters['L'], epsilon) == False): 
+    if (np.isclose(shape_coordinates[0][0], 0, epsilon) == False) or (np.isclose(shape_coordinates[-1][0], parameters['L'], epsilon) == False): 
 
-        print(f"{col.Fore.RED}{'Error: x component of first and last curve_coordinates do not coincide with 0 and L!!'}{col.Style.RESET_ALL}")
+        print(f"{col.Fore.RED}{'Error: x component of first and last shape_coordinates do not coincide with 0 and L!!'}{col.Style.RESET_ALL}")
         sys.exit(1)
 
     # remove the output directory it it already exists, and create it from scratch
@@ -3987,36 +3986,71 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
 
-    sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_mesh_1')
-    mesh_file = os.path.join(output_directory, "mesh.msh")
+
+    output_directory_mesh_0 = os.path.join(output_directory, 'mesh_0')
+    os.mkdir(output_directory_mesh_0)
+
+    output_directory_mesh_1 = os.path.join(output_directory, 'mesh_1')
+    os.mkdir(output_directory_mesh_1)
+
+    mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
 
 
-    metadata = parameters.copy()
-    metadata['file_format'] = 'xdmf'
+    mesh_metadata = parameters.copy()
 
     # remove spurious entities in mesh_metadata 
     if parameters['curve_format'] == 'parametric':
 
-        if 'curve_coordinates' in parameters:
-            del metadata['curve_coordinates']
+        if 'shape_coordinates' in parameters:
+            del mesh_metadata['shape_coordinates']
                            
     if parameters['curve_format'] == 'coordinates':
 
         if 'curve_parametric_form' in parameters:
-            del metadata['curve_parametric_form']
+            del mesh_metadata['curve_parametric_form']
             
         if 'N' in parameters:
-            del metadata['N']
+            del mesh_metadata['N']
 
-    metadata['curve_coordinates'] = curve_coordinates
+    mesh_metadata['shape_coordinates'] = shape_coordinates
+
+
+    # write metadata for mesh 0
+
+    mesh_0_metadata = {}
+    mesh_0_metadata['L'] = parameters['L']
+    mesh_0_metadata['resolution'] = parameters['resolution']
+    mesh_0_metadata['curve_format'] = parameters['curve_format']
+
+    # if the curve derives from a parametric form, write N and the parametric function
+    if parameters['curve_format'] == 'parametric':
+            mesh_0_metadata['curve_parametric_form'] = parameters['curve_parametric_form']
+            mesh_0_metadata['N'] = parameters['N']
+       
+    mesh_0_metadata['shape_coordinates'] = shape_coordinates
+
+    mesh_0_metadata['mesh_0_id'] = parameters['mesh_0_id']
+    mesh_0_metadata['mesh_1_id'] = parameters['mesh_1_id']
+    mesh_0_metadata['line_l_id'] = parameters['line_l_id']
+    mesh_0_metadata['line_r_id'] = parameters['line_r_id']
+    mesh_0_metadata['line_b_id'] = parameters['line_b_id']
+
+    mesh_0_metadata['file_format'] = 'xdmf'
+
+
+    # write metadata for mesh 1
+
+    mesh_1_metadata = {}
+
+
 
 
     #1. add rectangle vertices
 
     p_lb = gmsh.model.geo.addPoint(0, 0, 0)
     p_rb = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
-    p_rt = gmsh.model.geo.addPoint(curve_coordinates[-1][0], curve_coordinates[-1][1], 0)
-    p_lt = gmsh.model.geo.addPoint(curve_coordinates[0][0], curve_coordinates[0][1], 0)
+    p_rt = gmsh.model.geo.addPoint(shape_coordinates[-1][0], shape_coordinates[-1][1], 0)
+    p_lt = gmsh.model.geo.addPoint(shape_coordinates[0][0], shape_coordinates[0][1], 0)
     gmsh.model.geo.synchronize()
 
 
@@ -4026,9 +4060,9 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.model.geo.synchronize()
 
     curve_lines = []
-    for i in range(1, len(curve_coordinates)-1):
+    for i in range(1, len(shape_coordinates)-1):
 
-        curve_points.append(gmsh.model.geo.addPoint(curve_coordinates[i][0], curve_coordinates[i][1], 0))
+        curve_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
         gmsh.model.geo.synchronize()
 
         curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
@@ -4061,14 +4095,14 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     lines = gmsh.model.getEntities(dim=1)
 
     # square lines
-    tag_physical_object([lines[i] for i in range(N_lines)], parameters["sub_mesh_1_id"], gmsh.model, "lines_t")
-    tag_physical_object(lines[N_lines], parameters["line_sub_mesh_0_r_id"], gmsh.model, "line_r")
-    tag_physical_object(lines[N_lines+1], parameters["line_sub_mesh_0_b_id"], gmsh.model, "line_b")
-    tag_physical_object(lines[N_lines+2], parameters["line_sub_mesh_0_l_id"], gmsh.model, "line_l")
+    tag_physical_object([lines[i] for i in range(N_lines)], parameters["mesh_1_id"], gmsh.model, "lines_t")
+    tag_physical_object(lines[N_lines], parameters["line_r_id"], gmsh.model, "line_r")
+    tag_physical_object(lines[N_lines+1], parameters["line_b_id"], gmsh.model, "line_b")
+    tag_physical_object(lines[N_lines+2], parameters["line_l_id"], gmsh.model, "line_l")
 
     # tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
-    tag_physical_object(surfaces[0], parameters["sub_mesh_0_id"], gmsh.model, "sub_mesh_0")
+    tag_physical_object(surfaces[0], parameters["mesh_0_id"], gmsh.model, "mesh_0")
 
 
     # set the resolution close to the obstacle
@@ -4080,25 +4114,23 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
     gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
     gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
     gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(max([curve_coordinates[i][0] for i in range(len(curve_coordinates))]), max([curve_coordinates[i][1] for i in range(len(curve_coordinates))])))
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(max([shape_coordinates[i][0] for i in range(len(shape_coordinates))]), max([shape_coordinates[i][1] for i in range(len(shape_coordinates))])))
 
     gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
 
     gmsh.model.occ.synchronize()
     gmsh.model.mesh.generate(2)
 
-    gmsh.write(mesh_file)
+    gmsh.write(mesh_0_file)
 
-    full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
+    full_write(mesh_0_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
 
-    # print the boundary points of the boundaries given by the top line (sub_mesh 1)
+    # print the boundary points of the boundaries given by the top curve (sub_mesh 1)
     sorted_boundary_points(
-        read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
-        output_directory, 
-        [parameters['sub_mesh_1_id']],
-        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['sub_mesh_1_id']) + '.csv'))
-
-
+        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+        output_directory_mesh_0, 
+        [parameters['mesh_1_id']],
+        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
 
     clear_gmsh()
 
@@ -4108,21 +4140,21 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
 
     print("Generating H5 sub_mesh for top edge from 2D mesh...")
 
-    mesh, _ = read_from_file(output_directory)
+    mesh, _ = read_from_file(output_directory_mesh_0)
 
     '''
     read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
     '''
     # read the line mesh
-    mf = read_mesh_components(mesh, 1,  os.path.join(output_directory, "line_mesh.xdmf"))
+    mf = read_mesh_components(mesh, 1,  os.path.join(output_directory_mesh_0, "line_mesh.xdmf"))
 
-    sub_mesh_1_vertices = []
+    mesh_1_vertices = []
     added = []
 
     for edge in edges(mesh):
         # run through all mesh edges
 
-        if mf[edge] == parameters['sub_mesh_1_id']:
+        if mf[edge] == parameters['mesh_1_id']:
             # `edge` has been tagged with `sub_mesh_1_id`
 
             for v in vertices(edge):
@@ -4131,28 +4163,27 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
                 if v.index() not in added:
                     # if `v` has not been already added to `sub_mesh_1_vertices`, add it and update `added` in order to add the same vertex twice in the future
 
-                    sub_mesh_1_vertices.append(v.point().array()[:2])
+                    mesh_1_vertices.append(v.point().array()[:2])
                     added.append(v.index())
 
-    # print(f'sub_mesh_1_vertices = {sub_mesh_1_vertices}')
-    # print(f'len sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
+    # print(f'mesh_1_vertices = {mesh_1_vertices}')
+    # print(f'len mesh_1_vertices = {len(mesh_1_vertices)}')
 
-    if len(sub_mesh_1_vertices) != len(curve_coordinates):
-        # the meshing algorithm has inserted additional vertices in between the vertices of `curve_coordinates` -> call again `generate_square_no_circle_curve_mesh` with a new `curve_coordinates` which contains these vertices
+    if len(mesh_1_vertices) != len(shape_coordinates):
+        # the meshing algorithm has inserted additional vertices in between the vertices of `shape_coordinates` -> call again `generate_square_no_circle_curve_mesh` with a new `shape_coordinates` which contains these vertices
 
-        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on curve does not match the number of vertices of the 1d mesh. Recalculating curve_coordinates ...'}{col.Style.RESET_ALL}")
-        print(f'\tNumber of vertices on curve = {len(curve_coordinates)}\n\tNumber of vertices on line = {len(sub_mesh_1_vertices)}')
+        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on curve does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
+        print(f'\tNumber of vertices on curve = {len(shape_coordinates)}\n\tNumber of vertices on line = {len(mesh_1_vertices)}')
 
         '''
         build `segment_vertices`: 
-        segment_vertices[i] = [list of mesh vertices tagged with ID `sub_mesh_1_id` and which lie in between curve_coordinates[i] and curve_coordinates[i+1]
+        segment_vertices[i] = [list of mesh vertices tagged with ID `mesh_1_id` and which lie in between shape_coordinates[i] and shape_coordinates[i+1]
         '''
-        top_edge_vertices = []
-        segment_vertices = [[] for _ in range(len(curve_coordinates) - 1)]
-        for vertex in sub_mesh_1_vertices:
+        segment_vertices = [[] for _ in range(len(shape_coordinates) - 1)]
+        for vertex in mesh_1_vertices:
     
-            for i in range(len(curve_coordinates)-1):
-                if cal.point_on_segment(np.array(vertex), np.array(curve_coordinates[i]), np.array(curve_coordinates[i+1])):
+            for i in range(len(shape_coordinates)-1):
+                if cal.point_on_segment(np.array(vertex), np.array(shape_coordinates[i]), np.array(shape_coordinates[i+1])):
     
                     segment_vertices[i].append(vertex)
     
@@ -4161,12 +4192,12 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
         
         '''
-        sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - curve_coordinates_lr[i]).(curve_coordinates_lr[i+1]-curve_coordinates_lr[i]), 
-        i.e. the projection of segment_vertex[i][j] - curve_coordinates_lr[i] along the segment which goes from curve_coordinates_lr[i] to curve_coordinates_lr[i+1]. 
+        sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - shape_coordinates_lr[i]).(shape_coordinates_lr[i+1]-shape_coordinates_lr[i]), 
+        i.e. the projection of segment_vertex[i][j] - shape_coordinates_lr[i] along the segment which goes from shape_coordinates_lr[i] to shape_coordinates_lr[i+1]. 
         This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
         '''
         segment_vertices_projection = [
-            [np.dot(np.subtract(segment_vertex, curve_coordinates[i]), np.subtract(curve_coordinates[i+1], curve_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
+            [np.dot(np.subtract(segment_vertex, shape_coordinates[i]), np.subtract(shape_coordinates[i+1], shape_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
             ]
     
         for i in range(len(segment_vertices)):
@@ -4174,34 +4205,33 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
             segment_vertices[i] = [segment_vertices[i][j] for j in order]
 
         '''
-        build `new_curve_coordinates` which contains the vertices inserted by the meshing algorithm
+        build `new_shape_coordinates` which contains the vertices inserted by the meshing algorithm
         '''
-        new_curve_coordinates = [segment_vertices[0][0]]
+        new_shape_coordinates = [segment_vertices[0][0]]
         for i in range(len(segment_vertices)):
             for j in range(1, len(segment_vertices[i])):
 
-                new_curve_coordinates.append(segment_vertices[i][j])
+                new_shape_coordinates.append(segment_vertices[i][j])
 
         print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
 
-        print(f'lengh new_curve_coordinates = {len(new_curve_coordinates)}')
-        print(f'lengh sub_mesh_1_vertices = {len(sub_mesh_1_vertices)}')
+        # print(f'lengh new_shape_coordinates = {len(new_shape_coordinates)}')
+        # print(f'lengh sub_mesh_1_vertices = {len(mesh_1_vertices)}')
      
         clear_gmsh()
 
-        # now new_curve_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new_curve_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
-        generate_square_no_circle_curve_mesh(new_curve_coordinates, mesh_parameters_directory, output_directory, epsilon)
+        # now new_shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new_shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
+        generate_square_no_circle_curve_mesh(new_shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
 
     else:
-        # the meshing algorithm did not insert additional vertices with respect to `curve_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
-
+        # the meshing algorithm did not insert additional vertices with respect to `shape_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
 
         arc_length_table = [0]
         arc_length = 0
 
-        for i in range(1, len(curve_coordinates)):
+        for i in range(1, len(shape_coordinates)):
 
-            arc_length += np.linalg.norm(np.subtract(curve_coordinates[i], curve_coordinates[i-1]))
+            arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
             arc_length_table.append(arc_length)
 
         # print(f'arclength table = {arc_length_table}')
@@ -4210,36 +4240,33 @@ def generate_square_no_circle_curve_mesh(curve_coordinates, mesh_parameters_dire
         # Create a proper 1D IntervalMesh using the actual vertex positions
         if len(arc_length_table) >= 2:
 
-            N_intervals = len(curve_coordinates) - 1
+            N_intervals = len(shape_coordinates) - 1
 
             # Create output directory for submesh
-            sub_mesh_1_output_directory = os.path.join(output_directory, 'sub_meshes', '1')
-            os.makedirs(sub_mesh_1_output_directory, exist_ok=True)
+            output_directory_mesh_1 = os.path.join(output_directory, 'mesh_1')
+            os.makedirs(output_directory_mesh_1, exist_ok=True)
 
-            sub_mesh_1_metadata = dict([])
-            sub_mesh_1_metadata['x_l'] = 0.0
-            sub_mesh_1_metadata['x_r'] = arc_length_table[-1]
-            sub_mesh_1_metadata['coordinates'] = arc_length_table
-            sub_mesh_1_metadata['resolution'] = parameters['resolution']
-            sub_mesh_1_metadata['line_id'] = parameters['sub_mesh_1_id']
-            sub_mesh_1_metadata['vertex_l_id'] = parameters['vertex_sub_mesh_1_l_id']
-            sub_mesh_1_metadata['vertex_r_id'] = parameters['vertex_sub_mesh_1_r_id']
-            sub_mesh_1_metadata['file_format'] = 'h5'
+            mesh_1_metadata['x_l'] = 0.0
+            mesh_1_metadata['x_r'] = arc_length_table[-1]
+            mesh_1_metadata['coordinates'] = arc_length_table
+            mesh_1_metadata['resolution'] = parameters['resolution']
+            mesh_1_metadata['line_id'] = parameters['mesh_1_id']
+            mesh_1_metadata['vertex_l_id'] = parameters['vertex_l_id']
+            mesh_1_metadata['vertex_r_id'] = parameters['vertex_r_id']
+            mesh_1_metadata['file_format'] = 'h5'
 
             # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
             genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
-                                    parameters['sub_mesh_1_id'], parameters['vertex_sub_mesh_1_l_id'], parameters['vertex_sub_mesh_1_r_id'],
-                                    output_directory=sub_mesh_1_output_directory, 
-                                    metadata=sub_mesh_1_metadata,
+                                    parameters['mesh_1_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
+                                    output_directory=output_directory_mesh_1, 
+                                    metadata=mesh_1_metadata,
                                     coordinates=arc_length_table)
 
 
             # add x_l, x_r to  `metadata` and write it to file 
-            metadata['x_l'] = sub_mesh_1_metadata['x_l']
-            metadata['x_r'] = sub_mesh_1_metadata['x_r']
-            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), metadata)
-
-
+            mesh_metadata['x_l'] = mesh_1_metadata['x_l']
+            mesh_metadata['x_r'] = mesh_1_metadata['x_r']
+            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), mesh_metadata)
 
         print("...done.")
         

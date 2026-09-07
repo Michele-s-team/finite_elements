@@ -223,46 +223,46 @@ def deform_function(f, u):
 
 
 '''
-given a rectangular mesh and a sub mesh given by its top edge (which can be any one-dimensional manifold, not necessarily a line), transfer the values of a field (scalar, vector or tensor) defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
+given a rectangular 2d mesh and a sub mesh given by a curve on its top edge (which can be any one-dimensional manifold, not necessarily a line), transfer the values of a field (scalar, vector or tensor) defined on the curve 1d mesh to a function defined on the 2d mesh, setting to zero the values of the mesh function at points not on the curve.
 Input values:
     * Mandatory: 
-        - 'u_sub_mesh': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
-        - 'u_mesh': the field defined on the mesh
+        - 'u_1d': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
+        - 'u_2d': the field defined on the mesh
         - 'mesh_path': the path where the mesh is stored
 
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
+def transfer_1d_to_2d_curve(u_1d, u_2d, mesh_path,
                               tol=const.epsilon):
 
 
 
-    Q_mesh = u_mesh.function_space()
+    Q_2d = u_2d.function_space()
     
     '''
     read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
     `sub_mesh_vertices` is an ordered list of the coordinates of the vertices in the mesh which belong to the sub mesh 
     '''
     mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
-    sub_mesh_vertices = mesh_parameters['curve_coordinates']
+    mesh_1d_vertices = mesh_parameters['shape_coordinates']
 
     '''
-    compute the arc length along  the sub mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
+    compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
     '''
     arc_length = 0
     arc_length_tab = [0]
-    for i in range(1, len(sub_mesh_vertices)):
+    for i in range(1, len(mesh_1d_vertices)):
 
-        arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i], sub_mesh_vertices[i-1]))
+        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
         arc_length_tab.append(arc_length)
 
     
 
     
     # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_mesh.ufl_element().value_shape()
+    value_shape = Q_2d.ufl_element().value_shape()
     value_rank = len(value_shape)
     
     # Calculate total number of components
@@ -277,13 +277,13 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
         num_components = int(np.prod(value_shape))
 
     # Get DOF coordinates for the mesh function space
-    dof_coordinates = Q_mesh.tabulate_dof_coordinates()
-    n_dofs = Q_mesh.dim()
+    dof_coordinates = Q_2d.tabulate_dof_coordinates()
+    n_dofs = Q_2d.dim()
     n_nodes = n_dofs // num_components
 
     
     # Create list to store all DOF values (using list for efficiency with extend)
-    u_mesh_values = np.zeros(n_dofs)
+    u_2d_values = np.zeros(n_dofs)
 
     
     # Process each unique point
@@ -292,70 +292,70 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh, mesh_path,
 
         coordinate = dof_coordinates[node * num_components]
 
-        for i in range(1, len(sub_mesh_vertices)):
+        for i in range(1, len(mesh_1d_vertices)):
             # run through `sub_mesh_vertices` to find whether `node` belongs to the sub mesh
 
-            if cal.point_on_segment(np.array(coordinate), np.array(sub_mesh_vertices[i-1]), np.array(sub_mesh_vertices[i]), tol):
+            if cal.point_on_segment(np.array(coordinate), np.array(mesh_1d_vertices[i-1]), np.array(mesh_1d_vertices[i]), tol):
                 #  `node` lies on the segment in between two verices in `sub_mesh_vertices` -> it belongs to the sub mesh 
 
                 # arc length at the DOF = cumulative length up to v_{i-1} + distance along this segment
                 s = arc_length_tab[i-1] + np.linalg.norm(
-                        np.subtract(coordinate, sub_mesh_vertices[i-1]))
+                        np.subtract(coordinate, mesh_1d_vertices[i-1]))
 
                 # compute u_sub_mesh at the arc length `s`
-                u_sub_mesh_value = np.array(u_sub_mesh(s), dtype=float).flatten()
+                u_sub_mesh_value = np.array(u_1d(s), dtype=float).flatten()
 
                 # assign the compute value of `u_sub_mesh` to u_mesh_values
                 for j in range(num_components):
 
-                    u_mesh_values[num_components*node + j] = u_sub_mesh_value[j]
+                    u_2d_values[num_components*node + j] = u_sub_mesh_value[j]
 
                 break
 
                
     # set the values in u_mesh
-    u_mesh.vector().set_local(u_mesh_values)
-    u_mesh.vector().apply("insert")
+    u_2d.vector().set_local(u_2d_values)
+    u_2d.vector().apply("insert")
         
 
 
 '''
-transfer on a sub mesh a function defined on a mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge and it needs not be a straight line. 
+transfer on a 1d mesh a function defined on a 2d mesh (a scalar, vector, tensor of any shape), where the 2d mesh is given by a rectangle, and the 1d mesh by a curve constituting the top edge of the 2d mesh (it needs not be a straight line). 
 Input values: 
     * Mandatory:
-        - 'u_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
-        - 'u_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
+        - 'u_2d': the function defined on the 2d mesh (a scalar, vector, tensor of any shape)
+        - 'u_1d': the function defined on the 1d mesh (it needs to have the same shape as 'u_2d')
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon):
+def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
 
     # this is needed in case `u_mesh` is evaluated at point slightly outside its mesh
-    u_mesh.set_allow_extrapolation(True)
+    u_2d.set_allow_extrapolation(True)
 
 
-    Q_sub_mesh = u_sub_mesh.function_space()
+    Q_1d = u_1d.function_space()
 
     '''
-    read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
-    `sub_mesh_vertices` is an ordered list of the coordinates of the vertices in the mesh which belong to the sub mesh 
+    read all vertices which belong to edges tagged with ID 'mesh_1_id' and store them into `mesh_1_vertices`. 
+    `mesh_vertices` is an ordered list of the coordinates of the vertices in the 2d mesh which belong to the 1d mesh 
     '''
     mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
-    sub_mesh_vertices = mesh_parameters['curve_coordinates']
+    mesh_1d_vertices = mesh_parameters['shape_coordinates']
 
     '''
-    compute the arc length along  the sub mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
+    compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until mesh_1d_vertices included]
     '''
     arc_length = 0
     arc_length_tab = [0]
-    for i in range(1, len(sub_mesh_vertices)):
+    for i in range(1, len(mesh_1d_vertices)):
 
-        arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i], sub_mesh_vertices[i-1]))
+        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
         arc_length_tab.append(arc_length)
 
 
     # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_sub_mesh.ufl_element().value_shape()
+    value_shape = Q_1d.ufl_element().value_shape()
     value_rank = len(value_shape)
     
     # Calculate total number of components
@@ -370,12 +370,12 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
         num_components = int(np.prod(value_shape))
 
     # Get DOF coordinates
-    dof_coordinates = Q_sub_mesh.tabulate_dof_coordinates()
-    n_dofs = Q_sub_mesh.dim()
+    dof_coordinates = Q_1d.tabulate_dof_coordinates()
+    n_dofs = Q_1d.dim()
     n_nodes = n_dofs // num_components
 
     # Create list to store all DOF values (using list for efficiency with extend)
-    u_sub_mesh_values = np.zeros(n_dofs)
+    u_1d_values = np.zeros(n_dofs)
 
     
     # Evaluate at each unique coordinate
@@ -387,8 +387,6 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
         convert `coord[0]` into an arclength along the mesh: find the pair of entries in `arc_length_tab` that bracked coord[0]
         '''
 
-        # print(f'* coordinate[0] = {coordinate[0]}')
-
         for j in range(len(arc_length_tab)-1):
 
             if (coordinate[0] > arc_length_tab[j] - tol) and  (coordinate[0] < arc_length_tab[j+1] + tol):
@@ -398,35 +396,37 @@ def transfer_mesh_to_sub_mesh(u_mesh, u_sub_mesh, mesh_path, tol = const.epsilon
         '''
         the loop above returns j such that arc_length_tab[j] < coord[0] < arc_length_tab[j+1]
         '''
-        # print(f'* j = {j}')
 
-        mesh_coordinate = np.add(sub_mesh_vertices[j], np.multiply((coordinate[0] - arc_length_tab[j])/(arc_length_tab[j+1] - arc_length_tab[j]), np.subtract(sub_mesh_vertices[j+1], sub_mesh_vertices[j])))
+        mesh_2d_coordinate = np.add(mesh_1d_vertices[j], np.multiply((coordinate[0] - arc_length_tab[j])/(arc_length_tab[j+1] - arc_length_tab[j]), np.subtract(mesh_1d_vertices[j+1], mesh_1d_vertices[j])))
 
-        u_mesh_value = np.array(u_mesh(mesh_coordinate), dtype=float).flatten()
+        u_2d_mesh_value = np.array(u_2d(mesh_2d_coordinate), dtype=float).flatten()
         
         # assign the compute value of `u_sub_mesh` to u_mesh_values
         for j in range(num_components):
 
-            u_sub_mesh_values[num_components*node + j] = u_mesh_value[j]
+            u_1d_values[num_components*node + j] = u_2d_mesh_value[j]
                 
     
     # set the values in u_mesh
-    u_sub_mesh.vector().set_local(u_sub_mesh_values)
-    u_sub_mesh.vector().apply("insert")
+    u_1d.vector().set_local(u_1d_values)
+    u_1d.vector().apply("insert")
     
     
 '''
-given a sub mesh a and a sub mesh b obtained from a by means of a displacement field, transfer a field (scalar, vector, tensor) on sub mesh a onto sub mesh b
+given a 1d mesh a (obtained by laying flat the top edge (curve), or an internal shape of a 2d mesh a), and a 1d mesh b (obtained by laying flat the top edge (curve), or an internal shape of 2d mesh b), where 1d mesh b is obtained from 1d mesh a by means of a displacement field, this method transfers a field (scalar, vector, tensor) on 1d mesh a onto 1d mesh b
 Input values: 
     * Mandatory:
-        - `u_a`: the field on sub mesh a
-        - `u_b`: the field on sub mesh b
-        - `u`: the deformation field that relates  mesh a to sub mesh b
+        - `u_a`: the field on 1d mesh a
+        - `u_b`: the field on 1d mesh b
+        - `u`: the deformation field that relates 2d mesh a to 2d mesh b
         - `mesh_a_path`: the path of the mesh of `u_a`
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
+        - 'close' (False): This needs to be set to `True` if the shape internal to the 2d mesh a is a closed polygon. In fact, in this case the shape coordinates 'shape_coordinates' in mesh_a_path/'mesh_metadata.csv' represent a closed polygon but they do not include the last point of the polygon (which coincides with the first). If `close == True`, the first point in `shape_coordinates` is appended at the end of `shape_coordinates` by the method. This is needed for the transfer to be made correctly. 
 '''
-def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon):
+def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
+                                  tol=const.epsilon,
+                                  closed=False):
     
     u_a.set_allow_extrapolation(True)
     u.set_allow_extrapolation(True)
@@ -434,33 +434,36 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon)
     Q_b = u_b.function_space()
 
     '''
-    read all vertices in mesh a which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `vertices_a`
-    `vertices_a` is an ordered list of the coordinates of the vertices in  mesh a which belong to the sub mesh 
+    read all vertices in mesh a which belong to edges tagged with ID 'mesh_1_id' and store them into `mesh_2d_a_vertices`
+    `mesh_2d_a_vertices` is an ordered list of the coordinates of the vertices in 2d mesh a which belong to the 1d mesh a
     '''
-    mesh_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
-    mesh_a_vertices = mesh_a_parameters['curve_coordinates']
+    mesh_2d_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
+    mesh_2d_a_vertices = mesh_2d_a_parameters['shape_coordinates']
+
+    if closed:
+        mesh_2d_a_vertices.append(mesh_2d_a_vertices[0])
 
     '''
-    compute the arc length along sub mesh a: arc_length_a_tab[i] = [cumulative arc length along the sub mesh a curve obtained from its beginning until vertices_a[i] included]
+    compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]
     '''
     arc_length_a = 0
     arc_length_a_tab = [0]
-    for i in range(1, len(mesh_a_vertices)):
+    for i in range(1, len(mesh_2d_a_vertices)):
 
-        arc_length_a += np.linalg.norm(np.subtract(mesh_a_vertices[i], mesh_a_vertices[i-1]))
+        arc_length_a += np.linalg.norm(np.subtract(mesh_2d_a_vertices[i], mesh_2d_a_vertices[i-1]))
         arc_length_a_tab.append(arc_length_a)
 
 
     '''
-    compute the arc length along sub mesh a, deformed onto sub mesh b: arc_length_b_tab[i] = [cumulative arc length along the sub mesh a curve deformed into b, obtained from its beginning until sub_mesh_mesh_a_vertices[i] included]
+    compute the arc length along 1d mesh a, deformed onto 1d mesh b: arc_length_b_tab[i] = [cumulative arc length along the 1d mesh a curve deformed into b, obtained from its beginning until mesh_2d_a_vertices[i] included]
     '''
     arc_length_a_to_b = 0
     arc_length_a_to_b_tab = [0]
-    for i in range(1, len(mesh_a_vertices)):
+    for i in range(1, len(mesh_2d_a_vertices)):
 
         arc_length_a_to_b += np.linalg.norm(np.subtract(
-            np.add(mesh_a_vertices[i], u(mesh_a_vertices[i])), 
-            np.add(mesh_a_vertices[i-1], u(mesh_a_vertices[i-1]))
+            np.add(mesh_2d_a_vertices[i], u(mesh_2d_a_vertices[i])), 
+            np.add(mesh_2d_a_vertices[i-1], u(mesh_2d_a_vertices[i-1]))
             ))
         arc_length_a_to_b_tab.append(arc_length_a_to_b)
 
@@ -518,7 +521,7 @@ def transfer_sub_mesh_to_sub_mesh(u_a, u_b, u, mesh_a_path, tol = const.epsilon)
 
         u_a_value = np.array(u_a(coordinate_a), dtype=float).flatten()
         
-        # assign the compute value of `u_sub_mesh` to u_mesh_values
+        # assign the compute value of `u_a` to `u_b_values`
         for j in range(num_components):
 
             u_b_values[num_components*node + j] = u_a_value[j]

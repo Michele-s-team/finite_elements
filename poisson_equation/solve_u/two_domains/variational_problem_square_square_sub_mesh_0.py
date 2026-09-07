@@ -3,8 +3,10 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import switch_problem as swi
+
 import differential_geometry.boundary.geometry as bgeo
-import function_spaces as fsp
+fsp = importlib.import_module(swi.fsp)
 import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
