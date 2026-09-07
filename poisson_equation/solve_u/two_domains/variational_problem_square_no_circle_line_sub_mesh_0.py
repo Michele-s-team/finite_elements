@@ -5,10 +5,10 @@ import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
 import function as fu
-import function_spaces as fsp
 import runtime_arguments as rarg
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)

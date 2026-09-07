@@ -3,12 +3,12 @@ from fenics import *
 import importlib
 import ufl as ufl
 
-import function_spaces as fsp
 import input_output as io
 import mesh.utils as msh
 
 import switch_problem as swi
 
+fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
 i, j, k, l = ufl.indices(4)
