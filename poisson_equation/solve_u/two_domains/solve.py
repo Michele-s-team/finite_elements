@@ -18,8 +18,9 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-fsp = importlib.import_module(swi.fsp)
 import switch_problem as swi
+
+fsp = importlib.import_module(swi.fsp)
 import variational_problem.utils as var_pr
 
 rmsh = importlib.import_module(swi.rmsh)

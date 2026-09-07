@@ -45,7 +45,7 @@ fsp.u_exact[1].interpolate(u_exact_mesh_1_expression(element=fsp.Q[1].ufl_elemen
 fsp.grad_u[1].interpolate(grad_u_exact_mesh_1_expression(element=fsp.V[1].ufl_element()))
 fsp.f[1].interpolate(laplacian_u_exact_mesh_1_expression(element=fsp.Q[1].ufl_element()))
 
-# boundary conditions for sub_mesh[1]
+# boundary conditions for mesh[1]
 bc_l = DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.mf[1], rmsh.parameters['vertex_l_id'])
 bc_r = DirichletBC(fsp.Q[1], fsp.u_exact[1], rmsh.mf[1], rmsh.parameters['vertex_r_id'])
 

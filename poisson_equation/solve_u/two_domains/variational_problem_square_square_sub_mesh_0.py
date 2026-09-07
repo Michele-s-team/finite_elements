@@ -3,6 +3,8 @@ import importlib
 import numpy as np
 import ufl as ufl
 
+import switch_problem as swi
+
 import differential_geometry.boundary.geometry as bgeo
 fsp = importlib.import_module(swi.fsp)
 import switch_problem as swi
