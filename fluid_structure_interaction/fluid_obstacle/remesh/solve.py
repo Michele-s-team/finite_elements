@@ -103,7 +103,6 @@ for i in range(len(shape_coordinates_a)):
 
 msh.generate_square_shape_line_mesh(shape_coordinates_b, os.path.join(rarg.args.input_directory, '../'), path_b)
 
-# 
 
 parameters_b = io.read_parameters_from_csv_file(os.path.join(path_b, "mesh_metadata.csv"))
 
@@ -119,14 +118,15 @@ class u_a_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = x[0]**2
+        values[1] = x[0]**3
 
     def value_shape(self):
-        return (1,)
+        return (2,)
     
 
 
-Q_u_a = FunctionSpace(mesh_a[1], 'P', 2)
-Q_u_b = FunctionSpace(mesh_b[1], 'P', 2)
+Q_u_a = VectorFunctionSpace(mesh_a[1], 'P', 2, dim=2)
+Q_u_b = VectorFunctionSpace(mesh_b[1], 'P', 2, dim=2)
 
 
 u_a = Function(Q_u_a)
