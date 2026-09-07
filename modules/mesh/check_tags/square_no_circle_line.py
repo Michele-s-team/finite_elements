@@ -2,7 +2,6 @@ import colorama as col
 from fenics import *
 import importlib
 import numpy as np
-import os
 
 import calculus as cal
 import differential_geometry.manifold.geometry as geo
@@ -15,7 +14,6 @@ rmsh = importlib.import_module('mesh.read.square_no_circle_line')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
-sub_mesh_1_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, 'sub_meshes', '1',  "mesh_metadata.csv"))
 
 # CHANGE PARAMETERS HERE
 c_test = [0.3, 0.76]
@@ -46,12 +44,12 @@ class FunctionTestIntegrals(UserExpression):
 # construct function spaces and function_test_integrals_fenics for all sub meshes
 Q_test = []
 function_test_integrals_fenics = []
-for p in range(len(lmsh.sub_meshes)):
+for p in range(len(lmsh.mesh)):
     Q_test.append(FunctionSpace(lmsh.sub_meshes[p], 'P', 2))
     function_test_integrals_fenics.append(Function(Q_test[p]))
     function_test_integrals_fenics[p].interpolate(FunctionTestIntegrals(element=Q_test[p].ufl_element()))
 
-integral_exact = [''] * len(lmsh.sub_meshes)
+integral_exact = [''] * len(lmsh.mesh)
 integral_exact[0] = dict([ \
     ('dx', 0)
 ])
@@ -63,7 +61,7 @@ integral_exact[1] = dict([ \
 
 # exact surface integrals
 integral_exact[0]['dx'] = cal.surface_integral_polygon(function_test_integrals, full_boundary_cooordinates)
-integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, sub_mesh_1_parameters['x_l'], sub_mesh_1_parameters['x_r'])
+integral_exact[1]['dx'] = cal.curve_integral_line(function_test_integrals, lmsh.mesh_parameters[1]['x_l'], lmsh.mesh_parameters[1]['x_r'])
 
 # exact line integrals
 # form mesh #0
@@ -80,7 +78,7 @@ integral_exact[0]['ds'] = integral_exact[0]['ds_lr'] + integral_exact[0]['ds_tb'
 
 # for mesh #1
 integral_exact[1]['ds_l'] = function_test_integrals(0)
-integral_exact[1]['ds_r'] = function_test_integrals(sub_mesh_1_parameters['x_r'])
+integral_exact[1]['ds_r'] = function_test_integrals(lmsh.mesh_parameters[1]['x_r'])
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r']
 
@@ -90,7 +88,7 @@ test_mesh_integral_errors = dict([])
 print(f'Check integrals on the sub_meshes: ')
 
 # surface integrals
-for i in range(len(lmsh.sub_meshes)):
+for i in range(len(lmsh.mesh)):
     test_mesh_integral_errors[f'\int_sub_mesh_{i} f dx'] = msh.test_mesh_integral(integral_exact[i]['dx'], function_test_integrals_fenics[i], rmsh.dx_sub_mesh[i], f'\int_sub_mesh_{i} f dx')
 
 # line intergrals
