@@ -612,8 +612,8 @@ for n in range(rpam.parameters['N']):
         # 4.4.3 transfer fluid fields
 
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
+        msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_1_old)
         # sign
-        msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_old)
 
         msh.transfer(phi_fl_old, fsp.phi_fl, u_n_old)
 
