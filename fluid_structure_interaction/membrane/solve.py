@@ -570,11 +570,13 @@ for n in range(rpam.parameters['N']):
 
         # 4.4.2 tranafer mesh fields
 
-        # 4.4.2.1 transfer u_n
+        # 4.4.2.1 transfer u 
+
+        # 4.4.2.1.1 transfer u_n
 
         fsp.u_n.assign(Constant((0, 0)))
 
-        # 4.4.2.2 transfer u_n_1
+        # 4.4.2.1.2 transfer u_n_1
 
         # set u_a(y') =  u_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_1_old, fsp.u_a, u_n_old)
@@ -585,7 +587,7 @@ for n in range(rpam.parameters['N']):
         fsp.u_n_1.assign(fsp.u_a - fsp.u_b)
 
 
-        # 4.4.2.3 transfer u_n_2
+        # 4.4.2.1.3 transfer u_n_2
 
         # set u_a(y') =  u_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_2_old, fsp.u_a, u_n_old)
@@ -598,9 +600,8 @@ for n in range(rpam.parameters['N']):
 
         # sign
 
+        # 4.4.2.2 transfer u_dot
 
-        # fsp.u_n_1.assign(Constant((0, 0)))
-        fsp.u_n_2.assign(Constant((0, 0)))
 
         msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
