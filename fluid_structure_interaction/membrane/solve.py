@@ -663,6 +663,7 @@ for n in range(rpam.parameters['N']):
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
     
     # 3) update the fluid problem
+    fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
     fsp.v_fl_n_1.assign(fsp.v_fl_n)
 
     fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
