@@ -514,19 +514,22 @@ for n in range(rpam.parameters['N']):
         phi = sigma_n_32 - sigma_n_12
         To obtain the transferred value of `phi`, we transfer sigma_n_32 and sigma_n_12 separately, and then take the difference. 
         '''
-        # after this call, sigma_n_12_dummy(x_1') = sigma_n_12_old((phi_n_12)^{-1}(x_1')). 
+        # after this call, fsp.sigma_n_12_dummy(x_1') = sigma_n_12_old((phi_n_12_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12_dummy, u_n_12_old, pre_remesh_path)      
 
-        # after this call, sigma_n_32_dummy(x_1') = sigma_n_32_old((phi_n_32)^{-1}(x_1')). 
+        # after this call, fsp.sigma_n_32_dummy(x_1') = sigma_n_32_old((phi_n_32_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32_dummy, u_n_32_old, pre_remesh_path)   
 
         fsp.phi_output.assign(fsp.sigma_n_32_dummy - fsp.sigma_n_12_dummy)   
 
-        # sign
 
-          
+        # after this call, fsp.v_n_output(x_1') = v_n_old((phi_n_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
+
+        # after this call, fsp.v_n_output(x_1') = v_n_old((phi_n_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
+
+        # sign
         fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
