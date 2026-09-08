@@ -503,10 +503,14 @@ for n in range(rpam.parameters['N']):
 
         # 4.4.1 transfer membrane fields
 
+        # 4.4.1.1 transfer v_bar, w_bar
+
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         fu.transfer_1d_to_1d_curve(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         fu.transfer_1d_to_1d_curve(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
+
+        # 4.4.1.2 transfer phi
 
         '''
         phi = sigma_n_32 - sigma_n_12
@@ -520,12 +524,15 @@ for n in range(rpam.parameters['N']):
 
         fsp.phi_output.assign(fsp.sigma_n_32_dummy - fsp.sigma_n_12_dummy)   
 
+        # 4.4.1.3 transfer v_n, w_n
 
         # after this call, fsp.v_n_output(x_1') = v_n_old((phi_n_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
 
         # after this call, fsp.v_n_output(x_1') = v_n_old((phi_n_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
+
+        # 4.4.1.2 transfer U_n_12, U_n_32
 
         # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
         # after this call, fsp.U_a(x_1') = U_n_12_old((phi_n_old)^{-1}(x_1')). 
