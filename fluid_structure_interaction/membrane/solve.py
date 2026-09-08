@@ -403,7 +403,6 @@ for n in range(rpam.parameters['N']):
         # 4.1.1.3 _old fields for fluid
         v_fl_n_old = Function(fsp.Q_v_fl)
         v_fl_n_1_old = Function(fsp.Q_v_fl)
-        v_fl_n_2_old = Function(fsp.Q_v_fl)
 
         phi_fl_old = Function(fsp.Q_phi_fl)
 
@@ -452,7 +451,6 @@ for n in range(rpam.parameters['N']):
         # 4.1.2.2.3 write into fluid fields
         v_fl_n_old.assign(fsp.v_fl_n)
         v_fl_n_1_old.assign(fsp.v_fl_n_1)
-        v_fl_n_2_old.assign(fsp.v_fl_n_2)
 
         phi_fl_old.assign(fsp.phi_fl)
 
@@ -615,7 +613,6 @@ for n in range(rpam.parameters['N']):
         # 4.4.3 transfer fluid fields
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
         msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_old)
-        msh.transfer(v_fl_n_2_old, fsp.v_fl_n_2, u_n_old)
 
         msh.transfer(phi_fl_old, fsp.phi_fl, u_n_old)
 
@@ -624,7 +621,7 @@ for n in range(rpam.parameters['N']):
 
         #4.5 clean up
 
-        del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, u_n_12_old, u_n_32_old, v_fl_n_old, v_fl_n_1_old, v_fl_n_2_old, sigma_fl_n_12_old, sigma_fl_n_32_old
+        del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, u_n_12_old, u_n_32_old, v_fl_n_old, v_fl_n_1_old, sigma_fl_n_12_old, sigma_fl_n_32_old
         gc.collect()
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
@@ -655,7 +652,6 @@ for n in range(rpam.parameters['N']):
     fsp.u_dot_n_1.assign(fsp.u_dot_n)
     
     # 3) update the fluid problem
-    fsp.v_fl_n_2.assign(fsp.v_fl_n_1)
     fsp.v_fl_n_1.assign(fsp.v_fl_n)
 
     fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
