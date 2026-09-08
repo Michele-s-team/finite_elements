@@ -381,7 +381,6 @@ for n in range(rpam.parameters['N']):
         mu_n_12_old = Function(fsp.Q_mu_n_12)
 
         v_n_1_old = Function(fsp.Q_v_n)
-        w_n_1_old = Function(fsp.Q_w_n)
         sigma_n_12_old = Function(fsp.Q_phi)
         sigma_n_32_old = Function(fsp.Q_phi)
         U_n_32_old = Function(fsp.Q_U_n_12)
@@ -431,7 +430,6 @@ for n in range(rpam.parameters['N']):
         mu_n_12_old.assign(mu_n_12_dummy)
 
         v_n_1_old.assign(fsp.v_n_1)
-        w_n_1_old.assign(fsp.w_n_1)
         sigma_n_12_old.assign(fsp.sigma_n_12)
         sigma_n_32_old.assign(fsp.sigma_n_32)
         U_n_32_old.assign(fsp.U_n_32)
@@ -568,7 +566,6 @@ for n in range(rpam.parameters['N']):
 
 
         fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(w_n_1_old, fsp.w_n_1, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(U_n_32_old, fsp.U_n_32, u_n_old, pre_remesh_path)
@@ -596,7 +593,7 @@ for n in range(rpam.parameters['N']):
 
         #4.5 clean up
 
-        del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, w_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, u_n_12_old, u_n_32_old, v_fl_n_old, v_fl_n_1_old, v_fl_n_2_old, sigma_fl_n_12_old, sigma_fl_n_32_old
+        del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, u_n_12_old, u_n_32_old, v_fl_n_old, v_fl_n_1_old, v_fl_n_2_old, sigma_fl_n_12_old, sigma_fl_n_32_old
         gc.collect()
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
