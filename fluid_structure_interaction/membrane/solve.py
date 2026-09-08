@@ -598,14 +598,19 @@ for n in range(rpam.parameters['N']):
         fsp.u_n_2.assign(fsp.u_a - fsp.u_b)
 
 
-        # sign
-
         # 4.4.2.2 transfer u_dot
 
-
+        # set fsp.u_dot_n(y') =  u_dot_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)
+
+        # set fsp.u_dot_n_1(y') =  u_dot_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
+
+        # set fsp.u_dot_n_2(y') =  u_dot_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)
+
+        # sign
+
 
         # 4.4.3 transfer fluid fields
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
