@@ -407,7 +407,7 @@ for n in range(rpam.parameters['N']):
         sigma_fl_n_12_old = Function(fsp.Q_phi_fl)
         sigma_fl_n_32_old = Function(fsp.Q_phi_fl)
 
-
+        # sign
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field for membrane
@@ -541,9 +541,6 @@ for n in range(rpam.parameters['N']):
         gc.collect()
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
-
-
-        #sign
 
 
     
