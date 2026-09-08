@@ -423,6 +423,9 @@ Input values:
     * Optional:
         - 'tol' (const.epsilon): the tolerance used to assess distances
         - 'close' (False): This needs to be set to `True` if the shape internal to the 2d mesh a is a closed polygon. In fact, in this case the shape coordinates 'shape_coordinates' in mesh_a_path/'mesh_metadata.csv' represent a closed polygon but they do not include the last point of the polygon (which coincides with the first). If `close == True`, the first point in `shape_coordinates` is appended at the end of `shape_coordinates` by the method. This is needed for the transfer to be made correctly. 
+
+Return values: 
+    This method does not return anything, it writes into `u_b`. Once the method is called, we have u_b(x_1') = u_a(x_1), where x_1 and x_1' are the arc lengths along the curve of 2d mesh a and 2d mesh b, respectively.  Given that the deformation field `u` maps each point of 2d mesh a into a point of 2d mesh b, this implies a mapping of each arclength of 1d mesh to an arc length of 2d mesh b, which we call  x_1' = phi_u(x_1), where phi_u depends on `u`. 
 '''
 def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
                                   tol=const.epsilon,
