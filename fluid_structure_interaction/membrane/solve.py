@@ -561,20 +561,45 @@ for n in range(rpam.parameters['N']):
 
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
 
+        # 4.4.1.4 transfer v_n_1_old, 
+        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old, pre_remesh_path)
+
+
+
+        # 4.4.2 tranafer mesh fields
+
+        # 4.4.2.1 transfer u_n
+
+        fsp.u_n.assign(Constant((0, 0)))
+
+        # 4.4.2.2 transfer u_n_1
+
+        # set u_a(y') =  u_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_1_old, fsp.u_a, u_n_old)
+
+        # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_old, fsp.u_b, u_n_old)
+             
+        fsp.u_n_1.assign(fsp.u_a - fsp.u_b)
+
+
+        # 4.4.2.3 transfer u_n_2
+
+        # set u_a(y') =  u_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_2_old, fsp.u_a, u_n_old)
+
+        # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(u_n_old, fsp.u_b, u_n_old)
+
+        fsp.u_n_2.assign(fsp.u_a - fsp.u_b)
+
+
         # sign
 
 
-
-        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(U_n_32_old, fsp.U_n_32, u_n_old, pre_remesh_path)
-
-
-
-        # 4.4.2 set mesh fields
-        fsp.u_n.assign(Constant((0, 0)))
-        fsp.u_n_1.assign(Constant((0, 0)))
+        # fsp.u_n_1.assign(Constant((0, 0)))
         fsp.u_n_2.assign(Constant((0, 0)))
 
         msh.transfer(u_dot_n_old, fsp.u_dot_n, u_n_old)

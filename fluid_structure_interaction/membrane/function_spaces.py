@@ -166,6 +166,10 @@ u_dot_n = Function(Q_u_dot)
 u_dot_n_1 = Function(Q_u_dot)
 u_dot_n_2 = Function(Q_u_dot)
 
+u_a = Function(Q_u)
+u_b = Function(Q_u)
+
+
 # function space to store the projection of the membrane deformation field and of its derivative on the mesh
 U_n_12_on_mesh = Function(Q_u)
 U_dot_n_12_on_mesh = Function(Q_u_dot)
