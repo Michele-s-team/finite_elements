@@ -426,7 +426,7 @@ Input values:
 
 Return values: 
     This method does not return anything, it writes into `u_b`. Once the method is called, we have u_b(x_1') = u_a(x_1), where x_1 and x_1' are the arc lengths along the curve of 2d mesh a and 2d mesh b, respectively.  Given that the deformation field `u` maps each point of 2d mesh a into a point of 2d mesh b, this implies a mapping of each arclength of 1d mesh to an arc length of 2d mesh b, which we call  x_1' = phi_u(x_1), where phi_u depends on `u`. 
-    This after this method is called, we have u_b(x_1') = u_a((phi_u)^{-1}(x_1)). 
+    This after this method is called, we have u_b(x_1') = u_a((phi_u)^{-1}(x_1')). 
 '''
 def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
                                   tol=const.epsilon,
