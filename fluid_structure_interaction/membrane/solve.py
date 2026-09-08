@@ -401,7 +401,7 @@ for n in range(rpam.parameters['N']):
 
 
         # 4.1.1.3 _old fields for fluid
-        v_fl_bar_old = Function(fsp.Q_v_bar)
+        v_fl_bar_old = Function(fsp.Q_v_fl_bar)
         v_fl_n_old = Function(fsp.Q_v_fl)
         v_fl_n_1_old = Function(fsp.Q_v_fl)
 
