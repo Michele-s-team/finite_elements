@@ -563,7 +563,7 @@ for n in range(rpam.parameters['N']):
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
 
         # 4.4.1.4 transfer v_n_1_old, 
-        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_1_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old, pre_remesh_path)
 
