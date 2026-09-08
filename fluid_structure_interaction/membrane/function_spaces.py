@@ -108,6 +108,9 @@ sigma_n_32_dummy = Function( Q_phi )
 
 U_n_32 = Function( Q_U_n_12 )
 
+U_a = Function( Q_U_n_12 )
+U_b = Function( Q_U_n_12 )
+
 #reference configuration
 X_ref = Function(Q_X)
 

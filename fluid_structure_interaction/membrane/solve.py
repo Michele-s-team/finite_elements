@@ -499,8 +499,6 @@ for n in range(rpam.parameters['N']):
         pr_sol = importlib.reload(pr_sol)
         cu = importlib.reload(cu)
 
-
-
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 4.4.1 transfer membrane fields
@@ -529,8 +527,19 @@ for n in range(rpam.parameters['N']):
         # after this call, fsp.v_n_output(x_1') = v_n_old((phi_n_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
 
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+        # after this call, fsp.U_a(x_1') = U_n_12_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_a, u_n_old, pre_remesh_path)
+
+        # after this call, fsp.U_b(x_1') = U_n_32_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(U_n_32_old, fsp.U_b, u_n_old, pre_remesh_path)
+
+        fsp.U_n_12.assign(-(fsp.U_a - fsp.U_b)/2.0)
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+
         # sign
-        fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
+
+        
         fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
