@@ -491,12 +491,17 @@ for n in range(rpam.parameters['N']):
 
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
-        # sign
 
         # 4.4.1 transfer membrane fields
+
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         fu.transfer_1d_to_1d_curve(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
+        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         fu.transfer_1d_to_1d_curve(w_bar_old, fsp.w_bar_output, u_n_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)
+
+        # sign
+
+        fu.transfer_1d_to_1d_curve(phi_old, fsp.phi_output, u_n_old, pre_remesh_path)        
         fu.transfer_1d_to_1d_curve(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(w_n_old, fsp.w_n_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_n_12_output, u_n_old, pre_remesh_path)
