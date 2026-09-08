@@ -407,7 +407,6 @@ for n in range(rpam.parameters['N']):
         sigma_fl_n_12_old = Function(fsp.Q_phi_fl)
         sigma_fl_n_32_old = Function(fsp.Q_phi_fl)
 
-        # sign
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
         #4.1.2.1 unpack the mixed field for membrane
@@ -492,6 +491,7 @@ for n in range(rpam.parameters['N']):
 
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
+        # sign
 
         # 4.4.1 transfer membrane fields
         fu.transfer_1d_to_1d_curve(v_bar_old, fsp.v_bar_output, u_n_old, pre_remesh_path)
