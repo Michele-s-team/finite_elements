@@ -168,6 +168,9 @@ u_dot_n_2 = Function(Q_u_dot)
 u_a = Function(Q_u)
 u_b = Function(Q_u)
 
+# this is needed so no error is thrown when computing u_n at `coordinate` when building a new mesh
+u_n.set_allow_extrapolation(True)
+
 
 # function space to store the projection of the membrane deformation field and of its derivative on the mesh
 U_n_12_on_mesh = Function(Q_u)
