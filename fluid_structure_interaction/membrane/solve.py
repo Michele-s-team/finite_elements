@@ -624,7 +624,6 @@ for n in range(rpam.parameters['N']):
         msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_old)
         
         fsp.phi_fl.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
-        #sign
 
 
         #4.5 clean up
