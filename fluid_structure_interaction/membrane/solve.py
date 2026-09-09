@@ -372,7 +372,6 @@ for n in range(rpam.parameters['N']):
         # 4.1.1.1 _old fields for membrane
         v_bar_old = Function(fsp.Q_v_bar)
         w_bar_old = Function(fsp.Q_w_bar)
-        phi_old = Function(fsp.Q_phi)
         v_n_old = Function(fsp.Q_v_n)
         w_n_old = Function(fsp.Q_w_n)
         U_n_12_old = Function(fsp.Q_U_n_12)
@@ -395,17 +394,10 @@ for n in range(rpam.parameters['N']):
         u_dot_n_1_old = Function(fsp.Q_u_dot)
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
-        # 4.1.1.2.1 auxiliary _old fields needed for transfer
-        u_n_12_old = Function(fsp.Q_u)
-        u_n_32_old = Function(fsp.Q_u)
-
-
         # 4.1.1.3 _old fields for fluid
         v_fl_bar_old = Function(fsp.Q_v_fl_bar)
         v_fl_n_old = Function(fsp.Q_v_fl)
         v_fl_n_1_old = Function(fsp.Q_v_fl)
-
-        phi_fl_old = Function(fsp.Q_phi_fl)
 
         sigma_fl_n_12_old = Function(fsp.Q_phi_fl)
         sigma_fl_n_32_old = Function(fsp.Q_phi_fl)
@@ -421,7 +413,6 @@ for n in range(rpam.parameters['N']):
         # 4.1.2.2.1 write into membrane fields
         v_bar_old.assign(v_bar_dummy)
         w_bar_old.assign(w_bar_dummy)
-        phi_old.assign(phi_dummy)
         v_n_old.assign(v_n_dummy)
         w_n_old.assign(w_n_dummy)
         U_n_12_old.assign(U_n_12_dummy)
@@ -430,8 +421,10 @@ for n in range(rpam.parameters['N']):
         mu_n_12_old.assign(mu_n_12_dummy)
 
         v_n_1_old.assign(fsp.v_n_1)
-        sigma_n_12_old.assign(fsp.sigma_n_12)
+
+        sigma_n_12_old.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
         sigma_n_32_old.assign(fsp.sigma_n_32)
+        
         U_n_32_old.assign(fsp.U_n_32)
 
         # 4.1.2.2.1 write into mesh fields
@@ -443,10 +436,7 @@ for n in range(rpam.parameters['N']):
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
 
-        # WARNING: here I am assuming that u_n_12 and u_n_32 can be approximated by interpolating linearly the values at integer time steps - start
-        u_n_12_old.assign((fsp.u_n + fsp.u_n_1)/2.0)
-        u_n_32_old.assign((fsp.u_n_1 + fsp.u_n_2)/2.0)
-        # WARNING: here I am assuming that u_n_12 and u_n_32 can be approximated by interpolating linearly the values at integer time steps - end
+
 
 
         # 4.1.2.2.3 write into fluid fields
@@ -455,9 +445,7 @@ for n in range(rpam.parameters['N']):
         v_fl_n_old.assign(fsp.v_fl_n)
         v_fl_n_1_old.assign(fsp.v_fl_n_1)
 
-        phi_fl_old.assign(fsp.phi_fl)
-
-        sigma_fl_n_12_old.assign(fsp.sigma_fl_n_12)
+        sigma_fl_n_12_old.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
         sigma_fl_n_32_old.assign(fsp.sigma_fl_n_32)
 
 
@@ -513,13 +501,13 @@ for n in range(rpam.parameters['N']):
         phi = sigma_n_32 - sigma_n_12
         To obtain the transferred value of `phi`, we transfer sigma_n_32 and sigma_n_12 separately, and then take the difference. 
         '''
-        # after this call, fsp.sigma_n_12_dummy(x_1') = sigma_n_12_old((phi_n_12_old)^{-1}(x_1')). 
-        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12_dummy, u_n_12_old, pre_remesh_path)      
+        # after this call, fsp.sigma_n_12(x_1') = sigma_n_12_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)      
 
-        # after this call, fsp.sigma_n_32_dummy(x_1') = sigma_n_32_old((phi_n_32_old)^{-1}(x_1')). 
-        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32_dummy, u_n_32_old, pre_remesh_path)   
+        # after this call, fsp.sigma_n_32(x_1') = sigma_n_32_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)   
 
-        fsp.phi_output.assign(fsp.sigma_n_32_dummy - fsp.sigma_n_12_dummy)   
+        fsp.phi_output.assign(fsp.sigma_n_32 - fsp.sigma_n_12)   
 
         # 4.4.1.3 transfer v_n, w_n
 
@@ -556,16 +544,16 @@ for n in range(rpam.parameters['N']):
 
         # 4.4.1.3 transfer nu_n_12_old, psi_n_12_old, mu_n_12_old
 
-        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_12_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_12_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_12_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
+
 
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
 
+
         # 4.4.1.4 transfer v_n_1_old, 
-        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_1_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_old, pre_remesh_path)
 
 
 
@@ -617,26 +605,28 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_fl_bar_old, fsp.v_fl_bar, u_n_old)
 
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
-        msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_1_old)
+        msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_old)
+
+
 
         '''
         phi_fl = sigma_fl_n_32 - sigma_fl_n_12
         
         To obtain the transferred value of `phi_fl`, we transfer sigma_fl_n_32 and sigma_fl_n_12 separately, and then take the difference. 
         '''
-        msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_12_old)
-        msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_32_old)
+        msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
+        msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_old)
         
         fsp.phi_fl.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
 
+
         #4.5 clean up
 
-        del v_bar_old, w_bar_old, phi_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, u_n_12_old, u_n_32_old, v_fl_bar_old, v_fl_n_old, v_fl_n_1_old, phi_fl_old, sigma_fl_n_12_old, sigma_fl_n_32_old
+        del v_bar_old, w_bar_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, v_fl_bar_old, v_fl_n_old, v_fl_n_1_old, sigma_fl_n_12_old, sigma_fl_n_32_old
         gc.collect()
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
-        # sign
 
     
     # 5. update  fields
