@@ -561,7 +561,6 @@ for n in range(rpam.parameters['N']):
         fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)
 
-        #sign
 
 
         # 4.4.2 tranafer mesh fields
@@ -612,7 +611,10 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_fl_bar_old, fsp.v_fl_bar, u_n_old)
 
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
-        msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_1_old)
+        msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_old)
+
+        #sign
+
 
         '''
         phi_fl = sigma_fl_n_32 - sigma_fl_n_12
