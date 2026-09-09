@@ -2,7 +2,6 @@ from fenics import *
 import importlib
 import numpy as np
 from scipy.interpolate import CubicSpline
-from scipy.optimize import brentq
 
 import switch_problem as swi
 
