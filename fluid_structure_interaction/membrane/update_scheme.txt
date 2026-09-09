@@ -24,6 +24,7 @@ remesh
 
 v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
 
+fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_output, fsp.Q_phi ) )
 fsp.sigma_n_32.assign( fsp.sigma_n_12 )
 
 # for fluid
@@ -50,4 +51,5 @@ remesh
         fsp.phi_fl.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
 
 
+fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
 fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
