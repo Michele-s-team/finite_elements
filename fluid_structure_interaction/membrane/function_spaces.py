@@ -103,8 +103,7 @@ w_n_1 = Function(Q_w_n)
 sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
 sigma_n_12_output = Function( Q_phi )
-sigma_n_12_dummy = Function( Q_phi )
-sigma_n_32_dummy = Function( Q_phi )
+
 
 U_n_32 = Function( Q_U_n_12 )
 
