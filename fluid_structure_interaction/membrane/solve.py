@@ -613,7 +613,6 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_fl_n_old, fsp.v_fl_n, u_n_old)
         msh.transfer(v_fl_n_1_old, fsp.v_fl_n_1, u_n_old)
 
-        #sign
 
 
         '''
@@ -621,10 +620,12 @@ for n in range(rpam.parameters['N']):
         
         To obtain the transferred value of `phi_fl`, we transfer sigma_fl_n_32 and sigma_fl_n_12 separately, and then take the difference. 
         '''
-        msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_12_old)
-        msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_32_old)
+        msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
+        msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_old)
         
         fsp.phi_fl.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
+        #sign
+
 
         #4.5 clean up
 
@@ -633,7 +634,6 @@ for n in range(rpam.parameters['N']):
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
-        # sign
 
     
     # 5. update  fields
