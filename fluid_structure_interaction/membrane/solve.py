@@ -515,8 +515,6 @@ for n in range(rpam.parameters['N']):
 
         # 4.4.1.3 transfer v_n, w_n
 
-        # sign
-
         # after this call, fsp.v_n_output(x_1') = v_n_old((phi_n_old)^{-1}(x_1')). 
         fu.transfer_1d_to_1d_curve(v_n_old, fsp.v_n_output, u_n_old, pre_remesh_path)
 
@@ -550,11 +548,14 @@ for n in range(rpam.parameters['N']):
 
         # 4.4.1.3 transfer nu_n_12_old, psi_n_12_old, mu_n_12_old
 
-        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_12_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_12_old, pre_remesh_path)
-        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_12_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
+
 
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
+
+        #sign
 
         # 4.4.1.4 transfer v_n_1_old, 
         fu.transfer_1d_to_1d_curve(v_n_1_old, fsp.v_n_1, u_n_1_old, pre_remesh_path)
