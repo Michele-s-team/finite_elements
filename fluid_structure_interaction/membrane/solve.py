@@ -422,7 +422,7 @@ for n in range(rpam.parameters['N']):
 
         v_n_1_old.assign(fsp.v_n_1)
 
-        sigma_n_12_old.assign(fsp.sigma_n_32 - phi_dummy)
+        sigma_n_12_old.assign(fsp.sigma_n_32 - project(phi_dummy, fsp.Q_phi))
         sigma_n_32_old.assign(fsp.sigma_n_32)
         
         U_n_32_old.assign(fsp.U_n_32)
