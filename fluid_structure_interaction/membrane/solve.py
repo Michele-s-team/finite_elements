@@ -481,8 +481,8 @@ for n in range(rpam.parameters['N']):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
-        pr_sol = importlib.reload(pr_sol)
         cu = importlib.reload(cu)
+        pr_sol = importlib.reload(pr_sol)
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 

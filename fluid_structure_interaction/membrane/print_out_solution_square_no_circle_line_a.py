@@ -24,8 +24,6 @@ def print_solution(t, step, dt):
     # 1.1 membrane problem
     v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
 
-    fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_dummy, fsp.Q_phi ) )
-
     # print solution to file
     # append to the full time series solution at the current t
     fi.xdmffile_v_bar.write( v_bar_dummy, t )
@@ -36,7 +34,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_phi.write( phi_dummy, t )
     fi.xdmffile_u_n_12.write( U_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_nu_n_12.write( nu_n_12_dummy, t - dt / 2.0 )
-    fi.xdmffile_nu_n_12.write( psi_n_12_dummy, t - dt / 2.0 )
+    fi.xdmffile_psi_n_12.write( psi_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_mu_n_12.write( mu_n_12_dummy, t - dt / 2.0 )
 
     io.full_print(v_bar_dummy, 'v_bar_' + str(step + 1), \
