@@ -56,7 +56,8 @@ class X_ref_Expression(UserExpression):
 # interpolate `X_ref` according to the analytical expression `X_ref_Expression`
 fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 
-
+'''
 mesh_len = sum(c.volume() for c in cells(fsp.Q_X.mesh()))
 spline_end =  arc_length_tab[-1]
 print(f'*** \n\t s_max = {arc_length_tab[-1]}\n\tcheck : {mesh_len - spline_end} \n\t coordinate[-1][0] - 1 = {shape_coordinates[-1][0]-1}\n\tX_ref_s_dXref_ds(s_max)[0][0]-1 = {X_ref_s_dXref_ds(arc_length_tab[-1])[0][0]-1}\n\tX_ref(s_max) = {fsp.X_ref(arc_length_tab[-1])}')
+'''
