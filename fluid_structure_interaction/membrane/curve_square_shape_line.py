@@ -21,10 +21,6 @@ for i in range(1, len(shape_coordinates)):
 
 
 
-mesh_len = sum(c.volume() for c in cells(rmsh.lmsh.mesh[1]))
-spline_end =  arc_length_tab[-1]
-print(f'*** check : {mesh_len - spline_end}')
-
 
 # fit a periodic cubic spline for x(t) and y(t) separately
 cspline = [CubicSpline(arc_length_tab, shape_coordinates[:, 0], bc_type='natural'), CubicSpline(arc_length_tab, shape_coordinates[:, 1], bc_type='natural')]
@@ -40,4 +36,6 @@ def X_ref_s_dXref_ds(s):
     return np.array([float(cspline[0](s)), float(cspline[1](s))]), np.array([float(cspline[0](s, 1)), float(cspline[1](s, 1))])
 
 
-
+mesh_len = sum(c.volume() for c in cells(rmsh.lmsh.mesh[1]))
+spline_end =  arc_length_tab[-1]
+print(f'*** \n\tcheck : {mesh_len - spline_end} \n\t coordinate[-1][0] - 1 = {shape_coordinates[-1][0]-1}\n\tX_ref_s_dXref_ds(s_max)[0][0]-1 = {X_ref_s_dXref_ds(arc_length_tab[-1])[0][0]-1}')
