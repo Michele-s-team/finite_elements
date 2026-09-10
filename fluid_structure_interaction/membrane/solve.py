@@ -5,7 +5,7 @@ run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
 
 Examples:
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/membrane/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_line_a $MESH_PATH $SOLUTION_PATH
+    clear; clear; MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/membrane/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_no_circle_line_a $MESH_PATH $SOLUTION_PATH
 """
 import colorama as col
 import dolfin
@@ -358,8 +358,8 @@ for n in range(rpam.parameters['N']):
     pr_da.print_data(step)
 
 
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    # if True:
+    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    if step % rpam.parameters['remesh_stride'] == 0:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold)
 
@@ -481,8 +481,8 @@ for n in range(rpam.parameters['N']):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
-        pr_sol = importlib.reload(pr_sol)
         cu = importlib.reload(cu)
+        pr_sol = importlib.reload(pr_sol)
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 

@@ -85,7 +85,8 @@ os.makedirs(os.path.dirname(filepath_data), exist_ok=True)
 csvfile_data = open(filepath_data, 'a', newline='')
 fieldnames_data = [ \
     'step',
-    'mesh_quality'
+    'mesh_quality',
+    'max(X_ref^2)'
     ]
 
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)

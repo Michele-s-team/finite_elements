@@ -15,8 +15,6 @@ import switch_problem as swi
 
 fi = importlib.import_module(swi.fi)
 rmsh = importlib.import_module(swi.rmsh)
-vp_mesh = importlib.import_module(swi.vp_mesh)
-vp_fluid = importlib.import_module(swi.vp_fluid)
 
 i, j, k, l, alpha, beta, gamma = ufl.indices(7)
 
