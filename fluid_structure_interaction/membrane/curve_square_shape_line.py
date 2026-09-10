@@ -9,6 +9,9 @@ import function_spaces as fsp
 
 rmsh = importlib.import_module(swi.rmsh)
 
+
+    
+
 shape_coordinates = np.array(rmsh.parameters['shape_coordinates'])
 
 '''
@@ -36,6 +39,22 @@ Return values;
 '''
 def X_ref_s_dXref_ds(s):
     return np.array([float(cspline[0](s)), float(cspline[1](s))]), np.array([float(cspline[0](s, 1)), float(cspline[1](s, 1))])
+
+
+# reference configuration of the manifold, a straight line which coincides with the mesh line
+class X_ref_Expression(UserExpression):
+    def eval(self, values, x):
+
+        X, _ = X_ref_s_dXref_ds(x[0])
+
+        values[0] = X[0]
+        values[1] = X[1]
+
+    def value_shape(self):
+        return (2,)
+
+# interpolate `X_ref` according to the analytical expression `X_ref_Expression`
+fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 
 
 mesh_len = sum(c.volume() for c in cells(fsp.Q_X.mesh()))

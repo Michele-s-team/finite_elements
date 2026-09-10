@@ -16,8 +16,6 @@ cu = importlib.import_module(swi.cu)
 fi = importlib.import_module(swi.fi)
 rmsh = importlib.import_module(swi.rmsh)
 
-# this is needed to assign the correct profile to X_ref
-vp_membrane = importlib.reload(importlib.import_module(swi.vp_membrane))  
 
 def print_solution(t, step, dt):
 
