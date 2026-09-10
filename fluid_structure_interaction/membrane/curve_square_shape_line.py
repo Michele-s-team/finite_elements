@@ -20,6 +20,12 @@ for i in range(1, len(shape_coordinates)):
     arc_length_tab.append(arc_length)
 
 
+
+mesh_len = sum(c.volume() for c in cells(rmsh.lmsh.mesh[1]))
+spline_end =  arc_length_tab[-1]
+print(f'*** check : {mesh_len - spline_end}')
+
+
 # fit a periodic cubic spline for x(t) and y(t) separately
 cspline = [CubicSpline(arc_length_tab, shape_coordinates[:, 0], bc_type='natural'), CubicSpline(arc_length_tab, shape_coordinates[:, 1], bc_type='natural')]
 
