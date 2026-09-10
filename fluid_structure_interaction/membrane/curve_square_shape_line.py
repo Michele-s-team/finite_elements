@@ -5,6 +5,8 @@ from scipy.interpolate import CubicSpline
 
 import switch_problem as swi
 
+import function_spaces as fsp
+
 rmsh = importlib.import_module(swi.rmsh)
 
 shape_coordinates = np.array(rmsh.parameters['shape_coordinates'])
@@ -36,6 +38,6 @@ def X_ref_s_dXref_ds(s):
     return np.array([float(cspline[0](s)), float(cspline[1](s))]), np.array([float(cspline[0](s, 1)), float(cspline[1](s, 1))])
 
 
-mesh_len = sum(c.volume() for c in cells(rmsh.lmsh.mesh[1]))
+mesh_len = sum(c.volume() for c in cells(fsp.Q_X.mesh()))
 spline_end =  arc_length_tab[-1]
-print(f'*** \n\tcheck : {mesh_len - spline_end} \n\t coordinate[-1][0] - 1 = {shape_coordinates[-1][0]-1}\n\tX_ref_s_dXref_ds(s_max)[0][0]-1 = {X_ref_s_dXref_ds(arc_length_tab[-1])[0][0]-1}')
+print(f'*** \n\t s_max = {arc_length_tab[-1]}\n\tcheck : {mesh_len - spline_end} \n\t coordinate[-1][0] - 1 = {shape_coordinates[-1][0]-1}\n\tX_ref_s_dXref_ds(s_max)[0][0]-1 = {X_ref_s_dXref_ds(arc_length_tab[-1])[0][0]-1}\n\tX_ref(s_max) = {fsp.X_ref(arc_length_tab[-1])}')

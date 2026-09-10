@@ -61,7 +61,7 @@ def print_solution(t, step, dt):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     
     
-    io.full_print(project(fsp.X_ref, fsp.Q_X), 'X_ref_n_' + str(step + 1), \
+    io.full_print(fsp.X_ref, 'X_ref_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
    
 
