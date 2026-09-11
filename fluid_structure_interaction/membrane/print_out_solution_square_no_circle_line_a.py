@@ -10,6 +10,7 @@ import os
 import solution_paths as solpath
 
 import parameters.read.solution as rpam
+import runtime_arguments as rarg
 import switch_problem as swi
 
 cu = importlib.import_module(swi.cu)
@@ -126,6 +127,10 @@ def print_solution(t, step, dt):
     io.print_mesh_lines_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'line_mesh_n_' + str(step + 1) + '.csv'))
       
 
-    
+    #5. write shape vertices 
+
+    input_path = os.path.join(rarg.args.input_directory, f"mesh_0/boundary_points_id_{rmsh.parameters['mesh_1_id']}.csv")
+    output_path = os.path.join(rarg.args.output_directory, f"snapshots/csv/boundary_points_id_{rmsh.parameters['mesh_1_id']}_n_{step}.csv")
+    os.system(f'cp {input_path} {output_path}')
 
 
