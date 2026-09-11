@@ -115,7 +115,8 @@ def print_solution_D(t, step):
         rmsh.lmsh.mesh[0], 
         os.path.join(rarg.args.input_directory, f'mesh_{0}'), 
         [rmsh.lmsh.mesh_parameters[0]['shape_id']],
-        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.lmsh.mesh_parameters[0]['shape_id']) + f'_n_{step}.csv'))
+        outfile=os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.lmsh.mesh_parameters[0]['shape_id']) + f'_n_{step}.csv'),
+        closed=True)
 
 
     

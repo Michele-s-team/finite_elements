@@ -290,12 +290,16 @@ Input values:
     * Mandatory: 
         - 'mesh': the mesh
         - 'mesh_path': the path where 'triangle_mesh.xdmf' and 'line_mesh.xdmf' are located
-        - 'id': a list of tags tag of the boundary whose vertices will be computed
+        - 'id': a list of tags of the boundary whose vertices will be computed
     * Optional: 
         - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
+        - 'closed' (False): if True, the domain corresponding to `id` is a closed one, and it is open if False
+
 
 '''
-def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
+def sorted_boundary_points(mesh, mesh_path, id, 
+                           outfile=None,
+                           closed=False):
     
     mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
 
@@ -308,20 +312,60 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
             facet_list.append(facet)
                 
     # print(f'\n\t facet list = {facet_list}')
+    n_facets = len(facet_list)
       
     #initialize list of vertices   
     vertex_list = []
     
     # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
+    '''
+    `facet_list[0]` is the first facet considered, and I store its vertices into `first_facet_vertices`. I append to `vertex_list` the vertex #0 in this list, i.e., `first_facet_vertices[0]`. The other vertex `first_facet_vertices[1]`, is stored into `vertex_to_add`. 
+    Given that I delete from `facet_list` the facet `facet_list[0]`, this facet will not be considered in the search -> `vertex_to_add` will not be automatically added -> I will add it manyally at the end of the search.
+
+    I try to set the first entry in `vertex_list` to  first_facet_vertices[0] and `vertex_to_add` to `first_facet_vertices[1]`. If `first_facet_vertices[0]` is an endpoint, this would produce an inifinte loop in the search dynamics for connected vertices, because the only facet that contains `vertex_list[0]` is `facet_list[0]` and it has been deleted from `facet_list` by `del facet_list[0]`. Thus in this case, I swap `vertex_list[0]` and `vertex_to_add`, see below. 
+    '''    
+
     vertex_list.append(next(vertices(facet_list[0])))
+    vertex_to_add = [vertex for vertex in list(vertices(facet_list[0])) if vertex.index() != vertex_list[-1].index()][0]
+
     del facet_list[0]
+
+
+    '''
+    check whether there is one edge in `facet_list` that contains `vertex_list[-1]`
+    '''
+    found = False
+
+    for i in range(len(facet_list)):
+        # run through all facets   
+                
+        if found:
+            break
+                        
+        for v in vertices(facet_list[i]): 
+            # loop through vertices of the facet under consideration
+            
+            if v.index() == vertex_list[-1].index():
+                # if one of the vertices coincides with `vertex_list[-1]`, break and set `found = True`
+            
+                found = True
+                break
+
+    if found == False:
+        # no edge in `facet_list` contains `vertex_list[-1]` -> swap `vertex_list[0]` and `vertex_to_add`
+
+        vertex_temp = vertex_list[-1]
+        vertex_list[-1] = vertex_to_add
+        vertex_to_add = vertex_temp
     
+
     
-    # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
+    # now that `vertex_list[-1]` has been properlyt set, loop through facet_list to append the vertices connected, through a facet, to the last added vertex in vertex_list
     while len(facet_list) > 0:
 
         # append the next vertex: loop through facets
         found = False
+        
         for i in range(len(facet_list)):   
             
             if found:
@@ -346,9 +390,28 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
                     found = True
                     break
 
+    if closed == False:
+        # the domain is open -> need to add `vertex_to_add` to `vertex_list`. If the domain is closed, this is automatically added by the last iteration in the search above
+
+        vertex_list.insert(0, vertex_to_add)
+    
     # print(f'vertices:')
     # for v in vertex_list:
     #     print(f'\t{vertex_coordinates(v)}')
+
+    if closed == False:
+        expected_length_vertex_list = n_facets +1
+    else:
+        expected_length_vertex_list = n_facets
+
+
+
+    if len(vertex_list) != expected_length_vertex_list:
+
+        print(f'{col.Fore.RED}Error: len(vertex_list) != expected_length_vertex_list!! \nlen(vertex_list) = {len(vertex_list)} \t expected_length_vertex_list = {expected_length_vertex_list}{col.Style.RESET_ALL}')
+        sys.exit(1)
+
+
 
                    
 
@@ -2364,7 +2427,8 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
         read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
         output_directory, 
         [parameters['polygon_id']],
-        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+        outfile=os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'),
+        closed=True)
 
 
     clear_gmsh()
@@ -2685,7 +2749,8 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
             output_directory_mesh_0, 
             [parameters['shape_id']],
-            os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+            outfile=os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'),
+            closed=True)
 
 
         # B) mesh B (line)
@@ -4091,7 +4156,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
         read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
         output_directory_mesh_0, 
         [parameters['mesh_1_id']],
-        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
+        outfile=os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
 
     clear_gmsh()
 

@@ -125,7 +125,8 @@ msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
     output_directory, 
     [ellipse_id],
-    os.path.join(output_directory, 'boundary_points_id_' + str(ellipse_id) + '.csv'))
+    outfile=os.path.join(output_directory, 'boundary_points_id_' + str(ellipse_id) + '.csv'),
+    closed=True)
 
 
 msh.clear_gmsh()
