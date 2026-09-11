@@ -56,7 +56,8 @@ def print_solution(step):
         lmsh.mesh, 
         rarg.args.input_directory, 
         [rmsh.parameters['polygon_id']],
-        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + f'_n_{step}.csv'))
+        outfile=os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + f'_n_{step}.csv'),
+        closed=True)
 
     
     io.full_print(bgeo.calc_tangent_cg2(rmsh.lmsh.mesh), 't_n_' + str(step), \

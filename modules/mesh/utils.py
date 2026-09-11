@@ -293,9 +293,13 @@ Input values:
         - 'id': a list of tags of the boundary whose vertices will be computed
     * Optional: 
         - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
+        - 'closed' (False): if True, the domain corresponding to `id` is a closed one, and it is open if False
+
 
 '''
-def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
+def sorted_boundary_points(mesh, mesh_path, id, 
+                           outfile=None,
+                           closed=False):
     
     mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
 
@@ -386,17 +390,28 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
                     found = True
                     break
 
-    vertex_list.insert(0, vertex_to_add)
+    if closed == False:
+        # the domain is open -> need to add `vertex_to_add` to `vertex_list`. If the domain is closed, this is automatically added by the last iteration in the search above
+
+        vertex_list.insert(0, vertex_to_add)
     
     # print(f'vertices:')
     # for v in vertex_list:
     #     print(f'\t{vertex_coordinates(v)}')
 
-    
-    if len(vertex_list) != n_facets +1:
+    if closed == False:
+        expected_length_vertex_list = n_facets +1
+    else:
+        expected_length_vertex_list = n_facets
 
-        print(f'{col.Fore.RED}Error: len(vertex_list) != n_facets +1!! \nlen(vertex_list) = {len(vertex_list)} \t n_facets + 1 = {n_facets+1}{col.Style.RESET_ALL}')
+
+
+    if len(vertex_list) != expected_length_vertex_list:
+
+        print(f'{col.Fore.RED}Error: len(vertex_list) != expected_length_vertex_list!! \nlen(vertex_list) = {len(vertex_list)} \t expected_length_vertex_list = {expected_length_vertex_list}{col.Style.RESET_ALL}')
         sys.exit(1)
+
+
 
                    
 
@@ -2412,7 +2427,8 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
         read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
         output_directory, 
         [parameters['polygon_id']],
-        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+        outfile=os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'),
+        closed=True)
 
 
     clear_gmsh()
@@ -2733,7 +2749,8 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
             output_directory_mesh_0, 
             [parameters['shape_id']],
-            os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+            outfile=os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'),
+            closed=True)
 
 
         # B) mesh B (line)
@@ -4139,7 +4156,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
         read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
         output_directory_mesh_0, 
         [parameters['mesh_1_id']],
-        os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
+        outfile=os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
 
     clear_gmsh()
 
