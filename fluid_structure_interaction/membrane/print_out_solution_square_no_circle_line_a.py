@@ -130,7 +130,7 @@ def print_solution(t, step, dt):
     #5. write shape vertices 
 
     input_path = os.path.join(rarg.args.input_directory, f"mesh_0/boundary_points_id_{rmsh.parameters['mesh_1_id']}.csv")
-    output_path = os.path.join(rarg.args.output_directory, f"snapshots/csv/boundary_points_id_{rmsh.parameters['mesh_1_id']}_n_{step}.csv")
+    output_path = os.path.join(rarg.args.output_directory, f"snapshots/csv/boundary_points_id_{rmsh.parameters['mesh_1_id']}_n_{step + 1}.csv")
     os.system(f'cp {input_path} {output_path}')
 
 
