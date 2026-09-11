@@ -290,7 +290,7 @@ Input values:
     * Mandatory: 
         - 'mesh': the mesh
         - 'mesh_path': the path where 'triangle_mesh.xdmf' and 'line_mesh.xdmf' are located
-        - 'id': a list of tags tag of the boundary whose vertices will be computed
+        - 'id': a list of tags of the boundary whose vertices will be computed
     * Optional: 
         - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
 
@@ -308,20 +308,51 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
             facet_list.append(facet)
                 
     # print(f'\n\t facet list = {facet_list}')
+    n_facets = len(facet_list)
       
     #initialize list of vertices   
     vertex_list = []
     
     # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
-    vertex_list.append(next(vertices(facet_list[0])))
+    '''
+    `facet_list[0]` is the first facet considered, and I store its vertices into `first_facet_vertices`. I append to `vertex_list` the vertex #0 in this list, i.e., `first_facet_vertices[0]`. The other vertex `first_facet_vertices[1]`, is stored into `vertex_to_add`. 
+    Given that I delete from `facet_list` the facet `facet_list[0]`, this facet will not be considered in the search -> `vertex_to_add` will not be automatically added -> I will add it manyally at the end of the search. 
+    '''    
+    first_facet_vertices = list(vertices(facet_list[0]))
+    vertex_list.append(first_facet_vertices[0])
+    vertex_to_add = first_facet_vertices[1]
+
     del facet_list[0]
-    
+
+
+    # 
+    found = False
+
+    for i in range(len(facet_list)):   
+                
+        if found:
+            break
+                        
+        # loop through vertices in the facet under consideration
+        for v in vertices(facet_list[i]): 
+            
+            if v.index() == vertex_list[-1].index():
+            
+                found = True
+                break
+
+    if found == False: 
+        vertex_temp = vertex_list[-1]
+        vertex_list[-1] = vertex_to_add
+        vertex_to_add = vertex_temp
+    # 
     
     # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
     while len(facet_list) > 0:
 
         # append the next vertex: loop through facets
         found = False
+        
         for i in range(len(facet_list)):   
             
             if found:
@@ -346,9 +377,17 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
                     found = True
                     break
 
+    vertex_list.insert(0, vertex_to_add)
+    
     # print(f'vertices:')
     # for v in vertex_list:
     #     print(f'\t{vertex_coordinates(v)}')
+
+    
+    if len(vertex_list) != n_facets +1:
+
+        print(f'{col.Fore.RED}Error: len(vertex_list) != n_facets +1!! \nlen(vertex_list) = {len(vertex_list)} \t n_facets + 1 = {n_facets+1}{col.Style.RESET_ALL}')
+        sys.exit(1)
 
                    
 
