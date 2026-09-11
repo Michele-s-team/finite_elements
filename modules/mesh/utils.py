@@ -324,9 +324,9 @@ def sorted_boundary_points(mesh, mesh_path, id,
 
     I try to set the first entry in `vertex_list` to  first_facet_vertices[0] and `vertex_to_add` to `first_facet_vertices[1]`. If `first_facet_vertices[0]` is an endpoint, this would produce an inifinte loop in the search dynamics for connected vertices, because the only facet that contains `vertex_list[0]` is `facet_list[0]` and it has been deleted from `facet_list` by `del facet_list[0]`. Thus in this case, I swap `vertex_list[0]` and `vertex_to_add`, see below. 
     '''    
-    first_facet_vertices = list(vertices(facet_list[0]))
-    vertex_list.append(first_facet_vertices[0])
-    vertex_to_add = first_facet_vertices[1]
+
+    vertex_list.append(next(vertices(facet_list[0])))
+    vertex_to_add = [vertex for vertex in list(vertices(facet_list[0])) if vertex.index() != vertex_list[-1].index()][0]
 
     del facet_list[0]
 
