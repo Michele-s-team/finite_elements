@@ -199,7 +199,7 @@ phi_fl = Function(Q_phi_fl)
 var_tensor_sigma_fl= Function(Q_var_tensor_sigma_fl)
 
 # fields to store the BCs
-v_fl_bar_b = Function(Q_v_fl_bar)
+t_b = Function(Q_v_fl_bar)
 
 
 

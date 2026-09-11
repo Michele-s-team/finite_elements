@@ -69,7 +69,7 @@ def print_bcs(step):
             
         # 3. fluid problem
         fi.fieldnames_bcs[18]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.v_fl_bar_b), rmsh.ds_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar - fsp.t_b), rmsh.ds_mesh[0]['ds_b']):.{io.number_of_decimals}e}",
         fi.fieldnames_bcs[19]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_fl_bar), rmsh.ds_mesh[0]['ds_l']):.{io.number_of_decimals}e}",
         fi.fieldnames_bcs[20]: \

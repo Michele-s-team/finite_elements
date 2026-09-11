@@ -27,27 +27,28 @@ class sigma_fl_n_12_Expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+
+
 # expressions for boundary conditions
-class v_fl_bar_b_Expression(UserExpression):
+class t_b_Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = rpam.parameters['v_fl_bar_b_const']* 4.0 * 1.5 * x[0]/2 * (rmsh.parameters['L'] - x[0]/2) / (rmsh.parameters['L']**2)
+        values[1] = rpam.parameters['t_b_const']
 
     def value_shape(self):
         return (2,)
 
 
-fsp.v_fl_bar_b.interpolate(v_fl_bar_b_Expression(element=fsp.Q_v_fl_bar.ufl_element()))
+fsp.t_b.interpolate(t_b_Expression(element=fsp.Q_v_fl_bar.ufl_element()))
 
 # BCs
 # 1) for step 1
-bc_v_fl_bar_b = DirichletBC(fsp.Q_v_fl_bar, fsp.v_fl_bar_b, rmsh.mf[0], rmsh.parameters["line_b_id"])
 bc_v_fl_bar_l = DirichletBC(fsp.Q_v_fl_bar, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_l_id"])
 bc_v_fl_bar_0_r = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
 bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n, rmsh.mf[0], rmsh.parameters["mesh_1_id"])
 
-bc_v_fl_bar = [bc_v_fl_bar_b, bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
+bc_v_fl_bar = [bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
 
 # 2) for step 2
 bc_phi_fl_b = DirichletBC(fsp.Q_phi_fl, Constant(0), rmsh.mf[0], rmsh.parameters["line_b_id"])
@@ -64,10 +65,12 @@ F_v_fl_bar = ( \
                     + fsp.sigma_fl_n_32 * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.nu_v_fl_bar[alpha]).dx(beta) \
                     + rpam.parameters['eta_fluid'] * ela.G(fsp.u_n_1)[gamma, beta] * ((fsp.V_fl[alpha]).dx(gamma)) * ela.G(fsp.u_n_1)[delta, beta] * (fsp.nu_v_fl_bar[alpha]).dx(delta) \
             ) * ela.detF(fsp.u_n_1) * rmsh.dx_mesh[0] \
-            - (ela.G(fsp.u_n_1)[beta, alpha] * (bgeo.facet_normal[0])[beta] * fsp.sigma_fl_n_32 * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds'] \
+            - (ela.G(fsp.u_n_1)[beta, alpha] * (bgeo.facet_normal[0])[beta] * fsp.sigma_fl_n_32 * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_lr'] \
+            - (ela.G(fsp.u_n_1)[beta, alpha] * (bgeo.facet_normal[0])[beta] * fsp.sigma_fl_n_32 * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_t'] \
+            - fsp.t_b[alpha] * fsp.nu_v_fl_bar[alpha] * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_b'] + \
             - ( \
                    rpam.parameters['eta_fluid'] * ela.G(fsp.u_n_1)[delta, beta] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[gamma, beta] * (fsp.V_fl[alpha].dx(gamma)) * fsp.nu_v_fl_bar[alpha] * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_l'] + \
-                   rpam.parameters['eta_fluid'] * ela.G(fsp.u_n_1)[delta, beta] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[gamma, beta] * (fsp.V_fl[alpha].dx(gamma)) * fsp.nu_v_fl_bar[alpha] * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_tb'] + \
+                   rpam.parameters['eta_fluid'] * ela.G(fsp.u_n_1)[delta, beta] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[gamma, beta] * (fsp.V_fl[alpha].dx(gamma)) * fsp.nu_v_fl_bar[alpha] * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_t'] + \
                 #natural BC imposed here
                    rpam.parameters['eta_fluid'] * (bgeo.facet_normal[0])[delta] * (
                                                                                 ela.G(fsp.u_n_1)[delta, 0] * ela.G(fsp.u_n_1)[gamma, 0] * (fsp.V_fl[0].dx(gamma)) * fsp.nu_v_fl_bar[0] + \
