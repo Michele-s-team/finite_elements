@@ -316,7 +316,9 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
     # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
     '''
     `facet_list[0]` is the first facet considered, and I store its vertices into `first_facet_vertices`. I append to `vertex_list` the vertex #0 in this list, i.e., `first_facet_vertices[0]`. The other vertex `first_facet_vertices[1]`, is stored into `vertex_to_add`. 
-    Given that I delete from `facet_list` the facet `facet_list[0]`, this facet will not be considered in the search -> `vertex_to_add` will not be automatically added -> I will add it manyally at the end of the search. 
+    Given that I delete from `facet_list` the facet `facet_list[0]`, this facet will not be considered in the search -> `vertex_to_add` will not be automatically added -> I will add it manyally at the end of the search.
+
+    I try to set the first entry in `vertex_list` to  first_facet_vertices[0] and `vertex_to_add` to `first_facet_vertices[1]`. If `first_facet_vertices[0]` is an endpoint, this would produce an inifinte loop in the search dynamics for connected vertices, because the only facet that contains `vertex_list[0]` is `facet_list[0]` and it has been deleted from `facet_list` by `del facet_list[0]`. Thus in this case, I swap `vertex_list[0]` and `vertex_to_add`, see below. 
     '''    
     first_facet_vertices = list(vertices(facet_list[0]))
     vertex_list.append(first_facet_vertices[0])
@@ -325,29 +327,36 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
     del facet_list[0]
 
 
-    # 
+    '''
+    check whether there is one edge in `facet_list` that contains `vertex_list[-1]`
+    '''
     found = False
 
-    for i in range(len(facet_list)):   
+    for i in range(len(facet_list)):
+        # run through all facets   
                 
         if found:
             break
                         
-        # loop through vertices in the facet under consideration
         for v in vertices(facet_list[i]): 
+            # loop through vertices of the facet under consideration
             
             if v.index() == vertex_list[-1].index():
+                # if one of the vertices coincides with `vertex_list[-1]`, break and set `found = True`
             
                 found = True
                 break
 
-    if found == False: 
+    if found == False:
+        # no edge in `facet_list` contains `vertex_list[-1]` -> swap `vertex_list[0]` and `vertex_to_add`
+
         vertex_temp = vertex_list[-1]
         vertex_list[-1] = vertex_to_add
         vertex_to_add = vertex_temp
-    # 
     
-    # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
+
+    
+    # now that `vertex_list[-1]` has been properlyt set, loop through facet_list to append the vertices connected, through a facet, to the last added vertex in vertex_list
     while len(facet_list) > 0:
 
         # append the next vertex: loop through facets
