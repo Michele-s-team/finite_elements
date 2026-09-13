@@ -309,13 +309,13 @@ for n in range(rpam.parameters["num_steps"]):
         # set u_a(y') =  u_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_1_old, u_a, u_n_old)
 
-        # sign
-
-
         # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_old, u_b, u_n_old)
-             
+
+
         fsp.u_n_1.assign(u_a - u_b)
+
+
 
 
         # set u_a(y') =  u_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
@@ -323,6 +323,8 @@ for n in range(rpam.parameters["num_steps"]):
 
         # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_old, u_b, u_n_old)
+
+        # sign
 
         fsp.u_n_2.assign(u_a - u_b)
 
