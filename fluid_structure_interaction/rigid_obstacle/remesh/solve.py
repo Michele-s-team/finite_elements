@@ -335,9 +335,6 @@ for n in range(rpam.parameters["num_steps"]):
         # set fsp.u_dot_n_1(y') =  u_dot_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_1_old, fsp.u_dot_n_1, u_n_old)
 
-        # sign
-
-
         # set fsp.u_dot_n_2(y') =  u_dot_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_dot_n_2_old, fsp.u_dot_n_2, u_n_old)
 
@@ -365,6 +362,9 @@ for n in range(rpam.parameters["num_steps"]):
     # 1. update theta and omega
     fsp.theta_n_1 = fsp.theta_n
     fsp.omega_n_1 = fsp.omega_n
+
+    # sign
+
 
     # 2. update mesh fields
     fsp.u_n_2.assign(fsp.u_n_1)
