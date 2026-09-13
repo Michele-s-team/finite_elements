@@ -292,14 +292,10 @@ for n in range(rpam.parameters["num_steps"]):
         To obtain the transferred value of `phi`, we transfer sigma_n_32 and sigma_n_12 separately, and then take the difference. 
         '''
 
+
+        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
+        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
         # sign
-
-
-        # set fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12_old^{-1}(y')), where phi_n_12_old(y) = y + u_n_12_old(y)
-        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
-
-        # set fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32_old^{-1}(y')), where phi_n_32_old(y) = y + u_n_32_old(y)
-        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(phi_old, fsp.phi, u_n_old)
