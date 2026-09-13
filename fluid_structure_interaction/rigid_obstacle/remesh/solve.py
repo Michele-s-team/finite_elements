@@ -215,12 +215,6 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_2_old = Function(fsp.Q_u_dot)
 
 
-        # 1.2 define auxiliary fields for the transfer
-
-        u_n_12_old = Function(fsp.Q_u)
-        u_n_32_old = Function(fsp.Q_u)
-
-
 
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
@@ -242,11 +236,8 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_old.assign(fsp.u_dot_n)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
+        # sign
 
-        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - start
-        u_n_12_old.assign((fsp.u_n + fsp.u_n_1)/2.0)
-        u_n_32_old.assign((fsp.u_n_1 + fsp.u_n_2)/2.0)
-        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - end
 
 
         #2. set the new rotation angle of the polygon for the reference configuration 
@@ -350,7 +341,7 @@ for n in range(rpam.parameters["num_steps"]):
         del phi_old
         del u_n_old, u_n_1_old, u_n_2_old
         del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
-        del u_a, u_b, u_n_12_old, u_n_32_old
+        del u_a, u_b
 
         gc.collect()
 
