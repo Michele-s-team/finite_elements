@@ -282,10 +282,10 @@ for n in range(rpam.parameters["num_steps"]):
         # set fsp.v_n_2(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
-        # sign
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
+        # sign
 
         # set fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12_old^{-1}(y')), where phi_n_12_old(y) = y + u_n_12_old(y)
         msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
