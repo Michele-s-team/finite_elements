@@ -298,7 +298,6 @@ for n in range(rpam.parameters["num_steps"]):
 
         fsp.phi.assign(fsp.sigma_n_32 - fsp.sigma_n_12)
 
-        # sign
 
 
         # 6.1.2 transfer mesh fields
@@ -309,6 +308,9 @@ for n in range(rpam.parameters["num_steps"]):
 
         # set u_a(y') =  u_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_1_old, u_a, u_n_old)
+
+        # sign
+
 
         # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_old, u_b, u_n_old)
