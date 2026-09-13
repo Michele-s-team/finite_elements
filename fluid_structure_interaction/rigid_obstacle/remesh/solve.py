@@ -204,8 +204,6 @@ for n in range(rpam.parameters["num_steps"]):
         sigma_n_12_old = Function(fsp.Q_phi)
         sigma_n_32_old = Function(fsp.Q_phi)
 
-        phi_old = Function(fsp.Q_phi)
-
         u_n_old = Function(fsp.Q_u)
         u_n_1_old = Function(fsp.Q_u)
         u_n_2_old = Function(fsp.Q_u)
@@ -227,7 +225,6 @@ for n in range(rpam.parameters["num_steps"]):
         sigma_n_12_old.assign(fsp.sigma_n_12)
         sigma_n_32_old.assign(fsp.sigma_n_32)
 
-        phi_old.assign(fsp.phi)
 
         u_n_old.assign(fsp.u_n)
         u_n_1_old.assign(fsp.u_n_1)
@@ -345,7 +342,6 @@ for n in range(rpam.parameters["num_steps"]):
         del v_n_old, v_n_1_old, v_n_2_old
         del v__old
         del sigma_n_12_old, sigma_n_32_old
-        del phi_old
         del u_n_old, u_n_1_old, u_n_2_old
         del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
         del u_a, u_b
