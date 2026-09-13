@@ -95,7 +95,6 @@ additional_metadata={'phi': theta_ref})
 
 
 import function_spaces as fsp
-import print_out_solution as pr_sol
 
 #set initial profiles and values
 fsp.theta_n = rpam.parameters["theta_0"]
@@ -119,6 +118,8 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_da = importlib.import_module(swi.prout_da)
+pr_sol = importlib.import_module(swi.prout_sol)
+
 
 importlib.reload(geo)
 importlib.reload(rmsh.lmsh)
@@ -236,7 +237,6 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_old.assign(fsp.u_dot_n)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
-        # sign
 
 
 
@@ -261,6 +261,8 @@ for n in range(rpam.parameters["num_steps"]):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
+        pr_sol = importlib.reload(pr_sol)
+        # sign
 
         # 5.1 define auxiliary fields on the new mesh, needed for the transfer
         u_a = Function(fsp.Q_u)

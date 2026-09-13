@@ -4,8 +4,6 @@ Only some fields are printed.
 '''
 
 from fenics import *
-
-import csv
 import importlib
 import os
 import sys
