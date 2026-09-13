@@ -363,7 +363,6 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.theta_n_1 = fsp.theta_n
     fsp.omega_n_1 = fsp.omega_n
 
-    # sign
 
 
     # 2. update mesh fields
@@ -377,7 +376,9 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
-    fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
+    fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( fsp.phi, fsp.Q_phi ) )
+    fsp.sigma_n_32.assign( fsp.sigma_n_12 )
 
     if step % rpam.parameters['print_out_stride'] == 0:
         
