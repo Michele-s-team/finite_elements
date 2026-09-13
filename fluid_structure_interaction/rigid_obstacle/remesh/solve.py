@@ -177,6 +177,8 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
+    # write into sigma_n_12
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
 
