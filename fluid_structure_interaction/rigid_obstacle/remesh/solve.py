@@ -324,11 +324,9 @@ for n in range(rpam.parameters["num_steps"]):
         # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_old, u_b, u_n_old)
 
-        # sign
-
         fsp.u_n_2.assign(u_a - u_b)
 
-
+        # sign
 
         # 6.1.2.2 transfer u_dot
 
