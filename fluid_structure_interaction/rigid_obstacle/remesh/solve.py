@@ -262,7 +262,6 @@ for n in range(rpam.parameters["num_steps"]):
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
         pr_sol = importlib.reload(pr_sol)
-        # sign
 
         # 5.1 define auxiliary fields on the new mesh, needed for the transfer
         u_a = Function(fsp.Q_u)
@@ -277,11 +276,13 @@ for n in range(rpam.parameters["num_steps"]):
         # set fsp.v_n(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
 
-        # set fsp.v_n_1(y') =  v_n_1_old(phi_n_1_old^{-1}(y')), where phi_n_1_old(y) = y + u_n_1_old(y)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_1_old)
+        # set fsp.v_n_1(y') =  v_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-        # set fsp.v_n_2(y') =  v_n_2_old(phi_n_2_old^{-1}(y')), where phi_n_2_old(y) = y + u_n_2_old(y)
-        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_2_old)
+        # set fsp.v_n_2(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
+
+        # sign
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
