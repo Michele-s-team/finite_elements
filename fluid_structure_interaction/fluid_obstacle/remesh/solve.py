@@ -779,7 +779,6 @@ for n in range(rpam.parameters['N']):
         fsp.U_n_12.assign(-(fsp.U_a - fsp.U_b)/2.0)
         # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
 
-        # sign
 
         # 7.4.1.2 transfer U_n_32
 
@@ -805,6 +804,7 @@ for n in range(rpam.parameters['N']):
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
 
+        # sign
 
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
         fu.transfer_1d_to_1d_curve(
