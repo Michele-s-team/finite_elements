@@ -579,7 +579,7 @@ for n in range(rpam.parameters['N']):
         sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
         sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
-        phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
+        _, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
         omega_disk_old.assign(omega_disk_output)
 
         # 1.2.2 square fluid
@@ -851,14 +851,14 @@ for n in range(rpam.parameters['N']):
         del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
         del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
-        del omega_disk_old
+        del omega_disk_old, omega_disk_output, nu_n_12_output, dpsi_n_12_output
 
         # 9.2 D
         del u_n_di_old, u_n_1_di_old, u_n_sq_old, u_n_1_sq_old
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old
 
         # 9.3 I
-        del U_n_12_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
+        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
 
         # 9.4 M
         del c_n_old
