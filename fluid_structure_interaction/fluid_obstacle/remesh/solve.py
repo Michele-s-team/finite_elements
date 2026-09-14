@@ -529,6 +529,7 @@ for n in range(rpam.parameters['N']):
         v_sq__old = Function(fsp.Q_v__square)
 
         sigma_sq_n_12_old = Function(fsp.Q_sigma_square)
+        sigma_sq_n_32_old = Function(fsp.Q_sigma_square)
 
         phi_sq_old = Function(fsp.Q_sigma_square)
 
@@ -850,7 +851,7 @@ for n in range(rpam.parameters['N']):
         # 9.1 disk and square fluid
         del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
-        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old
+        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
         del phi_disk_old, omega_disk_old
 
         # 9.2 D
