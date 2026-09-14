@@ -204,7 +204,6 @@ print(f'... done.')
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
-
 import function_spaces as fsp
 
 pr_bc = importlib.import_module(swi.prout_bc)
