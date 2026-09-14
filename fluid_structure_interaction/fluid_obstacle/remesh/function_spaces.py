@@ -355,6 +355,12 @@ u_n_sq_dot_bc_di = Function(Q_u_sq_dot)
 U_n_12 = Function(Q_U)
 U_n_32 = Function(Q_U)
 
+# 4.1.1 auxiliary fields needed for transfer at remesh
+
+U_a = Function(Q_U)
+U_b = Function(Q_U)
+
+
 nu_and_dpsi_n_12 = Function(Q_nu_and_dpsi)
 nu_n_12, dpsi_n_12 = split( nu_and_dpsi_n_12 )
 
