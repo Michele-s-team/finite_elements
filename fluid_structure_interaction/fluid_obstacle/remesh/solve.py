@@ -713,7 +713,7 @@ for n in range(rpam.parameters['N']):
         msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
 
         
-        fsp.phi_square.assign(fsp.sigma_sq_n_32 - fsp.sigma_sq_n_12)
+        fsp.phi_square.assign(fsp.sigma_square_n_32 - fsp.sigma_square_n_12)
 
 
         # 7.3 D
