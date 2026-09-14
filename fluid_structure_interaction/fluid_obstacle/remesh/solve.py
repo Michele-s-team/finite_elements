@@ -551,6 +551,7 @@ for n in range(rpam.parameters['N']):
         # 1.1.4 I
 
         U_n_12_old = Function(fsp.Q_U)
+        U_n_32_old = Function(fsp.Q_U)
 
         # ys_U_n_12_old = ys + fsp.U_n_12 (both addednds are intended as before remeshing)
         ys_U_n_12_old = Function(fsp.Q_U)
@@ -618,6 +619,7 @@ for n in range(rpam.parameters['N']):
         # 1.2.4 D
 
         U_n_12_old.assign(fsp.U_n_12)
+        U_n_32_old.assign(fsp.U_n_32)
 
         ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
 
@@ -758,7 +760,26 @@ for n in range(rpam.parameters['N']):
 
         # 7.4 I
 
-        # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
+        # 7.4.1 transfer U_n_12, U_n_32 
+
+        # 7.4.1.1 transfer U_n_12
+
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+        # after this call, fsp.U_a(x_1') = U_n_12_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(
+            U_n_12_old, fsp.U_a, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'), 
+            closed=True
+            )
+
+        # after this call, fsp.U_b(x_1') = U_n_32_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(
+            U_n_32_old, fsp.U_b, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'), 
+            closed=True
+            )
+
+        fsp.U_n_12_output.assign(-(fsp.U_a - fsp.U_b)/2.0)
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
+
         fsp.U_n_12.assign(Constant((0, 0)))
   
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
