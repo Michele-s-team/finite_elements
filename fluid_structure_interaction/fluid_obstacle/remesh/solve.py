@@ -699,7 +699,7 @@ for n in range(rpam.parameters['N']):
 
         # 7.2 fluid in square
         msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
-        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_1_sq_old)
+        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_sq_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
