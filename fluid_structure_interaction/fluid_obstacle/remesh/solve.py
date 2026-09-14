@@ -804,14 +804,13 @@ for n in range(rpam.parameters['N']):
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
 
-        # sign
 
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
         fu.transfer_1d_to_1d_curve(
             ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'),
             closed=True
             )
-      
+
         # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
@@ -844,7 +843,7 @@ for n in range(rpam.parameters['N']):
 
         pr_sol.print_remesh(step, mesh_quality)
 
-    
+
         #9 clean up
 
         # 9.1 disk and square fluid
@@ -856,7 +855,6 @@ for n in range(rpam.parameters['N']):
         # 9.2 D
         del u_n_di_old, u_n_1_di_old, u_n_sq_old, u_n_1_sq_old
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old
-        del u_a_di, u_b_di, u_a_sq, u_b_sq
 
         # 9.3 I
         del U_n_12_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
@@ -878,6 +876,7 @@ for n in range(rpam.parameters['N']):
     # 2) D
 
     # 2.1) disk
+
     fsp.u_n_2_di.assign(fsp.u_n_1_di)
     fsp.u_n_1_di.assign(fsp.u_n_di)
 
@@ -885,6 +884,7 @@ for n in range(rpam.parameters['N']):
     fsp.u_n_1_di_dot.assign(fsp.u_n_di_dot)
 
     # 2.2) square
+
     fsp.u_n_2_sq.assign(fsp.u_n_1_sq)
     fsp.u_n_1_sq.assign(fsp.u_n_sq)
 
@@ -893,8 +893,12 @@ for n in range(rpam.parameters['N']):
 
 
     # 3) disk fluid 
+
     fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
+
+    # sign
+
 
     fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 
