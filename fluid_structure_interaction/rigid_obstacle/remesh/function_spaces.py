@@ -1,4 +1,3 @@
-import dolfin
 from fenics import *
 
 import mesh.load as lmsh
@@ -42,12 +41,18 @@ v_n = Function(Q_v)
 v_n_1 = Function(Q_v)
 v_n_2 = Function(Q_v)
 v_ = Function(Q_v_)
+
+# fields needed to store the boundary conditions
+v__profile_l = Function(Q_v_)
+v__profile_ellipse = Function(Q_v_)
+
 # sigma^{n-1/2}
 sigma_n_12 = Function(Q_phi)
 # sigma^{n-3/2}
 sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
 sigma_stress_n = Function(Q_sigma_stress)
+
 u_n = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
 u_n_1 = Function(Q_u)

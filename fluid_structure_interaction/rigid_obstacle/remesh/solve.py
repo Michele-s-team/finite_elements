@@ -95,7 +95,6 @@ additional_metadata={'phi': theta_ref})
 
 
 import function_spaces as fsp
-import print_out_solution as pr_sol
 
 #set initial profiles and values
 fsp.theta_n = rpam.parameters["theta_0"]
@@ -119,6 +118,8 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 vp_mesh = importlib.import_module(swi.vp_mesh)
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_da = importlib.import_module(swi.prout_da)
+pr_sol = importlib.import_module(swi.prout_sol)
+
 
 importlib.reload(geo)
 importlib.reload(rmsh.lmsh)
@@ -174,11 +175,10 @@ for n in range(rpam.parameters["num_steps"]):
     # step 3.3: velocity step
     var_pr.solve_vp(vp_fluid.F_v_n, fsp.v_n, vp_fluid.bc_v_n, fsp.J_v_n)
 
-    # write into sigma_n_12
-    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
-
     print('... done.', flush=True)
 
+    # write into sigma_n_12
+    fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
 
@@ -204,8 +204,6 @@ for n in range(rpam.parameters["num_steps"]):
         sigma_n_12_old = Function(fsp.Q_phi)
         sigma_n_32_old = Function(fsp.Q_phi)
 
-        phi_old = Function(fsp.Q_phi)
-
         u_n_old = Function(fsp.Q_u)
         u_n_1_old = Function(fsp.Q_u)
         u_n_2_old = Function(fsp.Q_u)
@@ -213,12 +211,6 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_old = Function(fsp.Q_u_dot)
         u_dot_n_1_old = Function(fsp.Q_u_dot)
         u_dot_n_2_old = Function(fsp.Q_u_dot)
-
-
-        # 1.2 define auxiliary fields for the transfer
-
-        u_n_12_old = Function(fsp.Q_u)
-        u_n_32_old = Function(fsp.Q_u)
 
 
 
@@ -233,7 +225,6 @@ for n in range(rpam.parameters["num_steps"]):
         sigma_n_12_old.assign(fsp.sigma_n_12)
         sigma_n_32_old.assign(fsp.sigma_n_32)
 
-        phi_old.assign(fsp.phi)
 
         u_n_old.assign(fsp.u_n)
         u_n_1_old.assign(fsp.u_n_1)
@@ -243,10 +234,6 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
 
-        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - start
-        u_n_12_old.assign((fsp.u_n + fsp.u_n_1)/2.0)
-        u_n_32_old.assign((fsp.u_n_1 + fsp.u_n_2)/2.0)
-        # WARNING: THIS ASSUMES THAT A LINEAR INTERPOLATION IS VALID TO COMPOUTE u_n_12_old and u_n_32_old - end
 
 
         #2. set the new rotation angle of the polygon for the reference configuration 
@@ -270,6 +257,7 @@ for n in range(rpam.parameters["num_steps"]):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
         pr_da = importlib.reload(pr_da)
+        pr_sol = importlib.reload(pr_sol)
 
         # 5.1 define auxiliary fields on the new mesh, needed for the transfer
         u_a = Function(fsp.Q_u)
@@ -284,23 +272,28 @@ for n in range(rpam.parameters["num_steps"]):
         # set fsp.v_n(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(v_n_old, fsp.v_n, u_n_old)
 
-        # set fsp.v_n_1(y') =  v_n_1_old(phi_n_1_old^{-1}(y')), where phi_n_1_old(y) = y + u_n_1_old(y)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_1_old)
+        # set fsp.v_n_1(y') =  v_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-        # set fsp.v_n_2(y') =  v_n_2_old(phi_n_2_old^{-1}(y')), where phi_n_2_old(y) = y + u_n_2_old(y)
-        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_2_old)
+        # set fsp.v_n_2(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
+
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v__old, fsp.v_, u_n_old)
 
-        # set fsp.sigma_n_12(y') =  sigma_n_12_old(phi_n_12_old^{-1}(y')), where phi_n_12_old(y) = y + u_n_12_old(y)
-        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_12_old)
+        '''
+        phi = sigma_n_32 - sigma_n_12
+        
+        To obtain the transferred value of `phi`, we transfer sigma_n_32 and sigma_n_12 separately, and then take the difference. 
+        '''
 
-        # set fsp.sigma_n_32(y') =  sigma_n_32_old(phi_n_32_old^{-1}(y')), where phi_n_32_old(y) = y + u_n_32_old(y)
-        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_32_old)
 
-        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        msh.transfer(phi_old, fsp.phi, u_n_old)
+        msh.transfer(sigma_n_12_old, fsp.sigma_n_12, u_n_old)
+        msh.transfer(sigma_n_32_old, fsp.sigma_n_32, u_n_old)
+
+        fsp.phi.assign(fsp.sigma_n_32 - fsp.sigma_n_12)
+
 
 
         # 6.1.2 transfer mesh fields
@@ -314,8 +307,11 @@ for n in range(rpam.parameters["num_steps"]):
 
         # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_old, u_b, u_n_old)
-             
+
+
         fsp.u_n_1.assign(u_a - u_b)
+
+
 
 
         # set u_a(y') =  u_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
@@ -325,7 +321,6 @@ for n in range(rpam.parameters["num_steps"]):
         msh.transfer(u_n_old, u_b, u_n_old)
 
         fsp.u_n_2.assign(u_a - u_b)
-
 
 
         # 6.1.2.2 transfer u_dot
@@ -347,10 +342,9 @@ for n in range(rpam.parameters["num_steps"]):
         del v_n_old, v_n_1_old, v_n_2_old
         del v__old
         del sigma_n_12_old, sigma_n_32_old
-        del phi_old
         del u_n_old, u_n_1_old, u_n_2_old
         del u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old
-        del u_a, u_b, u_n_12_old, u_n_32_old
+        del u_a, u_b
 
         gc.collect()
 
@@ -364,6 +358,8 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.theta_n_1 = fsp.theta_n
     fsp.omega_n_1 = fsp.omega_n
 
+
+
     # 2. update mesh fields
     fsp.u_n_2.assign(fsp.u_n_1)
     fsp.u_n_1.assign(fsp.u_n)
@@ -375,7 +371,9 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.v_n_2.assign(fsp.v_n_1)
     fsp.v_n_1.assign(fsp.v_n)
 
-    fsp.sigma_n_32.assign(fsp.sigma_n_12)
+
+    fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( fsp.phi, fsp.Q_phi ) )
+    fsp.sigma_n_32.assign( fsp.sigma_n_12 )
 
     if step % rpam.parameters['print_out_stride'] == 0:
         
