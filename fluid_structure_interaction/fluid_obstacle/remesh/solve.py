@@ -755,7 +755,6 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_sq_dot_old, fsp.u_n_sq_dot, u_n_sq_old)
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
 
-        # sign
 
 
         # 7.4 I
@@ -780,7 +779,8 @@ for n in range(rpam.parameters['N']):
         fsp.U_n_12_output.assign(-(fsp.U_a - fsp.U_b)/2.0)
         # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
 
-        fsp.U_n_12.assign(Constant((0, 0)))
+        # sign
+
   
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
