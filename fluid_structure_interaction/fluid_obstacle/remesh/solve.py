@@ -673,15 +673,24 @@ for n in range(rpam.parameters['N']):
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
 
-        # sign
 
-        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_12_di_old)
+        '''
+        phi_di = sigma_di_n_32 - sigma_di_n_12
+        
+        To obtain the transferred value of `phi_di`, we transfer sigma_di_n_32 and sigma_di_n_12 separately, and then take the difference. 
+        '''
 
-        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        msh.transfer(phi_disk_old, fsp.phi_disk_aux, u_n_di_old)
+        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_di_old)
+        msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_di_old)
+
+        fsp.phi_disk_aux.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
+
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(omega_disk_old, fsp.omega_disk_aux, u_n_di_old)
+
         fsp.assigner_phi_omega_disk.assign(fsp.phi_omega_disk, [fsp.phi_disk_aux, fsp.omega_disk_aux])
+
+
 
 
         # 7.2 fluid in square
@@ -691,12 +700,17 @@ for n in range(rpam.parameters['N']):
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
 
-
-        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_12_sq_old)
+        '''
+        phi_sq = sigma_sq_n_32 - sigma_sq_n_12
+        
+        To obtain the transferred value of `phi_sq`, we transfer sigma_sq_n_32 and sigma_sq_n_12 separately, and then take the difference. 
+        '''
+        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_sq_old)
+        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
 
         
-        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        msh.transfer(phi_sq_old, fsp.phi_square, u_n_sq_old)
+        fsp.phi_sq.assign(fsp.sigma_sq_n_32 - fsp.sigma_sq_n_12)
+
 
         # 7.3 D
 
@@ -707,10 +721,13 @@ for n in range(rpam.parameters['N']):
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
 
-        msh.transfer(u_n_1_di_old, u_a_di, u_n_di_old)
-        msh.transfer(u_n_di_old, u_b_di, u_n_di_old)
+        msh.transfer(u_n_1_di_old, fsp.u_a_di, u_n_di_old)
+        msh.transfer(u_n_di_old, fsp.u_b_di, u_n_di_old)
 
-        fsp.u_n_1_di.assign(u_a_di - u_b_di)
+        fsp.u_n_1_di.assign(fsp.u_a_di - fsp.u_b_di)
+
+        # sign
+
 
         # 7.3.1.2 transfer u_dot
 
