@@ -776,10 +776,13 @@ for n in range(rpam.parameters['N']):
             closed=True
             )
 
-        fsp.U_n_12_output.assign(-(fsp.U_a - fsp.U_b)/2.0)
+        fsp.U_n_12.assign(-(fsp.U_a - fsp.U_b)/2.0)
         # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
 
         # sign
+
+        # 7.4.1.2 transfer U_n_32
+
 
   
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
