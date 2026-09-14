@@ -498,9 +498,9 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    if mesh_quality < rpam.parameters['mesh_quality_threshold']:
+    # if mesh_quality < rpam.parameters['mesh_quality_threshold']:
     # if False:
-    # if step % 5 == True:
+    if step % 5 == True:
         # mesh quality got below the threshold -> remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
@@ -516,6 +516,7 @@ for n in range(rpam.parameters['N']):
         v_di__old = Function(fsp.Q_v__disk)
 
         sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
+        sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
 
         phi_disk_old = Function(fsp.Q_phi_disk)
         omega_disk_old = Function(fsp.Q_omega_disk)
@@ -849,7 +850,7 @@ for n in range(rpam.parameters['N']):
         # 9.1 disk and square fluid
         del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
-        del sigma_di_n_12_old, sigma_sq_n_12_old
+        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old
         del phi_disk_old, omega_disk_old
 
         # 9.2 D
