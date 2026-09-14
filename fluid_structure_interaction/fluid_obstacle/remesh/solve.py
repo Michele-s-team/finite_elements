@@ -703,15 +703,15 @@ for n in range(rpam.parameters['N']):
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
 
         '''
-        phi_sq = sigma_sq_n_32 - sigma_sq_n_12
+        phi_square = sigma_sq_n_32 - sigma_sq_n_12
         
-        To obtain the transferred value of `phi_sq`, we transfer sigma_sq_n_32 and sigma_sq_n_12 separately, and then take the difference. 
+        To obtain the transferred value of `phi_square`, we transfer sigma_sq_n_32 and sigma_sq_n_12 separately, and then take the difference. 
         '''
         msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_sq_old)
         msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
 
         
-        fsp.phi_sq.assign(fsp.sigma_sq_n_32 - fsp.sigma_sq_n_12)
+        fsp.phi_square.assign(fsp.sigma_sq_n_32 - fsp.sigma_sq_n_12)
 
 
         # 7.3 D
@@ -897,9 +897,7 @@ for n in range(rpam.parameters['N']):
     fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
 
-    # sign
-
-
+    fsp.sigma_disk_n_12.assign( fsp.sigma_disk_n_32 - fsp.phi_disk_aux )
     fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 
 
@@ -907,6 +905,7 @@ for n in range(rpam.parameters['N']):
     fsp.v_square_n_2.assign(fsp.v_square_n_1)
     fsp.v_square_n_1.assign(fsp.v_square_n)
 
+    fsp.sigma_square_n_12.assign( fsp.sigma_square_n_32 - fsp.phi_square )
     fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
 
     # 5) M
