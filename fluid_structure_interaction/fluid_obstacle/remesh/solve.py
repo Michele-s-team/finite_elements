@@ -505,7 +505,7 @@ for n in range(rpam.parameters['N']):
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
         
-        # 1.transfer fields
+        # 1. transfer fields
 
         # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
@@ -548,12 +548,6 @@ for n in range(rpam.parameters['N']):
         u_n_sq_dot_old = Function(fsp.Q_u_sq_dot)
         u_n_1_sq_dot_old = Function(fsp.Q_u_sq_dot)
 
-        # 1.1.3.3 auxiliary fields needed for the transfer
-
-        u_n_12_di_old = Function(fsp.Q_u_di)
-        u_n_12_sq_old = Function(fsp.Q_u_sq)
-
-
         # 1.1.4 I
 
         U_n_12_old = Function(fsp.Q_U)
@@ -582,6 +576,7 @@ for n in range(rpam.parameters['N']):
         v_di__old.assign(fsp.v_disk__)
 
         sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
+        sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
         phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
         phi_disk_old.assign(phi_disk_output)
@@ -595,6 +590,7 @@ for n in range(rpam.parameters['N']):
         v_sq__old.assign(fsp.v_square__)
 
         sigma_sq_n_12_old.assign(fsp.sigma_square_n_12)
+        sigma_sq_n_32_old.assign(fsp.sigma_square_n_32)
 
         phi_sq_old.assign(fsp.phi_square)
         
@@ -608,7 +604,6 @@ for n in range(rpam.parameters['N']):
         u_n_di_dot_old.assign(fsp.u_n_di_dot)
         u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
 
-        u_n_12_di_old.assign((fsp.u_n_di + fsp.u_n_1_di)/2.0)
 
 
         # 1.2.3.2 square
@@ -618,8 +613,6 @@ for n in range(rpam.parameters['N']):
 
         u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
         u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
-
-        u_n_12_sq_old.assign((fsp.u_n_sq + fsp.u_n_1_sq)/2.0)
 
 
         # 1.2.4 D
@@ -670,22 +663,17 @@ for n in range(rpam.parameters['N']):
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
 
-        # 5.1 auxiliary fields needed to transafer fields
-
-        u_a_di = Function(fsp.Q_u_di)
-        u_b_di = Function(fsp.Q_u_di)
-
-        u_a_sq = Function(fsp.Q_u_sq)
-        u_b_sq = Function(fsp.Q_u_sq)
-
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 7.1 fluid in disk
         msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
-        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_1_di_old)
+        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_di_old)
+
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
+
+        # sign
 
         msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_12_di_old)
 

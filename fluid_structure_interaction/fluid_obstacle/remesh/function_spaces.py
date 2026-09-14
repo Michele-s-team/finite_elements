@@ -299,15 +299,24 @@ u_n_di_dot = Function(Q_u_di_dot)
 u_n_1_di_dot = Function(Q_u_di_dot)
 u_n_2_di_dot = Function(Q_u_di_dot)
 
-# 3.1.3 test functions
+# 3.1.3 auxiliary fields needed to transafer fields
+
+u_a_di = Function(fsp.Q_u_di)
+u_b_di = Function(fsp.Q_u_di)
+
+u_a_sq = Function(fsp.Q_u_sq)
+u_b_sq = Function(fsp.Q_u_sq)
+
+
+# 3.1.4 test functions
 nu_u_n_di = TestFunction(Q_u_di)
 nu_u_n_di_dot = TestFunction(Q_u_di_dot)
 
-# 3.1.4 jacobians
+# 3.1.5 jacobians
 J_u_di = TrialFunction(Q_u_di)
 J_u_dot_di = TrialFunction(Q_u_di_dot)
 
-# 3.1.5 other fields
+# 3.1.6 other fields
 n_n_12_1_on_0_0 = Function(Q_u_di)
 # this field stores the values of v_square_n_1 (defined on sub_mes[0][1]) on sub_mes[0][0]
 v_square_n_1_0_1_on_0_0 = Function(Q_u_di_dot)
