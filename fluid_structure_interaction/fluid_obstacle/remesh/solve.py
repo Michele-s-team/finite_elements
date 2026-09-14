@@ -735,7 +735,6 @@ for n in range(rpam.parameters['N']):
 
         # 7.3.2.1 transfer u 
 
-        # sign
 
 
 
@@ -743,11 +742,12 @@ for n in range(rpam.parameters['N']):
         fsp.u_n_sq.assign(Constant((0, 0)))
 
 
-        msh.transfer(u_n_1_sq_old, u_a_sq, u_n_sq_old)
-        msh.transfer(u_n_sq_old, u_b_sq, u_n_sq_old)
+        msh.transfer(u_n_1_sq_old, fsp.u_a_sq, u_n_sq_old)
+        msh.transfer(u_n_sq_old, fsp.u_b_sq, u_n_sq_old)
 
-        fsp.u_n_1_sq.assign(u_a_sq - u_b_sq)
+        fsp.u_n_1_sq.assign(fsp.u_a_sq - fsp.u_b_sq)
 
+        # sign
 
         # 7.3.2.1 transfer u_dot
 
