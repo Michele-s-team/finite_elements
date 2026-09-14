@@ -301,11 +301,11 @@ u_n_2_di_dot = Function(Q_u_di_dot)
 
 # 3.1.3 auxiliary fields needed to transafer fields
 
-u_a_di = Function(fsp.Q_u_di)
-u_b_di = Function(fsp.Q_u_di)
+u_a_di = Function(Q_u_di)
+u_b_di = Function(Q_u_di)
 
-u_a_sq = Function(fsp.Q_u_sq)
-u_b_sq = Function(fsp.Q_u_sq)
+u_a_sq = Function(Q_u_sq)
+u_b_sq = Function(Q_u_sq)
 
 
 # 3.1.4 test functions
