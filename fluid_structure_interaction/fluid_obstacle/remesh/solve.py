@@ -195,7 +195,6 @@ print(f'... done.')
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
-import print_out_solution as pr_sol
 rmsh = importlib.import_module(swi.rmsh)
 
 vp_I = importlib.import_module(swi.vp_I)
@@ -204,6 +203,7 @@ vp_fl_di = importlib.import_module(swi.vp_fluid_di)
 vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 vp_M = importlib.import_module(swi.vp_M)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_sol = importlib.import_module(swi.prout_sol)
 
 
 #0 define classes for initial profiles
@@ -444,8 +444,8 @@ for n in range(rpam.parameters['N']):
     var_pr.solve_vp(vp_fl_di.F_v_disk_n, fsp.v_disk_n, vp_fl_di.bc_v_disk_n, fsp.J_v_disk, parameters=params)
 
     # write into sigma_disk_n_12
-    phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
-    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(phi_disk_output, fsp.Q_sigma_disk))
+    fsp.phi_disk_aux, fsp.omega_disk_aux = fsp.phi_omega_disk.split(deepcopy=True)
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(fsp.phi_disk_aux, fsp.Q_sigma_disk))
 
     print('... done.', flush=True)
 
@@ -518,7 +518,6 @@ for n in range(rpam.parameters['N']):
         sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
         sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
 
-        phi_disk_old = Function(fsp.Q_phi_disk)
         omega_disk_old = Function(fsp.Q_omega_disk)
 
 
@@ -531,7 +530,6 @@ for n in range(rpam.parameters['N']):
         sigma_sq_n_12_old = Function(fsp.Q_sigma_square)
         sigma_sq_n_32_old = Function(fsp.Q_sigma_square)
 
-        phi_sq_old = Function(fsp.Q_sigma_square)
 
 
         # 1.1.3 D
@@ -582,7 +580,6 @@ for n in range(rpam.parameters['N']):
         sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
         phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
-        phi_disk_old.assign(phi_disk_output)
         omega_disk_old.assign(omega_disk_output)
 
         # 1.2.2 square fluid
@@ -595,7 +592,6 @@ for n in range(rpam.parameters['N']):
         sigma_sq_n_12_old.assign(fsp.sigma_square_n_12)
         sigma_sq_n_32_old.assign(fsp.sigma_square_n_32)
 
-        phi_sq_old.assign(fsp.phi_square)
         
         # 1.2.3 D
 
@@ -660,12 +656,15 @@ for n in range(rpam.parameters['N']):
 
 
         #5. reload modules so everything is updated according to the mesh change
+
+        # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
         importlib.reload(bgeo)
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
+        pr_sol = importlib.reload(pr_sol)
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
@@ -852,7 +851,7 @@ for n in range(rpam.parameters['N']):
         del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
         del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
-        del phi_disk_old, omega_disk_old
+        del omega_disk_old
 
         # 9.2 D
         del u_n_di_old, u_n_1_di_old, u_n_sq_old, u_n_1_sq_old
