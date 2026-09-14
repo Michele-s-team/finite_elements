@@ -687,7 +687,7 @@ for n in range(rpam.parameters['N']):
         msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_di_old)
         msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_di_old)
 
-        fsp.phi_disk_aux.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
+        fsp.phi_disk_aux.assign(fsp.sigma_disk_n_32 - fsp.sigma_disk_n_12)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(omega_disk_old, fsp.omega_disk_aux, u_n_di_old)
