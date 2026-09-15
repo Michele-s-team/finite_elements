@@ -390,7 +390,6 @@ for n in range(rpam.parameters['num_steps']):
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
         v_n_old = Function(fsp.Q_v_n)
-        v_n_1_old = Function(fsp.Q_v_n)
         
         sigma_n_old = Function(fsp.Q_sigma_n)
 
@@ -412,7 +411,6 @@ for n in range(rpam.parameters['num_steps']):
 
         # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
-        v_n_1_old.assign(fsp.v_n_1)
 
         sigma_n_old.assign(sigma_n_dummy)
 
@@ -429,11 +427,10 @@ for n in range(rpam.parameters['num_steps']):
 
 
         '''         
-        4.1.3 Fields v_n_old, v_n_1_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, v_n_1_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
+        4.1.3 Fields v_n_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
         '''
 
         msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
-        msh.overwrite_interface_dofs(v_n_1_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
         msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
@@ -501,7 +498,6 @@ for n in range(rpam.parameters['num_steps']):
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
         msh.transfer(v_n_old, fsp.v_input, u_0_old)
-        msh.transfer(v_n_1_old, fsp.v_n_1, u_0_old)
 
         msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
 
@@ -571,7 +567,7 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4.3 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
+        del v_n_old, sigma_n_old, u_n_old, u_dot_n_old, u_dot_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
