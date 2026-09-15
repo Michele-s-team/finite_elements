@@ -498,9 +498,10 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    # if mesh_quality < rpam.parameters['mesh_quality_threshold']:
+    if mesh_quality < rpam.parameters['mesh_quality_threshold']:
     # if False:
-    if step % 5 == True:
+    # if step % 5 == True:
+
         # mesh quality got below the threshold -> remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
