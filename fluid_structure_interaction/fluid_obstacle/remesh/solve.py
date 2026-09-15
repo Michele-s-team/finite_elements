@@ -195,7 +195,6 @@ print(f'... done.')
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 import function_spaces as fsp
-import print_out_solution as pr_sol
 rmsh = importlib.import_module(swi.rmsh)
 
 vp_I = importlib.import_module(swi.vp_I)
@@ -204,6 +203,7 @@ vp_fl_di = importlib.import_module(swi.vp_fluid_di)
 vp_fl_sq = importlib.import_module(swi.vp_fluid_sq)
 vp_M = importlib.import_module(swi.vp_M)
 pr_bc = importlib.import_module(swi.prout_bc)
+pr_sol = importlib.import_module(swi.prout_sol)
 
 
 #0 define classes for initial profiles
@@ -444,8 +444,8 @@ for n in range(rpam.parameters['N']):
     var_pr.solve_vp(vp_fl_di.F_v_disk_n, fsp.v_disk_n, vp_fl_di.bc_v_disk_n, fsp.J_v_disk, parameters=params)
 
     # write into sigma_disk_n_12
-    phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
-    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(phi_disk_output, fsp.Q_sigma_disk))
+    fsp.phi_disk_aux, fsp.omega_disk_aux = fsp.phi_omega_disk.split(deepcopy=True)
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(fsp.phi_disk_aux, fsp.Q_sigma_disk))
 
     print('... done.', flush=True)
 
@@ -501,11 +501,12 @@ for n in range(rpam.parameters['N']):
     if mesh_quality < rpam.parameters['mesh_quality_threshold']:
     # if False:
     # if step % 5 == True:
+
         # mesh quality got below the threshold -> remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
         
-        # 1.transfer fields
+        # 1. transfer fields
 
         # 1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
@@ -516,8 +517,8 @@ for n in range(rpam.parameters['N']):
         v_di__old = Function(fsp.Q_v__disk)
 
         sigma_di_n_12_old = Function(fsp.Q_sigma_disk)
+        sigma_di_n_32_old = Function(fsp.Q_sigma_disk)
 
-        phi_disk_old = Function(fsp.Q_phi_disk)
         omega_disk_old = Function(fsp.Q_omega_disk)
 
 
@@ -528,8 +529,8 @@ for n in range(rpam.parameters['N']):
         v_sq__old = Function(fsp.Q_v__square)
 
         sigma_sq_n_12_old = Function(fsp.Q_sigma_square)
+        sigma_sq_n_32_old = Function(fsp.Q_sigma_square)
 
-        phi_sq_old = Function(fsp.Q_sigma_square)
 
 
         # 1.1.3 D
@@ -548,15 +549,10 @@ for n in range(rpam.parameters['N']):
         u_n_sq_dot_old = Function(fsp.Q_u_sq_dot)
         u_n_1_sq_dot_old = Function(fsp.Q_u_sq_dot)
 
-        # 1.1.3.3 auxiliary fields needed for the transfer
-
-        u_n_12_di_old = Function(fsp.Q_u_di)
-        u_n_12_sq_old = Function(fsp.Q_u_sq)
-
-
         # 1.1.4 I
 
         U_n_12_old = Function(fsp.Q_U)
+        U_n_32_old = Function(fsp.Q_U)
 
         # ys_U_n_12_old = ys + fsp.U_n_12 (both addednds are intended as before remeshing)
         ys_U_n_12_old = Function(fsp.Q_U)
@@ -582,9 +578,9 @@ for n in range(rpam.parameters['N']):
         v_di__old.assign(fsp.v_disk__)
 
         sigma_di_n_12_old.assign(fsp.sigma_disk_n_12)
+        sigma_di_n_32_old.assign(fsp.sigma_disk_n_32)
 
-        phi_disk_output, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
-        phi_disk_old.assign(phi_disk_output)
+        _, omega_disk_output = fsp.phi_omega_disk.split(deepcopy=True)
         omega_disk_old.assign(omega_disk_output)
 
         # 1.2.2 square fluid
@@ -595,8 +591,8 @@ for n in range(rpam.parameters['N']):
         v_sq__old.assign(fsp.v_square__)
 
         sigma_sq_n_12_old.assign(fsp.sigma_square_n_12)
+        sigma_sq_n_32_old.assign(fsp.sigma_square_n_32)
 
-        phi_sq_old.assign(fsp.phi_square)
         
         # 1.2.3 D
 
@@ -608,7 +604,6 @@ for n in range(rpam.parameters['N']):
         u_n_di_dot_old.assign(fsp.u_n_di_dot)
         u_n_1_di_dot_old.assign(fsp.u_n_1_di_dot)
 
-        u_n_12_di_old.assign((fsp.u_n_di + fsp.u_n_1_di)/2.0)
 
 
         # 1.2.3.2 square
@@ -619,12 +614,11 @@ for n in range(rpam.parameters['N']):
         u_n_sq_dot_old.assign(fsp.u_n_sq_dot)
         u_n_1_sq_dot_old.assign(fsp.u_n_1_sq_dot)
 
-        u_n_12_sq_old.assign((fsp.u_n_sq + fsp.u_n_1_sq)/2.0)
-
 
         # 1.2.4 D
 
         U_n_12_old.assign(fsp.U_n_12)
+        U_n_32_old.assign(fsp.U_n_32)
 
         ys_U_n_12_old.assign(fsp.ys + fsp.U_n_12)
 
@@ -663,52 +657,64 @@ for n in range(rpam.parameters['N']):
 
 
         #5. reload modules so everything is updated according to the mesh change
+
+        # ----- WARNING : FROM THIS LINE ON, FIELDS RELATIVE TO THE OLD MESH SET UP WILL BE OVERWRITTEN -----
         importlib.reload(geo)
         importlib.reload(rmsh.lmsh)
         importlib.reload(bgeo)
         fsp = importlib.reload(fsp)
         rmsh = importlib.reload(rmsh)
         pr_bc = importlib.reload(pr_bc)
-
-        # 5.1 auxiliary fields needed to transafer fields
-
-        u_a_di = Function(fsp.Q_u_di)
-        u_b_di = Function(fsp.Q_u_di)
-
-        u_a_sq = Function(fsp.Q_u_sq)
-        u_b_sq = Function(fsp.Q_u_sq)
+        pr_sol = importlib.reload(pr_sol)
 
         #7. transfer the values stored in the _old fields to the fields defined on the new mesh
 
         # 7.1 fluid in disk
         msh.transfer(v_di_n_old, fsp.v_disk_n, u_n_di_old)
-        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_1_di_old)
+        msh.transfer(v_di_n_1_old, fsp.v_disk_n_1, u_n_di_old)
+
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_di__old, fsp.v_disk__, u_n_di_old)
 
-        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_12_di_old)
+
+        '''
+        phi_di = sigma_di_n_32 - sigma_di_n_12
+        
+        To obtain the transferred value of `phi_di`, we transfer sigma_di_n_32 and sigma_di_n_12 separately, and then take the difference. 
+        '''
+
+        msh.transfer(sigma_di_n_12_old, fsp.sigma_disk_n_12, u_n_di_old)
+        msh.transfer(sigma_di_n_32_old, fsp.sigma_disk_n_32, u_n_di_old)
+
+        fsp.phi_disk_aux.assign(project(fsp.sigma_disk_n_32 - fsp.sigma_disk_n_12, fsp.Q_phi_disk))
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        msh.transfer(phi_disk_old, fsp.phi_disk_aux, u_n_di_old)
-        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(omega_disk_old, fsp.omega_disk_aux, u_n_di_old)
+
         fsp.assigner_phi_omega_disk.assign(fsp.phi_omega_disk, [fsp.phi_disk_aux, fsp.omega_disk_aux])
+
+
 
 
         # 7.2 fluid in square
         msh.transfer(v_sq_n_old, fsp.v_square_n, u_n_sq_old)
-        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_1_sq_old)
+        msh.transfer(v_sq_n_1_old, fsp.v_square_n_1, u_n_sq_old)
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
         msh.transfer(v_sq__old, fsp.v_square__, u_n_sq_old)
 
-
-        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_12_sq_old)
+        '''
+        phi_square = sigma_sq_n_32 - sigma_sq_n_12
+        
+        To obtain the transferred value of `phi_square`, we transfer sigma_sq_n_32 and sigma_sq_n_12 separately, and then take the difference. 
+        '''
+        msh.transfer(sigma_sq_n_12_old, fsp.sigma_square_n_12, u_n_sq_old)
+        msh.transfer(sigma_sq_n_32_old, fsp.sigma_square_n_32, u_n_sq_old)
 
         
-        # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        msh.transfer(phi_sq_old, fsp.phi_square, u_n_sq_old)
+        fsp.phi_square.assign(fsp.sigma_square_n_32 - fsp.sigma_square_n_12)
+
 
         # 7.3 D
 
@@ -719,10 +725,10 @@ for n in range(rpam.parameters['N']):
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_di.assign(Constant((0, 0)))
 
-        msh.transfer(u_n_1_di_old, u_a_di, u_n_di_old)
-        msh.transfer(u_n_di_old, u_b_di, u_n_di_old)
+        msh.transfer(u_n_1_di_old, fsp.u_a_di, u_n_di_old)
+        msh.transfer(u_n_di_old, fsp.u_b_di, u_n_di_old)
 
-        fsp.u_n_1_di.assign(u_a_di - u_b_di)
+        fsp.u_n_1_di.assign(fsp.u_a_di - fsp.u_b_di)
 
         # 7.3.1.2 transfer u_dot
 
@@ -733,15 +739,14 @@ for n in range(rpam.parameters['N']):
 
         # 7.3.2.1 transfer u 
 
-
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_sq.assign(Constant((0, 0)))
 
 
-        msh.transfer(u_n_1_sq_old, u_a_sq, u_n_sq_old)
-        msh.transfer(u_n_sq_old, u_b_sq, u_n_sq_old)
+        msh.transfer(u_n_1_sq_old, fsp.u_a_sq, u_n_sq_old)
+        msh.transfer(u_n_sq_old, fsp.u_b_sq, u_n_sq_old)
 
-        fsp.u_n_1_sq.assign(u_a_sq - u_b_sq)
+        fsp.u_n_1_sq.assign(fsp.u_a_sq - fsp.u_b_sq)
 
 
         # 7.3.2.1 transfer u_dot
@@ -749,31 +754,84 @@ for n in range(rpam.parameters['N']):
         msh.transfer(u_n_sq_dot_old, fsp.u_n_sq_dot, u_n_sq_old)
         msh.transfer(u_n_1_sq_dot_old, fsp.u_n_1_sq_dot, u_n_sq_old)
 
+
+
         # 7.4 I
 
-        # 7.4.1 given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
-        fsp.U_n_12.assign(Constant((0, 0)))
+        # 7.4.1 transfer U_n_12, U_n_32 
+
+        # 7.4.1.1 transfer U_n_12
+
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+        # after this call, fsp.U_a(x_1') = U_n_12_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(
+            U_n_12_old, fsp.U_a, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'), 
+            closed=True
+            )
+
+        # after this call, fsp.U_b(x_1') = U_n_32_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(
+            U_n_32_old, fsp.U_b, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'), 
+            closed=True
+            )
+
+        fsp.U_n_12.assign(-(fsp.U_a - fsp.U_b)/2.0)
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
+
+
+        # 7.4.1.2 transfer U_n_32
+
+        # WARNING: here I am assuming that U_n_32 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+
+        # after this call, fsp.U_a(x_1') = U_n_12_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(
+            U_n_12_old, fsp.U_a, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'), 
+            closed=True
+            )
+        
+        # after this call, fsp.U_b(x_1') = U_n_32_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(
+            U_n_32_old, fsp.U_b, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'), 
+            closed=True
+            )
+
+        fsp.U_n_32.assign(-3.0*(fsp.U_a - fsp.U_b)/2.0)
+        # WARNING: here I am assuming that U_n_32 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
+
+
   
         #7.4.2 given that psi_0 has been recreated from scratch, it is set to 0 -> re-set the correct profile in it
         fsp.psi_0.interpolate(psi_0_expression(element=fsp.Q_psi_0.ufl_element()))
 
 
         # 7.4.3 set the new ys equal to [the old ys] + [the old U_n_12]
-        fu.transfer_1d_to_1d_curve(ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
-      
+        fu.transfer_1d_to_1d_curve(
+            ys_U_n_12_old, fsp.ys, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'),
+            closed=True
+            )
+
         # 7.4.4 write the new nu_n_12 and dps_n_12 after remeshing: this may provide a good initial guess when solving for nu_n_12 and dpsi_n_12 after remeshing
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        fu.transfer_1d_to_1d_curve(
+            nu_n_12_old, fsp.nu_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'),
+            closed=True
+            )
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        fu.transfer_1d_to_1d_curve(dpsi_n_12_old, fsp.dpsi_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        fu.transfer_1d_to_1d_curve(
+            dpsi_n_12_old, fsp.dpsi_n_12_input, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'),
+            closed=True
+            )
 
         fsp.assigner_nu_and_dpsi.assign(fsp.nu_and_dpsi_n_12, [fsp.nu_n_12_input, fsp.dpsi_n_12_input])
 
         # 7.4.5 write the new mu_n_12 after remeshing: this may provide a good initial guess when solving for mu_n_12 after remeshing
 
         # this transfer is needed only to give the solver at the nest step a reasonable starting point, it needs not be done with the correct fields
-        fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'))
+        fu.transfer_1d_to_1d_curve(
+            mu_n_12_old, fsp.mu_n_12, u_n_di_old, os.path.join(pre_remesh_path, 'mesh_0'),
+            closed=True
+            )
 
 
         # 7.5 M
@@ -784,22 +842,21 @@ for n in range(rpam.parameters['N']):
 
         pr_sol.print_remesh(step, mesh_quality)
 
-    
+
         #9 clean up
 
         # 9.1 disk and square fluid
         del v_di_n_old, v_di_n_1_old, v_sq_n_old, v_sq_n_1_old
         del v_di__old, v_sq__old
-        del sigma_di_n_12_old, sigma_sq_n_12_old
-        del phi_disk_old, omega_disk_old
+        del sigma_di_n_12_old, sigma_di_n_32_old, sigma_sq_n_12_old, sigma_sq_n_32_old
+        del omega_disk_old, omega_disk_output, nu_n_12_output, dpsi_n_12_output
 
         # 9.2 D
         del u_n_di_old, u_n_1_di_old, u_n_sq_old, u_n_1_sq_old
         del u_n_di_dot_old, u_n_1_di_dot_old, u_n_sq_dot_old, u_n_1_sq_dot_old
-        del u_a_di, u_b_di, u_a_sq, u_b_sq
 
         # 9.3 I
-        del U_n_12_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
+        del U_n_12_old, U_n_32_old, ys_U_n_12_old, mu_n_12_old, nu_n_12_old, dpsi_n_12_old
 
         # 9.4 M
         del c_n_old
@@ -818,6 +875,7 @@ for n in range(rpam.parameters['N']):
     # 2) D
 
     # 2.1) disk
+
     fsp.u_n_2_di.assign(fsp.u_n_1_di)
     fsp.u_n_1_di.assign(fsp.u_n_di)
 
@@ -825,6 +883,7 @@ for n in range(rpam.parameters['N']):
     fsp.u_n_1_di_dot.assign(fsp.u_n_di_dot)
 
     # 2.2) square
+
     fsp.u_n_2_sq.assign(fsp.u_n_1_sq)
     fsp.u_n_1_sq.assign(fsp.u_n_sq)
 
@@ -833,9 +892,11 @@ for n in range(rpam.parameters['N']):
 
 
     # 3) disk fluid 
+
     fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
 
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(fsp.phi_disk_aux, fsp.Q_sigma_disk) )
     fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 
 
@@ -843,6 +904,7 @@ for n in range(rpam.parameters['N']):
     fsp.v_square_n_2.assign(fsp.v_square_n_1)
     fsp.v_square_n_1.assign(fsp.v_square_n)
 
+    fsp.sigma_square_n_12.assign(fsp.sigma_square_n_32 - fsp.phi_square)
     fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
 
     # 5) M

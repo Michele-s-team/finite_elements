@@ -204,7 +204,6 @@ print(f'... done.')
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
-
 import function_spaces as fsp
 
 pr_bc = importlib.import_module(swi.prout_bc)
@@ -527,7 +526,7 @@ for n in range(rpam.parameters['N']):
         fu.transfer_1d_to_1d_curve(U_n_32_old, fsp.U_b, u_n_old, pre_remesh_path)
 
         fsp.U_n_12_output.assign(-(fsp.U_a - fsp.U_b)/2.0)
-        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+        # WARNING: here I am assuming that U_n_12 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
 
 
         # WARNING: here I am assuming that U_n_32 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
@@ -539,7 +538,7 @@ for n in range(rpam.parameters['N']):
         fu.transfer_1d_to_1d_curve(U_n_12_old, fsp.U_b, u_n_old, pre_remesh_path)
 
         fsp.U_n_32.assign(3.0*(fsp.U_a - fsp.U_b)/2.0)
-        # WARNING: here I am assuming that U_n_32 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - start
+        # WARNING: here I am assuming that U_n_32 can be approximated by interpolating linearly the values at n-1/2 and n-3/2 - end
 
 
         # 4.4.1.3 transfer nu_n_12_old, psi_n_12_old, mu_n_12_old
