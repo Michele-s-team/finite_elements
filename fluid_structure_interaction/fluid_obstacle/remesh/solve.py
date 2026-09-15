@@ -738,9 +738,6 @@ for n in range(rpam.parameters['N']):
 
         # 7.3.2.1 transfer u 
 
-
-
-
         # given that I am starting at the (new) reference configuration, I set the displacement fields to zero 
         fsp.u_n_sq.assign(Constant((0, 0)))
 
