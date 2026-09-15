@@ -367,7 +367,6 @@ for n in range(rpam.parameters['num_steps']):
         u_dot_n_old = Function(fsp.Q_u_dot_n)
 
         c_n_old = Function(fsp.Q_sigma_n)
-        c_n_1_old = Function(fsp.Q_sigma_n)
 
         mu_n_old = Function(fsp.Q_mu_n)
 
@@ -465,8 +464,6 @@ for n in range(rpam.parameters['num_steps']):
         msh.transfer_dg(sigma_n_old, fsp.sigma_input, u_0_old, sf_old, rmsh.sf[0])
 
         msh.transfer_dg(c_n_old, fsp.c_input, u_0_old, sf_old, rmsh.sf[0])
-        msh.transfer_dg(c_n_1_old, fsp.c_n_1, u_0_old, sf_old, rmsh.sf[0])
-
 
     
         #4.4.1.2 Step B): set the initial u'
@@ -533,7 +530,7 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4.3 clean up
 
-        del v_n_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, c_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
+        del v_n_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
