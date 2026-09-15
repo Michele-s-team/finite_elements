@@ -376,8 +376,8 @@ for n in range(rpam.parameters['num_steps']):
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
-
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
+    if step % rpam.parameters['remesh_stride'] == 0:
+    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
     # if step > 1:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
