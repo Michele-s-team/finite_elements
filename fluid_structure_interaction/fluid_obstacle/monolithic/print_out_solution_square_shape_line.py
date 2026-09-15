@@ -20,7 +20,7 @@ vp = importlib.import_module(swi.vp)
 
 
 
-def print_solution(t, step, dt):
+def print_solution(t, step):
 
     #1 unpack the mixed field 
 

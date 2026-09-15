@@ -180,12 +180,14 @@ msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
     output_directory, 
     [rpam.parameters['ellipse_loop_id']],
-    os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['ellipse_loop_id']) + '.csv'))
+    outfile=os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['ellipse_loop_id']) + '.csv'),
+    closed=True)
 
 msh.sorted_boundary_points(
     msh.read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
     output_directory, 
     [rpam.parameters['circle_loop_id']],
-    os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'))
+    outfile=os.path.join(output_directory, 'boundary_points_id_' + str(rpam.parameters['circle_loop_id']) + '.csv'),
+    closed=True)
 
 msh.clear_gmsh()

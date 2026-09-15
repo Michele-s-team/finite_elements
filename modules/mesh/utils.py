@@ -22,12 +22,14 @@ alpha = ufl.indices(1)
 
 
 def create_mesh(mesh, cell_type, prune_z=False):
+
     cells = mesh.get_cells_type(cell_type)
     cell_data = mesh.get_cell_data("gmsh:physical", cell_type)
     points = mesh.points[:, :2] if prune_z else mesh.points
     out_mesh = meshio.Mesh(
         points=points, cells={cell_type: cells}, cell_data={"name_to_read": [cell_data]}
     )
+
     return out_mesh
 
 
@@ -61,9 +63,11 @@ Return values:
 
 
 def read_mesh_h5(filename, mesh_name='mesh'):
+
     mesh = Mesh()
     with HDF5File(mesh.mpi_comm(), filename, "r") as infile:
         infile.read(mesh, mesh_name, False)
+
     return mesh
 
 
@@ -77,6 +81,7 @@ Return values:
 
 
 def read_mesh(filename):
+
     # detect format from file extension
     if filename.endswith('.h5'):
         file_format = "h5"
@@ -101,6 +106,7 @@ if 'prune_z' = true (false), the z component will be removed from the mesh
 
 
 def write_mesh_components(infile, outfile, component_type, prune_z):
+
     mesh_from_file = meshio.read(infile)
     # print(f'type of mesh_from_file  = {type(mesh_from_file)}')
     component_mesh = create_mesh(mesh_from_file, component_type, prune_z)
@@ -164,11 +170,10 @@ def read_mesh_components_h5(mesh, dim, filename, name_to_read):
 '''
 Given a mesh written in a file, read its components stored into the file and return the collection of components
 Input values: 
-- 'mesh': the mesh to read the components from
-- 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
-- 'filename': the name of the file (either .h5 or .xdmf) where the components of the mesh are stored
+    - 'mesh': the mesh to read the components from
+    - 'dim': the dimension of the components to read: example: 1 for lines, 0 for vertices, etc. 
+    - 'filename': the name of the file (either .h5 or .xdmf) where the components of the mesh are stored
 '''
-
 
 def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
     # detect format from file extension
@@ -285,12 +290,16 @@ Input values:
     * Mandatory: 
         - 'mesh': the mesh
         - 'mesh_path': the path where 'triangle_mesh.xdmf' and 'line_mesh.xdmf' are located
-        - 'id': a list of tags tag of the boundary whose vertices will be computed
+        - 'id': a list of tags of the boundary whose vertices will be computed
     * Optional: 
         - 'outfile': path, name and extension of the csv file where the vertex coordinates will be printed 
+        - 'closed' (False): if True, the domain corresponding to `id` is a closed one, and it is open if False
+
 
 '''
-def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
+def sorted_boundary_points(mesh, mesh_path, id, 
+                           outfile=None,
+                           closed=False):
     
     mf = read_mesh_components(mesh, mesh.topology().dim()-1, os.path.join(mesh_path, "line_mesh.xdmf"))
 
@@ -303,20 +312,60 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
             facet_list.append(facet)
                 
     # print(f'\n\t facet list = {facet_list}')
+    n_facets = len(facet_list)
       
     #initialize list of vertices   
     vertex_list = []
     
     # add the first vertex to exterior vertex and delete the corresponding edge in exterior_facets
+    '''
+    `facet_list[0]` is the first facet considered, and I store its vertices into `first_facet_vertices`. I append to `vertex_list` the vertex #0 in this list, i.e., `first_facet_vertices[0]`. The other vertex `first_facet_vertices[1]`, is stored into `vertex_to_add`. 
+    Given that I delete from `facet_list` the facet `facet_list[0]`, this facet will not be considered in the search -> `vertex_to_add` will not be automatically added -> I will add it manyally at the end of the search.
+
+    I try to set the first entry in `vertex_list` to  first_facet_vertices[0] and `vertex_to_add` to `first_facet_vertices[1]`. If `first_facet_vertices[0]` is an endpoint, this would produce an inifinte loop in the search dynamics for connected vertices, because the only facet that contains `vertex_list[0]` is `facet_list[0]` and it has been deleted from `facet_list` by `del facet_list[0]`. Thus in this case, I swap `vertex_list[0]` and `vertex_to_add`, see below. 
+    '''    
+
     vertex_list.append(next(vertices(facet_list[0])))
+    vertex_to_add = [vertex for vertex in list(vertices(facet_list[0])) if vertex.index() != vertex_list[-1].index()][0]
+
     del facet_list[0]
+
+
+    '''
+    check whether there is one edge in `facet_list` that contains `vertex_list[-1]`
+    '''
+    found = False
+
+    for i in range(len(facet_list)):
+        # run through all facets   
+                
+        if found:
+            break
+                        
+        for v in vertices(facet_list[i]): 
+            # loop through vertices of the facet under consideration
+            
+            if v.index() == vertex_list[-1].index():
+                # if one of the vertices coincides with `vertex_list[-1]`, break and set `found = True`
+            
+                found = True
+                break
+
+    if found == False:
+        # no edge in `facet_list` contains `vertex_list[-1]` -> swap `vertex_list[0]` and `vertex_to_add`
+
+        vertex_temp = vertex_list[-1]
+        vertex_list[-1] = vertex_to_add
+        vertex_to_add = vertex_temp
     
+
     
-    # loop through exterior_facets to append the vertices connected, through a facet, to the last added vertex in exterior_vertex
+    # now that `vertex_list[-1]` has been properlyt set, loop through facet_list to append the vertices connected, through a facet, to the last added vertex in vertex_list
     while len(facet_list) > 0:
 
         # append the next vertex: loop through facets
         found = False
+        
         for i in range(len(facet_list)):   
             
             if found:
@@ -341,9 +390,28 @@ def sorted_boundary_points(mesh, mesh_path, id, outfile=None):
                     found = True
                     break
 
+    if closed == False:
+        # the domain is open -> need to add `vertex_to_add` to `vertex_list`. If the domain is closed, this is automatically added by the last iteration in the search above
+
+        vertex_list.insert(0, vertex_to_add)
+    
     # print(f'vertices:')
     # for v in vertex_list:
     #     print(f'\t{vertex_coordinates(v)}')
+
+    if closed == False:
+        expected_length_vertex_list = n_facets +1
+    else:
+        expected_length_vertex_list = n_facets
+
+
+
+    if len(vertex_list) != expected_length_vertex_list:
+
+        print(f'{col.Fore.RED}Error: len(vertex_list) != expected_length_vertex_list!! \nlen(vertex_list) = {len(vertex_list)} \t expected_length_vertex_list = {expected_length_vertex_list}{col.Style.RESET_ALL}')
+        sys.exit(1)
+
+
 
                    
 
@@ -619,7 +687,7 @@ Input values:
 def print_mesh_vertices_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -666,7 +734,7 @@ Input values:
 def print_mesh_edges_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -803,7 +871,7 @@ Input values:
 def print_mesh_triangles_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -871,7 +939,7 @@ Input values:
 def print_mesh_tetrahedra_to_csv(infile, outfile):
 
     # initialize gmsh
-    gmsh.initialize()
+    initialize_gmsh()
 
     # open the .msh file
     gmsh.open(infile)
@@ -1690,6 +1758,7 @@ Example of usage:
 
 
 def full_write(mesh_file, components, parameters, output_directory, prune_z):
+
     output_directory_slash = io.add_trailing_slash(output_directory)
 
     for component in components:
@@ -1722,20 +1791,21 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 '''
 Given a parent mesh and a submesh of it, and function mf_parent which identifies facets on the parent mesh, 
 this method returns the function which identifies the facet markers on the  sub_mesh, with the same ids as in the parent mesh
+
 Input values: 
-- 'parent': the parent mesh
-- 'submesh': the submesh of the parent mesh
-- 'mf_parent': the function which identifies facets on the parent mesh
+    - 'parent': the parent mesh
+    - 'submesh': the submesh of the parent mesh
+    - 'mf_parent': the function which identifies facets on the parent mesh
 Return values
-- 'mf_submesh': the function which identifies facets on a submesh of the parent mesh
+    - 'mf_submesh': the function which identifies facets on a submesh of the parent mesh
 
 Example of usage: 
     mf = msh.read_mesh_components(lmsh.mesh, 1, rarg.args.input_directory + "/line_mesh.xdmf")
     submesh_out = SubMesh(lmsh.mesh, sf, parameters["surface_out_id"])
     mf_submesh_out = transfer_facet_tags_to_sub_mesh(lmsh.mesh, submesh_out, mf)
     
-Then you can create a ds on the submesh with 
-    ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
+    Then you can create a ds on the submesh with 
+        ds_l_submesh_out = Measure("ds", domain=submesh_out, subdomain_data=mf_submesh_out, subdomain_id=parameters["line_sub_mesh_1_l_id"])
 '''
 
 
@@ -2207,8 +2277,8 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         mesh_file = os.path.join(output_directory, 'mesh.msh')
 
-        write_mesh_components_h5(mesh, output_directory + "line_mesh.h5", cell_function, "cf")
-        write_mesh_components_h5(mesh, output_directory + "vertex_mesh.h5", vertex_function, "vf")
+        write_mesh_components_h5(mesh, os.path.join(output_directory, "line_mesh.h5"), cell_function, "cf")
+        write_mesh_components_h5(mesh, os.path.join(output_directory, "vertex_mesh.h5"), vertex_function, "vf")
 
         # write the mesh to .msh file
         write_line_mesh_to_msh(mesh, mesh_file,
@@ -2225,7 +2295,7 @@ def genereate_line_mesh(x_l, x_r, n_intervals, line_id, vertex_l_id, vertex_r_id
 
         # print mesh metadata
         if metadata is not None:
-            io.write_parameters_to_csv_file(output_directory + "mesh_metadata.csv", metadata)
+            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), metadata)
 
     return mesh, cell_function, vertex_function
 
@@ -2357,7 +2427,8 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
         read_mesh(os.path.join(output_directory, 'triangle_mesh.xdmf')), 
         output_directory, 
         [parameters['polygon_id']],
-        os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'))
+        outfile=os.path.join(output_directory, 'boundary_points_id_' + str(parameters['polygon_id']) + '.csv'),
+        closed=True)
 
 
     clear_gmsh()
@@ -2383,7 +2454,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     os.makedirs(output_directory)
 
     geometry = pygmsh.occ.Geometry()
-    model = geometry.__enter__()
+    geometry.__enter__()
 
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
@@ -2407,10 +2478,10 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             sys.exit()
 
 
-    # mesh A will be stored in output_directory_square_mesh
+    # mesh A will be stored in output_directory_mesh_0
     output_directory_mesh_0 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_0'))
     os.mkdir(output_directory_mesh_0)
-    # mesh B will be stored in output_directory_line_mesh
+    # mesh B will be stored in output_directory_mesh_1
     output_directory_mesh_1 = io.add_trailing_slash(os.path.join(output_directory, 'mesh_1'))
     os.mkdir(output_directory_mesh_1)
 
@@ -2678,7 +2749,8 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
             read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
             output_directory_mesh_0, 
             [parameters['shape_id']],
-            os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'))
+            outfile=os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['shape_id']) + '.csv'),
+            closed=True)
 
 
         # B) mesh B (line)
@@ -2774,25 +2846,85 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
                 elif mesh_medatada[f'sub_mesh_{p}_dim'] == 1:
                     '''
-                    the sub_mesh under consideration has dimension 1 -> it is a line: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
+                    the sub_mesh under consideration has dimension 1 -> it is a one-dimensional manifold: if I generated it with 'sub_meshes.append(SubMesh(mesh, sf, parameters[f'sub_mesh_{p}_id']))' 
                     I would obtain a one-dimensional mesh embedded in two-dimensional space, thus in fact a two-dimensional mesh, which is not what I want : I want a truly one-dimensional mesh. 
                     -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
                     '''
 
                     # create the one-dimensional submesh from the facet function 'mf_mesh' and the id which identifies the sub_mesh under consideration: first extract the coordinates of the points in the one-dimensional submesh and store them into x_coordinates
-                    x_coordinates = []
-                    for facet in facets(mesh):
-                        if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
-                            for vertex in vertices(facet):
-                                x_coordinates.append(vertex.point().x())
+                    sub_mesh_vertices = []
 
-                    # then remove duplicates from x_coordinates and sort it 
-                    x_coordinates = sorted(list(set(x_coordinates)))  
+                    '''
+                    1. run through all facets of `mesh`, find the facets tagged with sub_mesh_{p}_id, consider the vertices belonging to each facet, and pick the vertex with x coordinate equal to 0 -> store it in the first entry of `sub_mesh_vertices`
+                    '''
+                    stop = False
+                    for facet in facets(mesh):
+
+                        if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
+
+                            for vertex in vertices(facet):
+
+                                if np.isclose(vertex.point().array()[0], 0):
+
+                                    sub_mesh_vertices.append(vertex)
+                                    stop = True
+                                    break
+
+                        if stop:
+
+                            break
+
+
+                    '''
+                    2. given the last entry of `sub_mesh_vertices`, iterate through all edges in `mesh`, find an edge that has one of its vertices coinciding with the last added vertces in `sub_mesh_vertices`, add it to `sub_mesh_vertices` and keep going until no more vertices are found. 
+                    As a result, `sub_mesh_vertices` will contain a properly ordered list of vertices connected along the one-dimensional manifold above
+                    `added` is a boolean list used to keep track of the vertices already added, in order not to add doubles. 
+                    '''   
+
+                    added = [sub_mesh_vertices[0].index()]
+                    keep_going = True
+                    while keep_going:
+
+                        keep_going = False
+
+                        for facet in facets(mesh):
+
+                            if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
+
+                                facet_vertices = list(vertices(facet))
+
+                                if (facet_vertices[0].index() == sub_mesh_vertices[-1].index()) and (facet_vertices[1].index() not in added):
+
+                                    sub_mesh_vertices.append(facet_vertices[1])
+                                    added.append(facet_vertices[1].index())
+
+                                    keep_going = True
+
+
+                                elif (facet_vertices[1].index() == sub_mesh_vertices[-1].index()) and (facet_vertices[0].index() not in added):
+
+                                    sub_mesh_vertices.append(facet_vertices[0])
+                                    added.append(facet_vertices[0].index())
+
+                                    keep_going = True
+
+
+                    '''
+                    3. compute the arc length along the one-dimensional manifold, store the cumulative arc length at each vertex of it in `line_mesh_coordinates`: these will be the one-dimensional coordinates of the line, 1d mesh that will be generated. 
+                    Thi 1d mesh is obtained by lying flat the one-dimensional manifold above. 
+                    '''
+                    line_mesh_coordinates = [0]
+                    arc_length = 0
+                    for i in range(1, len(sub_mesh_vertices)):
+
+                        arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i].point().array()[:2], sub_mesh_vertices[i-1].point().array()[:2])) 
+                        line_mesh_coordinates.append(arc_length)     
+
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
-                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], None,
+                    sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, line_mesh_coordinates[-1], None,
                                                                                         mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],
-                                                                                        coordinates=x_coordinates)
+                                                                                        coordinates=line_mesh_coordinates)
                     
                     sub_meshes.append(sub_mesh_1d)
                     sf_sub_meshes.append(cf_sub_mesh_1d)
@@ -2828,14 +2960,14 @@ Given 2d mesh given by a recangle with a meshed shape in it, and a line mesh obt
 Input values: 
     * Mandatory:
         - 'f_2d': the field on the 2d mesh
-        - 'f_1d': the field on the 2d mesh
+        - 'f_1d': the field on the 1d mesh
         - 'mesh_2d': the 2d mesh is stored
         - 'mf_mesh_2d': a function on 'mesh_2d' that tags its facets
         - 'shape_coordinates' : [[p_0_x, p_0_y], [p_1_x, p_1_y], ... ] the coordinates of the vertices of the shape in 'mesh_2d'
         - 'shape_id': the ID with which the shape is tagged in the 2d mesh 
 '''
 
-def transfer_2d_to_1d(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
+def transfer_2d_to_1d_shape(f_2d, f_1d, mesh_2d, mf_mesh_2d, shape_coordinates, shape_id):
 
     # 1. initialize 
     # mesh_2d = read_mesh(os.path.join(mesh_2d_path, 'triangle_mesh.xdmf'))
@@ -3168,10 +3300,14 @@ def tag_physical_object(object, id, model,
 
 '''
 given a field f (scalar, vector, or tensor) on  mesh A, and a deformation field that trasnforms mesh A into mesh B, and a field g (same type as f) on mesh B, set g equal to f
+
 Input values: 
     - 'f': function on mesh A
     - 'g': function on mesh B
     - 'u': displacement field, defined on mesh A
+
+Return values: 
+    Nothing is returned, the result is written into `g`. After this method is called, g is such that g(y') = f(phi^{-1}(y')), where phi(y) = y + u(y)
 '''
 def transfer(f, g, u):
 
@@ -3353,47 +3489,7 @@ def transfer_dg(f, g, u, sf_f, sf_g):
             # run through all components of the field f and write `value`, i.e., the value of `f` on the DOF under consideration, into g
 
             g.vector()[g_value_size * i + j] = values[j]
-            
-'''
-given a fiels (scalar, vector, tensor) f defined on a 1d mesh and a function g (same type as f) defnied on another 1d mesh which has the same length as the 1d mesh of g, transfer the profile of f into g
-
-Input values: 
-    - 'f': the field to be read. Note that this method will do f.set_allow_extrapolation(True)
-    - 'g': the field to be written in
-
-'''
-
-def transfer_1d(f, g):
-
-    f.set_allow_extrapolation(True)
-
-    Q_g = g.function_space()
-
-    value_shape = Q_g.ufl_element().value_shape()
-    value_size  = int(np.prod(value_shape)) if value_shape else 1
-
-
-    # unique DOF coordinates: tabulate_dof_coordinates repeats each position
-    # value_size times, so stride by value_size to get unique positions
-    dof_coords  = (Q_g.tabulate_dof_coordinates())[::value_size]
-
-    dof_map = Q_g.dofmap().dofs()
-    dof_values = g.vector().get_local()
-
-
-    for i in range(len(dof_coords)):
-        # run through all coordinates in the 1d mesh
-
-        s  = dof_coords[i][0]
-
-        value = np.atleast_1d(np.array(f(s)))
-
-        for k in range(value_size):
-
-            dof_values[dof_map[value_size * i + k]] = value[k]
-
-    g.vector().set_local(dof_values)
-    g.vector().apply("insert")
+     
 
 '''
 compute the mesh quality, defined as the minimal value of d r_in / r_out across all mesh cells
@@ -3880,6 +3976,336 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 
     f.vector().set_local(f_values)
     f.vector().apply("insert")
+
+
+'''
+generate a mesh given by a square whose top edge is an arbitrary curve
+Input values: 
+    * Mandatory:
+        - 'shape_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
+        Note: 
+        It must be shape_coordinates[0][0] = 0, shape_coordinates[-1][0] = parameters['L']. If not, an error is thrown. 
+        - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
+        - 'output_directory': the path where the mesh will be stored 
+    * Optional:
+        -  `epsilon` (const.epsilon): the tolerance with which distances are assessed in the method 
+'''
+def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_directory, output_directory, 
+                                        epsilon = const.epsilon):
+
+    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
+    parameters = io.read_parameters_from_csv_file(parameters_file_path)
+
+    if (np.isclose(shape_coordinates[0][0], 0, epsilon) == False) or (np.isclose(shape_coordinates[-1][0], parameters['L'], epsilon) == False): 
+
+        print(f"{col.Fore.RED}{'Error: x component of first and last shape_coordinates do not coincide with 0 and L!!'}{col.Style.RESET_ALL}")
+        sys.exit(1)
+
+    # remove the output directory it it already exists, and create it from scratch
+    shutil.rmtree(output_directory, ignore_errors=True)
+    os.makedirs(output_directory)
+
+    geometry = pygmsh.occ.Geometry()
+    geometry.__enter__()
+
+    # reset gmsh state from any previous call, AFTER pygmsh has initialized it
+    gmsh.clear()
+    gmsh.model.add("model")  # need a model after clear()
+
+
+    output_directory_mesh_0 = os.path.join(output_directory, 'mesh_0')
+    os.mkdir(output_directory_mesh_0)
+
+    output_directory_mesh_1 = os.path.join(output_directory, 'mesh_1')
+    os.mkdir(output_directory_mesh_1)
+
+    mesh_0_file = os.path.join(output_directory_mesh_0, "mesh.msh")
+
+
+    mesh_metadata = parameters.copy()
+
+    # remove spurious entities in mesh_metadata 
+    if parameters['curve_format'] == 'parametric':
+
+        if 'shape_coordinates' in parameters:
+            del mesh_metadata['shape_coordinates']
+                           
+    if parameters['curve_format'] == 'coordinates':
+
+        if 'curve_parametric_form' in parameters:
+            del mesh_metadata['curve_parametric_form']
+            
+        if 'N' in parameters:
+            del mesh_metadata['N']
+
+    mesh_metadata['shape_coordinates'] = shape_coordinates
+
+
+    # write metadata for mesh 0
+
+    mesh_0_metadata = {}
+    mesh_0_metadata['L'] = parameters['L']
+    mesh_0_metadata['resolution'] = parameters['resolution']
+    mesh_0_metadata['curve_format'] = parameters['curve_format']
+
+    # if the curve derives from a parametric form, write N and the parametric function
+    if parameters['curve_format'] == 'parametric':
+            mesh_0_metadata['curve_parametric_form'] = parameters['curve_parametric_form']
+            mesh_0_metadata['N'] = parameters['N']
+       
+    mesh_0_metadata['shape_coordinates'] = shape_coordinates
+
+    mesh_0_metadata['mesh_0_id'] = parameters['mesh_0_id']
+    mesh_0_metadata['mesh_1_id'] = parameters['mesh_1_id']
+    mesh_0_metadata['line_l_id'] = parameters['line_l_id']
+    mesh_0_metadata['line_r_id'] = parameters['line_r_id']
+    mesh_0_metadata['line_b_id'] = parameters['line_b_id']
+
+    mesh_0_metadata['file_format'] = 'xdmf'
+
+
+    # write metadata for mesh 1
+
+    mesh_1_metadata = {}
+
+
+
+
+    #1. add rectangle vertices
+
+    p_lb = gmsh.model.geo.addPoint(0, 0, 0)
+    p_rb = gmsh.model.geo.addPoint(parameters["L"], 0, 0)
+    p_rt = gmsh.model.geo.addPoint(shape_coordinates[-1][0], shape_coordinates[-1][1], 0)
+    p_lt = gmsh.model.geo.addPoint(shape_coordinates[0][0], shape_coordinates[0][1], 0)
+    gmsh.model.geo.synchronize()
+
+
+    #2. add curve vertices
+
+    curve_points = [p_lt]
+    gmsh.model.geo.synchronize()
+
+    curve_lines = []
+    for i in range(1, len(shape_coordinates)-1):
+
+        curve_points.append(gmsh.model.geo.addPoint(shape_coordinates[i][0], shape_coordinates[i][1], 0))
+        gmsh.model.geo.synchronize()
+
+        curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
+        gmsh.model.geo.synchronize()
+
+    curve_points.append(p_rt)
+    gmsh.model.geo.synchronize()
+
+    curve_lines.append(gmsh.model.geo.addLine(curve_points[-2], curve_points[-1]))
+    gmsh.model.geo.synchronize()
+
+    N_lines = len(curve_lines)
+
+    line_t = curve_lines
+    line_r = gmsh.model.geo.addLine(p_rt, p_rb)
+    line_b = gmsh.model.geo.addLine(p_rb, p_lb)
+    line_l = gmsh.model.geo.addLine(p_lb, p_lt)
+    gmsh.model.geo.synchronize()
+
+
+    loop = gmsh.model.geo.addCurveLoop([*line_t, line_r, line_b, line_l])
+    gmsh.model.geo.synchronize()
+
+
+
+    gmsh.model.geo.addPlaneSurface([loop])
+    gmsh.model.geo.synchronize()
+
+    # tag 1-dimensional objects
+    lines = gmsh.model.getEntities(dim=1)
+
+    # square lines
+    tag_physical_object([lines[i] for i in range(N_lines)], parameters["mesh_1_id"], gmsh.model, "lines_t")
+    tag_physical_object(lines[N_lines], parameters["line_r_id"], gmsh.model, "line_r")
+    tag_physical_object(lines[N_lines+1], parameters["line_b_id"], gmsh.model, "line_b")
+    tag_physical_object(lines[N_lines+2], parameters["line_l_id"], gmsh.model, "line_l")
+
+    # tag 2-dimensional objects
+    surfaces = gmsh.model.getEntities(dim=2)
+    tag_physical_object(surfaces[0], parameters["mesh_0_id"], gmsh.model, "mesh_0")
+
+
+    # set the resolution close to the obstacle
+    distance = gmsh.model.mesh.field.add("Distance")
+    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop])
+
+    threshold = gmsh.model.mesh.field.add("Threshold")
+    gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+    gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(max([shape_coordinates[i][0] for i in range(len(shape_coordinates))]), max([shape_coordinates[i][1] for i in range(len(shape_coordinates))])))
+
+    gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
+
+    gmsh.model.occ.synchronize()
+    gmsh.model.mesh.generate(2)
+
+    gmsh.write(mesh_0_file)
+
+    full_write(mesh_0_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
+
+    # print the boundary points of the boundaries given by the top curve (sub_mesh 1)
+    sorted_boundary_points(
+        read_mesh(os.path.join(output_directory_mesh_0, 'triangle_mesh.xdmf')), 
+        output_directory_mesh_0, 
+        [parameters['mesh_1_id']],
+        outfile=os.path.join(output_directory_mesh_0, 'boundary_points_id_' + str(parameters['mesh_1_id']) + '.csv'))
+
+    clear_gmsh()
+
+    # ========================================================================
+    # Generate submesh for the top edge from the 2D mesh and save it in .h5 format
+    # ========================================================================
+
+    print("Generating H5 sub_mesh for top edge from 2D mesh...")
+
+    mesh, _ = read_from_file(output_directory_mesh_0)
+
+    '''
+    read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
+    '''
+    # read the line mesh
+    mf = read_mesh_components(mesh, 1,  os.path.join(output_directory_mesh_0, "line_mesh.xdmf"))
+
+    mesh_1_vertices = []
+    added = []
+
+    for edge in edges(mesh):
+        # run through all mesh edges
+
+        if mf[edge] == parameters['mesh_1_id']:
+            # `edge` has been tagged with `sub_mesh_1_id`
+
+            for v in vertices(edge):
+                # run through the vertices of `edge`
+
+                if v.index() not in added:
+                    # if `v` has not been already added to `sub_mesh_1_vertices`, add it and update `added` in order to add the same vertex twice in the future
+
+                    mesh_1_vertices.append(v.point().array()[:2])
+                    added.append(v.index())
+
+    # print(f'mesh_1_vertices = {mesh_1_vertices}')
+    # print(f'len mesh_1_vertices = {len(mesh_1_vertices)}')
+
+    if len(mesh_1_vertices) != len(shape_coordinates):
+        # the meshing algorithm has inserted additional vertices in between the vertices of `shape_coordinates` -> call again `generate_square_no_circle_curve_mesh` with a new `shape_coordinates` which contains these vertices
+
+        print(f"{col.Fore.YELLOW}{'Warning: The number of vertices on curve does not match the number of vertices of the 1d mesh. Recalculating shape_coordinates ...'}{col.Style.RESET_ALL}")
+        print(f'\tNumber of vertices on curve = {len(shape_coordinates)}\n\tNumber of vertices on line = {len(mesh_1_vertices)}')
+
+        '''
+        build `segment_vertices`: 
+        segment_vertices[i] = [list of mesh vertices tagged with ID `mesh_1_id` and which lie in between shape_coordinates[i] and shape_coordinates[i+1]
+        '''
+        segment_vertices = [[] for _ in range(len(shape_coordinates) - 1)]
+        for vertex in mesh_1_vertices:
+    
+            for i in range(len(shape_coordinates)-1):
+                if cal.point_on_segment(np.array(vertex), np.array(shape_coordinates[i]), np.array(shape_coordinates[i+1])):
+    
+                    segment_vertices[i].append(vertex)
+    
+    
+        # convert `segment_vertices` to list
+        segment_vertices = [[segment_vertex.tolist() for segment_vertex in segment_list] for segment_list in segment_vertices]
+        
+        '''
+        sort `segment_vertices[i]` according to the value of `t` where t =( segment_vertex[i][j] - shape_coordinates_lr[i]).(shape_coordinates_lr[i+1]-shape_coordinates_lr[i]), 
+        i.e. the projection of segment_vertex[i][j] - shape_coordinates_lr[i] along the segment which goes from shape_coordinates_lr[i] to shape_coordinates_lr[i+1]. 
+        This is necessary to sort properly the vertices when flattening down the top curve of the mesh on a line in the follwing. 
+        '''
+        segment_vertices_projection = [
+            [np.dot(np.subtract(segment_vertex, shape_coordinates[i]), np.subtract(shape_coordinates[i+1], shape_coordinates[i])) for segment_vertex in segment_vertices[i]] for i in range(len(segment_vertices))
+            ]
+    
+        for i in range(len(segment_vertices)):
+            order = np.argsort(segment_vertices_projection[i])
+            segment_vertices[i] = [segment_vertices[i][j] for j in order]
+
+        '''
+        build `new_shape_coordinates` which contains the vertices inserted by the meshing algorithm
+        '''
+        new_shape_coordinates = [segment_vertices[0][0]]
+        for i in range(len(segment_vertices)):
+            for j in range(1, len(segment_vertices[i])):
+
+                new_shape_coordinates.append(segment_vertices[i][j])
+
+        print(f"{col.Fore.YELLOW}{'... done.'}{col.Style.RESET_ALL}")
+
+        # print(f'lengh new_shape_coordinates = {len(new_shape_coordinates)}')
+        # print(f'lengh sub_mesh_1_vertices = {len(mesh_1_vertices)}')
+     
+        clear_gmsh()
+
+        # now new_shape_coordinates includes the additional vertices introduced by the meshing algorithm -> call again generate_square_shape_line_mesh with this new_shape_coordinates -> this will generate a 2d mesh and a line mesh, in which the number of vertices on the 2d mesh boundary shape coincides with the number of vertices on the line mesh
+        generate_square_no_circle_curve_mesh(new_shape_coordinates, mesh_parameters_directory, output_directory, epsilon)
+
+    else:
+        # the meshing algorithm did not insert additional vertices with respect to `shape_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
+
+        arc_length_table = [0]
+        arc_length = 0
+
+        for i in range(1, len(shape_coordinates)):
+
+            arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
+            arc_length_table.append(arc_length)
+
+        # print(f'arclength table = {arc_length_table}')
+
+
+        # Create a proper 1D IntervalMesh using the actual vertex positions
+        if len(arc_length_table) >= 2:
+
+            N_intervals = len(shape_coordinates) - 1
+
+            # Create output directory for submesh
+            output_directory_mesh_1 = os.path.join(output_directory, 'mesh_1')
+            os.makedirs(output_directory_mesh_1, exist_ok=True)
+
+            mesh_1_metadata['x_l'] = 0.0
+            mesh_1_metadata['x_r'] = arc_length_table[-1]
+            mesh_1_metadata['coordinates'] = arc_length_table
+            mesh_1_metadata['resolution'] = parameters['resolution']
+            mesh_1_metadata['line_id'] = parameters['mesh_1_id']
+            mesh_1_metadata['vertex_l_id'] = parameters['vertex_l_id']
+            mesh_1_metadata['vertex_r_id'] = parameters['vertex_r_id']
+            mesh_1_metadata['file_format'] = 'h5'
+
+            # generate the line mesh with the specific coordinates written in top_edge_vertices, which may not be equally spaced
+            genereate_line_mesh(0.0, arc_length_table[-1], N_intervals,
+                                    parameters['mesh_1_id'], parameters['vertex_l_id'], parameters['vertex_r_id'],
+                                    output_directory=output_directory_mesh_1, 
+                                    metadata=mesh_1_metadata,
+                                    coordinates=arc_length_table)
+
+
+            # add x_l, x_r to  `metadata` and write it to file 
+            mesh_metadata['x_l'] = mesh_1_metadata['x_l']
+            mesh_metadata['x_r'] = mesh_1_metadata['x_r']
+            io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), mesh_metadata)
+
+        print("...done.")
+        
+
+'''
+initialize gmsh if gmsh has not been already initialized
+'''
+def initialize_gmsh():
+
+    if (gmsh.isInitialized() == False):
+        
+        gmsh.initialize()
+
 
 '''
 clear gmsh and geometry if gmsh is initialized

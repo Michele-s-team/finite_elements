@@ -205,16 +205,22 @@ def curve_integral_line(f, x_a, x_b):
 '''
 compute the integral over the lines of a polygonal chain (a sequence of joint segments) of a function of two variables
 Input values: 
-    - 'f': the function, f([x, y])
-    - 'polygon_coordinates': the list of vertices of the polygonal chain [[v0x, v0y], [v1x, v1y], ... ]
+    * Mandatory:
+        - 'f': the function, f([x, y])
+        - 'polygon_coordinates': the list of vertices of the polygonal chain [[v0x, v0y], [v1x, v1y], ... ]
+    * Optional:
+        - 'open' (`False` by default): if `False`, the polygon is assumed to be closed and `polygon_coordinates` are completed by adding a segment that closes them, if `True`, the polygon is assumed to be open. 
 
 Return values: 
-    - \int_{polygonal chain} dl f
+    - int_{polygonal chain} dl f
 '''
-def curve_integral_polygon(f, polygon_coordinates):
+def curve_integral_polygon(f, polygon_coordinates, open=False):
 
-    # add the integral over the segment that closes the polygon loop
-    result = curve_integral_line(f, polygon_coordinates[-1], polygon_coordinates[0])
+    if open == False:
+        # the polygon is closed -> add the integral over the segment that closes the polygon loop
+        result = curve_integral_line(f, polygon_coordinates[-1], polygon_coordinates[0])
+    else:
+        result = 0
 
     # add the integrals over the other segments
     for i in range(len(polygon_coordinates)-1):

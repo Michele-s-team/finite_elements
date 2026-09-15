@@ -4,8 +4,6 @@ Only some fields are printed.
 '''
 
 from fenics import *
-
-import csv
 import importlib
 import os
 import sys
@@ -23,52 +21,21 @@ import runtime_arguments as rarg
 import solution_paths as solpath
 import switch_problem as swi
 
+fi = importlib.import_module(swi.fi)
 rmsh = importlib.import_module(swi.rmsh)
 
 
-# create the path for the data csv file if it does not exist
-theta_omega_filename = os.path.join(rarg.args.output_directory, 'theta_omega.csv')
-os.makedirs(os.path.dirname(theta_omega_filename), exist_ok=True)
-
-theta_omega_csvfile = open(theta_omega_filename, 'a', newline='')
-theta_omega_fieldnames = [ "theta", "omega" ]
-theta_omega_writer = csv.DictWriter(theta_omega_csvfile, fieldnames=theta_omega_fieldnames)
-theta_omega_writer.writeheader()
-
-
-# create the path for the mesh csv file if it does not exist
-remesh_filename = os.path.join(rarg.args.output_directory, 'remesh.csv')
-os.makedirs(os.path.dirname(remesh_filename), exist_ok=True)
-
-remesh_csvfile = open(remesh_filename, 'a', newline='')
-remesh_fieldnames = [ "remesh_step", "phi", "mesh_quality_before_remesh"]
-remesh_writer = csv.DictWriter(remesh_csvfile, fieldnames=remesh_fieldnames)
-remesh_writer.writeheader()
-
-
-def print_remesh(step, phi, mesh_quality_before_remesh):
-
-    remesh_writer.writerows([{ \
-        remesh_fieldnames[0]: \
-            step, 
-        remesh_fieldnames[1]: \
-            phi, 
-        remesh_fieldnames[2]: \
-            mesh_quality_before_remesh, 
-    }])
-    remesh_csvfile.flush()
-    
 
 def print_solution(step):
 
     # 1) print theta and omega
-    theta_omega_writer.writerows([{ \
-        theta_omega_fieldnames[0]: \
+    fi.theta_omega_writer.writerows([{ \
+        fi.theta_omega_fieldnames[0]: \
             fsp.theta_n, \
-        theta_omega_fieldnames[1]: \
+        fi.theta_omega_fieldnames[1]: \
             fsp.omega_n
     }])
-    theta_omega_csvfile.flush()
+    fi.csvfile_theta_omega.flush()
 
 
     # 2) print the solution for the mesh problem
@@ -87,7 +54,8 @@ def print_solution(step):
         lmsh.mesh, 
         rarg.args.input_directory, 
         [rmsh.parameters['polygon_id']],
-        os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + f'_n_{step}.csv'))
+        outfile=os.path.join(solpath.snapshots_csv_path, 'boundary_points_id_' + str(rmsh.parameters['polygon_id']) + f'_n_{step}.csv'),
+        closed=True)
 
     
     io.full_print(bgeo.calc_tangent_cg2(rmsh.lmsh.mesh), 't_n_' + str(step), \
