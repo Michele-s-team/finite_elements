@@ -360,7 +360,6 @@ for n in range(rpam.parameters['num_steps']):
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
         v_n_old = Function(fsp.Q_v_n)
-        v_n_1_old = Function(fsp.Q_v_n)
         
         sigma_n_old = Function(fsp.Q_sigma_n)
 
@@ -386,7 +385,6 @@ for n in range(rpam.parameters['num_steps']):
 
         # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
-        v_n_1_old.assign(fsp.v_n_1)
 
         sigma_n_old.assign(sigma_n_dummy)
 
@@ -465,7 +463,6 @@ for n in range(rpam.parameters['num_steps']):
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
         msh.transfer_dg(v_n_old, fsp.v_input, u_0_old, sf_old, rmsh.sf[0])
-        msh.transfer_dg(v_n_1_old, fsp.v_n_1, u_0_old, sf_old, rmsh.sf[0])
 
         msh.transfer_dg(sigma_n_old, fsp.sigma_input, u_0_old, sf_old, rmsh.sf[0])
 
@@ -538,7 +535,7 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4.3 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, c_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
+        del v_n_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, c_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
