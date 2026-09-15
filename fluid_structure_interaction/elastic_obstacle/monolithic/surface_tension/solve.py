@@ -452,15 +452,7 @@ for n in range(rpam.parameters['num_steps']):
         for i in range(len(mesh_0_parameters["shape_coordinates"])):
             # run through all coordinates of the nodes of the boundary
 
-            coordinate = mesh_0_parameters["shape_coordinates"][i]
-
-            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
-            # shape_coordinates.append(np.add(
-            #                             coordinate,
-            #                             fsp.u_0(coordinate)
-            #                             ).tolist()
-            #                     )
-              
+            coordinate = mesh_0_parameters["shape_coordinates"][i]              
             shape_coordinates.append((dec_u.phi_0_expression()(coordinate)).tolist())
 
         #4.2.1 generate the mesh with the new shape_coordinates
