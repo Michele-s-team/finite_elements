@@ -36,7 +36,7 @@ metadata['file_format'] = 'xdmf'
 
 
 warnings.filterwarnings("ignore")
-gmsh.initialize()
+msh.initialize_gmsh()
 
 gmsh.model.add("my model")
 

@@ -1,0 +1,55 @@
+# for membrane
+ 
+var_pr.solve_vp(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, fsp.J_psi_mem, parameters=params)
+
+
+remesh
+
+        #4.1.2.1 unpack the mixed field for membrane
+        v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split(deepcopy=True)
+
+        sigma_n_12_old.assign(fsp.sigma_n_32 - phi_dummy)
+        sigma_n_32_old.assign(fsp.sigma_n_32)
+
+
+        # after this call, fsp.sigma_n_12(x_1') = sigma_n_12_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(sigma_n_12_old, fsp.sigma_n_12, u_n_old, pre_remesh_path)      
+
+        # after this call, fsp.sigma_n_32(x_1') = sigma_n_32_old((phi_n_old)^{-1}(x_1')). 
+        fu.transfer_1d_to_1d_curve(sigma_n_32_old, fsp.sigma_n_32, u_n_old, pre_remesh_path)   
+
+        fsp.phi_output.assign(fsp.sigma_n_32 - fsp.sigma_n_12)  
+
+        fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
+
+v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
+
+fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_output, fsp.Q_phi ) )
+fsp.sigma_n_32.assign( fsp.sigma_n_12 )
+
+# for fluid
+
+var_pr.solve_vp(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, fsp.J_phi_fl, parameters=params)
+
+
+remesh
+
+        phi_fl_old.assign(fsp.phi_fl)
+
+
+        sigma_fl_n_12_old.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
+        sigma_fl_n_32_old.assign(fsp.sigma_fl_n_32)
+
+                '''
+        phi_fl = sigma_fl_n_32 - sigma_fl_n_12
+        
+        To obtain the transferred value of `phi_fl`, we transfer sigma_fl_n_32 and sigma_fl_n_12 separately, and then take the difference. 
+        '''
+        msh.transfer(sigma_fl_n_12_old, fsp.sigma_fl_n_12, u_n_old)
+        msh.transfer(sigma_fl_n_32_old, fsp.sigma_fl_n_32, u_n_old)
+        
+        fsp.phi_fl.assign(fsp.sigma_fl_n_32 - fsp.sigma_fl_n_12)
+
+
+fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
+fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)

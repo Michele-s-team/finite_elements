@@ -46,7 +46,7 @@ P_psi_n_12 = FiniteElement('P', interval, rpam.parameters['function_space_degree
 P_mu_n_12 = FiniteElement( 'P', interval, rpam.parameters['function_space_degree_mem'] )
 
 element_mem = MixedElement( [P_v_bar, P_w_bar, P_phi, P_v_n, P_w_n, P_U_n_12, P_nu_n_12, P_psi_n_12, P_mu_n_12] )
-Q_mem = FunctionSpace(lmsh.sub_meshes[1], element_mem)
+Q_mem = FunctionSpace(lmsh.mesh[1], element_mem)
 
 # collapsed function spaces
 Q_v_bar = Q_mem.sub(0).collapse()
@@ -60,28 +60,28 @@ Q_psi_n_12 = Q_mem.sub(7).collapse()
 Q_mu_n_12 = Q_mem.sub(8).collapse()
 
 # function space for the X field
-Q_X = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
+Q_X = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
 # function space to store the time derivative of U_n_12
-Q_U_dot_n_12 = VectorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
+Q_U_dot_n_12 = VectorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree_mem'], dim=2)
 
 # tensor function space to project the stress tensor of the fluid mesh on the membrane mesh
-Q_var_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.sub_meshes[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+Q_var_tensor_sigma_fl_on_mem = TensorFunctionSpace(lmsh.mesh[1], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
 
 
 
 # 2) for the fictitious elastic body: 
-Q_u = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
-Q_u_dot = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_u = VectorFunctionSpace(lmsh.mesh[0], 'P', 1)
+Q_u_dot = VectorFunctionSpace(lmsh.mesh[0], 'P', 1)
 
 
 
 # 3) for the fluid:   
-Q_v_fl = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
-Q_v_fl_bar = VectorFunctionSpace(lmsh.sub_meshes[0], 'P', 2)
-Q_phi_fl = FunctionSpace(lmsh.sub_meshes[0], 'P', 1)
+Q_v_fl = VectorFunctionSpace(lmsh.mesh[0], 'P', 2)
+Q_v_fl_bar = VectorFunctionSpace(lmsh.mesh[0], 'P', 2)
+Q_phi_fl = FunctionSpace(lmsh.mesh[0], 'P', 1)
   
-Q_var_tensor_sigma_fl = TensorFunctionSpace(lmsh.sub_meshes[0], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
+Q_var_tensor_sigma_fl = TensorFunctionSpace(lmsh.mesh[0], 'P', rpam.parameters['function_space_degree_mem'], shape=(2,2))
 
 
 
@@ -104,7 +104,11 @@ sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
 sigma_n_12_output = Function( Q_phi )
 
+
 U_n_32 = Function( Q_U_n_12 )
+
+U_a = Function( Q_U_n_12 )
+U_b = Function( Q_U_n_12 )
 
 #reference configuration
 X_ref = Function(Q_X)
@@ -160,6 +164,13 @@ u_n_2 = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
 u_dot_n_1 = Function(Q_u_dot)
 u_dot_n_2 = Function(Q_u_dot)
+
+u_a = Function(Q_u)
+u_b = Function(Q_u)
+
+# this is needed so no error is thrown when computing u_n at `coordinate` when building a new mesh. In fact, in there `coordinate` may be read from file with a roundoff error and it may fall slightly outside the domain where u_n is defined. 
+u_n.set_allow_extrapolation(True)
+
 
 # function space to store the projection of the membrane deformation field and of its derivative on the mesh
 U_n_12_on_mesh = Function(Q_u)

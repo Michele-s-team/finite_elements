@@ -2,36 +2,28 @@ from fenics import *
 
 
 import csv
-import files as fi
 import function_spaces as fsp
-import function as fu
+import importlib
 import input_output as io
-import mesh.load as lmsh
 import mesh.utils as msh
 import os
 import solution_paths as solpath
 
+import parameters.read.solution as rpam
 import runtime_arguments as rarg
+import switch_problem as swi
 
-# create the path for the csv file if it does not exist
-filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
-os.makedirs(os.path.dirname(filename_theta_omega), exist_ok=True)
-
-csvfile = open(filename_theta_omega, 'a', newline='')
-fieldnames = [ \
-    "theta", \
-    "omega", \
-    ]
-writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-writer.writeheader()
+cu = importlib.import_module(swi.cu)
+fi = importlib.import_module(swi.fi)
+rmsh = importlib.import_module(swi.rmsh)
 
 
 def print_solution(t, step, dt):
-    
-    # 1) membrane problem
-    v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
 
-    fsp.sigma_n_12.assign( fsp.sigma_n_32 - project( phi_dummy, fsp.Q_phi ) )
+    # 1. write fields 
+
+    # 1.1 membrane problem
+    v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
 
     # print solution to file
     # append to the full time series solution at the current t
@@ -43,7 +35,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_phi.write( phi_dummy, t )
     fi.xdmffile_u_n_12.write( U_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_nu_n_12.write( nu_n_12_dummy, t - dt / 2.0 )
-    fi.xdmffile_nu_n_12.write( psi_n_12_dummy, t - dt / 2.0 )
+    fi.xdmffile_psi_n_12.write( psi_n_12_dummy, t - dt / 2.0 )
     fi.xdmffile_mu_n_12.write( mu_n_12_dummy, t - dt / 2.0 )
 
     io.full_print(v_bar_dummy, 'v_bar_' + str(step + 1), \
@@ -66,11 +58,12 @@ def print_solution(t, step, dt):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     
     
-    io.full_print(project(fsp.X_ref + U_n_12_dummy, fsp.Q_X), 'X_n_12_' + str(step + 1), \
+    io.full_print(fsp.X_ref, 'X_ref_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+   
 
+    # 1.2 mesh problem
 
-    # 2) mesh problem
     io.full_print(fsp.u_n, 'u_n_' + str(step + 1), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path,
                   solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.u_dot_n, 'u_dot_n_' + str(step + 1), solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
@@ -79,16 +72,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_u_n.write(fsp.u_n, t)
     fi.xdmffile_u_dot_n.write(fsp.u_dot_n, t)
 
-    # Write the deformed mesh to file
-    deformed_mesh = msh.deform_mesh(lmsh.sub_meshes[0], fsp.u_n)
-    with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step + 1) + '.xdmf') as xdmf:
-        xdmf.write(deformed_mesh)
-    io.print_mesh_vertices_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'vertex_mesh_n_' + str(step + 1) + '.csv')
-    io.print_mesh_lines_to_csv(deformed_mesh, solpath.snapshots_csv_path + 'line_mesh_n_' + str(step + 1) + '.csv')
-
-
-
-    # 3) fluid problem
+    # 1.3 fluid problem
     io.full_print(fsp.v_fl_bar, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(fsp.v_fl_n, 'v_fl_n_' + str(step + 1), \
@@ -98,7 +82,8 @@ def print_solution(t, step, dt):
     io.full_print(fsp.phi_fl, 'phi_fl_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
-    # include the snapshot in xdmf files
+
+    # 2. include snapshots in xdmf files
     fi.xdmffile_v_fl_n.write(fsp.v_fl_n, t)
     fi.xdmffile_v_fl_bar.write(fsp.v_fl_bar, t)
     fi.xdmffile_sigma_fl.write(fsp.sigma_fl_n_12, t - dt / 2.0)
@@ -113,5 +98,39 @@ def print_solution(t, step, dt):
     io.full_print_deformed(fsp.phi_fl, fsp.u_n, 'phi_fl_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
+
+    # 3. write the curve
+
+    tab_cspline = [
+        [
+            float(cu.cspline[0](cu.arc_length_tab[-1] * alpha/(rpam.parameters['n_points_output_cspline']-1))), 
+            float(cu.cspline[1](cu.arc_length_tab[-1] * alpha/(rpam.parameters['n_points_output_cspline']-1)))
+            ] 
+        for alpha in range(rpam.parameters['n_points_output_cspline']) 
+        ]
+
+    with open(os.path.join(solpath.snapshots_csv_path, f'cspline_n_{step + 1}.csv'), 'w', newline='') as cspline_file:
+
+        writer = csv.writer(cspline_file)
+        writer.writerow([':0',':1'])  
+        writer.writerows(tab_cspline) 
+
+
+    #4. Write the deformed mesh to file
+
+    deformed_mesh = msh.deform_mesh(rmsh.lmsh.mesh[0], fsp.u_n)
+
+    with XDMFFile(os.path.join(solpath.snapshots_path, 'mesh_n_' + str(step + 1) + '.xdmf')) as xdmf:
+        xdmf.write(deformed_mesh)
+
+    io.print_mesh_vertices_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'vertex_mesh_n_' + str(step + 1) + '.csv'))
+    io.print_mesh_lines_to_csv(deformed_mesh, os.path.join(solpath.snapshots_csv_path, 'line_mesh_n_' + str(step + 1) + '.csv'))
+      
+
+    #5. write shape vertices 
+
+    input_path = os.path.join(rarg.args.input_directory, f"mesh_0/boundary_points_id_{rmsh.parameters['mesh_1_id']}.csv")
+    output_path = os.path.join(rarg.args.output_directory, f"snapshots/csv/boundary_points_id_{rmsh.parameters['mesh_1_id']}_n_{step + 1}.csv")
+    os.system(f'cp {input_path} {output_path}')
 
 

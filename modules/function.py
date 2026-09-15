@@ -4,10 +4,14 @@ import dolfin
 from fenics import *
 import importlib
 import numpy as np
+import os
 import pandas as pd
-import math
 from scipy.spatial import cKDTree
 import ufl
+
+import calculus as cal
+import constants.utils as const
+import input_output as io
 
 
 i, j, k, l = ufl.indices(4)
@@ -155,12 +159,11 @@ def read_from_file(file_path, u):
 '''
 given a function space and its mesh, return a function space on the deformed mesh, deformed according to a displacement field
 Input values:
-- 'Q': the function space
-- 'u': the displacement field
+    - 'Q': the function space
+    - 'u': the displacement field
 Return values:
-- the new function space on the deformed mesh
+    - the new function space on the deformed mesh
 '''
-
 
 def deform_function_space(Q, u):
     
@@ -199,10 +202,13 @@ def copy_function_values(f_in, f_out):
 
 '''
 given a field defined on a mesh and a deformation field of the mesh, return the field defined and interpolated on the deformed mesh
+
 Input values: 
     - 'f': the field (scalar, vector or tensor)
     - 'u': the deformation field, defined on the mesh of f
 
+Return values:
+    - 'g' such that g(y') =  f(phi^{-1}(y')), where phi(y) = y + u(y)
 '''
 def deform_function(f, u):
 
@@ -217,27 +223,46 @@ def deform_function(f, u):
 
 
 '''
-
-given a rectangular mesh and a sub mesh given by its top edge, transfer the values of a field (scalar, vector or tensor) defined on the sub mesh to a function defined on the mesh, setting to zero the values of the mesh function at points not on the edge.
+given a rectangular 2d mesh and a sub mesh given by a curve on its top edge (which can be any one-dimensional manifold, not necessarily a line), transfer the values of a field (scalar, vector or tensor) defined on the curve 1d mesh to a function defined on the 2d mesh, setting to zero the values of the mesh function at points not on the curve.
 Input values:
-    - 'u_sub_mesh': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
-    - 'u_mesh': the field defined on the mesh
+    * Mandatory: 
+        - 'u_1d': the field defined on the sub mesh (it needs to have the same shape as 'u_mesh')
+        - 'u_2d': the field defined on the mesh
+        - 'mesh_path': the path where the mesh is stored
+
+    * Optional:
+        - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
 
-def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
+def transfer_1d_to_2d_curve(u_1d, u_2d, mesh_path,
+                              tol=const.epsilon):
 
 
-    Q_mesh = u_mesh.function_space()
+
+    Q_2d = u_2d.function_space()
     
-    # compute the height of the mesh rectangle 
-    h = (msh.compute_size(Q_mesh.mesh()))[1]
+    '''
+    read all vertices which belong to edges tagged with ID 'sub_mesh_1_id' and store them into `sub_mesh_1_vertices`
+    `sub_mesh_vertices` is an ordered list of the coordinates of the vertices in the mesh which belong to the sub mesh 
+    '''
+    mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
+    mesh_1d_vertices = mesh_parameters['shape_coordinates']
+
+    '''
+    compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
+    '''
+    arc_length = 0
+    arc_length_tab = [0]
+    for i in range(1, len(mesh_1d_vertices)):
+
+        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
+        arc_length_tab.append(arc_length)
+
     
 
-    # Get DOF coordinates for the mesh function space
-    mesh_coordinates = Q_mesh.tabulate_dof_coordinates()
     
     # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_mesh.ufl_element().value_shape()
+    value_shape = Q_2d.ufl_element().value_shape()
     value_rank = len(value_shape)
     
     # Calculate total number of components
@@ -250,91 +275,267 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
     else:
         # Tensor field (e.g., 2x2 matrix has 4 components)
         num_components = int(np.prod(value_shape))
-    
-    # For vector spaces, coordinates are repeated for each component
-    # We need to evaluate only at unique coordinates
-    num_unique_points = len(mesh_coordinates) // num_components
+
+    # Get DOF coordinates for the mesh function space
+    dof_coordinates = Q_2d.tabulate_dof_coordinates()
+    n_dofs = Q_2d.dim()
+    n_nodes = n_dofs // num_components
+
     
     # Create list to store all DOF values (using list for efficiency with extend)
-    all_values = []
+    u_2d_values = np.zeros(n_dofs)
+
     
     # Process each unique point
-    for i in range(num_unique_points):
+    for node in range(n_nodes):
         # run through mesh_coordinates with step num_components
-        mesh_coord = mesh_coordinates[i * num_components]
-        
-        # Check if this point is on the edge y = h
-        if math.isclose(mesh_coord[1], h):
-            # Evaluate the sub_mesh function at x-coordinate
-            value = u_sub_mesh(mesh_coord[0])
-            
-            if num_components == 1:
-                # Scalar field - direct assignment
-                all_values.append(value)
-            else:
-                # Vector or tensor field
-                # Extend with all components at once (interleaved ordering)
-                all_values.extend(np.array(value, dtype=float).flatten())
-        else:
-            # Point not on edge - add zeros
-            if num_components == 1:
-                all_values.append(0.0)
-            else:
-                all_values.extend([0.0] * num_components)
-    
-    # Set the values in the function
-    u_mesh.vector()[:] = np.array(all_values)
+
+        coordinate = dof_coordinates[node * num_components]
+
+        for i in range(1, len(mesh_1d_vertices)):
+            # run through `sub_mesh_vertices` to find whether `node` belongs to the sub mesh
+
+            if cal.point_on_segment(np.array(coordinate), np.array(mesh_1d_vertices[i-1]), np.array(mesh_1d_vertices[i]), tol):
+                #  `node` lies on the segment in between two verices in `sub_mesh_vertices` -> it belongs to the sub mesh 
+
+                # arc length at the DOF = cumulative length up to v_{i-1} + distance along this segment
+                s = arc_length_tab[i-1] + np.linalg.norm(
+                        np.subtract(coordinate, mesh_1d_vertices[i-1]))
+
+                # compute u_sub_mesh at the arc length `s`
+                u_sub_mesh_value = np.array(u_1d(s), dtype=float).flatten()
+
+                # assign the compute value of `u_sub_mesh` to u_mesh_values
+                for j in range(num_components):
+
+                    u_2d_values[num_components*node + j] = u_sub_mesh_value[j]
+
+                break
+
+               
+    # set the values in u_mesh
+    u_2d.vector().set_local(u_2d_values)
+    u_2d.vector().apply("insert")
         
 
 
 '''
-transfer on a sub mesh a function defined on a mesh, where the mesh is given by a rectangle, and the sub mesh by its top edge. 
+transfer on a 1d mesh a function defined on a 2d mesh (a scalar, vector, tensor of any shape), where the 2d mesh is given by a rectangle, and the 1d mesh by a curve constituting the top edge of the 2d mesh (it needs not be a straight line). 
 Input values: 
-    - 'f_mesh': the function defined on the mesh (a scalar, vector, tensor of any shape)
-    - 'f_sub_mesh': the function defined on the sub mesh (it needs to have the same shape as 'f_mesh')
-    - 'h': the height of the rectangle mesh 
+    * Mandatory:
+        - 'u_2d': the function defined on the 2d mesh (a scalar, vector, tensor of any shape)
+        - 'u_1d': the function defined on the 1d mesh (it needs to have the same shape as 'u_2d')
+    * Optional:
+        - 'tol' (const.epsilon): the tolerance used to assess distances
 '''
-def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
-    # Get DOF coordinates
-    sub_mesh_dim = f_sub_mesh.function_space().mesh().geometry().dim()
-    dof_coords_sub_mesh = f_sub_mesh.function_space().tabulate_dof_coordinates().reshape((-1, sub_mesh_dim))
+def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
+
+    # this is needed in case `u_mesh` is evaluated at point slightly outside its mesh
+    u_2d.set_allow_extrapolation(True)
+
+
+    Q_1d = u_1d.function_space()
+
+    '''
+    read all vertices which belong to edges tagged with ID 'mesh_1_id' and store them into `mesh_1_vertices`. 
+    `mesh_vertices` is an ordered list of the coordinates of the vertices in the 2d mesh which belong to the 1d mesh 
+    '''
+    mesh_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_path, 'mesh_metadata.csv')) 
+    mesh_1d_vertices = mesh_parameters['shape_coordinates']
+
+    '''
+    compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until mesh_1d_vertices included]
+    '''
+    arc_length = 0
+    arc_length_tab = [0]
+    for i in range(1, len(mesh_1d_vertices)):
+
+        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
+        arc_length_tab.append(arc_length)
+
+
+    # Determine the value shape (scalar, vector, or tensor)
+    value_shape = Q_1d.ufl_element().value_shape()
+    value_rank = len(value_shape)
     
-    # Get value shape
-    element = f_sub_mesh.function_space().ufl_element()
-    value_shape = element.value_shape()
-    
-    if len(value_shape) == 0:
-        value_size = 1
-    elif len(value_shape) == 1:
-        value_size = value_shape[0]
+    # Calculate total number of components
+    if value_rank == 0:
+        # Scalar field
+        num_components = 1
+    elif value_rank == 1:
+        # Vector field
+        num_components = value_shape[0]
     else:
-        value_size = np.prod(value_shape)
-    
-    # For tensor/vector spaces, coordinates are repeated for each component
-    # We need to evaluate only at unique coordinates
-    num_unique_points = len(dof_coords_sub_mesh) // value_size
-    
-    # Create flat array to store all DOF values
-    all_values = []
+        # Tensor field (e.g., 2x2 matrix has 4 components)
+        num_components = int(np.prod(value_shape))
+
+    # Get DOF coordinates
+    dof_coordinates = Q_1d.tabulate_dof_coordinates()
+    n_dofs = Q_1d.dim()
+    n_nodes = n_dofs // num_components
+
+    # Create list to store all DOF values (using list for efficiency with extend)
+    u_1d_values = np.zeros(n_dofs)
+
     
     # Evaluate at each unique coordinate
-    for i in range(num_unique_points):
-        coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
-        
-        val = f_mesh([coord[0], h])
-        
-        if value_size == 1:
-            all_values.append(val)
-        else:
-            # val is already the full tensor (4 components for 2x2)
-            all_values.extend(np.array(val).flatten())
-                
+    for node in range(n_nodes):
 
+        coordinate = dof_coordinates[node * num_components]  # Take first occurrence of each unique point
+
+        '''
+        convert `coord[0]` into an arclength along the mesh: find the pair of entries in `arc_length_tab` that bracked coord[0]
+        '''
+
+        for j in range(len(arc_length_tab)-1):
+
+            if (coordinate[0] > arc_length_tab[j] - tol) and  (coordinate[0] < arc_length_tab[j+1] + tol):
+                # `coordinate[0]` falls within arc_length_tab[j] and arc_length_tab[j+1] -> break the loop and store j
+                break
+
+        '''
+        the loop above returns j such that arc_length_tab[j] < coord[0] < arc_length_tab[j+1]
+        '''
+
+        mesh_2d_coordinate = np.add(mesh_1d_vertices[j], np.multiply((coordinate[0] - arc_length_tab[j])/(arc_length_tab[j+1] - arc_length_tab[j]), np.subtract(mesh_1d_vertices[j+1], mesh_1d_vertices[j])))
+
+        u_2d_mesh_value = np.array(u_2d(mesh_2d_coordinate), dtype=float).flatten()
+        
+        # assign the compute value of `u_sub_mesh` to u_mesh_values
+        for j in range(num_components):
+
+            u_1d_values[num_components*node + j] = u_2d_mesh_value[j]
+                
     
-    # Assign to the submesh function
-    f_sub_mesh.vector()[:] = np.array(all_values)
+    # set the values in u_mesh
+    u_1d.vector().set_local(u_1d_values)
+    u_1d.vector().apply("insert")
     
     
+'''
+given a 1d mesh a (obtained by laying flat the top edge (curve), or an internal shape of a 2d mesh a), and a 1d mesh b (obtained by laying flat the top edge (curve), or an internal shape of 2d mesh b), where 1d mesh b is obtained from 1d mesh a by means of a displacement field, this method transfers a field (scalar, vector, tensor) on 1d mesh a onto 1d mesh b
+Input values: 
+    * Mandatory:
+        - `u_a`: the field on 1d mesh a
+        - `u_b`: the field on 1d mesh b
+        - `u`: the deformation field that relates 2d mesh a to 2d mesh b
+        - `mesh_a_path`: the path of the mesh of `u_a`
+    * Optional:
+        - 'tol' (const.epsilon): the tolerance used to assess distances
+        - 'close' (False): This needs to be set to `True` if the shape internal to the 2d mesh a is a closed polygon. In fact, in this case the shape coordinates 'shape_coordinates' in mesh_a_path/'mesh_metadata.csv' represent a closed polygon but they do not include the last point of the polygon (which coincides with the first). If `close == True`, the first point in `shape_coordinates` is appended at the end of `shape_coordinates` by the method. This is needed for the transfer to be made correctly. 
+
+Return values: 
+    This method does not return anything, it writes into `u_b`. Once the method is called, we have u_b(x_1') = u_a(x_1), where x_1 and x_1' are the arc lengths along the curve of 2d mesh a and 2d mesh b, respectively.  Given that the deformation field `u` maps each point of 2d mesh a into a point of 2d mesh b, this implies a mapping of each arclength of 1d mesh to an arc length of 2d mesh b, which we call  x_1' = phi_u(x_1), where phi_u depends on `u`. 
+    This after this method is called, we have u_b(x_1') = u_a((phi_u)^{-1}(x_1')). 
+'''
+def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path, 
+                                  tol=const.epsilon,
+                                  closed=False):
+    
+    u_a.set_allow_extrapolation(True)
+    u.set_allow_extrapolation(True)
+
+    Q_b = u_b.function_space()
+
+    '''
+    read all vertices in mesh a which belong to edges tagged with ID 'mesh_1_id' and store them into `mesh_2d_a_vertices`
+    `mesh_2d_a_vertices` is an ordered list of the coordinates of the vertices in 2d mesh a which belong to the 1d mesh a
+    '''
+    mesh_2d_a_parameters = io.read_parameters_from_csv_file(os.path.join(mesh_a_path, 'mesh_metadata.csv')) 
+    mesh_2d_a_vertices = mesh_2d_a_parameters['shape_coordinates']
+
+    if closed:
+        mesh_2d_a_vertices.append(mesh_2d_a_vertices[0])
+
+    '''
+    compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]
+    '''
+    arc_length_a = 0
+    arc_length_a_tab = [0]
+    for i in range(1, len(mesh_2d_a_vertices)):
+
+        arc_length_a += np.linalg.norm(np.subtract(mesh_2d_a_vertices[i], mesh_2d_a_vertices[i-1]))
+        arc_length_a_tab.append(arc_length_a)
+
+
+    '''
+    compute the arc length along 1d mesh a, deformed onto 1d mesh b: arc_length_b_tab[i] = [cumulative arc length along the 1d mesh a curve deformed into b, obtained from its beginning until mesh_2d_a_vertices[i] included]
+    '''
+    arc_length_a_to_b = 0
+    arc_length_a_to_b_tab = [0]
+    for i in range(1, len(mesh_2d_a_vertices)):
+
+        arc_length_a_to_b += np.linalg.norm(np.subtract(
+            np.add(mesh_2d_a_vertices[i], u(mesh_2d_a_vertices[i])), 
+            np.add(mesh_2d_a_vertices[i-1], u(mesh_2d_a_vertices[i-1]))
+            ))
+        arc_length_a_to_b_tab.append(arc_length_a_to_b)
+
+
+    # Determine the value shape (scalar, vector, or tensor)
+    value_shape = Q_b.ufl_element().value_shape()
+    value_rank = len(value_shape)
+    
+    # Calculate total number of components
+    if value_rank == 0:
+        # Scalar field
+        num_components = 1
+    elif value_rank == 1:
+        # Vector field
+        num_components = value_shape[0]
+    else:
+        # Tensor field (e.g., 2x2 matrix has 4 components)
+        num_components = int(np.prod(value_shape))
+
+    # Get DOF coordinates
+    dof_coordinates_b = Q_b.tabulate_dof_coordinates()
+    n_dofs_b = Q_b.dim()
+    n_nodes_b = n_dofs_b // num_components
+
+    # print(f'*** sanity check: {abs(arc_length_a_to_b_tab[-1] - max(dof_coordinates_b[:, 0]))}')
+
+
+    # Create list to store all DOF values (using list for efficiency with extend)
+    u_b_values = np.zeros(n_dofs_b)
+
+    # Evaluate at each unique coordinate
+    for node in range(n_nodes_b):
+
+        # Take first occurrence of each unique point along b
+        coordinate_b = dof_coordinates_b[node * num_components][0]
+
+        '''
+        convert `coordinate_b` into an arclength along a by taking into account the deformation field `u` that brings a into b: find the pair of entries in `arc_length_a_to_b_tab` that bracked coordinate_b
+        '''
+
+        # print(f'* coordinate[0] = {coordinate[0]}')
+
+        for j in range(len(arc_length_a_to_b_tab)-1):
+
+            if (coordinate_b > arc_length_a_to_b_tab[j] - tol) and  (coordinate_b < arc_length_a_to_b_tab[j+1] + tol):
+                # `coordinate[0]` falls within arc_length_b_tab[j] and arc_length_b_tab[j+1] -> break the loop and store j
+                break
+
+        '''
+        the loop above returns j such that arc_length_b_tab[j] < coord[0] < arc_length_b_tab[j+1]
+        '''
+        # print(f'* j = {j}')
+
+        coordinate_a = arc_length_a_tab[j] + (coordinate_b - arc_length_a_to_b_tab[j]) / (arc_length_a_to_b_tab[j+1] - arc_length_a_to_b_tab[j]) * (arc_length_a_tab[j+1] - arc_length_a_tab[j])
+
+        u_a_value = np.array(u_a(coordinate_a), dtype=float).flatten()
+        
+        # assign the compute value of `u_a` to `u_b_values`
+        for j in range(num_components):
+
+            u_b_values[num_components*node + j] = u_a_value[j]
+                
+    
+    # set the values in u_mesh
+    u_b.vector().set_local(u_b_values)
+    u_b.vector().apply("insert")
+    
+
 
 
 '''

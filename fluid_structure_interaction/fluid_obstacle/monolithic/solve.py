@@ -84,7 +84,7 @@ alpha, beta = ufl.indices(2)
 
 
 print(f'Generating initial mesh ...')
-# # coordinates of the shape when the shape lies flat (theta_ref = 0)
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
 # shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
 # shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
@@ -360,16 +360,13 @@ for n in range(rpam.parameters['num_steps']):
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
         v_n_old = Function(fsp.Q_v_n)
-        v_n_1_old = Function(fsp.Q_v_n)
         
         sigma_n_old = Function(fsp.Q_sigma_n)
 
         u_n_old = Function(fsp.Q_u_n)
-        u_n_1_old = Function(fsp.Q_u_n)
         u_dot_n_old = Function(fsp.Q_u_dot_n)
 
         c_n_old = Function(fsp.Q_sigma_n)
-        c_n_1_old = Function(fsp.Q_sigma_n)
 
         mu_n_old = Function(fsp.Q_mu_n)
 
@@ -386,12 +383,10 @@ for n in range(rpam.parameters['num_steps']):
 
         # 4.1.2.2 write
         v_n_old.assign(v_n_dummy)
-        v_n_1_old.assign(fsp.v_n_1)
 
         sigma_n_old.assign(sigma_n_dummy)
 
         u_n_old.assign(u_n_dummy)
-        u_n_1_old.assign(fsp.u_n_1)
         u_dot_n_old.assign(u_dot_n_dummy)
 
         c_n_old.assign(c_n_dummy)
@@ -465,13 +460,10 @@ for n in range(rpam.parameters['num_steps']):
         # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
 
         msh.transfer_dg(v_n_old, fsp.v_input, u_0_old, sf_old, rmsh.sf[0])
-        msh.transfer_dg(v_n_1_old, fsp.v_n_1, u_0_old, sf_old, rmsh.sf[0])
 
         msh.transfer_dg(sigma_n_old, fsp.sigma_input, u_0_old, sf_old, rmsh.sf[0])
 
         msh.transfer_dg(c_n_old, fsp.c_input, u_0_old, sf_old, rmsh.sf[0])
-        msh.transfer_dg(c_n_1_old, fsp.c_n_1, u_0_old, sf_old, rmsh.sf[0])
-
 
     
         #4.4.1.2 Step B): set the initial u'
@@ -538,13 +530,12 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4.3 clean up
 
-        del v_n_old, v_n_1_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, c_n_1_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
+        del v_n_old, sigma_n_old, u_n_old, u_dot_n_old, c_n_old, mu_n_old, phi_n_old, phi_0_old, u_0_old
         gc.collect()
 
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
     
-    # sign add u_0
 
 
     #5 Update fields
@@ -565,7 +556,7 @@ for n in range(rpam.parameters['num_steps']):
 
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
         
-        pr_sol.print_solution(t, step, dt)
+        pr_sol.print_solution(t, step)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
     
