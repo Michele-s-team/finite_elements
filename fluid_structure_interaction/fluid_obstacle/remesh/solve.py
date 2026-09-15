@@ -895,7 +895,7 @@ for n in range(rpam.parameters['N']):
     fsp.v_disk_n_2.assign(fsp.v_disk_n_1)
     fsp.v_disk_n_1.assign(fsp.v_disk_n)
 
-    fsp.sigma_disk_n_12.assign( fsp.sigma_disk_n_32 - project(fsp.phi_disk_aux, fsp.Q_sigma_disk) )
+    fsp.sigma_disk_n_12.assign(fsp.sigma_disk_n_32 - project(fsp.phi_disk_aux, fsp.Q_sigma_disk) )
     fsp.sigma_disk_n_32.assign(fsp.sigma_disk_n_12)
 
 
@@ -903,7 +903,7 @@ for n in range(rpam.parameters['N']):
     fsp.v_square_n_2.assign(fsp.v_square_n_1)
     fsp.v_square_n_1.assign(fsp.v_square_n)
 
-    fsp.sigma_square_n_12.assign( fsp.sigma_square_n_32 - fsp.phi_square )
+    fsp.sigma_square_n_12.assign(fsp.sigma_square_n_32 - fsp.phi_square)
     fsp.sigma_square_n_32.assign(fsp.sigma_square_n_12)
 
     # 5) M
