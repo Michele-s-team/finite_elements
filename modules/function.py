@@ -535,7 +535,36 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     u_b.vector().set_local(u_b_values)
     u_b.vector().apply("insert")
     
+'''
+return the number of components of a field (scalar, vector or tensor) defined on a given function space
 
+Input values: 
+    - `Q`: the function space
+Return values: 
+    - `n_components`: 1 for a scalar, N for an N-dimensional vector, M x N for an M x N tensor, etc. 
+'''
+def n_components(Q):
+
+    # Determine the value shape (scalar, vector, or tensor)
+    value_shape = Q.ufl_element().value_shape()
+    value_rank = len(value_shape)
+    
+    # Calculate total number of components
+    if value_rank == 0:
+        # Scalar field
+        n_components = 1
+
+    elif value_rank == 1:
+
+        # Vector field
+        n_components = value_shape[0]
+
+    else:
+
+        # Tensor field (e.g., 2x2 matrix has 4 components)
+        n_components = int(np.prod(value_shape))
+
+    return n_components
 
 
 '''
