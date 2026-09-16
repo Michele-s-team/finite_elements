@@ -258,23 +258,7 @@ def transfer_1d_to_2d_curve(u_1d, u_2d, mesh_path,
         arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
         arc_length_tab.append(arc_length)
 
-    
-
-    
-    # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_2d.ufl_element().value_shape()
-    value_rank = len(value_shape)
-    
-    # Calculate total number of components
-    if value_rank == 0:
-        # Scalar field
-        num_components = 1
-    elif value_rank == 1:
-        # Vector field
-        num_components = value_shape[0]
-    else:
-        # Tensor field (e.g., 2x2 matrix has 4 components)
-        num_components = int(np.prod(value_shape))
+    num_components = n_components(Q_2d)
 
     # Get DOF coordinates for the mesh function space
     dof_coordinates = Q_2d.tabulate_dof_coordinates()
@@ -353,21 +337,7 @@ def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
         arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
         arc_length_tab.append(arc_length)
 
-
-    # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_1d.ufl_element().value_shape()
-    value_rank = len(value_shape)
-    
-    # Calculate total number of components
-    if value_rank == 0:
-        # Scalar field
-        num_components = 1
-    elif value_rank == 1:
-        # Vector field
-        num_components = value_shape[0]
-    else:
-        # Tensor field (e.g., 2x2 matrix has 4 components)
-        num_components = int(np.prod(value_shape))
+    num_components = n_components(Q_1d)
 
     # Get DOF coordinates
     dof_coordinates = Q_1d.tabulate_dof_coordinates()
@@ -471,21 +441,9 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
             ))
         arc_length_a_to_b_tab.append(arc_length_a_to_b)
 
-
-    # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_b.ufl_element().value_shape()
-    value_rank = len(value_shape)
     
-    # Calculate total number of components
-    if value_rank == 0:
-        # Scalar field
-        num_components = 1
-    elif value_rank == 1:
-        # Vector field
-        num_components = value_shape[0]
-    else:
-        # Tensor field (e.g., 2x2 matrix has 4 components)
-        num_components = int(np.prod(value_shape))
+    num_components = n_components(Q_b)
+    
 
     # Get DOF coordinates
     dof_coordinates_b = Q_b.tabulate_dof_coordinates()
