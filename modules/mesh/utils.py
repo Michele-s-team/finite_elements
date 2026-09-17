@@ -3168,16 +3168,13 @@ def shape_tool(mesh, mf_mesh, shape_coordinates, shape_id):
 
 
     # 5. compute the arc length along the shape in the 2d mesh
-    l = 0.0
-    cumulative_arc_length = [l]
 
-    for i in range(1, len(indices_vertices_on_shape)):
+    mesh_coordinates_indices_vertices_on_shape = [mesh_coordinates[indices_vertices_on_shape[i]] for i in range(len(indices_vertices_on_shape))]
+    cumulative_arc_length = geo_u.arc_length_tab(mesh_coordinates_indices_vertices_on_shape)
+    
+    l = cumulative_arc_length[-1]
 
-        delta_l =  np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[i]], mesh_coordinates[indices_vertices_on_shape[i-1]]))
-
-        l += delta_l
-        cumulative_arc_length.append(l)
-
+   
     delta_l = np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[-1]], mesh_coordinates[indices_vertices_on_shape[0]]))
 
     l += delta_l
