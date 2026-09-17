@@ -6,6 +6,7 @@ from scipy.interpolate import CubicSpline
 import switch_problem as swi
 
 import function_spaces as fsp
+import geometry.utils as geo
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -17,15 +18,7 @@ shape_coordinates = np.array(rmsh.parameters['shape_coordinates'])
 '''
 compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until shape_coordinates[i] included]
 '''
-arc_length = 0
-arc_length_tab = [0]
-for i in range(1, len(shape_coordinates)):
-
-    arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
-    arc_length_tab.append(arc_length)
-
-
-
+arc_length_tab = geo.arc_length_tab(shape_coordinates)
 
 # fit a periodic cubic spline for x(t) and y(t) separately
 cspline = [CubicSpline(arc_length_tab, shape_coordinates[:, 0], bc_type='natural'), CubicSpline(arc_length_tab, shape_coordinates[:, 1], bc_type='natural')]
