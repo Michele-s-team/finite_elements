@@ -38,6 +38,9 @@ integral_exact_ds_square = integral_exact_ds_lr + integral_exact_ds_tb
 
 integral_exact_ds = integral_exact_ds_square + integral_exact_ds_ellipse
 
+integral_exact_dS = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals)
+
+
 test_mesh_integral_errors = dict([])
 
 test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_dx, tf.function_test_integrals_fenics, rmsh.dx, '\int f dx')
@@ -56,6 +59,9 @@ test_mesh_integral_errors['\int f ds_ellipse'] = msh.test_mesh_integral(integral
 test_mesh_integral_errors['\int f ds_{l + tb + ellipse}'] = msh.test_mesh_integral(integral_exact_ds_l + integral_exact_ds_tb + integral_exact_ds_ellipse, tf.function_test_integrals_fenics, rmsh.ds_l_tb_ellipse, '\int f ds_{l + tb + ellipse}')
 
 test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, tf.function_test_integrals_fenics, rmsh.ds, '\int f ds')
+
+test_mesh_integral_errors['\int dS f'] = msh.test_mesh_integral(integral_exact_dS, tf.function_test_integrals_fenics, rmsh.dS, '\int f dS')
+
 
 # print to file the residuals of the tests of the mesh integrals
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
