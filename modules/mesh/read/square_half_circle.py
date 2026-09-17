@@ -36,6 +36,9 @@ ds_tb = ds_t + ds_b
 
 ds = ds_lr + ds_tb
 
+dS = Measure("dS", domain=lmsh.mesh)
+
+
 check_mesh_module = importlib.import_module('mesh.check_tags.square_half_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

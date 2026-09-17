@@ -54,6 +54,7 @@ ds_mesh[0] = dict([ \
     ('ds_r', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=parameters[f"line_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=parameters[f"mesh_{1}_id"])), \
     ('ds_b', Measure("ds", domain=lmsh.mesh[0], subdomain_data=mf[0], subdomain_id=parameters[f"line_b_id"])), \
+    ('dS', Measure("dS", domain=lmsh.mesh[0])), \
     ])
 
 ds_mesh[0]['ds_lr'] = ds_mesh[0]['ds_l'] + ds_mesh[0]['ds_r']

@@ -40,6 +40,7 @@ epsilon_boundaries = 1e-3
 # CHANGE PARAMETERS HERE
 
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=surface_id)
+
 ds_arc_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=circle_r_id)
 ds_arc_R = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=circle_R_id)
 ds_line_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=line_t_id)
@@ -47,6 +48,8 @@ ds_line_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=line
 ds_arc_rR = ds_arc_r + ds_arc_R
 ds_line_tb = ds_line_t + ds_line_b
 ds = ds_arc_rR + ds_line_tb
+
+dS = Measure("dS", domain=lmsh.mesh)
 
 
 check_mesh_module = importlib.import_module('mesh.check_tags.ring_slice')

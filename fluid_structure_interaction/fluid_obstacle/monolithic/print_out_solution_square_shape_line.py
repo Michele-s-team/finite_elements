@@ -80,7 +80,7 @@ def print_solution(t, step):
 
     # 3.1.1.2 write the cspline
 
-    tab_cspline = [[float(sh.cspline[0](alpha/rpam.parameters['n_points_output_cspline'])), float(sh.cspline[1](alpha/rpam.parameters['n_points_output_cspline']))] for alpha in range(rpam.parameters['n_points_output_cspline']) ]
+    tab_cspline = [[float(sh.cspline[0](alpha/(rpam.parameters['n_points_output_cspline']-1))), float(sh.cspline[1](alpha/(rpam.parameters['n_points_output_cspline']-1)))] for alpha in range(rpam.parameters['n_points_output_cspline']) ]
 
     with open(os.path.join(solpath.snapshots_csv_path, f'cspline_n_{step}.csv'), 'w', newline='') as cspline_file:
         writer = csv.writer(cspline_file)

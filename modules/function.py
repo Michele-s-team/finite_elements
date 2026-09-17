@@ -11,6 +11,7 @@ import ufl
 
 import calculus as cal
 import constants.utils as const
+import geometry.utils as geo
 import input_output as io
 
 
@@ -251,30 +252,9 @@ def transfer_1d_to_2d_curve(u_1d, u_2d, mesh_path,
     '''
     compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the sub mesh curve obtained from its beginning until sub_mesh_vertices included]
     '''
-    arc_length = 0
-    arc_length_tab = [0]
-    for i in range(1, len(mesh_1d_vertices)):
+    arc_length_tab = geo.arc_length_tab(mesh_1d_vertices)
 
-        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
-        arc_length_tab.append(arc_length)
-
-    
-
-    
-    # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_2d.ufl_element().value_shape()
-    value_rank = len(value_shape)
-    
-    # Calculate total number of components
-    if value_rank == 0:
-        # Scalar field
-        num_components = 1
-    elif value_rank == 1:
-        # Vector field
-        num_components = value_shape[0]
-    else:
-        # Tensor field (e.g., 2x2 matrix has 4 components)
-        num_components = int(np.prod(value_shape))
+    num_components = n_components(Q_2d)
 
     # Get DOF coordinates for the mesh function space
     dof_coordinates = Q_2d.tabulate_dof_coordinates()
@@ -346,28 +326,9 @@ def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
     '''
     compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until mesh_1d_vertices included]
     '''
-    arc_length = 0
-    arc_length_tab = [0]
-    for i in range(1, len(mesh_1d_vertices)):
+    arc_length_tab = geo.arc_length_tab(mesh_1d_vertices)
 
-        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
-        arc_length_tab.append(arc_length)
-
-
-    # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_1d.ufl_element().value_shape()
-    value_rank = len(value_shape)
-    
-    # Calculate total number of components
-    if value_rank == 0:
-        # Scalar field
-        num_components = 1
-    elif value_rank == 1:
-        # Vector field
-        num_components = value_shape[0]
-    else:
-        # Tensor field (e.g., 2x2 matrix has 4 components)
-        num_components = int(np.prod(value_shape))
+    num_components = n_components(Q_1d)
 
     # Get DOF coordinates
     dof_coordinates = Q_1d.tabulate_dof_coordinates()
@@ -450,42 +411,17 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     '''
     compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]
     '''
-    arc_length_a = 0
-    arc_length_a_tab = [0]
-    for i in range(1, len(mesh_2d_a_vertices)):
-
-        arc_length_a += np.linalg.norm(np.subtract(mesh_2d_a_vertices[i], mesh_2d_a_vertices[i-1]))
-        arc_length_a_tab.append(arc_length_a)
-
+    arc_length_a_tab = geo.arc_length_tab(mesh_2d_a_vertices)
 
     '''
     compute the arc length along 1d mesh a, deformed onto 1d mesh b: arc_length_b_tab[i] = [cumulative arc length along the 1d mesh a curve deformed into b, obtained from its beginning until mesh_2d_a_vertices[i] included]
     '''
-    arc_length_a_to_b = 0
-    arc_length_a_to_b_tab = [0]
-    for i in range(1, len(mesh_2d_a_vertices)):
-
-        arc_length_a_to_b += np.linalg.norm(np.subtract(
-            np.add(mesh_2d_a_vertices[i], u(mesh_2d_a_vertices[i])), 
-            np.add(mesh_2d_a_vertices[i-1], u(mesh_2d_a_vertices[i-1]))
-            ))
-        arc_length_a_to_b_tab.append(arc_length_a_to_b)
+    mesh_2d_a_vertices_u = [np.add(mesh_2d_a_vertices[i], u(mesh_2d_a_vertices[i])) for i in range(len(mesh_2d_a_vertices))]
+    arc_length_a_to_b_tab = geo.arc_length_tab(mesh_2d_a_vertices_u)
 
 
-    # Determine the value shape (scalar, vector, or tensor)
-    value_shape = Q_b.ufl_element().value_shape()
-    value_rank = len(value_shape)
+    num_components = n_components(Q_b)
     
-    # Calculate total number of components
-    if value_rank == 0:
-        # Scalar field
-        num_components = 1
-    elif value_rank == 1:
-        # Vector field
-        num_components = value_shape[0]
-    else:
-        # Tensor field (e.g., 2x2 matrix has 4 components)
-        num_components = int(np.prod(value_shape))
 
     # Get DOF coordinates
     dof_coordinates_b = Q_b.tabulate_dof_coordinates()
@@ -535,7 +471,36 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     u_b.vector().set_local(u_b_values)
     u_b.vector().apply("insert")
     
+'''
+return the number of components of a field (scalar, vector or tensor) defined on a given function space
 
+Input values: 
+    - `Q`: the function space
+Return values: 
+    - `n_components`: 1 for a scalar, N for an N-dimensional vector, M x N for an M x N tensor, etc. 
+'''
+def n_components(Q):
+
+    # Determine the value shape (scalar, vector, or tensor)
+    value_shape = Q.ufl_element().value_shape()
+    value_rank = len(value_shape)
+    
+    # Calculate total number of components
+    if value_rank == 0:
+        # Scalar field
+        n_components = 1
+
+    elif value_rank == 1:
+
+        # Vector field
+        n_components = value_shape[0]
+
+    else:
+
+        # Tensor field (e.g., 2x2 matrix has 4 components)
+        n_components = int(np.prod(value_shape))
+
+    return n_components
 
 
 '''

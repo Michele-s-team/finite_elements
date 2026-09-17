@@ -2913,12 +2913,8 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     3. compute the arc length along the one-dimensional manifold, store the cumulative arc length at each vertex of it in `line_mesh_coordinates`: these will be the one-dimensional coordinates of the line, 1d mesh that will be generated. 
                     Thi 1d mesh is obtained by lying flat the one-dimensional manifold above. 
                     '''
-                    line_mesh_coordinates = [0]
-                    arc_length = 0
-                    for i in range(1, len(sub_mesh_vertices)):
-
-                        arc_length += np.linalg.norm(np.subtract(sub_mesh_vertices[i].point().array()[:2], sub_mesh_vertices[i-1].point().array()[:2])) 
-                        line_mesh_coordinates.append(arc_length)     
+                    sub_mesh_vertices_point_array = [sub_mesh_vertices[i].point().array()[:2] for i in range(len(sub_mesh_vertices))]
+                    line_mesh_coordinates = geo_u.arc_length_tab(sub_mesh_vertices_point_array)
 
 
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
@@ -3172,16 +3168,13 @@ def shape_tool(mesh, mf_mesh, shape_coordinates, shape_id):
 
 
     # 5. compute the arc length along the shape in the 2d mesh
-    l = 0.0
-    cumulative_arc_length = [l]
 
-    for i in range(1, len(indices_vertices_on_shape)):
+    mesh_coordinates_indices_vertices_on_shape = [mesh_coordinates[indices_vertices_on_shape[i]] for i in range(len(indices_vertices_on_shape))]
+    cumulative_arc_length = geo_u.arc_length_tab(mesh_coordinates_indices_vertices_on_shape)
+    
+    l = cumulative_arc_length[-1]
 
-        delta_l =  np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[i]], mesh_coordinates[indices_vertices_on_shape[i-1]]))
-
-        l += delta_l
-        cumulative_arc_length.append(l)
-
+   
     delta_l = np.linalg.norm(np.subtract(mesh_coordinates[indices_vertices_on_shape[-1]], mesh_coordinates[indices_vertices_on_shape[0]]))
 
     l += delta_l
@@ -4252,16 +4245,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
     else:
         # the meshing algorithm did not insert additional vertices with respect to `shape_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
 
-        arc_length_table = [0]
-        arc_length = 0
-
-        for i in range(1, len(shape_coordinates)):
-
-            arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
-            arc_length_table.append(arc_length)
-
-        # print(f'arclength table = {arc_length_table}')
-
+        arc_length_table = geo_u.arc_length_tab(shape_coordinates)
 
         # Create a proper 1D IntervalMesh using the actual vertex positions
         if len(arc_length_table) >= 2:

@@ -46,11 +46,16 @@ integral_exact[0]['ds_tb'] = integral_exact[0]['ds_t'] + integral_exact[0]['ds_b
 
 integral_exact[0]['ds'] = integral_exact[0]['ds_lr'] + integral_exact[0]['ds_tb']
 
+integral_exact[0]['dS'] = cal.curve_integral_dS(rmsh.lmsh.mesh[0], tf.function_test_integrals[0])
+
+
 # for mesh #1
 integral_exact[1]['ds_l'] = (tf.function_test_integrals[1])(lmsh.mesh_parameters[1]['x_l'])
 integral_exact[1]['ds_r'] = (tf.function_test_integrals[1])(lmsh.mesh_parameters[1]['x_r'])
 
 integral_exact[1]['ds'] = integral_exact[1]['ds_l'] + integral_exact[1]['ds_r']
+
+
 
 test_mesh_integral_errors = dict([])
 
@@ -72,6 +77,8 @@ test_mesh_integral_errors[f'\int f ds_mesh_{0}_lr'] = msh.test_mesh_integral(int
 test_mesh_integral_errors[f'\int f ds_mesh_{0}_tb'] = msh.test_mesh_integral(integral_exact[0]['ds_tb'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds_tb'], f'\int f ds_mesh_{0}_tb')
 
 test_mesh_integral_errors[f'\int f ds_mesh_{0}'] = msh.test_mesh_integral(integral_exact[0]['ds'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['ds'], f'\int f ds_mesh_{0}')
+
+test_mesh_integral_errors['\int f dS_mesh_{0}'] = msh.test_mesh_integral(integral_exact[0]['dS'], tf.function_test_integrals_fenics[0], rmsh.ds_mesh[0]['dS'], '\int f dS_mesh_{0}')
 
 # for mesh #1
 test_mesh_integral_errors[f'\int f ds_mesh_{1}_l'] = msh.test_mesh_integral(integral_exact[1]['ds_l'], tf.function_test_integrals_fenics[1], rmsh.ds_mesh[1]['ds_l'], f'\int f ds_mesh_{1}_l')

@@ -23,6 +23,8 @@ dx_sub_mesh = []
 for p in range(len(lmsh.sub_meshes)):
     dx_sub_mesh.append(Measure("dx", domain=lmsh.sub_meshes[p], subdomain_data=lmsh.sf_sub_meshes[p], subdomain_id=parameters[f"sub_mesh_{p}_id"]))
 
+dS_sub_mesh = [Measure("dS", domain=lmsh.sub_meshes[i]) for i in range(len(lmsh.sub_meshes))] 
+
 ds_sub_mesh = [''] * len(lmsh.sub_meshes)
 
 ds_sub_mesh[0] = dict([ \

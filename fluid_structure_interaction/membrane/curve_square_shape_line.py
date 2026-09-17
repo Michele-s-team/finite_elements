@@ -6,6 +6,7 @@ from scipy.interpolate import CubicSpline
 import switch_problem as swi
 
 import function_spaces as fsp
+import geometry.utils as geo
 
 rmsh = importlib.import_module(swi.rmsh)
 
@@ -17,15 +18,7 @@ shape_coordinates = np.array(rmsh.parameters['shape_coordinates'])
 '''
 compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until shape_coordinates[i] included]
 '''
-arc_length = 0
-arc_length_tab = [0]
-for i in range(1, len(shape_coordinates)):
-
-    arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
-    arc_length_tab.append(arc_length)
-
-
-
+arc_length_tab = geo.arc_length_tab(shape_coordinates)
 
 # fit a periodic cubic spline for x(t) and y(t) separately
 cspline = [CubicSpline(arc_length_tab, shape_coordinates[:, 0], bc_type='natural'), CubicSpline(arc_length_tab, shape_coordinates[:, 1], bc_type='natural')]
@@ -56,8 +49,3 @@ class X_ref_Expression(UserExpression):
 # interpolate `X_ref` according to the analytical expression `X_ref_Expression`
 fsp.X_ref.interpolate(X_ref_Expression(element=fsp.Q_X.ufl_element()))
 
-'''
-mesh_len = sum(c.volume() for c in cells(fsp.Q_X.mesh()))
-spline_end =  arc_length_tab[-1]
-print(f'*** \n\t s_max = {arc_length_tab[-1]}\n\tcheck : {mesh_len - spline_end} \n\t coordinate[-1][0] - 1 = {shape_coordinates[-1][0]-1}\n\tX_ref_s_dXref_ds(s_max)[0][0]-1 = {X_ref_s_dXref_ds(arc_length_tab[-1])[0][0]-1}\n\tX_ref(s_max) = {fsp.X_ref(arc_length_tab[-1])}')
-'''

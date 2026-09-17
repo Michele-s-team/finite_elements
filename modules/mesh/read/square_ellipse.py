@@ -30,16 +30,21 @@ print(f"Radius of mesh cell = {col.Fore.BLUE}{r_mesh}{col.Style.RESET_ALL}")
 
 # test for surface elements
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
+
 ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=2)
 ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
 ds_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=4)
 ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
 ds_ellipse = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=6)
+
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 ds_l_tb_ellipse = ds_l + ds_t + ds_b + ds_ellipse
 ds = ds_square + ds_ellipse
+
+dS = Measure("dS", domain=lmsh.mesh)
+
 
 check_mesh_module = importlib.import_module('mesh.check_tags.square_ellipse')
 

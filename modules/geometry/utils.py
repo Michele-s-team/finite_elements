@@ -65,3 +65,24 @@ def aspect_ratio(polygon_coordinates):
     coord_y = [polygon_coordinates[i][1] for i in range(len(polygon_coordinates))]
 
     return (np.max(coord_y) - np.min(coord_y))/(np.max(coord_x) - np.min(coord_x))
+
+
+'''
+compute a list of cumulative arc length along a sequence of segments
+Input values: 
+    - `coordinates`: [[p_0_x, p_0_y, ...], [p_1_x, p_1_y, ...]], the list of coordinates of the points describing the sequence of segments
+Return values: 
+    - `arc_length_tab`: [s_0 = 0, s_1, s_2, ...], where s_i is the cumulative arc length along the sequence of segments, computed from p_0 to p_i included
+
+'''
+def arc_length_tab(coordinates):
+
+    arc_length = 0
+    arc_length_tab = [0]
+
+    for i in range(1, len(coordinates)):
+
+        arc_length += np.linalg.norm(np.subtract(coordinates[i], coordinates[i-1]))
+        arc_length_tab.append(arc_length)
+
+    return arc_length_tab
