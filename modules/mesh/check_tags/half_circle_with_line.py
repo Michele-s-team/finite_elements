@@ -22,17 +22,24 @@ integral_exact_darc_21 = cal.curve_integral_circle_arc(tf.function_test_integral
 
 integral_exact_dline_34 = cal.curve_integral_line(tf.function_test_integrals, rmsh.parameters["c_3"][:2], rmsh.parameters["c_4"][:2])
 
-integral_exact_dp1 = tf.function_test_integrals([rmsh.parameters["r"], 0])
-integral_exact_dp2 = tf.function_test_integrals([-rmsh.parameters["r"], 0])
+integral_exact_dp_1 = tf.function_test_integrals([rmsh.parameters["r"], 0])
+integral_exact_dp_2 = tf.function_test_integrals([-rmsh.parameters["r"], 0])
+
+# exact integral over interior boundary lines
+integral_exact_dS = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals)
 
 test_mesh_integral_errors = dict([])
 
 test_mesh_integral_errors['\int dx f'] = msh.test_mesh_integral(integral_exact_dx, tf.function_test_integrals_fenics, rmsh.dx, '\int dx f')
-test_mesh_integral_errors['\int dp f_{p_1}'] = msh.test_mesh_integral(integral_exact_dp1, tf.function_test_integrals_fenics, rmsh.dP_line_in_start, '\int dp f_{p_1}')
-test_mesh_integral_errors['\int dp f_{p_2}'] = msh.test_mesh_integral(integral_exact_dp2, tf.function_test_integrals_fenics, rmsh.dP_line_in_end, '\int dp f_{p_2}')
+
+test_mesh_integral_errors['\int dp f_{p_1}'] = msh.test_mesh_integral(integral_exact_dp_1, tf.function_test_integrals_fenics, rmsh.dP_line_in_start, '\int dp f_{p_1}')
+test_mesh_integral_errors['\int dp f_{p_2}'] = msh.test_mesh_integral(integral_exact_dp_2, tf.function_test_integrals_fenics, rmsh.dP_line_in_end, '\int dp f_{p_2}')
+
 test_mesh_integral_errors['\int dl f_{line_12}'] = msh.test_mesh_integral(integral_exact_dline_12, tf.function_test_integrals_fenics, rmsh.ds_line, '\int dl f_{line_12}')
 test_mesh_integral_errors['\int dl f_{arc_21}'] = msh.test_mesh_integral(integral_exact_darc_21, tf.function_test_integrals_fenics, rmsh.ds_arc, '\int dl f_{arc_21}')
 test_mesh_integral_errors['\int dl f_{line_34}'] = msh.test_mesh_integral(integral_exact_dline_34, tf.function_test_integrals_fenics, rmsh.dS_line_in, '\int dl f_{line_34}')
+
+test_mesh_integral_errors['\int dS f'] = msh.test_mesh_integral(integral_exact_dS, tf.function_test_integrals_fenics, rmsh.dS, '\int f dS')
 
 # print to file the residuals of the tests of the mesh integrals
 io.write_parameters_to_csv_file(io.add_trailing_slash(rarg.args.output_directory) + 'test_integral_errors.csv', test_mesh_integral_errors)
