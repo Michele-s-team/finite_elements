@@ -11,6 +11,7 @@ import ufl
 
 import calculus as cal
 import constants.utils as const
+import geometry.utils as geo
 import input_output as io
 
 
@@ -330,12 +331,7 @@ def transfer_2d_to_1d_curve(u_2d, u_1d, mesh_path, tol = const.epsilon):
     '''
     compute the arc length along the 1d mesh: arc_length_tab[i] = [cumulative arc length along the 1d mesh curve obtained from its beginning until mesh_1d_vertices included]
     '''
-    arc_length = 0
-    arc_length_tab = [0]
-    for i in range(1, len(mesh_1d_vertices)):
-
-        arc_length += np.linalg.norm(np.subtract(mesh_1d_vertices[i], mesh_1d_vertices[i-1]))
-        arc_length_tab.append(arc_length)
+    arc_length_tab = geo.arc_length_tab(mesh_1d_vertices)
 
     num_components = n_components(Q_1d)
 
