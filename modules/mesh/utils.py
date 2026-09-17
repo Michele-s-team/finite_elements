@@ -4245,14 +4245,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
     else:
         # the meshing algorithm did not insert additional vertices with respect to `shape_coordinates` -> proceed by generating the 1d mesh corresponding to the top edge of the square
 
-        arc_length_table = [0]
-        arc_length = 0
-
-        for i in range(1, len(shape_coordinates)):
-
-            arc_length += np.linalg.norm(np.subtract(shape_coordinates[i], shape_coordinates[i-1]))
-            arc_length_table.append(arc_length)
-
+        arc_length_table = geo_u.arc_length_tab(shape_coordinates)
 
         # Create a proper 1D IntervalMesh using the actual vertex positions
         if len(arc_length_table) >= 2:
