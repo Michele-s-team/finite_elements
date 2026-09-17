@@ -27,7 +27,7 @@ def print_data(step):
         fi.fieldnames_data[2]: \
             f"{np.max([rmsh.parameters['shape_coordinates'][i][1] for i in range(len(rmsh.parameters['shape_coordinates']))]):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[3]: \
-            f"{assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * sqrt(((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0))**2 + ((fsp.X_ref[1] + fsp.U_n_12[1]).dx(0))**2) * rmsh.dx_mesh[1]):.{rpam.parameters['print_out_digits']}e}",\
+            f"{assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1]):.{rpam.parameters['print_out_digits']}e}",\
             
     }])
 
