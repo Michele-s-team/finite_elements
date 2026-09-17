@@ -14,7 +14,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 # compute the maximal value of the y coordinate of the top boundary of mesh[0], in order to have an idea of how much the edge has been displaced vertically
 
-omega_t = assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * sqrt(((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0))**2 + ((fsp.X_ref[1] + fsp.U_n_12[1]).dx(0))**2) * rmsh.dx_mesh[1])
 
 # this method prints out the residuals of BCs for all sectors
 def print_data(step):
@@ -28,7 +27,7 @@ def print_data(step):
         fi.fieldnames_data[2]: \
             f"{np.max([rmsh.parameters['shape_coordinates'][i][1] for i in range(len(rmsh.parameters['shape_coordinates']))]):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[3]: \
-            f"{omega_t:.{rpam.parameters['print_out_digits']}e}",\
+            f"{assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * sqrt(((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0))**2 + ((fsp.X_ref[1] + fsp.U_n_12[1]).dx(0))**2) * rmsh.dx_mesh[1]):.{rpam.parameters['print_out_digits']}e}",\
             
     }])
 
