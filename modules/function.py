@@ -411,13 +411,7 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     '''
     compute the arc length along 1d mesh a: arc_length_a_tab[i] = [cumulative arc length along the 1d mesh a curve obtained from its beginning until vertices_a[i] included]
     '''
-    arc_length_a = 0
-    arc_length_a_tab = [0]
-    for i in range(1, len(mesh_2d_a_vertices)):
-
-        arc_length_a += np.linalg.norm(np.subtract(mesh_2d_a_vertices[i], mesh_2d_a_vertices[i-1]))
-        arc_length_a_tab.append(arc_length_a)
-
+    arc_length_a_tab = geo.arc_length_tab(mesh_2d_a_vertices)
 
     '''
     compute the arc length along 1d mesh a, deformed onto 1d mesh b: arc_length_b_tab[i] = [cumulative arc length along the 1d mesh a curve deformed into b, obtained from its beginning until mesh_2d_a_vertices[i] included]
