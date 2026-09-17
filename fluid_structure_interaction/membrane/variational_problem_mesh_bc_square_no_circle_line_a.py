@@ -19,6 +19,8 @@ rmsh = importlib.import_module(swi.rmsh)
 
 alpha, beta, gamma = ufl.indices(3)
 
+dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
+
 
 # BCs
 # BCs for u
@@ -31,7 +33,7 @@ bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[0], 
 
 bc_u_t = DirichletBC(fsp.Q_u, Constant((0,0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
-# bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
+bc_u_b = DirichletBC(fsp.Q_u, project(fsp.u_n_1 + dt * fsp.v_fl_n, fsp.Q_u), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
 
 
@@ -40,7 +42,7 @@ bc_u_t = DirichletBC(fsp.Q_u, Constant((0,0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.
 # bc_u_b = DirichletBC(fsp.Q_u, fsp.u_fs_on_mesh, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_2_id"])
 
 
-bcs_msh = [ bc_u_0_l, bc_u_0_r, bc_u_t]
+bcs_msh = [ bc_u_0_l, bc_u_0_r, bc_u_t, bc_u_b]
 
 
 
@@ -50,7 +52,7 @@ bcs_msh = [ bc_u_0_l, bc_u_0_r, bc_u_t]
 #bc_u_dot_l = Dirich.letBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
 '''free surface velocity equal to normal velocity. mesh_id changed into the one for the free boundary'''
-bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant(1)*fsp.v_fl_bar,  rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_2_id"])
+bc_u_dot_b = DirichletBC(fsp.Q_u_dot, fsp.v_fl_n,  rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_b_id"])
 
 ''' y component of the left boundary is set free(removing the fixed membrane boundary on the left), in order to apply the periodic boundary conditions for left and right) '''
 bc_u_dot_0_l = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0),rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["line_sub_mesh_0_l_id"])
@@ -59,10 +61,9 @@ bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.lmsh.mf_sub_mes
 ''' top boundary is left unmoving, both x and y velocity components are set to 0 '''
 bc_u_dot_t = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
-# bc_u_dot_t = DirichletBC(fsp.Q_u_dot,  fsp.U_dot_n_12_on_mesh,rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
 
-bcs_msh_dot = [bc_u_dot_0_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
+bcs_msh_dot = [bc_u_dot_0_l, bc_u_dot_0_r, bc_u_dot_b, bc_u_dot_t]
 
 
 

@@ -152,21 +152,11 @@ for n in range(rpam.parameters['N']):
     # --- fluid solve ---
     vp_fluid = importlib.reload(vp_fluid)
     var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
-
- 
-
     var_pr.solve_vp(vp_fluid.F_phi_fl, fsp.phi_fl, [], fsp.J_phi_fl, parameters=params)
-
-
     var_pr.solve_vp(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], fsp.J_v_fl_n, parameters=params)
 
     fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']),fsp.Q_var_tensor_sigma_fl))
     fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
-
-
-
-
-
 
 
     # Save the exact initial frame before any geometry update
@@ -176,24 +166,26 @@ for n in range(rpam.parameters['N']):
 
 
     # --- membrane solve ---
-
-    print('Solving membrane problem ...', flush=True)
+    
     vp_membrane = importlib.reload(vp_membrane)
     var_pr.solve_vp(vp_membrane.F_mem, fsp.psi_mem, vp_membrane.bcs_mem, fsp.J_psi_mem, parameters=params)
 
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split(deepcopy=True)
 
+
     # --- mesh solve ---
+
     fu.transfer_sub_mesh_to_mesh(U_n_12_output, fsp.U_n_12_on_mesh)
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_output, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)),fsp.Q_U_dot_n_12))
     fu.transfer_sub_mesh_to_mesh(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh)
 
     vp_mesh = importlib.reload(vp_mesh)
+
     var_pr.solve_vp(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_msh, fsp.J_u, parameters=params)
     var_pr.solve_vp(vp_mesh.F_msh_dot, fsp.u_dot_n, vp_mesh.bcs_msh_dot, fsp.J_u_dot, parameters=params)
 
-    # Update mesh only after solving
-    fsp.u_n.vector()[:] = fsp.u_n.vector()[:] + dt * fsp.u_dot_n.vector()[:]
+    # # Update mesh only after solving
+    # fsp.u_n.vector()[:] = fsp.u_n.vector()[:] + dt * fsp.u_dot_n.vector()[:]
 
     # Refresh histories after the update
     fsp.u_n_2.assign(fsp.u_n_1)
