@@ -47,16 +47,21 @@ else:
 
 # test for surface elements
 dx = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=parameters['surface_id'])
+
 ds_l = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_l_id'])
 ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_r_id'])
 ds_t = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_t_id'])
 ds_b = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['line_b_id'])
 ds_poly = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=parameters['polygon_id'])
+
 ds_lr = ds_l + ds_r
 ds_tb = ds_t + ds_b
 ds_square = ds_lr + ds_tb
 ds_l_tb_poly = ds_l + ds_t + ds_b + ds_poly
 ds = ds_square + ds_poly
+
+dS = Measure("dS", domain=lmsh.mesh)
+
 
 check_mesh_module = importlib.import_module('mesh.check_tags.square_polygon')
 
