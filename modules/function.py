@@ -420,7 +420,6 @@ def transfer_1d_to_1d_curve(u_a, u_b, u, mesh_a_path,
     arc_length_a_to_b_tab = geo.arc_length_tab(mesh_2d_a_vertices_u)
 
 
-    
     num_components = n_components(Q_b)
     
 
