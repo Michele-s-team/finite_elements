@@ -31,6 +31,8 @@ bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.lmsh.mf_sub_meshes[0], 
 
 bc_u_t = DirichletBC(fsp.Q_u, Constant((0,0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
+# bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
+
 
 
 
@@ -58,6 +60,8 @@ bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.lmsh.mf_sub_mes
 bc_u_dot_t = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
 
 # bc_u_dot_t = DirichletBC(fsp.Q_u_dot,  fsp.U_dot_n_12_on_mesh,rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["sub_mesh_1_id"])
+
+
 bcs_msh_dot = [bc_u_dot_0_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
 
