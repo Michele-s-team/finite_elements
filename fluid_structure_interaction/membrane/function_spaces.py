@@ -4,9 +4,6 @@ import mesh.load as lmsh
 import parameters.read.solution as rpam
 
 
-'''import the periodic bc for left and right'''
-from periodic_bc import PeriodicBoundary
-
 
 
 '''
