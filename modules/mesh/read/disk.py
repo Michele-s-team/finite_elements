@@ -27,6 +27,4 @@ check_mesh_module = importlib.import_module('mesh.check_tags.disk')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
-# CHANGE PARAMETERS HERE
 boundary = 'on_boundary'
-# CHANGE PARAMETERS HERE
