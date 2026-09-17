@@ -25,12 +25,16 @@ r_mesh = lmsh.mesh.hmin()
 # test for surface elements
 dx_r_rho = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=1)
 dx_rho_R = Measure("dx", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=2)
+
 ds_r = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=3)
 ds_rho = Measure("dS", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=4)
 ds_R = Measure("ds", domain=lmsh.mesh, subdomain_data=mf, subdomain_id=5)
 
 dx = dx_r_rho + dx_rho_R
 ds = ds_r + ds_R
+
+dS = Measure("dS", domain=lmsh.mesh)
+
 
 check_mesh_module = importlib.import_module('mesh.check_tags.ring_with_circle')
 
