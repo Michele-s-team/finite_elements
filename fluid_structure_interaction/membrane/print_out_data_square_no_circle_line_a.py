@@ -31,9 +31,9 @@ def print_data(step):
         fi.fieldnames_data[3]: \
             f"{assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1]):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[4]: \
-            f"{assemble(- rpam.parameters['rho_fluid'] * fsp.v_fl_n[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]['ds_b']):.{rpam.parameters['print_out_digits']}e}",\
+            f"{assemble(- rpam.parameters['rho_fluid'] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]['ds_b']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[5]: \
-            f"{(assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1]) - assemble(- rpam.parameters['rho_fluid'] * fsp.v_fl_n[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]['ds_b']))/(assemble(- rpam.parameters['rho_fluid'] * fsp.v_fl_n[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]['ds_b'])):.{rpam.parameters['print_out_digits']}e}",\
+            f"{(assemble(rpam.parameters['rho_fluid'] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1]) - assemble(- rpam.parameters['rho_fluid'] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]['ds_b']))/(assemble(- rpam.parameters['rho_fluid'] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]['ds_b'])):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[6]: \
             f"{float(phi_lb.value):.{rpam.parameters['print_out_digits']}e}"
     }])

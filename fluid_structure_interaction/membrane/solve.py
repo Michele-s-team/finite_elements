@@ -356,7 +356,7 @@ def solve(phi):
     print('... done.', flush=True)
 
     dMdt_t = assemble(rpam.parameters["rho_fluid"] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1])
-    dMdt_b = assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_n[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
+    dMdt_b = assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
 
     error = (dMdt_t - dMdt_b)/dMdt_b
 
@@ -391,6 +391,8 @@ for n in range(rpam.parameters['N']):
             solve(phi)
     '''
     root = fsolve(solve, float(phi_lb.value))
+
+
 
 
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
