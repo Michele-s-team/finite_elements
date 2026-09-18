@@ -340,8 +340,7 @@ for n in range(rpam.parameters['N']):
     fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 
     # 3.2.3.1.2 project U_dot_n_12
-    # POSSIBLE ERROR HERE: YOU SHOULD NOT USE fsp.w_n_1 BUT w_n_output
-    fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
+    fsp.U_dot_n_12.assign(project(phys.U_dot(w_n_output, geo_al.normal(psi_n_12_output, nu_n_12_output)), fsp.Q_U_dot_n_12))
     fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
     vp_mesh = importlib.reload(importlib.import_module(swi.vp_mesh))  

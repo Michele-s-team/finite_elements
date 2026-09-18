@@ -50,9 +50,17 @@ bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n_1, rmsh.mf[0], rmsh.para
 bc_v_fl_bar = [bc_v_fl_bar_b, bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
 
 # 2) for step 2
-bc_phi_fl_b = DirichletBC(fsp.Q_phi_fl, Constant(0), rmsh.mf[0], rmsh.parameters["line_b_id"])
+'''
+BC that pins phi_fl to vertex tagged with rmsh.parameters["vertex_lb_id"]
+this BC sets phi_fl(vertex_lb) = 0 and it removes the degeneracy in the variational problem 
+'''
+# coordinates of the bottom-left point of the mesh
+x_lb = (rmsh.lmsh.mesh[0].coordinates()[rmsh.vf[0].array() ==  rmsh.parameters["vertex_lb_id"]])[0]
+print(f'*** x_lb = {x_lb}')
+vertex_lb = CompiledSubDomain("near(x[0], x_lb_0) && near(x[1], x_lb_1)", x_lb_0=x_lb[0], x_lb_1=x_lb[1])
+bc_phi_fl_vertex_lb = DirichletBC(fsp.Q_phi_fl, Constant(1), vertex_lb, method="pointwise")
 
-bc_phi_fl = [bc_phi_fl_b]
+bc_phi_fl = [bc_phi_fl_vertex_lb]
 
 
 # step 1 for v_fl_bar
@@ -83,7 +91,6 @@ F_phi_fl = ( \
                     - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)) * ela.G(fsp.u_n_1)[delta, alpha] * (fsp.nu_phi_fl.dx(delta)) \
                     - (rpam.parameters['rho_fluid'] / dt) * ela.G(fsp.u_n_1)[beta, alpha] * ((fsp.v_fl_bar[alpha]).dx(beta)) * fsp.nu_phi_fl \
         ) * ela.detF(fsp.u_n_1) * rmsh.dx_mesh[0] + \
-        (ela.G(fsp.u_n_1)[delta, alpha] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_b'] + \
         (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_r'] 
 
 

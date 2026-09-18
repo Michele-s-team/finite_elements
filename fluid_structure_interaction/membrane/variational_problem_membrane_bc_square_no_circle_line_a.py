@@ -29,7 +29,7 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 # expressions for the initial conditions
 class v_n_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['v_bar_l'][0]
+        values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -58,6 +58,8 @@ class U_n_12_0_Expression( UserExpression ):
     
     
 # expressions for the boundary conditions
+
+
 class v_bar_l_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = rpam.parameters['v_bar_l'][0]
@@ -73,12 +75,13 @@ class v_bar_r_Expression( UserExpression ):
         return (1,)
         
         
-fsp.v_bar_l.interpolate( v_bar_l_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+        
+
 fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 
 
+
 # boundary conditions
-bc_v_bar_l = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_l, rmsh.mf[1], rmsh.parameters['vertex_l_id'])
 bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.mf[1], rmsh.parameters['vertex_r_id'])
 
 bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.mf[1], rmsh.parameters['vertex_l_id'])
@@ -89,12 +92,13 @@ bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5), Constant((0,0)), rmsh.mf[1], rmsh.pa
 bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.mf[1], rmsh.parameters['vertex_r_id'])
 
 
-bcs_mem = [bc_v_bar_l, bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
+
+bcs_mem = [bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
 
 
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
-
+# natural BC imposed here
 F_v_bar = ( \
                       rpam.parameters['rho'] * (( \
                                          (fsp.v_bar[i] - fsp.v_n_1[i]) \
@@ -119,10 +123,10 @@ F_v_bar = ( \
                       ((fsp.W ** 2) * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
           ) \
           - dt * ( \
-                      (fsp.sigma_n_32 * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
+                      (fsp.sigma_n_32 * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds_r'] \
            ) \
           - dt * 2.0 * rpam.parameters['eta'] * ( \
-                      (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds']
+                      (geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[k] * fsp.nu_v_bar[j]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds_r']
           )
 
 
@@ -138,7 +142,7 @@ F_w_bar = ( \
                                   + 2.0 * rpam.parameters['eta'] * (geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * geo.Nabla_v( fsp.V, fsp.psi_n_12, fsp.nu_n_12 )[j, k] *
                                                  (geo.b( fsp.psi_n_12, fsp.nu_n_12 ))[i, j] - 2.0 * fsp.W * (
                                                          2.0 * ((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )))\
-                                # force exerted by the fluid on the membrane
+                                    #   force exerted by the fluid on the membrane
                                   + geo.from_3D_to_normal(fsp.psi_n_12, 
                                                           flu.dFdl(
                                                                  fsp.var_tensor_sigma_fl_on_mem, 
@@ -157,19 +161,26 @@ F_w_bar = ( \
           )
           
 
+          
+
 # natural BC implemented here
 F_phi = ( \
                     dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( i )) * (fsp.nu_phi.dx( j )) \
                     + rpam.parameters['rho'] * (geo.Nabla_v( fsp.v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, i] - 2.0 * fsp.mu_n_12 * fsp.w_bar) * fsp.nu_phi \
-            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1] 
+            ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1] \
+        - dt * ((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * (fsp.phi).dx(i)) * fsp.nu_phi * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds_l']
 
-# - dt * ((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * (fsp.phi).dx(i)) * fsp.nu_phi * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds']
+
 
 
 F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
 
+
+
 F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
+
+
 
 
 F_U_n_12 = ( \
@@ -178,6 +189,7 @@ F_U_n_12 = ( \
                                 - dt * fsp.w_n_1 * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
                         ) * fsp.nu_U_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
+
 
 
 F_nu_psi = (
@@ -189,6 +201,7 @@ F_nu_psi = (
 
 
 F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
+
 
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
