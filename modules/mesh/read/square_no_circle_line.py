@@ -17,6 +17,7 @@ parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_direc
 
 sf = [None] * lmsh.parameters['n_meshes']
 mf = [None] * lmsh.parameters['n_meshes']
+vf = [None] * lmsh.parameters['n_meshes']
 
 
 #1. read quantities for mesh[0]
@@ -26,6 +27,9 @@ sf[0] = msh.read_mesh_components(lmsh.mesh[0], (lmsh.mesh[0]).topology().dim(), 
 
 # 1.2. read the lines
 mf[0] = msh.read_mesh_components(lmsh.mesh[0], (lmsh.mesh[0]).topology().dim() - 1, os.path.join(rarg.args.input_directory, f'mesh_{0}', 'line_mesh.xdmf'))
+
+# 1.3. read the vertices
+vf[0] = msh.read_mesh_components(lmsh.mesh[0], (lmsh.mesh[0]).topology().dim() - 2, os.path.join(rarg.args.input_directory, f'mesh_{0}', 'vertex_mesh.xdmf'))
 
 # 2. read quantities for mesh[1]
 
@@ -43,6 +47,7 @@ r_mesh =  [lmsh.mesh[i].hmin() for i in range(len(lmsh.mesh))]
 # create line and surface elements for meshes
 dx_mesh = []
 ds_mesh = [None] * lmsh.parameters['n_meshes']
+dP_mesh = [None] * lmsh.parameters['n_meshes']
 
 
 for p in range(len(lmsh.mesh)):
@@ -61,6 +66,10 @@ ds_mesh[0]['ds_lr'] = ds_mesh[0]['ds_l'] + ds_mesh[0]['ds_r']
 ds_mesh[0]['ds_tb'] = ds_mesh[0]['ds_t'] + ds_mesh[0]['ds_b']
 
 ds_mesh[0]['ds'] = ds_mesh[0]['ds_lr'] + ds_mesh[0]['ds_tb']
+
+dP_mesh[0] = dict([ \
+    ('dP_lb', Measure("dP", domain=lmsh.mesh[0], subdomain_data=vf[0], subdomain_id=parameters[f"vertex_lb_id"]))
+    ])
 
 ds_mesh[1] = dict([ \
     ('ds_l', Measure("ds", domain=lmsh.mesh[1], subdomain_data=mf[1], subdomain_id=parameters[f"vertex_l_id"])), \
