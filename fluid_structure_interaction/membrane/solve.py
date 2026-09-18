@@ -353,9 +353,6 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
 
 
-
-    
-
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
     #3.3.1 compute mesh quality
