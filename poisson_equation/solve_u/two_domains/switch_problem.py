@@ -23,4 +23,11 @@ elif rarg.args.problem == 'square_no_circle_line_a':
     vp_sub_mesh_1 = 'variational_problem_square_no_circle_line_a_sub_mesh_1'
     prout_bc = 'print_out_square_no_circle_line_a'
 
+elif rarg.args.problem == 'square_no_circle_line_b':
+    fsp = 'function_spaces_square_no_circle_line'
+    rmsh = 'mesh.read.square_no_circle_line'
+    vp_sub_mesh_0 = 'variational_problem_square_no_circle_line_b_sub_mesh_0'
+    vp_sub_mesh_1 = 'variational_problem_square_no_circle_line_b_sub_mesh_1'
+    prout_bc = 'print_out_square_no_circle_line_b'
+
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')
