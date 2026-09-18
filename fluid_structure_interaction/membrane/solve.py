@@ -344,6 +344,15 @@ def solve(phi):
 
     print('... done.', flush=True)
 
+    dMdt_t = assemble(rpam.parameters["rho_fluid"] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1])
+    dMdt_b = assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_n[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
+
+    error = (dMdt_t - dMdt_b)/dMdt_b
+
+    print(f'phi_lb = {float(phi_lb.value)} \t error = {error}')
+
+    return error
+
 '''
 #2.2 read initial profiles by reading them from file
 '''
@@ -369,8 +378,6 @@ for n in range(rpam.parameters['N']):
 
         solve(phi)
 
-
-        print(f'* \n\tphi_lb = {float(phi_lb.value)}\n\tdM/dt_t = {assemble(rpam.parameters["rho_fluid"] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1])}\n\tdM/dt_b = {assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_n[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])}')
 
 
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
