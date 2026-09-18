@@ -292,12 +292,34 @@ for n in range(rpam.parameters['N']):
     step += 1
 
     #3.2 solve variational problems
+
+    # 3.2.1 solve fluid problem
+
+    print('Solving fluid problem ...', flush=True)
+
+    vp_fluid = importlib.reload(importlib.import_module(swi.vp_fluid))  
+
+    # step 3.2.3.1: approximate velocity step
+    var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
+
+    # Step 3.2.3.2: surface_tension correction step
+    var_pr.solve_vp(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, fsp.J_phi_fl, parameters=params)
+
+    # step 3.2.3.3: velocity 
+    var_pr.solve_vp(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], fsp.J_v_fl_n, parameters=params)
+
+    fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
+
+
+    print('... done.', flush=True)
+
     
-    #3.2.1 solve membrane problem 
+    #3.2.2 solve membrane problem 
+
     print('Solving membrane problem ...', flush=True)
    
     # project from mesh[0] onto mesh[1] the fields from the fluid problem, in order to find the force exerted by the fluid on the membrane 
-    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n, fsp.sigma_fl_n_12, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
     fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
     
     vp_membrane = importlib.reload(importlib.import_module(swi.vp_membrane))  
@@ -307,7 +329,7 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
 
 
-    #3.2.2 solve mesh problem
+    #3.2.3 solve mesh problem
 
     print('Solving mesh problem ...', flush=True)
     
@@ -328,22 +350,7 @@ for n in range(rpam.parameters['N']):
     print('... done.', flush=True)
 
 
-    # 3.2.3 solve fluid problem
 
-    print('Solving fluid problem ...', flush=True)
-
-    vp_fluid = importlib.reload(importlib.import_module(swi.vp_fluid))  
-
-    # step 3.2.3.1: approximate velocity step
-    var_pr.solve_vp(vp_fluid.F_v_fl_bar, fsp.v_fl_bar, vp_fluid.bc_v_fl_bar, fsp.J_v_fl_bar, parameters=params)
-
-    # Step 3.2.3.2: surface_tension correction step
-    var_pr.solve_vp(vp_fluid.F_phi_fl, fsp.phi_fl, vp_fluid.bc_phi_fl, fsp.J_phi_fl, parameters=params)
-
-    # step 3.2.3.3: velocity 
-    var_pr.solve_vp(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], fsp.J_v_fl_n, parameters=params)
-
-    print('... done.', flush=True)
     
 
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
