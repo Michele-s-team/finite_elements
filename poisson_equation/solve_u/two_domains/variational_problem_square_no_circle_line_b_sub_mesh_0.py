@@ -1,3 +1,8 @@
+'''
+solve for a degenerate variational problem on mesh[0] where the solution u[0] is determined modulo a constant
+the constant is fixed by pinning the solution u[0] on the bottom left vertex of the mesh
+'''
+
 from fenics import *
 import importlib
 import numpy as np
@@ -50,7 +55,16 @@ fsp.grad_u[0].interpolate(grad_u_exact_mesh_0_expression(element=fsp.V[0].ufl_el
 fsp.f[0].interpolate(laplacian_u_exact_mesh_0_expression(element=fsp.Q[0].ufl_element()))
 
 
-bcs = []
+'''
+BC that pins u[0] to vertex tagged with rmsh.parameters["vertex_lb_id"]
+this BC sets u[0](vertex_lb) = 0 and it removes the degeneracy in the variational problem 
+'''
+# coordinates of the bottom-left point of the mesh
+x_lb = (rmsh.lmsh.mesh[0].coordinates()[rmsh.vf[0].array() ==  rmsh.parameters["vertex_lb_id"]])[0]
+vertex_lb = CompiledSubDomain("near(x[0], x_lb_0) && near(x[1], x_lb_1)", x_lb_0=x_lb[0], x_lb_1=x_lb[1])
+bc_vertex_lb = DirichletBC(fsp.Q[0], Constant(1.0), vertex_lb, method="pointwise")
+
+bcs = [bc_vertex_lb]
 
 F = (fsp.u[0].dx(i) * fsp.nu_u[0].dx(i) + fsp.f[0] * fsp.nu_u[0]) * rmsh.dx_mesh[0] \
     - bgeo.facet_normal[0][i] * fsp.grad_u[0][i] * fsp.nu_u[0] * rmsh.ds_mesh[0]['ds']
