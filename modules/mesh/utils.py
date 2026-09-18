@@ -3972,7 +3972,7 @@ def overwrite_interface_dofs(f, sf, mf_I, shape_id, surface_0_id, surface_1_id, 
 
 
 '''
-generate a mesh given by a square whose top edge is an arbitrary curve
+generate a mesh given by a square whose top edge is an arbitrary curve. On top of 2- and 1-dimensional entities, also the bottom-left vertex (0-d entity is tagged)
 Input values: 
     * Mandatory:
         - 'shape_coordinates': a list of coordinates [[p_0_x, p_0_y], [p_1_x, p_1_y], ...] of the points defining the curve
@@ -4110,6 +4110,12 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
     gmsh.model.geo.addPlaneSurface([loop])
     gmsh.model.geo.synchronize()
 
+    # tag 0-dimensional objects
+    points = gmsh.model.getEntities(dim=0)
+
+    tag_physical_object(points[0], parameters["vertex_lb_id"], gmsh.model, "vertex_lb")
+
+
     # tag 1-dimensional objects
     lines = gmsh.model.getEntities(dim=1)
 
@@ -4142,7 +4148,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
 
     gmsh.write(mesh_0_file)
 
-    full_write(mesh_0_file, ['triangle', 'line'], mesh_0_metadata, output_directory_mesh_0, True)
+    full_write(mesh_0_file, ['triangle', 'line', 'vertex'], mesh_0_metadata, output_directory_mesh_0, True)
 
     # print the boundary points of the boundaries given by the top curve (sub_mesh 1)
     sorted_boundary_points(
