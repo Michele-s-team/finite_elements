@@ -292,6 +292,8 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
+    phi_lb.value.assign(-4.0)
+
     #3.2 solve variational problems
 
     # 3.2.1 solve fluid problem
