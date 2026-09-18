@@ -88,7 +88,8 @@ fieldnames_data = [ \
     'mesh_quality',
     'max(X_ref^2)',
     'dM/dt_t',
-    'dM/dt_b'
+    'dM/dt_b',
+    'phi_lb'
     ]
 
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)

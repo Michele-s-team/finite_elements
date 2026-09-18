@@ -14,6 +14,7 @@ import gc
 import importlib
 import numpy as np
 import os
+from scipy.optimize import fsolve
 import sys
 import ufl
 
@@ -197,6 +198,16 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
 # 
 
+'''
+# test fsolve - start 
+def func(x):
+    return 2 - x
+root = fsolve(func, 1)
+
+print(f'root = {root}')
+sys.exit(0)
+# test fsolve - end
+'''
 
 print(f'Generating initial mesh ...')
 # generate the mesh with the curve given by shape_coordinates and write into its mesh_metadata
@@ -371,13 +382,15 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
-    for phi in np.arange(-4, 4, 0.5):
+    '''
+        for phi in np.arange(-4, 4, 0.5):
 
 
-        #3.2 solve variational problems
+            #3.2 solve variational problems
 
-        solve(phi)
-
+            solve(phi)
+    '''
+    root = fsolve(solve, float(phi_lb.value))
 
 
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
