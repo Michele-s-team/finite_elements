@@ -89,6 +89,7 @@ fieldnames_data = [ \
     'max(X_ref^2)',
     'dM/dt_t',
     'dM/dt_b',
+    '(dM/dt_t-dM/dt_b)/dM/dt_b',
     'phi_lb'
     ]
 
