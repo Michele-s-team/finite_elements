@@ -333,11 +333,14 @@ for n in range(rpam.parameters['N']):
 
     print('Solving mesh problem ...', flush=True)
     
-    # project field U_n_12 and its time derivative from mesh[1] onto mesh[0] in order to set BCs for the mesh problem
-    # a) project U_n_12
+    # 3.2.3.1 project field U_n_12 and its time derivative from mesh[1] onto mesh[0] in order to set BCs for the mesh problem
+
+    # 3.2.3.1.1 project U_n_12
     v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
     fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
-    # b) project U_dot_n_12
+
+    # 3.2.3.1.2 project U_dot_n_12
+    # POSSIBLE ERROR HERE: YOU SHOULD NOT USE fsp.w_n_1 BUT w_n_output
     fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
     fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
