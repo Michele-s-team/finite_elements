@@ -7,6 +7,7 @@ import importlib
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
+import phi_lb as phi_lb
 import physics.elasticity as ela
 import function_spaces as fsp
 import parameters.read.solution as rpam
@@ -58,7 +59,7 @@ this BC sets phi_fl(vertex_lb) = 0 and it removes the degeneracy in the variatio
 x_lb = (rmsh.lmsh.mesh[0].coordinates()[rmsh.vf[0].array() ==  rmsh.parameters["vertex_lb_id"]])[0]
 print(f'*** x_lb = {x_lb}')
 vertex_lb = CompiledSubDomain("near(x[0], x_lb_0) && near(x[1], x_lb_1)", x_lb_0=x_lb[0], x_lb_1=x_lb[1])
-bc_phi_fl_vertex_lb = DirichletBC(fsp.Q_phi_fl, Constant(1), vertex_lb, method="pointwise")
+bc_phi_fl_vertex_lb = DirichletBC(fsp.Q_phi_fl, phi_lb.value, vertex_lb, method="pointwise")
 
 bc_phi_fl = [bc_phi_fl_vertex_lb]
 

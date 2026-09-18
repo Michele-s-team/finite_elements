@@ -27,6 +27,7 @@ import input_output as io
 import mesh.utils as msh
 import mesh_quality as msh_qu
 import parameters.read.solution as rpam
+import phi_lb as phi_lb
 import physics.utils as phys
 import runtime_arguments as rarg
 import switch_problem as swi
