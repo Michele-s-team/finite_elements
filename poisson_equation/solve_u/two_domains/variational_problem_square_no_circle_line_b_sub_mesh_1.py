@@ -1,3 +1,7 @@
+'''
+this variational problem is disconnected from the variational problem on mesh[0]
+'''
+
 from fenics import *
 import importlib
 import numpy as np
