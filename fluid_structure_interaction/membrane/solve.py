@@ -184,7 +184,7 @@ params = {
         'absolute_tolerance': 1e-6,
         'relative_tolerance': 1e-6,
         'maximum_iterations': 1000000,
-        'report': True,
+        'report': False,
     }
 }
 
@@ -194,7 +194,7 @@ PETScOptions.set('snes_atol', 1e-12)     # Stricter absolute tolerance
 PETScOptions.set('snes_rtol', 1e-12)     # Stricter relative tolerance
 PETScOptions.set('snes_stol', 1e-8)      # Keep step tolerance same
 PETScOptions.set('snes_max_it', 100000)
-PETScOptions.set('snes_monitor')
+# PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         # Increase function evaluation limit
 # 
 
