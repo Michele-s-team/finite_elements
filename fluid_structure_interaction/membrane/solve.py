@@ -246,7 +246,7 @@ v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, n
 
 fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 # b) project U_dot_n_12
-fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n_1, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
+fsp.U_dot_n_12.assign(project(phys.U_dot(fsp.w_n, geo_al.normal(fsp.psi_n_12, fsp.nu_n_12)), fsp.Q_U_dot_n_12))
 fu.transfer_1d_to_2d_curve(fsp.U_dot_n_12, fsp.U_dot_n_12_on_mesh, rarg.args.input_directory)
 
 vp_mesh = importlib.import_module(swi.vp_mesh)
@@ -273,6 +273,14 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'soluti
 
 #2.1 set from expressions
 
+class sigma_fl_n_12_0_Expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = rpam.parameters['sigma_fl_n_12_0_b']
+
+    def value_shape(self):
+        return (1,)
+
 # 2.1.1 for the membrane
 fsp.v_bar_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_n_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
@@ -282,7 +290,7 @@ fsp.U_n_12_0.interpolate( vp_membrane.U_n_12_0_Expression( element=fsp.Q_U_n_12.
 # 2.1.3 for the fluid
 # fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v.ufl_element()))
 # fsp.v_n_2.assign(fsp.v_n_1)
-fsp.sigma_fl_n_12.interpolate(vp_fluid.sigma_fl_n_12_Expression(element=fsp.Q_phi_fl.ufl_element()))
+fsp.sigma_fl_n_12.interpolate(sigma_fl_n_12_0_Expression(element=fsp.Q_phi_fl.ufl_element()))
 fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
 fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.U_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
@@ -355,7 +363,7 @@ def solve(phi):
 
     print('... done.', flush=True)
 
-    dMdt_t = assemble(rpam.parameters["rho_fluid"] * geo.ufl_norm(fsp.U_dot_n_12) * geo.ufl_norm((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0)) * rmsh.dx_mesh[1])
+    dMdt_t = assemble(rpam.parameters["rho_fluid"] * fsp.w_n * geo.ufl_norm((fsp.X_ref + fsp.U_n_12).dx(0)) * rmsh.dx_mesh[1])
     dMdt_b = assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
 
     error = (dMdt_t - dMdt_b)/dMdt_b
