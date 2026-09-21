@@ -398,10 +398,12 @@ for n in range(rpam.parameters['N']):
 
             solve(phi)
     '''
-    root = fsolve(solve, float(phi_lb.value))
+    root = fsolve(solve, float(phi_lb.value))[0]
 
-
-
+    '''
+    call `solve` by evaluating it at the root found above, so all fields are set to their correct profiles on the root
+    '''
+    solve(root)
 
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
