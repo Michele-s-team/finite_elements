@@ -186,7 +186,7 @@ F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.
 F_U_n_12 = ( \
                     ( \
                                 (fsp.U_n_12[alpha] - fsp.U_n_32[alpha]) \
-                                - dt * fsp.w_n_1 * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
+                                - dt * fsp.w_n * (geo.normal( fsp.psi_n_12, fsp.nu_n_12 ))[alpha]  \
                         ) * fsp.nu_U_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
