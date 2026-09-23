@@ -12,6 +12,7 @@ import physics.fluid_mechanics as flu
 import function_spaces as fsp
 import mesh.load as lmsh
 import parameters.read.solution as rpam
+import physics.utils as phys
 import switch_problem as swi
 
 cu = importlib.import_module(swi.cu)
@@ -62,9 +63,8 @@ F_v_bar = ( \
                                  ) * fsp.nu_v_bar[i] \
                              + dt * 1.0 / 2.0 * (fsp.W ** 2) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                              ) \
+                      + dt * (- phys.Pi(fsp.V, fsp.W, fsp.sigma_n_32, rpam.parameters['eta'], fsp.psi_n_12, fsp.nu_n_12)[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
 # checked - end
-                      + dt * (fsp.sigma_n_32 * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
-                                  + 2.0 * rpam.parameters['eta'] * geo.d_c( fsp.V, fsp.W, fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[j, i] \
                                     #   force exerted by the fluid on the membrane
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, 
                                                              flu.dFdl(
