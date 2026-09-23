@@ -42,6 +42,8 @@ bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n_1, rmsh.mf[0], rmsh.para
 
 bc_v_fl_bar = [bc_v_fl_bar_b, bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
 
+# sign
+
 # 2) for step 2
 '''
 BC that pins phi_fl to vertex tagged with rmsh.parameters["vertex_lb_id"]
