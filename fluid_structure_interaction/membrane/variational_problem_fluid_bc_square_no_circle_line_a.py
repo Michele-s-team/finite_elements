@@ -61,7 +61,7 @@ bc_phi_fl = [bc_phi_fl_vertex_lb]
 
 # step 1 for v_fl_bar
 # checked - start
-F_v_fl_bar = ( \
+F_v_fl_bar_0 = ( \
                    rpam.parameters['rho_fluid'] * (
                                                 (fsp.v_fl_bar[alpha] - fsp.v_fl_n_1[alpha]) / dt \
                                                 + (3.0 / 2.0 * (fsp.v_fl_n_1[gamma] - fsp.u_dot_n_1[gamma]) * ela.G(fsp.u_n_1)[beta, gamma] - 1.0 / 2.0 * (fsp.v_fl_n_2[gamma] - fsp.u_dot_n_2[gamma]) * ela.G(fsp.u_n_2)[beta, gamma]) * (fsp.V_fl[alpha]).dx(beta)
@@ -69,8 +69,11 @@ F_v_fl_bar = ( \
                     + ela.G(fsp.u_n_1)[gamma, beta] * flu.sigma_ale(fsp.V_fl, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid'])[alpha, beta] * (fsp.nu_v_fl_bar[alpha]).dx(gamma) \
             ) * ela.detF(fsp.u_n_1) * rmsh.dx_mesh[0] \
             - (ela.G(fsp.u_n_1)[gamma, beta] * (bgeo.facet_normal[0])[gamma] * flu.sigma_ale(fsp.V_fl, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid'])[alpha, beta] * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds'] \
-            # checked - end
 
+F_v_fl_bar_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( ela.G(fsp.u_n_1)[alpha, 0]* (fsp.V_fl[1].dx(alpha)) * ela.G(fsp.u_n_1)[beta, 0] * (fsp.nu_v_fl_bar[1].dx(beta)) ) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_r']    
+        
+F_v_fl_bar = F_v_fl_bar_0 + F_v_fl_bar_N
+# checked - end
 
 # step 2 for phi
 # natural BC imposed here
