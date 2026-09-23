@@ -74,9 +74,11 @@ F_v_bar = ( \
                                                              fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
                             )
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]  \
+# checked - start
           - dt * rpam.parameters['rho'] / 2.0 * ( \
                       ((fsp.W ** 2) * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
           ) \
+# checked - end
           - dt * ( \
                       (fsp.sigma_n_32 * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds_r'] \
            ) \
