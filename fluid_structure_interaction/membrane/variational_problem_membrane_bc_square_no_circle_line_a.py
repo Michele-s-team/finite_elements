@@ -1,3 +1,4 @@
+# checked - start
 from fenics import *
 import importlib
 import ufl as ufl
@@ -24,49 +25,8 @@ i, j, k, l, alpha, beta = ufl.indices( 6 )
 
 dt = rpam.parameters['T'] / rpam.parameters['N']
 
-
-
-# expressions for the initial conditions
-class v_n_0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0
-
-    def value_shape(self):
-        return (1,)
-
-class sigma_n_32_0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_n_12_0']
-
-    def value_shape(self):
-        return (1,)
-
-class nu_n_12_0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 1
-
-    def value_shape(self):
-        return (1,)
     
-class U_n_12_0_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-    
-    
-# expressions for the boundary conditions
-
-
-class v_bar_l_Expression( UserExpression ):
-    def eval(self, values, x):
-        values[0] = rpam.parameters['v_bar_l'][0]
-
-    def value_shape(self):
-        return (1,)
-    
+# expressions for the BCs    
 class v_bar_r_Expression( UserExpression ):
     def eval(self, values, x):
         values[0] = rpam.parameters['v_bar_r'][0]
@@ -74,14 +34,12 @@ class v_bar_r_Expression( UserExpression ):
     def value_shape(self):
         return (1,)
         
-        
-        
-
 fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 
 
+# checked - end
 
-# boundary conditions
+# BCs
 bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.mf[1], rmsh.parameters['vertex_r_id'])
 
 bc_w_bar_l = DirichletBC(fsp.Q_mem.sub(1), Constant(0), rmsh.mf[1], rmsh.parameters['vertex_l_id'])

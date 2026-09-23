@@ -273,6 +273,8 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'soluti
 
 #2.1 set from expressions
 
+# 2.1.1 expressions for the fluid
+
 class sigma_fl_n_12_0_Expression(UserExpression):
     def eval(self, values, x):
 
@@ -280,18 +282,51 @@ class sigma_fl_n_12_0_Expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+    
+# 2.1.2 expressions for the membrane
+class v_n_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
 
-# 2.1.1 for the membrane
-fsp.v_bar_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
-fsp.v_n_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
-fsp.nu_n_12_0.interpolate( vp_membrane.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
-fsp.U_n_12_0.interpolate( vp_membrane.U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
-# 2.1.2 for the mesh
-# 2.1.3 for the fluid
-# fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v.ufl_element()))
-# fsp.v_n_2.assign(fsp.v_n_1)
+    def value_shape(self):
+        return (1,)
+
+class sigma_n_32_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['sigma_n_12_0']
+
+    def value_shape(self):
+        return (1,)
+
+class nu_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 1
+
+    def value_shape(self):
+        return (1,)
+    
+class U_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+   
+
+# 2.2 interpolate expressions for initial profiles
+
+# 2.2.2 for the fluid
+
 fsp.sigma_fl_n_12.interpolate(sigma_fl_n_12_0_Expression(element=fsp.Q_phi_fl.ufl_element()))
 fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+
+# 2.2.1 for the membrane
+
+fsp.v_bar_0.interpolate(v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+fsp.v_n_0.interpolate(v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
+fsp.nu_n_12_0.interpolate(nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
+fsp.U_n_12_0.interpolate(U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
 
 fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.U_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
