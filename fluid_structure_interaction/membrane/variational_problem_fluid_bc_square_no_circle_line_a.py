@@ -1,3 +1,4 @@
+# checked - start
 '''
 this module solves for the fields, \textrm_{v_FL}^n, \varsigma,  which define the state of the fluid
 '''
@@ -26,7 +27,7 @@ class v_fl_bar_b_Expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
-        values[1] = rpam.parameters['v_fl_bar_b_const']* 4.0 * 1.5 * x[0]/2 * (rmsh.parameters['L'] - x[0]/2) / (rmsh.parameters['L']**2)
+        values[1] = rpam.parameters['v_fl_bar_b_const'] * 4.0 * 1.5 * x[0]/2 * (rmsh.parameters['L'] - x[0]/2) / (rmsh.parameters['L']**2)
 
     def value_shape(self):
         return (2,)
@@ -34,7 +35,6 @@ class v_fl_bar_b_Expression(UserExpression):
 
 fsp.v_fl_bar_b.interpolate(v_fl_bar_b_Expression(element=fsp.Q_v_fl_bar.ufl_element()))
 
-# checked - start
 # BCs
 # 1) for step 1
 bc_v_fl_bar_b = DirichletBC(fsp.Q_v_fl_bar, fsp.v_fl_bar_b, rmsh.mf[0], rmsh.parameters["line_b_id"])
@@ -79,11 +79,9 @@ F_phi_fl = ( \
                     - (rpam.parameters['rho_fluid'] / dt) * ela.G(fsp.u_n_1)[beta, alpha] * ((fsp.v_fl_bar[alpha]).dx(beta)) * fsp.nu_phi_fl \
         ) * ela.detF(fsp.u_n_1) * rmsh.dx_mesh[0] + \
         (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_r']
-# checked - end
-
 
 
 # step 3 for v_fl_n
 F_v_fl_n = (((fsp.v_fl_bar[alpha] - fsp.v_fl_n[alpha]) - (dt / rpam.parameters['rho_fluid']) * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta))) * fsp.nu_v_fl_n[alpha]) * ela.detF(fsp.u_n_1) * rmsh.dx_mesh[0]
 
-
+# checked - end
