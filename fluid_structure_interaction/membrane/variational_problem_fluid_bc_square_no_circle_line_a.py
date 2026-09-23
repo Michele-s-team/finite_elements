@@ -44,7 +44,6 @@ bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar, fsp.u_dot_n_1, rmsh.mf[0], rmsh.para
 
 bc_v_fl_bar = [bc_v_fl_bar_b, bc_v_fl_bar_l, bc_v_fl_bar_0_r, bc_v_fl_bar_t]
 
-# checked - end
 
 # 2) for step 2
 '''
@@ -60,7 +59,6 @@ bc_phi_fl = [bc_phi_fl_vertex_lb]
 
 
 # step 1 for v_fl_bar
-# checked - start
 F_v_fl_bar_0 = ( \
                    rpam.parameters['rho_fluid'] * (
                                                 (fsp.v_fl_bar[alpha] - fsp.v_fl_n_1[alpha]) / dt \
@@ -73,7 +71,6 @@ F_v_fl_bar_0 = ( \
 F_v_fl_bar_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( ela.G(fsp.u_n_1)[alpha, 0]* (fsp.V_fl[1].dx(alpha)) * ela.G(fsp.u_n_1)[beta, 0] * (fsp.nu_v_fl_bar[1].dx(beta)) ) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_r']    
         
 F_v_fl_bar = F_v_fl_bar_0 + F_v_fl_bar_N
-# checked - end
 
 # step 2 for phi
 # natural BC imposed here
@@ -81,7 +78,8 @@ F_phi_fl = ( \
                     - ela.G(fsp.u_n_1)[beta, alpha] * (fsp.phi_fl.dx(beta)) * ela.G(fsp.u_n_1)[delta, alpha] * (fsp.nu_phi_fl.dx(delta)) \
                     - (rpam.parameters['rho_fluid'] / dt) * ela.G(fsp.u_n_1)[beta, alpha] * ((fsp.v_fl_bar[alpha]).dx(beta)) * fsp.nu_phi_fl \
         ) * ela.detF(fsp.u_n_1) * rmsh.dx_mesh[0] + \
-        (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_r'] 
+        (ela.G(fsp.u_n_1)[delta, 1] * (bgeo.facet_normal[0])[delta] * ela.G(fsp.u_n_1)[beta, 1] * (fsp.phi_fl.dx(beta)) * fsp.nu_phi_fl) * ela.detF(fsp.u_n_1) * rmsh.ds_mesh[0]['ds_r']
+# checked - end
 
 
 
