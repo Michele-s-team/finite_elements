@@ -38,7 +38,6 @@ class v_bar_r_Expression( UserExpression ):
 fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 
 
-# checked - end
 
 # BCs
 bc_v_bar_r = DirichletBC(fsp.Q_mem.sub(0), fsp.v_bar_r, rmsh.mf[1], rmsh.parameters['vertex_r_id'])
@@ -49,10 +48,9 @@ bc_phi_l = DirichletBC(fsp.Q_mem.sub(2), Constant(0), rmsh.mf[1], rmsh.parameter
 bc_U_n_12_l = DirichletBC(fsp.Q_mem.sub(5), Constant((0,0)), rmsh.mf[1], rmsh.parameters['vertex_l_id'])
 bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.mf[1], rmsh.parameters['vertex_r_id'])
 
+
 bcs_mem = [bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
 
-
-# checked - start
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
 # natural BC imposed here
 F_v_bar = ( \
