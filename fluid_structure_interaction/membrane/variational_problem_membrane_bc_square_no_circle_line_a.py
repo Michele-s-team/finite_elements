@@ -1,4 +1,3 @@
-# checked - start
 from fenics import *
 import importlib
 import ufl as ufl
@@ -161,4 +160,3 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
 # total functional for the mixed problem
 F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
-# checked - end
