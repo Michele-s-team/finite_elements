@@ -80,7 +80,6 @@ F_v_bar = ( \
           + dt * ( \
                       ( (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[k] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[k, j] * phys.Pi(fsp.V, fsp.W, fsp.sigma_n_32, rpam.parameters['eta'], fsp.psi_n_12, fsp.nu_n_12)[i, j]  * fsp.nu_v_bar[i]) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds_r'] \
            )
-# checked - end
 
 
 F_w_bar = ( \
@@ -105,6 +104,7 @@ F_w_bar = ( \
                                                              
                       ) * fsp.nu_w_bar
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1] \
+# checked - end
           + dt * rpam.parameters['rho'] * ( \
                       (fsp.W * fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[j] * geo.g( fsp.psi_n_12, fsp.nu_n_12 )[j, i] * (3.0 / 2.0 * fsp.v_n_1[i] - 1.0 / 2.0 * fsp.v_n_2[i])) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
 
