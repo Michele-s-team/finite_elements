@@ -44,13 +44,12 @@ bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf[0], rmsh.paramet
 # Eq. (89)
 bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
 
-# checked - end
-
+# Eq. (91)
 bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf[0], rmsh.parameters["mesh_1_id"])
-
 
 bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
+# checked - end
 
 
 # variational functional for u
