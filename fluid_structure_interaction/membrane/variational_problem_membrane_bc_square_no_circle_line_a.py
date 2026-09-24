@@ -126,9 +126,6 @@ F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( f
 
 F_w_n = ((fsp.w_n - fsp.w_bar) * fsp.nu_w_n) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
-# checked - end
-
-
 
 F_U_n_12 = ( \
                     ( \
@@ -137,6 +134,7 @@ F_U_n_12 = ( \
                         ) * fsp.nu_U_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
+# checked - end
 
 
 F_nu_psi = (
