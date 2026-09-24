@@ -49,14 +49,12 @@ bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf[0], rmsh.p
 
 bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
-# checked - end
 
 
 # variational functional for u
 F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_mesh[0] \
     + ((bgeo.facet_normal[0])[beta] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * fsp.nu_u[alpha]) * rmsh.ds_mesh[0]['ds']
 
-# checked - start
 # This enforces (86)
 F_u_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_n[1].dx(0)) * fsp.nu_u[1].dx(0) ) * rmsh.ds_mesh[0]['ds_r']    
 # checked - end
