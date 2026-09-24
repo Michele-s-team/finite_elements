@@ -134,9 +134,6 @@ F_U_n_12 = ( \
                         ) * fsp.nu_U_n_12[alpha] \
             ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
-# checked - end
-
-
 F_nu_psi = (
         ((fsp.X_ref[0] + fsp.U_n_12[0]).dx(0) - geo.e(fsp.psi_n_12, fsp.nu_n_12)[0, 0])\
         * ( -cos(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * sin(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
@@ -144,6 +141,7 @@ F_nu_psi = (
         * ( sin(fsp.psi_n_12) * fsp.nu_nu_n_12 + fsp.nu_n_12 * cos(fsp.psi_n_12) * fsp.nu_psi_n_12 )\
     ) * geo.sqrt_detg(fsp.psi_n_12, fsp.nu_n_12) * rmsh.dx_mesh[1]
 
+# checked - end
 
 F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
