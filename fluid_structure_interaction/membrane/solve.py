@@ -523,8 +523,6 @@ for n in range(rpam.parameters['N']):
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
 
 
-
-
         # 4.1.2.2.3 write into fluid fields
         v_fl_bar_old.assign(fsp.v_fl_bar)
 
