@@ -236,8 +236,6 @@ fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_m
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression(element=fsp.Q_psi_n_12.ufl_element()))
-
 
 # 2. mesh problem
 # project field U_n_12 and its time derivative from mesh[0] onto mesh[1] in order to set BCs for the mesh problem
