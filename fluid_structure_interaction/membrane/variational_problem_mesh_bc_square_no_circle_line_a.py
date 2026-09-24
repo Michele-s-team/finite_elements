@@ -1,3 +1,4 @@
+# checked - start
 '''
 this module solves for the variables u, \dot{u} which define the state of the mesh
 '''
@@ -17,9 +18,11 @@ rmsh = importlib.import_module(swi.rmsh)
 alpha, beta, gamma = ufl.indices(3)
 
 # BCs
+
 # BCs for u
 bc_u_l = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_l_id"])
 bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_b_id"])
+# checked - end
 
 bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
 
