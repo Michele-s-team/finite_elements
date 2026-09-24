@@ -1,4 +1,3 @@
-# checked - start
 '''
 this module solves for the variables u, \dot{u} which define the state of the mesh
 '''
@@ -57,7 +56,7 @@ F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.
 
 # This enforces (86)
 F_u_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_n[1].dx(0)) * fsp.nu_u[1].dx(0) ) * rmsh.ds_mesh[0]['ds_r']    
-# checked - end
+
 F_msh = F_u + F_u_N
 
 
@@ -89,9 +88,7 @@ F_u_dot = - ( \
                     )    
                 ) * fsp.nu_u_dot[alpha] * rmsh.ds_mesh[0]['ds']
 
-# checked - start
 # This enforces (90)
 F_u_dot_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_dot_n[1].dx(0)) * fsp.nu_u_dot[1].dx(0) ) * rmsh.ds_mesh[0]['ds_r']    
-# checked - end
 
 F_msh_dot = F_u_dot + F_u_dot_N
