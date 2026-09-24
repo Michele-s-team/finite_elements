@@ -86,9 +86,11 @@ csvfile_data = open(filepath_data, 'a', newline='')
 fieldnames_data = [ \
     'step',
     'mesh_quality',
-    'max(X_ref^2)',
+    'max(X_cur^2)',
     'dM/dt_t',
-    'dM/dt_b'
+    'dM/dt_b',
+    '(dM/dt_t-dM/dt_b)/dM/dt_b',
+    'phi_lb'
     ]
 
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)

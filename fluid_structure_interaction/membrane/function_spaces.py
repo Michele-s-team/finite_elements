@@ -214,3 +214,6 @@ nu_v_fl_bar = TestFunction(Q_v_fl_bar)
 nu_phi_fl = TestFunction(Q_phi_fl)
 
 V_fl =  (v_fl_n_1 + v_fl_bar) / 2.0
+
+# coordinates to evaluate functions on Q_U_n_12
+U_n_12_coordinates = Q_U_n_12.tabulate_dof_coordinates()

@@ -1,6 +1,5 @@
 from fenics import *
 import importlib
-import numpy as np
 import ufl as ufl
 
 import differential_geometry.boundary.geometry as bgeo
