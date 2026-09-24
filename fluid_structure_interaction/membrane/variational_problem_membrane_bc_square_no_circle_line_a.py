@@ -111,9 +111,6 @@ F_w_bar = ( \
                       (fsp.nu_w_bar * (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12, lmsh.mesh[1]))[i] * ((fsp.mu_n_12).dx( i ))) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
           )
           
-# checked - end
-
-          
 
 # natural BC implemented here
 F_phi = ( \
@@ -123,6 +120,7 @@ F_phi = ( \
         - dt * ((bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12,  lmsh.mesh[1]))[i] * (fsp.phi).dx(i)) * fsp.nu_phi * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds_l']
 
 
+# checked - end
 
 
 F_v_n = ((rpam.parameters['rho'] * (fsp.v_n[i] - fsp.v_bar[i]) + dt * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * (fsp.phi.dx( j ))) * fsp.nu_v_n[i]) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
