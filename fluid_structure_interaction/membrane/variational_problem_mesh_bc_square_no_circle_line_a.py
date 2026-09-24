@@ -20,16 +20,17 @@ alpha, beta, gamma = ufl.indices(3)
 # BCs
 
 # BCs for u
+
 # Eq. (84)
 bc_u_l = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_l_id"])
-# Eq. (85)
 bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_b_id"])
-# checked - end
 
+# Eq. (85)
 bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
-
+# Eq. (87)
 bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf[0], rmsh.parameters["mesh_1_id"])
 
+# checked - end
 
 bcs_msh = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
 
