@@ -393,8 +393,8 @@ def solve(phi):
     vp_mesh = importlib.reload(importlib.import_module(swi.vp_mesh))  
 
     # solve for u_n and u_dot_n
-    var_pr.solve_vp(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_u, fsp.J_u, parameters=params)
-    var_pr.solve_vp(vp_mesh.F_msh_dot, fsp.u_dot_n, vp_mesh.bcs_u_dot, fsp.J_u_dot, parameters=params)
+    var_pr.solve_vp(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs_u, fsp.J_u, parameters=params)
+    var_pr.solve_vp(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_u_dot, fsp.J_u_dot, parameters=params)
 
     print('... done.', flush=True)
 
