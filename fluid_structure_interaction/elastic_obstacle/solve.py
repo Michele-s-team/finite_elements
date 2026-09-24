@@ -154,8 +154,8 @@ for n in range(rpam.parameters['num_steps']):
 
     vp_msh = importlib.reload(vp_msh)
 
-    var_pr.solve_vp(vp_msh.F_msh_u, fsp.u_msh_n, vp_msh.bcs_msh, fsp.J_msh_u, parameters=params)
-    var_pr.solve_vp(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, vp_msh.bcs_msh_dot, fsp.J_msh_u_dot, parameters=params)
+    var_pr.solve_vp(vp_msh.F_msh_u, fsp.u_msh_n, vp_msh.bcs_u, fsp.J_msh_u, parameters=params)
+    var_pr.solve_vp(vp_msh.F_msh_u_dot, fsp.u_msh_dot_n, vp_msh.bcs_u_dot, fsp.J_msh_u_dot, parameters=params)
 
     print('... done.', flush=True)
 

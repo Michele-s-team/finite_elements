@@ -8,8 +8,9 @@ alpha, beta, gamma, delta = ufl.indices(4)
 
 
 # Pi(v, w, omega, sigma)[i, j] = \Pi^{ij}_notes, i.e., the momentum-flux tensor
-def Pi(v, w, omega, sigma, eta):
-    return as_tensor(- geo.g_c(omega)[alpha, beta] * sigma - 2.0 * eta * geo.d_c(v, w, omega)[alpha, beta], (alpha, beta))
+def Pi(v, w, sigma, eta, omega, nu=None):
+
+    return as_tensor(- geo.g_c(omega, nu)[alpha, beta] * sigma - 2.0 * eta * geo.d_c(v, w, omega, nu)[alpha, beta], (alpha, beta))
 
 
 '''
@@ -27,7 +28,8 @@ Return values:
 
 
 def dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu):
-    return as_tensor(Pi(v, w, omega, sigma, eta)[alpha, beta] * geo.g(omega)[beta, gamma] * nu[gamma], (alpha))
+
+    return as_tensor(Pi(v, w, sigma, eta, omega)[alpha, beta] * geo.g(omega)[beta, gamma] * nu[gamma], (alpha))
 
 
 '''
@@ -76,6 +78,7 @@ Return values:
 
 
 def dFdl_eta_sigma_3d(v, w, omega, sigma, eta, nu):
+    
     return geo.from_tangent_to_3D_space(omega, dFdl_eta_sigma_t(v, w, omega, sigma, eta, nu))
 
 

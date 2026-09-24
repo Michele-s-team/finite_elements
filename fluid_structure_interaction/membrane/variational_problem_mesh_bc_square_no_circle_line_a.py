@@ -17,42 +17,51 @@ rmsh = importlib.import_module(swi.rmsh)
 alpha, beta, gamma = ufl.indices(3)
 
 # BCs
+
 # BCs for u
+
+# Eq. (84)
 bc_u_l = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_l_id"])
 bc_u_b = DirichletBC(fsp.Q_u, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_b_id"])
 
+# Eq. (85)
 bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
 
+# Eq. (87)
 bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf[0], rmsh.parameters["mesh_1_id"])
 
 
-bcs_msh = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
+bcs_u = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
 
 
 # BCs for u_dot
+
+# Eq. (88)
 bc_u_dot_l = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_l_id"])
 bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_b_id"])
 
+# Eq. (89)
 bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
 
+# Eq. (91)
 bc_u_dot_t = DirichletBC(fsp.Q_u_dot, fsp.U_dot_n_12_on_mesh, rmsh.mf[0], rmsh.parameters["mesh_1_id"])
 
-
-bcs_msh_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
+bcs_u_dot = [bc_u_dot_l, bc_u_dot_b, bc_u_dot_0_r, bc_u_dot_t]
 
 
 
 # variational functional for u
-F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_mesh[0] \
+F_u_0 = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * (fsp.nu_u[alpha].dx(beta))) * rmsh.dx_mesh[0] \
     + ((bgeo.facet_normal[0])[beta] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[alpha, beta] * fsp.nu_u[alpha]) * rmsh.ds_mesh[0]['ds']
 
+# This enforces (86)
 F_u_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_n[1].dx(0)) * fsp.nu_u[1].dx(0) ) * rmsh.ds_mesh[0]['ds_r']    
-        
-F_msh = F_u + F_u_N
+
+F_u = F_u_0 + F_u_N
 
 
 # variational problem for u_dot
-F_u_dot = - ( \
+F_u_dot_0 = - ( \
                     (
                         ela.F_dot(fsp.u_dot_n)[alpha, gamma] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[gamma, beta] \
                         + ela.F(fsp.u_n)[alpha, gamma] * ela.S_dot(
@@ -79,7 +88,7 @@ F_u_dot = - ( \
                     )    
                 ) * fsp.nu_u_dot[alpha] * rmsh.ds_mesh[0]['ds']
 
-
+# This enforces (90)
 F_u_dot_N = rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.u_dot_n[1].dx(0)) * fsp.nu_u_dot[1].dx(0) ) * rmsh.ds_mesh[0]['ds_r']    
 
-F_msh_dot = F_u_dot + F_u_dot_N
+F_u_dot = F_u_dot_0 + F_u_dot_N

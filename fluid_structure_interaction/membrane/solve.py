@@ -236,8 +236,6 @@ fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_m
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
 
-fsp.sigma_n_32.interpolate(vp_membrane.sigma_n_32_0_Expression(element=fsp.Q_psi_n_12.ufl_element()))
-
 
 # 2. mesh problem
 # project field U_n_12 and its time derivative from mesh[0] onto mesh[1] in order to set BCs for the mesh problem
@@ -273,6 +271,8 @@ io.write_parameters_to_csv_file(os.path.join(rarg.args.output_directory, 'soluti
 
 #2.1 set from expressions
 
+# 2.1.1 expressions for the fluid
+
 class sigma_fl_n_12_0_Expression(UserExpression):
     def eval(self, values, x):
 
@@ -280,18 +280,51 @@ class sigma_fl_n_12_0_Expression(UserExpression):
 
     def value_shape(self):
         return (1,)
+    
+# 2.1.2 expressions for the membrane
+class v_n_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
 
-# 2.1.1 for the membrane
-fsp.v_bar_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
-fsp.v_n_0.interpolate( vp_membrane.v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
-fsp.nu_n_12_0.interpolate( vp_membrane.nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
-fsp.U_n_12_0.interpolate( vp_membrane.U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
-# 2.1.2 for the mesh
-# 2.1.3 for the fluid
-# fsp.v_n_1.interpolate(vp_fl.v_expression(element=fsp.Q_v.ufl_element()))
-# fsp.v_n_2.assign(fsp.v_n_1)
+    def value_shape(self):
+        return (1,)
+
+class sigma_n_32_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['sigma_n_12_0']
+
+    def value_shape(self):
+        return (1,)
+
+class nu_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 1
+
+    def value_shape(self):
+        return (1,)
+    
+class U_n_12_0_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+   
+
+# 2.2 interpolate expressions for initial profiles
+
+# 2.2.2 for the fluid
+
 fsp.sigma_fl_n_12.interpolate(sigma_fl_n_12_0_Expression(element=fsp.Q_phi_fl.ufl_element()))
 fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
+
+# 2.2.1 for the membrane
+
+fsp.v_bar_0.interpolate(v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+fsp.v_n_0.interpolate(v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
+fsp.nu_n_12_0.interpolate(nu_n_12_0_Expression( element=fsp.Q_nu_n_12.ufl_element() ) )
+fsp.U_n_12_0.interpolate(U_n_12_0_Expression( element=fsp.Q_U_n_12.ufl_element() ) )
 
 fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_0, fsp.w_bar_0, fsp.phi_0, fsp.v_n_0, fsp.w_n_0, fsp.U_n_12_0, fsp.nu_n_12_0, fsp.psi_n_12_0, fsp.mu_n_12_0 ])
 
@@ -348,7 +381,7 @@ def solve(phi):
     # 3.2.3.1 project field U_n_12 and its time derivative from mesh[1] onto mesh[0] in order to set BCs for the mesh problem
 
     # 3.2.3.1.1 project U_n_12
-    v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
+    _, _, _, _, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, _ = fsp.psi_mem.split( deepcopy=True )
     fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 
     # 3.2.3.1.2 project U_dot_n_12
@@ -358,15 +391,16 @@ def solve(phi):
     vp_mesh = importlib.reload(importlib.import_module(swi.vp_mesh))  
 
     # solve for u_n and u_dot_n
-    var_pr.solve_vp(vp_mesh.F_msh, fsp.u_n, vp_mesh.bcs_msh, fsp.J_u, parameters=params)
-    var_pr.solve_vp(vp_mesh.F_msh_dot, fsp.u_dot_n, vp_mesh.bcs_msh_dot, fsp.J_u_dot, parameters=params)
+    var_pr.solve_vp(vp_mesh.F_u, fsp.u_n, vp_mesh.bcs_u, fsp.J_u, parameters=params)
+    var_pr.solve_vp(vp_mesh.F_u_dot, fsp.u_dot_n, vp_mesh.bcs_u_dot, fsp.J_u_dot, parameters=params)
 
     print('... done.', flush=True)
 
+    # 3.3 compute the objective function in order to solve for phi_{FL LB}
     dMdt_t = assemble(rpam.parameters["rho_fluid"] * fsp.w_n * geo.ufl_norm((fsp.X_ref + fsp.U_n_12).dx(0)) * rmsh.dx_mesh[1])
-    dMdt_b = assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
+    dMdt_b = assemble(rpam.parameters["rho_fluid"] * fsp.v_fl_bar_b[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
 
-    error = (dMdt_t - dMdt_b)/dMdt_b
+    error = (dMdt_t + dMdt_b)/dMdt_b
 
     print(f'phi_lb = {float(phi_lb.value)} \t error = {error}')
 
@@ -390,14 +424,6 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
-    '''
-        for phi in np.arange(-4, 4, 0.5):
-
-
-            #3.2 solve variational problems
-
-            solve(phi)
-    '''
     root = fsolve(solve, float(phi_lb.value))[0]
 
     '''
@@ -493,8 +519,6 @@ for n in range(rpam.parameters['N']):
         u_dot_n_old.assign(fsp.u_dot_n)
         u_dot_n_1_old.assign(fsp.u_dot_n_1)
         u_dot_n_2_old.assign(fsp.u_dot_n_2)
-
-
 
 
         # 4.1.2.2.3 write into fluid fields
