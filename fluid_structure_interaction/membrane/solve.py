@@ -383,7 +383,7 @@ def solve(phi):
     # 3.2.3.1 project field U_n_12 and its time derivative from mesh[1] onto mesh[0] in order to set BCs for the mesh problem
 
     # 3.2.3.1.1 project U_n_12
-    v_bar_output, w_bar_output, phi_output, v_n_output, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, mu_n_12_output = fsp.psi_mem.split( deepcopy=True )
+    _, _, _, _, w_n_output, U_n_12_output, nu_n_12_output, psi_n_12_output, _ = fsp.psi_mem.split( deepcopy=True )
     fu.transfer_1d_to_2d_curve(U_n_12_output, fsp.U_n_12_on_mesh, rarg.args.input_directory)
 
     # 3.2.3.1.2 project U_dot_n_12
