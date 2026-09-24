@@ -141,7 +141,6 @@ F_nu_psi = (
 
 F_mu_n_12 = ((geo.H( fsp.psi_n_12, fsp.nu_n_12 ) - fsp.mu_n_12) * fsp.nu_mu_n_12) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]
 
-# checked - end
 
 
 F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
@@ -162,3 +161,4 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
 # total functional for the mixed problem
 F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_nu_psi + F_mu_n_12) + F_N
 
+# checked - end
