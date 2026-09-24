@@ -398,6 +398,7 @@ def solve(phi):
 
     print('... done.', flush=True)
 
+    # 3.3 compute the objective function in order to solve for phi_{FL LB}
     dMdt_t = assemble(rpam.parameters["rho_fluid"] * fsp.w_n * geo.ufl_norm((fsp.X_ref + fsp.U_n_12).dx(0)) * rmsh.dx_mesh[1])
     dMdt_b = assemble(- rpam.parameters["rho_fluid"] * fsp.v_fl_bar[alpha] * (bgeo.facet_normal[0])[alpha] * rmsh.ds_mesh[0]["ds_b"])
 
