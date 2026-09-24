@@ -64,8 +64,8 @@ F_v_bar = ( \
                              + dt * 1.0 / 2.0 * (fsp.W ** 2) * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
                              ) \
                       + dt * (- phys.Pi(fsp.V, fsp.W, fsp.sigma_n_32, rpam.parameters['eta'], fsp.psi_n_12, fsp.nu_n_12)[i, j] * geo.Nabla_f( fsp.nu_v_bar, fsp.psi_n_12, fsp.nu_n_12 )[i, j] \
-# checked - end
                                     #   force exerted by the fluid on the membrane
+                                    # - f^{FL i}_t(varsigma_FL(v^n, vargiam^{n-1/2}, u^{n-1}), nu_n_12, psi_n_12)    
                                       -  geo.from_3D_to_tangent(fsp.psi_n_12, 
                                                              flu.dFdl(
                                                                  fsp.var_tensor_sigma_fl_on_mem, 
@@ -73,6 +73,7 @@ F_v_bar = ( \
                                                                  ), 
                                                              fsp.nu_n_12)[i] * fsp.nu_v_bar[i]\
                             )
+# checked - end
           ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1]  \
 # checked - start
           - dt * rpam.parameters['rho'] / 2.0 * ( \
