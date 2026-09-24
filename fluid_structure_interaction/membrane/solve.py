@@ -426,14 +426,6 @@ for n in range(rpam.parameters['N']):
     t += dt
     step += 1
 
-    '''
-        for phi in np.arange(-4, 4, 0.5):
-
-
-            #3.2 solve variational problems
-
-            solve(phi)
-    '''
     root = fsolve(solve, float(phi_lb.value))[0]
 
     '''
