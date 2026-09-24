@@ -31,14 +31,18 @@ bc_u_0_r = DirichletBC(fsp.Q_u.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters[
 # Eq. (87)
 bc_u_t = DirichletBC(fsp.Q_u, fsp.U_n_12_on_mesh, rmsh.mf[0], rmsh.parameters["mesh_1_id"])
 
-# checked - end
 
 bcs_u = [bc_u_l, bc_u_b, bc_u_0_r, bc_u_t]
 
 
 # BCs for u_dot
+
+# Eq. (88)
 bc_u_dot_l = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_l_id"])
 bc_u_dot_b = DirichletBC(fsp.Q_u_dot, Constant((0, 0)), rmsh.mf[0], rmsh.parameters["line_b_id"])
+
+# checked - end
+
 
 bc_u_dot_0_r = DirichletBC(fsp.Q_u_dot.sub(0), Constant(0), rmsh.mf[0], rmsh.parameters["line_r_id"])
 
