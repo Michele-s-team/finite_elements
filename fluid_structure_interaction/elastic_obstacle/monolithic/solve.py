@@ -4,6 +4,7 @@ This code solves for the dynamics of the Navier Stokes equations with an elastic
 NOTE: 
     - here decompose_u assumes that -pi/2 < theta < pi/2
     - in the remeshing block, I do not transfer past fields *_n_1 because they are overwritten right after remeshing
+    - if 'remesh_stride' is in 'rpam.parameters', remeshing is done every rpam.parameters['remesh_stride'] steps, while if 'mesh_quality_threshold' is in 'rpam.parameters', remeshing is made when mesh quality drops below 'rpam.parameters['mesh_quality_threshold']'
 
 run with:
     rm -r solution; mkdir solution; python3 solve.py [path where to read the mesh] [path where to store the solution]
@@ -312,6 +313,7 @@ print("Starting time iteration ...", flush=True)
 
 t = 0
 step = 0
+do_remesh = False
 
 for n in range(rpam.parameters['num_steps']):
 
@@ -368,11 +370,19 @@ for n in range(rpam.parameters['num_steps']):
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
+    # evaluate whether remeshing should be done and write the result in `do_remesh`
+    if 'remesh_stride' in rpam.parameters:
+        # `rpam.parameters` constains `remesh_stride` -> do remesh every `rpam.parameters['remesh_stride]`
 
-    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if step % rpam.parameters['remesh_stride'] == 0:
-    # if step > 1:
+        do_remesh = (step % rpam.parameters['remesh_stride'] == 0)
 
+    elif 'mesh_quality_threshold' in rpam.parameters: 
+        # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
+
+        do_remesh = (msh_qu.quality < rpam.parameters['mesh_quality_threshold'])
+
+
+    if do_remesh:
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 
 
