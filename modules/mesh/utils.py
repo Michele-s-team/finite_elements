@@ -4391,18 +4391,18 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     # add 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
-    # gmsh.model.addPhysicalGroup(2, shape_surface, tag=1, name="shape_surface")
+    tag_physical_object(surfaces[0], 1, gmsh.model, 'shape_surface')
 
-    tag_physical_object(shape_surface, 1, gmsh.model, 'shape_surface')
-
-    gmsh.model.addPhysicalGroup(3, [shape_volume], tag=2, name="shape_volume")
-    gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")
     gmsh.model.addPhysicalGroup(2, [box_surface_le], tag=3, name="shape_surface_le")
     gmsh.model.addPhysicalGroup(2, [box_surface_ri], tag=4, name="shape_surface_ri")
     gmsh.model.addPhysicalGroup(2, [box_surface_to], tag=5, name="shape_surface_to")
     gmsh.model.addPhysicalGroup(2, [box_surface_bo], tag=6, name="shape_surface_bo")
     gmsh.model.addPhysicalGroup(2, [box_surface_fr], tag=7, name="shape_surface_fr")
     gmsh.model.addPhysicalGroup(2, [box_surface_ba], tag=8, name="shape_surface_ba")
+
+    # tag 3-dimensional objects
+    gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")  
+    gmsh.model.addPhysicalGroup(3, [shape_volume], tag=2, name="shape_volume")
 
     
     gmsh.model.mesh.generate(3)
