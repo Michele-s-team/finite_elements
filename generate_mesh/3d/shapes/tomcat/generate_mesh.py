@@ -37,4 +37,6 @@ msh.print_mesh_vertices_to_csv(mesh_file, os.path.join(rarg.args.output_director
 msh.print_mesh_edges_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "edges.csv"))
 msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "triangles.csv"))
 
+msh.generate_3d_shape_mesh(os.path.join(rarg.args.output_directory, '3d'))
+
 msh.clear_gmsh()

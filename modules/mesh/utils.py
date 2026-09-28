@@ -4285,6 +4285,27 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
             io.write_parameters_to_csv_file(os.path.join(output_directory, "mesh_metadata.csv"), mesh_metadata)
 
         print("...done.")
+
+
+'''
+
+
+'''
+def generate_3d_shape_mesh(output_directory):
+
+    # remove the output directory it it already exists, and create it from scratch
+    shutil.rmtree(output_directory, ignore_errors=True)
+    os.makedirs(output_directory)
+
+    geometry = pygmsh.occ.Geometry()
+    geometry.__enter__()
+
+    # reset gmsh state from any previous call, AFTER pygmsh has initialized it
+    gmsh.clear()
+    gmsh.model.add("model")  # need a model after clear()
+
+    clear_gmsh()
+
         
 
 '''
@@ -4305,3 +4326,5 @@ def clear_gmsh():
     if gmsh.isInitialized():
         
         gmsh.finalize()
+
+
