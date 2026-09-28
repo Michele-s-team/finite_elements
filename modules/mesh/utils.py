@@ -4401,7 +4401,12 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     gmsh.model.addPhysicalGroup(2, [box_surface_ba], tag=8, name="shape_surface_ba")
 
     # tag 3-dimensional objects
-    gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")  
+    volumes = gmsh.model.getEntities(dim=3)
+
+    # gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")  
+    tag_physical_object(volumes[0], 9, gmsh.model, 'shape_volume')
+
+
     gmsh.model.addPhysicalGroup(3, [shape_volume], tag=2, name="shape_volume")
 
     
