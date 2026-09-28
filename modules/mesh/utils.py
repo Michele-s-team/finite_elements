@@ -4348,17 +4348,37 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     gmsh.model.geo.synchronize()
 
 
-    cube_loop_l = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
-    cube_loop_r = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
-    cube_loop_f = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
-    cube_loop_b = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
+    cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
+    cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
+
+    # p_8 -> p_4 -> p_3 -> p_7 -> p_8
+    cube_loop_to = gmsh.model.geo.addCurveLoop([cube_line_12, -cube_line_3, cube_line_11, -cube_line_5])
+
+    # p1 p5  p6 p2
+    cube_loop_bo = gmsh.model.geo.addCurveLoop([cube_line_9, -cube_line_7, cube_line_10, -cube_line_1])
+    
+    cube_loop_fr = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
+
+    # p3 p4
+    cube_loop_ba = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
 
     gmsh.model.geo.synchronize()
 
-    box_surface_l = gmsh.model.geo.addPlaneSurface([cube_loop_r])
-    box_surface_r = gmsh.model.geo.addPlaneSurface([cube_loop_l])
-    box_surface_f = gmsh.model.geo.addPlaneSurface([cube_loop_f])
-    box_surface_b = gmsh.model.geo.addPlaneSurface([cube_loop_b])
+    box_surface_le = gmsh.model.geo.addPlaneSurface([cube_loop_ri])
+    box_surface_ri = gmsh.model.geo.addPlaneSurface([cube_loop_le])
+    box_surface_to = gmsh.model.geo.addPlaneSurface([cube_loop_to])
+    box_surface_bo = gmsh.model.geo.addPlaneSurface([cube_loop_bo])
+    box_surface_fr = gmsh.model.geo.addPlaneSurface([cube_loop_fr])
+    box_surface_ba = gmsh.model.geo.addPlaneSurface([cube_loop_ba])
+    gmsh.model.geo.synchronize()
+
+    box_surfaces = [box_surface_le, box_surface_ri, box_surface_to, box_surface_bo, box_surface_fr, box_surface_ba]
+
+    # make a surface loop out of `box_surfaces`
+    box_loop = gmsh.model.geo.addSurfaceLoop(box_surfaces)
+    gmsh.model.geo.synchronize()
+
+    box_volume = gmsh.model.geo.addVolume([box_loop, shape_loop])
     gmsh.model.geo.synchronize()
 
 
@@ -4369,10 +4389,12 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     # tags to identify the boundary and the bulk in FEniCS
     gmsh.model.addPhysicalGroup(2, shape_surface, tag=1, name="shape_surface")
     gmsh.model.addPhysicalGroup(3, [shape_volume], tag=2, name="shape_volume")
-    gmsh.model.addPhysicalGroup(2, [box_surface_r], tag=3, name="surface_r")
-    gmsh.model.addPhysicalGroup(2, [box_surface_l], tag=4, name="surface_l")
-    gmsh.model.addPhysicalGroup(2, [box_surface_f], tag=5, name="surface_f")
-    gmsh.model.addPhysicalGroup(2, [box_surface_b], tag=6, name="surface_b")
+    gmsh.model.addPhysicalGroup(2, [box_surface_le], tag=3, name="surface_le")
+    gmsh.model.addPhysicalGroup(2, [box_surface_ri], tag=4, name="surface_ri")
+    gmsh.model.addPhysicalGroup(2, [box_surface_to], tag=5, name="surface_to")
+    gmsh.model.addPhysicalGroup(2, [box_surface_bo], tag=6, name="surface_bo")
+    gmsh.model.addPhysicalGroup(2, [box_surface_fr], tag=7, name="surface_fr")
+    gmsh.model.addPhysicalGroup(2, [box_surface_ba], tag=8, name="surface_ba")
 
     
     gmsh.model.mesh.generate(3)

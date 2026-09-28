@@ -39,7 +39,7 @@ msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directo
 '''
 
 
-trimesh.creation.capsule(height=2.0, radius=0.5, count=[5, 5]).export(stl_file)
+trimesh.creation.capsule(height=0.5, radius=0.5, count=[5, 5]).export(stl_file)
 
 
 msh.generate_3d_shape_mesh(stl_file, rarg.args.output_directory)
