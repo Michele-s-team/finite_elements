@@ -31,7 +31,7 @@ metadata = dict()
 mesh_file = os.path.join(rarg.args.output_directory, "mesh.msh")
 
 mesh = meshio.read(os.path.join('/home/fenics/shared/generate_mesh/3d/shapes/tomcat/input', "mesh.stl"))
-meshio.write(os.path.join(rarg.args.output_directory, "mesh.msh"), mesh) 
+meshio.write(mesh_file, mesh) 
 
 msh.print_mesh_vertices_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "vertices.csv"))
 msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "triangles.csv"))
