@@ -4308,10 +4308,11 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     gmsh.merge(shape_file)
 
     # the triangles inserted so far in the mesh
-    shape_surface = [surface[1] for surface in gmsh.model.getEntities(dim=2)]
+    shape_surface = gmsh.model.getEntities(dim=2)
+    shape_surface_ids = [surface[1] for surface in shape_surface]
 
     # make a surface loop out of `surfaces`
-    shape_loop = gmsh.model.geo.addSurfaceLoop(shape_surface)
+    shape_loop = gmsh.model.geo.addSurfaceLoop(shape_surface_ids)
     gmsh.model.geo.synchronize()
 
     shape_volume = gmsh.model.geo.addVolume([shape_loop])
@@ -4378,23 +4379,30 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     box_loop = gmsh.model.geo.addSurfaceLoop(box_surfaces)
     gmsh.model.geo.synchronize()
 
-    box_volume = gmsh.model.geo.addVolume([box_loop, shape_loop])
+    box_minus_shape_volume = gmsh.model.geo.addVolume([box_loop, shape_loop])
     gmsh.model.geo.synchronize()
 
 
-    # gmsh.model.mesh.embed(2, shape_surface, 3, box_volume)
-    # gmsh.model.geo.synchronize()
+    gmsh.model.mesh.embed(2, shape_surface_ids, 3, box_minus_shape_volume)
+    gmsh.model.geo.synchronize()
 
 
-    # tags to identify the boundary and the bulk in FEniCS
-    gmsh.model.addPhysicalGroup(2, shape_surface, tag=1, name="shape_surface")
+
+    # add 2-dimensional objects
+    surfaces = gmsh.model.getEntities(dim=2)
+
+    # gmsh.model.addPhysicalGroup(2, shape_surface, tag=1, name="shape_surface")
+
+    tag_physical_object(shape_surface, 1, gmsh.model, 'shape_surface')
+
     gmsh.model.addPhysicalGroup(3, [shape_volume], tag=2, name="shape_volume")
-    gmsh.model.addPhysicalGroup(2, [box_surface_le], tag=3, name="surface_le")
-    gmsh.model.addPhysicalGroup(2, [box_surface_ri], tag=4, name="surface_ri")
-    gmsh.model.addPhysicalGroup(2, [box_surface_to], tag=5, name="surface_to")
-    gmsh.model.addPhysicalGroup(2, [box_surface_bo], tag=6, name="surface_bo")
-    gmsh.model.addPhysicalGroup(2, [box_surface_fr], tag=7, name="surface_fr")
-    gmsh.model.addPhysicalGroup(2, [box_surface_ba], tag=8, name="surface_ba")
+    gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")
+    gmsh.model.addPhysicalGroup(2, [box_surface_le], tag=3, name="shape_surface_le")
+    gmsh.model.addPhysicalGroup(2, [box_surface_ri], tag=4, name="shape_surface_ri")
+    gmsh.model.addPhysicalGroup(2, [box_surface_to], tag=5, name="shape_surface_to")
+    gmsh.model.addPhysicalGroup(2, [box_surface_bo], tag=6, name="shape_surface_bo")
+    gmsh.model.addPhysicalGroup(2, [box_surface_fr], tag=7, name="shape_surface_fr")
+    gmsh.model.addPhysicalGroup(2, [box_surface_ba], tag=8, name="shape_surface_ba")
 
     
     gmsh.model.mesh.generate(3)
