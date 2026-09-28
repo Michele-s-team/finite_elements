@@ -4291,7 +4291,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
 
 
 '''
-def generate_3d_shape_mesh(output_directory):
+def generate_3d_shape_mesh(shape_file, output_directory):
 
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
@@ -4303,6 +4303,81 @@ def generate_3d_shape_mesh(output_directory):
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
+
+    # insert the shape in `stl_file`
+    gmsh.merge(shape_file)
+
+    # the triangles inserted so far in the mesh
+    shape_surface = [surface[1] for surface in gmsh.model.getEntities(dim=2)]
+
+    # make a surface loop out of `surfaces`
+    shape_loop = gmsh.model.geo.addSurfaceLoop(shape_surface)
+    gmsh.model.geo.synchronize()
+
+    shape_volume = gmsh.model.geo.addVolume([shape_loop])
+    gmsh.model.geo.synchronize()
+
+    r = [-2, -2, -2]
+    L = [4, 4, 4]
+
+    p_1 = gmsh.model.geo.addPoint(r[0], r[1], r[2])
+    p_2 = gmsh.model.geo.addPoint(r[0] + L[0], r[1], r[2])
+    p_3 = gmsh.model.geo.addPoint(r[0] + L[0], r[1], r[2] + L[2])
+    p_4 = gmsh.model.geo.addPoint(r[0], r[1], r[2] + L[2])
+
+    p_5 = gmsh.model.geo.addPoint(r[0], r[1] + L[1], r[2])
+    p_6 = gmsh.model.geo.addPoint(r[0] + L[0], r[1] + L[1], r[2])
+    p_7 = gmsh.model.geo.addPoint(r[0] + L[0], r[1] + L[1], r[2] + L[2])
+    p_8 = gmsh.model.geo.addPoint(r[0], r[1] + L[1], r[2] + L[2])
+    gmsh.model.geo.synchronize()
+
+    cube_line_1 = gmsh.model.geo.addLine(p_1, p_2)
+    cube_line_2 = gmsh.model.geo.addLine(p_2, p_3)
+    cube_line_3 = gmsh.model.geo.addLine(p_3, p_4)
+    cube_line_4 = gmsh.model.geo.addLine(p_4, p_1)
+
+    cube_line_5 = gmsh.model.geo.addLine(p_8, p_7)
+    cube_line_6 = gmsh.model.geo.addLine(p_7, p_6)
+    cube_line_7 = gmsh.model.geo.addLine(p_6, p_5)
+    cube_line_8 = gmsh.model.geo.addLine(p_5, p_8)
+
+    cube_line_9 = gmsh.model.geo.addLine(p_1, p_5)
+    cube_line_10 = gmsh.model.geo.addLine(p_6, p_2)
+    cube_line_11 = gmsh.model.geo.addLine(p_3, p_7)
+    cube_line_12 = gmsh.model.geo.addLine(p_8, p_4)
+    gmsh.model.geo.synchronize()
+
+
+    cube_loop_l = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
+    cube_loop_r = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
+    cube_loop_f = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
+    cube_loop_b = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
+
+    gmsh.model.geo.synchronize()
+
+    box_surface_l = gmsh.model.geo.addPlaneSurface([cube_loop_r])
+    box_surface_r = gmsh.model.geo.addPlaneSurface([cube_loop_l])
+    box_surface_f = gmsh.model.geo.addPlaneSurface([cube_loop_f])
+    box_surface_b = gmsh.model.geo.addPlaneSurface([cube_loop_b])
+    gmsh.model.geo.synchronize()
+
+
+    # gmsh.model.mesh.embed(2, shape_surface, 3, box_volume)
+    # gmsh.model.geo.synchronize()
+
+
+    # tags to identify the boundary and the bulk in FEniCS
+    gmsh.model.addPhysicalGroup(2, shape_surface, tag=1, name="shape_surface")
+    gmsh.model.addPhysicalGroup(3, [shape_volume], tag=2, name="shape_volume")
+    gmsh.model.addPhysicalGroup(2, [box_surface_r], tag=3, name="surface_r")
+    gmsh.model.addPhysicalGroup(2, [box_surface_l], tag=4, name="surface_l")
+    gmsh.model.addPhysicalGroup(2, [box_surface_f], tag=5, name="surface_f")
+    gmsh.model.addPhysicalGroup(2, [box_surface_b], tag=6, name="surface_b")
+
+    
+    gmsh.model.mesh.generate(3)
+    gmsh.write(os.path.join(output_directory, 'mesh.msh'))
+
 
     clear_gmsh()
 
