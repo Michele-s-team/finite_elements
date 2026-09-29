@@ -31,6 +31,8 @@ parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_direc
 dx_surface = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=lmsh.parameters['surface_volume_id'])  
 dx_box = Measure("dx", domain=lmsh.mesh, subdomain_data=cf, subdomain_id=lmsh.parameters['box_volume_id'])  
 
+dx = dx_box + dx_surface
+
 ds_le = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_le_id'])
 ds_ri = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_ri_id'])
 ds_to = Measure("ds", domain=lmsh.mesh, subdomain_data=sf, subdomain_id=lmsh.parameters['boundary_to_id'])

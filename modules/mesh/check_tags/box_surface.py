@@ -25,6 +25,8 @@ test_mesh_integral_errors = dict([])
 integral_exact_dx_surface = cal.volume_integral_ball(tf.function_test_integrals, rmsh.parameters['surface_radius'], rmsh.parameters['surface_translation_vector'])
 integral_exact_dx_box = cal.volume_integral_box(tf.function_test_integrals, L, r=r) - integral_exact_dx_surface
 
+integral_exact_dx = integral_exact_dx_surface + integral_exact_dx_box
+
 # 1.2 surface integrals
 
 integral_exact_ds_le = cal.surface_integral_rectangle(lambda x: tf.function_test_integrals([x[0], r[1] + L[1], x[1]]), [r[0], r[2]], [r[0] + L[0], r[2] + L[2]])
@@ -48,6 +50,8 @@ integral_exact_ds = integral_exact_ds_leri + integral_exact_ds_tobo + integral_e
 
 test_mesh_integral_errors['\int_box f dx'] = msh.test_mesh_integral(integral_exact_dx_box, tf.function_test_integrals_fenics, rmsh.dx_box, '\int_ball f dx_box')
 test_mesh_integral_errors['\int_surface f dx'] = msh.test_mesh_integral(integral_exact_dx_surface, tf.function_test_integrals_fenics, rmsh.dx_surface, '\int_ball f dx_surface')
+
+test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_dx, tf.function_test_integrals_fenics, rmsh.dx, '\int_ball f dx')
 
 # 2.2 surface integrals
 
