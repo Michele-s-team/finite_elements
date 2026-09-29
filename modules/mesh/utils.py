@@ -4411,7 +4411,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     #4.2 tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
-    tag_physical_object(volumes[1], parameters['box_minus_surface_volume_id'], gmsh.model, 'box_minus_surface_volume')
+    tag_physical_object(volumes[1], parameters['box_volume_id'], gmsh.model, 'box_minus_surface_volume')
     tag_physical_object(volumes[0], parameters['surface_volume_id'], gmsh.model, 'surface_volume')
 
     #5. set the resolution

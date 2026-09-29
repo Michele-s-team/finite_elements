@@ -8,7 +8,6 @@ Example:
 '''
 
 import os
-import shutil
 import sys
 import trimesh
 from trimesh import transformations as tr
@@ -28,8 +27,10 @@ surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 
 #1.1 the generated surface will be rotated according to the rotation matrix `R`
 R = tr.rotation_matrix(rpam.parameters['surface_rotation_angle'], rpam.parameters['surface_rotation_axis'])
+
 #1.2 the generated surface will be translated according to the translation matrix `T`
 T = tr.translation_matrix(rpam.parameters['surface_translation_vector'])
+
 #1.3 compose `T` . `R`
 transform = tr.concatenate_matrices(T, R)
 
@@ -44,5 +45,3 @@ trimesh.creation.capsule(
 
 # 2. incorporate the surface in the stl file into a box and write this into a 3d mesh
 msh.generate_box_surface_mesh(surface_file, rarg.args.parameter_directory, rarg.args.output_directory)
-
-msh.clear_gmsh()
