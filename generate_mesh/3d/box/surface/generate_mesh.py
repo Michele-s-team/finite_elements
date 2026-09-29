@@ -22,22 +22,9 @@ import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
 
-metadata = dict()
-
-
 stl_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
-# msh_file = os.path.join(rarg.args.output_directory, "mesh.msh")
 
-# msh_file = meshio.read(os.path.join('/home/fenics/shared/generate_mesh/3d/shapes/tomcat/input', "mesh.stl"))
-'''
-meshio.write(mesh_file, stl_file) 
-
-# this is a mesh given by a two-dimensional manifold -> print its vertices, edges and triangles 
-msh.print_mesh_vertices_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "vertices.csv"))
-msh.print_mesh_edges_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "edges.csv"))
-msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "triangles.csv"))
-'''
-
+# 1. generate the stl file with the shape
 # the generated shape will be rotated according to the rotation matrix `R`
 R = tr.rotation_matrix(rpam.parameters['shape_rotation_angle'], rpam.parameters['shape_rotation_axis'])
 # the generated shape will be translated according to the translation matrix `T`
@@ -53,6 +40,7 @@ trimesh.creation.capsule(
     ).export(stl_file)
 
 
+# 2. incorporate the shape in the stl file into a box and write this into a 3d mesh
 msh.generate_box_surface_mesh(stl_file, rarg.args.parameter_directory, rarg.args.output_directory)
 
 msh.clear_gmsh()
