@@ -4347,21 +4347,12 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     cube_line_12 = gmsh.model.geo.addLine(p_8, p_4)
     gmsh.model.geo.synchronize()
 
-
     cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
     cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
-
-    # p_8 -> p_4 -> p_3 -> p_7 -> p_8
     cube_loop_to = gmsh.model.geo.addCurveLoop([cube_line_12, -cube_line_3, cube_line_11, -cube_line_5])
-
-    # p1 p5  p6 p2
     cube_loop_bo = gmsh.model.geo.addCurveLoop([cube_line_9, -cube_line_7, cube_line_10, -cube_line_1])
-    
     cube_loop_fr = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
-
-    # p3 p4
     cube_loop_ba = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
-
     gmsh.model.geo.synchronize()
 
     box_surface_le = gmsh.model.geo.addPlaneSurface([cube_loop_le])
@@ -4390,21 +4381,21 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     # add 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
-    tag_physical_object(surfaces[0], 1, gmsh.model, 'shape_surface')
-    tag_physical_object(surfaces[1], 2, gmsh.model, 'box_surface_le')
-    tag_physical_object(surfaces[2], 3, gmsh.model, 'box_surface_ri')
-    tag_physical_object(surfaces[3], 4, gmsh.model, 'box_surface_to')
-    tag_physical_object(surfaces[4], 5, gmsh.model, 'box_surface_bo')
-    tag_physical_object(surfaces[5], 6, gmsh.model, 'box_surface_fr')
-    tag_physical_object(surfaces[6], 7, gmsh.model, 'box_surface_ba')
+    tag_physical_object(surfaces[0], parameters['shape_surface_id'], gmsh.model, 'shape_surface')
+    tag_physical_object(surfaces[1], parameters['boundary_le_id'], gmsh.model, 'boundary_le')
+    tag_physical_object(surfaces[2], parameters['boundary_ri_id'], gmsh.model, 'boundary_ri')
+    tag_physical_object(surfaces[3], parameters['boundary_to_id'], gmsh.model, 'boundary_to')
+    tag_physical_object(surfaces[4], parameters['boundary_bo_id'], gmsh.model, 'boundary_bo')
+    tag_physical_object(surfaces[5], parameters['boundary_fr_id'], gmsh.model, 'boundary_fr')
+    tag_physical_object(surfaces[6], parameters['boundary_ba_id'], gmsh.model, 'boundary_ba')
 
 
     # tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
     # gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")  
-    tag_physical_object(volumes[0], 9, gmsh.model, 'shape_volume')
-    tag_physical_object(volumes[1], 10, gmsh.model, 'box_minus_shape_volume')
+    tag_physical_object(volumes[1], parameters['box_minus_shape_volume_id'], gmsh.model, 'box_minus_shape_volume')
+    tag_physical_object(volumes[0], parameters['shape_volume_id'], gmsh.model, 'shape_volume')
 
 
 
