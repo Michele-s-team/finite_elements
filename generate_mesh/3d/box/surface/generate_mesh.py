@@ -34,6 +34,7 @@ T = tr.translation_matrix(rpam.parameters['surface_translation_vector'])
 #1.3 compose `T` . `R`
 transform = tr.concatenate_matrices(T, R)
 
+'''
 #1.4 generate the surface
 trimesh.creation.capsule(
         height=rpam.parameters['surface_height'], 
@@ -41,7 +42,14 @@ trimesh.creation.capsule(
         count=rpam.parameters['surface_n_sections'], 
         transform=transform
     ).export(surface_file)
+'''
 
+m = trimesh.creation.icosphere(
+    subdivisions=rpam.parameters['surface_subdivisions'],
+    radius=rpam.parameters['surface_radius'])
+
+m.apply_transform(transform)
+m.export(surface_file)
 
 # 2. incorporate the surface in the stl file into a box and write this into a 3d mesh
 msh.generate_box_surface_mesh(surface_file, rarg.args.parameter_directory, rarg.args.output_directory)

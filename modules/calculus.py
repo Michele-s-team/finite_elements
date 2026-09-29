@@ -581,22 +581,27 @@ def volume_integral_ball(f, r, c):
     return result
 
 '''
-compute the volume integral of a function in a box with one edge centered at the origin
+compute the volume integral of a function in a box with one edge vertex centered at the origin
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'L': list of sizes of the box [length, height, width]
+    * Mandatory: 
+        - 'f': the function f([x, y, z])
+        - 'L': list of sizes of the box [length, height, width]
+    * Optional:
+        - `r` ([0, 0, 0]): the coordinates of the location of the edge vertex (the one with the smallest values of x, y and z) definig the origin of the box
+
 Return values: 
-- \int dx_box f
+    - \int dx_box f
 '''
-def volume_integral_box(f, L):
+def volume_integral_box(f, L, r=[0, 0, 0]):
     result = spi.tplquad(
         lambda x, y, z: f([x, y, z]) ,
-        0,  # z lower bound
-        L[2],  # z upper bound
-        lambda z: 0,  # y lower bound
-        lambda z: L[1],  # y upper bound
-        lambda z, y: 0,  # x lower bound
-        lambda z, y: L[0]  # x upper bound
+        r[2],  # z lower bound
+        r[2] + L[2],  # z upper bound
+        lambda z: r[1],  # y lower bound
+        lambda z: r[1] + L[1],  # y upper bound
+        lambda z, y: r[0],  # x lower bound
+        lambda z, y: r[0] + L[0]  # x upper bound
     )[0]
 
     return result

@@ -4363,8 +4363,8 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     gmsh.model.geo.synchronize()
 
     # 2.3 add curve loops which enclose the box surfaces (sides)
-    cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
-    cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
+    cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
+    cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
     cube_loop_to = gmsh.model.geo.addCurveLoop([cube_line_12, -cube_line_3, cube_line_11, -cube_line_5])
     cube_loop_bo = gmsh.model.geo.addCurveLoop([cube_line_9, -cube_line_7, cube_line_10, -cube_line_1])
     cube_loop_fr = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
@@ -4380,7 +4380,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     box_surface_ba = gmsh.model.geo.addPlaneSurface([cube_loop_ba])
     gmsh.model.geo.synchronize()
 
-    box_surfaces = [box_surface_le, box_surface_ri, box_surface_to, box_surface_bo, box_surface_fr, box_surface_ba]
+    box_surfaces = [box_surface_ri, box_surface_le, box_surface_to, box_surface_bo, box_surface_fr, box_surface_ba]
 
     #2.5 make a surface loop out of `box_surfaces`, which represents the full outer surface of the box
     box_loop = gmsh.model.geo.addSurfaceLoop(box_surfaces)
