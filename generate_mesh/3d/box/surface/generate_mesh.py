@@ -22,25 +22,27 @@ import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
 
-stl_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
+surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 
-# 1. generate the stl file with the shape
-# the generated shape will be rotated according to the rotation matrix `R`
-R = tr.rotation_matrix(rpam.parameters['shape_rotation_angle'], rpam.parameters['shape_rotation_axis'])
-# the generated shape will be translated according to the translation matrix `T`
-T = tr.translation_matrix(rpam.parameters['shape_translation_vector'])
-# compose `T` . `R`
+# 1. generate the stl file with the surface
+
+#1.1 the generated surface will be rotated according to the rotation matrix `R`
+R = tr.rotation_matrix(rpam.parameters['surface_rotation_angle'], rpam.parameters['surface_rotation_axis'])
+#1.2 the generated surface will be translated according to the translation matrix `T`
+T = tr.translation_matrix(rpam.parameters['surface_translation_vector'])
+#1.3 compose `T` . `R`
 transform = tr.concatenate_matrices(T, R)
-# generate the shape
+
+#1.4 generate the surface
 trimesh.creation.capsule(
-        height=rpam.parameters['shape_height'], 
-        radius=rpam.parameters['shape_radius'], 
-        count=rpam.parameters['shape_n_sections'], 
+        height=rpam.parameters['surface_height'], 
+        radius=rpam.parameters['surface_radius'], 
+        count=rpam.parameters['surface_n_sections'], 
         transform=transform
-    ).export(stl_file)
+    ).export(surface_file)
 
 
-# 2. incorporate the shape in the stl file into a box and write this into a 3d mesh
-msh.generate_box_surface_mesh(stl_file, rarg.args.parameter_directory, rarg.args.output_directory)
+# 2. incorporate the surface in the stl file into a box and write this into a 3d mesh
+msh.generate_box_surface_mesh(surface_file, rarg.args.parameter_directory, rarg.args.output_directory)
 
 msh.clear_gmsh()

@@ -4290,11 +4290,11 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
 '''
 generate a 3d mesh given by a box with a surface inside
 Input values: 
-    - `shape_file`: the `.stl` file containing the surface
+    - `surface_file`: the `.stl` file containing the surface
     - `mesh_parameters_directory`: the path of `mesh_parameters.csv`
     - `output_directory`: the path where the mesh will be stored
 '''
-def generate_box_surface_mesh(shape_file, mesh_parameters_directory, output_directory):
+def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_directory):
 
     geometry = pygmsh.occ.Geometry()
     geometry.__enter__()
@@ -4314,24 +4314,24 @@ def generate_box_surface_mesh(shape_file, mesh_parameters_directory, output_dire
     #write metadata for ensemble mesh
     mesh_metadata = parameters.copy()
 
-    # 1. generate the shape
+    # 1. generate the surface
 
-    #1.1 insert the shape in `shape_file` intp the mesh
-    gmsh.merge(shape_file)
+    #1.1 insert the surface in `surface_file` intp the mesh
+    gmsh.merge(surface_file)
 
-    #1.2 obtain the surface of the shape: the triangles inserted so far in the mesh are stored into `shape_surface` and their respective IDs in `shape_surface_ids`
-    shape_surface = gmsh.model.getEntities(dim=2)
-    shape_surface_ids = [surface[1] for surface in shape_surface]
+    #1.2 obtain the surface of the surface: the triangles inserted so far in the mesh are stored into `surface_surface` and their respective IDs in `surface_surface_ids`
+    surface_surface = gmsh.model.getEntities(dim=2)
+    surface_surface_ids = [surface[1] for surface in surface_surface]
 
-    #1.3 make a surface loop which represnts the surface of the shape
-    shape_loop = gmsh.model.geo.addSurfaceLoop(shape_surface_ids)
+    #1.3 make a surface loop which represnts the surface of the surface
+    surface_loop = gmsh.model.geo.addSurfaceLoop(surface_surface_ids)
     gmsh.model.geo.synchronize()
 
-    #1.4 this is the volume enclosed by the shape
-    gmsh.model.geo.addVolume([shape_loop])
+    #1.4 this is the volume enclosed by the surface
+    gmsh.model.geo.addVolume([surface_loop])
     gmsh.model.geo.synchronize()
 
-    #2. generate the box surrounding the shape
+    #2. generate the box surrounding the surface
 
     #2.1 add points delimiting the box
     p_1 = gmsh.model.geo.addPoint(r[0], r[1], r[2])
@@ -4386,11 +4386,11 @@ def generate_box_surface_mesh(shape_file, mesh_parameters_directory, output_dire
     box_loop = gmsh.model.geo.addSurfaceLoop(box_surfaces)
     gmsh.model.geo.synchronize()
 
-    # 3. define the volume between the shape and the box
-    box_minus_shape_volume = gmsh.model.geo.addVolume([box_loop, shape_loop])
+    # 3. define the volume between the surface and the box
+    box_minus_surface_volume = gmsh.model.geo.addVolume([box_loop, surface_loop])
     gmsh.model.geo.synchronize()
 
-    gmsh.model.mesh.embed(2, shape_surface_ids, 3, box_minus_shape_volume)
+    gmsh.model.mesh.embed(2, surface_surface_ids, 3, box_minus_surface_volume)
     gmsh.model.geo.synchronize()
 
 
@@ -4399,7 +4399,7 @@ def generate_box_surface_mesh(shape_file, mesh_parameters_directory, output_dire
     #4.1 tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
-    tag_physical_object(surfaces[0], parameters['shape_surface_id'], gmsh.model, 'shape_surface')
+    tag_physical_object(surfaces[0], parameters['surface_surface_id'], gmsh.model, 'surface_surface')
     tag_physical_object(surfaces[1], parameters['boundary_le_id'], gmsh.model, 'boundary_le')
     tag_physical_object(surfaces[2], parameters['boundary_ri_id'], gmsh.model, 'boundary_ri')
     tag_physical_object(surfaces[3], parameters['boundary_to_id'], gmsh.model, 'boundary_to')
@@ -4411,14 +4411,14 @@ def generate_box_surface_mesh(shape_file, mesh_parameters_directory, output_dire
     #4.2 tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
-    tag_physical_object(volumes[1], parameters['box_minus_shape_volume_id'], gmsh.model, 'box_minus_shape_volume')
-    tag_physical_object(volumes[0], parameters['shape_volume_id'], gmsh.model, 'shape_volume')
+    tag_physical_object(volumes[1], parameters['box_minus_surface_volume_id'], gmsh.model, 'box_minus_surface_volume')
+    tag_physical_object(volumes[0], parameters['surface_volume_id'], gmsh.model, 'surface_volume')
 
     #5. set the resolution
-    # se resolution equal to parameters["resolution"] at a distance 0 from `shape_loop`, and  at distance max(parameters["L"]) from `shape_loop`
+    # se resolution equal to parameters["resolution"] at a distance 0 from `surface_loop`, and  at distance max(parameters["L"]) from `surface_loop`
     distance = gmsh.model.mesh.field.add("Distance")
 
-    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [shape_loop])
+    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [surface_loop])
 
     threshold = gmsh.model.mesh.field.add("Threshold")
     gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
