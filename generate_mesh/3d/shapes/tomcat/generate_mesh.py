@@ -7,9 +7,11 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/shapes/tomcat"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/shapes/tomcat/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
+import numpy as np
 import os
 import sys
 import trimesh
+from trimesh import transformations as tr
 
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
@@ -38,8 +40,14 @@ msh.print_mesh_edges_to_csv(mesh_file, os.path.join(rarg.args.output_directory, 
 msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "triangles.csv"))
 '''
 
+R = tr.rotation_matrix(np.pi/4, [1, 0, 0])
+T = tr.translation_matrix([0, 0, 0])
 
-trimesh.creation.capsule(height=0.5, radius=0.5, count=[5, 5]).export(stl_file)
+# compose: T @ R applies R first, then T
+transform = tr.concatenate_matrices(T, R)
+
+
+trimesh.creation.capsule(height=0.5, radius=0.5, count=[5, 5], transform=transform).export(stl_file)
 
 
 msh.generate_3d_shape_mesh(stl_file, rarg.args.output_directory)
