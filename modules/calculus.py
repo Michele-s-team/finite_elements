@@ -341,11 +341,12 @@ def curve_integral_dS(mesh, f, sf=None, surface_id=None):
 
 '''
 compute the integral of a function of two variables over a rectangle
+
 Input values:
-- 'f': the function f([x, y])
-- 'p_bl', 'p_rt': the bottom-left and top-right corner points of the rectangle, each is a list with two entries
-Result: 
-- the integral \int_{rectagnle} dx dy f(x,y)
+    - 'f': the function f([x, y])
+    - 'p_bl', 'p_rt': the bottom-left and top-right corner points of the rectangle, each is a list with two entries
+Return values: 
+    - the integral \int_{rectagnle} dx dy f(x,y)
 
 Example of usage:
     def g(x):
