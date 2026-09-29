@@ -18,6 +18,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import mesh.utils as msh
+import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
 
@@ -40,16 +41,16 @@ msh.print_mesh_edges_to_csv(mesh_file, os.path.join(rarg.args.output_directory, 
 msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directory, "triangles.csv"))
 '''
 
+# the generated shape will be rotated according to the rotation matrix `R`
 R = tr.rotation_matrix(np.pi/4, [1, 0, 0])
-T = tr.translation_matrix([0, 0, 0])
-
-# compose: T @ R applies R first, then T
+# the generated shape will be translated according to the translation matrix `T`
+T = tr.translation_matrix([0.5, 0, 0])
+# compose `T` . `R`
 transform = tr.concatenate_matrices(T, R)
+# generate the shape
+trimesh.creation.capsule(height=rpam.parameters['shape_height'], radius=rpam.parameters['shape_radius'], count=[5, 5], transform=transform).export(stl_file)
 
 
-trimesh.creation.capsule(height=0.5, radius=0.5, count=[5, 5], transform=transform).export(stl_file)
-
-
-msh.generate_3d_shape_mesh(stl_file, rarg.args.output_directory)
+msh.generate_3d_shape_mesh(stl_file, rarg.args.parameter_directory, rarg.args.output_directory)
 
 msh.clear_gmsh()

@@ -4291,7 +4291,7 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
 
 
 '''
-def generate_3d_shape_mesh(shape_file, output_directory):
+def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directory):
 
     # remove the output directory it it already exists, and create it from scratch
     shutil.rmtree(output_directory, ignore_errors=True)
@@ -4303,6 +4303,9 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
+
+    parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
+    parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
     # insert the shape in `stl_file`
     gmsh.merge(shape_file)
@@ -4318,8 +4321,8 @@ def generate_3d_shape_mesh(shape_file, output_directory):
     shape_volume = gmsh.model.geo.addVolume([shape_loop])
     gmsh.model.geo.synchronize()
 
-    r = [-2, -2, -2]
-    L = [4, 4, 4]
+    r = parameters['r']
+    L = parameters['L']
 
     p_1 = gmsh.model.geo.addPoint(r[0], r[1], r[2])
     p_2 = gmsh.model.geo.addPoint(r[0] + L[0], r[1], r[2])
