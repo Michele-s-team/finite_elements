@@ -4306,6 +4306,9 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     r = parameters['r']
     L = parameters['L']
 
+    #write metadata for ensemble mesh
+    mesh_metadata = parameters.copy()
+
     # 1. generate the shape
 
     #1.1 insert the shape in `shape_file` intp the mesh
@@ -4406,11 +4409,33 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     tag_physical_object(volumes[1], parameters['box_minus_shape_volume_id'], gmsh.model, 'box_minus_shape_volume')
     tag_physical_object(volumes[0], parameters['shape_volume_id'], gmsh.model, 'shape_volume')
 
-    #5. write the mesh in the .msh file
+    #5. set the resolution
+    # se resolution equal to parameters["resolution"] at a distance 0 from `shape_loop`, and  at distance max(parameters["L"]) from `shape_loop`
+    distance = gmsh.model.mesh.field.add("Distance")
+
+    gmsh.model.mesh.field.setNumbers(distance, "FacesList", [shape_loop])
+
+    threshold = gmsh.model.mesh.field.add("Threshold")
+    gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
+    gmsh.model.mesh.field.setNumber(threshold, "LcMin", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "LcMax", parameters["resolution"])
+    gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
+    gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(parameters["L"]))
+
+    minimum = gmsh.model.mesh.field.add("Min")
+    gmsh.model.mesh.field.setNumbers(minimum, "FieldsList", [threshold])
+    gmsh.model.mesh.field.setAsBackgroundMesh(minimum)
+
+    gmsh.model.geo.synchronize()
+
+    # 6. write the mesh in the .msh file
     gmsh.model.mesh.generate(3)
     gmsh.write(os.path.join(output_directory, 'mesh.msh'))
 
-    # 6. clear gmsh
+    # 7. write mesh metadata
+    io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
+
+    # 8. clear gmsh
     clear_gmsh()
 
         
