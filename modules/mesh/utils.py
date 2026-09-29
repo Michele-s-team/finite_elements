@@ -4303,23 +4303,29 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
-    # insert the shape in `stl_file`
-    gmsh.merge(shape_file)
-
-    # the triangles inserted so far in the mesh
-    shape_surface = gmsh.model.getEntities(dim=2)
-    shape_surface_ids = [surface[1] for surface in shape_surface]
-
-    # make a surface loop out of `surfaces`
-    shape_loop = gmsh.model.geo.addSurfaceLoop(shape_surface_ids)
-    gmsh.model.geo.synchronize()
-
-    shape_volume = gmsh.model.geo.addVolume([shape_loop])
-    gmsh.model.geo.synchronize()
-
     r = parameters['r']
     L = parameters['L']
 
+    # 1. generate the shape
+
+    #1.1 insert the shape in `shape_file` intp the mesh
+    gmsh.merge(shape_file)
+
+    #1.2 obtain the surface of the shape: the triangles inserted so far in the mesh are stored into `shape_surface` and their respective IDs in `shape_surface_ids`
+    shape_surface = gmsh.model.getEntities(dim=2)
+    shape_surface_ids = [surface[1] for surface in shape_surface]
+
+    #1.3 make a surface loop which represnts the surface of the shape
+    shape_loop = gmsh.model.geo.addSurfaceLoop(shape_surface_ids)
+    gmsh.model.geo.synchronize()
+
+    #1.4 this is the volume enclosed by the shape
+    gmsh.model.geo.addVolume([shape_loop])
+    gmsh.model.geo.synchronize()
+
+    #2. generate the box surrounding the shape
+
+    #2.1 add points delimiting the box
     p_1 = gmsh.model.geo.addPoint(r[0], r[1], r[2])
     p_2 = gmsh.model.geo.addPoint(r[0] + L[0], r[1], r[2])
     p_3 = gmsh.model.geo.addPoint(r[0] + L[0], r[1], r[2] + L[2])
@@ -4331,6 +4337,7 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     p_8 = gmsh.model.geo.addPoint(r[0], r[1] + L[1], r[2] + L[2])
     gmsh.model.geo.synchronize()
 
+    # 2.2 add lines which represent the edges of the box
     cube_line_1 = gmsh.model.geo.addLine(p_1, p_2)
     cube_line_2 = gmsh.model.geo.addLine(p_2, p_3)
     cube_line_3 = gmsh.model.geo.addLine(p_3, p_4)
@@ -4347,6 +4354,7 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     cube_line_12 = gmsh.model.geo.addLine(p_8, p_4)
     gmsh.model.geo.synchronize()
 
+    # 2.3 add curve loops which enclose the box surfaces (sides)
     cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
     cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
     cube_loop_to = gmsh.model.geo.addCurveLoop([cube_line_12, -cube_line_3, cube_line_11, -cube_line_5])
@@ -4355,6 +4363,7 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     cube_loop_ba = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
     gmsh.model.geo.synchronize()
 
+    # 2.4 obtain box surfaces (sides)
     box_surface_le = gmsh.model.geo.addPlaneSurface([cube_loop_le])
     box_surface_ri = gmsh.model.geo.addPlaneSurface([cube_loop_ri])
     box_surface_to = gmsh.model.geo.addPlaneSurface([cube_loop_to])
@@ -4365,20 +4374,21 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
 
     box_surfaces = [box_surface_le, box_surface_ri, box_surface_to, box_surface_bo, box_surface_fr, box_surface_ba]
 
-    # make a surface loop out of `box_surfaces`
+    #2.5 make a surface loop out of `box_surfaces`, which represents the full outer surface of the box
     box_loop = gmsh.model.geo.addSurfaceLoop(box_surfaces)
     gmsh.model.geo.synchronize()
 
+    # 3. define the volume between the shape and the box
     box_minus_shape_volume = gmsh.model.geo.addVolume([box_loop, shape_loop])
     gmsh.model.geo.synchronize()
-
 
     gmsh.model.mesh.embed(2, shape_surface_ids, 3, box_minus_shape_volume)
     gmsh.model.geo.synchronize()
 
 
+    # 4. tag objects
 
-    # add 2-dimensional objects
+    #4.1 tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
     tag_physical_object(surfaces[0], parameters['shape_surface_id'], gmsh.model, 'shape_surface')
@@ -4390,20 +4400,17 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     tag_physical_object(surfaces[6], parameters['boundary_ba_id'], gmsh.model, 'boundary_ba')
 
 
-    # tag 3-dimensional objects
+    #4.2 tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
-    # gmsh.model.addPhysicalGroup(3, [box_minus_shape_volume], tag=9, name="box_minus_shape_volume")  
     tag_physical_object(volumes[1], parameters['box_minus_shape_volume_id'], gmsh.model, 'box_minus_shape_volume')
     tag_physical_object(volumes[0], parameters['shape_volume_id'], gmsh.model, 'shape_volume')
 
-
-
-    
+    #5. write the mesh in the .msh file
     gmsh.model.mesh.generate(3)
     gmsh.write(os.path.join(output_directory, 'mesh.msh'))
 
-
+    # 6. clear gmsh
     clear_gmsh()
 
         
