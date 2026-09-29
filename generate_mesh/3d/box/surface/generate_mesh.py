@@ -1,10 +1,10 @@
 '''
-This code generates a 3d mesh given by a F14 tomcat
+This code generates a 3d mesh given by a box with a surface in it
 
 Run it with
     python3 generate_mesh.py [path where to read parameters] [output directory]
 Example:
-    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/shapes/tomcat"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/shapes/tomcat/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
+    clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/box/surface"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/box/surface/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
 import os
