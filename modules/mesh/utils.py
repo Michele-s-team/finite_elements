@@ -4303,6 +4303,8 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
 
+    mesh_file = os.path.join(output_directory, 'mesh.msh')
+
     r = parameters['r']
     L = parameters['L']
 
@@ -4430,7 +4432,9 @@ def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directo
 
     # 6. write the mesh in the .msh file
     gmsh.model.mesh.generate(3)
-    gmsh.write(os.path.join(output_directory, 'mesh.msh'))
+    gmsh.write(mesh_file)
+
+    full_write(mesh_file, ['tetra', 'triangle'], mesh_metadata, output_directory, False)
 
     # 7. write mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
