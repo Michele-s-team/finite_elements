@@ -53,6 +53,6 @@ trimesh.creation.capsule(
     ).export(stl_file)
 
 
-msh.generate_3d_shape_mesh(stl_file, rarg.args.parameter_directory, rarg.args.output_directory)
+msh.generate_box_surface_mesh(stl_file, rarg.args.parameter_directory, rarg.args.output_directory)
 
 msh.clear_gmsh()

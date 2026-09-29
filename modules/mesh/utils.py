@@ -4288,10 +4288,13 @@ def generate_square_no_circle_curve_mesh(shape_coordinates, mesh_parameters_dire
 
 
 '''
-
-
+generate a 3d mesh given by a box with a surface inside
+Input values: 
+    - `shape_file`: the `.stl` file containing the surface
+    - `mesh_parameters_directory`: the path of `mesh_parameters.csv`
+    - `output_directory`: the path where the mesh will be stored
 '''
-def generate_3d_shape_mesh(shape_file, mesh_parameters_directory, output_directory):
+def generate_box_surface_mesh(shape_file, mesh_parameters_directory, output_directory):
 
     geometry = pygmsh.occ.Geometry()
     geometry.__enter__()
