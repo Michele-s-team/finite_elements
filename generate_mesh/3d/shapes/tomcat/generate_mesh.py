@@ -7,8 +7,8 @@ Example:
     clear; clear; PARAMETERS_PATH="/home/fenics/shared/generate_mesh/3d/shapes/tomcat"; SOLUTION_PATH="/home/fenics/shared/generate_mesh/3d/shapes/tomcat/solution"; rm -rf $SOLUTION_PATH; mkdir $SOLUTION_PATH; python3 generate_mesh.py $PARAMETERS_PATH $SOLUTION_PATH
 '''
 
-import numpy as np
 import os
+import shutil
 import sys
 import trimesh
 from trimesh import transformations as tr
@@ -22,13 +22,10 @@ import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
 
-# geometry = pygmsh.occ.Geometry()
-# model = geometry.__enter__()
-
 metadata = dict()
 
 
-stl_file = os.path.join('/home/fenics/shared/generate_mesh/3d/shapes/tomcat/input', "mesh.stl")
+stl_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 # msh_file = os.path.join(rarg.args.output_directory, "mesh.msh")
 
 # msh_file = meshio.read(os.path.join('/home/fenics/shared/generate_mesh/3d/shapes/tomcat/input', "mesh.stl"))
@@ -42,13 +39,18 @@ msh.print_mesh_triangles_to_csv(mesh_file, os.path.join(rarg.args.output_directo
 '''
 
 # the generated shape will be rotated according to the rotation matrix `R`
-R = tr.rotation_matrix(np.pi/4, [1, 0, 0])
+R = tr.rotation_matrix(rpam.parameters['shape_rotation_angle'], rpam.parameters['shape_rotation_axis'])
 # the generated shape will be translated according to the translation matrix `T`
-T = tr.translation_matrix([0.5, 0, 0])
+T = tr.translation_matrix(rpam.parameters['shape_translation_vector'])
 # compose `T` . `R`
 transform = tr.concatenate_matrices(T, R)
 # generate the shape
-trimesh.creation.capsule(height=rpam.parameters['shape_height'], radius=rpam.parameters['shape_radius'], count=[5, 5], transform=transform).export(stl_file)
+trimesh.creation.capsule(
+        height=rpam.parameters['shape_height'], 
+        radius=rpam.parameters['shape_radius'], 
+        count=rpam.parameters['shape_n_sections'], 
+        transform=transform
+    ).export(stl_file)
 
 
 msh.generate_3d_shape_mesh(stl_file, rarg.args.parameter_directory, rarg.args.output_directory)
