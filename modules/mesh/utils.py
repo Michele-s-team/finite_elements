@@ -4346,38 +4346,38 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     gmsh.model.geo.synchronize()
 
     # 2.2 add lines which represent the edges of the box
-    cube_line_1 = gmsh.model.geo.addLine(p_1, p_2)
-    cube_line_2 = gmsh.model.geo.addLine(p_2, p_3)
-    cube_line_3 = gmsh.model.geo.addLine(p_3, p_4)
-    cube_line_4 = gmsh.model.geo.addLine(p_4, p_1)
+    box_line_1 = gmsh.model.geo.addLine(p_1, p_2)
+    box_line_2 = gmsh.model.geo.addLine(p_2, p_3)
+    box_line_3 = gmsh.model.geo.addLine(p_3, p_4)
+    box_line_4 = gmsh.model.geo.addLine(p_4, p_1)
 
-    cube_line_5 = gmsh.model.geo.addLine(p_8, p_7)
-    cube_line_6 = gmsh.model.geo.addLine(p_7, p_6)
-    cube_line_7 = gmsh.model.geo.addLine(p_6, p_5)
-    cube_line_8 = gmsh.model.geo.addLine(p_5, p_8)
+    box_line_5 = gmsh.model.geo.addLine(p_8, p_7)
+    box_line_6 = gmsh.model.geo.addLine(p_7, p_6)
+    box_line_7 = gmsh.model.geo.addLine(p_6, p_5)
+    box_line_8 = gmsh.model.geo.addLine(p_5, p_8)
 
-    cube_line_9 = gmsh.model.geo.addLine(p_1, p_5)
-    cube_line_10 = gmsh.model.geo.addLine(p_6, p_2)
-    cube_line_11 = gmsh.model.geo.addLine(p_3, p_7)
-    cube_line_12 = gmsh.model.geo.addLine(p_8, p_4)
+    box_line_9 = gmsh.model.geo.addLine(p_1, p_5)
+    box_line_10 = gmsh.model.geo.addLine(p_6, p_2)
+    box_line_11 = gmsh.model.geo.addLine(p_3, p_7)
+    box_line_12 = gmsh.model.geo.addLine(p_8, p_4)
     gmsh.model.geo.synchronize()
 
     # 2.3 add curve loops which enclose the box surfaces (sides)
-    cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
-    cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
-    cube_loop_to = gmsh.model.geo.addCurveLoop([cube_line_12, -cube_line_3, cube_line_11, -cube_line_5])
-    cube_loop_bo = gmsh.model.geo.addCurveLoop([cube_line_9, -cube_line_7, cube_line_10, -cube_line_1])
-    cube_loop_fr = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
-    cube_loop_ba = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
+    box_loop_ri = gmsh.model.geo.addCurveLoop([box_line_1, box_line_2, box_line_3, box_line_4])
+    box_loop_le = gmsh.model.geo.addCurveLoop([box_line_5, box_line_6, box_line_7, box_line_8])
+    box_loop_to = gmsh.model.geo.addCurveLoop([box_line_12, -box_line_3, box_line_11, -box_line_5])
+    box_loop_bo = gmsh.model.geo.addCurveLoop([box_line_9, -box_line_7, box_line_10, -box_line_1])
+    box_loop_fr = gmsh.model.geo.addCurveLoop([box_line_4, box_line_9, box_line_8, box_line_12])
+    box_loop_ba = gmsh.model.geo.addCurveLoop([box_line_11, box_line_6, box_line_10, box_line_2])
     gmsh.model.geo.synchronize()
 
     # 2.4 obtain box surfaces (sides)
-    box_surface_le = gmsh.model.geo.addPlaneSurface([cube_loop_le])
-    box_surface_ri = gmsh.model.geo.addPlaneSurface([cube_loop_ri])
-    box_surface_to = gmsh.model.geo.addPlaneSurface([cube_loop_to])
-    box_surface_bo = gmsh.model.geo.addPlaneSurface([cube_loop_bo])
-    box_surface_fr = gmsh.model.geo.addPlaneSurface([cube_loop_fr])
-    box_surface_ba = gmsh.model.geo.addPlaneSurface([cube_loop_ba])
+    box_surface_le = gmsh.model.geo.addPlaneSurface([box_loop_le])
+    box_surface_ri = gmsh.model.geo.addPlaneSurface([box_loop_ri])
+    box_surface_to = gmsh.model.geo.addPlaneSurface([box_loop_to])
+    box_surface_bo = gmsh.model.geo.addPlaneSurface([box_loop_bo])
+    box_surface_fr = gmsh.model.geo.addPlaneSurface([box_loop_fr])
+    box_surface_ba = gmsh.model.geo.addPlaneSurface([box_loop_ba])
     gmsh.model.geo.synchronize()
 
     box_surfaces = [box_surface_ri, box_surface_le, box_surface_to, box_surface_bo, box_surface_fr, box_surface_ba]
@@ -4396,7 +4396,14 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
 
     # 4. tag objects
 
-    #4.1 tag 2-dimensional objects
+    #4.1 tag 1-dimensional objetcs
+    lines = gmsh.model.getEntities(dim=1)
+
+    for i in range(12):
+        tag_physical_object(lines[i], parameters[f'box_line_{i+1}_id'], gmsh.model, f'box_line_{i+1}')
+
+
+    #4.2 tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
     tag_physical_object(surfaces[0], parameters['surface_surface_id'], gmsh.model, 'surface_surface')
@@ -4408,7 +4415,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     tag_physical_object(surfaces[6], parameters['boundary_ba_id'], gmsh.model, 'boundary_ba')
 
 
-    #4.2 tag 3-dimensional objects
+    #4.3 tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
     tag_physical_object(volumes[1], parameters['box_volume_id'], gmsh.model, 'box_minus_surface_volume')
@@ -4437,7 +4444,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     gmsh.model.mesh.generate(3)
     gmsh.write(mesh_file)
 
-    full_write(mesh_file, ['tetra', 'triangle'], mesh_metadata, output_directory, False)
+    full_write(mesh_file, ['tetra', 'triangle', 'line'], mesh_metadata, output_directory, False)
 
     # 7. write mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
