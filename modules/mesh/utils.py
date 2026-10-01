@@ -725,10 +725,12 @@ Input values:
     - 'infile': the .msh file where the mesh is stored
     - 'outfile': the .csv file where the edges will be stored, in the format
 
-    p_1,p_2
-    id_p_1_edge_0,id_p_2_edge_0
-    id_p_1_edge_1,id_p_2_edge_1
+    p_1,p_2,tag
+    id_p_1_edge_0,id_p_2_edge_0,edge_tag
+    id_p_1_edge_1,id_p_2_edge_1,edge_tag
     ...
+
+    where `edge_tag` is the tag given by the edge in mesh generation, and if the edge was not tagged `edge_tag = const.non_tagged_id`
 '''
 
 def print_mesh_edges_to_csv(infile, outfile):
