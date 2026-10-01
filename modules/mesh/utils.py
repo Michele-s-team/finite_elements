@@ -758,6 +758,8 @@ def print_mesh_edges_to_csv(infile, outfile):
     # initialize a 'list' of unique elements, this sets the list to empty
     edges = set()
 
+    edge_tag_map = {}
+
     if mesh_dimension == 1: 
 
         # check that mesh components are segments
@@ -792,7 +794,6 @@ def print_mesh_edges_to_csv(infile, outfile):
 
         print(f'groups = {physical_groups}\nentities = {entities}\nelement_types = {element_types}\nelement node tags = {element_node_tags}')
     
-        edge_tag_map = {}
 
               
         for _, tag in gmsh.model.getPhysicalGroups(dim=1):
@@ -891,12 +892,13 @@ def print_mesh_edges_to_csv(infile, outfile):
             edges.update([pair_12, pair_23, pair_31, pair_41, pair_42, pair_43])
 
 
+
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
-    print(f"p_1,p_2", file=csvfile)
+    print(f"p_1,p_2,tag", file=csvfile)
     for edge in edges:
 
-        print(f"{edge[0]},{edge[1]}", file=csvfile)
+        print(f"{edge[0]},{edge[1]},{edge_tag_map.get(edge, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
