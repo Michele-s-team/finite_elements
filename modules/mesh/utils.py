@@ -1396,10 +1396,11 @@ def print_mesh_info(mesh, title):
 
 '''
 assign a tag to lines in a cell which satisfy a given condition
+
 Input values:
-- 'line_condition': a function of the line which tells whether the line satifies the condition to be tagged
-- 'tag' : the tag which one wants to assign to the lines
-- 'mesh': the mesh, a <meshio mesh object>
+    - 'line_condition': a function of the line which tells whether the line satifies the condition to be tagged
+    - 'tag' : the tag which one wants to assign to the lines
+    - 'mesh': the mesh, a <meshio mesh object>
 '''
 
 
