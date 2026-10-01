@@ -12,8 +12,9 @@ rmsh = importlib.import_module('mesh.read.box_surface')
 
 print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 
-r = rmsh.parameters['r']
-L = rmsh.parameters['L']
+
+r = rmsh.lmsh.parameters['r']
+L = rmsh.lmsh.parameters['L']
 
 test_mesh_integral_errors = dict([])
 
@@ -22,7 +23,7 @@ test_mesh_integral_errors = dict([])
 # 1.1 volume integrals
 
 
-integral_exact_dx_surface = cal.volume_integral_ball(tf.function_test_integrals, rmsh.parameters['surface_radius'], rmsh.parameters['surface_translation_vector'])
+integral_exact_dx_surface = cal.volume_integral_ball(tf.function_test_integrals, rmsh.lmsh.parameters['surface_radius'], rmsh.lmsh.parameters['surface_translation_vector'])
 integral_exact_dx_box = cal.volume_integral_box(tf.function_test_integrals, L, r=r) - integral_exact_dx_surface
 
 integral_exact_dx = integral_exact_dx_surface + integral_exact_dx_box
