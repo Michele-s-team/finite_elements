@@ -30,6 +30,8 @@ integral_exact_dx = integral_exact_dx_surface + integral_exact_dx_box
 
 # 1.2 surface integrals
 
+# 1.2.1 external surfaces
+
 integral_exact_ds_le = cal.surface_integral_rectangle(lambda x: tf.function_test_integrals([x[0], r[1] + L[1], x[1]]), [r[0], r[2]], [r[0] + L[0], r[2] + L[2]])
 integral_exact_ds_ri = cal.surface_integral_rectangle(lambda x: tf.function_test_integrals([x[0], r[1], x[1]]), [r[0], r[2]], [r[0] + L[0], r[2] + L[2]])
 
@@ -44,6 +46,9 @@ integral_exact_ds_tobo = integral_exact_ds_to + integral_exact_ds_bo
 integral_exact_ds_frba = integral_exact_ds_fr + integral_exact_ds_ba
 
 integral_exact_ds = integral_exact_ds_leri + integral_exact_ds_tobo + integral_exact_ds_frba
+
+
+# 1.2.2 internal surfaces
 
 # 2. print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 
