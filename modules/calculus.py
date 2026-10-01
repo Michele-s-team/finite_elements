@@ -557,6 +557,13 @@ def surface_integral_sphere(f, r, c):
 
     return result
 
+'''
+
+'''
+def surface_integral_triangulated_surface():
+
+    
+
 
 '''
 compute the volume integral of a function in a ball
