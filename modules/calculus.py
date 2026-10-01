@@ -562,7 +562,7 @@ def surface_integral_sphere(f, r, c):
 '''
 def surface_integral_triangulated_surface():
 
-    
+    pass
 
 
 '''
