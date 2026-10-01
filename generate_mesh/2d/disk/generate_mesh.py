@@ -40,7 +40,8 @@ geometry = pygmsh.geo.Geometry()
 model = geometry.__enter__()
 
 # Add circle
-circle_r = model.add_circle(rpam.parameters["c_r"], rpam.parameters["r"], mesh_size=rpam.parameters["resolution"])
+circle_r = model.add_circle(rpam.parameters["c_r"], rpam.parameters["r"], 
+                            mesh_size=rpam.parameters["resolution"])
 
 plane_surface = model.add_plane_surface(circle_r.curve_loop, holes=[])
 
