@@ -1306,13 +1306,13 @@ def add_circle_with_lines(c_r, r, n_segments, model):
 
 '''
 tag as physical entities the objects with a given dimension in a mesh
-Input values:
-- 'list_of_objects': an array containing the objects to be tagged
-- 'dimension': the dimension of the objects that one wants to tag
-- 'tag' : the tag which one wants to give to the objects
-- 'labal' : the lable which one wants to give to the objects
-'''
 
+Input values:
+    - 'list_of_objects': an array containing the objects to be tagged
+    - 'dimension': the dimension of the objects that one wants to tag
+    - 'tag' : the tag which one wants to give to the objects
+    - 'labal' : the lable which one wants to give to the objects
+'''
 
 def tag_group(list_of_objects, dimension, tag, label):
     gmsh.model.addPhysicalGroup(dimension, list_of_objects, tag)
