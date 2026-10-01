@@ -1762,6 +1762,8 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     output_directory_slash = io.add_trailing_slash(output_directory)
 
+    d = mesh.topology().dim()
+
     for component in components:
         write_mesh_components(mesh_file, os.path.join(output_directory_slash, component + "_mesh.xdmf"), component, prune_z)
 
@@ -1775,12 +1777,12 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     # print the mesh edges to csv fie
     print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory_slash, "edges.csv"))
 
-    if mesh.topology().dim() > 1:
+    if d > 1:
         
         # the mesh has dimension > 1 -> print the mesh triangles to csv
         print_mesh_triangles_to_csv(mesh_file, os.path.join(output_directory_slash, "triangles.csv"))
 
-        if mesh.topology().dim() > 2: 
+        if d > 2: 
 
             # the mesh has dimension > 2 -> print the mesh tetrahedra to csv
             print_mesh_tetrahedra_to_csv(mesh_file, os.path.join(output_directory_slash, "tetrahedra.csv"))
