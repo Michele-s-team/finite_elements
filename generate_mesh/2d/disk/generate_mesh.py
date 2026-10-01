@@ -9,6 +9,7 @@ Example:
 
 import meshio
 import gmsh
+import os
 import pygmsh
 import sys
 
@@ -52,7 +53,7 @@ model.add_physical(circle_r.curve_loop.curves, "Circle r")
 geometry.generate_mesh(64)
 gmsh.write(mesh_file)
 
-msh.print_mesh_edges_to_csv(mesh_file, output_directory + 'edges.csv')
+msh.print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory, 'edges.csv'))
 
 mesh_from_file = meshio.read(mesh_file)
 
