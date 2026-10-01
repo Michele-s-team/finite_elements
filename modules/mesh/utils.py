@@ -751,7 +751,7 @@ def print_mesh_edges_to_csv(infile, outfile):
     ''' 
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
-    map = edge_tag_map(gmsh.model)
+    map = object_map('edge', gmsh.model)
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -881,9 +881,8 @@ def print_mesh_triangles_to_csv(infile, outfile):
     # get the list of components with dimension 2 from the mesh (triangles)
     triangles = gmsh.model.mesh.getElements(dim=2)
 
-    # construct a map which, given the tag of a node, gives its coordinates
-    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    map = object_map('triangle', gmsh.model)
+
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -912,10 +911,10 @@ def print_mesh_triangles_to_csv(infile, outfile):
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"p_1,p_2,p_3", file=csvfile)
+    print(f"p_1,p_2,p_3,tag", file=csvfile)
     for triplet in triplets:
 
-        print(f"{triplet[0]},{triplet[1]},{triplet[2]}", file=csvfile)
+        print(f"{triplet[0]},{triplet[1]},{triplet[2]},{map.get(triplet, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
     
@@ -4477,22 +4476,61 @@ def clear_gmsh():
 
 
 '''
-return a map between mesh edges and their tags
+return a map between mesh objects and their tags
 
 Input values: 
+    - `object_type`: the type of object: `tetrahedron`, `triangle`, `edge` or `vertex`
     - `model`: the gmsh.model used to open the mesh
 Return values; 
-    - `map`:  a map such that map.get(edge) = [tag with which `edge` was tagged in the mesh read by `model`], where `edge` is a tuple given by the IDs of the two vertices of the edge, in increasing order
+    - `map`:  a map such that map.get(tuple) = [tag with which `edge` was tagged in the mesh read by `model`], where `tuple` is a tuple given by the IDs of the two vertices of the object, sorted in increasing order
 '''
-def edge_tag_map(model):
+def object_map(object_type, model):
+
+    d = -1
+    stride = -1
+    object_element_type = -1
+
+    if object_type == 'vertex':
+
+        d = 0
+        stride = 1
+        object_element_type = 15
+
+    elif object_type == 'edge':
+
+        d = 1
+        stride = 2
+        object_element_type = 1
+
+
+    elif object_type == 'triangle':
+
+        d = 2
+        stride = 3
+        object_element_type = 2
+
+
+    elif object_type == 'tetrahedron':
+
+        d = 3
+        stride = 4
+        object_element_type = 4
+
+    else: 
+
+        print(f'{col.Fore.RED}Error!! object_type is not valid!.{col.Fore.RESET}')
+        sys.exit(1)
+
+
+
 
     # initialize the map as an empty one
     map = {}
 
-    for _, tag in model.getPhysicalGroups(dim=1):
+    for _, tag in model.getPhysicalGroups(dim=d):
         # run through all objects of dimension 1 that have been tagged with `tag`
 
-        for entity in model.getEntitiesForPhysicalGroup(1, tag):
+        for entity in model.getEntitiesForPhysicalGroup(d, tag):
             # run through all the physical entities (e.g. edges) that have been tagged with `tag`
     
             '''
@@ -4506,19 +4544,19 @@ def edge_tag_map(model):
 
                 means that there is only one element of type 1 (a segment) and this element contains two nodes, tagged with IDs 5 and 6
             '''
-            element_types, _, element_node_tags = model.mesh.getElements(dim=1, tag=entity)
+            element_types, _, element_node_tags = model.mesh.getElements(dim=d, tag=entity)
 
             for element_type, element_node_tag in zip(element_types, element_node_tags):
                 # run through all elements in `element_types` and `element_node_tags`
 
-                if element_type == 1:
+                if element_type == object_element_type:
                     # the element under consideration is a segment
 
-                    for i in range(0, len(element_node_tag), 2):
+                    for i in range(0, len(element_node_tag), stride):
                         # run through all the nodes stored into `element_node_tag` with a stride of 2 to store subsequent nodes connected by a line
 
-                        node_pair = tuple(sorted([element_node_tag[i], element_node_tag[i + 1]]))
-                        map[node_pair] = tag
+                        vertex_tuple = tuple(sorted([element_node_tag[i + j] for j in range(stride)]))
+                        map[vertex_tuple] = tag
 
 
     return map
