@@ -196,50 +196,50 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
 
+
 '''
-returns a mesh function that tags internal facets of a 2d mesh contained into two neighboring surfaces
+returns a mesh function that tags internal edges (triangles) of a 2d (3d) mesh contained into two neighboring surfaces (volumes)
 Input values:   
     - 'mesh': the mesh
-    - 'sf': the mesh function tagging mesh surfaces of the mesh
-    - 'surface_a_id', 'surface_b_id': ID with which the neighboring surfaces have been tagged
-    - 'boundary_ab_id': ID with which the 1d boundary between the two surfaces has been tagged
+    - 'sf': the mesh function tagging mesh edges (triangles) of the 2d (3d) mesh
+    - 'surface_a_id', 'surface_b_id': ID with which the neighboring surfaces (volumes) have been tagged
+    - 'boundary_ab_id': ID with which the 1d (2d) boundary between the two surfaces (volumes) has been tagged
 
 Return values"
-    - 'mf': a mesh function where internal facets of surface_a are tagged with 'surface_a_id', the internal facets of surface_b are tagged with 'surface_b_id', and the facets at the interface between surface_a and surface_b are tagged with 'boundary_ab_id'
+    - 'mf': a mesh function where internal edges (triangles) of surface_a are tagged with 'surface_a_id', the internal edges (triangles) of surface_b are tagged with 'surface_b_id', and the edges (triangles) at the interface between surface_a and surface_b are tagged with 'boundary_ab_id'
 '''
 def read_mesh_internal_components(mesh, sf, surface_a_id, surface_b_id, boundary_ab_id):
 
-    # build a function mf_I that tags interior lines and allows for reading them
-    mf = MeshFunction("size_t", mesh, mesh.topology().dim() - 1, 0)
+    d = mesh.topology().dim()
 
-    mesh.init(1, 2)   # build facet-to-cell connectivity
+    # build a function mf_I that tags interior lines and allows for reading them
+    mf = MeshFunction("size_t", mesh, d - 1, 0)
+
+    # build facet-to-cell connectivity
+    mesh.init(d - 1, d)   
 
     for facet in facets(mesh):
 
         if facet.exterior() == False:
-            # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
-
-            # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
+            # the facet under consideration does not belong to the exterior of the mesh -> it is an internal facet
 
             # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
-            cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
+            cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(d)]
 
             if all(c == surface_a_id for c in cell_tags):
-                # all cells that have facet as one of their boundary facets belong to l_surface -> the facet under consideration is an internal facet of l_surface -> tag this facet in mf_I with ID l_surface_id
+                # all cells that have the edge (triangle) under consideration as one of their boundary edges (triangle)s belong to surface_a -> the edge (triangle) under consideration is an internal edge (triangle) of surface_a -> tag this edge (triangle) in mf_I with ID `surface_a_id`
 
                 mf[facet] = surface_a_id
 
             elif all(c == surface_b_id for c in cell_tags):
-                # all cells that have 'facet' as one of their boundary facets belong to r_surface -> the facet under consideration is an internal facet of r_surface -> tag this facet in mf_I with ID r_surface_id
+                # all cells that have the edge (triangle) under consideration as one of their boundary edges (triangle)s belong to surface_b -> the edge (triangle) under consideration is an internal edge (triangle) of surface_b -> tag this edge (triangle) in mf_I with ID `surface_b_id`
 
                 mf[facet] = surface_b_id
 
             else:
-                # one of the two cells that have 'facet' as one of their boundary facets belongs to l_surface, and the other to r_surface -> the facet under consideration is an internal facet coinciding with 'm_line' -> tag this facet in mf_I with ID 'm_line_id'
+                # one of the two cells that have the edge (triangle) as one of their boundary facets (triangles) belongs to surface_a, and the other to surface_b -> the facet (triangle) under consideration is an internal facet (triangle) which belongs to surface_ab -> tag this facet in mf_I with ID 'boundary_ab_id'
 
                 mf[facet] = boundary_ab_id
-
-                # print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
 
     return mf
  
