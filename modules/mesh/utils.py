@@ -749,14 +749,12 @@ def print_mesh_edges_to_csv(infile, outfile):
     ''' 
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
-    # construct a map which, given the tag of a node, gives its coordinates
-    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
-    # print( "node map = ", node_map )
+    map = edge_tag_map(gmsh.model)
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
     edges = set()
+
 
 
     if mesh_dimension == 1: 
@@ -784,19 +782,7 @@ def print_mesh_edges_to_csv(infile, outfile):
             edges.update([pair_12])
 
     elif mesh_dimension == 2:
-
-        # 
-        tag = 6
-        physical_groups = gmsh.model.getPhysicalGroups(dim=1)
-        entities = gmsh.model.getEntitiesForPhysicalGroup(1, tag)
-        element_types, _, element_node_tags = gmsh.model.mesh.getElements(dim=1, tag=entities[0])
-
-        print(f'groups = {physical_groups}\nentities = {entities}\nelement_types = {element_types}\nelement node tags = {element_node_tags}')
     
-        #------ 
-        map = edge_tag_map(gmsh.model)
-    
-
         # check that the mesh components are  triangles 
         if list(components[0]) != [2]:
             print(f"{col.Fore.RED}Error: expected linear triangles (type 2), got {list(components[0])}{col.Style.RESET_ALL}")
@@ -2217,7 +2203,7 @@ Input values:
     * Mandatory:
         - 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
         - 'n_intervals': the number of intervals into which the line mesh is divided
-        - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
+        - 'line_id': the id of the line mesh: all line intervals will be tagged with this id
         - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
         - 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
         - 'vertex_m_id': the id of the middle vertex in the mesh
