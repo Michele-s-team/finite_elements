@@ -231,12 +231,13 @@ def curve_integral_polygon(f, polygon_coordinates, open=False):
 
 '''
 return the curve integral of a function  along a circle 
+
 Input values:
-- 'f': the function f(x[0], x[1])
-- 'r': the circle radius
-- 'c': the circle center (an array of two points)
+    - 'f': the function f(x[0], x[1])
+    - 'r': the circle radius
+    - 'c': the circle center (an array of two points)
 Return values: 
-\int_circle f dl
+    - \int_circle f dl
 
 Example of usage:
     def g(x):
