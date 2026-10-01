@@ -758,7 +758,6 @@ def print_mesh_edges_to_csv(infile, outfile):
     # initialize a 'list' of unique elements, this sets the list to empty
     edges = set()
 
-    edge_tag_map = {}
 
     if mesh_dimension == 1: 
 
@@ -794,46 +793,9 @@ def print_mesh_edges_to_csv(infile, outfile):
 
         print(f'groups = {physical_groups}\nentities = {entities}\nelement_types = {element_types}\nelement node tags = {element_node_tags}')
     
-
-              
-        for _, tag in gmsh.model.getPhysicalGroups(dim=1):
-            # run through all objects of dimension 1 that have been tagged with `tag`
-
-            for entity in gmsh.model.getEntitiesForPhysicalGroup(1, tag):
-                # run through all the physical entities (e.g. edges) that have been tagged with `tag`
-        
-                '''
-                given the entity `entity` under consideration
-                    - store into `element_types` the list of element types found on it
-                    - store into `element_node_tags` the tags of the nodes belonging to each entry in `element_types
-
-                for example, 
-                    element_types = [1]
-                    element node tags = [array([5, 6], dtype=uint64)]
-
-                    means that there is only one element of type 1 (a segment) and this element contains two nodes, tagged with IDs 5 and 6
-                '''
-                element_types, _, element_node_tags = gmsh.model.mesh.getElements(dim=1, tag=entity)
-
-                for element_type, element_node_tag in zip(element_types, element_node_tags):
-                    # run through all elements in `element_types` and `element_node_tags`
-
-                    if element_type == 1:
-                        # the element under consideration is a segment
-
-                        for i in range(0, len(element_node_tag), 2):
-                            # run through all the nodes stored into `element_node_tag` with a stride of 2 to store subsequent nodes connected by a line
-
-                            node_pair = tuple(sorted([element_node_tag[i], element_node_tag[i + 1]]))
-                            edge_tag_map[node_pair] = tag
-
-
-        
-        
-
-
-        
-        # 
+        #------ 
+        map = edge_tag_map(gmsh.model)
+    
 
         # check that the mesh components are  triangles 
         if list(components[0]) != [2]:
@@ -898,7 +860,7 @@ def print_mesh_edges_to_csv(infile, outfile):
     print(f"p_1,p_2,tag", file=csvfile)
     for edge in edges:
 
-        print(f"{edge[0]},{edge[1]},{edge_tag_map.get(edge, const.non_tagged_id)}", file=csvfile)
+        print(f"{edge[0]},{edge[1]},{map.get(edge, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
@@ -4519,3 +4481,49 @@ def clear_gmsh():
         gmsh.finalize()
 
 
+'''
+return a map between mesh edges and their tags
+
+Input values: 
+    - `model`: the gmsh.model used to open the mesh
+Return values; 
+    - `map`:  a map such that map.get(edge) = [tag with which `edge` was tagged in the mesh read by `model`], where `edge` is a tuple given by the IDs of the two vertices of the edge, in increasing order
+'''
+def edge_tag_map(model):
+
+    # initialize the map as an empty one
+    map = {}
+
+    for _, tag in model.getPhysicalGroups(dim=1):
+        # run through all objects of dimension 1 that have been tagged with `tag`
+
+        for entity in model.getEntitiesForPhysicalGroup(1, tag):
+            # run through all the physical entities (e.g. edges) that have been tagged with `tag`
+    
+            '''
+            given the entity `entity` under consideration
+                - store into `element_types` the list of element types found on it
+                - store into `element_node_tags` the tags of the nodes belonging to each entry in `element_types
+
+            for example, 
+                element_types = [1]
+                element node tags = [array([5, 6], dtype=uint64)]
+
+                means that there is only one element of type 1 (a segment) and this element contains two nodes, tagged with IDs 5 and 6
+            '''
+            element_types, _, element_node_tags = model.mesh.getElements(dim=1, tag=entity)
+
+            for element_type, element_node_tag in zip(element_types, element_node_tags):
+                # run through all elements in `element_types` and `element_node_tags`
+
+                if element_type == 1:
+                    # the element under consideration is a segment
+
+                    for i in range(0, len(element_node_tag), 2):
+                        # run through all the nodes stored into `element_node_tag` with a stride of 2 to store subsequent nodes connected by a line
+
+                        node_pair = tuple(sorted([element_node_tag[i], element_node_tag[i + 1]]))
+                        map[node_pair] = tag
+
+
+    return map
