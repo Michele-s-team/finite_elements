@@ -751,6 +751,7 @@ def print_mesh_edges_to_csv(infile, outfile):
     ''' 
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
+    # build a map for edges IDs
     map = object_map('edge', gmsh.model)
 
     # Store unique edges from the triangle elements
@@ -881,6 +882,7 @@ def print_mesh_triangles_to_csv(infile, outfile):
     # get the list of components with dimension 2 from the mesh (triangles)
     triangles = gmsh.model.mesh.getElements(dim=2)
 
+    # build a map for triangles IDs
     map = object_map('triangle', gmsh.model)
 
 
@@ -931,11 +933,12 @@ Input values:
 
     the .csv file where the tetrahedra will be stored, in the format
 
-    p_1,p_2,p_3,p_4
-    id_p_1_tetrahedron_0,id_p_2_tetrahedron_0,id_p_3_tetrahedron_0,id_p_4_tetrahedron_0
-    id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1
+    p_1,p_2,p_3,p_4,tag
+    id_p_1_tetrahedron_0,id_p_2_tetrahedron_0,id_p_3_tetrahedron_0,id_p_4_tetrahedron_0,tag_of_tetrahedron_0
+    id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1,tag_of_tetrahedron_1
     ...
     
+    where `tag_of_tetrahedron_*` is the tag given by the edge in mesh generation, and if the tetrahedron was not tagged `tag_of_tetrahedron_* = const.non_tagged_id`
 '''
 def print_mesh_tetrahedra_to_csv(infile, outfile):
 
@@ -947,6 +950,10 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
 
     # get the list of components with dimension 2 from the mesh (triangles)
     tetrahedra = gmsh.model.mesh.getElements(dim=3)
+
+    # build a map for tetrahedra IDs
+    map = object_map('tetrahedron', gmsh.model)
+
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -974,10 +981,10 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"p_1,p_2,p_3,p_4", file=csvfile)
+    print(f"p_1,p_2,p_3,p_4,tag", file=csvfile)
     for quartet in quartets:
 
-        print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]}", file=csvfile)
+        print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]},{map.get(quartet, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
@@ -1762,14 +1769,14 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
 
     output_directory_slash = io.add_trailing_slash(output_directory)
 
-    d = mesh.topology().dim()
-
     for component in components:
         write_mesh_components(mesh_file, os.path.join(output_directory_slash, component + "_mesh.xdmf"), component, prune_z)
 
     # print  mesh vertices to csv file
     mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
 
+    # mesh dimension
+    d = mesh.topology().dim()
 
     # print the mesh vertices to csv fie
     print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory_slash, "vertices.csv"))
