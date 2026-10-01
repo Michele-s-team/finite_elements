@@ -25,7 +25,7 @@ cf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), os.path.joi
 sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, os.path.join(rarg.args.input_directory, 'triangle_mesh.xdmf'))
 
 # 1.2.2 internal triangles
-sf_I = msh.read_mesh_internal_components(lmsh.mesh, sf, lmsh.parameters['surface_volume_id'], lmsh.parameters['box_volume_id'], lmsh.parameters['surface_surface_id'])
+sf_I = msh.read_mesh_internal_components(lmsh.mesh, cf, lmsh.parameters['surface_volume_id'], lmsh.parameters['box_volume_id'], lmsh.parameters['surface_surface_id'])
 
 
 #2.  radius of the smallest cell in the mesh
