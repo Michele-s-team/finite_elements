@@ -668,7 +668,7 @@ def difference_on_boundary_circle(f, g, r, R, c):
 '''
 NOTE: This method is different from input_output.print_mesh_vertices_to_csv. 
 
-print the mesh vertices ids and coordinates to csv file
+print the mesh vertices ids, coordinates and tags to csv file
 
 Input values: 
     - `infile`: full path of the input msh file
@@ -676,10 +676,12 @@ Input values:
 
 Return values: 
     The output csv file is
-    id,:0,:1,:2
-    id_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord
-    id_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord
+    id,:0,:1,:2,tag
+    id_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord,tag_of_vertex_0
+    id_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord,tag_of_vertex_1
     ...
+
+    where `tag_of_vertex_*` is the tag given to the vertex in mesh generation, and if the vertex was not tagged `tag_of_vertex_*` = `const.non_tagged_id`
 
     The id convention is the same used in mesh.utils.print_mesh_edges_to_csv
 '''
@@ -695,6 +697,8 @@ def print_mesh_vertices_to_csv(infile, outfile):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
 
+    map = object_map('vertex', gmsh.model)
+
     # construct a map which, given the id of a node, gives its coordinates
     node_ids, node_coordinates, _ = gmsh.model.mesh.getNodes()
     nodes = [[node_ids[i], list(node_coordinates[3 * i: 3 * (i + 1)])] for i in range(len(node_ids))]
@@ -704,11 +708,13 @@ def print_mesh_vertices_to_csv(infile, outfile):
 
 
     csvfile = open(outfile, "w")
-    print(f"id,:0,:1,:2", file=csvfile)
+    print(f"id,:0,:1,:2,tag", file=csvfile)
 
     for node in nodes:
 
-        print(f"{node[0]},{node[1][0]},{node[1][1]},{node[1][2]}", file=csvfile)
+        # here `tuple([node[0]])` is a tuple with a single element containing the vertex id, and it corresponds, for example, to `triplet` in `print_mesh_triangles_to_csv`
+
+        print(f"{node[0]},{node[1][0]},{node[1][1]},{node[1][2]},{map.get(tuple([node[0]]), const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
