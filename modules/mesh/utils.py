@@ -730,7 +730,7 @@ Input values:
     id_p_1_edge_1,id_p_2_edge_1,edge_tag
     ...
 
-    where `edge_tag` is the tag given by the edge in mesh generation, and if the edge was not tagged `edge_tag = const.non_tagged_id`
+    where `edge_tag` is the tag given to the edge in mesh generation, and if the edge was not tagged `edge_tag` = `const.non_tagged_id`
 '''
 
 def print_mesh_edges_to_csv(infile, outfile):
@@ -865,10 +865,13 @@ Input values:
 
     the .csv file where the edges will be stored, in the format
 
-    p_1,p_2,p_3
-    id_p_1_triangle_0,id_p_2_triangle_0,id_p_3_triangle_0
-    id_p_1_triangle_1,id_p_2_triangle_1,id_p_3_triangle_1
+    p_1,p_2,p_3,tag
+    id_p_1_triangle_0,id_p_2_triangle_0,id_p_3_triangle_0,tag_triangle_0
+    id_p_1_triangle_1,id_p_2_triangle_1,id_p_3_triangle_1,tag_triangle_1
     ...
+
+    where `tag_triangle_*` is the tag given to the tiangle in mesh generation, and if the triangle was not tagged `tag_triangle_*` = `const.non_tagged_id`
+
     
 '''
 def print_mesh_triangles_to_csv(infile, outfile):
@@ -938,7 +941,7 @@ Input values:
     id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1,tag_of_tetrahedron_1
     ...
     
-    where `tag_of_tetrahedron_*` is the tag given by the edge in mesh generation, and if the tetrahedron was not tagged `tag_of_tetrahedron_* = const.non_tagged_id`
+    where `tag_of_tetrahedron_*` is the tag given to the tetrahedron in mesh generation, and if the tetrahedron was not tagged `tag_of_tetrahedron_*` = `const.non_tagged_id`
 '''
 def print_mesh_tetrahedra_to_csv(infile, outfile):
 
