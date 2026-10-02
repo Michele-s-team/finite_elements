@@ -2099,6 +2099,7 @@ def write_line_mesh_to_msh(mesh, filename,
     # print(f'tagged_ids = {tagged_ids}')
 
     if len(tagged_ids) > 0:
+        # there are some tagged objects -> write them into `physical_entities`
 
         '''
         reshape tagged_ids in column format and append it to cell_blocks: they are thus interpreted as a cell block with a single vertex
