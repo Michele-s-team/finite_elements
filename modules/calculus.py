@@ -619,8 +619,6 @@ def surface_integral_triangle(g, triangle):
         lambda v: 0,     # u from 0 ...
         lambda v: (un - v*vn)/un)  # ... to (un - v*vn)/un
 
-    print(f'result = {result}')
-
     return result
 
 
