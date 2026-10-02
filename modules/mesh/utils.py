@@ -2098,7 +2098,7 @@ def write_line_mesh_to_msh(mesh, filename,
     tagged_ids = np.nonzero(vertex_tags)[0]
     # print(f'tagged_ids = {tagged_ids}')
 
-    if len(tagged_ids > 0):
+    if len(tagged_ids) > 0:
 
         '''
         reshape tagged_ids in column format and append it to cell_blocks: they are thus interpreted as a cell block with a single vertex
