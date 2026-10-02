@@ -20,6 +20,8 @@ import mesh.utils as msh
 import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
+
+'''
 # test surface_integral_triangle - start
 import calculus as cal
 import numpy as np
@@ -33,6 +35,7 @@ def g(x): return np.linalg.norm(x)
 print(f'*** = {cal.surface_integral_triangle(g, [p_1, p_2, p_3])}')
 
 # test surface_integral_triangle - end
+'''
 
 
 surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
