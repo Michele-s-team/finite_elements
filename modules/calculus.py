@@ -565,13 +565,38 @@ def surface_integral_triangle(triangle):
 
     '''
     triangle = [p_1, p_2, p_3]
-    e_12 and e_12 are the unit vectors joining p_1 and p_2 and the unit vector joining p_1 and p_3, respectivelu
+    e_ij are the unit vectors joining p_i and p_j, they are not normalized
     '''
-    e_12 = geo.normalize(np.subtract(triangle[1], triangle[0]))
-    e_13 = geo.normalize(np.subtract(triangle[2], triangle[0]))
+    e_u = np.subtract(triangle[1], triangle[0])
+    e_v = np.subtract(triangle[2], triangle[0])
+    e_23 = np.subtract(triangle[2], triangle[1])
 
-    print(f'e_12 = {e_12}')
-    print(f'e_13 = {e_13}')
+    uu = np.dot(e_u, e_u)
+    uv = np.dot(e_u, e_v)
+    vv = np.dot(e_v, e_v)
+
+
+    print(f'e_u = {e_u}')
+    print(f'e_u = {e_v}')
+
+    '''
+    the triangle surface is parametrized with 
+        r(u, v) = u e_u + v e_u
+
+    the normal to the side p_1 - p_3 is n (not normalized and it is given by )
+
+    n = a e_u + b e_v
+    '''
+
+    a = 1.0/np.sqrt(uu + uv/vv*(-2 + vv))
+    b = - a * uv/vv
+
+    n = np.add(a * e_u, b* e_v)
+
+    print(f'n = {n}\n n.e_v = {np.dot(n, e_v)}')
+
+    sys.exit(1)
+
 
 
 '''
