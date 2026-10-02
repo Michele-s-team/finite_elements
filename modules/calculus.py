@@ -735,13 +735,14 @@ def def_volume_integral_tetrahedron(g, tetrahedron):
 
     '''
     tetrahedron = [p_1, p_2, p_3, p_3]
-    e_u and e_v are the tangent vectors to p_1 -  p_2 and p_1 - p_3, respectively, they are not normalized
+    e_u e_v, e_w are the tangent vectors to p_1 -  p_2, p_1 - p_3 and p_1 - p_4 respectively, they are not normalized
     '''
 
     e_u = np.subtract(tetrahedron[1], tetrahedron[0])
     e_v = np.subtract(tetrahedron[2], tetrahedron[0])
     e_w = np.subtract(tetrahedron[3], tetrahedron[0])
 
+    # normal perpendicular to the triangle p_2 - p_3 - p_4
     n = np.cross(
         np.subtract(tetrahedron[2], tetrahedron[1]),
         np.subtract(tetrahedron[3], tetrahedron[1])
@@ -752,7 +753,7 @@ def def_volume_integral_tetrahedron(g, tetrahedron):
     vn = np.dot(e_v, n)
     wn = np.dot(e_w, n)
 
-
+    # absolute value of the jabobian of the transformation x -> u, v, w
     J = abs(np.linalg.det(np.array([e_u, e_v, e_w])))
 
     # w is given
