@@ -569,11 +569,15 @@ def surface_integral_triangle(triangle):
     '''
     e_u = np.subtract(triangle[1], triangle[0])
     e_v = np.subtract(triangle[2], triangle[0])
-    e_23 = np.subtract(triangle[2], triangle[1])
+    f = np.subtract(triangle[2], triangle[1])
 
     uu = np.dot(e_u, e_u)
     uv = np.dot(e_u, e_v)
     vv = np.dot(e_v, e_v)
+
+    uf = np.dot(e_u, f)
+    vf = np.dot(e_v, f)
+
 
 
     print(f'e_u = {e_u}')
@@ -590,12 +594,12 @@ def surface_integral_triangle(triangle):
     solve for a and b by imposing n.e_v = 0 and n.n = 1, and obtain (picking one sign for the directio of `n`)
     '''
 
-    a = 1.0/np.sqrt(uu + uv/vv*(-2 + vv))
-    b = - a * uv/vv
+    a = vf/np.sqrt(uu*(vf**2) + (uf**2)*vv - 2 * uf*uv*vf)
+    b = - uf/np.sqrt(uu*(vf**2) + (uf**2)*vv - 2 * uf*uv*vf)
 
     n = np.add(a * e_u, b* e_v)
 
-    print(f'n = {n}\n n.e_v = {np.dot(n, e_v)}')
+    print(f'n = {n}\n n.f = {np.dot(n, f)}')
 
     sys.exit(1)
 
