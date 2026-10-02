@@ -716,8 +716,22 @@ Return value:
 '''
 
 def volume_integral_box_minus_ball(f, L, r, c):
-    
+
     return volume_integral_box(f, L) - volume_integral_ball(f, r, c)
+
+
+'''
+compute the volume integral of a function over a tetrahedron
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the tetrahedron
+    - `tetrahedron`: [p_1, p_2, p_3, p_4] where p_i = [p_i_x, p_i_y, p_i_z] are the coordinates of the ith vertex of the tetrahedron 
+
+Return values: 
+    - \int_tetrahedron dx g   
+'''
+def def_volume_integral_tetrahedron(g, tetrahedron):
+
+    pass
 
 
 
