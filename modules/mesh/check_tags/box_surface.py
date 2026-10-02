@@ -1,6 +1,8 @@
 import colorama as col
 from fenics import *
 import importlib
+import os
+import pandas as pd
 
 import calculus as cal
 import input_output as io
@@ -29,6 +31,29 @@ integral_exact_dx_box = cal.volume_integral_box(tf.function_test_integrals, L, r
 integral_exact_dx = integral_exact_dx_surface + integral_exact_dx_box
 
 # 1.2 surface integrals
+vertices = pd.read_csv(os.path.join(rarg.args.input_directory, 'vertices.csv')) 
+triangles = pd.read_csv(os.path.join(rarg.args.input_directory, 'triangles.csv')) 
+
+vertices_by_id = vertices.set_index('id')[[':0', ':1', ':2']]
+
+
+triangles = triangles[triangles['tag'] == rmsh.lmsh.parameters['surface_surface_id']]
+
+print(f'vertices = {vertices}')
+print(f'vert id = {vertices_by_id.loc[661, ":1"]}')
+
+surface_triangles = []
+for _, row in triangles.iterrows():
+
+    p_1 = [vertices_by_id.loc[row["p_1"], f":{i}"] for i in range(3)]
+    p_2 = [vertices_by_id.loc[row["p_2"], f":{i}"] for i in range(3)]
+    p_3 = [vertices_by_id.loc[row["p_3"], f":{i}"] for i in range(3)]
+
+    surface_triangles.append([p_1, p_2, p_3])
+
+
+print(f'surface_triangles = {surface_triangles}')
+
 
 # 1.2.1 external surfaces
 
