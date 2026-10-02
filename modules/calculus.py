@@ -28,6 +28,7 @@ from shapely.ops import triangulate
 import sys
 
 import constants.utils as const
+import geometry.utils as geo
 
 small_number = 1e-3
 
@@ -562,7 +563,15 @@ compute the surface integral of a function of three variables over a triangle in
 '''
 def surface_integral_triangle(triangle):
 
-    pass
+    '''
+    triangle = [p_1, p_2, p_3]
+    e_12 and e_12 are the unit vectors joining p_1 and p_2 and the unit vector joining p_1 and p_3, respectivelu
+    '''
+    e_12 = geo.normalize(np.subtract(triangle[1], triangle[0]))
+    e_13 = geo.normalize(np.subtract(triangle[2], triangle[0]))
+
+    print(f'e_12 = {e_12}')
+    print(f'e_13 = {e_13}')
 
 
 '''
