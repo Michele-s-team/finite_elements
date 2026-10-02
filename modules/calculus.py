@@ -560,7 +560,7 @@ def surface_integral_sphere(f, r, c):
 '''
 compute the surface integral of a function of three variables over a triangle in three dimensions
 '''
-def surface_integral_triangle():
+def surface_integral_triangle(triangle):
 
     pass
 
