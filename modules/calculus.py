@@ -562,11 +562,12 @@ def surface_integral_sphere(f, r, c):
 '''
 compute the surface integral of a function of three variables over a triangle in three dimensions
 '''
-def surface_integral_triangle(triangle):
+def surface_integral_triangle(g, triangle):
 
     '''
     triangle = [p_1, p_2, p_3]
-    e_ij are the unit vectors joining p_i and p_j, they are not normalized
+    e_u and e_v are the tangent vectors to p_1 -  p_2 and p_1 - p_3, respectively, they are not normalized
+    f is the tangent vector to p_2 - p_3
     '''
     e_u = np.subtract(triangle[1], triangle[0])
     e_v = np.subtract(triangle[2], triangle[0])
@@ -574,22 +575,19 @@ def surface_integral_triangle(triangle):
 
     u_cross_v = np.cross(e_u, e_v)
 
+    # define dot products
     uu = np.dot(e_u, e_u)
     uv = np.dot(e_u, e_v)
     vv = np.dot(e_v, e_v)
-
     uf = np.dot(e_u, f)
     vf = np.dot(e_v, f)
-
-
-
-
 
     print(f'e_u = {e_u}')
     print(f'e_u = {e_v}')
 
     '''
     the triangle surface is parametrized with 
+
         r(u, v) = u e_u + v e_u
 
     the normal to the side p_1 - p_3 is n (normalized) is given by
@@ -606,21 +604,26 @@ def surface_integral_triangle(triangle):
 
     print(f'n = {n}\n n.f = {np.dot(n, f)}')
 
+    # dot products with respect to `n`
     un = np.dot(e_u, n)
     vn = np.dot(e_v, n)
 
-    def g(u, v):
-        return np.linalg.norm(u_cross_v)
 
     print(f'un = {un}')
 
-    result, _ = dblquad(g, 0, 1,         # v in [0, 1]
-                        lambda v: 0,     # u from 0 ...
-                        lambda v: (un - v*vn)/un)  # ... to f(v)
+    result, _ = dblquad(
+        # lambda capture defining the function to integrate, which is |e_u x e_v| (for the area element) and g(r(u, v))
+        lambda u, v: np.linalg.norm(u_cross_v) * g(np.add(triangle[0], np.add(u * e_u, v * e_v))), 
+        0, 1,         # v in [0, 1]
+        lambda v: 0,     # u from 0 ...
+        lambda v: (un - v*vn)/un)  # ... to (un - v*vn)/un
 
     print(f'result = {result}')
 
     sys.exit(1)
+
+    return result
+
 
 
 
