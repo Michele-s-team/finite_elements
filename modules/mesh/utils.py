@@ -2064,8 +2064,6 @@ def write_line_mesh_to_msh(mesh, filename,
     cell_blocks = [("line", cells)]
 
 
-
-
     '''
     `physical entities` stores the entities to which physical tags are assigned
     For example:
@@ -2092,7 +2090,7 @@ def write_line_mesh_to_msh(mesh, filename,
     '''
     vertex_tags = vertex_function.array().astype(np.uint64) 
 
-    print(f'vertex_tags = {vertex_tags}')
+    # print(f'vertex_tags = {vertex_tags}')
 
     '''
     tagged_ids contains the positions of the vertices in `vertex_tags` that have a nonzero tag. For example, if `vertex_tags` = [1, 0, 0, 3], then `taggd_ids` = [0, 3]
