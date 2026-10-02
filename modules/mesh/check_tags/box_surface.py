@@ -39,8 +39,8 @@ vertices_by_id = vertices.set_index('id')[[':0', ':1', ':2']]
 
 triangles = triangles[triangles['tag'] == rmsh.lmsh.parameters['surface_surface_id']]
 
-print(f'vertices = {vertices}')
-print(f'vert id = {vertices_by_id.loc[661, ":1"]}')
+# print(f'vertices = {vertices}')
+# print(f'vert id = {vertices_by_id.loc[661, ":1"]}')
 
 surface_triangles = []
 for _, row in triangles.iterrows():
@@ -52,7 +52,12 @@ for _, row in triangles.iterrows():
     surface_triangles.append([p_1, p_2, p_3])
 
 
-print(f'surface_triangles = {surface_triangles}')
+# print(f'surface_triangles = {surface_triangles}')
+
+def f(x):
+    return 1
+
+print(f'integral = {cal.surface_integral_triangulated_surface(f, surface_triangles)}')
 
 
 # 1.2.1 external surfaces
