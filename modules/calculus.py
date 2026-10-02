@@ -756,7 +756,7 @@ def def_volume_integral_tetrahedron(g, tetrahedron):
     # absolute value of the jabobian of the transformation x -> u, v, w
     J = abs(np.linalg.det(np.array([e_u, e_v, e_w])))
 
-    # w is given
+    
     result, _ = tplquad(
         lambda u, v, w: J * g(np.add(tetrahedron[0], np.add(np.add(u * e_u, v * e_v), w * e_w))), 
         0, 1,         # w in [0, 1]
