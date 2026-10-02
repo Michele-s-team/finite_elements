@@ -1,7 +1,34 @@
+import colorama as col
 from matplotlib.path import Path
 import numpy as np
+import sys
 
 import constants.utils as const
+
+'''
+normalize a vector in any dimemnsion according to its Euclidean norm
+
+Input values
+    - `v`: [v_0, v_1, ... ] the vector 
+
+Return values
+    - v/|v| if |v| !=0. If |v| = 0, nothing is returned, an error message is printed, and the code is aborted
+'''
+def normalize(v):
+
+    norm = np.linalg.norm(v)
+
+    if norm != 0: 
+
+        result = v/norm
+
+    else:
+
+        print(f'{col.Fore.RED}Error!! normalizing a vector with zero norm.{col.Fore.RESET}')
+        sys.exit(1)
+
+    return result
+
 
 
 '''

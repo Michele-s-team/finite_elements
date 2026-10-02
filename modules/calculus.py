@@ -22,12 +22,14 @@ Depends on numpy, scipy, shapely, and FEniCS
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
+from scipy.integrate import dblquad
 from scipy.spatial.distance import pdist
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
 import sys
 
 import constants.utils as const
+import geometry.utils as geo
 
 small_number = 1e-3
 
@@ -554,6 +556,97 @@ def surface_integral_sphere(f, r, c):
         lambda phi: 0,  # theta lower bound
         lambda phi: np.pi,  # theta upper bound
     )[0]
+
+    return result
+
+'''
+compute the surface integral of a function of three variables over a triangle in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the triangle
+    - `triangle`: [p_1, p_2, p_3] where p_i = [p_i_x, p_i_y, p_i_z] are the coordinates of the ith vertex of the triangle 
+
+Return values: 
+    - \int_triangle dS g
+
+'''
+def surface_integral_triangle(g, triangle):
+
+    '''
+    triangle = [p_1, p_2, p_3]
+    e_u and e_v are the tangent vectors to p_1 -  p_2 and p_1 - p_3, respectively, they are not normalized
+    f is the tangent vector to p_2 - p_3
+    '''
+    e_u = np.subtract(triangle[1], triangle[0])
+    e_v = np.subtract(triangle[2], triangle[0])
+    f = np.subtract(triangle[2], triangle[1])
+
+    u_cross_v = np.cross(e_u, e_v)
+
+    # define dot products
+    uu = np.dot(e_u, e_u)
+    uv = np.dot(e_u, e_v)
+    vv = np.dot(e_v, e_v)
+    uf = np.dot(e_u, f)
+    vf = np.dot(e_v, f)
+
+
+    '''
+    the triangle surface is parametrized with 
+
+        r(u, v) = u e_u + v e_u
+
+    the normal to the side p_1 - p_3 is n (normalized) is given by
+
+    n = a e_u + b e_v
+
+    solve for a and b by imposing n.e_v = 0 and n.n = 1, and obtain (picking one sign for the directio of `n`)
+    '''
+
+    a = vf/np.sqrt(uu*(vf**2) + (uf**2)*vv - 2 * uf*uv*vf)
+    b = - uf/np.sqrt(uu*(vf**2) + (uf**2)*vv - 2 * uf*uv*vf)
+
+    n = np.add(a * e_u, b* e_v)
+
+    # dot products with respect to `n`
+    un = np.dot(e_u, n)
+    vn = np.dot(e_v, n)
+
+    result, _ = dblquad(
+        # lambda capture defining the function to integrate, which is |e_u x e_v| (for the area element) and g(r(u, v))
+        lambda u, v: np.linalg.norm(u_cross_v) * g(np.add(triangle[0], np.add(u * e_u, v * e_v))), 
+        0, 1,         # v in [0, 1]
+        lambda v: 0,     # u from 0 ...
+        lambda v: (un - v*vn)/un)  # ... to (un - v*vn)/un
+
+    return result
+
+
+'''
+compute the surface integral of a function of three variables over a triangulated surface in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the triangle
+    - `surface_triangles`: the list of triangles defining the surface: 
+            [
+                [p_0_1, p_0_2, p_0_3], 
+                [p_1_1, p_1_2, p_1_3], 
+                ...
+            ]  
+        where p_n_i = [p_n_i_x, p_n_i_y, p_n_i_z] are the coordinates of the ith vertex of the nth triangle 
+
+Return values: 
+    - \int_surface dS g
+'''
+
+def surface_integral_triangulated_surface(f, surface_triangles):
+
+    result = 0
+
+    for surface_triangle in surface_triangles:
+        # loop over all triangles of the surface and add the integral on each triangle to `result`
+
+        result += surface_integral_triangle(f, surface_triangle)
 
     return result
 
