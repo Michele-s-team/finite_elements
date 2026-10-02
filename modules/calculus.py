@@ -583,9 +583,11 @@ def surface_integral_triangle(triangle):
     the triangle surface is parametrized with 
         r(u, v) = u e_u + v e_u
 
-    the normal to the side p_1 - p_3 is n (not normalized and it is given by )
+    the normal to the side p_1 - p_3 is n (normalized) is given by
 
     n = a e_u + b e_v
+
+    solve for a and b by imposing n.e_v = 0 and n.n = 1, and obtain (picking one sign for the directio of `n`)
     '''
 
     a = 1.0/np.sqrt(uu + uv/vv*(-2 + vv))
