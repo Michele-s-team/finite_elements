@@ -558,9 +558,9 @@ def surface_integral_sphere(f, r, c):
     return result
 
 '''
-
+compute the surface integral of a function of three variables over a triangle in three dimensions
 '''
-def surface_integral_triangulated_surface():
+def surface_integral_triangle():
 
     pass
 

@@ -20,6 +20,14 @@ import mesh.utils as msh
 import parameters.read.mesh as rpam
 import runtime_arguments_generate_mesh as rarg
 
+# test surface_integral_triangle - start
+
+p_1 = [0.1, 0.2, 0.3]
+p_2 = [0.23, 0.42, 0.23]
+p_3 = [0.01, 0.24, 0.34]
+
+# test surface_integral_triangle - end
+
 
 surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 
