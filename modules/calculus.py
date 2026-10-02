@@ -561,6 +561,14 @@ def surface_integral_sphere(f, r, c):
 
 '''
 compute the surface integral of a function of three variables over a triangle in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the triangle
+    - `triangle`: [p_1, p_2, p_3] where p_i = [p_i_x, p_i_y, p_i_z] are the coordinates of the ith vertex of the triangle 
+
+Return values: 
+    - \int_triangle dS g
+
 '''
 def surface_integral_triangle(g, triangle):
 
@@ -619,8 +627,6 @@ def surface_integral_triangle(g, triangle):
         lambda v: (un - v*vn)/un)  # ... to (un - v*vn)/un
 
     print(f'result = {result}')
-
-    sys.exit(1)
 
     return result
 
