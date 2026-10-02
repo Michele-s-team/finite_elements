@@ -1,6 +1,8 @@
 import colorama as col
 from fenics import *
 import importlib
+import os
+import pandas as pd
 
 import calculus as cal
 import input_output as io
@@ -29,7 +31,6 @@ integral_exact_dx_box = cal.volume_integral_box(tf.function_test_integrals, L, r
 integral_exact_dx = integral_exact_dx_surface + integral_exact_dx_box
 
 # 1.2 surface integrals
-
 # 1.2.1 external surfaces
 
 integral_exact_ds_le = cal.surface_integral_rectangle(lambda x: tf.function_test_integrals([x[0], r[1] + L[1], x[1]]), [r[0], r[2]], [r[0] + L[0], r[2] + L[2]])
@@ -50,6 +51,29 @@ integral_exact_ds = integral_exact_ds_leri + integral_exact_ds_tobo + integral_e
 
 # 1.2.2 internal surfaces
 
+vertices = pd.read_csv(os.path.join(rarg.args.input_directory, 'vertices.csv')) 
+triangles = pd.read_csv(os.path.join(rarg.args.input_directory, 'triangles.csv')) 
+
+# relabel `vertices` according to the `id` columns, so vertex with `id=n` can be called with vertices_by_id.loc[n, ...] (see below)
+vertices_by_id = vertices.set_index('id')[[':0', ':1', ':2']]
+
+# select only triangles with tag = surface_surface_id
+triangles = triangles[triangles['tag'] == rmsh.lmsh.parameters['surface_surface_id']]
+
+# build a list of triangles definining the surface
+surface_triangles = []
+for _, row in triangles.iterrows():
+
+    p_1 = [vertices_by_id.loc[row["p_1"], f":{i}"] for i in range(3)]
+    p_2 = [vertices_by_id.loc[row["p_2"], f":{i}"] for i in range(3)]
+    p_3 = [vertices_by_id.loc[row["p_3"], f":{i}"] for i in range(3)]
+
+    surface_triangles.append([p_1, p_2, p_3])
+
+# feed `surface_triangles` to surface_integral_triangulated_surface and compute the exact value of the integral of `tf.function_test_integrals` over the dS_surface
+integral_exact_dS_surface = cal.surface_integral_triangulated_surface(tf.function_test_integrals, surface_triangles)
+
+
 
 # 2. print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
 
@@ -61,6 +85,8 @@ test_mesh_integral_errors['\int_surface f dx'] = msh.test_mesh_integral(integral
 test_mesh_integral_errors['\int f dx'] = msh.test_mesh_integral(integral_exact_dx, tf.function_test_integrals_fenics, rmsh.dx, '\int_ball f dx')
 
 # 2.2 surface integrals
+
+# 2.2.1 external surfaces
 
 test_mesh_integral_errors['\int_le f ds'] = msh.test_mesh_integral(integral_exact_ds_le, tf.function_test_integrals_fenics, rmsh.ds_le, '\int_le f ds')
 test_mesh_integral_errors['\int_ri f ds'] = msh.test_mesh_integral(integral_exact_ds_ri, tf.function_test_integrals_fenics, rmsh.ds_ri, '\int_ri f ds')
@@ -75,6 +101,9 @@ test_mesh_integral_errors['\int_frba f ds'] = msh.test_mesh_integral(integral_ex
 
 test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, tf.function_test_integrals_fenics, rmsh.ds, '\int f ds')
 
+# 2.2.2 internal surfaces
+
+test_mesh_integral_errors['\int f dS_surface'] = msh.test_mesh_integral(integral_exact_dS_surface, tf.function_test_integrals_fenics, rmsh.dS_surface, '\int f dS_surface')
 
 
 # test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, tf.function_test_integrals_fenics, rmsh.ds, '\int f ds')
