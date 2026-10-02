@@ -99,9 +99,8 @@ gmsh.model.geo.synchronize()
 vertex_list = gmsh.model.getEntities(dim=0)
 #add circle vertex_list: each vertex is added with a different ID
 for i in range(N):
-    gmsh.model.addPhysicalGroup(vertex_list[i][0], [vertex_list[i][1]], rpam.parameters["vertex_0_id"] + i)
-    gmsh.model.setPhysicalName(vertex_list[i][0], rpam.parameters["vertex_0_id"] + i, f"vertex_{i}")
 
+    msh.tag_physical_object(vertex_list[i], rpam.parameters["vertex_0_id"] + i, gmsh.model, f"vertex_{i}")
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
