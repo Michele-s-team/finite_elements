@@ -622,6 +622,33 @@ def surface_integral_triangle(g, triangle):
     return result
 
 
+'''
+compute the surface integral of a function of three variables over a triangulated surface in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the triangle
+    - `surface_triangles`: the list of triangles defining the surface: 
+            [
+                [p_0_1, p_0_2, p_0_3], 
+                [p_1_1, p_1_2, p_1_3], 
+                ...
+            ]  
+        where p_n_i = [p_n_i_x, p_n_i_y, p_n_i_z] are the coordinates of the ith vertex of the nth triangle 
+
+Return values: 
+    - \int_surface dS g
+'''
+
+def surface_integral_triangulated_surface(f, surface_triangles):
+
+    result = 0
+
+    for surface_triangle in surface_triangles:
+        # loop over all triangles of the surface and add the integral on each triangle to `result`
+
+        result += surface_integral_triangle(f, surface_triangle)
+
+    return result
 
 
 '''
