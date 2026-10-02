@@ -22,7 +22,9 @@ Depends on numpy, scipy, shapely, and FEniCS
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
+import scipy.integrate as integrate
 from scipy.integrate import dblquad
+from scipy.integrate import tplquad
 from scipy.spatial.distance import pdist
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
@@ -731,7 +733,41 @@ Return values:
 '''
 def def_volume_integral_tetrahedron(g, tetrahedron):
 
-    pass
+    '''
+    tetrahedron = [p_1, p_2, p_3, p_3]
+    e_u and e_v are the tangent vectors to p_1 -  p_2 and p_1 - p_3, respectively, they are not normalized
+    '''
+
+    e_u = np.subtract(tetrahedron[1], tetrahedron[0])
+    e_v = np.subtract(tetrahedron[2], tetrahedron[0])
+    e_w = np.subtract(tetrahedron[3], tetrahedron[0])
+
+    n = np.cross(
+        np.subtract(tetrahedron[2], tetrahedron[1]),
+        np.subtract(tetrahedron[3], tetrahedron[1])
+    )
+
+    # dot products with respect to `n`
+    un = np.dot(e_u, n)
+    vn = np.dot(e_v, n)
+    wn = np.dot(e_w, n)
+
+
+    J = abs(np.linalg.det(np.array([e_u, e_v, e_w])))
+
+    # w is given
+    result, _ = tplquad(
+        lambda u, v, w: J * g(np.add(tetrahedron[0], np.add(np.add(u * e_u, v * e_v), w * e_w))), 
+        0, 1,         # w in [0, 1]
+        lambda w: 0,     # u from 0 ...
+        lambda w: max((un - w * wn)/un, 0), #... to (un - w*wn)/un
+        lambda u, w: 0, #v from 0 ... 
+        lambda u, w: max((un - u * un -w * wn)/vn, 0) # to  (un - u*un - w*wn)/vn
+        )  
+
+    return result
+
+
 
 
 
