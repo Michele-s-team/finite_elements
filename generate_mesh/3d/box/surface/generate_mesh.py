@@ -24,13 +24,13 @@ import runtime_arguments_generate_mesh as rarg
 import calculus as cal
 import numpy as np
 
-p_1 = [0.1, 0.2, 0.3]
-p_2 = [0.23, 0.42, 0.23]
-p_3 = [0.01, 0.24, 0.34]
+p_1 = [0.3, 0.2, 0.3]
+p_2 = [-0.23, 0.42, 0.23]
+p_3 = [0.41, 0.4, 0.49]
 
 def g(x): return np.linalg.norm(x)
 
-cal.surface_integral_triangle(g, [p_1, p_2, p_3])
+print(f'*** = {cal.surface_integral_triangle(g, [p_1, p_2, p_3])}')
 
 # test surface_integral_triangle - end
 
