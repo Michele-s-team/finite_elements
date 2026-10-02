@@ -4422,14 +4422,20 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
 
     # 4. tag objects
 
-    #4.1 tag 1-dimensional objetcs
+    #4.1 tag 0-dimensional objetcs
+    vertices = gmsh.model.getEntities(dim=0)
+
+    tag_physical_object(vertices[0], parameters['vertex_1_id'], gmsh.model, 'p_1')
+
+
+    #4.2 tag 1-dimensional objetcs
     lines = gmsh.model.getEntities(dim=1)
 
     for i in range(12):
         tag_physical_object(lines[i], parameters[f'box_line_{i+1}_id'], gmsh.model, f'box_line_{i+1}')
 
 
-    #4.2 tag 2-dimensional objects
+    #4.3 tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
     tag_physical_object(surfaces[0], parameters['surface_surface_id'], gmsh.model, 'surface_surface')
@@ -4441,7 +4447,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     tag_physical_object(surfaces[6], parameters['boundary_ba_id'], gmsh.model, 'boundary_ba')
 
 
-    #4.3 tag 3-dimensional objects
+    #4.4 tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
     tag_physical_object(volumes[1], parameters['box_volume_id'], gmsh.model, 'box_minus_surface_volume')
@@ -4470,7 +4476,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     gmsh.model.mesh.generate(3)
     gmsh.write(mesh_file)
 
-    full_write(mesh_file, ['tetra', 'triangle', 'line'], mesh_metadata, output_directory, False)
+    full_write(mesh_file, ['tetra', 'triangle', 'line', 'vertex'], mesh_metadata, output_directory, False)
 
     # 7. write mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
