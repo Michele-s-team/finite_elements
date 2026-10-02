@@ -590,8 +590,6 @@ def surface_integral_triangle(g, triangle):
     uf = np.dot(e_u, f)
     vf = np.dot(e_v, f)
 
-    print(f'e_u = {e_u}')
-    print(f'e_u = {e_v}')
 
     '''
     the triangle surface is parametrized with 
@@ -610,14 +608,9 @@ def surface_integral_triangle(g, triangle):
 
     n = np.add(a * e_u, b* e_v)
 
-    print(f'n = {n}\n n.f = {np.dot(n, f)}')
-
     # dot products with respect to `n`
     un = np.dot(e_u, n)
     vn = np.dot(e_v, n)
-
-
-    print(f'un = {un}')
 
     result, _ = dblquad(
         # lambda capture defining the function to integrate, which is |e_u x e_v| (for the area element) and g(r(u, v))
