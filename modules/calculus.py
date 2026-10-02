@@ -687,6 +687,7 @@ Input values
 Return values: 
     - \int dx_box f
 '''
+
 def volume_integral_box(f, L, r=[0, 0, 0]):
     result = spi.tplquad(
         lambda x, y, z: f([x, y, z]) ,
@@ -704,16 +705,18 @@ def volume_integral_box(f, L, r=[0, 0, 0]):
 
 '''
 compute the integral of a function in the region between a ball and a box which has one edge centered at the origin
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'L': a list containing the sizes of the box along each axis
-- 'r': radius of the ball
-- 'c' : center of the ball
+    - 'f': the function f([x, y, z])
+    - 'L': a list containing the sizes of the box along each axis
+    - 'r': radius of the ball
+    - 'c' : center of the ball
 Return value: 
-- \int_{box - ball} d^3x  f
+    - \int_{box - ball} d^3x  f
 '''
 
 def volume_integral_box_minus_ball(f, L, r, c):
+    
     return volume_integral_box(f, L) - volume_integral_ball(f, r, c)
 
 
