@@ -22,6 +22,7 @@ Depends on numpy, scipy, shapely, and FEniCS
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
+from scipy.integrate import dblquad
 from scipy.spatial.distance import pdist
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
@@ -571,12 +572,16 @@ def surface_integral_triangle(triangle):
     e_v = np.subtract(triangle[2], triangle[0])
     f = np.subtract(triangle[2], triangle[1])
 
+    u_cross_v = np.cross(e_u, e_v)
+
     uu = np.dot(e_u, e_u)
     uv = np.dot(e_u, e_v)
     vv = np.dot(e_v, e_v)
 
     uf = np.dot(e_u, f)
     vf = np.dot(e_v, f)
+
+
 
 
 
@@ -600,6 +605,20 @@ def surface_integral_triangle(triangle):
     n = np.add(a * e_u, b* e_v)
 
     print(f'n = {n}\n n.f = {np.dot(n, f)}')
+
+    un = np.dot(e_u, n)
+    vn = np.dot(e_v, n)
+
+    def g(u, v):
+        return np.linalg.norm(u_cross_v)
+
+    print(f'un = {un}')
+
+    result, _ = dblquad(g, 0, 1,         # v in [0, 1]
+                        lambda v: 0,     # u from 0 ...
+                        lambda v: (un - v*vn)/un)  # ... to f(v)
+
+    print(f'result = {result}')
 
     sys.exit(1)
 
