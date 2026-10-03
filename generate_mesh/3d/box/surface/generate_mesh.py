@@ -23,7 +23,7 @@ import runtime_arguments_generate_mesh as rarg
 
 surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 
-# test def_volume_integral_tetrahedron - start
+# test volume_integral_tetrahedron - start
 import calculus as cal
 import numpy as np
 
@@ -37,10 +37,10 @@ tetrahedron = [p_1, p_2, p_3, p_4]
 def g(x):
     return x[0]**2 - x[1]* np.cos(2*np.pi*x[2])
 
-print(f'integral = {cal.def_volume_integral_tetrahedron(g, tetrahedron)}')
+print(f'integral = {cal.volume_integral_tetrahedron(g, tetrahedron)}')
 
 sys.exit(1)
-# test def_volume_integral_tetrahedron - end
+# test volume_integral_tetrahedron - end
 
 
 

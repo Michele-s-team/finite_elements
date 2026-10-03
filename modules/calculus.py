@@ -713,7 +713,7 @@ Input values;
 Return values: 
     - \int_tetrahedron dx g   
 '''
-def def_volume_integral_tetrahedron(g, tetrahedron):
+def volume_integral_tetrahedron(g, tetrahedron):
 
     '''
     tetrahedron = [p_1, p_2, p_3, p_3]
