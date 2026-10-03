@@ -23,28 +23,6 @@ import runtime_arguments_generate_mesh as rarg
 
 surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 
-'''
-# test volume_integral_tetrahedron - start
-import calculus as cal
-import numpy as np
-
-p_1 = [0.3, 0.2, 0.5]
-p_2 = [4,2.354,0]
-p_3 = [3.5,2,-1]
-p_4 = [2,2.54,-2.43]
-
-tetrahedron = [p_1, p_2, p_3, p_4]
-
-def g(x):
-    return x[0]**2 - x[1]* np.cos(2*np.pi*x[2])
-
-print(f'integral = {cal.volume_integral_tetrahedron(g, tetrahedron)}')
-
-sys.exit(1)
-# test volume_integral_tetrahedron - end
-'''
-
-
 # 1. generate the stl file with the surface
 
 #1.1 the generated surface will be rotated according to the rotation matrix `R`
