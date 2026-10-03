@@ -637,11 +637,13 @@ def surface_integral_triangulated_surface(f, surface_triangles):
 
 '''
 compute the volume integral of a function in a ball
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'r', 'c_r': radius and center of the ball
+    - 'f': the function f([x, y, z])
+    - 'r', 'c_r': radius and center of the ball
+
 Return values: 
-- \int dx_ball f
+    - \int dx_ball f
 '''
 
 
