@@ -18,14 +18,45 @@ print(f'Module {__file__} called {rmsh.__file__}', flush=True)
 r = rmsh.lmsh.parameters['r']
 L = rmsh.lmsh.parameters['L']
 
+# load coordinates of mesh vertices, triangles and tetrahedra, which will be needed to compute `integral_exact_*`
+vertices = pd.read_csv(os.path.join(rarg.args.input_directory, 'vertices.csv')) 
+triangles = pd.read_csv(os.path.join(rarg.args.input_directory, 'triangles.csv')) 
+tetrahedra = pd.read_csv(os.path.join(rarg.args.input_directory, 'tetrahedra.csv')) 
+
+# relabel `vertices` according to the `id` columns, so vertex with `id=n` can be called with vertices_by_id.loc[n, ...] (see below)
+vertices_by_id = vertices.set_index('id')[[':0', ':1', ':2']]
+
+
+
 test_mesh_integral_errors = dict([])
 
-# 1. define exact integrals
+# 1. compute exact integrals
 
 # 1.1 volume integrals
 
+# 1.1.1 volume enclosed by the surface
 
-integral_exact_dx_surface = cal.volume_integral_ball(tf.function_test_integrals, rmsh.lmsh.parameters['surface_radius'], rmsh.lmsh.parameters['surface_translation_vector'])
+# select only triangles with tag = surface_surface_id
+tetrahedra = tetrahedra[tetrahedra['tag'] == rmsh.lmsh.parameters['surface_volume_id']]
+
+# build a list of triangles definining the surface
+surface_volume_tetrahedra = []
+for _, row in tetrahedra.iterrows():
+
+    p_1 = [vertices_by_id.loc[row["p_1"], f":{i}"] for i in range(3)]
+    p_2 = [vertices_by_id.loc[row["p_2"], f":{i}"] for i in range(3)]
+    p_3 = [vertices_by_id.loc[row["p_3"], f":{i}"] for i in range(3)]
+    p_4 = [vertices_by_id.loc[row["p_4"], f":{i}"] for i in range(3)]
+
+    surface_volume_tetrahedra.append([p_1, p_2, p_3, p_4])
+
+
+# feed `surface_volume_tetrahedra` to volume_integral_tetrahedral_volume and compute the exact value of the integral of `tf.function_test_integrals` over `dx_surface`
+integral_exact_dx_surface = cal.volume_integral_tetrahedral_surface(tf.function_test_integrals, surface_volume_tetrahedra)
+
+
+# 1.1.2 volume betwee surface and box
+
 integral_exact_dx_box = cal.volume_integral_box(tf.function_test_integrals, L, r=r) - integral_exact_dx_surface
 
 integral_exact_dx = integral_exact_dx_surface + integral_exact_dx_box
@@ -51,11 +82,6 @@ integral_exact_ds = integral_exact_ds_leri + integral_exact_ds_tobo + integral_e
 
 # 1.2.2 internal surfaces
 
-vertices = pd.read_csv(os.path.join(rarg.args.input_directory, 'vertices.csv')) 
-triangles = pd.read_csv(os.path.join(rarg.args.input_directory, 'triangles.csv')) 
-
-# relabel `vertices` according to the `id` columns, so vertex with `id=n` can be called with vertices_by_id.loc[n, ...] (see below)
-vertices_by_id = vertices.set_index('id')[[':0', ':1', ':2']]
 
 # select only triangles with tag = surface_surface_id
 triangles = triangles[triangles['tag'] == rmsh.lmsh.parameters['surface_surface_id']]
