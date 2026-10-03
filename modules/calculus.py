@@ -509,30 +509,12 @@ def surface_integral_polygon(f, polygon_coordinates):
         # store the three triangle vertices into vertices
         vertices = [np.array(p) for p in triangle.exterior.coords[:3]]
 
-        '''
-        one makes a change of variable from the xy plane to the uv plane. The triangle in the xy plane corresponds to the region 0 <= u <= 1, 0 <= v <= 1, u+v<=1 in the uv plane. 
-        The transformation is 
-
-        (x, y) =vertices[0] + u (vertices[1] - vertices[0]) + v (vertices[2] - vertices[0])
-        and the jacobian J is the jacobian of this transformation 
-        '''
-        J = abs((vertices[1][0]-vertices[0][0])*(vertices[2][1]-vertices[0][1]) - (vertices[2][0]-vertices[0][0])*(vertices[1][1]-vertices[0][1]))
-
-        '''
-        integrand re-expressed as a function of u and v
-        '''
-        def integrand(v, u):
-
-            x = vertices[0][0] + (vertices[1][0]-vertices[0][0])*u + (vertices[2][0]-vertices[0][0])*v
-            y = vertices[0][1] + (vertices[1][1]-vertices[0][1])*u + (vertices[2][1]-vertices[0][1])*v
-
-            return f([x, y]) * J
-
-        # store the integral over the triangle in result
-        result, _ = spi.dblquad(integrand, 0, 1, lambda u: 0, lambda u: 1-u)
+        # add z-entry, equal to 0, to coordinate 
+        for i in range(len(vertices)): 
+            vertices[i] = np.append(vertices[i], 0)
 
         # add the integral to the total integral
-        total += result
+        total += surface_integral_triangle(lambda x: f([x[0], x[1]]), vertices)
 
     
     return total
