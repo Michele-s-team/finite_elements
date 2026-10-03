@@ -635,6 +635,39 @@ def surface_integral_triangulated_surface(f, surface_triangles):
     return result
 
 
+
+
+'''
+compute the volume integral of a function of three variables over a volume composed of tetrahedra in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the volume
+    - `volume_tetrahedra`: the list of tetrahedra defining the volume: 
+            [
+                [p_0_1, p_0_2, p_0_3, p_0_4], 
+                [p_1_1, p_1_2, p_1_3, p_1_4], 
+                ...
+            ]  
+        where p_n_i = [p_n_i_x, p_n_i_y, p_n_i_z] are the coordinates of the ith vertex of the nth tetrahedron 
+
+Return values: 
+    - \int_volume dx g
+'''
+
+def volume_integral_tetrahedral_surface(f, volume_tetrahedra):
+
+    result = 0
+
+    for volume_tetrahedron in volume_tetrahedra:
+        # loop over all tetrahedra of the volmue and add the integral on each tetrahedron to `result`
+
+        result += volume_integral_tetrahedron(f, volume_tetrahedron)
+
+    return result
+
+
+
+
 '''
 compute the volume integral of a function in a ball
 

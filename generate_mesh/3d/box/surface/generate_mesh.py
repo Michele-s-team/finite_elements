@@ -23,6 +23,7 @@ import runtime_arguments_generate_mesh as rarg
 
 surface_file = os.path.join(rarg.args.output_directory, 'mesh.stl')
 
+'''
 # test volume_integral_tetrahedron - start
 import calculus as cal
 import numpy as np
@@ -41,8 +42,7 @@ print(f'integral = {cal.volume_integral_tetrahedron(g, tetrahedron)}')
 
 sys.exit(1)
 # test volume_integral_tetrahedron - end
-
-
+'''
 
 
 # 1. generate the stl file with the surface
