@@ -9,6 +9,7 @@ Example:
 
 import numpy as np
 import os
+import pymeshlab
 import sys
 import trimesh
 from trimesh import transformations as tr
@@ -47,6 +48,7 @@ trimesh.creation.capsule(
     ).export(surface_file)
 '''
 
+'''
 # 1.4.b generate a torus
 # closed circular profile in the (r, z) half-plane: last point equals the first
 tab_theta = np.linspace(0.0, 2.0 * np.pi, rpam.parameters['n_sections_min'] + 1)
@@ -54,7 +56,7 @@ tab_theta = np.linspace(0.0, 2.0 * np.pi, rpam.parameters['n_sections_min'] + 1)
 cross_sectional_profile = np.column_stack([rpam.parameters['r_max'] + rpam.parameters['r_min'] * np.cos(tab_theta), rpam.parameters['r_min'] * np.sin(tab_theta)])
 # revolve the circle about the z axis and obtain a torus
 m = trimesh.creation.revolve(cross_sectional_profile, sections=rpam.parameters['n_sections_maj'])
-
+'''
 
 '''
 #1.4.c generate a sphere
@@ -62,6 +64,21 @@ m = trimesh.creation.icosphere(
     subdivisions=rpam.parameters['surface_subdivisions'],
     radius=rpam.parameters['surface_radius'])
 '''
+
+
+m = trimesh.load('mesh.obj', force='mesh')
+m.merge_vertices()
+
+# isotropic remeshing: replaces the surface triangulation with near-equilateral triangles of uniform size
+ms = pymeshlab.MeshSet()
+ms.add_mesh(pymeshlab.Mesh(vertex_matrix=m.vertices, face_matrix=m.faces))
+ms.remeshing_isotropic_explicit_remeshing(
+    iterations=10,
+    targetlen=pymeshlab.Percentage(2),
+)
+mm = ms.current_mesh()
+m = trimesh.Trimesh(vertices=mm.vertex_matrix(), faces=mm.face_matrix())
+
 
 #2.  apply the translation + rotation to the generated shape 
 m.apply_transform(transform)

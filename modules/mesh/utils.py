@@ -4328,6 +4328,8 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
+    # gmsh.option.setNumber("Mesh.OptimizeNetgen", 1)   # extra Netgen optimization pass, good at removing slivers
+    gmsh.option.setNumber("Mesh.Algorithm3D", 4)      # Frontal: usually better quality than the default Delaunay (1)
 
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
