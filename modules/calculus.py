@@ -22,7 +22,9 @@ Depends on numpy, scipy, shapely, and FEniCS
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
+import scipy.integrate as integrate
 from scipy.integrate import dblquad
+from scipy.integrate import tplquad
 from scipy.spatial.distance import pdist
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
@@ -507,30 +509,12 @@ def surface_integral_polygon(f, polygon_coordinates):
         # store the three triangle vertices into vertices
         vertices = [np.array(p) for p in triangle.exterior.coords[:3]]
 
-        '''
-        one makes a change of variable from the xy plane to the uv plane. The triangle in the xy plane corresponds to the region 0 <= u <= 1, 0 <= v <= 1, u+v<=1 in the uv plane. 
-        The transformation is 
-
-        (x, y) =vertices[0] + u (vertices[1] - vertices[0]) + v (vertices[2] - vertices[0])
-        and the jacobian J is the jacobian of this transformation 
-        '''
-        J = abs((vertices[1][0]-vertices[0][0])*(vertices[2][1]-vertices[0][1]) - (vertices[2][0]-vertices[0][0])*(vertices[1][1]-vertices[0][1]))
-
-        '''
-        integrand re-expressed as a function of u and v
-        '''
-        def integrand(v, u):
-
-            x = vertices[0][0] + (vertices[1][0]-vertices[0][0])*u + (vertices[2][0]-vertices[0][0])*v
-            y = vertices[0][1] + (vertices[1][1]-vertices[0][1])*u + (vertices[2][1]-vertices[0][1])*v
-
-            return f([x, y]) * J
-
-        # store the integral over the triangle in result
-        result, _ = spi.dblquad(integrand, 0, 1, lambda u: 0, lambda u: 1-u)
+        # add z-entry, equal to 0, to coordinate 
+        for i in range(len(vertices)): 
+            vertices[i] = np.append(vertices[i], 0)
 
         # add the integral to the total integral
-        total += result
+        total += surface_integral_triangle(lambda x: f([x[0], x[1]]), vertices)
 
     
     return total
@@ -651,13 +635,48 @@ def surface_integral_triangulated_surface(f, surface_triangles):
     return result
 
 
+
+
+'''
+compute the volume integral of a function of three variables over a volume composed of tetrahedra in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the volume
+    - `volume_tetrahedra`: the list of tetrahedra defining the volume: 
+            [
+                [p_0_1, p_0_2, p_0_3, p_0_4], 
+                [p_1_1, p_1_2, p_1_3, p_1_4], 
+                ...
+            ]  
+        where p_n_i = [p_n_i_x, p_n_i_y, p_n_i_z] are the coordinates of the ith vertex of the nth tetrahedron 
+
+Return values: 
+    - \int_volume dx g
+'''
+
+def volume_integral_tetrahedral_surface(f, volume_tetrahedra):
+
+    result = 0
+
+    for volume_tetrahedron in volume_tetrahedra:
+        # loop over all tetrahedra of the volmue and add the integral on each tetrahedron to `result`
+
+        result += volume_integral_tetrahedron(f, volume_tetrahedron)
+
+    return result
+
+
+
+
 '''
 compute the volume integral of a function in a ball
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'r', 'c_r': radius and center of the ball
+    - 'f': the function f([x, y, z])
+    - 'r', 'c_r': radius and center of the ball
+
 Return values: 
-- \int dx_ball f
+    - \int dx_ball f
 '''
 
 
@@ -687,6 +706,7 @@ Input values
 Return values: 
     - \int dx_box f
 '''
+
 def volume_integral_box(f, L, r=[0, 0, 0]):
     result = spi.tplquad(
         lambda x, y, z: f([x, y, z]) ,
@@ -704,17 +724,68 @@ def volume_integral_box(f, L, r=[0, 0, 0]):
 
 '''
 compute the integral of a function in the region between a ball and a box which has one edge centered at the origin
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'L': a list containing the sizes of the box along each axis
-- 'r': radius of the ball
-- 'c' : center of the ball
+    - 'f': the function f([x, y, z])
+    - 'L': a list containing the sizes of the box along each axis
+    - 'r': radius of the ball
+    - 'c' : center of the ball
 Return value: 
-- \int_{box - ball} d^3x  f
+    - \int_{box - ball} d^3x  f
 '''
 
 def volume_integral_box_minus_ball(f, L, r, c):
+
     return volume_integral_box(f, L) - volume_integral_ball(f, r, c)
+
+
+'''
+compute the volume integral of a function over a tetrahedron
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the tetrahedron
+    - `tetrahedron`: [p_1, p_2, p_3, p_4] where p_i = [p_i_x, p_i_y, p_i_z] are the coordinates of the ith vertex of the tetrahedron 
+
+Return values: 
+    - \int_tetrahedron dx g   
+'''
+def volume_integral_tetrahedron(g, tetrahedron):
+
+    '''
+    tetrahedron = [p_1, p_2, p_3, p_3]
+    e_u e_v, e_w are the tangent vectors to p_1 -  p_2, p_1 - p_3 and p_1 - p_4 respectively, they are not normalized
+    '''
+
+    e_u = np.subtract(tetrahedron[1], tetrahedron[0])
+    e_v = np.subtract(tetrahedron[2], tetrahedron[0])
+    e_w = np.subtract(tetrahedron[3], tetrahedron[0])
+
+    # normal perpendicular to the triangle p_2 - p_3 - p_4
+    n = np.cross(
+        np.subtract(tetrahedron[2], tetrahedron[1]),
+        np.subtract(tetrahedron[3], tetrahedron[1])
+    )
+
+    # dot products with respect to `n`
+    un = np.dot(e_u, n)
+    vn = np.dot(e_v, n)
+    wn = np.dot(e_w, n)
+
+    # absolute value of the jabobian of the transformation x -> u, v, w
+    J = abs(np.linalg.det(np.array([e_u, e_v, e_w])))
+
+    
+    result, _ = tplquad(
+        lambda u, v, w: J * g(np.add(tetrahedron[0], np.add(np.add(u * e_u, v * e_v), w * e_w))), 
+        0, 1,         # w in [0, 1]
+        lambda w: 0,     # u from 0 ...
+        lambda w: max((un - w * wn)/un, 0), #... to (un - w*wn)/un
+        lambda u, w: 0, #v from 0 ... 
+        lambda u, w: max((un - u * un -w * wn)/vn, 0) # to  (un - u*un - w*wn)/vn
+        )  
+
+    return result
+
+
 
 
 
