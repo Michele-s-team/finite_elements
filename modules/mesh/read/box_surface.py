@@ -63,6 +63,9 @@ ds = ds_leri + ds_tobo + ds_frba
 
 dS_surface = Measure("dS", domain=lmsh.mesh, subdomain_data=sf_I, subdomain_id=lmsh.parameters[f"surface_surface_id"])
 
+dS_I_surface = Measure("dS", domain=lmsh.mesh, subdomain_data=sf_I, subdomain_id=lmsh.parameters[f"surface_volume_id"])
+dS_I_box = Measure("dS", domain=lmsh.mesh, subdomain_data=sf_I, subdomain_id=lmsh.parameters[f"box_volume_id"])
+
 
 check_mesh_module = importlib.import_module('mesh.check_tags.box_surface')
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)

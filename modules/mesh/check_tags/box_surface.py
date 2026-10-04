@@ -52,10 +52,12 @@ for _, row in tetrahedra.iterrows():
 
 
 # feed `surface_volume_tetrahedra` to volume_integral_tetrahedral_volume and compute the exact value of the integral of `tf.function_test_integrals` over `dx_surface`
-integral_exact_dx_surface = cal.volume_integral_tetrahedral_surface(tf.function_test_integrals, surface_volume_tetrahedra)
+# change this - start
+# integral_exact_dx_surface = cal.volume_integral_tetrahedral_surface(tf.function_test_integrals, surface_volume_tetrahedra)
+integral_exact_dx_surface = 1.0
+# change this - end
 
-
-# 1.1.2 volume betwee surface and box
+# 1.1.2 volume between surface and box
 
 integral_exact_dx_box = cal.volume_integral_box(tf.function_test_integrals, L, r=r) - integral_exact_dx_surface
 
@@ -82,7 +84,7 @@ integral_exact_ds = integral_exact_ds_leri + integral_exact_ds_tobo + integral_e
 
 # 1.2.2 internal surfaces
 
-
+# 1.2.2.1 surface 
 # select only triangles with tag = surface_surface_id
 triangles = triangles[triangles['tag'] == rmsh.lmsh.parameters['surface_surface_id']]
 
@@ -99,6 +101,13 @@ for _, row in triangles.iterrows():
 # feed `surface_triangles` to surface_integral_triangulated_surface and compute the exact value of the integral of `tf.function_test_integrals` over the dS_surface
 integral_exact_dS_surface = cal.surface_integral_triangulated_surface(tf.function_test_integrals, surface_triangles)
 
+# 1.2.2.2  triangles internal to surface
+
+integral_exact_dS_I_surface = 1.0
+
+# 1.2.2.2  triangles internal to the volume between surface and volume
+
+integral_exact_dS_I_box = 1.0
 
 
 # 2. print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
@@ -129,7 +138,15 @@ test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_d
 
 # 2.2.2 internal surfaces
 
+# 2.2.2.1 surface surface
 test_mesh_integral_errors['\int f dS_surface'] = msh.test_mesh_integral(integral_exact_dS_surface, tf.function_test_integrals_fenics, rmsh.dS_surface, '\int f dS_surface')
+
+# 2.2.2.2 triangles internal to surface
+test_mesh_integral_errors[f'\int f dS_I_surface'] = msh.test_mesh_integral(integral_exact_dS_I_surface, tf.function_test_integrals_fenics, rmsh.dS_I_surface, f'\int f dS_I_surface')
+
+# 2.2.2.3 triangles in the volume between surface and box
+test_mesh_integral_errors[f'\int f dS_I_box'] = msh.test_mesh_integral(integral_exact_dS_I_box, tf.function_test_integrals_fenics, rmsh.dS_I_box, f'\int f dS_I_box')
+
 
 
 # test_mesh_integral_errors['\int f ds'] = msh.test_mesh_integral(integral_exact_ds, tf.function_test_integrals_fenics, rmsh.ds, '\int f ds')
