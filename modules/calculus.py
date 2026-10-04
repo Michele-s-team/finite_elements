@@ -361,7 +361,9 @@ Example of usage:
 
 
 def surface_integral_rectangle(f, p_bl, p_tr):
+
     f_swapped = lambda x, y: f([y, x])
+    
     return spi.dblquad(f_swapped, p_bl[0], p_tr[0], lambda x: p_bl[1], lambda x: p_tr[1])[0]
 
 
