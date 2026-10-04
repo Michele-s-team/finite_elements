@@ -307,8 +307,11 @@ def curve_integral_dS(mesh, f, sf=None, surface_id=None):
     result = 0.0
     cell_tags = None
 
+    # mesh dimension
+    d = mesh.topology().dim()
+
     # ensure facet->cell connectivity is built
-    mesh.init(1, 2)  
+    mesh.init(d-1, d)  
 
 
     for facet in facets(mesh):
