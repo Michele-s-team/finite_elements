@@ -3550,7 +3550,7 @@ def average(u):
     return (u("+")+u("-"))/2
 
 '''
-set field defined on a DG space equal to a profile in a mesh region 
+set field defined on a DG space equal to a profile in a mesh region
 Input values: 
     * Mandatory:
         - 'f': the field defined on a DG space
@@ -3584,6 +3584,7 @@ def interpolate_dg(f, g, sf=None, region_id=None):
     value_size  = int(np.prod(element.value_shape())) if element.value_shape() else 1
 
     mesh = Q.mesh()
+    mesh_dimension = mesh.topology().dim()
 
     '''
     dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
@@ -3669,7 +3670,7 @@ def interpolate_dg(f, g, sf=None, region_id=None):
                 dof_coordinate = dof_coordinates[cell_dofs_unique[i]]
 
                 for j in range(value_size):
-                    f_values[cell_dofs[j * n_nodes + i]] = np.atleast_1d(g(dof_coordinate[:2]))[j]
+                    f_values[cell_dofs[j * n_nodes + i]] = np.atleast_1d(g(dof_coordinate[:mesh_dimension]))[j]
 
 
     f.vector().set_local(f_values) 
