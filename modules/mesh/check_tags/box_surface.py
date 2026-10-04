@@ -103,11 +103,12 @@ integral_exact_dS_surface = cal.surface_integral_triangulated_surface(tf.functio
 
 # 1.2.2.2  triangles internal to surface
 
-integral_exact_dS_I_surface = 1.0
+integral_exact_dS_I_surface = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals, rmsh.cf, rmsh.lmsh.parameters[f"surface_volume_id"])
+
 
 # 1.2.2.2  triangles internal to the volume between surface and volume
 
-integral_exact_dS_I_box = 1.0
+integral_exact_dS_I_box = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals, rmsh.cf, rmsh.lmsh.parameters[f"box_volume_id"])
 
 
 # 2. print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly

@@ -293,17 +293,17 @@ def curve_integral_circle_arc(f, r, theta_min, theta_max, c):
 
 
 '''
-compute the integral of a function over measure of internal facets 'dS' for a 2d mesh
+compute the integral of a function over measure of internal facets 'dS' for a 2d (3d) mesh
 Input values: 
     * Mandatory
         - 'mesh' the mesh
         - 'f': the function that will be integrated over 'dS'
     * Optional: 
-        - 'sf', 'surface_id': the mesh function that is used to tag mesh surfaces, and the tag of the mesh surface to be considered for the calculation. Both are 'None' by default: if not provided, this method computes the curve integral across all internal facets of 'mesh'
+        - 'sf', 'surface_id': the mesh function that is used to tag 2d (3d) mesh surface (volume), and the tag of the mesh surface (volume) to be considered for the calculation. Both are 'None' by default: if not provided, this method computes the curve integral across all internal facets of 'mesh'
 Return values: 
-    - int dS_ f
-
+    - int dS f
 '''
+
 def curve_integral_dS(mesh, f, sf=None, surface_id=None):
 
     # mesh dimension
