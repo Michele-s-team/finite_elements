@@ -369,12 +369,14 @@ def surface_integral_rectangle(f, p_bl, p_tr):
 
 '''
 integate a function of two variables over a ring delimited by two concentric circles
+
 Input values 
-- 'f': the function f([x, y])
-- 'r', 'R': radii of the inner and outer circle defining the ring
-- 'c' : center of the circles (a list of two values)
+    - 'f': the function f([x, y])
+    - 'r', 'R': radii of the inner and outer circle defining the ring
+    - 'c' : center of the circles (a list of two values)
+
 Result:
-- \int_ring dx dy f
+    - \int_ring dx dy f
 
 Example of usage:
     def g(x):
