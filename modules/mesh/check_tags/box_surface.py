@@ -52,10 +52,8 @@ for _, row in tetrahedra.iterrows():
 
 
 # feed `surface_volume_tetrahedra` to volume_integral_tetrahedral_volume and compute the exact value of the integral of `tf.function_test_integrals` over `dx_surface`
-# change this - start
-# integral_exact_dx_surface = cal.volume_integral_tetrahedral_surface(tf.function_test_integrals, surface_volume_tetrahedra)
-integral_exact_dx_surface = 1.0
-# change this - end
+integral_exact_dx_surface = cal.volume_integral_tetrahedral_surface(tf.function_test_integrals, surface_volume_tetrahedra)
+# integral_exact_dx_surface = 1.0
 
 # 1.1.2 volume between surface and box
 
@@ -103,11 +101,11 @@ integral_exact_dS_surface = cal.surface_integral_triangulated_surface(tf.functio
 
 # 1.2.2.2  triangles internal to surface
 
-integral_exact_dS_I_surface = 1.0
+integral_exact_dS_I_surface = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals, rmsh.cf, rmsh.lmsh.parameters[f"surface_volume_id"])
 
 # 1.2.2.2  triangles internal to the volume between surface and volume
 
-integral_exact_dS_I_box = 1.0
+integral_exact_dS_I_box = cal.curve_integral_dS(rmsh.lmsh.mesh, tf.function_test_integrals, rmsh.cf, rmsh.lmsh.parameters[f"box_volume_id"])
 
 
 # 2. print out the integrals on the surface elements and compare them with the exact values to double check that the elements are tagged correctly
