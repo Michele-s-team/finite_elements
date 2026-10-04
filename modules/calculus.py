@@ -202,7 +202,9 @@ Example of usage:
 
 
 def curve_integral_line(f, x_a, x_b):
+
     line_curve = lambda t: line(x_a, x_b, t)
+
     return curve_integral(f, line_curve)
 
 
@@ -304,15 +306,14 @@ Return values:
 '''
 def curve_integral_dS(mesh, f, sf=None, surface_id=None):
 
-    result = 0.0
-    cell_tags = None
-
     # mesh dimension
     d = mesh.topology().dim()
 
-    # ensure facet->cell connectivity is built
+    # build facet-to-cell connectivity
     mesh.init(d-1, d)  
 
+    result = 0.0
+    cell_tags = None
 
     for facet in facets(mesh):
         # loop through all mesh facets
@@ -323,27 +324,39 @@ def curve_integral_dS(mesh, f, sf=None, surface_id=None):
             if sf != None:
                 # this method has been called with 'sf' != None -> consider all cells adjacent to 'facet', compute their tags, and store them in 'cell_tags'
 
-                cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
+                # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells    
+                cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(d)]
 
             if (((surface_id == None) or (sf == None)) or all(c == surface_id for c in cell_tags)):
                 # the method has been called on the whole mesh, i.e., (surface_id == None) or (sf == None), or it has been called on a specific region of the mesh, and 'facet' is an facet internal to this region -> compute the integral over 'facet' and add it to the result
 
                 '''
-                facet_vertices contains the coordinates of the endpoints of `facet`:
+                facet_vertices contains the coordinates of the vertices lying on the extremities of `facet`:
                 facet_vertices = 
                 [
-                    [p_0_x, p_0_y],
-                    [p_1_x, p_1_y]
+                    [p_0_x, p_0_y, p_0_z],
+                    [p_1_x, p_1_y, p_1_z]
                 ]
                 ''' 
                 facet_vertices = []
 
                 for v in vertices(facet):
-                    # run through the vertices of `facet`
+                    # run through the vertices of `facet` and write their coordinates in `facet_vertices`
 
-                    facet_vertices.append((v.point().array().tolist())[:2])
+                    facet_vertices.append((v.point().array().tolist())[:d])
 
-                result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
+                # add the integral over `facet` to `result`
+
+                if d == 2:
+                    # mesh is 2-dimensional -> the integral is over a line (edge)
+
+                    result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
+
+                elif d == 3:
+                    # mesh id 3-dimensional -> the integral is over a triangle 
+
+                    result += surface_integral_triangle(f, facet_vertices)
+
 
     return result
 

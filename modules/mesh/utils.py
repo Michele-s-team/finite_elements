@@ -210,6 +210,7 @@ Return values"
 '''
 def read_mesh_internal_components(mesh, sf, surface_a_id, surface_b_id, boundary_ab_id):
 
+    # mesh dimension
     d = mesh.topology().dim()
 
     # build a function mf_I that tags interior lines and allows for reading them
