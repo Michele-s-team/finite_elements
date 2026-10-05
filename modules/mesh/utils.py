@@ -3550,7 +3550,7 @@ def average(u):
     return (u("+")+u("-"))/2
 
 '''
-set field defined on a DG space equal to a profile in a mesh region
+set field defined on a DG space equal to a profile in a mesh region. It works for 2d and 3d meshes. 
 Input values: 
     * Mandatory:
         - 'f': the field defined on a DG space
