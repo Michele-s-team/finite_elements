@@ -481,3 +481,12 @@ then include `import h5py` at the top of the .py file
         sign: default
         solution_tolerance: 1e-16
     symmetric: False
+
+
+- Possible explanation for crash in fluid_structure_interaction/fluid_obstacle/monolithic: 
+
+    Strongly non-circular shapes may fail because you assumed that the shape is such that the 'cones' formed by each edge cover the whole domain outside the shape, with a one-to-one correspondence .
+
+    Check if this is the case when it crashes.
+
+- Possible explanation for crashes in the dynamics: dt at the denominator may kill (take over) the penalty terms. 
