@@ -3730,6 +3730,31 @@ def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
         sys.exit(1)
 
 
+'''
+build the DG0 indicator of region 'region_id' tagged in the cell mesh function 'cf'
+'''
+def region_indicator(mesh, cf, region_id):
+
+    Q = FunctionSpace(mesh, 'DG', 0)
+    f = Function(Q)
+
+    f.vector()[:] = (cf.array() == region_id).astype(float)
+    return f
+
+
+'''
+restrict a UFL expression to the side of an internal boundary that lies in a given mesh region, independently of the '+'/'-' convention used by the assembler
+Input values:
+    - 'expr': the UFL expression to restrict (fields, gradients, facet normals, ...)
+    - 'chi': DG0 indicator of the region (1 on its cells, 0 elsewhere)
+Return values:
+    - the restriction of 'expr' to the side of each facet that belongs to the region
+Note: valid only on measures whose facets have exactly one adjacent cell in the region
+'''
+def side(expression, indicator):
+
+    return indicator('+') * expression('+') + indicator('-') * expression('-')
+
 
 def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
 

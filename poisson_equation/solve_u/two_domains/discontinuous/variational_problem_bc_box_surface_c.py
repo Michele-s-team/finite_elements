@@ -51,14 +51,12 @@ msh.interpolate_dg(fsp.u_exact, u_exact_box_expression(), rmsh.cf, rmsh.lmsh.par
 
 msh.interpolate_dg(fsp.f, f_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
 
+I_surface = msh.region_indicator(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
+I_box = msh.region_indicator(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
 
+# surface_label, box_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters["surface_volume_id"], rmsh.lmsh.parameters["box_volume_id"], rmsh.dS_surface)
 
-
-
-
-surface_label, box_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters["surface_volume_id"], rmsh.lmsh.parameters["box_volume_id"], rmsh.dS_surface)
-
-print(f'label_ shape ={surface_label}\nlabel_square = {box_label}')
+# print(f'label_ shape ={surface_label}\nlabel_square = {box_label}')
 
 '''
 # test plus_minus - start
@@ -90,7 +88,8 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 ) * \
         rmsh.dx \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
-        - bgeo.facet_normal(box_label)[i] * ((fsp.u(box_label)).dx(i)) * (fsp.nu_u(box_label)) * rmsh.dS_surface
+        - msh.side(bgeo.facet_normal, I_box)[i] * ((msh.side(fsp.u, I_box)).dx(i)) * (msh.side(fsp.nu_u, I_box)) * rmsh.dS_surface
+        # - bgeo.facet_normal(box_label)[i] * ((fsp.u(box_label)).dx(i)) * (fsp.nu_u(box_label)) * rmsh.dS_surface
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i]
@@ -101,7 +100,7 @@ F_I = (
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds + \
-            (fsp.u(box_label) - fsp.u_exact(box_label)) * fsp.nu_u(box_label) * rmsh.dS_surface\
+            (msh.side(fsp.u, I_box) - msh.side(fsp.u_exact, I_box)) * msh.side(fsp.nu_u, I_box) * rmsh.dS_surface\
         )
 
 
