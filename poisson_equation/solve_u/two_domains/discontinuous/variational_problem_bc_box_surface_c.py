@@ -17,8 +17,6 @@ rmsh = importlib.import_module(swi.rmsh)
 
 i, j = ufl.indices(2)
 
-
-# test case 1
     
 class f_box_expression(UserExpression):
     def eval(self, values, x):
