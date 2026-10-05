@@ -48,32 +48,7 @@ class u_exact_box_expression(UserExpression):
 
 msh.interpolate_dg(fsp.u_exact, u_exact_surface_expression(), rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
 msh.interpolate_dg(fsp.u_exact, u_exact_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
-
 msh.interpolate_dg(fsp.f, f_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
-
-I_surface = msh.region_indicator(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
-I_box = msh.region_indicator(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
-
-# surface_label, box_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters["surface_volume_id"], rmsh.lmsh.parameters["box_volume_id"], rmsh.dS_surface)
-
-# print(f'label_ shape ={surface_label}\nlabel_square = {box_label}')
-
-'''
-# test plus_minus - start
-import input_output as io
-import solution_paths as solpath
-import sys 
-
-io.full_print(bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh, bgeo.facet_normal(box_label), rmsh.dS_surface, interior=True), 'n', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
-              solpath.nodal_values_path,
-              mesh_function=rmsh.cf)
-
-print(f'plus_minus = {msh.plus_minus(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters["surface_volume_id"], rmsh.lmsh.parameters["box_volume_id"], rmsh.dS_surface)}')
-
-sys.exit(1)
-
-# test plus_minus - end
-'''
 
 bcs = []
 
@@ -88,8 +63,7 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 ) * \
         rmsh.dx \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
-        - msh.side(bgeo.facet_normal, I_box)[i] * ((msh.side(fsp.u, I_box)).dx(i)) * (msh.side(fsp.nu_u, I_box)) * rmsh.dS_surface
-        # - bgeo.facet_normal(box_label)[i] * ((fsp.u(box_label)).dx(i)) * (fsp.nu_u(box_label)) * rmsh.dS_surface
+        - msh.side(bgeo.facet_normal, rmsh.I_box)[i] * ((msh.side(fsp.u, rmsh.I_box)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_box)) * rmsh.dS_surface
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i]
@@ -100,7 +74,7 @@ F_I = (
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds + \
-            (msh.side(fsp.u, I_box) - msh.side(fsp.u_exact, I_box)) * msh.side(fsp.nu_u, I_box) * rmsh.dS_surface\
+            (msh.side(fsp.u, rmsh.I_box) - msh.side(fsp.u_exact, rmsh.I_box)) * msh.side(fsp.nu_u, rmsh.I_box) * rmsh.dS_surface\
         )
 
 
