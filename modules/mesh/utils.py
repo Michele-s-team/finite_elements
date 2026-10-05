@@ -3550,14 +3550,14 @@ def average(u):
     return (u("+")+u("-"))/2
 
 '''
-set field defined on a DG space equal to a profile in a mesh region. It works for 2d and 3d meshes. 
+set field defined on a DG space equal to a profile in a mesh region. It works for 2d (3d) meshes. 
 Input values: 
     * Mandatory:
         - 'f': the field defined on a DG space
         - 'g': the profile to which 'f' will be set
     * Optional:
-        - 'sf': 'None' by default, the mesh function that tags mesh surfaces. 
-        - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
+        - 'sf': 'None' by default, the mesh function that tags mesh triangles (tetrahedra). 
+        - 'region_id': 'None' by default, the id of the mesh  surface (volume) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells, e.g., triangles (tetrahedra), in the mesh, 'f' to 'g' on the cell DOFs
 '''
 def interpolate_dg(f, g, sf=None, region_id=None):
 
@@ -3681,7 +3681,7 @@ def interpolate_dg(f, g, sf=None, region_id=None):
 recognize to which mesh subregions + and - parts of an internal boundary correspond in a mesh
 Input values:
     - 'mesh': the mesh
-    - 'sf': the mesh function that tags mesh facets
+    - 'sf': the mesh function that tags mesh cells
     - 'region_a_id', 'region_b_id': the tags with which regions a and b are tagged in 'sf'
     - 'dS_ab': the measure corresponding to the facets between region a and b
 Return values: 
