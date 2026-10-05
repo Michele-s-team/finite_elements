@@ -3731,7 +3731,13 @@ def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
 
 
 '''
-build the DG0 indicator of region 'region_id' tagged in the cell mesh function 'cf'
+build the DG0 indicator of region tagged in a 1d, 2d or 3d mesh
+Input values: 
+    - `mesh`: the mesh
+    - `cf`: the MeshFuntion tagging mesh cells with different IDs
+    - `region_id`: the tag of the region on which the indicator will be built
+Return values: 
+    - `f`: a DG scalar function that is equal to 1 on DOFs belonging to region tagged with `region_id` and 0 otherwise
 '''
 def region_indicator(mesh, cf, region_id):
 
