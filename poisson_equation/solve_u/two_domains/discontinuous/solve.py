@@ -31,7 +31,7 @@ import variational_problem.utils as var_pr
 
 
 
-'''
+
 # test of interpolate_dg
 
 rmsh = importlib.import_module(swi.rmsh)
@@ -43,34 +43,36 @@ import mesh.utils as msh
 
 
 #1. test for scalar
-Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
+Q = FunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'])
 u = Function(Q)
 
 class u_shape_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]-x[2]))
 
     def value_shape(self):
         return (1,)
 
-msh.interpolate_dg(u, u_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(u, u_shape_expression(), rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
 
 class u_square_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.sin(2 * np.pi*(x[0]-x[1]))
+        values[0] = np.sin(2 * np.pi*(x[0]-x[1]-2*x[2]))
 
     def value_shape(self):
         return (1,)
 
-msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(u, u_square_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
 
 io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              mesh_function=rmsh.lmsh.sf[0])
+              mesh_function=rmsh.cf)
 
+sys.exit(1)
 
+'''
 #2. test for vector
 V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
 v = Function(V)
