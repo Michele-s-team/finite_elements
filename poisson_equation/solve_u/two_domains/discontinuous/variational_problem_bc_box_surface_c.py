@@ -81,7 +81,7 @@ bcs = []
 
 
 # variational functional for the original problem (poisson equation)
-F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh[0],
+F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 rmsh.cf,
                                 (fsp.u - fsp.u_exact) * fsp.nu_u,
                                 fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u,
