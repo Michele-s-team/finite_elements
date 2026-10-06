@@ -3775,7 +3775,7 @@ def region_indicator(mesh, cf, region_id):
 
         if(dof_to_cell[i] != i):
      
-            print(f'{col.Fore.RED}Error!! dof_to_cell is not the idnetity!.{col.Fore.RESET}')
+            print(f'{col.Fore.RED}Error!! dof_to_cell is not the idnetity! not ok{col.Fore.RESET}')
 
             sys.exit(1)
             
