@@ -52,17 +52,6 @@ msh.interpolate_dg(fsp.u_exact, u_exact_square_expression(), rmsh.sf[0], rmsh.lm
 msh.interpolate_dg(fsp.f, f_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
 
 
-
-'''
-# test plus_minus - start
-print(f'plus_minus = {msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]["dS_shape"])}')
-# test plus_minus - end
-'''
-sub_mesh_0_0_label, sub_mesh_0_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]["dS_shape"])
-
-print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}')
-
-
 bcs = []
 
 
@@ -76,7 +65,7 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh[0],
                                 ) * \
         rmsh.dx_mesh[0]['dx'] \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] \
-        - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.ds_mesh[0]['dS_shape']
+        - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((msh.side(fsp.u, rmsh.I_sub_mesh_0_1)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_sub_mesh_0_1)) * rmsh.ds_mesh[0]['dS_shape']
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i]
@@ -87,7 +76,7 @@ F_I = (
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh[0] *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] + \
-            (fsp.u(sub_mesh_0_1_label) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.ds_mesh[0]['dS_shape']\
+            (msh.side(fsp.u, rmsh.I_sub_mesh_0_1) - msh.side(fsp.u_exact, rmsh.I_sub_mesh_0_1)) * msh.side(fsp.nu_u, rmsh.I_sub_mesh_0_1) * rmsh.ds_mesh[0]['dS_shape']\
         )
 
 
