@@ -15,6 +15,7 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py two_squares_no_circle_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py two_squares_no_circle_b $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/3d/box/surface/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py box_surface_c $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box/surface/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py box_surface_d $MESH_PATH $SOLUTION_PATH
 
 '''
 
