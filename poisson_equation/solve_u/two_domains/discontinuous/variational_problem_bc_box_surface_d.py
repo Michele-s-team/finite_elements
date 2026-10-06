@@ -83,8 +83,8 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 ) * \
         rmsh.dx \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
-        - bgeo.facet_normal(sub_mesh_0_1_label)[i] * ((fsp.u(sub_mesh_0_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.dS_surface \
-        - bgeo.facet_normal(sub_mesh_0_0_label)[i] * fsp.u(sub_mesh_0_0_label) * ((fsp.u(sub_mesh_0_0_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_0_label)) * rmsh.dS_surface
+        - bgeo.facet_normal(sub_mesh_0_1_label)[i] * ((msh.side(fsp.u, rmsh.I_box)).dx(i)) * (fsp.nu_u(sub_mesh_0_1_label)) * rmsh.dS_surface \
+        - bgeo.facet_normal(sub_mesh_0_0_label)[i] * msh.side(fsp.u, rmsh.I_surface) * ((msh.side(fsp.u, rmsh.I_surface)).dx(i)) * (fsp.nu_u(sub_mesh_0_0_label)) * rmsh.dS_surface
 
 F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I_box \
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I_surface \
@@ -94,8 +94,8 @@ F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * 
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds + \
-            (fsp.u(sub_mesh_0_1_label) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.dS_surface + \
-            (fsp.u(sub_mesh_0_0_label) - fsp.u_exact(sub_mesh_0_0_label)) * fsp.nu_u(sub_mesh_0_0_label) * rmsh.dS_surface \
+            (msh.side(fsp.u, rmsh.I_box) - fsp.u_exact(sub_mesh_0_1_label)) * fsp.nu_u(sub_mesh_0_1_label) * rmsh.dS_surface + \
+            (msh.side(fsp.u, rmsh.I_surface) - fsp.u_exact(sub_mesh_0_0_label)) * fsp.nu_u(sub_mesh_0_0_label) * rmsh.dS_surface \
         )
 
 
