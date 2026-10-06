@@ -25,7 +25,6 @@ i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
-sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
 
 
 # 1. define expressions for BCs
