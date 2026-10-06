@@ -216,10 +216,10 @@ F_u_n = msh.ufl_conditional_form(
             ) * rmsh.ds_mesh[0]['dS_shape'] \
             + ( \
                 ( \
-                    1.0 / sqrt(bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[i] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[i]) \
-                    * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[j] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[j].dx(k) * bgeo.facet_tangent[0](sub_mesh_0_label)[k]
+                    1.0 / sqrt(bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[i] * bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[i]) \
+                    * bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[j] * bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[j].dx(k) * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[k]
                 ) \
-                * (msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_1)[l] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[l] )
+                * (msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_1)[l] * bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[l] )
             ) * rmsh.ds_mesh[0]['dS_shape']
         )
 
@@ -275,9 +275,9 @@ F_u_dot_n = msh.ufl_conditional_form(
                 + ( \
                     ( \
                         ( msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1)[i] - ( msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1)[i] - msh.side(fsp.u_n_1, rmsh.I_sub_mesh_0_1)[i] ) / dt ) \
-                        * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[i] \
+                        * bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[i] \
                     ) \
-                    * ( msh.side(fsp.nu_u_dot_n, rmsh.I_sub_mesh_0_1)[q] * bgeo.t_cur(bgeo.facet_tangent[0](sub_mesh_0_label), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[q] ) \
+                    * ( msh.side(fsp.nu_u_dot_n, rmsh.I_sub_mesh_0_1)[q] * bgeo.t_cur(msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.grad_u_n, rmsh.I_sub_mesh_0_1))[q] ) \
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
         
