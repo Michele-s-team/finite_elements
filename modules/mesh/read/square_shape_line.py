@@ -147,6 +147,18 @@ ds_sub_mesh[0][1]['ds_lrtb'] = ds_sub_mesh[0][1]['ds_lr'] + ds_sub_mesh[0][1]['d
 ds_sub_mesh[0][1]['ds'] = ds_sub_mesh[0][1]['ds_lrtb'] + ds_sub_mesh[0][1]['ds_shape']
 
 
+# 5 indicator functions for shape and square volumes
+
+# 5.1 I_shape is a DG0 scalar that equals `1` on DOFs belonging to the shape surface, and `0` to DOFs belonging to the surface between the shape and the square
+I_shape = msh.region_indicator(lmsh.mesh, sf, lmsh.parameters[f'sub_mesh_{0}_{0}_id"'])
+
+# 5.2 I_square is a DG0 scalar that equals `1` on DOFs belonging to the volume between the shape and the square, and `0` to DOFs belonging to the shape volume 
+I_square = msh.region_indicator(lmsh.mesh, sf, lmsh.parameters[f'sub_mesh_{0}_{1}_id"'])
+
+
+
+# 6. check mesh tags
+
 check_mesh_module = importlib.import_module('mesh.check_tags.square_shape_line')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
