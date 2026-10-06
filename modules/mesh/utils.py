@@ -3677,58 +3677,6 @@ def interpolate_dg(f, g, sf=None, region_id=None):
     f.vector().apply("insert")
 
 
-'''
-recognize to which mesh subregions + and - parts of an internal boundary correspond in a mesh
-Input values:
-    - 'mesh': the mesh
-    - 'sf': the mesh function that tags mesh cells
-    - 'region_a_id', 'region_b_id': the tags with which regions a and b are tagged in 'sf'
-    - 'dS_ab': the measure corresponding to the facets between region a and b
-Return values: 
-    - [symbol corresponding to region a, symbol corresponding to region b]. For example, if region a corresponds to '-' and region b to '+', this method returns ['-', '+']
-
-'''
-def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
-
-    Q = FunctionSpace(mesh, 'DG', 0)
-
-    class a_expression(UserExpression):
-        def eval(self, values, x):
-
-            values[0] = 1.0
-
-        def value_shape(self):
-            return (1,)
-        
-    class b_expression(UserExpression):
-        def eval(self, values, x):
-
-            values[0] = -1.0
-
-        def value_shape(self):
-            return (1,)
-
-    u = Function(Q)
-
-    interpolate_dg(u, a_expression(), sf, region_a_id)
-    interpolate_dg(u, b_expression(), sf, region_b_id)
-
-    mean_p = assemble(u("+") * dS_ab) / assemble(Constant(1.0) * dS_ab)
-    mean_m = assemble(u("-") * dS_ab) / assemble(Constant(1.0) * dS_ab)
-
-    if (np.isclose(mean_p, 1)) and (np.isclose(mean_m, -1)):
-
-        return ['+', '-']
-    
-    elif (np.isclose(mean_p, -1)) and (np.isclose(mean_m, 1)):
-
-        return ['-', '+']
-
-    else:
-
-        print(f"{col.Fore.RED}Error: plus_minus failed!{col.Style.RESET_ALL}")
-        sys.exit(1)
-
 
 '''
 build the DG0 indicator of region tagged in a 1d, 2d or 3d mesh
@@ -3744,8 +3692,43 @@ def region_indicator(mesh, cf, region_id):
 
     Q = FunctionSpace(mesh, 'DG', 0)
     f = Function(Q)
+    f_mesh = Q.mesh()
 
     f.vector()[:] = (cf.array() == region_id).astype(float)
+
+
+    # check that dof IDs coincide with cell IDs - start
+    '''
+    map each DOF of f to the cell of f's mesh that owns it: for a DG space
+    every DOF belongs to exactly one cell
+
+    Here
+
+    f_dof_map.cell_dofs(cell.index()) = 
+        [ID of 1st DOF sitting on cell `cell`, 
+        ID of 2nd DOF sitting on cell `cell`, 
+        ... ]
+
+    dof_to_cell[ID of DOF] = index of the cell to which DOF belongs
+
+    the entries of f.vector() are labelled with the same ID of DOF that labels the entries of dof_to_cell
+    '''
+    f_dof_map = Q.dofmap()
+    dof_to_cell = np.empty(Q.dim(), dtype=np.int64)
+    for cell in cells(f_mesh):
+
+        dof_to_cell[f_dof_map.cell_dofs(cell.index())] = cell.index()
+
+    for i in range(len(dof_to_cell)):
+
+        if(dof_to_cell[i] != i):
+     
+            print(f'{col.Fore.RED}Error!! dof_to_cell is not the idnetity! not ok{col.Fore.RESET}')
+
+            sys.exit(1)
+            
+    # check that dof IDs coincide with cell IDs - end
+
     return f
 
 

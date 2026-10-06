@@ -21,16 +21,6 @@ sh = importlib.import_module(swi.sh)
 i, j, k, l, m, n, o, p, q, r, s, t, u = ufl.indices(13)
 
 
-sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
-
-
-
-
-
-
-
-
-
 # 
 def theta(s):
     return cal.atan_quad([ sh.y_s_dy_ds(s)[0][0] - rmsh.parameters['c'][0], sh.y_s_dy_ds(s)[0][1] - rmsh.parameters['c'][1] ])
