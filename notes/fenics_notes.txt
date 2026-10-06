@@ -490,3 +490,11 @@ then include `import h5py` at the top of the .py file
     Check if this is the case when it crashes.
 
 - Possible explanation for crashes in the dynamics: dt at the denominator may kill (take over) the penalty terms. 
+
+- to replace msh.side(), replace
+
+        (\w+)\.(\w+)\(sub_mesh_0_([0,1])_label\)
+
+    with 
+
+        msh.side($1.$2, rmsh.I_sub_mesh_0_$3)
