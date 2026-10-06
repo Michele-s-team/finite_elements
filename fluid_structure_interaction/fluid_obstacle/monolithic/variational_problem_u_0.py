@@ -41,7 +41,7 @@ F = msh.ufl_conditional_form(
             msh.jump(fsp.nu_u_0[k], bgeo.facet_normal[0])[i] * msh.average( ela.P(fsp.u_0, ela.K(fsp.u_0, rpam.parameters['exponent']), ela.mu(fsp.u_0, rpam.parameters['exponent']))[k, i] )   
         ) * rmsh.ds_mesh[0]['dS_I_square'] \
         + bgeo.facet_normal[0][i] * ela.P(fsp.u_0, ela.K(fsp.u_0, rpam.parameters['exponent']), ela.mu(fsp.u_0, rpam.parameters['exponent']))[k, i] * fsp.nu_u_0[k] * rmsh.ds_mesh[0]['ds'] \
-        + bgeo.facet_normal[0](sub_mesh_1_label)[i] * ela.P(fsp.u_0(sub_mesh_1_label), ela.K(fsp.u_0(sub_mesh_1_label), rpam.parameters['exponent']), ela.mu(fsp.u_0(sub_mesh_1_label), rpam.parameters['exponent']))[k, i] * fsp.nu_u_0(sub_mesh_1_label)[k] * rmsh.ds_mesh[0]['dS_shape'] \
+        + bgeo.facet_normal[0](sub_mesh_1_label)[i] * ela.P(msh.side(fsp.u_0, rmsh.I_sub_mesh_0_1), ela.K(msh.side(fsp.u_0, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']), ela.mu(msh.side(fsp.u_0, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']))[k, i] * msh.side(fsp.nu_u_0, rmsh.I_sub_mesh_0_1)[k] * rmsh.ds_mesh[0]['dS_shape'] \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
             msh.jump(fsp.u_0[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_0[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_square'] \
             + fsp.u_0[i] * fsp.nu_u_0[i] * rmsh.ds_mesh[0]['ds'] \
