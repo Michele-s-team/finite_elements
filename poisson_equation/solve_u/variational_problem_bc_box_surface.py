@@ -13,7 +13,6 @@ i, j = ufl.indices(2)
 
 
 class u_exact_expression(UserExpression):
-
     def eval(self, values, x):
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + 3 * x[2] ** 2
 
@@ -22,9 +21,7 @@ class u_exact_expression(UserExpression):
 
 
 class grad_u_expression(UserExpression):
-
     def eval(self, values, x):
-
         values[0] = 2 * x[0]
         values[1] = 4 * x[1]
         values[2] = 6 * x[2]
@@ -44,12 +41,11 @@ class laplacian_u_expression(UserExpression):
 
 
 class hess_u_exact_expression(UserExpression):
-    
     def init(self, **kwargs):
         super().init(**kwargs)
 
     def eval(self, values, x):
-        # test case 1
+
         values[0] = 2
         values[1] = 0
         values[2] = 0
@@ -72,16 +68,18 @@ fsp.f.interpolate(laplacian_u_expression(element=fsp.Q.ufl_element()))
 
 fsp.hess_u_exact.interpolate(hess_u_exact_expression(element=fsp.T.ufl_element()))
 
-bc_u_leri = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_leri)
-bc_u_tobo = DirichletBC(fsp.Q, fsp.u_exact, rmsh.boundary_tobo)
-bcs = [bc_u_leri, bc_u_tobo]
+bc_u_le = DirichletBC(fsp.Q, fsp.u_exact, rmsh.sf, rmsh.parameters["boundary_le_id"])
+bc_u_ri = DirichletBC(fsp.Q, fsp.u_exact, rmsh.sf, rmsh.parameters["boundary_ri_id"])
+bc_u_to = DirichletBC(fsp.Q, fsp.u_exact, rmsh.sf, rmsh.parameters["boundary_to_id"])
+bc_u_bo = DirichletBC(fsp.Q, fsp.u_exact, rmsh.sf, rmsh.parameters["boundary_bo_id"])
+
+bcs = [bc_u_le, bc_u_ri, bc_u_to, bc_u_bo]
 
 # variational functional for the original problem (poisson equation)
 F = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_leri \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_tobo \
-    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_frba\
-    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_sphere
+    - bgeo.facet_normal[i] * fsp.grad_u[i] * fsp.nu_u * rmsh.ds_frba
 
 # variational functional for post-processing problem (pp) to obtain the hessian (hess)
 F_pp = (fsp.hess_u[i, j] * fsp.nu_hess_u[i, j] + (fsp.u.dx(j)) * ((fsp.nu_hess_u[i, j]).dx(i))) * rmsh.dx \

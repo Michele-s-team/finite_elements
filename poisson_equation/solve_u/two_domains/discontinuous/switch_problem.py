@@ -58,4 +58,20 @@ elif rarg.args.problem == 'two_squares_no_circle_b':
     prout_sol = 'print_out_solution_two_squares_no_circle'
     prout_bc = 'print_out_bc_two_squares_no_circle_b'
 
+elif rarg.args.problem == 'box_surface_c':
+
+    fsp = 'function_spaces_one_mesh'
+    rmsh = 'mesh.read.box_surface'
+    vp = 'variational_problem_bc_box_surface_c'
+    prout_sol = 'print_out_solution_box_surface'
+    prout_bc = 'print_out_bc_box_surface_c'
+
+elif rarg.args.problem == 'box_surface_d':
+
+    fsp = 'function_spaces_one_mesh'
+    rmsh = 'mesh.read.box_surface'
+    vp = 'variational_problem_bc_box_surface_d'
+    prout_sol = 'print_out_solution_box_surface'
+    prout_bc = 'print_out_bc_box_surface_d'
+
 print(f'{col.Fore.CYAN}Loaded {rarg.args.problem} problem{col.Style.RESET_ALL}')

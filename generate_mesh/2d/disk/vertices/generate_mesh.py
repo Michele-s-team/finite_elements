@@ -99,26 +99,19 @@ gmsh.model.geo.synchronize()
 vertex_list = gmsh.model.getEntities(dim=0)
 #add circle vertex_list: each vertex is added with a different ID
 for i in range(N):
-    gmsh.model.addPhysicalGroup(vertex_list[i][0], [vertex_list[i][1]], rpam.parameters["vertex_0_id"] + i)
-    gmsh.model.setPhysicalName(vertex_list[i][0], rpam.parameters["vertex_0_id"] + i, f"vertex_{i}")
 
+    msh.tag_physical_object(vertex_list[i], rpam.parameters["vertex_0_id"] + i, gmsh.model, f"vertex_{i}")
 
 # add 1-dimensional objects
 lines = gmsh.model.getEntities(dim=1)
 
 #add circle lines
-gmsh.model.addPhysicalGroup(1, [lines[i][1] for i in range(0, N)], rpam.parameters["circle_id"])
-gmsh.model.setPhysicalName(1, rpam.parameters["circle_id"], "circle_loop")
-
+msh.tag_physical_object([lines[i] for i in range(0, N)], rpam.parameters["circle_id"], gmsh.model, "circle_loop")
 
 # add 2-dimensional objects
 surfaces = gmsh.model.getEntities(dim=2)
 
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["surface_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["surface_id"], "disk_surface")
-
-
-
+msh.tag_physical_object(surfaces[0], rpam.parameters["surface_id"], gmsh.model, "disk_surface")
 
 # set the resolution
 # se resolution equal to parameters["resolution"] at a distance 0 from surface_in, and  at distance max(rpam.parameters["L"],rpam.parameters["h"]) from sub_mesh_0_1_id

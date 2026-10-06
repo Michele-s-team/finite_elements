@@ -196,50 +196,51 @@ def read_mesh_components(mesh, dim, filename, name_to_read="name_to_read"):
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
 
+
 '''
-returns a mesh function that tags internal facets of a 2d mesh contained into two neighboring surfaces
+returns a mesh function that tags internal edges (triangles) of a 2d (3d) mesh contained into two neighboring surfaces (volumes)
 Input values:   
     - 'mesh': the mesh
-    - 'sf': the mesh function tagging mesh surfaces of the mesh
-    - 'surface_a_id', 'surface_b_id': ID with which the neighboring surfaces have been tagged
-    - 'boundary_ab_id': ID with which the 1d boundary between the two surfaces has been tagged
+    - 'sf': the mesh function tagging mesh edges (triangles) of the 2d (3d) mesh
+    - 'surface_a_id', 'surface_b_id': ID with which the neighboring surfaces (volumes) have been tagged
+    - 'boundary_ab_id': ID with which the 1d (2d) boundary between the two surfaces (volumes) has been tagged
 
 Return values"
-    - 'mf': a mesh function where internal facets of surface_a are tagged with 'surface_a_id', the internal facets of surface_b are tagged with 'surface_b_id', and the facets at the interface between surface_a and surface_b are tagged with 'boundary_ab_id'
+    - 'mf': a mesh function where internal edges (triangles) of surface_a are tagged with 'surface_a_id', the internal edges (triangles) of surface_b are tagged with 'surface_b_id', and the edges (triangles) at the interface between surface_a and surface_b are tagged with 'boundary_ab_id'
 '''
 def read_mesh_internal_components(mesh, sf, surface_a_id, surface_b_id, boundary_ab_id):
 
-    # build a function mf_I that tags interior lines and allows for reading them
-    mf = MeshFunction("size_t", mesh, mesh.topology().dim() - 1, 0)
+    # mesh dimension
+    d = mesh.topology().dim()
 
-    mesh.init(1, 2)   # build facet-to-cell connectivity
+    # build a function mf_I that tags interior lines and allows for reading them
+    mf = MeshFunction("size_t", mesh, d - 1, 0)
+
+    # build facet-to-cell connectivity
+    mesh.init(d - 1, d)   
 
     for facet in facets(mesh):
 
         if facet.exterior() == False:
-            # the facet under consideration does not to the exterior of the mesh -> it is an internal facet
-
-            # print(f'facet {facet.index()} belongs to the interior of the mesh, vertices: {[v.index() for v in vertices(facet)]}')
+            # the facet under consideration does not belong to the exterior of the mesh -> it is an internal facet
 
             # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells
-            cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
+            cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(d)]
 
             if all(c == surface_a_id for c in cell_tags):
-                # all cells that have facet as one of their boundary facets belong to l_surface -> the facet under consideration is an internal facet of l_surface -> tag this facet in mf_I with ID l_surface_id
+                # all cells that have the edge (triangle) under consideration as one of their boundary edges (triangle)s belong to surface_a -> the edge (triangle) under consideration is an internal edge (triangle) of surface_a -> tag this edge (triangle) in mf_I with ID `surface_a_id`
 
                 mf[facet] = surface_a_id
 
             elif all(c == surface_b_id for c in cell_tags):
-                # all cells that have 'facet' as one of their boundary facets belong to r_surface -> the facet under consideration is an internal facet of r_surface -> tag this facet in mf_I with ID r_surface_id
+                # all cells that have the edge (triangle) under consideration as one of their boundary edges (triangle)s belong to surface_b -> the edge (triangle) under consideration is an internal edge (triangle) of surface_b -> tag this edge (triangle) in mf_I with ID `surface_b_id`
 
                 mf[facet] = surface_b_id
 
             else:
-                # one of the two cells that have 'facet' as one of their boundary facets belongs to l_surface, and the other to r_surface -> the facet under consideration is an internal facet coinciding with 'm_line' -> tag this facet in mf_I with ID 'm_line_id'
+                # one of the two cells that have the edge (triangle) as one of their boundary facets (triangles) belongs to surface_a, and the other to surface_b -> the facet (triangle) under consideration is an internal facet (triangle) which belongs to surface_ab -> tag this facet in mf_I with ID 'boundary_ab_id'
 
                 mf[facet] = boundary_ab_id
-
-                # print(f'facet {facet.index()} belongs to both l_surface and and r_surface, vertices: {[v.index() for v in vertices(facet)]}')
 
     return mf
  
@@ -668,20 +669,22 @@ def difference_on_boundary_circle(f, g, r, R, c):
 '''
 NOTE: This method is different from input_output.print_mesh_vertices_to_csv. 
 
-print the mesh vertices tags and coordinates to csv file
+print the mesh vertices ids, coordinates and tags to csv file
 
 Input values: 
     - `infile`: full path of the input msh file
     - `outfile`: full path of the output csv file
 
-    Return values: 
+Return values: 
     The output csv file is
-    tag,:0,:1,:2
-    tag_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord
-    tag_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord
+    id,:0,:1,:2,tag
+    id_vertex_0,vertex_0_x_coord,vertex_0_y_coord,vertex_0_z_coord,tag_of_vertex_0
+    id_vertex_1,vertex_1_x_coord,vertex_1_y_coord,vertex_1_z_coord,tag_of_vertex_1
     ...
 
-    The tag convention is the same used in mesh.utils.print_mesh_edges_to_csv
+    where `tag_of_vertex_*` is the tag given to the vertex in mesh generation, and if the vertex was not tagged `tag_of_vertex_*` = `const.non_tagged_id`
+
+    The id convention is the same used in mesh.utils.print_mesh_edges_to_csv
 '''
 
 def print_mesh_vertices_to_csv(infile, outfile):
@@ -695,20 +698,24 @@ def print_mesh_vertices_to_csv(infile, outfile):
     # create the path for the csv file if it does not exist
     os.makedirs(os.path.dirname(outfile), exist_ok=True)
 
-    # construct a map which, given the tag of a node, gives its coordinates
-    node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    nodes = [[node_tags[i], list(node_coords[3 * i: 3 * (i + 1)])] for i in range(len(node_tags))]
+    map = object_map('vertex', gmsh.model)
 
-    # sort nodes in increasing order of `tag`
+    # construct a map which, given the id of a node, gives its coordinates
+    node_ids, node_coordinates, _ = gmsh.model.mesh.getNodes()
+    nodes = [[node_ids[i], list(node_coordinates[3 * i: 3 * (i + 1)])] for i in range(len(node_ids))]
+
+    # sort nodes in increasing order of `id`
     nodes.sort(key=lambda n: n[0])      
 
 
     csvfile = open(outfile, "w")
-    print(f"tag,:0,:1,:2", file=csvfile)
+    print(f"id,:0,:1,:2,tag", file=csvfile)
 
     for node in nodes:
 
-        print(f"{node[0]},{node[1][0]},{node[1][1]},{node[1][2]}", file=csvfile)
+        # here `tuple([node[0]])` is a tuple with a single element containing the vertex id, and it corresponds, for example, to `triplet` in `print_mesh_triangles_to_csv`
+
+        print(f"{node[0]},{node[1][0]},{node[1][1]},{node[1][2]},{map.get(tuple([node[0]]), const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
@@ -725,10 +732,12 @@ Input values:
     - 'infile': the .msh file where the mesh is stored
     - 'outfile': the .csv file where the edges will be stored, in the format
 
-    p_1,p_2
-    id_p_1_edge_0,id_p_2_edge_0
-    id_p_1_edge_1,id_p_2_edge_1
+    p_1,p_2,tag
+    id_p_1_edge_0,id_p_2_edge_0,edge_tag
+    id_p_1_edge_1,id_p_2_edge_1,edge_tag
     ...
+
+    where `edge_tag` is the tag given to the edge in mesh generation, and if the edge was not tagged `edge_tag` = `const.non_tagged_id`
 '''
 
 def print_mesh_edges_to_csv(infile, outfile):
@@ -749,14 +758,14 @@ def print_mesh_edges_to_csv(infile, outfile):
     ''' 
     components = gmsh.model.mesh.getElements(dim=mesh_dimension)
 
-    # construct a map which, given the tag of a node, gives its coordinates
-    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
-    # print( "node map = ", node_map )
+    # build a map for edges IDs
+    map = object_map('edge', gmsh.model)
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
     edges = set()
+
+
 
     if mesh_dimension == 1: 
 
@@ -783,7 +792,7 @@ def print_mesh_edges_to_csv(infile, outfile):
             edges.update([pair_12])
 
     elif mesh_dimension == 2:
-
+    
         # check that the mesh components are  triangles 
         if list(components[0]) != [2]:
             print(f"{col.Fore.RED}Error: expected linear triangles (type 2), got {list(components[0])}{col.Style.RESET_ALL}")
@@ -841,12 +850,13 @@ def print_mesh_edges_to_csv(infile, outfile):
             edges.update([pair_12, pair_23, pair_31, pair_41, pair_42, pair_43])
 
 
+
     # loop through the edges added before and write the endoints of their lines to file
     csvfile = open(outfile, "w")
-    print(f"p_1,p_2", file=csvfile)
+    print(f"p_1,p_2,tag", file=csvfile)
     for edge in edges:
 
-        print(f"{edge[0]},{edge[1]}", file=csvfile)
+        print(f"{edge[0]},{edge[1]},{map.get(edge, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
@@ -862,10 +872,13 @@ Input values:
 
     the .csv file where the edges will be stored, in the format
 
-    p_1,p_2,p_3
-    id_p_1_triangle_0,id_p_2_triangle_0,id_p_3_triangle_0
-    id_p_1_triangle_1,id_p_2_triangle_1,id_p_3_triangle_1
+    p_1,p_2,p_3,tag
+    id_p_1_triangle_0,id_p_2_triangle_0,id_p_3_triangle_0,tag_triangle_0
+    id_p_1_triangle_1,id_p_2_triangle_1,id_p_3_triangle_1,tag_triangle_1
     ...
+
+    where `tag_triangle_*` is the tag given to the tiangle in mesh generation, and if the triangle was not tagged `tag_triangle_*` = `const.non_tagged_id`
+
     
 '''
 def print_mesh_triangles_to_csv(infile, outfile):
@@ -879,9 +892,9 @@ def print_mesh_triangles_to_csv(infile, outfile):
     # get the list of components with dimension 2 from the mesh (triangles)
     triangles = gmsh.model.mesh.getElements(dim=2)
 
-    # construct a map which, given the tag of a node, gives its coordinates
-    # node_tags, node_coords, _ = gmsh.model.mesh.getNodes()
-    # node_map = {node_tags[i]: node_coords[3 * i: 3 * (i + 1)] for i in range(len(node_tags))}
+    # build a map for triangles IDs
+    map = object_map('triangle', gmsh.model)
+
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -910,10 +923,10 @@ def print_mesh_triangles_to_csv(infile, outfile):
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"p_1,p_2,p_3", file=csvfile)
+    print(f"p_1,p_2,p_3,tag", file=csvfile)
     for triplet in triplets:
 
-        print(f"{triplet[0]},{triplet[1]},{triplet[2]}", file=csvfile)
+        print(f"{triplet[0]},{triplet[1]},{triplet[2]},{map.get(triplet, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
     
@@ -930,11 +943,12 @@ Input values:
 
     the .csv file where the tetrahedra will be stored, in the format
 
-    p_1,p_2,p_3,p_4
-    id_p_1_tetrahedron_0,id_p_2_tetrahedron_0,id_p_3_tetrahedron_0,id_p_4_tetrahedron_0
-    id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1
+    p_1,p_2,p_3,p_4,tag
+    id_p_1_tetrahedron_0,id_p_2_tetrahedron_0,id_p_3_tetrahedron_0,id_p_4_tetrahedron_0,tag_of_tetrahedron_0
+    id_p_1_tetrahedron_1,id_p_2_tetrahedron_1,id_p_3_tetrahedron_1,id_p_4_tetrahedron_1,tag_of_tetrahedron_1
     ...
     
+    where `tag_of_tetrahedron_*` is the tag given to the tetrahedron in mesh generation, and if the tetrahedron was not tagged `tag_of_tetrahedron_*` = `const.non_tagged_id`
 '''
 def print_mesh_tetrahedra_to_csv(infile, outfile):
 
@@ -946,6 +960,10 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
 
     # get the list of components with dimension 2 from the mesh (triangles)
     tetrahedra = gmsh.model.mesh.getElements(dim=3)
+
+    # build a map for tetrahedra IDs
+    map = object_map('tetrahedron', gmsh.model)
+
 
     # Store unique edges from the triangle elements
     # initialize a 'list' of unique elements, this sets the list to empty
@@ -973,10 +991,10 @@ def print_mesh_tetrahedra_to_csv(infile, outfile):
     
     # loop through the triplets added before and write the vertices of each triplet to file
     csvfile = open(outfile, "w")
-    print(f"p_1,p_2,p_3,p_4", file=csvfile)
+    print(f"p_1,p_2,p_3,p_4,tag", file=csvfile)
     for quartet in quartets:
 
-        print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]}", file=csvfile)
+        print(f"{quartet[0]},{quartet[1]},{quartet[2]},{quartet[3]},{map.get(quartet, const.non_tagged_id)}", file=csvfile)
 
     csvfile.close()
 
@@ -1295,13 +1313,13 @@ def add_circle_with_lines(c_r, r, n_segments, model):
 
 '''
 tag as physical entities the objects with a given dimension in a mesh
-Input values:
-- 'list_of_objects': an array containing the objects to be tagged
-- 'dimension': the dimension of the objects that one wants to tag
-- 'tag' : the tag which one wants to give to the objects
-- 'labal' : the lable which one wants to give to the objects
-'''
 
+Input values:
+    - 'list_of_objects': an array containing the objects to be tagged
+    - 'dimension': the dimension of the objects that one wants to tag
+    - 'tag' : the tag which one wants to give to the objects
+    - 'labal' : the lable which one wants to give to the objects
+'''
 
 def tag_group(list_of_objects, dimension, tag, label):
     gmsh.model.addPhysicalGroup(dimension, list_of_objects, tag)
@@ -1385,10 +1403,11 @@ def print_mesh_info(mesh, title):
 
 '''
 assign a tag to lines in a cell which satisfy a given condition
+
 Input values:
-- 'line_condition': a function of the line which tells whether the line satifies the condition to be tagged
-- 'tag' : the tag which one wants to assign to the lines
-- 'mesh': the mesh, a <meshio mesh object>
+    - 'line_condition': a function of the line which tells whether the line satifies the condition to be tagged
+    - 'tag' : the tag which one wants to assign to the lines
+    - 'mesh': the mesh, a <meshio mesh object>
 '''
 
 
@@ -1767,6 +1786,8 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     # print  mesh vertices to csv file
     mesh = read_mesh(output_directory_slash + components[0] + "_mesh.xdmf")
 
+    # mesh dimension
+    d = mesh.topology().dim()
 
     # print the mesh vertices to csv fie
     print_mesh_vertices_to_csv(mesh_file, os.path.join(output_directory_slash, "vertices.csv"))
@@ -1774,12 +1795,12 @@ def full_write(mesh_file, components, parameters, output_directory, prune_z):
     # print the mesh edges to csv fie
     print_mesh_edges_to_csv(mesh_file, os.path.join(output_directory_slash, "edges.csv"))
 
-    if mesh.topology().dim() > 1:
+    if d > 1:
         
         # the mesh has dimension > 1 -> print the mesh triangles to csv
         print_mesh_triangles_to_csv(mesh_file, os.path.join(output_directory_slash, "triangles.csv"))
 
-        if mesh.topology().dim() > 2: 
+        if d > 2: 
 
             # the mesh has dimension > 2 -> print the mesh tetrahedra to csv
             print_mesh_tetrahedra_to_csv(mesh_file, os.path.join(output_directory_slash, "tetrahedra.csv"))
@@ -2003,7 +2024,7 @@ Input values:
         - `filename`: path and filename with `.msh` extension where the mesh will be written
     * Optinal:
         - 'vertex_function`: a mesh function that tags mesh vertices
-        - `cell_function`: a mesh function taht tags mesh cells
+        - `cell_function`: a mesh function that tags mesh cells
 
 '''
 def write_line_mesh_to_msh(mesh, filename,
@@ -2043,6 +2064,7 @@ def write_line_mesh_to_msh(mesh, filename,
     # print(f'cells = {cells}')
     cell_blocks = [("line", cells)]
 
+
     '''
     `physical entities` stores the entities to which physical tags are assigned
     For example:
@@ -2062,6 +2084,8 @@ def write_line_mesh_to_msh(mesh, filename,
 
         physical_entities.append(np.zeros((len(cells)), dtype=np.uint64))
 
+
+
     '''
     vertex_tags = [tag_vertex_0, tag_vertex_1, ...]
     '''
@@ -2075,7 +2099,8 @@ def write_line_mesh_to_msh(mesh, filename,
     tagged_ids = np.nonzero(vertex_tags)[0]
     # print(f'tagged_ids = {tagged_ids}')
 
-    if len(tagged_ids > 0):
+    if len(tagged_ids) > 0:
+        # there are some tagged objects -> write them into `physical_entities`
 
         '''
         reshape tagged_ids in column format and append it to cell_blocks: they are thus interpreted as a cell block with a single vertex
@@ -2084,10 +2109,12 @@ def write_line_mesh_to_msh(mesh, filename,
         # print(f'vertex_cells = {vertex_cells}')
 
         cell_blocks.append(('vertex', vertex_cells))
+
         '''
         append the corresponding tags of the tagged vertices to `physical_entities`
         '''
         physical_entities.append(vertex_tags[tagged_ids])
+
 
     # print("coords of tagged =", points[tagged_ids, 0])
     # print("tags of tagged   =", vertex_tags[tagged_ids])
@@ -2101,7 +2128,7 @@ def write_line_mesh_to_msh(mesh, filename,
         cell_blocks,
         cell_data={
             "gmsh:physical": physical_entities,
-            "gmsh:geometrical": [np.zeros_like(a) for a in physical_entities]
+            "gmsh:geometrical": physical_entities
         },
         file_format="gmsh22",
         binary=False
@@ -2203,7 +2230,7 @@ Input values:
     * Mandatory:
         - 'x_l', 'x_r': the left and right x coordinate of the extremal points of the line mesh
         - 'n_intervals': the number of intervals into which the line mesh is divided
-        - 'line_id': the id of the line mesh: all lien intervals will be tagged with this id
+        - 'line_id': the id of the line mesh: all line intervals will be tagged with this id
         - 'vertex_l_id', 'vertex_r_id': the id of the extermal left and right vertices, respectively
         - 'x_m_id' [optional]: the coordinate of the middle vertex in the mesh: this coordinate must match with one of the coordinates of the mesh vertices
         - 'vertex_m_id': the id of the middle vertex in the mesh
@@ -3523,14 +3550,14 @@ def average(u):
     return (u("+")+u("-"))/2
 
 '''
-set field defined on a DG space equal to a profile in a mesh region 
+set field defined on a DG space equal to a profile in a mesh region. It works for 2d (3d) meshes. 
 Input values: 
     * Mandatory:
         - 'f': the field defined on a DG space
         - 'g': the profile to which 'f' will be set
     * Optional:
-        - 'sf': 'None' by default, the mesh function that tags mesh surfaces. 
-        - 'region_id': 'None' by default, the id of the mesh region (surface) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells in the mesh, 'f' to 'g' on the cell DOFs
+        - 'sf': 'None' by default, the mesh function that tags mesh triangles (tetrahedra). 
+        - 'region_id': 'None' by default, the id of the mesh  surface (volume) on which 'f' will be set equal to 'g'. If 'id' is 'None' then this method will run through all cells, e.g., triangles (tetrahedra), in the mesh, 'f' to 'g' on the cell DOFs
 '''
 def interpolate_dg(f, g, sf=None, region_id=None):
 
@@ -3557,6 +3584,7 @@ def interpolate_dg(f, g, sf=None, region_id=None):
     value_size  = int(np.prod(element.value_shape())) if element.value_shape() else 1
 
     mesh = Q.mesh()
+    mesh_dimension = mesh.topology().dim()
 
     '''
     dof_coordinates stores the coordinates of the points where DOFs sit. Because the field 'f' defined on each DOF has value_size components, dof_coordinates is composed of blocks, where each block has 'value_size' entries, and blocks are all identical
@@ -3642,7 +3670,7 @@ def interpolate_dg(f, g, sf=None, region_id=None):
                 dof_coordinate = dof_coordinates[cell_dofs_unique[i]]
 
                 for j in range(value_size):
-                    f_values[cell_dofs[j * n_nodes + i]] = np.atleast_1d(g(dof_coordinate[:2]))[j]
+                    f_values[cell_dofs[j * n_nodes + i]] = np.atleast_1d(g(dof_coordinate[:mesh_dimension]))[j]
 
 
     f.vector().set_local(f_values) 
@@ -3653,7 +3681,7 @@ def interpolate_dg(f, g, sf=None, region_id=None):
 recognize to which mesh subregions + and - parts of an internal boundary correspond in a mesh
 Input values:
     - 'mesh': the mesh
-    - 'sf': the mesh function that tags mesh facets
+    - 'sf': the mesh function that tags mesh cells
     - 'region_a_id', 'region_b_id': the tags with which regions a and b are tagged in 'sf'
     - 'dS_ab': the measure corresponding to the facets between region a and b
 Return values: 
@@ -3701,6 +3729,40 @@ def plus_minus(mesh, sf, region_a_id, region_b_id, dS_ab):
         print(f"{col.Fore.RED}Error: plus_minus failed!{col.Style.RESET_ALL}")
         sys.exit(1)
 
+
+'''
+build the DG0 indicator of region tagged in a 1d, 2d or 3d mesh
+
+Input values: 
+    - `mesh`: the mesh
+    - `cf`: the MeshFuntion tagging mesh cells with different IDs
+    - `region_id`: the tag of the region on which the indicator will be built
+Return values: 
+    - `f`: a DG scalar function that is equal to 1 on DOFs belonging to region tagged with `region_id` and 0 otherwise
+'''
+def region_indicator(mesh, cf, region_id):
+
+    Q = FunctionSpace(mesh, 'DG', 0)
+    f = Function(Q)
+
+    f.vector()[:] = (cf.array() == region_id).astype(float)
+    return f
+
+
+'''
+pick the side of an UFL expression corresponding to one side of a mesh region, independently of the '+'/'-' convention used by the assembler
+
+Input values:
+    - 'expression': the UFL expression to restrict
+    - 'indicator': DG0 indicator of the region (1 on its cells, 0 elsewhere), as generated by `region_indicator`
+
+Return values:
+    - the restriction of 'expr' to the side of each facet that belongs to the region
+
+'''
+def side(expression, indicator):
+
+    return indicator('+') * expression('+') + indicator('-') * expression('-')
 
 
 def ufl_conditional_form(mesh, sf, form_a, form_b, tag_a, tag_b):
@@ -4302,6 +4364,8 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     # reset gmsh state from any previous call, AFTER pygmsh has initialized it
     gmsh.clear()
     gmsh.model.add("model")  # need a model after clear()
+    # gmsh.option.setNumber("Mesh.OptimizeNetgen", 1)   # extra Netgen optimization pass, good at removing slivers
+    gmsh.option.setNumber("Mesh.Algorithm3D", 4)      # Frontal: usually better quality than the default Delaunay (1)
 
     parameters_file_path = os.path.join(mesh_parameters_directory, 'mesh_parameters.csv')
     parameters = io.read_parameters_from_csv_file(parameters_file_path)
@@ -4346,38 +4410,38 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     gmsh.model.geo.synchronize()
 
     # 2.2 add lines which represent the edges of the box
-    cube_line_1 = gmsh.model.geo.addLine(p_1, p_2)
-    cube_line_2 = gmsh.model.geo.addLine(p_2, p_3)
-    cube_line_3 = gmsh.model.geo.addLine(p_3, p_4)
-    cube_line_4 = gmsh.model.geo.addLine(p_4, p_1)
+    box_line_1 = gmsh.model.geo.addLine(p_1, p_2)
+    box_line_2 = gmsh.model.geo.addLine(p_2, p_3)
+    box_line_3 = gmsh.model.geo.addLine(p_3, p_4)
+    box_line_4 = gmsh.model.geo.addLine(p_4, p_1)
 
-    cube_line_5 = gmsh.model.geo.addLine(p_8, p_7)
-    cube_line_6 = gmsh.model.geo.addLine(p_7, p_6)
-    cube_line_7 = gmsh.model.geo.addLine(p_6, p_5)
-    cube_line_8 = gmsh.model.geo.addLine(p_5, p_8)
+    box_line_5 = gmsh.model.geo.addLine(p_8, p_7)
+    box_line_6 = gmsh.model.geo.addLine(p_7, p_6)
+    box_line_7 = gmsh.model.geo.addLine(p_6, p_5)
+    box_line_8 = gmsh.model.geo.addLine(p_5, p_8)
 
-    cube_line_9 = gmsh.model.geo.addLine(p_1, p_5)
-    cube_line_10 = gmsh.model.geo.addLine(p_6, p_2)
-    cube_line_11 = gmsh.model.geo.addLine(p_3, p_7)
-    cube_line_12 = gmsh.model.geo.addLine(p_8, p_4)
+    box_line_9 = gmsh.model.geo.addLine(p_1, p_5)
+    box_line_10 = gmsh.model.geo.addLine(p_6, p_2)
+    box_line_11 = gmsh.model.geo.addLine(p_3, p_7)
+    box_line_12 = gmsh.model.geo.addLine(p_8, p_4)
     gmsh.model.geo.synchronize()
 
     # 2.3 add curve loops which enclose the box surfaces (sides)
-    cube_loop_ri = gmsh.model.geo.addCurveLoop([cube_line_1, cube_line_2, cube_line_3, cube_line_4])
-    cube_loop_le = gmsh.model.geo.addCurveLoop([cube_line_5, cube_line_6, cube_line_7, cube_line_8])
-    cube_loop_to = gmsh.model.geo.addCurveLoop([cube_line_12, -cube_line_3, cube_line_11, -cube_line_5])
-    cube_loop_bo = gmsh.model.geo.addCurveLoop([cube_line_9, -cube_line_7, cube_line_10, -cube_line_1])
-    cube_loop_fr = gmsh.model.geo.addCurveLoop([cube_line_4, cube_line_9, cube_line_8, cube_line_12])
-    cube_loop_ba = gmsh.model.geo.addCurveLoop([cube_line_11, cube_line_6, cube_line_10, cube_line_2])
+    box_loop_ri = gmsh.model.geo.addCurveLoop([box_line_1, box_line_2, box_line_3, box_line_4])
+    box_loop_le = gmsh.model.geo.addCurveLoop([box_line_5, box_line_6, box_line_7, box_line_8])
+    box_loop_to = gmsh.model.geo.addCurveLoop([box_line_12, -box_line_3, box_line_11, -box_line_5])
+    box_loop_bo = gmsh.model.geo.addCurveLoop([box_line_9, -box_line_7, box_line_10, -box_line_1])
+    box_loop_fr = gmsh.model.geo.addCurveLoop([box_line_4, box_line_9, box_line_8, box_line_12])
+    box_loop_ba = gmsh.model.geo.addCurveLoop([box_line_11, box_line_6, box_line_10, box_line_2])
     gmsh.model.geo.synchronize()
 
     # 2.4 obtain box surfaces (sides)
-    box_surface_le = gmsh.model.geo.addPlaneSurface([cube_loop_le])
-    box_surface_ri = gmsh.model.geo.addPlaneSurface([cube_loop_ri])
-    box_surface_to = gmsh.model.geo.addPlaneSurface([cube_loop_to])
-    box_surface_bo = gmsh.model.geo.addPlaneSurface([cube_loop_bo])
-    box_surface_fr = gmsh.model.geo.addPlaneSurface([cube_loop_fr])
-    box_surface_ba = gmsh.model.geo.addPlaneSurface([cube_loop_ba])
+    box_surface_le = gmsh.model.geo.addPlaneSurface([box_loop_le])
+    box_surface_ri = gmsh.model.geo.addPlaneSurface([box_loop_ri])
+    box_surface_to = gmsh.model.geo.addPlaneSurface([box_loop_to])
+    box_surface_bo = gmsh.model.geo.addPlaneSurface([box_loop_bo])
+    box_surface_fr = gmsh.model.geo.addPlaneSurface([box_loop_fr])
+    box_surface_ba = gmsh.model.geo.addPlaneSurface([box_loop_ba])
     gmsh.model.geo.synchronize()
 
     box_surfaces = [box_surface_ri, box_surface_le, box_surface_to, box_surface_bo, box_surface_fr, box_surface_ba]
@@ -4396,7 +4460,20 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
 
     # 4. tag objects
 
-    #4.1 tag 2-dimensional objects
+    #4.1 tag 0-dimensional objetcs
+    vertices = gmsh.model.getEntities(dim=0)
+
+    tag_physical_object(vertices[0], parameters['vertex_1_id'], gmsh.model, 'p_1')
+
+
+    #4.2 tag 1-dimensional objetcs
+    lines = gmsh.model.getEntities(dim=1)
+
+    for i in range(12):
+        tag_physical_object(lines[i], parameters[f'box_line_{i+1}_id'], gmsh.model, f'box_line_{i+1}')
+
+
+    #4.3 tag 2-dimensional objects
     surfaces = gmsh.model.getEntities(dim=2)
 
     tag_physical_object(surfaces[0], parameters['surface_surface_id'], gmsh.model, 'surface_surface')
@@ -4408,7 +4485,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     tag_physical_object(surfaces[6], parameters['boundary_ba_id'], gmsh.model, 'boundary_ba')
 
 
-    #4.2 tag 3-dimensional objects
+    #4.4 tag 3-dimensional objects
     volumes = gmsh.model.getEntities(dim=3)
 
     tag_physical_object(volumes[1], parameters['box_volume_id'], gmsh.model, 'box_minus_surface_volume')
@@ -4437,7 +4514,7 @@ def generate_box_surface_mesh(surface_file, mesh_parameters_directory, output_di
     gmsh.model.mesh.generate(3)
     gmsh.write(mesh_file)
 
-    full_write(mesh_file, ['tetra', 'triangle'], mesh_metadata, output_directory, False)
+    full_write(mesh_file, ['tetra', 'triangle', 'line', 'vertex'], mesh_metadata, output_directory, False)
 
     # 7. write mesh metadata
     io.write_parameters_to_csv_file(os.path.join(output_directory, 'mesh_metadata.csv'), mesh_metadata)
@@ -4467,3 +4544,88 @@ def clear_gmsh():
         gmsh.finalize()
 
 
+'''
+return a map between mesh objects and their tags
+
+Input values: 
+    - `object_type`: the type of object: `tetrahedron`, `triangle`, `edge` or `vertex`
+    - `model`: the gmsh.model used to open the mesh
+Return values; 
+    - `map`:  a map such that map.get(tuple) = [tag with which `edge` was tagged in the mesh read by `model`], where `tuple` is a tuple given by the IDs of the two vertices of the object, sorted in increasing order
+'''
+def object_map(object_type, model):
+
+    d = -1
+    stride = -1
+    object_element_type = -1
+
+    if object_type == 'vertex':
+
+        d = 0
+        stride = 1
+        object_element_type = 15
+
+    elif object_type == 'edge':
+
+        d = 1
+        stride = 2
+        object_element_type = 1
+
+
+    elif object_type == 'triangle':
+
+        d = 2
+        stride = 3
+        object_element_type = 2
+
+
+    elif object_type == 'tetrahedron':
+
+        d = 3
+        stride = 4
+        object_element_type = 4
+
+    else: 
+
+        print(f'{col.Fore.RED}Error!! object_type is not valid!.{col.Fore.RESET}')
+        sys.exit(1)
+
+
+
+
+    # initialize the map as an empty one
+    map = {}
+
+    for _, tag in model.getPhysicalGroups(dim=d):
+        # run through all objects of dimension 1 that have been tagged with `tag`
+
+        for entity in model.getEntitiesForPhysicalGroup(d, tag):
+            # run through all the physical entities (e.g. edges) that have been tagged with `tag`
+    
+            '''
+            given the entity `entity` under consideration
+                - store into `element_types` the list of element types found on it
+                - store into `element_node_tags` the tags of the nodes belonging to each entry in `element_types
+
+            for example, 
+                element_types = [1]
+                element node tags = [array([5, 6], dtype=uint64)]
+
+                means that there is only one element of type 1 (a segment) and this element contains two nodes, tagged with IDs 5 and 6
+            '''
+            element_types, _, element_node_tags = model.mesh.getElements(dim=d, tag=entity)
+
+            for element_type, element_node_tag in zip(element_types, element_node_tags):
+                # run through all elements in `element_types` and `element_node_tags`
+
+                if element_type == object_element_type:
+                    # the element under consideration is a segment
+
+                    for i in range(0, len(element_node_tag), stride):
+                        # run through all the nodes stored into `element_node_tag` with a stride of 2 to store subsequent nodes connected by a line
+
+                        vertex_tuple = tuple(sorted([element_node_tag[i + j] for j in range(stride)]))
+                        map[vertex_tuple] = tag
+
+
+    return map

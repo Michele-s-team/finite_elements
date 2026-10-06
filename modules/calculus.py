@@ -22,12 +22,16 @@ Depends on numpy, scipy, shapely, and FEniCS
 from fenics import *
 import numpy as np
 import scipy.integrate as spi
+import scipy.integrate as integrate
+from scipy.integrate import dblquad
+from scipy.integrate import tplquad
 from scipy.spatial.distance import pdist
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
 import sys
 
 import constants.utils as const
+import geometry.utils as geo
 
 small_number = 1e-3
 
@@ -198,7 +202,9 @@ Example of usage:
 
 
 def curve_integral_line(f, x_a, x_b):
+
     line_curve = lambda t: line(x_a, x_b, t)
+
     return curve_integral(f, line_curve)
 
 
@@ -231,12 +237,13 @@ def curve_integral_polygon(f, polygon_coordinates, open=False):
 
 '''
 return the curve integral of a function  along a circle 
+
 Input values:
-- 'f': the function f(x[0], x[1])
-- 'r': the circle radius
-- 'c': the circle center (an array of two points)
+    - 'f': the function f(x[0], x[1])
+    - 'r': the circle radius
+    - 'c': the circle center (an array of two points)
 Return values: 
-\int_circle f dl
+    - \int_circle f dl
 
 Example of usage:
     def g(x):
@@ -286,25 +293,27 @@ def curve_integral_circle_arc(f, r, theta_min, theta_max, c):
 
 
 '''
-compute the integral of a function over measure of internal facets 'dS' for a 2d mesh
+compute the integral of a function over measure of internal facets 'dS' for a 2d (3d) mesh
 Input values: 
     * Mandatory
         - 'mesh' the mesh
         - 'f': the function that will be integrated over 'dS'
     * Optional: 
-        - 'sf', 'surface_id': the mesh function that is used to tag mesh surfaces, and the tag of the mesh surface to be considered for the calculation. Both are 'None' by default: if not provided, this method computes the curve integral across all internal facets of 'mesh'
+        - 'sf', 'surface_id': the mesh function that is used to tag 2d (3d) mesh surface (volume), and the tag of the mesh surface (volume) to be considered for the calculation. Both are 'None' by default: if not provided, this method computes the curve integral across all internal facets of 'mesh'
 Return values: 
-    - int dS_ f
-
+    - int dS f
 '''
+
 def curve_integral_dS(mesh, f, sf=None, surface_id=None):
+
+    # mesh dimension
+    d = mesh.topology().dim()
+
+    # build facet-to-cell connectivity
+    mesh.init(d-1, d)  
 
     result = 0.0
     cell_tags = None
-
-    # ensure facet->cell connectivity is built
-    mesh.init(1, 2)  
-
 
     for facet in facets(mesh):
         # loop through all mesh facets
@@ -315,27 +324,39 @@ def curve_integral_dS(mesh, f, sf=None, surface_id=None):
             if sf != None:
                 # this method has been called with 'sf' != None -> consider all cells adjacent to 'facet', compute their tags, and store them in 'cell_tags'
 
-                cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(2)]
+                # consider the cells that have 'facet' as one of their boundary facets, and put their tag in the list 'cell_tags', which will contain two cells    
+                cell_tags = [sf[Cell(mesh, cell_id)] for cell_id in facet.entities(d)]
 
             if (((surface_id == None) or (sf == None)) or all(c == surface_id for c in cell_tags)):
                 # the method has been called on the whole mesh, i.e., (surface_id == None) or (sf == None), or it has been called on a specific region of the mesh, and 'facet' is an facet internal to this region -> compute the integral over 'facet' and add it to the result
 
                 '''
-                facet_vertices contains the coordinates of the endpoints of `facet`:
+                facet_vertices contains the coordinates of the vertices lying on the extremities of `facet`:
                 facet_vertices = 
                 [
-                    [p_0_x, p_0_y],
-                    [p_1_x, p_1_y]
+                    [p_0_x, p_0_y, p_0_z],
+                    [p_1_x, p_1_y, p_1_z]
                 ]
                 ''' 
                 facet_vertices = []
 
                 for v in vertices(facet):
-                    # run through the vertices of `facet`
+                    # run through the vertices of `facet` and write their coordinates in `facet_vertices`
 
-                    facet_vertices.append((v.point().array().tolist())[:2])
+                    facet_vertices.append((v.point().array().tolist())[:d])
 
-                result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
+                # add the integral over `facet` to `result`
+
+                if d == 2:
+                    # mesh is 2-dimensional -> the integral is over a line (edge)
+
+                    result += curve_integral_line(f, facet_vertices[0], facet_vertices[1])
+
+                elif d == 3:
+                    # mesh id 3-dimensional -> the integral is over a triangle 
+
+                    result += surface_integral_triangle(f, facet_vertices)
+
 
     return result
 
@@ -356,18 +377,22 @@ Example of usage:
 
 
 def surface_integral_rectangle(f, p_bl, p_tr):
+
     f_swapped = lambda x, y: f([y, x])
+    
     return spi.dblquad(f_swapped, p_bl[0], p_tr[0], lambda x: p_bl[1], lambda x: p_tr[1])[0]
 
 
 '''
 integate a function of two variables over a ring delimited by two concentric circles
+
 Input values 
-- 'f': the function f([x, y])
-- 'r', 'R': radii of the inner and outer circle defining the ring
-- 'c' : center of the circles (a list of two values)
+    - 'f': the function f([x, y])
+    - 'r', 'R': radii of the inner and outer circle defining the ring
+    - 'c' : center of the circles (a list of two values)
+
 Result:
-- \int_ring dx dy f
+    - \int_ring dx dy f
 
 Example of usage:
     def g(x):
@@ -504,30 +529,12 @@ def surface_integral_polygon(f, polygon_coordinates):
         # store the three triangle vertices into vertices
         vertices = [np.array(p) for p in triangle.exterior.coords[:3]]
 
-        '''
-        one makes a change of variable from the xy plane to the uv plane. The triangle in the xy plane corresponds to the region 0 <= u <= 1, 0 <= v <= 1, u+v<=1 in the uv plane. 
-        The transformation is 
-
-        (x, y) =vertices[0] + u (vertices[1] - vertices[0]) + v (vertices[2] - vertices[0])
-        and the jacobian J is the jacobian of this transformation 
-        '''
-        J = abs((vertices[1][0]-vertices[0][0])*(vertices[2][1]-vertices[0][1]) - (vertices[2][0]-vertices[0][0])*(vertices[1][1]-vertices[0][1]))
-
-        '''
-        integrand re-expressed as a function of u and v
-        '''
-        def integrand(v, u):
-
-            x = vertices[0][0] + (vertices[1][0]-vertices[0][0])*u + (vertices[2][0]-vertices[0][0])*v
-            y = vertices[0][1] + (vertices[1][1]-vertices[0][1])*u + (vertices[2][1]-vertices[0][1])*v
-
-            return f([x, y]) * J
-
-        # store the integral over the triangle in result
-        result, _ = spi.dblquad(integrand, 0, 1, lambda u: 0, lambda u: 1-u)
+        # add z-entry, equal to 0, to coordinate 
+        for i in range(len(vertices)): 
+            vertices[i] = np.append(vertices[i], 0)
 
         # add the integral to the total integral
-        total += result
+        total += surface_integral_triangle(lambda x: f([x[0], x[1]]), vertices)
 
     
     return total
@@ -556,14 +563,140 @@ def surface_integral_sphere(f, r, c):
 
     return result
 
+'''
+compute the surface integral of a function of three variables over a triangle in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the triangle
+    - `triangle`: [p_1, p_2, p_3] where p_i = [p_i_x, p_i_y, p_i_z] are the coordinates of the ith vertex of the triangle 
+
+Return values: 
+    - \int_triangle dS g
+
+'''
+def surface_integral_triangle(g, triangle):
+
+    '''
+    triangle = [p_1, p_2, p_3]
+    e_u and e_v are the tangent vectors to p_1 -  p_2 and p_1 - p_3, respectively, they are not normalized
+    f is the tangent vector to p_2 - p_3
+    '''
+    e_u = np.subtract(triangle[1], triangle[0])
+    e_v = np.subtract(triangle[2], triangle[0])
+    f = np.subtract(triangle[2], triangle[1])
+
+    u_cross_v = np.cross(e_u, e_v)
+
+    # define dot products
+    uu = np.dot(e_u, e_u)
+    uv = np.dot(e_u, e_v)
+    vv = np.dot(e_v, e_v)
+    uf = np.dot(e_u, f)
+    vf = np.dot(e_v, f)
+
+
+    '''
+    the triangle surface is parametrized with 
+
+        r(u, v) = u e_u + v e_u
+
+    the normal to the side p_1 - p_3 is n (normalized) is given by
+
+    n = a e_u + b e_v
+
+    solve for a and b by imposing n.e_v = 0 and n.n = 1, and obtain (picking one sign for the directio of `n`)
+    '''
+
+    a = vf/np.sqrt(uu*(vf**2) + (uf**2)*vv - 2 * uf*uv*vf)
+    b = - uf/np.sqrt(uu*(vf**2) + (uf**2)*vv - 2 * uf*uv*vf)
+
+    n = np.add(a * e_u, b* e_v)
+
+    # dot products with respect to `n`
+    un = np.dot(e_u, n)
+    vn = np.dot(e_v, n)
+
+    result, _ = dblquad(
+        # lambda capture defining the function to integrate, which is |e_u x e_v| (for the area element) and g(r(u, v))
+        lambda u, v: np.linalg.norm(u_cross_v) * g(np.add(triangle[0], np.add(u * e_u, v * e_v))), 
+        0, 1,         # v in [0, 1]
+        lambda v: 0,     # u from 0 ...
+        lambda v: (un - v*vn)/un)  # ... to (un - v*vn)/un
+
+    return result
+
+
+'''
+compute the surface integral of a function of three variables over a triangulated surface in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the triangle
+    - `surface_triangles`: the list of triangles defining the surface: 
+            [
+                [p_0_1, p_0_2, p_0_3], 
+                [p_1_1, p_1_2, p_1_3], 
+                ...
+            ]  
+        where p_n_i = [p_n_i_x, p_n_i_y, p_n_i_z] are the coordinates of the ith vertex of the nth triangle 
+
+Return values: 
+    - \int_surface dS g
+'''
+
+def surface_integral_triangulated_surface(f, surface_triangles):
+
+    result = 0
+
+    for surface_triangle in surface_triangles:
+        # loop over all triangles of the surface and add the integral on each triangle to `result`
+
+        result += surface_integral_triangle(f, surface_triangle)
+
+    return result
+
+
+
+
+'''
+compute the volume integral of a function of three variables over a volume composed of tetrahedra in three dimensions
+
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the volume
+    - `volume_tetrahedra`: the list of tetrahedra defining the volume: 
+            [
+                [p_0_1, p_0_2, p_0_3, p_0_4], 
+                [p_1_1, p_1_2, p_1_3, p_1_4], 
+                ...
+            ]  
+        where p_n_i = [p_n_i_x, p_n_i_y, p_n_i_z] are the coordinates of the ith vertex of the nth tetrahedron 
+
+Return values: 
+    - \int_volume dx g
+'''
+
+def volume_integral_tetrahedral_surface(f, volume_tetrahedra):
+
+    result = 0
+
+    for volume_tetrahedron in volume_tetrahedra:
+        # loop over all tetrahedra of the volmue and add the integral on each tetrahedron to `result`
+
+        result += volume_integral_tetrahedron(f, volume_tetrahedron)
+
+    return result
+
+
+
 
 '''
 compute the volume integral of a function in a ball
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'r', 'c_r': radius and center of the ball
+    - 'f': the function f([x, y, z])
+    - 'r', 'c_r': radius and center of the ball
+
 Return values: 
-- \int dx_ball f
+    - \int dx_ball f
 '''
 
 
@@ -593,6 +726,7 @@ Input values
 Return values: 
     - \int dx_box f
 '''
+
 def volume_integral_box(f, L, r=[0, 0, 0]):
     result = spi.tplquad(
         lambda x, y, z: f([x, y, z]) ,
@@ -610,17 +744,68 @@ def volume_integral_box(f, L, r=[0, 0, 0]):
 
 '''
 compute the integral of a function in the region between a ball and a box which has one edge centered at the origin
+
 Input values 
-- 'f': the function f([x, y, z])
-- 'L': a list containing the sizes of the box along each axis
-- 'r': radius of the ball
-- 'c' : center of the ball
+    - 'f': the function f([x, y, z])
+    - 'L': a list containing the sizes of the box along each axis
+    - 'r': radius of the ball
+    - 'c' : center of the ball
 Return value: 
-- \int_{box - ball} d^3x  f
+    - \int_{box - ball} d^3x  f
 '''
 
 def volume_integral_box_minus_ball(f, L, r, c):
+
     return volume_integral_box(f, L) - volume_integral_ball(f, r, c)
+
+
+'''
+compute the volume integral of a function over a tetrahedron
+Input values; 
+    - `g`: the function of [x, y, z] which will be integrated over the tetrahedron
+    - `tetrahedron`: [p_1, p_2, p_3, p_4] where p_i = [p_i_x, p_i_y, p_i_z] are the coordinates of the ith vertex of the tetrahedron 
+
+Return values: 
+    - \int_tetrahedron dx g   
+'''
+def volume_integral_tetrahedron(g, tetrahedron):
+
+    '''
+    tetrahedron = [p_1, p_2, p_3, p_3]
+    e_u e_v, e_w are the tangent vectors to p_1 -  p_2, p_1 - p_3 and p_1 - p_4 respectively, they are not normalized
+    '''
+
+    e_u = np.subtract(tetrahedron[1], tetrahedron[0])
+    e_v = np.subtract(tetrahedron[2], tetrahedron[0])
+    e_w = np.subtract(tetrahedron[3], tetrahedron[0])
+
+    # normal perpendicular to the triangle p_2 - p_3 - p_4
+    n = np.cross(
+        np.subtract(tetrahedron[2], tetrahedron[1]),
+        np.subtract(tetrahedron[3], tetrahedron[1])
+    )
+
+    # dot products with respect to `n`
+    un = np.dot(e_u, n)
+    vn = np.dot(e_v, n)
+    wn = np.dot(e_w, n)
+
+    # absolute value of the jabobian of the transformation x -> u, v, w
+    J = abs(np.linalg.det(np.array([e_u, e_v, e_w])))
+
+    
+    result, _ = tplquad(
+        lambda u, v, w: J * g(np.add(tetrahedron[0], np.add(np.add(u * e_u, v * e_v), w * e_w))), 
+        0, 1,         # w in [0, 1]
+        lambda w: 0,     # u from 0 ...
+        lambda w: max((un - w * wn)/un, 0), #... to (un - w*wn)/un
+        lambda u, w: 0, #v from 0 ... 
+        lambda u, w: max((un - u * un -w * wn)/vn, 0) # to  (un - u*un - w*wn)/vn
+        )  
+
+    return result
+
+
 
 
 
