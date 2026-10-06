@@ -31,7 +31,7 @@ sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0
 import input_output as io 
 import solution_paths as solpath
 
-n_1 = bgeo.field_facet_normal(bgeo.facet_normal[0](sub_mesh_1_label), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior=True)
+n_1 = bgeo.field_facet_normal(msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_1), rmsh.lmsh.mesh[0], rmsh.ds_mesh[0]['dS_shape'], interior=True)
 
 io.full_print(n_1, 'n_1', \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])
@@ -117,7 +117,7 @@ F_v_n = msh.ufl_conditional_form(
                 bgeo.facet_normal[0][l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_l'] + \
                 bgeo.facet_normal[0][l] * ela.G(fsp.u_n)[l, j] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, j] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_tb'] + \
                 bgeo.facet_normal[0][l] * ela.G(fsp.u_n)[l, 1] * flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu_fluid'])[i, 1] * fsp.nu_v_n[i] * ela.detF(fsp.u_n) * rmsh.ds_mesh[0]['ds_r'] + \
-                bgeo.facet_normal[0](sub_mesh_1_label)[l] * ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[l, j] * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu_fluid'])[i, j] * msh.side(fsp.nu_v_n, rmsh.I_sub_mesh_0_1)[i] * ela.detF(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1)) * rmsh.ds_mesh[0]['dS_shape']
+                msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_1)[l] * ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[l, j] * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu_fluid'])[i, j] * msh.side(fsp.nu_v_n, rmsh.I_sub_mesh_0_1)[i] * ela.detF(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1)) * rmsh.ds_mesh[0]['dS_shape']
            ) \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
             msh.jump(fsp.v_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_v_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_square'] \
@@ -162,7 +162,7 @@ F_u_n = msh.ufl_conditional_form(
         - (\
                 msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[k] * msh.average( ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] )
         ) * rmsh.ds_mesh[0]['dS_I_shape'] \
-        - (flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), cont.pressure_scale * msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j]) * bgeo.facet_normal[0](sub_mesh_0_label)[k]) * msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_0)[i] * rmsh.ds_mesh[0]['dS_shape'] \
+        - (flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), cont.pressure_scale * msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu_fluid'])[i, j] * msh.average(ela.detF(fsp.u_n) * ela.G(fsp.u_n)[k, j]) * msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0)[k]) * msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_0)[i] * rmsh.ds_mesh[0]['dS_shape'] \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
             msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_shape'] \
         ) \
@@ -170,7 +170,7 @@ F_u_n = msh.ufl_conditional_form(
             msh.jump(fsp.nu_u_n[k], bgeo.facet_normal[0])[i] * msh.average( ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] )   
         ) * rmsh.ds_mesh[0]['dS_I_square'] \
         + bgeo.facet_normal[0][i] * ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * fsp.nu_u_n[k] * rmsh.ds_mesh[0]['ds'] \
-        + bgeo.facet_normal[0](sub_mesh_1_label)[i] * ela.P(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), ela.K(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']), ela.mu(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']))[k, i] * msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_1)[k] * rmsh.ds_mesh[0]['dS_shape'] \
+        + msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_1)[i] * ela.P(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), ela.K(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']), ela.mu(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']))[k, i] * msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_1)[k] * rmsh.ds_mesh[0]['dS_shape'] \
         + rpam.parameters['alpha']/rmsh.r_mesh[0] * (\
             msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_square'] \
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_mesh[0]['ds'] \
@@ -209,7 +209,7 @@ F_u_dot_n = msh.ufl_conditional_form(
             ) \
             + ( msh.jump(fsp.nu_u_dot_n[k], bgeo.facet_normal[0])[i] * msh.average( Q(fsp.u_n, fsp.u_dot_n)[k, i] ) ) * rmsh.ds_mesh[0]['dS_I_square'] \
             + ( bgeo.facet_normal[0][i] * Q(fsp.u_n, fsp.u_dot_n)[k, i] * fsp.nu_u_dot_n[k] ) * rmsh.ds_mesh[0]['ds'] \
-            + ( bgeo.facet_normal[0](sub_mesh_1_label)[i] * Q(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1))[k, i] * (msh.side(fsp.nu_u_dot_n, rmsh.I_sub_mesh_0_1))[k]) * rmsh.ds_mesh[0]['dS_shape'] \
+            + ( msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_1)[i] * Q(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1))[k, i] * (msh.side(fsp.nu_u_dot_n, rmsh.I_sub_mesh_0_1))[k]) * rmsh.ds_mesh[0]['dS_shape'] \
             + rpam.parameters['alpha']/rmsh.r_mesh[0] * ( \
                 msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_dot_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_square'] \
                 + ( fsp.u_dot_n[i] * fsp.nu_u_dot_n[i] ) * rmsh.ds_mesh[0]['ds'] \
