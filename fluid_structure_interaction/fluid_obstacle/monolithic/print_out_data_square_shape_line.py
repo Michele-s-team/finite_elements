@@ -32,7 +32,7 @@ i, j, k = ufl.indices(3)
 
 
 def f_fluid():
-    return as_tensor(ela.detF(fsp.u_n(vp.sub_mesh_0_label)) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k] * ela.G(fsp.u_n(vp.sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_square'])[i, j], (i))
+    return as_tensor(ela.detF(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_0)) * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k] * ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[k, j] * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu_square'])[i, j], (i))
 
 def print_data(step):
 
@@ -65,7 +65,7 @@ def print_data(step):
         fi.fieldnames_data[6]: \
             f"{msh.average_wrt_measure(geo.ufl_norm(f_fluid()), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[7]: \
-            f"{msh.average_wrt_measure(geo.ufl_norm(vp.f_shape(fsp.c_n(vp.sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
+            f"{msh.average_wrt_measure(geo.ufl_norm(vp.f_shape(msh.side(fsp.c_n, rmsh.I_sub_mesh_0_1), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[8]: \
             f"{geo_u.aspect_ratio(shape_coordinates) - 1:.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_data[9]: \
