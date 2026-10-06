@@ -3744,8 +3744,43 @@ def region_indicator(mesh, cf, region_id):
 
     Q = FunctionSpace(mesh, 'DG', 0)
     f = Function(Q)
+    f_mesh = Q.mesh()
 
     f.vector()[:] = (cf.array() == region_id).astype(float)
+
+
+    # check that dof IDs coincide with cell IDs - start
+    '''
+    map each DOF of f to the cell of f's mesh that owns it: for a DG space
+    every DOF belongs to exactly one cell
+
+    Here
+
+    f_dof_map.cell_dofs(cell.index()) = 
+        [ID of 1st DOF sitting on cell `cell`, 
+        ID of 2nd DOF sitting on cell `cell`, 
+        ... ]
+
+    dof_to_cell[ID of DOF] = index of the cell to which DOF belongs
+
+    the entries of f.vector() are labelled with the same ID of DOF that labels the entries of dof_to_cell
+    '''
+    f_dof_map = Q.dofmap()
+    dof_to_cell = np.empty(Q.dim(), dtype=np.int64)
+    for cell in cells(f_mesh):
+
+        dof_to_cell[f_dof_map.cell_dofs(cell.index())] = cell.index()
+
+    for i in range(len(dof_to_cell)):
+
+        if(dof_to_cell[i] != i):
+     
+            print(f'{col.Fore.RED}Error!! dof_to_cell is not the idnetity!.{col.Fore.RESET}')
+
+            sys.exit(1)
+            
+    # check that dof IDs coincide with cell IDs - end
+
     return f
 
 
