@@ -61,11 +61,6 @@ msh.interpolate_dg(fsp.f, f_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box
 
 
 
-sub_mesh_0_0_label, sub_mesh_0_1_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.cf, rmsh.lmsh.parameters["surface_volume_id"], rmsh.lmsh.parameters["box_volume_id"], rmsh.dS_surface)
-
-print(f'label_ shape ={sub_mesh_0_0_label}\nlabel_square = {sub_mesh_0_1_label}')
-
-
 bcs = []
 
 # I assign a value to the function to give a reasonable initial condition to the solver
@@ -83,8 +78,8 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 ) * \
         rmsh.dx \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
-        - bgeo.facet_normal(sub_mesh_0_1_label)[i] * ((msh.side(fsp.u, rmsh.I_box)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_box)) * rmsh.dS_surface \
-        - bgeo.facet_normal(sub_mesh_0_0_label)[i] * msh.side(fsp.u, rmsh.I_surface) * ((msh.side(fsp.u, rmsh.I_surface)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_surface)) * rmsh.dS_surface
+        - msh.side(bgeo.facet_normal, rmsh.I_box)[i] * ((msh.side(fsp.u, rmsh.I_box)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_box)) * rmsh.dS_surface \
+        - msh.side(bgeo.facet_normal, rmsh.I_surface)[i] * msh.side(fsp.u, rmsh.I_surface) * ((msh.side(fsp.u, rmsh.I_surface)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_surface)) * rmsh.dS_surface
 
 F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I_box \
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I_surface \
