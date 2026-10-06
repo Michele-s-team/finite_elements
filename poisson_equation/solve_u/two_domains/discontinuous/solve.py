@@ -14,6 +14,7 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/ellipse_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_ellipse_circle_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py two_squares_no_circle_a $MESH_PATH $SOLUTION_PATH
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square_no_circle/two_squares_no_circle/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py two_squares_no_circle_b $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/3d/box/surface/solution"; SOLUTION_PATH="/home/fenics/shared/poisson_equation/solve_u/two_domains/discontinuous/solution"; rm -rf $SOLUTION_PATH; python3 solve.py box_surface_c $MESH_PATH $SOLUTION_PATH
 
 '''
 
@@ -42,66 +43,69 @@ import mesh.utils as msh
 
 
 #1. test for scalar
-Q = FunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'])
+Q = FunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'])
 u = Function(Q)
 
-class u_shape_expression(UserExpression):
+class u_surface_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]-x[2]))
 
     def value_shape(self):
         return (1,)
 
-msh.interpolate_dg(u, u_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(u, u_surface_expression(), rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
 
-class u_square_expression(UserExpression):
+class u_box_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.sin(2 * np.pi*(x[0]-x[1]))
+        values[0] = np.sin(2 * np.pi*(x[0]-x[1]-2*x[2]))
 
     def value_shape(self):
         return (1,)
 
-msh.interpolate_dg(u, u_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(u, u_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
 
 io.full_print(u, 'u', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              mesh_function=rmsh.lmsh.sf[0])
+              mesh_function=rmsh.cf)
+
 
 
 #2. test for vector
-V = VectorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], dim=3)
+V = VectorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'], dim=4)
 v = Function(V)
 
-class v_shape_expression(UserExpression):
+class v_surface_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
         values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
         values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**3
 
     def value_shape(self):
-        return (3,)
+        return (4,)
     
-msh.interpolate_dg(v, v_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(v, v_surface_expression(), rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
 
     
-class v_square_expression(UserExpression):
+class v_box_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = np.sin(8 * np.pi*(x[0]+x[1]))
         values[1] = np.cos(2 * np.pi*(x[0]+x[1]))**4
         values[2] = np.sin(2 * np.pi*(x[0]-2*x[1]**2))**3
+        values[3] = np.sin(2 * np.pi*(x[0]-2*x[1]**2))**4
 
     def value_shape(self):
-        return (3,)
+        return (4,)
 
-msh.interpolate_dg(v, v_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(v, v_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
 
 io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              mesh_function=rmsh.lmsh.sf[0])
+              mesh_function=rmsh.cf)
 
 
 
@@ -109,45 +113,44 @@ io.full_print(v, 'v', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_
 
 
 # 3. test for tensor
-T = TensorFunctionSpace(rmsh.lmsh.mesh[0], 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
+T = TensorFunctionSpace(rmsh.lmsh.mesh, 'DG', rpam.parameters['function_space_degree'], shape=(2, 3))
 t = Function(T)
 
-class t_shape_expression(UserExpression):
+class t_surface_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
-        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
-        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**2))**2
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]-2*x[2]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]-2*x[2]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]-2*x[2]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]-2*x[2]))**2
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]-2*x[2]))**2
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**2-2*x[2]))**2
 
     def value_shape(self):
         return (2, 3)
 
-msh.interpolate_dg(t, t_shape_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_0_id'])
+msh.interpolate_dg(t, t_surface_expression(), rmsh.cf, rmsh.lmsh.parameters['surface_volume_id'])
 
 
-class t_square_expression(UserExpression):
+class t_box_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = np.cos(2 * np.pi*(x[0]+x[1]))
-        values[1] = np.cos(4 * np.pi*(x[0]+x[1]))
-        values[2] = np.sin(2 * np.pi*(x[0]-x[1]))**2
-        values[3] = np.sin(2 * np.pi*(x[0]-x[1]))**3
-        values[4] = np.sin(2 * np.pi*(x[0]-x[1]))**4
-        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**3))**5
+        values[0] = np.cos(2 * np.pi*(x[0]+x[1]-x[2]))
+        values[1] = np.cos(4 * np.pi*(x[0]+x[1]-x[2]))
+        values[2] = np.sin(2 * np.pi*(x[0]-x[1]-x[2]))**2
+        values[3] = np.sin(2 * np.pi*(x[0]-x[1]-x[2]))**3
+        values[4] = np.sin(2 * np.pi*(x[0]-x[1]-x[2]))**4
+        values[5] = np.sin(2 * np.pi*(x[0]-x[1]**3-2*x[2]))**5
 
     def value_shape(self):
         return (2, 3)
 
-msh.interpolate_dg(t, t_square_expression(), rmsh.sf[0], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
+msh.interpolate_dg(t, t_box_expression(), rmsh.cf, rmsh.lmsh.parameters['box_volume_id'])
 
 io.full_print(t, 't', solpath.xdmf_file_path, solpath.h5_file_path, solpath.csv_files_path,
               solpath.nodal_values_path,
-              mesh_function=rmsh.lmsh.sf[0])
+              mesh_function=rmsh.cf)
 
-sys.exit(1)
 # test interpolate_dg for vectors  and tensors - end
 '''
 

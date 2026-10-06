@@ -66,6 +66,15 @@ dS_surface = Measure("dS", domain=lmsh.mesh, subdomain_data=sf_I, subdomain_id=l
 dS_I_surface = Measure("dS", domain=lmsh.mesh, subdomain_data=sf_I, subdomain_id=lmsh.parameters[f"surface_volume_id"])
 dS_I_box = Measure("dS", domain=lmsh.mesh, subdomain_data=sf_I, subdomain_id=lmsh.parameters[f"box_volume_id"])
 
+# 4 indicator functions for surface and box volumes
 
+# 4.1 I_surface is a DG0 scalar that equals `1` on DOFs belonging to the surface volume, and `0` to DOFs belonging to the volume between the surface and the box
+I_surface = msh.region_indicator(lmsh.mesh, cf, lmsh.parameters['surface_volume_id'])
+
+# 4.2 I_box is a DG0 scalar that equals `1` on DOFs belonging to the volume between the surface and the box, and `0` to DOFs belonging to the surface volume 
+I_box = msh.region_indicator(lmsh.mesh, cf, lmsh.parameters['box_volume_id'])
+
+
+# 5 check mesh tags
 check_mesh_module = importlib.import_module('mesh.check_tags.box_surface')
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
