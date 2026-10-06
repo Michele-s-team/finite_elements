@@ -498,3 +498,11 @@ then include `import h5py` at the top of the .py file
     with 
 
         msh.side($1.$2, rmsh.I_sub_mesh_0_$3)
+
+- to replace + in folders with os.path.join with regex, replace
+
+        rarg\.args\.input_directory \+ "/(.*)"
+
+        with 
+
+        os.path.join(rarg.args.input_directory, '$1')
