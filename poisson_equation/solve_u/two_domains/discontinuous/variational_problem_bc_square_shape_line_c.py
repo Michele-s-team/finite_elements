@@ -65,7 +65,7 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh[0],
                                 ) * \
         rmsh.dx_mesh[0]['dx'] \
         - bgeo.facet_normal[0][i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_mesh[0]['ds'] \
-        - bgeo.facet_normal[0](sub_mesh_0_1_label)[i] * ((msh.side(fsp.u, rmsh.I_sub_mesh_0_1)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_sub_mesh_0_1)) * rmsh.ds_mesh[0]['dS_shape']
+        - msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_1)[i] * ((msh.side(fsp.u, rmsh.I_sub_mesh_0_1)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_sub_mesh_0_1)) * rmsh.ds_mesh[0]['dS_shape']
 
 F_I = (
         - msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal[0])[i]
