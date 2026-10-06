@@ -49,11 +49,22 @@ ds = ds_lr + ds_tb
 # all internal facets contained into the square
 dS = dS_l + dS_r + dS_m
 
+
+# 4 indicator functions for l and box volumes
+
+# 4.1 I_l is a DG0 scalar that equals `1` on DOFs belonging to the l surface, and `0` to DOFs belonging to r surface
+I_l = msh.region_indicator(lmsh.mesh, sf, lmsh.parameters['l_surface_id'])
+
+# 4.2 I_r is a DG0 scalar that equals `1` on DOFs belonging to the r surface, and `0` to DOFs belonging to l surface
+I_r = msh.region_indicator(lmsh.mesh, sf, lmsh.parameters['r_surface_id'])
+
+
+#5. check mesh tags
 check_mesh_module = importlib.import_module('mesh.check_tags.two_squares_no_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
-#3.  Define boundaries and obstacle
+#6. Define boundaries and obstacle
 boundary = 'on_boundary'
 boundary_l = f'near(x[0], 0.0)'
 boundary_r = f'near(x[0], {lmsh.parameters["L"]})'

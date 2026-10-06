@@ -1,12 +1,13 @@
 from fenics import *
 import importlib
+import os
 
 import input_output as io
 import mesh.load as lmsh
 import mesh.utils as msh
 import runtime_arguments as rarg
 
-parameters = io.read_parameters_from_csv_file(rarg.args.input_directory + "/mesh_metadata.csv")
+parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, 'mesh_metadata.csv'))
 
 # radius of the smallest cell in the mesh
 r_mesh = lmsh.mesh.hmin()
@@ -16,10 +17,10 @@ r_mesh = lmsh.mesh.hmin()
 # 1 read quantities for the whole mesh
 
 # 1.1 read the triangles
-sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.input_directory + "/triangle_mesh.xdmf")
+sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), os.path.join(rarg.args.input_directory, 'triangle_mesh.xdmf'))
 
 # 1.2 read the lines
-mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
+mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, os.path.join(rarg.args.input_directory, 'line_mesh.xdmf'))
 
 # 1.3 read the inner (I) lines
 mf_I = msh.read_mesh_internal_components(lmsh.mesh, sf, lmsh.parameters[f'sub_mesh_{0}_id'], lmsh.parameters[f'sub_mesh_{1}_id'], lmsh.parameters['ellipse_loop_id'])
@@ -83,11 +84,22 @@ ds_sub_mesh[1]['ds_tb'] = ds_sub_mesh[1]['ds_t'] + ds_sub_mesh[1]['ds_b']
 ds_sub_mesh[1]['ds_lrtb'] = ds_sub_mesh[1]['ds_lr'] + ds_sub_mesh[1]['ds_tb']
 ds_sub_mesh[1]['ds'] = ds_sub_mesh[1]['ds_lrtb'] + ds_sub_mesh[1]['ds_ellipse']
 
+
+# 4 indicator functions for sub_mesh_0 and sub_mesh_1 surfaces
+
+# 4.1 I_sub_mesh_0 is a DG0 scalar that equals `1` on DOFs belonging to sub_mesh_0, and `0` to DOFs belonging to sub_mesh_1
+I_sub_mesh_0 = msh.region_indicator(lmsh.mesh, sf, lmsh.parameters['sub_mesh_0_id'])
+
+# 4.2 I_sub_mesh_1 is a DG0 scalar that equals `1` on DOFs belonging to sub_mesh_0, and `0` to DOFs belonging to sub_mesh_1 
+I_sub_mesh_1 = msh.region_indicator(lmsh.mesh, sf, lmsh.parameters['sub_mesh_1_id'])
+
+
+# 5. check mesh tags
 check_mesh_module = importlib.import_module('mesh.check_tags.square_ellipse_circle')
 
 print(f'Module {__file__} called {check_mesh_module.__file__}', flush=True)
 
-# Define boundaries: it is important that these boundaries are defined in the right order, because a definition may call a preceeding one
+#6. Define boundaries: it is important that these boundaries are defined in the right order, because a definition may call a preceeding one
 
 boundary = [''] * len(lmsh.sub_meshes)
 boundary[0] = dict([])
