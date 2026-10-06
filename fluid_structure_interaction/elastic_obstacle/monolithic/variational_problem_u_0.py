@@ -20,7 +20,6 @@ rmsh = importlib.import_module(swi.rmsh)
 i, j, k, l, m = ufl.indices(5)
 
 
-sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh[0], rmsh.sf[0], rmsh.lmsh.parameters["sub_mesh_0_0_id"], rmsh.lmsh.parameters["sub_mesh_0_1_id"], rmsh.ds_mesh[0]['dS_shape'])
 
 
 
