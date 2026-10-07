@@ -1257,7 +1257,10 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
-                                                                     'generate_mesh', 'generate_mesh',  generate_mesh_path, generate_mesh_path, problem_name, problem_name, success)
+                                                                     'generate_mesh', 'generate_mesh', 
+                                                                     os.path.join(generate_mesh_path, 'elastic_obstacle_monolithic_square_shape_line_b_parameters'),
+                                                                     os.path.join(generate_mesh_path, 'elastic_obstacle_monolithic_square_shape_line_b_parameters'), 
+                                                                     problem_name, problem_name, success)
 
 
 case_name = 'fluid_structure_interaction/elastic_obstacle/monolithic/surface_tension'
@@ -1315,7 +1318,8 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
                                                                      generate_mesh_path, root_path + case_name,
                                                                      mesh_solution_path_a, problem_solution_path_a, mesh_solution_path_b, problem_solution_path_b,
                                                                      'generate_mesh', 'generate_mesh',  
-                                                                     os.path.join(generate_mesh_path, 'fluid_obstacle_monolithic_parameters'), os.path.join(generate_mesh_path, 'fluid_obstacle_monolithic_parameters'), 
+                                                                     os.path.join(generate_mesh_path, 'fluid_obstacle_monolithic_parameters'), 
+                                                                     os.path.join(generate_mesh_path, 'fluid_obstacle_monolithic_parameters'), 
                                                                      problem_name, problem_name, success)
 
 
