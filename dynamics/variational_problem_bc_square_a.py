@@ -75,8 +75,8 @@ class grad_square_Expression( UserExpression ):
 # profiles for the normal derivative
 class grad_circle_Expression( UserExpression ):
     def eval(self, values, x):
-        a = 0.1
-        values[0] = a
+        
+        values[0] = rpam.parameters['grad_circle_const']
 
     def value_shape(self):
         return (1,)
