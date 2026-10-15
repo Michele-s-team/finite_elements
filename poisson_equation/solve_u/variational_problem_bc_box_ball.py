@@ -13,6 +13,7 @@ i, j = ufl.indices(2)
 
 
 class u_exact_expression(UserExpression):
+
     def eval(self, values, x):
         values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2 + 3 * x[2] ** 2
 
@@ -21,18 +22,21 @@ class u_exact_expression(UserExpression):
 
 
 class grad_u_expression(UserExpression):
+
     def eval(self, values, x):
+
         values[0] = 2 * x[0]
         values[1] = 4 * x[1]
         values[2] = 6 * x[2]
 
-
-def value_shape(self):
-    return (2,)
+    def value_shape(self):
+        return (2,)
 
 
 class laplacian_u_expression(UserExpression):
+
     def eval(self, values, x):
+
         values[0] = 12
 
     def value_shape(self):
@@ -40,6 +44,7 @@ class laplacian_u_expression(UserExpression):
 
 
 class hess_u_exact_expression(UserExpression):
+    
     def init(self, **kwargs):
         super().init(**kwargs)
 

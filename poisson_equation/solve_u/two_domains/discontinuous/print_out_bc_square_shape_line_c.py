@@ -21,7 +21,7 @@ i, j, k, l = ufl.indices(4)
 print("Check of BCs:")
 
 print(f"\t\t<<(u - phi)^2>>_[partial Omega square] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds_mesh[0]['ds']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-print(f"\t\t<<(u - phi)^2>>_[partial Omega shape] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u(vp.sub_mesh_0_1_label), fsp.u_exact(vp.sub_mesh_0_1_label), rmsh.ds_mesh[0]['dS_shape']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(u - phi)^2>>_[partial Omega shape] = {col.Fore.RED}{msh.difference_wrt_measure(msh.side(fsp.u, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_exact, rmsh.I_sub_mesh_0_1), rmsh.ds_mesh[0]['dS_shape']):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 
 

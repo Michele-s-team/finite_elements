@@ -1,12 +1,12 @@
 from fenics import *
 
 import mesh.load as lmsh
+import parameters.read.solution as rpam
 
-function_space_degree = 4
 
-Q = FunctionSpace(lmsh.mesh, 'P', function_space_degree)
-V = VectorFunctionSpace(lmsh.mesh, 'P', function_space_degree)
-T = TensorFunctionSpace(lmsh.mesh, 'P', function_space_degree, shape=(lmsh.mesh.topology().dim(), lmsh.mesh.topology().dim()))
+Q = FunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
+V = VectorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'])
+T = TensorFunctionSpace(lmsh.mesh, 'P', rpam.parameters['function_space_degree'], shape=(lmsh.mesh.topology().dim(), lmsh.mesh.topology().dim()))
 
 # Define variational problem
 u = Function(Q)
