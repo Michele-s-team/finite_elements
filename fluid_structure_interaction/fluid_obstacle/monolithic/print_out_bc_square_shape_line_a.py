@@ -19,8 +19,8 @@ i, j, k, l, m, n = ufl.indices(6)
 
 # term related to the BC (108)
 def bc_shape():
-    return as_tensor(flu.sigma_ale(fsp.v_n(vp.sub_mesh_0_label), fsp.sigma_n(vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_0_label), rpam.parameters['mu_shape'])[i, j] * ela.G(fsp.u_n(vp.sub_mesh_0_label))[k, j] * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k] - ( bgeo.facet_normal[0](vp.sub_mesh_0_label)[k] * ela.G(fsp.u_n(vp.sub_mesh_1_label))[k, j] * flu.sigma_ale(fsp.v_n(vp.sub_mesh_1_label), fsp.sigma_n(vp.sub_mesh_1_label), fsp.u_n(vp.sub_mesh_1_label), rpam.parameters['mu_square'])[i, j] \
-    + 1.0/ela.detF(fsp.u_n(vp.sub_mesh_0_label)) * vp.f_shape(fsp.c_n(vp.sub_mesh_1_label), msh.average(fsp.u_n), msh.average(fsp.mu_n), bgeo.facet_normal[0](vp.sub_mesh_0_label))[i] ), (i))
+    return as_tensor(flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_0), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_0), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_0), rpam.parameters['mu_shape'])[i, j] * ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_0))[k, j] * msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0)[k] - ( msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0)[k] * ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[k, j] * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu_square'])[i, j] \
+    + 1.0/ela.detF(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_0)) * vp.f_shape(msh.side(fsp.c_n, rmsh.I_sub_mesh_0_1), msh.average(fsp.u_n), msh.average(fsp.mu_n), msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0))[i] ), (i))
 
 
 # this function prints out the residuals of BCs
@@ -42,11 +42,11 @@ def print_bcs(step):
             fi.fieldnames_bcs[6]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[7]: \
-            f"{msh.abs_wrt_measure(( ( ( fsp.u_n(vp.sub_mesh_1_label)[i] - fsp.u_n_1(vp.sub_mesh_1_label)[i] ) *  bgeo.n_cur(bgeo.facet_normal[0](vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_1_label), fsp.dyds(vp.sub_mesh_1_label))[i] ) - ( ( fsp.v_n(vp.sub_mesh_1_label)[i] * vp.dt * bgeo.n_cur(bgeo.facet_normal[0](vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_1_label), fsp.dyds(vp.sub_mesh_1_label))[i] ) ) ), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
+            f"{msh.abs_wrt_measure(( ( ( msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1)[i] - msh.side(fsp.u_n_1, rmsh.I_sub_mesh_0_1)[i] ) *  bgeo.n_cur(msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.dyds, rmsh.I_sub_mesh_0_1))[i] ) - ( ( msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1)[i] * vp.dt * bgeo.n_cur(msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.dyds, rmsh.I_sub_mesh_0_1))[i] ) ) ), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[8]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_n), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[9]: \
-            f"{msh.abs_wrt_measure( ( fsp.u_dot_n(vp.sub_mesh_1_label)[i] * bgeo.n_cur(bgeo.facet_normal[0](vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_1_label), fsp.dyds(vp.sub_mesh_1_label))[i] - fsp.v_n(vp.sub_mesh_1_label)[i] * bgeo.n_cur(bgeo.facet_normal[0](vp.sub_mesh_0_label), fsp.u_n(vp.sub_mesh_1_label), fsp.dyds(vp.sub_mesh_1_label))[i] ), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
+            f"{msh.abs_wrt_measure( ( msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1)[i] * bgeo.n_cur(msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.dyds, rmsh.I_sub_mesh_0_1))[i] - msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1)[i] * bgeo.n_cur(msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.dyds, rmsh.I_sub_mesh_0_1))[i] ), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[10]: \
             f"{msh.abs_wrt_measure(sqrt(msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j]), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[11]: \
@@ -54,7 +54,7 @@ def print_bcs(step):
             fi.fieldnames_bcs[12]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n)[k, i] * (-bgeo.facet_normal[0][k]) * ( -rpam.parameters['D']*ela.G(fsp.u_n)[j, i]*(fsp.c_n.dx(j)) ), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}",\
             fi.fieldnames_bcs[13]: \
-            f"{msh.abs_wrt_measure(ela.detF(fsp.u_n(vp.sub_mesh_1_label)) * ela.G(fsp.u_n(vp.sub_mesh_1_label))[k, i] * bgeo.facet_normal[0](vp.sub_mesh_0_label)[k] * ( -rpam.parameters['D']*ela.G(fsp.u_n(vp.sub_mesh_1_label))[j, i]*(fsp.c_n(vp.sub_mesh_1_label).dx(j)) ) - rpam.parameters['kappa'], rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.abs_wrt_measure(ela.detF(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1)) * ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[k, i] * msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0)[k] * ( -rpam.parameters['D']*ela.G(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[j, i]*(msh.side(fsp.c_n, rmsh.I_sub_mesh_0_1).dx(j)) ) - rpam.parameters['kappa'], rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_bcs.flush()

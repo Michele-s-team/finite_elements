@@ -72,7 +72,7 @@ def print_solution(t, step):
                         c_n_dummy, 
                         u_n_dummy, 
                         mu_n_dummy, 
-                        bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], bgeo.facet_normal[0](vp.sub_mesh_0_label), rmsh.ds_mesh[0]['dS_shape'], interior=True)
+                        bgeo.field_facet_normal_normalized(rmsh.lmsh.mesh[0], msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0), rmsh.ds_mesh[0]['dS_shape'], interior=True)
             ), fsp.Q_u_n), 
         'f_shape_n_' + str(step),
         solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0]

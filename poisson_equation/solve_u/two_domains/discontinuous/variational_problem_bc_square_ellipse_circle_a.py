@@ -65,12 +65,6 @@ msh.interpolate_dg(fsp.f, f_0_expression(), rmsh.sf, rmsh.lmsh.parameters['sub_m
 msh.interpolate_dg(fsp.f, f_1_expression(), rmsh.sf, rmsh.lmsh.parameters['sub_mesh_1_id'])
 
 
-
-sub_mesh_0_label, sub_mesh_1_label = msh.plus_minus(rmsh.lmsh.mesh, rmsh.sf, rmsh.lmsh.parameters["sub_mesh_0_id"], rmsh.lmsh.parameters["sub_mesh_1_id"], rmsh.dS_ellipse)
-
-print(f'label_0 ={sub_mesh_0_label}\nlabel_1 = {sub_mesh_1_label}')
-
-
 bcs = []
 
 # I assign a value to the function to give a reasonable initial condition to the solver
@@ -88,9 +82,9 @@ F_0 =   msh.ufl_conditional_form(rmsh.lmsh.mesh,
                                 rmsh.lmsh.parameters['sub_mesh_1_id']
                                 ) * rmsh.dx \
         - bgeo.facet_normal[i] * fsp.u * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_circle \
-        - bgeo.facet_normal(sub_mesh_0_label)[i] * fsp.u(sub_mesh_0_label) * ((fsp.u(sub_mesh_0_label)).dx(i)) * (fsp.nu_u(sub_mesh_0_label)) * rmsh.dS_ellipse \
+        - msh.side(bgeo.facet_normal, rmsh.I_sub_mesh_0)[i] * msh.side(fsp.u, rmsh.I_sub_mesh_0) * ((msh.side(fsp.u, rmsh.I_sub_mesh_0)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_sub_mesh_0)) * rmsh.dS_ellipse \
         - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds_lrtb \
-        - bgeo.facet_normal(sub_mesh_1_label)[i] * ((fsp.u(sub_mesh_1_label)).dx(i)) * (fsp.nu_u(sub_mesh_1_label)) * rmsh.dS_ellipse
+        - msh.side(bgeo.facet_normal, rmsh.I_sub_mesh_1)[i] * ((msh.side(fsp.u, rmsh.I_sub_mesh_1)).dx(i)) * (msh.side(fsp.nu_u, rmsh.I_sub_mesh_1)) * rmsh.dS_ellipse
 
 
 F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_normal)[i] * rmsh.dS_I[0] \
@@ -102,9 +96,9 @@ F_I =   - msh.average(fsp.u.dx(i)) * msh.jump(fsp.u * fsp.nu_u, bgeo.facet_norma
 
 F_b =   rpam.parameters['alpha']/rmsh.r_mesh *(\
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_lrtb + \
-            (fsp.u(sub_mesh_1_label) - fsp.u_exact(sub_mesh_1_label)) * fsp.nu_u(sub_mesh_1_label) * rmsh.dS_ellipse + \
+            (msh.side(fsp.u, rmsh.I_sub_mesh_1) - msh.side(fsp.u_exact, rmsh.I_sub_mesh_1)) * msh.side(fsp.nu_u, rmsh.I_sub_mesh_1) * rmsh.dS_ellipse + \
             (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds_circle + \
-            (fsp.u(sub_mesh_0_label) - fsp.u_exact(sub_mesh_0_label)) * fsp.nu_u(sub_mesh_0_label) * rmsh.dS_ellipse \
+            (msh.side(fsp.u, rmsh.I_sub_mesh_0) - msh.side(fsp.u_exact, rmsh.I_sub_mesh_0)) * msh.side(fsp.nu_u, rmsh.I_sub_mesh_0) * rmsh.dS_ellipse \
         )
 
 
