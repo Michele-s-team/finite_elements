@@ -33,8 +33,16 @@ class v_bar_r_Expression( UserExpression ):
 
     def value_shape(self):
         return (1,)
+    
+class sigma_l_Expression( UserExpression ):
+    def eval(self, values, x):
+        values[0] = rpam.parameters['sigma_l_const']
+
+    def value_shape(self):
+        return (1,)
         
 fsp.v_bar_r.interpolate( v_bar_r_Expression( element=fsp.Q_v_bar.ufl_element() ) )
+fsp.sigma_l.interpolate( sigma_l_Expression( element=fsp.Q_phi.ufl_element() ) )
 
 
 
@@ -51,7 +59,7 @@ bc_U_n_12_0_r = DirichletBC(fsp.Q_mem.sub(5).sub(0), Constant(0), rmsh.mf[1], rm
 bcs_mem = [bc_v_bar_r, bc_w_bar_l, bc_phi_l, bc_U_n_12_l, bc_U_n_12_0_r]
 
 # Define variational problem : F_vbar, F_wbar .... F_mu_n_12 are related to the PDEs for v_bar, ..., mu^{n-1/2} respectively .
-# natural BC imposed here
+# natural BCs imposed here
 F_v_bar = ( \
                       rpam.parameters['rho'] * (( \
                                          (fsp.v_bar[i] - fsp.v_n_1[i]) \

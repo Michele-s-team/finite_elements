@@ -291,7 +291,7 @@ class v_n_0_Expression( UserExpression ):
 
 class sigma_n_32_0_Expression( UserExpression ):
     def eval(self, values, x):
-        values[0] = rpam.parameters['sigma_n_12_0']
+        values[0] = rpam.parameters['sigma_l_const']
 
     def value_shape(self):
         return (1,)
@@ -320,6 +320,8 @@ fsp.sigma_fl_n_12.interpolate(sigma_fl_n_12_0_Expression(element=fsp.Q_phi_fl.uf
 fsp.sigma_fl_n_32.assign(fsp.sigma_fl_n_12)
 
 # 2.2.1 for the membrane
+
+fsp.sigma_n_32.interpolate(sigma_n_32_0_Expression( element=fsp.Q_phi.ufl_element() ) )
 
 fsp.v_bar_0.interpolate(v_n_0_Expression( element=fsp.Q_v_bar.ufl_element() ) )
 fsp.v_n_0.interpolate(v_n_0_Expression( element=fsp.Q_v_n.ufl_element() ) )
