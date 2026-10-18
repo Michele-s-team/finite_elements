@@ -102,6 +102,7 @@ w_n_1 = Function(Q_w_n)
 
 sigma_n_12 = Function( Q_phi )
 sigma_n_32 = Function( Q_phi )
+sigma_l = Function( Q_phi )
 sigma_n_12_output = Function( Q_phi )
 
 
