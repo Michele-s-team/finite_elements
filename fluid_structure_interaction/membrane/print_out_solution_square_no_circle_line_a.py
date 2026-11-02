@@ -11,7 +11,6 @@ import os
 import solution_paths as solpath
 import ufl
 
-import command as cmd
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import parameters.read.solution as rpam
@@ -23,7 +22,6 @@ cu = importlib.import_module(swi.cu)
 fi = importlib.import_module(swi.fi)
 rmsh = importlib.import_module(swi.rmsh)
 
-cmd.set_gauge('arc_length')      # restore e, K, normal after the reload
 
 
 i, j, k = ufl.indices( 3 )
@@ -86,7 +84,7 @@ def print_solution(t, step, dt):
     io.full_print(project(
             2.0 * rpam.parameters['eta'] * (geo.g_c( psi_n_12_dummy, nu_n_12_dummy )[i, k] * geo.Nabla_v( v_n_dummy, psi_n_12_dummy, nu_n_12_dummy )[j, k] *
                                                  (geo.b( psi_n_12_dummy, nu_n_12_dummy ))[i, j] - 2.0 * w_n_dummy * (
-                                                         2.0 * ((fsp.mu_n_12) ** 2) - geo.K( psi_n_12_dummy, nu_n_12_dummy ))), fsp.Q_phi), 'f_vis_n' + str(step + 1), \
+                                                         2.0 * ((mu_n_12_dummy) ** 2) - geo.K( psi_n_12_dummy, nu_n_12_dummy ))), fsp.Q_phi), 'f_vis_n_n_' + str(step + 1), \
             solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(project(
             geo.from_3D_to_normal(psi_n_12_dummy, 

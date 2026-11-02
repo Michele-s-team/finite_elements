@@ -22,6 +22,7 @@ import ufl
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import command as cmd
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import physics.fluid_mechanics as flu
 import function as fu
@@ -594,6 +595,7 @@ for n in range(rpam.parameters['N']):
         pr_da = importlib.reload(pr_da)
         cu = importlib.reload(cu)
         pr_sol = importlib.reload(pr_sol)
+        cmd.set_gauge('arc_length')      # restore e, K, normal after the reload
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
