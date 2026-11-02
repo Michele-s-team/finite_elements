@@ -441,7 +441,7 @@ for n in range(rpam.parameters['N']):
     print('Solving post-processing problem ...', flush=True)
 
     vp_pp = importlib.reload(importlib.import_module(swi.vp_pp))  
-    var_pr.solve_vp(vp_pp.F_f_el, fsp.f_el, vp_pp.bcs_f_el, fsp.J_f_el, parameters=params)
+    var_pr.solve_vp(vp_pp.F_f_el_n_12, fsp.f_el_n_12, vp_pp.bcs_f_el_n_12, fsp.J_f_el, parameters=params)
 
     print('... done.', flush=True)
 
@@ -487,7 +487,7 @@ for n in range(rpam.parameters['N']):
         U_n_32_old = Function(fsp.Q_U_n_12)
 
         # 4.1.1.1.2 post-processing fields
-        f_el_old = Function(fsp.Q_phi)
+        f_el_n_12_old = Function(fsp.Q_phi)
 
 
         # 4.1.1.2 _old for mesh
@@ -530,7 +530,7 @@ for n in range(rpam.parameters['N']):
 
         # 4.1.2.2.1.2 post-processing fields
 
-        f_el_old.assign(fsp.f_el)
+        f_el_n_12_old.assign(fsp.f_el_n_12)
 
 
         v_n_1_old.assign(fsp.v_n_1)
@@ -661,7 +661,7 @@ for n in range(rpam.parameters['N']):
 
         # 4.4.1.4 transfer post-processing fields
 
-        fu.transfer_1d_to_1d_curve(f_el_old, fsp.f_el, u_n_old, pre_remesh_path)
+        fu.transfer_1d_to_1d_curve(f_el_n_12_old, fsp.f_el_n_12, u_n_old, pre_remesh_path)
 
 
 
@@ -738,7 +738,7 @@ for n in range(rpam.parameters['N']):
 
         #4.5 clean up
 
-        del v_bar_old, w_bar_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, v_fl_bar_old, v_fl_n_old, v_fl_n_1_old, sigma_fl_n_12_old, sigma_fl_n_32_old, f_el_old
+        del v_bar_old, w_bar_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, v_fl_bar_old, v_fl_n_old, v_fl_n_1_old, sigma_fl_n_12_old, sigma_fl_n_32_old, f_el_n_12_old
         gc.collect()
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
