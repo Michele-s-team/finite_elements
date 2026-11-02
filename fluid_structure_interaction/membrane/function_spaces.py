@@ -95,6 +95,8 @@ psi_mem = Function(Q_mem)
 # test functions
 nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_U_n_12, nu_nu_n_12, nu_psi_n_12,  nu_mu_n_12 = TestFunctions( Q_mem )
 
+nu_f_el = TestFunction(Q_phi)
+
 #fields at the preceeding steps
 v_n_1 = Function(Q_v_n)
 v_n_2 = Function(Q_v_n)
@@ -145,6 +147,10 @@ U_dot_n_12 = Function( Q_U_dot_n_12)
 # fields for the boundary conditions
 v_bar_l = Function( Q_v_bar )
 v_bar_r = Function( Q_v_bar )
+
+# fields for post-processing
+f_el = Function( Q_phi )
+
 
 
 # functions derived from psi_mem
