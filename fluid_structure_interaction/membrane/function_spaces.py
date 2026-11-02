@@ -91,6 +91,8 @@ Q_var_tensor_sigma_fl = TensorFunctionSpace(lmsh.mesh[0], 'P', rpam.parameters['
 #Jacobian
 J_psi_mem = TrialFunction(Q_mem)
 psi_mem = Function(Q_mem)
+J_f_el = TrialFunction(Q_phi)
+
 
 # test functions
 nu_v_bar, nu_w_bar, nu_phi, nu_v_n, nu_w_n, nu_U_n_12, nu_nu_n_12, nu_psi_n_12,  nu_mu_n_12 = TestFunctions( Q_mem )

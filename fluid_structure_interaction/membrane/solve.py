@@ -255,6 +255,10 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
 
+# 4. post-processing problem
+vp_pp = importlib.import_module(swi.vp_pp)
+
+
 # 1. store metadata
 
 # 1.1 store mesh metadata
@@ -430,6 +434,18 @@ for n in range(rpam.parameters['N']):
     call `solve` by evaluating it at the root found above, so all fields are set to their correct profiles on the root
     '''
     solve(root)
+
+    '''
+    solve for post-processing fields
+    '''
+    print('Solving post-processing problem ...', flush=True)
+
+    vp_pp = importlib.reload(importlib.import_module(swi.vp_pp))  
+    var_pr.solve_vp(vp_pp.F_f_el, fsp.f_el, vp_pp.bcs_f_el, fsp.J_f_el, parameters=params)
+
+    print('... done.', flush=True)
+
+
 
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 

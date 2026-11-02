@@ -20,9 +20,10 @@ cmd.set_gauge('arc_length')
 i, j = ufl.indices( 2 )
 
 
+bcs_f_el = []
 
 F_f_el = (
-            fsp.f_el \
+            fsp.f_el *  fsp.nu_f_el \
             - rpam.parameters['kappa'] * (
                 2.0 * geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, j] * ((fsp.mu_n_12).dx(i)) * (fsp.nu_f_el.dx(j)) \
                 - 4.0 * fsp.mu_n_12 * (((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )) * fsp.nu_f_el
