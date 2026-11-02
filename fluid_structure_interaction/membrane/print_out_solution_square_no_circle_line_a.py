@@ -8,7 +8,9 @@ import input_output as io
 import mesh.utils as msh
 import os
 import solution_paths as solpath
+import ufl
 
+import differential_geometry.manifold.geometry as geo
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
 import switch_problem as swi
@@ -16,6 +18,8 @@ import switch_problem as swi
 cu = importlib.import_module(swi.cu)
 fi = importlib.import_module(swi.fi)
 rmsh = importlib.import_module(swi.rmsh)
+
+i, j, k = ufl.indices( 3 )
 
 
 def print_solution(t, step, dt):
@@ -67,7 +71,18 @@ def print_solution(t, step, dt):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(project(2 * fsp.sigma_n_12 * fsp.mu_n_12, fsp.Q_phi), 'f_lap_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-   
+
+    '''
+    2.0 * rpam.parameters['eta'] * (geo.g_c( fsp.psi_n_12, fsp.nu_n_12 )[i, k] * geo.Nabla_v( fsp.V, fsp.psi_n_12, fsp.nu_n_12 )[j, k] *
+                                                 (geo.b( fsp.psi_n_12, fsp.nu_n_12 ))[i, j] - 2.0 * fsp.W * (
+                                                         2.0 * ((fsp.mu_n_12) ** 2) - geo.K( fsp.psi_n_12, fsp.nu_n_12 )))
+    '''
+    io.full_print(project(
+            2.0 * rpam.parameters['eta'] * (
+                geo.g_c( psi_n_12_dummy, mu_n_12_dummy )[i, k] * geo.Nabla_v( v_n_dummy, psi_n_12_dummy, mu_n_12_dummy )[j, k] * (geo.b( psi_n_12_dummy, mu_n_12_dummy ))[i, j] 
+                - 2.0 * w_n_dummy * ( 2.0 * ((fsp.mu_n_12) ** 2) - geo.K( psi_n_12_dummy, mu_n_12_dummy ) )
+                ), fsp.Q_phi), 'f_vis_n' + str(step + 1), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
     # 1.2 mesh problem
 
