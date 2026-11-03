@@ -39,6 +39,8 @@ def print_solution(t, step, dt):
     # 1.1 membrane problem
     v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
 
+    # 1.1.1 physical fields
+
     # print solution to file
     # append to the full time series solution at the current t
     fi.xdmffile_v_bar.write( v_bar_dummy, t )
@@ -75,8 +77,9 @@ def print_solution(t, step, dt):
     io.full_print(fsp.X_ref, 'X_ref_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
-    # post-processing fields
+    #1.1.2 post-processing fields
 
+    #1.1.2.1 forces
     io.full_print(fsp.f_el_n_12, 'f_el_n_12_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print(project(2 * fsp.sigma_n_12 * fsp.mu_n_12, fsp.Q_phi), 'f_lap_n_12_' + str(step + 1), \
@@ -93,6 +96,15 @@ def print_solution(t, step, dt):
                         geo_al.normal(psi_n_12_dummy, nu_n_12_dummy)
                         ), 
                 nu_n_12_dummy), fsp.Q_phi), 'f_fl_n_12_' + str(step + 1), \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+    # 1.1.2.2 intertial terms
+    io.full_print(project(
+        rpam.parameters['rho'] * ( v_n_dummy[i] * v_n_dummy[k] * geo.b( psi_n_12_dummy, nu_n_12_dummy )[k, i] ), fsp.Q_phi), 'f_ine_v_n_' + str(step + 1), \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+    io.full_print(project(
+        rpam.parameters['rho'] * ( v_n_dummy[i] * (w_n_dummy.dx(i)) ), fsp.Q_phi), 'f_ine_w_n_' + str(step + 1), \
     solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
 
 
