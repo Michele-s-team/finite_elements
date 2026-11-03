@@ -30,7 +30,9 @@ F_f_el_n_12 = (
             )
         ) * geo.sqrt_detg( fsp.psi_n_12, fsp.nu_n_12 ) * rmsh.dx_mesh[1] \
         + 2.0 * rpam.parameters['kappa'] * ( \
-                      ( (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12, lmsh.mesh[1]))[i] * ((fsp.mu_n_12).dx( i )) * fsp.nu_f_el_n_12) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
+                    ( 
+                          (bgeo.n_lr( fsp.psi_n_12, fsp.nu_n_12, lmsh.mesh[1]))[i] * ((fsp.mu_n_12).dx(i)) * fsp.nu_f_el_n_12 
+                    ) * bgeo.sqrt_deth_lr( fsp.psi_n_12 ) * rmsh.ds_mesh[1]['ds'] \
           )
 
 
