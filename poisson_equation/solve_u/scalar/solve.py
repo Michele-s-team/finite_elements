@@ -1,11 +1,10 @@
 '''
 This code solves the integro-differential Poisson equation 
 
-Nabla u = alpha * f
-alpha = \int u 
+    Nabla u = alpha * f in Omega
+    alpha = \int_Omega u 
 
-
-
+    
 Run with
     clear; clear; python3 solve.py [name of the variational problem to solve] [path where to read the mesh generated from generate_mesh.py] [path where to store the solution]
 

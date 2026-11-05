@@ -19,6 +19,15 @@ class u_exact_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+    
+class s_exact_expression(UserExpression):
+    def eval(self, values, x):
+        
+        values[0] = 2.0
+
+    def value_shape(self):
+        return (1,)
+
 
 class f_expression(UserExpression):
     def eval(self, values, x):
@@ -31,6 +40,7 @@ class f_expression(UserExpression):
 
 
 fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q_u.ufl_element()))
+fsp.s_exact.interpolate(s_exact_expression(element=fsp.Q_s.ufl_element()))
 fsp.f.interpolate(f_expression(element=fsp.Q_u.ufl_element()))
 
 
