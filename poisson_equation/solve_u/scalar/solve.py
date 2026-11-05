@@ -33,4 +33,4 @@ vp = importlib.import_module(swi.vp)
 # solve the variational problem 
 var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J)
 
-# prout_bc = importlib.import_module(swi.prout_bc)
+prout_bc = importlib.import_module(swi.prout_bc)
