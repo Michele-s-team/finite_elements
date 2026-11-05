@@ -30,20 +30,7 @@ import variational_problem.utils as var_pr
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
-
-# set the solver parameters here
-params = {'nonlinear_solver': 'newton',
-          'newton_solver':
-              {
-                  'linear_solver': 'superlu',
-                  'absolute_tolerance': 1e-6,
-                  'relative_tolerance': 1e-6,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
-              }
-          }
-
-# solve the original variational problem 
-# var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u, parameters=params)
+# solve the variational problem 
+var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J)
 
 # prout_bc = importlib.import_module(swi.prout_bc)

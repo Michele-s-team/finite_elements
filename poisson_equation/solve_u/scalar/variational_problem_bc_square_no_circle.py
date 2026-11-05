@@ -34,10 +34,13 @@ fsp.u_exact.interpolate(u_exact_expression(element=fsp.Q_u.ufl_element()))
 fsp.f.interpolate(laplacian_u_expression(element=fsp.Q_u.ufl_element()))
 
 
-bc_u = DirichletBC(fsp.Q_u, fsp.u_exact, rmsh.boundary)
+bc_u = DirichletBC(fsp.Q.sub(0), fsp.u_exact, rmsh.boundary)
 
 bcs = [bc_u]
 
-# variational functional for the original problem (poisson equation)
-F = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.f * fsp.nu_u) * rmsh.dx \
+F_u = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.s * fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
+
+F_s = (fsp.s - 1) * fsp.nu_s * rmsh.dx
+
+F = F_u + F_s
