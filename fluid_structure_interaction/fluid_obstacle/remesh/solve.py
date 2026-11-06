@@ -314,6 +314,7 @@ print("Starting time iteration ...", flush=True)
 # Time-stepping
 t = 0
 step = 0
+do_remesh = False
 
 for n in range(rpam.parameters['N']):
 
@@ -360,19 +361,6 @@ for n in range(rpam.parameters['N']):
 
     nu_n_12_output, dpsi_n_12_output = fsp.nu_and_dpsi_n_12.split(deepcopy=True)
 
-    '''
-    if step > 120:
-        io.full_print(fsp.ys, 'ys_test_' + str(step), \
-                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print(fsp.U_n_12_smooth, 'U_n_12_smooth_test_' + str(step), \
-                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print(fsp.U_n_12, 'U_n_12_test_' + str(step), \
-                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print(nu_n_12_output, 'nu_n_12_test_' + str(step), \
-                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-        io.full_print(dpsi_n_12_output, 'dpsi_n_12_test_' + str(step), \
-                    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-    '''
 
     # 1.3 solve for mu_n_12
     var_pr.solve_vp(vp_I.F_mu, fsp.mu_n_12, vp_I.bcs_mu, fsp.J_mu, parameters=params)
@@ -498,11 +486,21 @@ for n in range(rpam.parameters['N']):
     mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    if mesh_quality < rpam.parameters['mesh_quality_threshold']:
-    # if False:
-    # if step % 5 == True:
+    # evaluate whether remeshing should be done and write the result in `do_remesh`
+    if 'remesh_stride' in rpam.parameters:
+        # `rpam.parameters` constains `remesh_stride` -> do remesh every `rpam.parameters['remesh_stride]`
 
-        # mesh quality got below the threshold -> remesh 
+        do_remesh = (step % rpam.parameters['remesh_stride'] == 0)
+
+    elif 'mesh_quality_threshold' in rpam.parameters: 
+        # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
+
+        do_remesh = (mesh_quality < rpam.parameters['mesh_quality_threshold'])
+
+
+    if do_remesh:
+
+        #remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
         

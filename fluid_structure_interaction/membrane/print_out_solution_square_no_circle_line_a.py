@@ -2,14 +2,19 @@ from fenics import *
 
 
 import csv
+import function as fu
 import function_spaces as fsp
 import importlib
 import input_output as io
 import mesh.utils as msh
 import os
 import solution_paths as solpath
+import ufl
 
+import differential_geometry.manifold.geometry as geo
+import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 import runtime_arguments as rarg
 import switch_problem as swi
 
@@ -18,12 +23,23 @@ fi = importlib.import_module(swi.fi)
 rmsh = importlib.import_module(swi.rmsh)
 
 
+
+i, j, k = ufl.indices( 3 )
+
+
 def print_solution(t, step, dt):
+
+    # WARNING: here `var_tensor_sigma_fl` uses `u_n` while in the variational problem it is defined with u_n_1 - start 
+    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n, fsp.sigma_fl_n_12, fsp.u_n, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+    # WARNING: here `var_tensor_sigma_fl` uses `u_n` while in the variational problem it is defined with u_n_1 - end
+    fu.transfer_2d_to_1d_curve(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rarg.args.input_directory)
 
     # 1. write fields 
 
     # 1.1 membrane problem
     v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
+
+    # 1.1.1 physical fields
 
     # print solution to file
     # append to the full time series solution at the current t
@@ -60,7 +76,37 @@ def print_solution(t, step, dt):
     
     io.full_print(fsp.X_ref, 'X_ref_n_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-   
+
+    #1.1.2 post-processing fields
+
+    #1.1.2.1 forces
+    io.full_print(fsp.f_el_n_12, 'f_el_n_12_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(project(2 * fsp.sigma_n_12 * fsp.mu_n_12, fsp.Q_phi), 'f_lap_n_12_' + str(step + 1), \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(project(
+            2.0 * rpam.parameters['eta'] * (geo.g_c( psi_n_12_dummy, nu_n_12_dummy )[i, k] * geo.Nabla_v( v_n_dummy, psi_n_12_dummy, nu_n_12_dummy )[j, k] *
+                                                 (geo.b( psi_n_12_dummy, nu_n_12_dummy ))[i, j] - 2.0 * w_n_dummy * (
+                                                         2.0 * ((mu_n_12_dummy) ** 2) - geo.K( psi_n_12_dummy, nu_n_12_dummy ))), fsp.Q_phi), 'f_vis_n_n_' + str(step + 1), \
+            solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+    io.full_print(project(
+            geo.from_3D_to_normal(psi_n_12_dummy, 
+                flu.dFdl(
+                        fsp.var_tensor_sigma_fl_on_mem, 
+                        geo_al.normal(psi_n_12_dummy, nu_n_12_dummy)
+                        ), 
+                nu_n_12_dummy), fsp.Q_phi), 'f_fl_n_12_' + str(step + 1), \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+    # 1.1.2.2 intertial terms
+    io.full_print(project(
+        rpam.parameters['rho'] * ( v_n_dummy[i] * v_n_dummy[k] * geo.b( psi_n_12_dummy, nu_n_12_dummy )[k, i] ), fsp.Q_phi), 'f_ine_v_n_' + str(step + 1), \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
+    io.full_print(project(
+        rpam.parameters['rho'] * ( v_n_dummy[i] * (w_n_dummy.dx(i)) ), fsp.Q_phi), 'f_ine_w_n_' + str(step + 1), \
+    solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
+
 
     # 1.2 mesh problem
 

@@ -22,6 +22,7 @@ import ufl
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
+import command as cmd
 import differential_geometry.manifold.gauges.arc_length_gauge as geo_al
 import physics.fluid_mechanics as flu
 import function as fu
@@ -255,6 +256,10 @@ vp_fluid = importlib.import_module(swi.vp_fluid)
 dolfin.parameters["form_compiler"]["quadrature_degree"] = rpam.parameters['quadrature_degree']
 
 
+# 4. post-processing problem
+vp_pp = importlib.import_module(swi.vp_pp)
+
+
 # 1. store metadata
 
 # 1.1 store mesh metadata
@@ -416,6 +421,7 @@ print("Starting time iteration ...", flush=True)
 
 t = 0
 step = 0
+do_remesh = False
 
 for n in range(rpam.parameters['N']):
 
@@ -431,6 +437,18 @@ for n in range(rpam.parameters['N']):
     '''
     solve(root)
 
+    '''
+    solve for post-processing fields
+    '''
+    print('Solving post-processing problem ...', flush=True)
+
+    vp_pp = importlib.reload(importlib.import_module(swi.vp_pp))  
+    var_pr.solve_vp(vp_pp.F_f_el_n_12, fsp.f_el_n_12, vp_pp.bcs_f_el_n_12, fsp.J_f_el, parameters=params)
+
+    print('... done.', flush=True)
+
+
+
     #3.3 print BCs, ICs, data such as mesh quality. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
     #3.3.1 compute mesh quality
@@ -441,9 +459,18 @@ for n in range(rpam.parameters['N']):
     pr_bc.print_bcs(step)
     pr_da.print_data(step)
 
+    # evaluate whether remeshing should be done and write the result in `do_remesh`
+    if 'remesh_stride' in rpam.parameters:
+        # `rpam.parameters` constains `remesh_stride` -> do remesh every `rpam.parameters['remesh_stride]`
 
-    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    if step % rpam.parameters['remesh_stride'] == 0:
+        do_remesh = (step % rpam.parameters['remesh_stride'] == 0)
+
+    elif 'mesh_quality_threshold' in rpam.parameters: 
+        # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
+
+        do_remesh = (msh_qu.quality < rpam.parameters['mesh_quality_threshold'])
+
+    if do_remesh:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold)
 
@@ -454,6 +481,8 @@ for n in range(rpam.parameters['N']):
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
         # 4.1.1.1 _old fields for membrane
+
+        # 4.1.1.1.1 physical fields
         v_bar_old = Function(fsp.Q_v_bar)
         w_bar_old = Function(fsp.Q_w_bar)
         v_n_old = Function(fsp.Q_v_n)
@@ -467,6 +496,9 @@ for n in range(rpam.parameters['N']):
         sigma_n_12_old = Function(fsp.Q_phi)
         sigma_n_32_old = Function(fsp.Q_phi)
         U_n_32_old = Function(fsp.Q_U_n_12)
+
+        # 4.1.1.1.2 post-processing fields
+        f_el_n_12_old = Function(fsp.Q_phi)
 
 
         # 4.1.1.2 _old for mesh
@@ -495,6 +527,9 @@ for n in range(rpam.parameters['N']):
         # 4.1.2.2 write into the _old fields
 
         # 4.1.2.2.1 write into membrane fields
+
+        # 4.1.2.2.1.1 physical fields
+
         v_bar_old.assign(v_bar_dummy)
         w_bar_old.assign(w_bar_dummy)
         v_n_old.assign(v_n_dummy)
@@ -503,6 +538,11 @@ for n in range(rpam.parameters['N']):
         nu_n_12_old.assign(nu_n_12_dummy)
         psi_n_12_old.assign(psi_n_12_dummy)
         mu_n_12_old.assign(mu_n_12_dummy)
+
+        # 4.1.2.2.1.2 post-processing fields
+
+        f_el_n_12_old.assign(fsp.f_el_n_12)
+
 
         v_n_1_old.assign(fsp.v_n_1)
 
@@ -565,6 +605,7 @@ for n in range(rpam.parameters['N']):
         pr_da = importlib.reload(pr_da)
         cu = importlib.reload(cu)
         pr_sol = importlib.reload(pr_sol)
+        cmd.set_gauge('arc_length')      # restore e, K, normal after the reload
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
@@ -629,6 +670,11 @@ for n in range(rpam.parameters['N']):
         fu.transfer_1d_to_1d_curve(nu_n_12_old, fsp.nu_n_12_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(psi_n_12_old, fsp.psi_n_12_output, u_n_old, pre_remesh_path)
         fu.transfer_1d_to_1d_curve(mu_n_12_old, fsp.mu_n_12_output, u_n_old, pre_remesh_path)
+
+        # 4.4.1.4 transfer post-processing fields
+
+        fu.transfer_1d_to_1d_curve(f_el_n_12_old, fsp.f_el_n_12, u_n_old, pre_remesh_path)
+
 
 
         fsp.assigner_mem.assign(fsp.psi_mem, [fsp.v_bar_output, fsp.w_bar_output, fsp.phi_output, fsp.v_n_output, fsp.w_n_output, fsp.U_n_12_output, fsp.nu_n_12_output, fsp.psi_n_12_output, fsp.mu_n_12_output])
@@ -704,7 +750,7 @@ for n in range(rpam.parameters['N']):
 
         #4.5 clean up
 
-        del v_bar_old, w_bar_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, v_fl_bar_old, v_fl_n_old, v_fl_n_1_old, sigma_fl_n_12_old, sigma_fl_n_32_old
+        del v_bar_old, w_bar_old, v_n_old, w_n_old, U_n_12_old, nu_n_12_old, psi_n_12_old, mu_n_12_old, v_n_1_old, sigma_n_12_old, sigma_n_32_old, U_n_32_old, u_n_old, u_n_1_old, u_n_2_old, u_dot_n_old, u_dot_n_1_old, u_dot_n_2_old, v_fl_bar_old, v_fl_n_old, v_fl_n_1_old, sigma_fl_n_12_old, sigma_fl_n_32_old, f_el_n_12_old
         gc.collect()
 
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')

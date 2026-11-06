@@ -77,39 +77,6 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
-'''# test mean - start
-import numpy as np
-
-coords = [[1,2],[3,4]]
-c = np.mean(coords, axis=0)
-
-print(f'c = {c}')
-
-
-sys.exit(1)
-# test mean - end
-'''
-
-'''
-# test phi_0_expression() - start
-import decompose_u as dec_u
-
-mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
-
-shape_coordinates = []
-for i in range(len(mesh_0_parameters["shape_coordinates"])):
-    # run through all coordinates of the nodes of the boundary
-
-    coordinate = mesh_0_parameters["shape_coordinates"][i]
-
-    print(f'coordinate = {coordinate}')
-        
-    shape_coordinates.append(dec_u.phi_0_expression()(coordinate))
-
-sys.exit(1)
-# test phi_0_expression() - end
-'''
-
 alpha, beta = ufl.indices(2)
 
 
@@ -320,6 +287,7 @@ print("Starting time iteration ...", flush=True)
 
 t = 0
 step = 0
+do_remesh = False
 
 for n in range(rpam.parameters['num_steps']):
 
@@ -376,9 +344,19 @@ for n in range(rpam.parameters['num_steps']):
     pr_ic.print_ics(step)
     pr_da.print_data(step)
 
-    if step % rpam.parameters['remesh_stride'] == 0:
-    # if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-    # if step > 1:
+    # evaluate whether remeshing should be done and write the result in `do_remesh`
+    if 'remesh_stride' in rpam.parameters:
+        # `rpam.parameters` constains `remesh_stride` -> do remesh every `rpam.parameters['remesh_stride]`
+
+        do_remesh = (step % rpam.parameters['remesh_stride'] == 0)
+
+    elif 'mesh_quality_threshold' in rpam.parameters: 
+        # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
+
+        do_remesh = (msh_qu.quality < rpam.parameters['mesh_quality_threshold'])
+
+
+    if do_remesh:
 
         #4. remesh (the mesh quality got below mesh_quality_threshold ->)
 

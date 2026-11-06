@@ -135,6 +135,8 @@ print("Starting time iteration ...", flush=True)
 
 t = 0
 step = 0
+do_remesh = False
+
 for n in range(rpam.parameters["num_steps"]):
 
     # Update current time
@@ -186,8 +188,20 @@ for n in range(rpam.parameters["num_steps"]):
     pr_da.print_data(step)
 
 
-    if msh_qu.quality < rpam.parameters['mesh_quality_threshold']:
-        #  mesh quality got below the threshold -> remesh 
+    # evaluate whether remeshing should be done and write the result in `do_remesh`
+    if 'remesh_stride' in rpam.parameters:
+        # `rpam.parameters` constains `remesh_stride` -> do remesh every `rpam.parameters['remesh_stride]`
+
+        do_remesh = (step % rpam.parameters['remesh_stride'] == 0)
+
+    elif 'mesh_quality_threshold' in rpam.parameters: 
+        # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
+
+        do_remesh = (msh_qu.quality < rpam.parameters['mesh_quality_threshold'])
+
+
+    if do_remesh:
+        #4. remesh 
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
