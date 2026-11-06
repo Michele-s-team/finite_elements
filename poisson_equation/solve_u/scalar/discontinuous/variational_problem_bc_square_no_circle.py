@@ -28,8 +28,6 @@ class u_exact_expression(UserExpression):
         return (1,)
 
 
-
-
 class f_expression(UserExpression):
     def eval(self, values, x):
 
