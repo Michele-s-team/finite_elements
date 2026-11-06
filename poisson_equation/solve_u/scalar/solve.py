@@ -2,7 +2,7 @@
 This code solves the integro-differential Poisson equation 
 
     Nabla u = alpha * f in Omega
-    alpha = \int_Omega u 
+    alpha = \int_{partial Omega} u 
 
     
 Run with

@@ -23,7 +23,7 @@ class u_exact_expression(UserExpression):
 class s_exact_expression(UserExpression):
     def eval(self, values, x):
         
-        values[0] = 2.0
+        values[0] = 9.0
 
     def value_shape(self):
         return (1,)
@@ -32,7 +32,7 @@ class s_exact_expression(UserExpression):
 class f_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = 6.0/2.0
+        values[0] = 6.0/9.0
 
     def value_shape(self):
         return (1,)
@@ -51,6 +51,6 @@ bcs = [bc_u]
 F_u = (dot(grad(fsp.u), grad(fsp.nu_u)) + fsp.s * fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds \
 
-F_s = (fsp.s/assemble(Constant(1.0) * rmsh.dx) - fsp.u) * fsp.nu_s * rmsh.dx
+F_s = (fsp.s/assemble(Constant(1.0) * rmsh.ds) - fsp.u) * fsp.nu_s * rmsh.ds
 
 F = F_u + F_s
