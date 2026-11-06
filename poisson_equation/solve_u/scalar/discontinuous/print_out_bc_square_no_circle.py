@@ -22,7 +22,9 @@ print(f"\t\t<<(u - phi)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_
 
 print("Comparison with exact solution: ")
 print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(u_output, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(s - s_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(s_output, fsp.s_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print(f"\t\terror_norm(u, u_exact)_Omega = {col.Fore.RED}{fu.error_norm(u_output, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\terror_norm(s, s_exact)_Omega = {col.Fore.RED}{fu.error_norm(s_output, fsp.s_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 import print_out_solution

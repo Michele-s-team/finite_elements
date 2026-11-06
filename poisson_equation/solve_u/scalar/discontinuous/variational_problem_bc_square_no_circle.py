@@ -27,6 +27,15 @@ class u_exact_expression(UserExpression):
     def value_shape(self):
         return (1,)
 
+class s_exact_expression(UserExpression):
+    def eval(self, values, x):
+
+        # test case 1
+        values[0] = 9.0
+ 
+    def value_shape(self):
+        return (1,)
+
 
 class f_expression(UserExpression):
     def eval(self, values, x):
@@ -39,12 +48,14 @@ class f_expression(UserExpression):
 
 
 msh.interpolate_dg(fsp.u_exact, u_exact_expression())
+fsp.s_exact.interpolate(s_exact_expression(element=fsp.Q_s.ufl_element()))
 msh.interpolate_dg(fsp.f, f_expression())
 
 
 bcs = []
 
 # variational functional
+# 1. variational functional for `u`
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.s * fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
@@ -55,9 +66,11 @@ F_I = (
 
 F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
 
+F_u = F_0 + F_I + F_E
+
+# 2. variational functional for `s`
 F_s = (fsp.s/assemble(Constant(1.0) * rmsh.ds) - fsp.u) * fsp.nu_s * rmsh.ds
 
 
-F_u = F_0 + F_I + F_E
-
+#3. total variational functional 
 F = F_u + F_s
