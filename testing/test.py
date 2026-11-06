@@ -507,7 +507,7 @@ checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(comm
 case_name = 'poisson_equation/solve_u/scalar'
 
 problem_name = 'square_no_circle'
-generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/symmetric/'
+generate_mesh_path = root_path + 'generate_mesh/2d/square_no_circle/'
 checks[case_name + '_' + problem_name] = utest.test_generate_mesh_and_solve(commit_a, commit_b,
                                                                      root_path,
                                                                      generate_mesh_path, root_path + case_name,
