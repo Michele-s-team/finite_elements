@@ -12,20 +12,17 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-i, j, k, l = ufl.indices(4)
 
+u_output, s_output = fsp.psi.split( deepcopy=True )
 
 
 # check if the boundary conditions (BCs) are satisfied
 print("Check of BCs:")
-print(f"\t\t<<(u - phi)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(u - phi)^2>>_[partial Omega] = {col.Fore.RED}{msh.difference_wrt_measure(u_output, fsp.u_exact, rmsh.ds):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 print("Comparison with exact solution: ")
-print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(fsp.u, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\t<<(u - u_exact)^2>>_Omega = {col.Fore.RED}{msh.difference_wrt_measure(u_output, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
-print(f"\t\terror_norm(u, u_exact)_Omega = {col.Fore.RED}{fu.error_norm(fsp.u, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
-
-# print(
-#     f"\t\t<<(hess_u - hess_u_exact)^2>>_Omega = {col.Fore.RED}{msh.abs_wrt_measure(sqrt((fsp.hess_u[i, j] - fsp.hess_u_exact[i, j]) * (fsp.hess_u[i, j] - fsp.hess_u_exact[i, j])), rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
+print(f"\t\terror_norm(u, u_exact)_Omega = {col.Fore.RED}{fu.error_norm(u_output, fsp.u_exact, rmsh.dx):.{io.number_of_decimals}e}{col.Style.RESET_ALL}")
 
 import print_out_solution

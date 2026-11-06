@@ -30,6 +30,6 @@ rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
 
 
-var_pr.solve_vp(vp.F, fsp.u, vp.bcs, fsp.J_u)
+var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J)
 
 prout_bc = importlib.import_module(swi.prout_bc)

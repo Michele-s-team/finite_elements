@@ -32,7 +32,7 @@ class f_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        values[0] = 6.0
+        values[0] = 6.0 / 9.0
 
     def value_shape(self):
         return (1,)
@@ -44,7 +44,7 @@ msh.interpolate_dg(fsp.f, f_expression())
 
 bcs = []
 
-# variational functional for the original problem (poisson equation)
+# variational functional
 F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.s * fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
