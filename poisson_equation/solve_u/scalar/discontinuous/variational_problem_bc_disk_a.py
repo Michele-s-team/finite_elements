@@ -22,46 +22,44 @@ class u_exact_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
-
-        # test case 2
-        values[0] = np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['r']) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.lmsh.parameters['r'])
-
+        values[0] = 1 + x[0] ** 2 + 2 * x[1] ** 2
+ 
     def value_shape(self):
         return (1,)
 
 
 
 
-class laplacian_u_expression(UserExpression):
+class f_expression(UserExpression):
     def eval(self, values, x):
 
         # test case 1
-        # values[0] = 6.0
-
-        # test case 2
-        values[0] = - (4 * np.pi/rmsh.lmsh.parameters['r'])**2 * np.sin(2 * np.pi * (x[0] + x[1]) / rmsh.lmsh.parameters['r']) * np.cos(2 * np.pi * (x[0] - x[1]) / rmsh.lmsh.parameters['r'])
+        values[0] = 6.0
 
     def value_shape(self):
         return (1,)
 
 
 msh.interpolate_dg(fsp.u_exact, u_exact_expression())
-msh.interpolate_dg(fsp.f, laplacian_u_expression())
+msh.interpolate_dg(fsp.f, f_expression())
 
 
 bcs = []
 
 # variational functional for the original problem (poisson equation)
-F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.f * fsp.nu_u) * rmsh.dx \
+F_0 = (fsp.u.dx(i) * fsp.nu_u.dx(i) + fsp.s * fsp.f * fsp.nu_u) * rmsh.dx \
     - bgeo.facet_normal[i] * (fsp.u.dx(i)) * fsp.nu_u * rmsh.ds
 
 F_I = (
-        -  msh.average(fsp.u.dx(i))    * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] + \
+        -  msh.average(fsp.u.dx(i)) * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] + \
         rpam.parameters['alpha']/rmsh.r_mesh * ( msh.jump(fsp.u, bgeo.facet_normal)[i] * msh.jump(fsp.nu_u, bgeo.facet_normal)[i] )
         ) * rmsh.dS
 
 F_E =   rpam.parameters['alpha']/rmsh.r_mesh * (fsp.u - fsp.u_exact) * fsp.nu_u * rmsh.ds
 
+F_s = (fsp.s/assemble(Constant(1.0) * rmsh.ds) - fsp.u) * fsp.nu_s * rmsh.ds
 
-F = F_0 + F_I + F_E
+
+F_u = F_0 + F_I + F_E
+
+F = F_u + F_s
