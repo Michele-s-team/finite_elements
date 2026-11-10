@@ -1,4 +1,3 @@
-import dolfin
 from fenics import *
 
 import mesh.load as lmsh
@@ -24,8 +23,12 @@ omega_n_1 : float
 Q_v = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_v_ = VectorFunctionSpace(lmsh.mesh, 'P', 2)
 Q_phi = FunctionSpace(lmsh.mesh, 'P', 1)
+
 Q_u = VectorFunctionSpace(lmsh.mesh, 'P', 1)
 Q_u_dot = VectorFunctionSpace(lmsh.mesh, 'P', 1)
+
+# function space for stress tensor \varsigma
+Q_sigma_stress = TensorFunctionSpace(lmsh.mesh, 'P', 2, shape=(2, 2))
 
 # function space for the vector dy(s)/ds which represents the tangent to the ellipse curve
 Q_y = VectorFunctionSpace(lmsh.mesh, 'P', 2)
@@ -38,11 +41,18 @@ v_n = Function(Q_v)
 v_n_1 = Function(Q_v)
 v_n_2 = Function(Q_v)
 v_ = Function(Q_v_)
+
+# fields needed to store the boundary conditions
+v__profile_l = Function(Q_v_)
+v__profile_ellipse = Function(Q_v_)
+
 # sigma^{n-1/2}
 sigma_n_12 = Function(Q_phi)
 # sigma^{n-3/2}
 sigma_n_32 = Function(Q_phi)
 phi = Function(Q_phi)
+sigma_stress_n = Function(Q_sigma_stress)
+
 u_n = Function(Q_u)
 u_dot_n = Function(Q_u_dot)
 u_n_1 = Function(Q_u)
@@ -50,15 +60,13 @@ u_dot_n_1 = Function(Q_u_dot)
 u_n_2 = Function(Q_u)
 u_dot_n_2 = Function(Q_u_dot)
 
-u_ellipse = Function(Q_u)
+u_shape = Function(Q_u)
 u_square = Function(Q_u)
-u_dot_ellipse = Function(Q_u_dot)
+u_dot_shape = Function(Q_u_dot)
 u_dot_square = Function(Q_u_dot)
 
-# y_ellipse = {y^s}_notes
-ys_ellipse = Function(Q_y)
-# dyds_ellipse = {dy^s/ds}_notes
-dyds_ellipse = Function(Q_dyds)
+# y_shape = {y^s}_notes
+ys_shape = Function(Q_y)
 
 # Define test functions
 nu_v_n = TestFunction(Q_v)
