@@ -38,8 +38,8 @@ this is the RHS of (64) of 'Channel flow with moving obstacle'
 class v__profile_poly_Expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = fsp.omega_n * (-np.sin(fsp.theta_n) * (x[0] - rmsh.parameters["c"][0]) - np.cos(fsp.theta_n) * (x[1] - rmsh.parameters["c"][1]))
-        values[1] = fsp.omega_n * (np.cos(fsp.theta_n) * (x[0] - rmsh.parameters["c"][0]) - np.sin(fsp.theta_n) * (x[1] - rmsh.parameters["c"][1]))
+        values[0] = fsp.omega_n * (-np.sin(fsp.theta_n - rmsh.parameters['phi']) * (x[0] - rmsh.parameters["c"][0]) - np.cos(fsp.theta_n - rmsh.parameters['phi']) * (x[1] - rmsh.parameters["c"][1]))
+        values[1] = fsp.omega_n * (np.cos(fsp.theta_n - rmsh.parameters['phi']) * (x[0] - rmsh.parameters["c"][0]) - np.sin(fsp.theta_n - rmsh.parameters['phi']) * (x[1] - rmsh.parameters["c"][1]))
   
     def value_shape(self):
         return (2,)
