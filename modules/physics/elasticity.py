@@ -133,11 +133,13 @@ def E_dot(u, u_dot):
 
 '''
 time derivative of S
+
 Input values:
-- 'u': {u^t}_notes
-- 'u_dot': {du^t/dt}_notes
+    - 'u': {u^t}_notes
+    - 'u_dot': {du^t/dt}_notes
+
 Return values:
-- dS_{ij}^t/dt_notes
+    - dS_{ij}^t/dt_notes
 '''
 
 
@@ -154,9 +156,9 @@ def S_dot(u, u_dot, K, K_dot, mu, mu_dot):
 '''
 tensor {G^t_{ij}}_notes
 Input values: 
-- 'u': displacement vector field
+    - 'u': displacement vector field
 Return values:
-- G[i,j] = {G^t_{ij}}_notes
+    - G[i,j] = {G^t_{ij}}_notes
 '''
 
 
@@ -204,6 +206,14 @@ Return values:
 '''
 def P(u, K, mu):
     return as_tensor(F(u)[i, j] * S(u, K, mu)[j, k], (i, k))
+
+
+
+def Q(u, u_dot):
+
+    return as_tensor(
+        (F_dot(u_dot)[k, j] * S(u, K, mu)[j, i] + F(u)[k, j] * S_dot(u, u_dot, K, K_dot, mu, mu_dot)[j, i]), 
+    (k, i))
 
 '''
 tensor C in 'Notes "Kanensky legcture notes"' 
