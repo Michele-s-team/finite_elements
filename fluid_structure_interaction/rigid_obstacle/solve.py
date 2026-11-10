@@ -291,7 +291,7 @@ for n in range(rpam.parameters["num_steps"]):
         # set fsp.v_n_1(y') =  v_n_1_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(v_n_1_old, fsp.v_n_1, u_n_old)
 
-        # set fsp.v_n_2(y') =  v_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
+        # set fsp.v_n_2(y') =  v_n_2_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(v_n_2_old, fsp.v_n_2, u_n_old)
 
 
