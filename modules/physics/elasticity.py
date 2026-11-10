@@ -197,19 +197,31 @@ def detF(u):
 
 '''
 tensor P in 'Equations of motion for an elastic body
+
 Input values:
-- 'u': displacement vector field
-- 'K', 'mu': bulk modulus and modulus of hydrostatic compression
+    - 'u': displacement vector field
+    - 'K', 'mu': bulk modulus and modulus of hydrostatic compression
 
 Return values:
-- P[i, j] = P_{ij}
+    - P[i, j] = P_{ij}
 '''
 def P(u, K, mu):
     return as_tensor(F(u)[i, j] * S(u, K, mu)[j, k], (i, k))
 
 
+'''
+tensor Q corresponding to the time derivative of `P`
 
-def Q(u, u_dot):
+Input values: 
+    - `u`: displacement field
+    - `u_dot`: time derivative of `u`
+    - 'K', 'mu': bulk modulus and modulus of hydrostatic compression
+    - 'K_dot', 'mu_dot': time derivatives of bulk modulus and modulus of hydrostatic compression, respectively
+
+Return values: 
+
+'''
+def Q(u, u_dot, K, mu, K_dot, mu_dot):
 
     return as_tensor(
         (F_dot(u_dot)[k, j] * S(u, K, mu)[j, i] + F(u)[k, j] * S_dot(u, u_dot, K, K_dot, mu, mu_dot)[j, i]), 
