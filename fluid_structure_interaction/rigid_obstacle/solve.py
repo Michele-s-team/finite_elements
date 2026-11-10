@@ -165,7 +165,6 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
-    # sign
     
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)
@@ -185,12 +184,9 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
-    # sign
-
 
     pr_bc.print_bcs(step)
     pr_da.print_data(step)
-
 
 
 
@@ -204,6 +200,7 @@ for n in range(rpam.parameters["num_steps"]):
         # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
 
         do_remesh = (msh_qu.quality < rpam.parameters['mesh_quality_threshold'])
+
 
 
     if do_remesh:
@@ -231,7 +228,6 @@ for n in range(rpam.parameters["num_steps"]):
         u_dot_n_old = Function(fsp.Q_u_dot)
         u_dot_n_1_old = Function(fsp.Q_u_dot)
         u_dot_n_2_old = Function(fsp.Q_u_dot)
-
 
 
         # 1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
@@ -328,9 +324,7 @@ for n in range(rpam.parameters["num_steps"]):
         # set u_b(y') =  u_n_old(phi_n_old^{-1}(y')), where phi_n_old(y) = y + u_n_old(y)
         msh.transfer(u_n_old, u_b, u_n_old)
 
-
         fsp.u_n_1.assign(u_a - u_b)
-
 
 
 
