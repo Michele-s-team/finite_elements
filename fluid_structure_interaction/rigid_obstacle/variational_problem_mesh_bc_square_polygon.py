@@ -78,6 +78,10 @@ class u_dot_shape_expression(UserExpression):
 fsp.u_shape.interpolate(u_shape_expression(element=fsp.Q_u.ufl_element()))
 fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u.ufl_element()))
 
+fsp.u_dot_shape.interpolate(u_dot_shape_expression(element=fsp.Q_u_dot.ufl_element()))
+fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
+
+
 # BCs for u_n
 
 bc_u_shape = DirichletBC(fsp.Q_u, fsp.u_shape, rmsh.mf, rmsh.parameters['polygon_id'])
@@ -87,11 +91,8 @@ bc_u_square_t = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['lin
 bc_u_square_b = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_b_id'])
 bcs = [bc_u_shape, bc_u_square_l, bc_u_square_r, bc_u_square_t, bc_u_square_b]
 
-# variational functional for u_n, Eq. (87) in 'Channel flow with moving obstacle'
-F_u = (ela.F(fsp.u_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
-fsp.u_dot_shape.interpolate(u_dot_shape_expression(element=fsp.Q_u_dot.ufl_element()))
-fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
+# BCs for u_dot_n
 
 bc_u_dot_shape = DirichletBC(fsp.Q_u_dot, fsp.u_dot_shape, rmsh.mf, rmsh.parameters['polygon_id'])
 bc_u_dot_square_l = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_l_id'])
@@ -100,6 +101,14 @@ bc_u_dot_square_t = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.par
 bc_u_dot_square_b = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_b_id'])
 
 bcs_dot = [bc_u_dot_shape, bc_u_dot_square_l, bc_u_dot_square_r, bc_u_dot_square_t, bc_u_dot_square_b]
+
+
+
+# variational functional for u_n, Eq. (87) in 'Channel flow with moving obstacle'
+F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[i, j] * (fsp.nu_u[i].dx(j))) * rmsh.dx
+
+# sign
+
 
 F_u_dot = ( \
                       (ela.F_dot(fsp.u_dot_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[j, i] \
