@@ -2360,6 +2360,7 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     # write into metadata the file format wich which the mesh will be written
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
+    metadata['polygon_coordinates'] = polygon_coordinates
 
     if additional_metadata is not None:
         metadata.update(additional_metadata)
