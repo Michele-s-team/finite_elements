@@ -104,10 +104,10 @@ bcs_dot = [bc_u_dot_shape, bc_u_dot_square_l, bc_u_dot_square_r, bc_u_dot_square
 
 
 
-# variational functional for u_n,
+# variational functional for u_n, I dropped the boundary terms because of the dirichlet BCs
 F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[i, j] * (fsp.nu_u[i].dx(j))) * rmsh.dx
 
-# variational functional for u_dot_n
+# variational functional for u_dot_n, I dropped the boundary terms because of the dirichlet BCs
 F_u_dot = - ela.Q(
                 fsp.u_n, fsp.u_dot_n, 
                 ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]), 
