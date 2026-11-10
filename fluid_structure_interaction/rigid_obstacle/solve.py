@@ -156,7 +156,6 @@ for n in range(rpam.parameters["num_steps"]):
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
 
-    # sign
 
     vp_mesh = importlib.reload(vp_mesh)
 
@@ -166,6 +165,7 @@ for n in range(rpam.parameters["num_steps"]):
 
     print('... done.', flush=True)
 
+    # sign
     
     # step 3) update v_n and sigma_n_12 (fluid problem)
     print('Solving fluid problem ...', flush=True)

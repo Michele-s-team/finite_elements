@@ -219,6 +219,7 @@ Input values:
     - 'K_dot', 'mu_dot': time derivatives of bulk modulus and modulus of hydrostatic compression, respectively
 
 Return values: 
+    - `Q` as defined in (111) of 'Channel flow with elastic obstacle'
 
 '''
 def Q(u, u_dot, K, mu, K_dot, mu_dot):
