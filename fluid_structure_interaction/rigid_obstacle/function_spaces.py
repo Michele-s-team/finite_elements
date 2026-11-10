@@ -44,7 +44,7 @@ v_ = Function(Q_v_)
 
 # fields needed to store the boundary conditions
 v__profile_l = Function(Q_v_)
-v__profile_ellipse = Function(Q_v_)
+v__profile_poly = Function(Q_v_)
 
 # sigma^{n-1/2}
 sigma_n_12 = Function(Q_phi)

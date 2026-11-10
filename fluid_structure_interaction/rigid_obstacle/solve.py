@@ -185,9 +185,13 @@ for n in range(rpam.parameters["num_steps"]):
     fsp.sigma_n_12.assign(fsp.sigma_n_32 - fsp.phi)
 
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh, fsp.u_n))
+    # sign
+
 
     pr_bc.print_bcs(step)
     pr_da.print_data(step)
+
+
 
 
     # evaluate whether remeshing should be done and write the result in `do_remesh`
