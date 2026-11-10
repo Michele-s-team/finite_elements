@@ -15,11 +15,11 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-
-
 i, j, k, l = ufl.indices(4)
 
-
+'''
+this is the profile of u^n in the RHS of the BC (100) in 'Channel flow with moving obstacle'
+'''
 class u_shape_expression(UserExpression):
     def eval(self, values, x):
 

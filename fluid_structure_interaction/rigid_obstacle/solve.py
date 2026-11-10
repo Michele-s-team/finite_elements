@@ -142,7 +142,6 @@ for n in range(rpam.parameters["num_steps"]):
     t += dt
     step += 1
 
-    # sign
 
     # step 1): update theta and omega
     print('Solving theta problem ...', flush=True)
@@ -156,6 +155,8 @@ for n in range(rpam.parameters["num_steps"]):
 
     # step 2): update u and u_dot (mesh problem)
     print('Solving mesh problem ...', flush=True)
+
+    # sign
 
     vp_mesh = importlib.reload(vp_mesh)
 
