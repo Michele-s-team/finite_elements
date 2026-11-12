@@ -39,4 +39,5 @@ fsp.ys_shape.interpolate(ys_shape_expression(element=fsp.Q_y.ufl_element()))
 # momentum of forces exerted by the fluid on the ellipse
 # here I substitutes d y_{s l}/d s in 'Channel flow with moving obstacle' with '- bego.facet_tangent': this allows for doing withouth interpolating the shape y_s and taking its derivative with respect to `s`
 M_ellipse = assemble( \
-    (geo.epsilon[i, j] * (fsp.ys_shape[i] + fsp.u_n_1[i] - (Constant(rmsh.parameters['c']))[i]) * flu.sigma_ale(fsp.v_n_1, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * ( - bgeo.facet_tangent[l])) * rmsh.ds_poly)
+    (geo.epsilon[i, j] * (fsp.ys_shape[i] + fsp.u_n_1[i] - (Constant(rmsh.parameters['c']))[i]) * flu.sigma_ale(fsp.v_n_1, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters["mu"])[j, k] * geo.epsilon[k, m] * ela.F(fsp.u_n_1)[m, l] * ( - bgeo.facet_tangent[l])) * rmsh.ds_poly) \
+    + rpam.parameters['M']

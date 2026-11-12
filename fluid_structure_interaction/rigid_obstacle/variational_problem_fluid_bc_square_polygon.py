@@ -20,17 +20,7 @@ i, j, k, l = ufl.indices(4)
 
 dt = rpam.parameters["T"] / rpam.parameters["num_steps"]  # time step size
 
-'''
-this is the RHS of (63) of 'Channel flow with moving obstacle'
-'''
-class v__profile_l_Expression(UserExpression):
-    def eval(self, values, x):
 
-        values[0] = rpam.parameters["v_l"] * 4.0*1.5*x[1]*(rmsh.parameters["h"] - x[1]) / (rmsh.parameters["h"]**2)
-        values[1] = 0
-  
-    def value_shape(self):
-        return (2,)
 
 '''
 this is the RHS of (64) of 'Channel flow with moving obstacle'
@@ -44,23 +34,22 @@ class v__profile_poly_Expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-fsp.v__profile_l.interpolate(v__profile_l_Expression(element=fsp.Q_v_.ufl_element()))
 fsp.v__profile_poly.interpolate(v__profile_poly_Expression(element=fsp.Q_v_.ufl_element()))
 
 
 # BCs for `v_`, equivalent to (63) and (64) in 'Channel flow with moving obstacle'
-bc_v__l = DirichletBC(fsp.Q_v_, fsp.v__profile_l, rmsh.mf, rmsh.parameters['line_l_id'])
 bc_v__t = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.mf, rmsh.parameters['line_t_id'])
 bc_v__b = DirichletBC(fsp.Q_v_, Constant((0, 0)), rmsh.mf, rmsh.parameters['line_b_id'])
 bc_v__poly = DirichletBC(fsp.Q_v_, fsp.v__profile_poly, rmsh.mf, rmsh.parameters['polygon_id'])
 
-bc_v_ = [bc_v__l, bc_v__t, bc_v__b, bc_v__poly]
+bc_v_ = [bc_v__t, bc_v__b, bc_v__poly]
 
 
 # BCs for phi, equivalent fo (69) in 'Channel flow with moving obstacle
 
+bc_phi_l = DirichletBC(fsp.Q_phi, Constant(0), rmsh.mf, rmsh.parameters['line_l_id'])
 bc_phi_r = DirichletBC(fsp.Q_phi, Constant(0), rmsh.mf, rmsh.parameters['line_r_id'])
-bc_phi = [bc_phi_r]
+bc_phi = [bc_phi_l, bc_phi_r]
 
 # BCs for v_n
 bc_v_n = []
@@ -74,8 +63,9 @@ F_v_ = ( \
                    + ela.G(fsp.u_n_1)[k, j] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, j] * (fsp.nu_v_[i]).dx(k) \
            ) * ela.detF(fsp.u_n_1) * rmsh.dx \
        - ( \
-            ela.G(fsp.u_n_1)[k, j] * bgeo.facet_normal[k] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_l_tb_poly \
-            + ela.G(fsp.u_n_1)[k, 1] * bgeo.facet_normal[k] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, 1] * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_r \
+            ela.G(fsp.u_n_1)[k, j] * bgeo.facet_normal[k] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_tb \
+            + ela.G(fsp.u_n_1)[k, j] * bgeo.facet_normal[k] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, j] * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_poly \
+            + ela.G(fsp.u_n_1)[k, 1] * bgeo.facet_normal[k] * flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, 1] * fsp.nu_v_[i] * ela.detF(fsp.u_n_1) * rmsh.ds_lr \
         )
 
 # step 2 for phi
@@ -83,7 +73,7 @@ F_phi = ( \
             - ela.G(fsp.u_n_1)[j, i] * (fsp.phi.dx(j)) * ela.G(fsp.u_n_1)[l, i] * (fsp.nu_phi.dx(l)) \
             - (rpam.parameters["rho"] / dt) * ela.G(fsp.u_n_1)[j, i] * ((fsp.v_[i]).dx(j)) * fsp.nu_phi \
         ) * ela.detF(fsp.u_n_1) * rmsh.dx \
-        + (ela.G(fsp.u_n_1)[l, i] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_r
+        + (ela.G(fsp.u_n_1)[l, i] * bgeo.facet_normal[l] * ela.G(fsp.u_n_1)[j, i] * (fsp.phi.dx(j)) * fsp.nu_phi) * ela.detF(fsp.u_n_1) * rmsh.ds_lr
 
 
 # step 3 for v_n
