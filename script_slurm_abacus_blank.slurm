@@ -3,7 +3,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem=8gb
 #SBATCH --time=64-00:00:00
-##SBATCH --account=recherche_prod
+#SBATCH --account=dev
 #SBATCH --partition=dev
 #SBATCH --mail-user=michele.castellana@curie.fr
 
