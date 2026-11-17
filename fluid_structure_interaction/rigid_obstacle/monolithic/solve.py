@@ -13,13 +13,13 @@ Examples:
     MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/polygon/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
 """
 
-# sign
 
 import colorama as col
 import dolfin
 from fenics import *
 import gc
 import importlib
+import numpy as np
 import os
 import sys
 
@@ -27,7 +27,7 @@ import sys
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
-import continuation as cont
+import calculus as cal
 import function as fu
 import input_output as io
 import mesh.utils as msh
@@ -42,8 +42,20 @@ fi = importlib.import_module(swi.fi)
 
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
+# coordinates of the shape when the shape lies flat (theta_ref = 0)
+polygon_coordinates_0 = mesh_parameters['polygon_coordinates']
+
+# theta_ref is the rotation angle of the polygon in the reference configuration 
+theta_ref = rpam.parameters["theta_0"]
+
+# trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
+polygon_coordinates = []
+for coordinate in polygon_coordinates_0:
+    polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
+
 
 # set the solver parameters here
 '''params = {'nonlinear_solver': 'newton',
@@ -82,50 +94,33 @@ PETScOptions.set('snes_max_funcs', 1000000)
 
 
 
-'''
-# test phi_0_expression() - start
-import decompose_u as dec_u
-
-mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
-
-shape_coordinates = []
-for i in range(len(mesh_0_parameters["shape_coordinates"])):
-    # run through all coordinates of the nodes of the boundary
-
-    coordinate = mesh_0_parameters["shape_coordinates"][i]
-
-    print(f'coordinate = {coordinate}')
-        
-    shape_coordinates.append(dec_u.phi_0_expression()(coordinate))
-
-sys.exit(1)
-# test phi_0_expression() - end
-'''
-
 
 print(f'Generating initial mesh ...')
-# coordinates of the shape when the shape lies flat (theta_ref = 0)
-shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
-shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+# generate the mesh with the polygon and write theta_ref into its mesh_metadata
+msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
+additional_metadata={'phi': theta_ref})
 
-# generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
-msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 print(f'... done.')
+
+# sign
+
 
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 fsp = importlib.import_module(swi.fsp)
+
+
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)
 pr_sol = importlib.import_module(swi.prout_sol)
 rmsh = importlib.import_module(swi.rmsh)
 vp = importlib.import_module(swi.vp)
-import decompose_u as dec_u
-import variational_problem_u_0 as vp_u_0
+
+
 
 
 

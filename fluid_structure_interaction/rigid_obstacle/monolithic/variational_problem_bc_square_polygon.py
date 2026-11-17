@@ -4,10 +4,9 @@ this module solves for the fields v_n, sigma_n, u_n, u_dot_n which define the st
 
 from fenics import *
 import importlib
-import numpy as np
+import sys
 import ufl as ufl
 
-import continuation as cont
 import differential_geometry.boundary.geometry as bgeo
 import mesh.utils as msh
 import physics.fluid_mechanics as flu
@@ -18,6 +17,9 @@ import switch_problem as swi
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+
+# sign
+sys.exit(0)
 
 i, j, k, l, m = ufl.indices(5)
 
