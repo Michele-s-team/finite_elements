@@ -1,5 +1,5 @@
 '''
-this module solves for the fields v_n, sigma_n, u_n, u_dot_n which define the state of the whole system, for an elastic body in a channel in which fluid is injected in the left edge of the channel
+this module solves for the fields theta_n, omega_n, v_n, sigma_n, u_n, u_dot_n which define the state of the whole system, for a rigid body in a channel in which fluid is injected in the left edge of the channel
 '''
 
 from fenics import *
@@ -18,8 +18,6 @@ import switch_problem as swi
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
 
-# sign
-sys.exit(0)
 
 i, j, k, l, m = ufl.indices(5)
 
@@ -28,8 +26,8 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 
 
-
-# 1. define expressions for BCs
+# 1.  expressions for BCs
+# `v_l` and `v_tb` correspond to `g` in `Channel flow with moving obstacle`
 
 class v_l_expression(UserExpression):
     def eval(self, values, x):
@@ -40,7 +38,7 @@ class v_l_expression(UserExpression):
     def value_shape(self):
         return (2,)
     
-class v_tb_circle_expression(UserExpression):
+class v_tb_expression(UserExpression):
     def eval(self, values, x):
 
         values[0] = 0
@@ -49,40 +47,18 @@ class v_tb_circle_expression(UserExpression):
     def value_shape(self):
         return (2,)
         
-
-class rho_el_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = rpam.parameters['rho_el']
-
-    def value_shape(self):
-        return (1,)
     
-'''    
-class f_expression(UserExpression):
-    def eval(self, values, x):
-
-        values[0] = 1.0
-        values[1] = 0.0
-
-    def value_shape(self):
-        return (2,)
-
-msh.interpolate_dg(fsp.f, f_expression())
-'''
 
 msh.interpolate_dg(fsp.v_l, v_l_expression())
-msh.interpolate_dg(fsp.v_tb, v_tb_circle_expression())
-
-
-msh.interpolate_dg(fsp.rho_el, rho_el_expression())
-
-
-
+msh.interpolate_dg(fsp.v_tb, v_tb_expression())
 
 bcs = []
 
-# 2 variational problems
+# sign
+sys.exit(0)
+
+
+# 2. variational problems
 
 # 2.1 fluid
 
@@ -90,8 +66,8 @@ bcs = []
 
 # natural BC imposed here
 F_v_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh[0],
-                                        rmsh.sf[0], 
+                                        rmsh.lmsh.mesh,
+                                        rmsh.sf, 
                                         fsp.v_n[i] * fsp.nu_v_n[i], 
                                         ( \
                                             rpam.parameters['rho_fluid'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
@@ -122,8 +98,8 @@ F_v_n = msh.ufl_conditional_form(
 
 
 F_sigma_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh[0],
-                                        rmsh.sf[0], 
+                                        rmsh.lmsh.mesh,
+                                        rmsh.sf, 
                                         fsp.sigma_n * fsp.nu_sigma_n, 
                                         ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n),
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
@@ -142,8 +118,8 @@ F_sigma_n = msh.ufl_conditional_form(
 
 
 F_u_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh[0],
-                                        rmsh.sf[0], 
+                                        rmsh.lmsh.mesh,
+                                        rmsh.sf, 
                                         fsp.rho_el / dt * (fsp.u_dot_n[i] - fsp.u_dot_n_1[i]) * fsp.nu_u_n[i] \
                                         + ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_n[i].dx(k)), 
                                         - ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_n[k].dx(i)), 
@@ -188,8 +164,8 @@ def Q(u, u_dot):
 
 
 F_u_dot_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh[0],
-                                        rmsh.sf[0], 
+                                        rmsh.lmsh.mesh,
+                                        rmsh.sf, 
                                         (fsp.u_n[i] - fsp.u_n_1[i] - fsp.u_dot_n[i] * dt) * fsp.nu_u_dot_n[i], 
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
