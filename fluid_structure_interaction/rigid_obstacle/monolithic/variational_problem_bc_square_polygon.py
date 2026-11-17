@@ -54,8 +54,6 @@ msh.interpolate_dg(fsp.v_tb, v_tb_expression())
 
 bcs = []
 
-# sign
-sys.exit(0)
 
 
 # 2. variational problems

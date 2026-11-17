@@ -43,7 +43,13 @@ fi = importlib.import_module(swi.fi)
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
-polygon_coordinates_0 = mesh_parameters['polygon_coordinates']
+shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
+
+shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+
+# sign
+sys.exit(0)
+
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
@@ -104,7 +110,6 @@ additional_metadata={'phi': theta_ref})
 
 print(f'... done.')
 
-# sign
 
 
 # first load of modules
