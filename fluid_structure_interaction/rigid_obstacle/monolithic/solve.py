@@ -329,57 +329,9 @@ for n in range(rpam.parameters['num_steps']):
         sys.exit(1)
                 
 
-
-        '''
-            phi_0_old(y) = y + u_0_old(y)
-            y' = phi_0_old(y)
-
-            the function phi_n_old_def that satisfies
-
-            phi_n_old_def(phi_0_old(y)) = phi_n_old(y)
-            phi_n_old_def(y') = phi_n_old(phi_0_old^{-1}(y'))
-
-            is constructed as
-
-            phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
-        '''
-
-        phi_n_old_def = fu.deform_function(phi_n_old, u_0_old)
-        phi_n_old_def.set_allow_extrapolation(True)
-
-        #  This implements Eq. (15) in 'Decomposition of deformation field' 
-        fsp.u_input.assign(project(phi_n_old_def - fsp.y, fsp.Q_u_n))
-
-        #4.4.1.2.2 set u_dot_input
-
-
-        '''
-            phi_0_old(y) = y + u_0_old(y)
-            y' = phi_0_old(y)
-
-            the function u_dot_n_old_def that satisfies
-
-            u_dot_n_old_def(phi_0_old(y)) = u_dot_n_old(y)
-            u_dot_n_old_def(y') = u_dot_n_old(phi_0_old^{-1}(y'))
-
-            is constructed as
-
-            u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
-        '''
-
-        u_dot_n_old_def = fu.deform_function(u_dot_n_old, u_0_old)
-        u_dot_n_old_def.set_allow_extrapolation(True)
-
-        #  This implements Eq. (16) in 'Decomposition of deformation field' 
-        fsp.u_dot_input.assign(project(u_dot_n_old_def, fsp.Q_u_dot_n))
-
-        # 4.4.2 write the profiles of fields right after remeshing into the mixed field psi
-        
-        fsp.assigner.assign(fsp.psi, [fsp.v_input, fsp.sigma_input, fsp.u_input, fsp.u_dot_input])
-
         #4.4.3 clean up
 
-        del v_n_old, sigma_n_old, u_n_old, u_dot_n_old, phi_n_old, phi_0_old, u_0_old
+        del theta_n_old, omega_n_old, v_n_old, sigma_n_old, u_n_old, u_dot_n_old
         gc.collect()
 
 
