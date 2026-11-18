@@ -2975,8 +2975,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
     else:
         # did not find sub_meshes -> return None for all fields
 
-        print(f'Did not find sub_meshes')
-
         sub_meshes = None
         sf_sub_meshes = None 
         mf_sub_meshes = None
