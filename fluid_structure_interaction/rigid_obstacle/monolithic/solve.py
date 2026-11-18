@@ -69,18 +69,19 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 
 # set the solver parameters here
-'''params = {'nonlinear_solver': 'newton',
+params = {'nonlinear_solver': 'newton',
           'newton_solver':
               {
                   'linear_solver': 'superlu',
                   'absolute_tolerance': 1e-6,
                   'relative_tolerance': 1e-6,
-                  'maximum_iterations': 1000000,
-                  'relaxation_parameter': 0.95,
+                #   'maximum_iterations': 1000000,
+                #   'relaxation_parameter': 0.95,
               }
-          }'''
+          }
 
 
+'''
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
@@ -103,7 +104,7 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
 
-
+'''
 
 
 print(f'Generating initial mesh ...')
@@ -181,13 +182,11 @@ msh.interpolate_dg(fsp.sigma_0, sigma_0_expression())
 
 # 2.1.3 u_n, u_dot_n
 
-#
 
+
+# assign _0 fields to `psi` so as to make it start from a good initial guess
 fsp.assigner.assign(fsp.psi, [fsp.theta_0, fsp.omega_0, fsp.v_0, fsp.sigma_0, fsp.u_0, fsp.u_dot_0])
 
-# sign 
-sys.exit(1)
-# 
 
 
 
@@ -209,50 +208,27 @@ for n in range(rpam.parameters['num_steps']):
     #3.2 solve variational problem
 
     print('Solving monolithic problem ... ')
-
-    if step <= rpam.parameters['n_hold']:
         
-        cont.pressure_scale = Constant(0.0)
-    
-    elif step <= rpam.parameters['n_hold'] + rpam.parameters['n_ramp']:
-    
-        cont.pressure_scale = Constant((step - rpam.parameters['n_hold']) / rpam.parameters['n_ramp'])
-    
-    else:
-        cont.pressure_scale = Constant(1.0)
-        
-    # rebuild F with new pressure_scale
     vp = importlib.reload(importlib.import_module(swi.vp))  
 
     var_pr.solve_vp(vp.F, fsp.psi, vp.bcs, fsp.J_psi, parameters=params)
 
     print('... done.', flush=True)
 
+ 
     #3.3 print BCs, ICs, data such as mesh quality, and decompose the deformation field. Note: print_bcs and print_ics must be before the fields update to print the correct residuals of BCs
 
     #3.3.1 compute mesh quality
-    _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
+    _, _, _, _, u_n_dummy_mesh_quality, _ = fsp.psi.split( deepcopy=True )
     msh_qu.quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.mesh[0], u_n_dummy_mesh_quality))
 
-
-    #3.3.2 decompose the deformation field
-
-    dec_u = importlib.reload(dec_u) 
-    vp_u_0 = importlib.reload(vp_u_0) 
-
-    print('Solving for u_0 ... ')
-
-    var_pr.solve_vp(vp_u_0.F, fsp.u_0, vp_u_0.bcs, fsp.J_u_0, parameters=params)
-
-    print('... done.', flush=True)
-
-    # now that u_0 is known, I set phi_0(y) = y + u_0(y) also in \partial \Omega^y_square
-    fsp.phi_0.assign(fsp.y + fsp.u_0)
 
     #3.3.3 compure BCs, ICs and data
     pr_bc.print_bcs(step)
     pr_ic.print_ics(step)
     pr_da.print_data(step)
+
+    
 
     # evaluate whether remeshing should be done and write the result in `do_remesh`
     if 'remesh_stride' in rpam.parameters:
@@ -267,8 +243,7 @@ for n in range(rpam.parameters['num_steps']):
 
 
     if do_remesh:
-        #4. remesh 
-
+        #4. remesh    
 
         print(f'{col.Fore.CYAN}Remeshing ... {col.Style.RESET_ALL}')
 
@@ -276,73 +251,46 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
+        theta_n_old = Function(fsp.Q_theta_n)
+        omega_n_old = Function(fsp.Q_omega_n)
+
         v_n_old = Function(fsp.Q_v_n)
-        
         sigma_n_old = Function(fsp.Q_sigma_n)
 
         u_n_old = Function(fsp.Q_u_n)
         u_dot_n_old = Function(fsp.Q_u_dot_n)
 
-        phi_n_old = Function(fsp.Q_u_n)
-        phi_0_old = Function(fsp.Q_u_n)
-        u_0_old = Function(fsp.Q_u_n)
 
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
+
+
         #4.1.2.1 unpack the mixed field 
-        v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+        theta_n_dummy, omega_n_dummy, v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
         # 4.1.2.2 write
-        v_n_old.assign(v_n_dummy)
 
+        theta_n_old.assign(theta_n_dummy)
+        omega_n_old.assign(omega_n_dummy)
+
+        v_n_old.assign(v_n_dummy)
         sigma_n_old.assign(sigma_n_dummy)
 
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
 
-        phi_n_old.assign(project(fsp.y + u_n_dummy, fsp.Q_u_n))
-        phi_0_old.assign(fsp.phi_0)
-        u_0_old.assign(fsp.u_0)
 
+        #4.1.1.2.3 store the marker function of the old mesh (the reference keeps the old MeshFunction and its mesh alive through the module reloads)
+        sf_old = rmsh.sf[0]
 
-        '''         
-        4.1.3 Fields v_n_old and sigma_n_old are discontinuous across the shape -> in order to use `transfer` on them, I overwrite their DOFs at the interface belonging to sub_mesh_0_0_id with the respective DOFs at the interface belonging to sub_mesh_0_0_id. In this way, when `transfer` will evaluate v_n_old, sigma_n_old ... at a point `x` lying on the interface, it will always use the correct value (the one belonging to sub_mesh_0_1)
-        '''
+         
+        #4.2 set the new rotation angle of the polygon for the reference configuration 
 
-        msh.overwrite_interface_dofs(v_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
-
-        msh.overwrite_interface_dofs(sigma_n_old, rmsh.sf[0], rmsh.mf_I[0], rmsh.lmsh.parameters['shape_id'], rmsh.lmsh.parameters['sub_mesh_0_0_id'], rmsh.lmsh.parameters['sub_mesh_0_1_id'])
-
-
-        '''
-        4.2
-
-        Right before remesh, the deformation field is u_n, which corresponds to phi_n. 
-        We decompose phi_n into 
-            - a part `phi_0(y)` that preserves the elastic energy, which is a comination of a rotation and a rigid translation, 
-            - a part `u'(y)` that cannot be written as a combination of a rotation and a rigid translation. 
-
-        We trace the coordinates of shape vertices right after remeshing according to phi_0: these will be the coordinates of the new reference configuration of the shape. 
-
-        Right after remeshing, the iteration starts with reference coordinates y' = phi_0(y), and with a nonzero deformation u'(phi_0^{-1}(y')) with respect to this reference configuration phi_0. 
-        '''
-
-        mesh_0_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, f'mesh_{0}', 'mesh_metadata.csv')) 
 
         shape_coordinates = []
-        for i in range(len(mesh_0_parameters["shape_coordinates"])):
-            # run through all coordinates of the nodes of the boundary
+        for coordinate in shape_coordinates_0:
+            shape_coordinates.append(np.add(mesh_parameters['c'], cal.R(msh.average_wrt_measure(fsp.theta_n, rmsh.dx_mesh[0]['dx'])).dot(np.subtract(coordinate, mesh_parameters['c']))))
 
-            coordinate = mesh_0_parameters["shape_coordinates"][i]
-
-            # the new reference coordinate is obtained by adding to the previous reference coordinate, the displacement field u_0
-            # shape_coordinates.append(np.add(
-            #                             coordinate,
-            #                             fsp.u_0(coordinate)
-            #                             ).tolist()
-            #                     )
-              
-            shape_coordinates.append((dec_u.phi_0_expression()(coordinate)).tolist())
 
         #4.2.1 generate the mesh with the new shape_coordinates
 
@@ -363,26 +311,23 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        '''
-        4.4.1 Transfer the fields
+        msh.transfer(theta_n_old, fsp.theta_0, u_n_old)
+        msh.transfer(omega_n_old, fsp.omega_0, u_n_old)
 
-        Given that the transformation reference -> current before right before remeshing, phi_n, is decomposed into phi_0 (A) + u' (B), the field are transferred in two steps
-            A) trasnfer the field with phi_0_old (u_0_0ld)
-            B) set a nonzero deformation u' with respect to the reference coordinates y'
-        '''
+        msh.transfer_dg(v_n_old, fsp.v_0, u_n_old, sf_old, rmsh.sf[0])
+        msh.transfer_dg(sigma_n_old, fsp.sigma_0, u_n_old, sf_old, rmsh.sf[0])
 
-        # 4.4.1.1 Step A): transfer fields with phi_0_old (u_0_0ld)
+        fsp.u_0.assign(Constant((0, 0)))
+        msh.transfer_dg(u_dot_n_old, fsp.u_dot_0, u_n_old, sf_old, rmsh.sf[0])
 
-        msh.transfer(v_n_old, fsp.v_input, u_0_old)
+        fsp.assigner.assign(fsp.psi, [fsp.theta_0, fsp.omega_0, fsp.v_0, fsp.sigma_0, fsp.u_0, fsp.u_dot_0])
 
-        msh.transfer(sigma_n_old, fsp.sigma_input, u_0_old)
-
-
-        #4.4.1.2 Step B): set the initial u'
-
-        #4.4.1.2.1 set u_input
 
         msh.interpolate_dg(fsp.y, fu.identity_expression())
+
+        # sign 
+        sys.exit(1)
+                
 
 
         '''
