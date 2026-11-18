@@ -35,8 +35,8 @@ all fields are defined from a mixed function space
 
 # 1.1 body
 
-R_theta_n = FiniteElement('Real', msh.element_geometry(lmsh.mesh), 0)
-R_omega_n = FiniteElement('Real', msh.element_geometry(lmsh.mesh), 0)
+R_theta_n = FiniteElement('Real', msh.element_geometry(lmsh.mesh[0]), 0)
+R_omega_n = FiniteElement('Real', msh.element_geometry(lmsh.mesh[0]), 0)
 
 
 #1.2 fluid 
@@ -47,8 +47,8 @@ D_sigma_n = FiniteElement('DG', triangle, 1)
 
 #1.3 domain
 
-D_u_n = VectorElement('DG',  msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
-D_u_dot_n = VectorElement('DG',  msh.element_geometry(lmsh.mesh), rpam.parameters['u_dot_function_space_degree'])
+D_u_n = VectorElement('DG',  msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
+D_u_dot_n = VectorElement('DG',  msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_dot_function_space_degree'])
 
 element = MixedElement([R_theta_n, R_omega_n, D_v_n, D_sigma_n, D_u_n, D_u_dot_n])
 
@@ -56,7 +56,7 @@ element = MixedElement([R_theta_n, R_omega_n, D_v_n, D_sigma_n, D_u_n, D_u_dot_n
 #2 define function spaces
 
 #2.1 global function space
-Q = FunctionSpace(lmsh.mesh, element)
+Q = FunctionSpace(lmsh.mesh[0], element)
 
 
 #2.2 collapsed function spaces

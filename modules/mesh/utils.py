@@ -2335,7 +2335,7 @@ Input values:
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional: 
-        - 'additional_metadata': some additional data that will be written appended to mesh_metadata.csv. It is None by default. 
+        - 'additional_metadata' (None): some additional data that will be written appended to mesh_metadata.csv. It is None by default. 
 '''
 
 def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory,
@@ -2363,6 +2363,7 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     metadata['polygon_coordinates'] = [[float(coordinate[0]), float(coordinate[1])] for coordinate in polygon_coordinates]
 
     if additional_metadata is not None:
+        
         metadata.update(additional_metadata)
 
     # generate the mesh
@@ -2471,10 +2472,11 @@ Input values:
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional: 
-        - 'epsilon': the tolerance with which distances are evaluated
-'''
+        - 'epsilon' (const.epsilon): the tolerance with which distances are evaluated
+        - 'additional_metadata' (None): some additional data that will be written appended to mesh_metadata.csv. It is None by default. '''
 def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory,
-                                    epsilon = const.epsilon):
+                                    epsilon = const.epsilon,
+                                    additional_metadata=None):
     
 
     # remove the output directory it it already exists, and create it from scratch
@@ -2555,6 +2557,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     # if the shape derives from a parametric form, write N and the parametric function
     if parameters['shape_format'] == 'parametric':
+
         mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
         mesh_0_metadata['N'] = parameters['N']
         
@@ -2591,7 +2594,11 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_1_metadata['file_format'] = 'h5'
 
 
-
+    if additional_metadata is not None:
+        
+        mesh_metadata.update(additional_metadata)
+        mesh_0_metadata.update(additional_metadata)
+        mesh_1_metadata.update(additional_metadata)
 
     # A) generate mesh A (square with circle)
 

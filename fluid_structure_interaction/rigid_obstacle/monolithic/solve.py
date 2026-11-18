@@ -47,25 +47,23 @@ print(f'Generating initial mesh ...')
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
-shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+shape_coordinates_0 = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
 
 # generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
-msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+msh.generate_square_shape_line_mesh(shape_coordinates_0, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
 
 print(f'... done.')
 
-
-# sign
-sys.exit(0)
 
 
 # theta_ref is the rotation angle of the polygon in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
 # trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
-polygon_coordinates = []
-for coordinate in polygon_coordinates_0:
-    polygon_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+shape_coordinates = []
+for coordinate in shape_coordinates_0:
+    shape_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+
 
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
@@ -112,17 +110,19 @@ PETScOptions.set('snes_max_funcs', 1000000)
 print(f'Generating initial mesh ...')
 
 # generate the mesh with the polygon and write theta_ref into its mesh_metadata
-msh.generate_square_polygon_mesh(polygon_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
 
 
 print(f'... done.')
 
 
-
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
+# sign
+sys.exit(0)
+
 fsp = importlib.import_module(swi.fsp)
 
 
