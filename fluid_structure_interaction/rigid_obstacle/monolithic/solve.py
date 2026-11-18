@@ -67,7 +67,7 @@ for coordinate in shape_coordinates_0:
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
-
+'''
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
@@ -79,9 +79,9 @@ params = {'nonlinear_solver': 'newton',
                 #   'relaxation_parameter': 0.95,
               }
           }
-
-
 '''
+
+
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
@@ -104,7 +104,7 @@ PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
 
-'''
+
 
 
 print(f'Generating initial mesh ...')
@@ -287,14 +287,16 @@ for n in range(rpam.parameters['num_steps']):
         #4.2 set the new rotation angle of the polygon for the reference configuration 
 
 
+        theta_ref = msh.average_wrt_measure(fsp.theta_n, rmsh.dx_mesh[0]['dx'])
+
         shape_coordinates = []
         for coordinate in shape_coordinates_0:
-            shape_coordinates.append(np.add(mesh_parameters['c'], cal.R(msh.average_wrt_measure(fsp.theta_n, rmsh.dx_mesh[0]['dx'])).dot(np.subtract(coordinate, mesh_parameters['c']))))
+            shape_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
 
 
         #4.2.1 generate the mesh with the new shape_coordinates
 
-        msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+        msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory, additional_metadata={'phi': theta_ref})
 
         #4.3 reload modules so everything is updated according to the mesh change
 
@@ -325,8 +327,6 @@ for n in range(rpam.parameters['num_steps']):
 
         msh.interpolate_dg(fsp.y, fu.identity_expression())
 
-        # sign 
-        sys.exit(1)
                 
 
         #4.4.3 clean up
@@ -338,26 +338,32 @@ for n in range(rpam.parameters['num_steps']):
         print(f'{col.Fore.CYAN}... done.{col.Style.RESET_ALL}')
 
 
+           
+
     #5 Update fields
 
     #5.1 unpack the mixed field 
-    v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
+    theta_n_dummy, omega_n_dummy, v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
     #5.2 update fields
+
+    fsp.theta_n_1.assign(theta_n_dummy)
+    fsp.omega_n_1.assign(omega_n_dummy)
+
     fsp.v_n_1.assign(v_n_dummy)
 
     fsp.u_n_1.assign(u_n_dummy)
     fsp.u_dot_n_1.assign(u_dot_n_dummy)
 
     #5.3 clean up
-    del v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
+    del theta_n_dummy, omega_n_dummy, v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy, u_n_dummy_mesh_quality
 
     #6. print the solution
     if step % rpam.parameters['print_out_stride'] == 0:
 
         # step is a multiple of rpam.parameters['print_out_stride'] -> print the solution. This is done in order not to produce too many files in the output
         
-        pr_sol.print_solution(t, step, dt)
+        pr_sol.print_solution(t, step)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
     

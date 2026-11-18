@@ -90,6 +90,6 @@ def print_solution(t, step):
 
     # 5 write shape vertices 
 
-    input_path = os.path.join(rarg.args.input_directory, f"boundary_points_id_{rmsh.parameters['polygon_id']}.csv")
+    input_path = os.path.join(rarg.args.input_directory, f"boundary_points_id_{rmsh.parameters['shape_id']}.csv")
     output_path = os.path.join(rarg.args.output_directory, f"snapshots/csv/boundary_points_id_{rmsh.parameters['shape_id']}_n_{step}.csv")
     os.system(f'cp {input_path} {output_path}')
