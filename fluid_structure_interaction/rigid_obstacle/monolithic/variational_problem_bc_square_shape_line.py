@@ -64,7 +64,7 @@ bcs = []
 
 # natural BC imposed here
 F_v_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         fsp.v_n[i] * fsp.nu_v_n[i], 
                                         ( \
@@ -96,7 +96,7 @@ F_v_n = msh.ufl_conditional_form(
 
 
 F_sigma_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         fsp.sigma_n * fsp.nu_sigma_n, 
                                         ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n),
@@ -116,7 +116,7 @@ F_sigma_n = msh.ufl_conditional_form(
 
 
 F_u_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         fsp.rho_el / dt * (fsp.u_dot_n[i] - fsp.u_dot_n_1[i]) * fsp.nu_u_n[i] \
                                         + ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_n[i].dx(k)), 
@@ -162,7 +162,7 @@ def Q(u, u_dot):
 
 
 F_u_dot_n = msh.ufl_conditional_form(
-                                        rmsh.lmsh.mesh,
+                                        rmsh.lmsh.mesh[0],
                                         rmsh.sf, 
                                         (fsp.u_n[i] - fsp.u_n_1[i] - fsp.u_dot_n[i] * dt) * fsp.nu_u_dot_n[i], 
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
