@@ -214,12 +214,14 @@ F_theta_n = ( ( fsp.theta_n - ( fsp.theta_n_1 + fsp.omega_n_1 * dt ) ) * fsp.nu_
 
 # 2.3.2 omega_n
 
-F_omega_n = ( ( fsp.omega_n - ( fsp.omega_n_1 + dt/rpam.parameters['I'] * 
+S_shape = assemble( Constant(1) * rmsh.ds_mesh[0]['dS_shape'] )
+
+F_omega_n = ( ( msh.average(fsp.omega_n)/S_shape - ( msh.average(fsp.omega_n_1)/S_shape + dt/rpam.parameters['I'] * 
                     ( \
-                        assemble( geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] * rmsh.ds_mesh[0]['dS_shape'] )
+                        geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] 
                     )  \
                 ) 
-            ) * fsp.nu_theta_n ) * rmsh.dx_mesh[0]['dx']
+            ) * msh.average(fsp.nu_theta_n) ) * rmsh.ds_mesh[0]['dS_shape']
 
 
 
