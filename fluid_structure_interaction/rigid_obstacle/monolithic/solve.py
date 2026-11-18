@@ -56,13 +56,13 @@ print(f'... done.')
 
 
 
-# theta_ref is the rotation angle of the polygon in the reference configuration 
+# theta_ref is the rotation angle of the shape in the reference configuration 
 theta_ref = rpam.parameters["theta_0"]
 
-# trace the coordinates of flat polygon vertices by rotating by theta_ref polygon_coordinates_flat 
+# trace the coordinates of flat shape vertices by rotating by theta_ref shape_coordinates_0 
 shape_coordinates = []
 for coordinate in shape_coordinates_0:
-    shape_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
+    shape_coordinates.append((np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c'])))).tolist())
 
 
 
@@ -109,7 +109,7 @@ PETScOptions.set('snes_max_funcs', 1000000)
 
 print(f'Generating initial mesh ...')
 
-# generate the mesh with the polygon and write theta_ref into its mesh_metadata
+# generate the mesh with the shape and write theta_ref into its mesh_metadata
 msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory,
 additional_metadata={'phi': theta_ref})
 
@@ -120,10 +120,9 @@ print(f'... done.')
 # first load of modules
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
+fsp = importlib.import_module(swi.fsp)
 # sign
 sys.exit(0)
-
-fsp = importlib.import_module(swi.fsp)
 
 
 pr_bc = importlib.import_module(swi.prout_bc)
