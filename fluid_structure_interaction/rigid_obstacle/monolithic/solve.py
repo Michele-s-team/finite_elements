@@ -10,7 +10,7 @@ run with:
 
 Examples:
 
-    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_polygon $MESH_PATH $SOLUTION_PATH
+    MESH_PATH="/home/fenics/shared/generate_mesh/2d/square/shape_line/solution"; SOLUTION_PATH="/home/fenics/shared/fluid_structure_interaction/rigid_obstacle/monolithic/solution"; rm -rf $SOLUTION_PATH; python3 solve.py square_shape_line $MESH_PATH $SOLUTION_PATH
 """
 
 
@@ -39,13 +39,21 @@ import variational_problem.utils as var_pr
 
 fi = importlib.import_module(swi.fi)
 
-
 mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
+
+
+print(f'Generating initial mesh ...')
 
 # coordinates of the shape when the shape lies flat (theta_ref = 0)
 shape_parametric_form = io.read_function_expresssion(mesh_parameters['shape_parametric_form'])
 
 shape_coordinates = [shape_parametric_form(i/mesh_parameters['N']) for i in range(mesh_parameters['N'])]
+
+# generate the mesh with the shape given by shape_coordinates and write into its mesh_metadata
+msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), rarg.args.input_directory)
+
+print(f'... done.')
+
 
 # sign
 sys.exit(0)
