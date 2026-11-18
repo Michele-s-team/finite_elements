@@ -94,11 +94,19 @@ theta_n, omega_n, v_n, sigma_n, u_n, u_dot_n = split(psi)
 theta_n_1 = Function(Q_theta_n)
 omega_n_1 = Function(Q_omega_n)
 
+theta_0 = Function(Q_theta_n)
+omega_0 = Function(Q_omega_n)
+
+
 # 3.2.2 fluid
 
 v_n_1 = Function(Q_v_n)
 
+v_0 = Function(Q_v_n)
+sigma_0 = Function (Q_sigma_n)
+
 # velocity profiles for the BCs
+
 v_l = Function(Q_v_n)
 v_tb = Function(Q_v_n)
 
@@ -107,6 +115,9 @@ v_tb = Function(Q_v_n)
 
 u_n_1 = Function(Q_u_n)
 u_dot_n_1 = Function(Q_u_dot_n)
+
+u_0 = Function(Q_u_n)
+u_dot_0 = Function(Q_u_dot_n)
 
 
 # y is the identity function that, given the coordinates y_i in the reference configuration, returns y_i

@@ -154,12 +154,39 @@ class v_0_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-    
 
-msh.interpolate_dg(fsp.v_n_1, v_0_expression())
+class sigma_0_expression(UserExpression):
+    def eval(self, values, x):
+
+        values[0] = 0
+
+    def value_shape(self):
+        return (1,)
+
+# 2.1.1 theta_n, omega_n
+
+fsp.theta_0.assign(Constant(rpam.parameters['theta_0']))
 fsp.theta_n_1.assign(Constant(rpam.parameters['theta_0']))
+
+fsp.omega_0.assign(Constant(rpam.parameters['omega_0']))
 fsp.omega_n_1.assign(Constant(rpam.parameters['omega_0']))
 
+
+# 2.1.2 v_n, sigma_n
+
+msh.interpolate_dg(fsp.v_0, v_0_expression())
+msh.interpolate_dg(fsp.v_n_1, v_0_expression())
+
+msh.interpolate_dg(fsp.sigma_0, sigma_0_expression())
+
+# 2.1.3 u_n, u_dot_n
+
+#
+
+fsp.assigner.assign(fsp.psi, [fsp.theta_0, fsp.omega_0, fsp.v_0, fsp.sigma_0, fsp.u_0, fsp.u_dot_0])
+
+# sign 
+sys.exit(1)
 # 
 
 

@@ -7,7 +7,7 @@ import importlib
 import sys
 import ufl as ufl
 
-import calculus as cal
+import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 import function as fu
 import mesh.utils as msh
@@ -210,10 +210,20 @@ F_u_dot_n = msh.ufl_conditional_form(
 
 F_theta_n = ( ( fsp.theta_n - ( fsp.theta_n_1 + fsp.omega_n_1 * dt ) ) * fsp.nu_omega_n ) * rmsh.dx_mesh[0]['dx']
 
-# sign
-sys.exit(1)
 
 
 # 2.3.2 omega_n
 
-F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n
+F_omega_n = ( ( fsp.omega_n - ( fsp.omega_n_1 + dt/rpam.parameters['I'] * 
+                    ( \
+                        assemble( geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] * rmsh.ds_mesh[0]['dS_shape'] )
+                    )  \
+                ) 
+            ) * fsp.nu_theta_n ) * rmsh.dx_mesh[0]['dx']
+
+
+
+
+F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_theta_n + F_omega_n
+
+
