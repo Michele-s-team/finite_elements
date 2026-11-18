@@ -121,10 +121,6 @@ print(f'... done.')
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 fsp = importlib.import_module(swi.fsp)
-# sign
-sys.exit(0)
-
-
 pr_bc = importlib.import_module(swi.prout_bc)
 pr_ic = importlib.import_module(swi.prout_ic)
 pr_da = importlib.import_module(swi.prout_da)

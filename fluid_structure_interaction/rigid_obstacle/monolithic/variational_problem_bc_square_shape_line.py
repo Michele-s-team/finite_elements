@@ -24,8 +24,6 @@ i, j, k, l, m = ufl.indices(5)
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
 
-
-
 # 1.  expressions for BCs
 # `v_l` and `v_tb` correspond to `g` in `Channel flow with moving obstacle`
 
@@ -54,6 +52,9 @@ msh.interpolate_dg(fsp.v_tb, v_tb_expression())
 
 bcs = []
 
+# sign
+sys.exit(0)
+
 
 
 # 2. variational problems
@@ -65,7 +66,7 @@ bcs = []
 # natural BC imposed here
 F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
-                                        rmsh.sf, 
+                                        rmsh.sf[0], 
                                         fsp.v_n[i] * fsp.nu_v_n[i], 
                                         ( \
                                             rpam.parameters['rho_fluid'] * ( (fsp.v_n[i] - fsp.v_n_1[i]) / dt \
@@ -97,7 +98,7 @@ F_v_n = msh.ufl_conditional_form(
 
 F_sigma_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
-                                        rmsh.sf, 
+                                        rmsh.sf[0], 
                                         fsp.sigma_n * fsp.nu_sigma_n, 
                                         ela.G(fsp.u_n)[j, i] * fsp.v_n[i].dx(j) * fsp.nu_sigma_n * ela.detF(fsp.u_n),
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
@@ -117,7 +118,7 @@ F_sigma_n = msh.ufl_conditional_form(
 
 F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
-                                        rmsh.sf, 
+                                        rmsh.sf[0], 
                                         fsp.rho_el / dt * (fsp.u_dot_n[i] - fsp.u_dot_n_1[i]) * fsp.nu_u_n[i] \
                                         + ela.N(fsp.u_n, rpam.parameters['K_elastic'], rpam.parameters['mu_elastic'])[i, k] * (fsp.nu_u_n[i].dx(k)), 
                                         - ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_n[k].dx(i)), 
@@ -163,7 +164,7 @@ def Q(u, u_dot):
 
 F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
-                                        rmsh.sf, 
+                                        rmsh.sf[0], 
                                         (fsp.u_n[i] - fsp.u_n_1[i] - fsp.u_dot_n[i] * dt) * fsp.nu_u_dot_n[i], 
                                         - Q(fsp.u_n, fsp.u_dot_n)[k, i] * (fsp.nu_u_dot_n[k]).dx(i), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
