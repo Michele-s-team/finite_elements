@@ -2959,7 +2959,7 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     sf_sub_meshes.append(cf_sub_mesh_1d)
                     mf_sub_meshes.append(vf_sub_mesh_1d)
 
-                print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
+                print(f'\tSub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
 
             print('... done.')
 
