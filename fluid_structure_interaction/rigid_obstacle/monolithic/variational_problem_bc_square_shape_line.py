@@ -4,9 +4,9 @@ this module solves for the fields theta_n, omega_n, v_n, sigma_n, u_n, u_dot_n w
 
 from fenics import *
 import importlib
-import sys
 import ufl as ufl
 
+import continuation as cont
 import differential_geometry.manifold.geometry as geo
 import differential_geometry.boundary.geometry as bgeo
 import function as fu
@@ -215,7 +215,7 @@ S_shape = assemble( Constant(1) * rmsh.ds_mesh[0]['dS_shape'] )
 # unlike Eq. (124) in 'Channel flow with moving obstacle', this variational functional is multiplied by rmsh.ds_mesh[0]['dS_shape'], while in Eq. (124) it is multiplied by rmsh.dx_mesh[0]['dx']. Given that theta_n and omega_n have only one DOF, constant across the whole cell, this is the same as Eq. (124)
 F_omega_n = ( ( msh.average(fsp.omega_n)/S_shape - ( msh.average(fsp.omega_n_1)/S_shape + dt/rpam.parameters['I'] * 
                     ( \
-                        geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] 
+                        geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), cont.pressure_scale * msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] 
                     )  \
                 ) 
             ) * msh.average(fsp.nu_theta_n) ) * rmsh.ds_mesh[0]['dS_shape']

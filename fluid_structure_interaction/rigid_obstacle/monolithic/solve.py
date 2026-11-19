@@ -28,6 +28,7 @@ module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
 import calculus as cal
+import continuation as cont
 import function as fu
 import input_output as io
 import mesh.utils as msh
@@ -208,6 +209,17 @@ for n in range(rpam.parameters['num_steps']):
     #3.2 solve variational problem
 
     print('Solving monolithic problem ... ')
+
+    if step <= rpam.parameters['n_hold']:
+        
+        cont.pressure_scale = Constant(0.0)
+    
+    elif step <= rpam.parameters['n_hold'] + rpam.parameters['n_ramp']:
+    
+        cont.pressure_scale = Constant((step - rpam.parameters['n_hold']) / rpam.parameters['n_ramp'])
+    
+    else:
+        cont.pressure_scale = Constant(1.0)
         
     vp = importlib.reload(importlib.import_module(swi.vp))  
 
