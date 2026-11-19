@@ -144,14 +144,10 @@ F_sigma_n = msh.ufl_conditional_form(
         fsp.sigma_n * fsp.nu_sigma_n * rmsh.ds_mesh[0]['ds_r'] \
     )
 
-# sign
-
-
 
 # 2.2 elastic body and domain
 
 # 2.2.1 u_n
-
 
 F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
@@ -175,6 +171,7 @@ F_u_n = msh.ufl_conditional_form(
         )
 
 
+# sign
 
 # 2.2.2 u_dot_n
 
