@@ -156,7 +156,7 @@ F_sigma_n = msh.ufl_conditional_form(
 F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
-                                        ( fsp.u_n[i] - ( c()[i] - msh.average(fsp.y)[i] + R(fsp.theta_n - Constant(rmsh.parameters['phi']))[i, j] * ( msh.average(fsp.y)[j] - c()[j] ) ) ) * fsp.nu_u_n[i], 
+                                        ( fsp.u_n[i] - ( c()[i] - (fsp.y)[i] + R(fsp.theta_n - Constant(rmsh.parameters['phi']))[i, j] * ( msh.average(fsp.y)[j] - c()[j] ) ) ) * fsp.nu_u_n[i], 
                                         - ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']))[k, i] * (fsp.nu_u_n[k].dx(i)), 
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
