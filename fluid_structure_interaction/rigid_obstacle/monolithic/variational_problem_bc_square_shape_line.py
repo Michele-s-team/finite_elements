@@ -4,6 +4,8 @@ this module solves for the fields theta_n, omega_n, v_n, sigma_n, u_n, u_dot_n w
 
 from fenics import *
 import importlib
+import input_output as io
+import os
 import ufl as ufl
 
 import continuation as cont
@@ -14,11 +16,15 @@ import mesh.utils as msh
 import physics.fluid_mechanics as flu
 import physics.elasticity as ela
 import parameters.read.solution as rpam
+import runtime_arguments as rarg
 import switch_problem as swi
 
 
 fsp = importlib.import_module(swi.fsp)
 rmsh = importlib.import_module(swi.rmsh)
+
+mesh_parameters = io.read_parameters_from_csv_file(os.path.join(rarg.args.input_directory, '../', 'mesh_parameters.csv')) 
+
 
 
 i, j, k, l, m = ufl.indices(5)
@@ -52,7 +58,7 @@ def dRdtheta(theta):
 
 
 def c():
-    return as_vector(rmsh.parameters['c'])
+    return as_vector(mesh_parameters['c'])
 
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
