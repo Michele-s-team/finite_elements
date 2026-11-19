@@ -172,7 +172,7 @@ F_u_n = msh.ufl_conditional_form(
         ) \
         + rpam.parameters['alpha_shape']/rmsh.r_mesh[0] * (\
             msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_shape'] \
-        ) \
+        )
 
 
 
