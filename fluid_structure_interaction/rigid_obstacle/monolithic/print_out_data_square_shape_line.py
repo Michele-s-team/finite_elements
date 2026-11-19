@@ -6,6 +6,7 @@ import importlib
 from fenics import *
 import ufl as ufl
 
+import continuation as cont
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
@@ -27,7 +28,9 @@ def print_data(step):
         fi.fieldnames_data[1]: \
             f"{msh.average_wrt_measure(theta_n_dummy, rmsh.dx_mesh[0]['dx']):.{rpam.parameters['print_out_digits']}e}",
         fi.fieldnames_data[2]: \
-            f"{msh.average_wrt_measure(omega_n_dummy, rmsh.dx_mesh[0]['dx']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.average_wrt_measure(omega_n_dummy, rmsh.dx_mesh[0]['dx']):.{rpam.parameters['print_out_digits']}e}",
+        fi.fieldnames_data[3]: \
+            f"{float(cont.pressure_scale):.{rpam.parameters['print_out_digits']}e}"
         }])
 
     fi.csvfile_data.flush()
