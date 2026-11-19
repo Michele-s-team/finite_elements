@@ -104,9 +104,21 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
+'''
+# check dyds - start
+rmsh = importlib.import_module(swi.rmsh)
+import solution_paths as solpath
+import differential_geometry.boundary.geometry as bgeo
 
+dyds = bgeo.field_facet_tangent_normalized(rmsh.lmsh.mesh[0], msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_0), rmsh.ds_mesh[0]['dS_shape'], 
+                                    interior=True)
 
+io.full_print(dyds, 'dyds', \
+                  solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path, rmsh.sf[0])    
 
+sys.exit(1)
+# check dyds - end
+'''
 
 print(f'Generating initial mesh ...')
 
