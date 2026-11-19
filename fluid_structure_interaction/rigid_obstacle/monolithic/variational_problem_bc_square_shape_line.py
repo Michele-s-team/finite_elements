@@ -207,8 +207,6 @@ F_u_dot_n = msh.ufl_conditional_form(
 
 F_theta_n = ( ( fsp.theta_n - ( fsp.theta_n_1 + fsp.omega_n_1 * dt ) ) * fsp.nu_omega_n ) * rmsh.dx_mesh[0]['dx']
 
-# sign
-
 
 # 2.3.2 omega_n
 

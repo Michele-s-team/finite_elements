@@ -251,11 +251,17 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.1.1 Define _old fields that store the last configurations from the last iteration with the previous mesh
 
+        # 4.1.1.1 body
+        
         theta_n_old = Function(fsp.Q_theta_n)
         omega_n_old = Function(fsp.Q_omega_n)
 
+        # 4.1.1.2 fluid
+
         v_n_old = Function(fsp.Q_v_n)
         sigma_n_old = Function(fsp.Q_sigma_n)
+
+        # 4.1.1.3 domain
 
         u_n_old = Function(fsp.Q_u_n)
         u_dot_n_old = Function(fsp.Q_u_dot_n)
@@ -263,32 +269,38 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.1.2 Write in the _old fields the configurations form the last iteration with the previous mesh
 
-
-
         #4.1.2.1 unpack the mixed field 
         theta_n_dummy, omega_n_dummy, v_n_dummy, sigma_n_dummy, u_n_dummy, u_dot_n_dummy = fsp.psi.split( deepcopy=True )
 
         # 4.1.2.2 write
 
+        # 4.1.2.1 body
+
         theta_n_old.assign(theta_n_dummy)
         omega_n_old.assign(omega_n_dummy)
 
+        # 4.1.2.2 body
+
         v_n_old.assign(v_n_dummy)
         sigma_n_old.assign(sigma_n_dummy)
+
+        # 4.1.2.3 domain
 
         u_n_old.assign(u_n_dummy)
         u_dot_n_old.assign(u_dot_n_dummy)
 
 
-        #4.1.1.2.3 store the marker function of the old mesh (the reference keeps the old MeshFunction and its mesh alive through the module reloads)
+        #4.1.1.2.4 store the measure and marker function of the old mesh (the reference keeps the old MeshFunction and its mesh alive through the module reloads)
+        dx_old = rmsh.dx_mesh[0]['dx']
         sf_old = rmsh.sf[0]
 
          
         #4.2 set the new rotation angle of the polygon for the reference configuration 
 
-
+        # obtain the angle of the body in the new reference configuration, `theta_ref`, by averaging `theta_n` over the whole mesh (`theta_n` is constant over the mesh)
         theta_ref = msh.average_wrt_measure(fsp.theta_n, rmsh.dx_mesh[0]['dx'])
 
+        # compute the  `shape_coordinates` in the new reference configuration by rotating them with `theta_ref`
         shape_coordinates = []
         for coordinate in shape_coordinates_0:
             shape_coordinates.append(np.add(mesh_parameters['c'], cal.R(theta_ref).dot(np.subtract(coordinate, mesh_parameters['c']))))
@@ -313,17 +325,26 @@ for n in range(rpam.parameters['num_steps']):
 
         #4.4 transfer the values stored in the _old fields to the fields defined on the new mesh
 
-        msh.transfer(theta_n_old, fsp.theta_0, u_n_old)
-        msh.transfer(omega_n_old, fsp.omega_0, u_n_old)
+
+        # 4.4.1 body: there the fields `theta` and `omega` are constant across the mesh, so I simply transfer them with 
+
+        fsp.theta_0.assign(Constant(msh.average_wrt_measure(theta_n_old, dx_old)))
+        fsp.omega_0.assign(Constant(msh.average_wrt_measure(omega_n_old, dx_old)))
+
+        # 4.4.2: fluid
 
         msh.transfer_dg(v_n_old, fsp.v_0, u_n_old, sf_old, rmsh.sf[0])
         msh.transfer_dg(sigma_n_old, fsp.sigma_0, u_n_old, sf_old, rmsh.sf[0])
+
+
+        # 4.4.3: domain
 
         fsp.u_0.assign(Constant((0, 0)))
         msh.transfer_dg(u_dot_n_old, fsp.u_dot_0, u_n_old, sf_old, rmsh.sf[0])
 
         fsp.assigner.assign(fsp.psi, [fsp.theta_0, fsp.omega_0, fsp.v_0, fsp.sigma_0, fsp.u_0, fsp.u_dot_0])
 
+        # sign
 
         msh.interpolate_dg(fsp.y, fu.identity_expression())
 
