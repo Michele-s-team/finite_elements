@@ -188,7 +188,6 @@ F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.parameters['sub_mesh_0_0_id'],
                                         rmsh.lmsh.parameters['sub_mesh_0_1_id']
                                 ) * rmsh.dx_mesh[0]['dx'] \
-# sign
             + ( msh.jump(fsp.nu_u_dot_n[k], bgeo.facet_normal[0])[i] * msh.average( ela.Q(fsp.u_n, fsp.u_dot_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']), ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']), ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']))[k, i] ) ) * rmsh.ds_mesh[0]['dS_I_square'] \
             + ( bgeo.facet_normal[0][i] * ela.Q(fsp.u_n, fsp.u_dot_n, ela.K(fsp.u_n, rpam.parameters['exponent']), ela.mu(fsp.u_n, rpam.parameters['exponent']), ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']), ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters['exponent']))[k, i] * fsp.nu_u_dot_n[k] ) * rmsh.ds_mesh[0]['ds'] \
             + ( msh.side(bgeo.facet_normal[0], rmsh.I_sub_mesh_0_1)[i] * ela.Q(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1),  msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1), ela.K(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']), ela.mu(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']), ela.K_dot(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1),  msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']), ela.mu_dot(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1),  msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1), rpam.parameters['exponent']))[k, i] * (msh.side(fsp.nu_u_dot_n, rmsh.I_sub_mesh_0_1))[k]) * rmsh.ds_mesh[0]['dS_shape'] \
@@ -198,8 +197,9 @@ F_u_dot_n = msh.ufl_conditional_form(
             ) \
             + rpam.parameters['alpha_shape']/rmsh.r_mesh[0] * ( \
                 msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_dot_n[i], bgeo.facet_normal[0])[j] *  rmsh.ds_mesh[0]['dS_shape'] \
-            ) \
-            
+            ) 
+
+
 
 # 2.3 theta_n and omega_n
 
@@ -207,12 +207,14 @@ F_u_dot_n = msh.ufl_conditional_form(
 
 F_theta_n = ( ( fsp.theta_n - ( fsp.theta_n_1 + fsp.omega_n_1 * dt ) ) * fsp.nu_omega_n ) * rmsh.dx_mesh[0]['dx']
 
+# sign
 
 
 # 2.3.2 omega_n
 
 S_shape = assemble( Constant(1) * rmsh.ds_mesh[0]['dS_shape'] )
 
+# unlike Eq. (124) in 'Channel flow with moving obstacle', this variational functional is multiplied by rmsh.ds_mesh[0]['dS_shape'], while in Eq. (124) it is multiplied by rmsh.dx_mesh[0]['dx']. Given that theta_n and omega_n have only one DOF, constant across the whole cell, this is the same as Eq. (124)
 F_omega_n = ( ( msh.average(fsp.omega_n)/S_shape - ( msh.average(fsp.omega_n_1)/S_shape + dt/rpam.parameters['I'] * 
                     ( \
                         geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] 
