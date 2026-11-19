@@ -167,7 +167,9 @@ F_u_n = msh.ufl_conditional_form(
             + fsp.u_n[i] * fsp.nu_u_n[i] * rmsh.ds_mesh[0]['ds'] \
         ) \
         + rpam.parameters['alpha_shape']/rmsh.r_mesh[0] * (\
-            msh.jump(fsp.u_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_shape'] \
+            ( 
+                ( msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1)[i] - ( c()[i] - msh.average(fsp.y)[i] + R(msh.average(fsp.theta_n - Constant(rmsh.parameters['phi'])))[i, j] * ( msh.average(fsp.y)[j] - c()[j] ) ) ) * msh.side(fsp.nu_u_n, rmsh.I_sub_mesh_0_1)[i]
+            ) * rmsh.ds_mesh[0]['dS_shape'] \
         )
 
 
@@ -195,9 +197,11 @@ F_u_dot_n = msh.ufl_conditional_form(
                 msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_dot_n[i], bgeo.facet_normal[0])[j] * rmsh.ds_mesh[0]['dS_I_square'] \
                 + ( fsp.u_dot_n[i] * fsp.nu_u_dot_n[i] ) * rmsh.ds_mesh[0]['ds'] \
             ) \
-            + rpam.parameters['alpha_shape']/rmsh.r_mesh[0] * ( \
-                msh.jump(fsp.u_dot_n[i], bgeo.facet_normal[0])[j] * msh.jump(fsp.nu_u_dot_n[i], bgeo.facet_normal[0])[j] *  rmsh.ds_mesh[0]['dS_shape'] \
-            ) 
+            + rpam.parameters['alpha_shape']/rmsh.r_mesh[0] * (\
+                ( 
+                    ( msh.side(fsp.u_dot_n, rmsh.I_sub_mesh_0_1)[i] - ( msh.average(fsp.omega_n) * dRdtheta(msh.average(fsp.theta_n - Constant(rmsh.parameters['phi'])))[i, j] * ( msh.average(fsp.y)[j] - c()[j] ) ) ) * msh.side(fsp.nu_u_dot_n, rmsh.I_sub_mesh_0_1)[i]
+                ) * rmsh.ds_mesh[0]['dS_shape'] \
+            )
 
 
 
@@ -205,7 +209,7 @@ F_u_dot_n = msh.ufl_conditional_form(
 
 # 2.3.1 theta_n
 
-F_theta_n = ( ( fsp.theta_n - ( fsp.theta_n_1 + fsp.omega_n_1 * dt ) ) * fsp.nu_omega_n ) * rmsh.dx_mesh[0]['dx']
+F_theta_n = ( ( fsp.theta_n - ( fsp.theta_n_1 + fsp.omega_n * dt ) ) * fsp.nu_omega_n ) * rmsh.dx_mesh[0]['dx']
 
 
 # 2.3.2 omega_n
