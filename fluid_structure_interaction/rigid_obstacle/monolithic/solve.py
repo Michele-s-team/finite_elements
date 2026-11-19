@@ -68,7 +68,7 @@ for coordinate in shape_coordinates_0:
 
 dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 
-'''
+
 # set the solver parameters here
 params = {'nonlinear_solver': 'newton',
           'newton_solver':
@@ -80,9 +80,9 @@ params = {'nonlinear_solver': 'newton',
                 #   'relaxation_parameter': 0.95,
               }
           }
+
+
 '''
-
-
 params = {
     'nonlinear_solver': 'snes',
     'snes_solver': {
@@ -104,6 +104,7 @@ PETScOptions.set('snes_max_it', 100000)
 PETScOptions.set('snes_monitor')
 PETScOptions.set('snes_max_funcs', 1000000)         
 
+'''
 '''
 # check dyds - start
 rmsh = importlib.import_module(swi.rmsh)
