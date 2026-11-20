@@ -160,9 +160,6 @@ F_sigma_n = msh.ufl_conditional_form(
 
 # 2.2.1 u_n
 
-# sign
-
-
 F_u_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
@@ -217,7 +214,7 @@ F_u_dot_n = msh.ufl_conditional_form(
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
 
-
+# sign
 
 # 2.3 theta_n and omega_n
 
