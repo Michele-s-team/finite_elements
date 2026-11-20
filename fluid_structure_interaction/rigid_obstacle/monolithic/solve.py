@@ -369,11 +369,7 @@ for n in range(rpam.parameters['num_steps']):
 
         fsp.assigner.assign(fsp.psi, [fsp.theta_0, fsp.omega_0, fsp.v_0, fsp.sigma_0, fsp.u_0, fsp.u_dot_0])
 
-        # sign
-
         msh.interpolate_dg(fsp.y, fu.identity_expression())
-
-                
 
         #4.4.3 clean up
 
