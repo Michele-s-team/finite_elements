@@ -105,6 +105,8 @@ bcs = []
 
 # 2.1.1 v_n
 
+# sign
+
 # natural BC imposed here
 F_v_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
