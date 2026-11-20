@@ -70,7 +70,11 @@ dt = rpam.parameters['T'] / rpam.parameters['num_steps']  # time step size
 class v_l_expression(UserExpression):
     def eval(self, values, x):
 
-        values[0] = rpam.parameters['v_l'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h'] - x[1]) / (rmsh.parameters['h']**2)
+        if x[1] < rmsh.parameters['h']/2:
+            values[0] = rpam.parameters['v_l'] * 4.0 * 1.5 * x[1] * (rmsh.parameters['h']/2 - x[1]) / ((rmsh.parameters['h']/2)**2)
+        else:
+            values[0] = - rpam.parameters['v_l'] * 4.0 * 1.5 * (x[1] - rmsh.parameters['h']/2) * (rmsh.parameters['h'] - x[1]) / ((rmsh.parameters['h']/2)**2)
+
         values[1] = 0.0
 
     def value_shape(self):
