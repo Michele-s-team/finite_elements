@@ -214,7 +214,6 @@ F_u_dot_n = msh.ufl_conditional_form(
                 ) * rmsh.ds_mesh[0]['dS_shape'] \
             )
 
-# sign
 
 # 2.3 theta_n and omega_n
 
@@ -232,12 +231,11 @@ F_omega_n = ( ( msh.average(fsp.omega_n)/S_shape - ( msh.average(fsp.omega_n_1)/
                     ( \
                         geo.epsilon[i, j] * ( msh.average(fsp.y[i] + fsp.u_n[i]) - c()[i] ) * flu.sigma_ale(msh.side(fsp.v_n, rmsh.I_sub_mesh_0_1), cont.pressure_scale * msh.side(fsp.sigma_n, rmsh.I_sub_mesh_0_1), msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1), rpam.parameters['mu'])[j, k] * geo.epsilon[k, m] * ela.F(msh.side(fsp.u_n, rmsh.I_sub_mesh_0_1))[m, l] * msh.side(bgeo.facet_tangent[0], rmsh.I_sub_mesh_0_0)[l] 
                     )  \
-                ) 
+                )
             ) * msh.average(fsp.nu_theta_n) ) * rmsh.ds_mesh[0]['dS_shape']
 
 
 
 
 F = F_v_n + F_sigma_n + F_u_n + F_u_dot_n + F_theta_n + F_omega_n
-
 
