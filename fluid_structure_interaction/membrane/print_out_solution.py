@@ -33,7 +33,7 @@ writer.writeheader()
 def print_solution(t, step, dt):
 
 
-    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_bar, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
 
     
     # 1) membrane problem

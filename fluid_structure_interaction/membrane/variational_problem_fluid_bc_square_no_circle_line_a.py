@@ -24,7 +24,7 @@ dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 class sigma_fl_n_12_Expression(UserExpression):
     def eval(self, values, x):
         # values[0] =2*(np.pi*4)**2*0.01*(0.01)*rpam.parameters['eta_fluid']*np.cos(x[0]*np.pi*4)*np.exp(-4*np.pi*(0.01*np.cos(4*np.pi*x[0])))+ (4*np.pi)**3*(0.01)**2*0.01*rpam.parameters['eta_fluid']*np.cos(2*4*np.pi*x[0])*np.exp(-2*4*np.pi*(0.01*np.cos(4*np.pi*x[0])))
-        values[0] =2*(np.pi*4)**2*0.01*(0.01)*rpam.parameters['eta_fluid']*np.cos(x[0]*np.pi*4)
+        values[0] =-2*(np.pi*4)**2*0.01*(0.01)*rpam.parameters['eta_fluid']*np.cos(x[0]*np.pi*4)
         # values[0] = 0
 
     def value_shape(self):

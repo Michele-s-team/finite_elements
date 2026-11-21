@@ -154,7 +154,7 @@ for n in range(rpam.parameters['N']):
     var_pr.solve_vp(vp_fluid.F_v_fl_n, fsp.v_fl_n, [], fsp.J_v_fl_n, parameters=params)
     fsp.sigma_fl_n_12.assign(fsp.sigma_fl_n_32 - fsp.phi_fl)
 
-    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_bar, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']),fsp.Q_var_tensor_sigma_fl))
+    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']),fsp.Q_var_tensor_sigma_fl))
     # fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
     print("Fluid solve:done")
 
