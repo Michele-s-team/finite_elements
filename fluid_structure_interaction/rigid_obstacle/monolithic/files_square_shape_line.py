@@ -47,7 +47,8 @@ fieldnames_data = [ \
     'step',
     'theta_n',
     'omega_n',
-    'pressure_scale'
+    'pressure_scale',
+    'mesh_quality'
     ]
 writer_data = csv.DictWriter(csvfile_data, fieldnames=fieldnames_data)
 writer_data.writeheader()
