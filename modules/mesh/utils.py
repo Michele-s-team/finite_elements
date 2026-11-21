@@ -253,16 +253,29 @@ Return values:
 '''
 
 
+# def test_mesh_integral(exact_value, f_test, measure, label):
+#     numerical_value = assemble(f_test * measure)
+
+#     result = abs((numerical_value - exact_value) / exact_value)
+#     print(
+#         f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {result:.{io.number_of_decimals}e}")
+
+#     return result
+
 def test_mesh_integral(exact_value, f_test, measure, label):
+
+    print("DEBUG:", label)
+    print("MEASURE SIZE =", assemble(Constant(1.0) * measure))
+
     numerical_value = assemble(f_test * measure)
 
     result = abs((numerical_value - exact_value) / exact_value)
+
     print(
-        f"{label} = {numerical_value:.{4}}, should be {exact_value:.{4}}, relative error =  {result:.{io.number_of_decimals}e}")
+        f"{label} = {numerical_value:.4f}, should be {exact_value:.4f}, relative error = {result:.6e}"
+    )
 
     return result
-
-
 class BoundaryMarker(SubDomain):
     def inside(self, x, on_boundary):
         return on_boundary
@@ -2425,17 +2438,23 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     I would obtain a one-dimensional mesh embedded in two-dimensional space, thus in fact a two-dimensional mesh, which is not what I want : I want a truly one-dimensional mesh. 
                     -> I create an IntervalMesh and assign to it the coordinates of the submesh, and append to sub_meshes the IntervalMesh
                     '''
-
+                    print("SUBMESH", p)
+                    print("target id =", mesh_medatada[f"sub_mesh_{p}_id"])
                     # create the one-dimensional submesh from the facet function 'mf_mesh' and the id which identifies the sub_mesh under consideration: first extract the coordinates of the points in the one-dimensional submesh and store them into x_coordinates
                     x_coordinates = []
+                    target_id = mesh_medatada[f"sub_mesh_{p}_id"]
+
                     for facet in facets(mesh):
-                        if mf_mesh[facet] == mesh_medatada[f'sub_mesh_{p}_id']:
+                        if mf_mesh[facet] == target_id:
+                            print("FOUND FACET WITH TARGET ID", target_id)
                             for vertex in vertices(facet):
                                 x_coordinates.append(vertex.point().x())
-
                     # then remove duplicates from x_coordinates and sort it 
                     x_coordinates = sorted(list(set(x_coordinates)))  
-
+                    print("READING SUBMESH", p)
+                    print("x_coordinates =", x_coordinates)
+                    print("len(x_coordinates) =", len(x_coordinates))
+                    print("SUBMESH 2 METADATA:")
                     # generate the one-dimensional submesh and return its cell mesh function and vertex mesh function
                     sub_mesh_1d, cf_sub_mesh_1d, vf_sub_mesh_1d = genereate_line_mesh(0, mesh_medatada['L'], None,
                                                                                         mesh_medatada[f'sub_mesh_{p}_id'], mesh_medatada[f'vertex_sub_mesh_{p}_l_id'], mesh_medatada[f'vertex_sub_mesh_{p}_r_id'],

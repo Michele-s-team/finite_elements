@@ -15,7 +15,7 @@ import math
 import os
 import pygmsh
 import sys
-
+import numpy as np
 # add the path where to find the shared modules
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
@@ -34,86 +34,132 @@ mesh_metadata_file_name = output_directory + 'mesh_metadata.csv'
 
 metadata = rpam.parameters.copy()
 metadata['file_format'] = 'xdmf'
-
-print("output_directory = ", output_directory)
+# print("METADATA KEYS BEFORE WRITE:")
+# print(metadata.keys())
+# print("n_sub_meshes =", metadata['n_sub_meshes'])
+# print("output_directory = ", output_directory)
 
 geometry = pygmsh.occ.Geometry()
 model = geometry.__enter__()
 
-# add outer rectangle
-p_1 = gmsh.model.geo.addPoint(0, 0, 0)
-p_2 = gmsh.model.geo.addPoint(rpam.parameters["L"], 0, 0)
-p_3 = gmsh.model.geo.addPoint(rpam.parameters["L"], rpam.parameters["h"], 0)
-p_4 = gmsh.model.geo.addPoint(0, rpam.parameters["h"], 0)
+# -----------------------------------------------------------------------
+# Cosine parameters
+# -----------------------------------------------------------------------
+A    = rpam.parameters["A"]     # amplitude
+lmda = rpam.parameters["lmda"] # wavelength
+L    = rpam.parameters["L"]
+h    = rpam.parameters["h"]
+n    = rpam.parameters["n"]
+
+
+# cosine shape function
+def cosine_y(x):
+    return h + A * np.cos(n*np.pi* x )
+
+
+nPoints = 3000  # number of discretisation point
+
+# left endpoint  (x=0)
+p_top_start = gmsh.model.geo.addPoint(0, cosine_y(0), 0)
+pointList_top = [p_top_start]
+for i in range(1, nPoints):
+    x = L * i / nPoints
+    pointList_top.append(gmsh.model.geo.addPoint(x, cosine_y(x), 0))
+# right endpoint (x=L)
+p_top_end = gmsh.model.geo.addPoint(L, cosine_y(L), 0)
+pointList_top.append(p_top_end)
+
+spline_top = gmsh.model.geo.addSpline(pointList_top)   # sub_mesh_1
+
+
+bottom_points = []
+for i in range(1, nPoints):
+    x = i*L/(nPoints-1)
+    bottom_points.append(
+        gmsh.model.geo.addPoint(
+            x, A*np.cos(n*np.pi*x/lmda),0
+        )
+    )
+
+# -----------------------------------------------------------------------
+# 2 straight sides
+# -----------------------------------------------------------------------
+p_bl = bottom_points[0]  # bottom-left
+p_br = bottom_points[-1]   # bottom-right
+
+line_12 = gmsh.model.geo.addSpline(bottom_points)              # bottom  (sub_mesh_2)
+line_23 = gmsh.model.geo.addLine(p_br, p_top_end)          # right wall
+line_41 = gmsh.model.geo.addLine(p_top_start, p_bl)        # left  wall
+
+# CCW loop: bottom → right → cosine (reversed) → left
+loop = gmsh.model.geo.addCurveLoop([line_12, line_23, -spline_top, line_41])
+surface_domain = gmsh.model.geo.addPlaneSurface([loop])
 gmsh.model.geo.synchronize()
 
-line_12 = gmsh.model.geo.addLine(p_1, p_2)
-line_23 = gmsh.model.geo.addLine(p_2, p_3)
-line_34 = gmsh.model.geo.addLine(p_3, p_4)
-line_41 = gmsh.model.geo.addLine(p_4, p_1)
-gmsh.model.geo.synchronize()
+# -----------------------------------------------------------------------
+# Physical groups – using geo kernel
+# -----------------------------------------------------------------------
+print(f"DEBUG: spline_top={spline_top}, line_12={line_12}, line_23={line_23}, line_41={line_41}")
 
-loop = gmsh.model.geo.addCurveLoop([line_12, line_23, line_34, line_41])
-gmsh.model.geo.synchronize()
+gmsh.model.geo.addPhysicalGroup(1, [line_12],    rpam.parameters["sub_mesh_2_id"])
+gmsh.model.setPhysicalName    (1, rpam.parameters["sub_mesh_2_id"],        "sub_mesh_2")
 
-surface_square = gmsh.model.geo.addPlaneSurface([loop])
-gmsh.model.geo.synchronize()
+gmsh.model.geo.addPhysicalGroup(1, [line_23],    rpam.parameters["line_sub_mesh_0_r_id"])
+gmsh.model.setPhysicalName    (1, rpam.parameters["line_sub_mesh_0_r_id"], "line_23")
 
-# add 1-dimensional objects
-lines = gmsh.model.getEntities(dim=1)
+gmsh.model.geo.addPhysicalGroup(1, [spline_top], rpam.parameters["sub_mesh_1_id"])
+gmsh.model.setPhysicalName    (1, rpam.parameters["sub_mesh_1_id"],        "sub_mesh_1")
 
-# DEBUG: Print what line entities we have
-print(f"DEBUG: Line entities: {lines}")
-print(f"DEBUG: Expected line IDs - line_12: {line_12}, line_23: {line_23}, line_34: {line_34}, line_41: {line_41}")
+gmsh.model.geo.addPhysicalGroup(1, [line_41],    rpam.parameters["line_sub_mesh_0_l_id"])
+gmsh.model.setPhysicalName    (1, rpam.parameters["line_sub_mesh_0_l_id"], "line_41")
+print("line_12 =", line_12)
+print("line_23 =", line_23)
+print("line_41 =", line_41)
+print("spline_top =", spline_top)
+print("sub_mesh_0_id =", rpam.parameters["sub_mesh_0_id"])
+print("sub_mesh_1_id =", rpam.parameters["sub_mesh_1_id"])
+print("sub_mesh_2_id =", rpam.parameters["sub_mesh_2_id"])
 
-# square lines
-gmsh.model.addPhysicalGroup(lines[0][0], [lines[0][1]], rpam.parameters["line_sub_mesh_0_b_id"])
-gmsh.model.setPhysicalName(lines[0][0], rpam.parameters["line_sub_mesh_0_b_id"], "line_12")
+gmsh.model.geo.addPhysicalGroup(2, [surface_domain], rpam.parameters["sub_mesh_0_id"])
+gmsh.model.setPhysicalName    (2, rpam.parameters["sub_mesh_0_id"], "sub_mesh_0")
 
-gmsh.model.addPhysicalGroup(lines[1][0], [lines[1][1]], rpam.parameters["line_sub_mesh_0_r_id"])
-gmsh.model.setPhysicalName(lines[1][0], rpam.parameters["line_sub_mesh_0_r_id"], "line_23")
-
-# gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["line_sub_mesh_0_t_id"])
-# gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["line_sub_mesh_0_t_id"], "line_34")
-
-gmsh.model.addPhysicalGroup(lines[2][0], [lines[2][1]], rpam.parameters["sub_mesh_1_id"])
-gmsh.model.setPhysicalName(lines[2][0], rpam.parameters["sub_mesh_1_id"], "sub_mesh_1")
-
-gmsh.model.addPhysicalGroup(lines[3][0], [lines[3][1]], rpam.parameters["line_sub_mesh_0_l_id"])
-gmsh.model.setPhysicalName(lines[3][0], rpam.parameters["line_sub_mesh_0_l_id"], "line_41")
-
-# add 2-dimensional objects
-surfaces = gmsh.model.getEntities(dim=2)
-
-# DEBUG: Print what surface entities we have
-print(f"DEBUG: Surface entities: {surfaces}")
-
-gmsh.model.addPhysicalGroup(surfaces[0][0], [surfaces[0][1]], rpam.parameters["sub_mesh_0_id"])
-gmsh.model.setPhysicalName(surfaces[0][0], rpam.parameters["sub_mesh_0_id"], "sub_mesh_0")
-
-# DEBUG: Print the physical group IDs we're using
 print(f"DEBUG: Physical group IDs:")
-print(f"  sub_mesh_0_id (surface): {rpam.parameters['sub_mesh_0_id']}")
-print(f"  sub_mesh_1_id (line_34): {rpam.parameters['sub_mesh_1_id']}")
+print(f"  sub_mesh_0_id (surface):      {rpam.parameters['sub_mesh_0_id']}")
+print(f"  sub_mesh_1_id (cosine spline): {rpam.parameters['sub_mesh_1_id']}")
 
-# set the resolution close to the obstacle
-distance = gmsh.model.mesh.field.add("Distance")
-gmsh.model.mesh.field.setNumbers(distance, "FacesList", [loop])
 
-threshold = gmsh.model.mesh.field.add("Threshold")
-gmsh.model.mesh.field.setNumber(threshold, "IField", distance)
-gmsh.model.mesh.field.setNumber(threshold, "LcMin", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "LcMax", rpam.parameters["resolution"])
-gmsh.model.mesh.field.setNumber(threshold, "DistMin", 0)
-gmsh.model.mesh.field.setNumber(threshold, "DistMax", max(rpam.parameters["L"], rpam.parameters["h"]))
+gmsh.model.geo.synchronize()
 
-gmsh.model.mesh.field.setAsBackgroundMesh(threshold)
+dist_field = gmsh.model.mesh.field.add("Distance")
+gmsh.model.mesh.field.setNumbers(dist_field, "CurvesList", [spline_top])
+gmsh.model.mesh.field.setNumber (dist_field, "NumPointsPerCurve", 1000)
 
-gmsh.model.occ.synchronize()
+thr_field = gmsh.model.mesh.field.add("Threshold")
+gmsh.model.mesh.field.setNumber(thr_field, "InField",  dist_field)
+gmsh.model.mesh.field.setNumber(thr_field, "SizeMin",  rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(thr_field, "SizeMax",  rpam.parameters["resolution"])
+gmsh.model.mesh.field.setNumber(thr_field, "DistMin",  0.0)
+gmsh.model.mesh.field.setNumber(thr_field, "DistMax",  max(L, h))
+
+min_field = gmsh.model.mesh.field.add("Min")
+gmsh.model.mesh.field.setNumbers(min_field, "FieldsList", [thr_field])
+gmsh.model.mesh.field.setAsBackgroundMesh(min_field)
+
+gmsh.option.setNumber("Mesh.MeshSizeExtendFromBoundary", 0)
+gmsh.option.setNumber("Mesh.MeshSizeFromPoints",         0)
+gmsh.option.setNumber("Mesh.MeshSizeFromCurvature",      0)
+
 gmsh.model.mesh.generate(2)
+print("Physical groups:")
+for dim, tag in gmsh.model.getPhysicalGroups():
+    print(dim, tag,
+          gmsh.model.getEntitiesForPhysicalGroup(dim, tag))
+gmsh.option.setNumber("Mesh.MshFileVersion", 2.2)
 
 gmsh.write(mesh_file)
-
+metadata['n_sub_meshes'] = 3
+metadata['sub_mesh_2_dim'] = 1
+metadata['sub_mesh_2_id'] = rpam.parameters['sub_mesh_2_id']
 msh.full_write(mesh_file, ['triangle', 'line'], metadata, output_directory, True)
 
 # print the boundary points of the boundaries given by the top line (sub_mesh 1)
@@ -139,12 +185,36 @@ with XDMFFile(output_directory + "triangle_mesh.xdmf") as infile:
     infile.read(mesh_temp)
 
 
-# create a list of the vertices in mesh_2d which lie on the top edge
+# collect vertices that lie on the cosine top boundary
 top_edge_vertices = []
 for vertex in vertices(mesh_temp):
     point = vertex.point()
-    if math.isclose(point.y(), rpam.parameters["h"]):
-        top_edge_vertices.append(point.x())
+    x, y = point.x(), point.y()
+    y_cos = h + A * np.cos(n * np.pi * x / lmda)
+    if math.isclose(y, y_cos, abs_tol= 1e-5):
+        top_edge_vertices.append(x)
+
+top_edge_vertices = sorted(list(set(top_edge_vertices)))
+print("Top EDGE VERTICES:")
+print(top_edge_vertices)
+print("NUMBER OF Top VERTICES =", len(top_edge_vertices))
+
+''' create a list of the vertices in mesh_2d which lies on the bottom edge-analogus to the top membrane '''
+bottom_edge_vertices = []
+
+for vertex in vertices(mesh_temp):
+    point = vertex.point()
+
+    y_bottom = A*np.cos(n*np.pi*point.x()/lmda)
+
+    if math.isclose(point.y(), y_bottom, rel_tol=1e-4, abs_tol=1e-4):
+        bottom_edge_vertices.append(point.x())
+
+bottom_edge_vertices = sorted(list(set(bottom_edge_vertices)))
+print("BOTTOM EDGE VERTICES:")
+print(bottom_edge_vertices)
+print("NUMBER OF BOTTOM VERTICES =", len(bottom_edge_vertices))
+
 
 # Sort vertices by x-coordinate and remove duplicates
 top_edge_vertices = sorted(list(set(top_edge_vertices)))
@@ -164,6 +234,8 @@ if len(top_edge_vertices) >= 2:
     sub_mesh_1_metadata['x_l'] = 0.0
     sub_mesh_1_metadata['x_r'] = rpam.parameters['L']
     sub_mesh_1_metadata['coordinates'] = top_edge_vertices
+    sub_mesh_1_metadata['A'] = A
+    sub_mesh_1_metadata['lmda'] = lmda
     sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
     sub_mesh_1_metadata['line_id'] = rpam.parameters['sub_mesh_1_id']
     sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']
@@ -176,8 +248,38 @@ if len(top_edge_vertices) >= 2:
                             output_directory=sub_mesh_1_output_directory, metadata=sub_mesh_1_metadata,
                             coordinates=top_edge_vertices)
 
+    print("===== GENERATING SUBMESH 2 =====")
+    print("Number of bottom vertices =", len(bottom_edge_vertices))
+    print(bottom_edge_vertices[:10])
+
+    
+    sub_mesh_2_output_directory = output_directory + "sub_meshes/2/"
+    os.makedirs(sub_mesh_2_output_directory, exist_ok=True)
+
+    sub_mesh_2_metadata = dict([])
+    sub_mesh_2_metadata['x_l'] = 0.0
+    sub_mesh_2_metadata['x_r'] = rpam.parameters['L']
+    sub_mesh_2_metadata['coordinates'] = bottom_edge_vertices
+    sub_mesh_2_metadata['resolution'] = rpam.parameters['resolution']
+    sub_mesh_2_metadata['line_id'] = rpam.parameters['sub_mesh_2_id']
+    sub_mesh_2_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_2_l_id']
+    sub_mesh_2_metadata['vertex_r_id'] = rpam.parameters['vertex_sub_mesh_2_r_id']
+    sub_mesh_2_metadata['file_format'] = 'h5'
+
+
+    msh.genereate_line_mesh(0.0,rpam.parameters['L'],
+    len(bottom_edge_vertices)-1,rpam.parameters['sub_mesh_2_id'], rpam.parameters['vertex_sub_mesh_2_l_id'],
+    rpam.parameters['vertex_sub_mesh_2_r_id'],output_directory=sub_mesh_2_output_directory,metadata=sub_mesh_2_metadata,
+    coordinates=bottom_edge_vertices
+)
+
+
+
+
+
 
     print("...done!")
     
 else:
     print("Error: Not enough vertices found on top edge")
+

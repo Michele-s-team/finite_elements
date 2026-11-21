@@ -1,6 +1,8 @@
 from fenics import *
 
-
+import importlib
+import ufl as ufl
+import numpy as np
 import csv
 import files as fi
 import function_spaces as fsp
@@ -12,6 +14,8 @@ import os
 import solution_paths as solpath
 
 import runtime_arguments as rarg
+import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 
 # create the path for the csv file if it does not exist
 filename_theta_omega = rarg.args.output_directory + '/theta_omega.csv'
@@ -27,6 +31,10 @@ writer.writeheader()
 
 
 def print_solution(t, step, dt):
+
+
+    fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_bar, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+
     
     # 1) membrane problem
     v_bar_dummy, w_bar_dummy, phi_dummy, v_n_dummy, w_n_dummy, U_n_12_dummy, nu_n_12_dummy, psi_n_12_dummy, mu_n_12_dummy = fsp.psi_mem.split( deepcopy=True )
@@ -78,8 +86,7 @@ def print_solution(t, step, dt):
     # include the snapshot in xdmf files
     fi.xdmffile_u_n.write(fsp.u_n, t)
     fi.xdmffile_u_dot_n.write(fsp.u_dot_n, t)
-
-    # Write the deformed mesh to file
+    
     deformed_mesh = msh.deform_mesh(lmsh.sub_meshes[0], fsp.u_n)
     with XDMFFile(solpath.snapshots_path + 'mesh_n_' + str(step + 1) + '.xdmf') as xdmf:
         xdmf.write(deformed_mesh)
@@ -103,6 +110,7 @@ def print_solution(t, step, dt):
     fi.xdmffile_v_fl_bar.write(fsp.v_fl_bar, t)
     fi.xdmffile_sigma_fl.write(fsp.sigma_fl_n_12, t - dt / 2.0)
     fi.xdmffile_phi_fl.write(fsp.phi_fl, t)
+    fi.xdmffile_sigma_fl_tensor.write(fsp.var_tensor_sigma_fl,t)
 
     io.full_print_deformed(fsp.v_fl_bar, fsp.u_n, 'v_fl_bar_' + str(step + 1), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)

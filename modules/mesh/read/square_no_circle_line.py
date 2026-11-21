@@ -13,7 +13,6 @@ sf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim(), rarg.args.i
 # read the lines
 mf = msh.read_mesh_components(lmsh.mesh, lmsh.mesh.topology().dim() - 1, rarg.args.input_directory + "/line_mesh.xdmf")
 
-
 # r_mesh[i] is the radius of the smallest cell in sub_meshes[i]
 r_mesh =  [lmsh.sub_meshes[i].hmin() for i in range(len(lmsh.sub_meshes))]
 
@@ -33,7 +32,7 @@ ds_sub_mesh[0] = dict([ \
     ('ds_l', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_l_id"])), \
     ('ds_r', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_r_id"])), \
     ('ds_t', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"sub_mesh_{1}_id"])), \
-    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"line_sub_mesh_{0}_b_id"])), \
+    ('ds_b', Measure("ds", domain=lmsh.sub_meshes[0], subdomain_data=lmsh.mf_sub_meshes[0], subdomain_id=parameters[f"sub_mesh_{2}_id"])), \
     ])
 
 ds_sub_mesh[0]['ds_lr'] = ds_sub_mesh[0]['ds_l'] + ds_sub_mesh[0]['ds_r']
@@ -60,8 +59,8 @@ boundary = [''] * len(lmsh.sub_meshes)
 boundary[0] = dict([ \
     ('l', f'near(x[0], {0})'), \
     ('r', f'near(x[0], {parameters["L"]})'), \
-    ('t', f'near(x[1], {parameters["h"]})'), \
-    ('b', f'near(x[1], {0})') \
+    ('t', f'near(x[1], {parameters["h"]} + 'f'{parameters["A"]}*cos({parameters["n"]}*pi*x[0]))'), \
+    ('b', f'near(x[1], 'f'{parameters["A"]}*cos({parameters["n"]}*pi*x[0]))') \
     ])
 
 boundary[0]['lr'] = f"({boundary[0]['l']}) || ({boundary[0]['r']})"
