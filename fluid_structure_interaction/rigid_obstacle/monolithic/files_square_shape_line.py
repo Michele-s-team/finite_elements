@@ -19,7 +19,10 @@ os.makedirs(os.path.dirname(filepath_bcs), exist_ok=True)
 
 csvfile_bcs = open(filepath_bcs, 'a', newline='')
 fieldnames_bcs = [ \
-    'step'
+    'step',
+    # These two equations are Eq. (59) in 'Channel flow with moving obstacle'
+    '<<|v^n - v_l|^2>>_{partial Omega l}', \
+    '<<|v^n - v_tb|^2>>_{partial Omega tb}',\
     ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()
