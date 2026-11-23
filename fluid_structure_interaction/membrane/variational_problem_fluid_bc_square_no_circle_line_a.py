@@ -23,9 +23,10 @@ dt = rpam.parameters['T'] / rpam.parameters['N']  # time step size
 #1-order pressure field solution 
 class sigma_fl_n_12_Expression(UserExpression):
     def eval(self, values, x):
-        # values[0] =2*(np.pi*4)**2*0.01*(0.01)*rpam.parameters['eta_fluid']*np.cos(x[0]*np.pi*4)*np.exp(-4*np.pi*(0.01*np.cos(4*np.pi*x[0])))+ (4*np.pi)**3*(0.01)**2*0.01*rpam.parameters['eta_fluid']*np.cos(2*4*np.pi*x[0])*np.exp(-2*4*np.pi*(0.01*np.cos(4*np.pi*x[0])))
+        # M please explain where this expression comes from
+        # M numerical values such as `0.01` should not be hard-written in the .py files, write them in paramters_... .csv and then refer to them in the py file, revise this throughout the project
+
         values[0] =-2*(np.pi*4)**2*0.01*(0.01)*rpam.parameters['eta_fluid']*np.cos(x[0]*np.pi*4)
-        # values[0] = 0
 
     def value_shape(self):
         return (1,)
@@ -45,6 +46,7 @@ fsp.sigma_fl_n_12.interpolate(sigma_fl_n_12_Expression(element=fsp.Q_phi_fl.ufl_
 
 
 #normal vector on the top boundary (the membrane)
+# M as I suggested eearlier you should not introduce new definitions for quantities that are already defined : do not redefine `normal_vector` nor `normal`, use `bgeo.sub_mesh_facet_normal[0])`
 normal_vector = bgeo.field_facet_normal_normalized(rmsh.lmsh.sub_meshes[0],bgeo.sub_mesh_facet_normal[0],rmsh.ds_sub_mesh[0]['ds_t'])
 normal = as_vector((normal_vector[0], Constant(1)*normal_vector[1]))
 
@@ -52,11 +54,8 @@ normal = as_vector((normal_vector[0], Constant(1)*normal_vector[1]))
 # # BCs
 # 1) for step 1  inject velocity at top boundary downward using cosine profile and the normal vector.
 
-#nject velocity normally to the membrane
+#inject velocity normally to the membrane
 bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar,Constant(-0.01)*normal,rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["sub_mesh_1_id"])
-
-#inject velocity vertically to the membrane
-# bc_v_fl_bar_t = DirichletBC(fsp.Q_v_fl_bar,Constant((0.0, -0.1)),rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["sub_mesh_1_id"])
 
 bc_v_fl_bar_0_l = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0),rmsh.lmsh.mf_sub_meshes[0], rmsh.parameters["line_sub_mesh_0_l_id"])
 bc_v_fl_bar_0_r = DirichletBC(fsp.Q_v_fl_bar.sub(0), Constant(0),rmsh.lmsh.mf_sub_meshes[0],rmsh.parameters["line_sub_mesh_0_r_id"])
@@ -68,6 +67,7 @@ bc_sigma_fl_t = DirichletBC(fsp.Q_phi_fl, fsp.sigma_fl_n_12,rmsh.lmsh.mf_sub_mes
 bc_sigma_fl = [bc_sigma_fl_t]
 
 # step 1 for v_fl_bar
+# M  add a comment showing where you imposed natural BCs
 F_v_fl_bar = ( \
                    rpam.parameters['rho_fluid'] * (
                                                 (fsp.v_fl_bar[alpha] - fsp.v_fl_n_1[alpha]) / dt \
@@ -76,6 +76,7 @@ F_v_fl_bar = ( \
                     + fsp.sigma_fl_n_32 * ela.G(fsp.u_n_1)[beta, alpha] * (fsp.nu_v_fl_bar[alpha]).dx(beta) \
                     + rpam.parameters['eta_fluid'] * ela.G(fsp.u_n_1)[gamma, beta] * ((fsp.V_fl[alpha]).dx(gamma)) * ela.G(fsp.u_n_1)[delta, beta] * (fsp.nu_v_fl_bar[alpha]).dx(delta) \
             ) * ela.detF(fsp.u_n_1) * rmsh.dx_sub_mesh[0] \
+# M condense terms ~ ds_l and ds_r into ds_lr
             - (ela.G(fsp.u_n_1)[beta, alpha] * (bgeo.sub_mesh_facet_normal[0])[beta] * fsp.sigma_fl_n_32 * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_r'] \
             - (ela.G(fsp.u_n_1)[beta, alpha] * (bgeo.sub_mesh_facet_normal[0])[beta] * fsp.sigma_fl_n_32 * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_l'] \
             - (ela.G(fsp.u_n_1)[beta, alpha] * (bgeo.sub_mesh_facet_normal[0])[beta] * fsp.sigma_fl_n_32 * fsp.nu_v_fl_bar[alpha]) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_t'] \
@@ -84,14 +85,6 @@ F_v_fl_bar = ( \
              * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_lr'] +
              rpam.parameters['eta_fluid'] * ela.G(fsp.u_n_1)[delta, beta] * (bgeo.sub_mesh_facet_normal[0])[delta] * ela.G(fsp.u_n_1)[gamma, beta] * (fsp.V_fl[alpha].dx(gamma)) * fsp.nu_v_fl_bar[alpha] \
                           * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_t']             
-                # + 
-                # rpam.parameters['eta_fluid'] * (bgeo.sub_mesh_facet_normal[0])[delta] * (
-                #                                                                 ela.G(fsp.u_n_1)[delta, 0] * ela.G(fsp.u_n_1)[gamma, 0] * (fsp.V_fl[0].dx(gamma)) * fsp.nu_v_fl_bar[0] + \
-                #                                                                 ela.G(fsp.u_n_1)[delta, 1] * ela.G(fsp.u_n_1)[gamma, 1] * (fsp.V_fl[0].dx(gamma)) * fsp.nu_v_fl_bar[0] + \
-                #                                                                 ela.G(fsp.u_n_1)[delta, 1] * ela.G(fsp.u_n_1)[gamma, 1] * (fsp.V_fl[1].dx(gamma)) * fsp.nu_v_fl_bar[1] 
-                #                                                                 #added 23July 
-                #                                                             #    ela.G(fsp.u_n_1)[delta, 0] * ela.G(fsp.u_n_1)[gamma, 0] * (fsp.V_fl[1].dx(gamma)) * fsp.nu_v_fl_bar[1] 
-                #                                                             ) * ela.detF(fsp.u_n_1) * rmsh.ds_sub_mesh[0]['ds_b']
                 )+\
             rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.v_fl_bar[1]).dx(0) * fsp.nu_v_fl_bar[1].dx(0) ) * rmsh.ds_sub_mesh[0]['ds_l']+\
             rpam.parameters["alpha"] / rmsh.r_mesh[0] * ( (fsp.v_fl_bar[1]).dx(0) * fsp.nu_v_fl_bar[1].dx(0) ) * rmsh.ds_sub_mesh[0]['ds_r']

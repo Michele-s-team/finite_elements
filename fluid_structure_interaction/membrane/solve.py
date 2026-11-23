@@ -12,7 +12,6 @@ import dolfin
 from fenics import *
 import importlib
 import sys
-import numpy as np
 module_path = '/home/fenics/shared/modules'
 sys.path.append(module_path)
 
@@ -213,5 +212,5 @@ for n in range(rpam.parameters['N']):
 
 
 
-
+# M this should be removed
 u_vec = U_n_12_output.vector().get_local()
