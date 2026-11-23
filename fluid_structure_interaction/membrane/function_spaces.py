@@ -212,6 +212,7 @@ phi_fl = Function(Q_phi_fl)
 
 # stress tensor of the fluid 
 var_tensor_sigma_fl= Function(Q_var_tensor_sigma_fl)
+var_tensor_sigma_fl_not_ALE=Function(Q_var_tensor_sigma_fl)
 
 # fields to store the BCs
 v_fl_bar_b = Function(Q_v_fl_bar)
@@ -234,41 +235,3 @@ V_fl =  (v_fl_n_1 + v_fl_bar) / 2.0
 
 
 
-
-'''4) free surface fields'''
-''' define collapsed spaces '''
-Q_u_fs = Q_fs.sub(0).collapse()
-Q_u_fs_dot = Q_fs.sub(1).collapse()
-
-'''define the jacobian '''
-J_fs = TrialFunction(Q_fs)  #used for the Newton,s method, just numerical
-
-'''define solutions field '''
-psi_fs = Function(Q_fs) #vector that contains all free surface unknowns
-
-'''test functions'''
-nu_eta, nu_eta_dot = TestFunctions(Q_fs)  #test functions, used in the weak formulation, like in the membrane
-
-'''define previous timestep fields'''
-U_bottom_1 = Function(Q_u_fs)
-U_bottom_2 = Function(Q_u_fs)
-
-U_dot_bottom_1 = Function(Q_u_fs_dot)
-U_dot_bottom_2 = Function(Q_u_fs_dot)
-
-'''output fields'''
-u_fs_output = Function(Q_u_fs)
-u_fs_dot_output = Function(Q_u_fs_dot)
-
-'''split the unknowns'''
-u_fs, u_fs_dot = split(psi_fs)
-
-''' assigner'''
-assigner_fs = FunctionAssigner(Q_fs,[Q_u_fs, Q_u_fs_dot])
-
-u_fs_on_mesh = Function(Q_u)
-u_fs_dot_on_mesh = Function(Q_u_dot)
-
-
-u_fs_on_mesh_fs     = Function(Q_u_fs)      # free surface displacement living on sub_mesh[2]
-u_fs_dot_on_mesh_fs = Function(Q_u_fs_dot)  # free surface velocity living on sub_mesh[2]

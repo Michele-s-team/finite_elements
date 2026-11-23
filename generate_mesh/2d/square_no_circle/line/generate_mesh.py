@@ -46,7 +46,10 @@ model = geometry.__enter__()
 # Cosine parameters
 # -----------------------------------------------------------------------
 A    = rpam.parameters["A"]     # amplitude
+<<<<<<< HEAD
 lmda = rpam.parameters["lmda"] # wavelength
+=======
+>>>>>>> f7ce8d1c (Corrections)
 L    = rpam.parameters["L"]
 h    = rpam.parameters["h"]
 n    = rpam.parameters["n"]
@@ -77,7 +80,11 @@ for i in range(1, nPoints):
     x = i*L/(nPoints-1)
     bottom_points.append(
         gmsh.model.geo.addPoint(
+<<<<<<< HEAD
             x, A*np.cos(n*np.pi*x/lmda),0
+=======
+            x, A*np.cos(n*np.pi*x),0
+>>>>>>> f7ce8d1c (Corrections)
         )
     )
 
@@ -190,7 +197,11 @@ top_edge_vertices = []
 for vertex in vertices(mesh_temp):
     point = vertex.point()
     x, y = point.x(), point.y()
+<<<<<<< HEAD
     y_cos = h + A * np.cos(n * np.pi * x / lmda)
+=======
+    y_cos = h + A * np.cos(n * np.pi * x )
+>>>>>>> f7ce8d1c (Corrections)
     if math.isclose(y, y_cos, abs_tol= 1e-5):
         top_edge_vertices.append(x)
 
@@ -205,7 +216,11 @@ bottom_edge_vertices = []
 for vertex in vertices(mesh_temp):
     point = vertex.point()
 
+<<<<<<< HEAD
     y_bottom = A*np.cos(n*np.pi*point.x()/lmda)
+=======
+    y_bottom = A*np.cos(n*np.pi*point.x())
+>>>>>>> f7ce8d1c (Corrections)
 
     if math.isclose(point.y(), y_bottom, rel_tol=1e-4, abs_tol=1e-4):
         bottom_edge_vertices.append(point.x())
@@ -235,7 +250,10 @@ if len(top_edge_vertices) >= 2:
     sub_mesh_1_metadata['x_r'] = rpam.parameters['L']
     sub_mesh_1_metadata['coordinates'] = top_edge_vertices
     sub_mesh_1_metadata['A'] = A
+<<<<<<< HEAD
     sub_mesh_1_metadata['lmda'] = lmda
+=======
+>>>>>>> f7ce8d1c (Corrections)
     sub_mesh_1_metadata['resolution'] = rpam.parameters['resolution']
     sub_mesh_1_metadata['line_id'] = rpam.parameters['sub_mesh_1_id']
     sub_mesh_1_metadata['vertex_l_id'] = rpam.parameters['vertex_sub_mesh_1_l_id']

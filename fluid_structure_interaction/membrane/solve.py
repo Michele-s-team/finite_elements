@@ -38,6 +38,7 @@ params = {'nonlinear_solver': 'newton',
                   'relative_tolerance': 1e-5,
                   'maximum_iterations': 1000,
                   'relaxation_parameter': 0.7,
+                  'relaxation_parameter': 0.9,
               }
           }
 
@@ -80,6 +81,7 @@ rmsh = importlib.import_module(swi.rmsh)
 # test calls of problems
 # 1) membrane problem
 fsp.var_tensor_sigma_fl.assign(project(flu.sigma_ale(fsp.v_fl_n_1, fsp.sigma_fl_n_32, fsp.u_n_1, rpam.parameters['eta_fluid']), fsp.Q_var_tensor_sigma_fl))
+
 # fu.transfer_mesh_to_sub_mesh(fsp.var_tensor_sigma_fl, fsp.var_tensor_sigma_fl_on_mem, rmsh.parameters['h'])
 
 vp_membrane = importlib.import_module(swi.vp_membrane)
@@ -211,6 +213,3 @@ for n in range(rpam.parameters['N']):
     print(f'\t{(100.0 * (t / rpam.parameters["T"]))} %', flush=True)
 
 
-
-# M this should be removed
-u_vec = U_n_12_output.vector().get_local()

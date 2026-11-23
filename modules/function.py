@@ -1,3 +1,6 @@
+import sys
+sys.path.append("/home/fenics/shared/fluid_structure_interaction/membrane")
+
 import colorama as col
 # this import is needed, do not remove it 
 import dolfin
@@ -8,7 +11,11 @@ import math
 import ufl
 import command as cmd
 
-
+try:
+    import switch_problem as swi
+    rmsh = importlib.import_module(swi.rmsh)
+except AttributeError:
+    rmsh = None
 
 
 
@@ -256,10 +263,10 @@ def transfer_sub_mesh_to_mesh(u_sub_mesh, u_mesh):
         mesh_coord = mesh_coordinates[i * num_components]
         
         # Check if this point is on the edge y = h
-        A = 0.01
-        n = 4
+        A =rmsh.parameters['A']
+        n = rmsh.parameters['n']
         x = mesh_coord[0]
-        y = 0.2+A*np.cos(n*np.pi*mesh_coord[0])
+        y = rmsh.parameters['h']+A*np.cos(n*np.pi*mesh_coord[0])
 
         if math.isclose(mesh_coord[1], y):
             # Evaluate the sub_mesh function at x-coordinate
@@ -317,11 +324,10 @@ def transfer_mesh_to_sub_mesh(f_mesh, f_sub_mesh, h):
     # Evaluate at each unique coordinate
     for i in range(num_unique_points):
         coord = dof_coords_sub_mesh[i * value_size]  # Take first occurrence of each unique point
-        # val = f_mesh([coord[0], h])
-        A =0.01
-        n = 4
+        A =rmsh.parameters['A']
+        n = rmsh.parameters['n']
         x = coord[0]
-        y = 0.2+A*np.cos(n*np.pi*coord[0])
+        y = rmsh.parameters['h']+A*np.cos(n*np.pi*coord[0])
 
         f_mesh.set_allow_extrapolation(True)
         val = f_mesh([x, y])

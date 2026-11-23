@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 kappa,rho,rho_fluid,eta_fluid,eta,sigma_n_12_0,sigma_fl_n_12_0_t,T,N,function_space_degree_mem,v_bar_l,v_bar_r,v_fl_bar_b_const,alpha,exponent,quadrature_degree,print_out_stride
 0,1E-12,0.000001,10,0.0001,0,0,0.0001,10000,2,[0],[0],0.01,1000,3,4,1
+=======
+kappa,rho,rho_fluid,eta_fluid,eta,sigma_n_12_0,sigma_fl_n_12_0_t,T,N,function_space_degree_mem,v_bar_l,v_bar_r,v_fl_bar_t_const,alpha,exponent,quadrature_degree,print_out_stride
+0,1E-15,1E-12,0.01,0.0000001,0,0,0.0001,5000,2,[0],[0],0.01,1000,3,4,1
+>>>>>>> f7ce8d1c (Corrections)

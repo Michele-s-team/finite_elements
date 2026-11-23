@@ -28,11 +28,17 @@ dt = rpam.parameters['T'] / rpam.parameters['N']
 class X_ref_Expression(UserExpression):
     def eval(self, values, x):
         values[0] = x[0]
+<<<<<<< HEAD
         # values[1] =  rmsh.parameters['h'] 
         A = rmsh.parameters['A']
         n = rmsh.parameters['n']
         h = rmsh.parameters['h']
 
+=======
+        A = rmsh.parameters['A']
+        n = rmsh.parameters['n']
+        h = rmsh.parameters['h']
+>>>>>>> f7ce8d1c (Corrections)
         values[1] = h+A*np.cos(n*np.pi*values[0])
 
     def value_shape(self):
@@ -166,6 +172,7 @@ F_v_bar = ( \
 
 
 
+<<<<<<< HEAD
 
 #old weak formulation, will go back to it when the membrane becomes compressible 
 
@@ -208,6 +215,9 @@ F_v_bar = ( \
 
 
 #RHS of the normal momentum is put to zero.The membrane is static here and does not move.          
+=======
+#RHS of the normal momentum is modified to be zero; the membrane is static!          
+>>>>>>> f7ce8d1c (Corrections)
 F_w_bar = ( \
                       rpam.parameters['rho'] * ((fsp.w_bar - fsp.w_n_1) + dt * fsp.V[i] * fsp.V[k] * geo.b( fsp.psi_n_12, fsp.nu_n_12 )[k, i]) * fsp.nu_w_bar \
                       - dt * rpam.parameters['rho'] * fsp.W * geo.Nabla_v( geo.vector_times_scalar( 3.0 / 2.0 * fsp.v_n_1 - 1.0 / 2.0 * fsp.v_n_2, fsp.nu_w_bar ), fsp.psi_n_12, fsp.nu_n_12 )[i, i] \
@@ -271,8 +281,12 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
         ) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds_l']\
         #  second derivative with respect to X^1 of psi =0
          + fsp.psi_n_12.dx(0).dx(0)* fsp.nu_psi_n_12*bgeo.sqrt_deth_lr(fsp.psi_n_12)* (rmsh.ds_sub_mesh[1]['ds'])
+<<<<<<< HEAD
         #added, derivative with respect to x(0) of the tension=0 on left and right (moving membrane)
         # +(fsp.phi.dx(0)) * (fsp.nu_phi.dx(0)) * bgeo.sqrt_deth_lr(fsp.psi_n_12) * rmsh.ds_sub_mesh[1]['ds']
+=======
+
+>>>>>>> f7ce8d1c (Corrections)
         )
 
 
@@ -281,6 +295,13 @@ F_N =  rpam.parameters["alpha"] / rmsh.r_mesh[1] * (
 
 #F_nu_psi commented out since the membrane now is curved and nu is defined according to the shape.
 F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_mu_n_12 ) +F_N
+
+
+
+
+
+#F_nu_psi commented out since the membrane now is curved and nu is defined according to the shape.
+# F_mem = (F_v_bar + F_w_bar + F_phi + F_v_n + F_w_n + F_U_n_12 + F_mu_n_12 ) +F_N
 
 
 
