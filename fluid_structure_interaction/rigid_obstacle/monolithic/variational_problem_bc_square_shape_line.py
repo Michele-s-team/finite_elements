@@ -1,5 +1,5 @@
 '''
-this module solves for the fields theta_n, omega_n, v_n, sigma_n, u_n, u_dot_n which define the state of the whole system, for a rigid body in a channel in which fluid is injected in the left edge of the channel
+this module solves for the fields theta_n, omega_n, v_n, sigma_n, u_n, u_dot_n which define the state of the whole system, for a rigid body in a channel in which fluid is injected in the left edge of the channel, with the monolithic approach
 '''
 
 from fenics import *
