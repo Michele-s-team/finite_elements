@@ -25,7 +25,7 @@ def print_data(step):
 
     fi.writer_data.writerows([{
         fi.fieldnames_data[0]: \
-            f"{step:.{rpam.parameters['print_out_digits']}e}",
+            step,
         fi.fieldnames_data[1]: \
             f"{msh.average_wrt_measure(theta_n_dummy, rmsh.dx_mesh[0]['dx']):.{rpam.parameters['print_out_digits']}e}",
         fi.fieldnames_data[2]: \
