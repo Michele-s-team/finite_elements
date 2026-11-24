@@ -26,7 +26,9 @@ fieldnames_bcs = [ \
     # Eq. (60) in 'Channel flow with moving obstacle'
     '<<|\\textrm{v}^n - omega^n \\partial_\\theta R (y -c)|^2>>_{partial Omega shape}',\
     # Eq. (105) in 'Channel flow with moving obstacle'
-    '<<\\varsigma_n^2>>_{partial Omega r}'
+    '<<\\varsigma_n^2>>_{partial Omega r}',\
+    # Eq. (106) in 'Channel flow with moving obstacle'
+    '<<\\varsigma_{i 1} \\varsigma_{i 1}>>_{partial Omega r}'
     ]
 writer_bcs = csv.DictWriter(csvfile_bcs, fieldnames=fieldnames_bcs)
 writer_bcs.writeheader()

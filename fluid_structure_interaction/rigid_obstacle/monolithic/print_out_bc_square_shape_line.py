@@ -5,6 +5,7 @@ import ufl as ufl
 import differential_geometry.manifold.geometry as geo
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 import switch_problem as swi
 
 fi = importlib.import_module(swi.fi)
@@ -28,7 +29,7 @@ def print_bcs(step):
 
     fi.writer_bcs.writerows([{
         fi.fieldnames_bcs[0]: \
-            step,
+            int(step),
         fi.fieldnames_bcs[1]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_n - fsp.v_l), rmsh.ds_mesh[0]['ds_l']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_bcs[2]: \
@@ -36,7 +37,9 @@ def print_bcs(step):
         fi.fieldnames_bcs[3]: \
             f"{msh.abs_wrt_measure( sqrt(bc_residual(i)*bc_residual(i)), rmsh.ds_mesh[0]['dS_shape']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_bcs[4]: \
-            f"{msh.abs_wrt_measure( fsp.sigma_n, rmsh.ds_mesh[0]['ds_r']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.abs_wrt_measure( fsp.sigma_n, rmsh.ds_mesh[0]['ds_r']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_bcs[5]: \
+            f"{msh.abs_wrt_measure( geo.ufl_norm(as_tensor(flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu'])[i, 0], (i))), rmsh.ds_mesh[0]['ds_r']):.{rpam.parameters['print_out_digits']}e}"
         }]
         )
 
