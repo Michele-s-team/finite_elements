@@ -49,7 +49,11 @@ os.makedirs(os.path.dirname(filepath_ics), exist_ok=True)
 
 csvfile_ics = open(filepath_ics, 'a', newline='')
 fieldnames_ics = [ \
-    'step'
+    'step',
+    '<<[v^n_i]_j [v^n_i]_j>>_{partial Omega square I}',
+    '<<[varsigma]_i [varsigma]_i>>_{partial Omega square I}',
+    '<<[u^n_i]_j [u^n_i]_j>>_{partial Omega square I}',
+    '<<[\dot{u}^n_i]_j [\dot{u}^n_i]_j>>_{partial Omega square I}'
     ]
 writer_ics = csv.DictWriter(csvfile_ics, fieldnames=fieldnames_ics)
 writer_ics.writeheader()
