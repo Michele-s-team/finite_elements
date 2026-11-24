@@ -1,5 +1,5 @@
 """
-This code solves for the dynamics of the Navier Stokes equations with an elastic obstacle which is pinned on part of its boundary on a flat manifold Crank Nicholson discretization scheme, by defining all fields on discontinuous spaces and using the monolithic approach
+This code solves for the dynamics of the Navier Stokes equations with an elastic obstacle which is pinned on part of its boundary on a flat manifold, by defining all fields on discontinuous spaces and using the monolithic approach
 
 NOTE: 
     - here decompose_u assumes that -pi/2 < theta < pi/2
