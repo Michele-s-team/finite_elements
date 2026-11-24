@@ -39,7 +39,9 @@ def print_bcs(step):
         fi.fieldnames_bcs[4]: \
             f"{msh.abs_wrt_measure( fsp.sigma_n, rmsh.ds_mesh[0]['ds_r']):.{rpam.parameters['print_out_digits']}e}",\
         fi.fieldnames_bcs[5]: \
-            f"{msh.abs_wrt_measure( geo.ufl_norm(as_tensor(flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu'])[i, 0], (i))), rmsh.ds_mesh[0]['ds_r']):.{rpam.parameters['print_out_digits']}e}"
+            f"{msh.abs_wrt_measure( geo.ufl_norm(as_tensor(flu.sigma_ale(fsp.v_n, fsp.sigma_n, fsp.u_n, rpam.parameters['mu'])[i, 0], (i))), rmsh.ds_mesh[0]['ds_r']):.{rpam.parameters['print_out_digits']}e}",\
+        fi.fieldnames_bcs[6]: \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_n), rmsh.ds_mesh[0]['ds']):.{rpam.parameters['print_out_digits']}e}", \
         }]
         )
 
