@@ -816,10 +816,11 @@ def R_z(theta):
 
 '''
 A rotation matrix in two dimensions
+
 Input values: 
-- 'theta': the rotation angle, in radians
+    - 'theta': the rotation angle, in radians
 Return values: 
-- the rotation matrix
+    - the rotation matrix
 '''
 
 
@@ -828,10 +829,11 @@ def R(theta):
 
 '''
 derivative of R(theta) with respect to thetat
+
 Input values: 
-- 'theta': the rotation angle, in radians
+    - 'theta': the rotation angle, in radians
 Return values: 
-- dR(theta)/ dtheta
+    - dR(theta)/ dtheta
 '''
 def dRddtheta(theta):
     return np.array([[-np.sin(theta), -np.cos(theta)], [np.cos(theta), -np.sin(theta)]])

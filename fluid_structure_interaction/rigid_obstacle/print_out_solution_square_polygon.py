@@ -74,6 +74,3 @@ def print_solution(step):
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
     io.full_print_deformed(fsp.sigma_n_12, fsp.u_n, 'sigma_n_12_' + str(step), \
                   solpath.snapshots_path, solpath.snapshots_h5_path, solpath.snapshots_csv_path, solpath.snapshots_csv_nodal_values_path)
-    
-
-

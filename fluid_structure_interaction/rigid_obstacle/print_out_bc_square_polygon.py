@@ -10,6 +10,7 @@ import differential_geometry.manifold.geometry as geo
 import input_output as io
 import mesh.utils as msh
 import parameters.read.solution as rpam
+import physics.fluid_mechanics as flu
 import switch_problem as swi
 
 fi = importlib.import_module(swi.fi)
@@ -36,13 +37,13 @@ def print_bcs(step):
         fi.fieldnames_bcs[4]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.u_dot_square - fsp.u_dot_n), rmsh.ds_square):.{io.number_of_decimals}e}", \
         fi.fieldnames_bcs[5]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v__profile_l - fsp.v_), rmsh.ds_l):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_ - fsp.v__profile_l), rmsh.ds_l):.{io.number_of_decimals}e}", \
         fi.fieldnames_bcs[6]: \
             f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_), rmsh.ds_tb):.{io.number_of_decimals}e}", \
         fi.fieldnames_bcs[7]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v__profile_ellipse - fsp.v_), rmsh.ds_poly):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(fsp.v_ - fsp.v__profile_poly), rmsh.ds_poly):.{io.number_of_decimals}e}", \
         fi.fieldnames_bcs[8]: \
-            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(rpam.parameters['mu'] * ela.G(fsp.u_n_1)[j, 0] * (fsp.V[i].dx(j)), (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
+            f"{msh.abs_wrt_measure(geo.ufl_norm(ufl.as_tensor(flu.sigma_ale(fsp.V, fsp.sigma_n_32, fsp.u_n_1, rpam.parameters['mu'])[i, 0], (i))), rmsh.ds_r):.{io.number_of_decimals}e}", \
         fi.fieldnames_bcs[9]: \
             f"{msh.abs_wrt_measure(ela.G(fsp.u_n_1)[j, i] * bgeo.facet_normal[j] * ela.G(fsp.u_n_1)[l, i] * (fsp.phi.dx(l)), rmsh.ds_l_tb_poly):.{io.number_of_decimals}e}", \
         fi.fieldnames_bcs[10]: \

@@ -21,7 +21,7 @@ fieldnames_bcs = [ \
     '<<(l_profile_v_bar^i - v_bar^i)(l_profile_v_bar_i - v_bar_i)>>_l', \
     '<<v_bar^i v_bar_i>>_{tb}', \
     '<<(polygon_profile_v_bar^i - v_bar^i)(v__profile_polygon - v_bar_i)>>_polygon', \
-    '<<\mu G^{n-1}_{j1} \partial_j V_i>>_r', \
+    '<<|varsigma_{i 1}(V, sigma_ast, u_n_1|>>_r', \
     '<<(G^{n-1}_{ji} nu_j G^{n-1}_{li} \partial_l phi)^2>>_{l + tb + polygon}' ,\
     '<<phi^2>>_r'
     ]

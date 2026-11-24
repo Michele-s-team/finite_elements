@@ -15,11 +15,25 @@ import switch_problem as swi
 
 rmsh = importlib.import_module(swi.rmsh)
 
-
-
 i, j, k, l = ufl.indices(4)
 
 
+'''
+this is the profile of u^n in the RHS of the BC (99) in 'Channel flow with moving obstacle'
+'''
+class u_square_expression(UserExpression):
+
+    def eval(self, values, x):
+        values[0] = 0
+        values[1] = 0
+
+    def value_shape(self):
+        return (2,)
+    
+
+'''
+this is the profile of u^n in the RHS of the BC (100) in 'Channel flow with moving obstacle'
+'''
 class u_shape_expression(UserExpression):
     def eval(self, values, x):
 
@@ -32,17 +46,23 @@ class u_shape_expression(UserExpression):
     def value_shape(self):
         return (2,)
 
-
-class u_square_expression(UserExpression):
+'''
+this is the profile of \dot{u}^n in the RHS of the BC (101) in 'Channel flow with moving obstacle'
+'''
+class u_dot_square_expression(UserExpression):
     def eval(self, values, x):
+
         values[0] = 0
         values[1] = 0
 
     def value_shape(self):
         return (2,)
 
-
+'''
+this is the profile of \dot{u}^n in the RHS of the BC (102) in 'Channel flow with moving obstacle'
+'''
 class u_dot_shape_expression(UserExpression):
+
     def eval(self, values, x):
 
         x_minus_focus = np.subtract(x, rmsh.parameters['c'])
@@ -55,17 +75,14 @@ class u_dot_shape_expression(UserExpression):
         return (2,)
 
 
-class u_dot_square_expression(UserExpression):
-    def eval(self, values, x):
-        values[0] = 0
-        values[1] = 0
-
-    def value_shape(self):
-        return (2,)
-
-
 fsp.u_shape.interpolate(u_shape_expression(element=fsp.Q_u.ufl_element()))
 fsp.u_square.interpolate(u_square_expression(element=fsp.Q_u.ufl_element()))
+
+fsp.u_dot_shape.interpolate(u_dot_shape_expression(element=fsp.Q_u_dot.ufl_element()))
+fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
+
+
+# BCs for u_n
 
 bc_u_shape = DirichletBC(fsp.Q_u, fsp.u_shape, rmsh.mf, rmsh.parameters['polygon_id'])
 bc_u_square_l = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_l_id'])
@@ -74,11 +91,8 @@ bc_u_square_t = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['lin
 bc_u_square_b = DirichletBC(fsp.Q_u, fsp.u_square, rmsh.mf, rmsh.parameters['line_b_id'])
 bcs = [bc_u_shape, bc_u_square_l, bc_u_square_r, bc_u_square_t, bc_u_square_b]
 
-# variational functional for the original problem
-F_u = (ela.F(fsp.u_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[j, i] * (fsp.nu_u[k].dx(i))) * rmsh.dx
 
-fsp.u_dot_shape.interpolate(u_dot_shape_expression(element=fsp.Q_u_dot.ufl_element()))
-fsp.u_dot_square.interpolate(u_dot_square_expression(element=fsp.Q_u_dot.ufl_element()))
+# BCs for u_dot_n
 
 bc_u_dot_shape = DirichletBC(fsp.Q_u_dot, fsp.u_dot_shape, rmsh.mf, rmsh.parameters['polygon_id'])
 bc_u_dot_square_l = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.parameters['line_l_id'])
@@ -88,12 +102,16 @@ bc_u_dot_square_b = DirichletBC(fsp.Q_u_dot, fsp.u_dot_square, rmsh.mf, rmsh.par
 
 bcs_dot = [bc_u_dot_shape, bc_u_dot_square_l, bc_u_dot_square_r, bc_u_dot_square_t, bc_u_dot_square_b]
 
-F_u_dot = ( \
-                      (ela.F_dot(fsp.u_dot_n)[k, j] * ela.S(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[j, i] \
-                       + ela.F(fsp.u_n)[k, j] * ela.S_dot(fsp.u_n,
-                                                      fsp.u_dot_n,
-                                                      ela.K(fsp.u_n, rpam.parameters["exponent"]),
-                                                      ela.K_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters["exponent"]),
-                                                      ela.mu(fsp.u_n, rpam.parameters["exponent"]),
-                                                      ela.mu_dot(fsp.u_n, fsp.u_dot_n, rpam.parameters["exponent"]))[j, i]) \
-                      * (fsp.nu_u_dot[k].dx(i))) * rmsh.dx
+
+
+# variational functional for u_n, I dropped the boundary terms because of the dirichlet BCs
+F_u = - (ela.P(fsp.u_n, ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]))[i, j] * (fsp.nu_u[i].dx(j))) * rmsh.dx
+
+# variational functional for u_dot_n, I dropped the boundary terms because of the dirichlet BCs
+F_u_dot = - ela.Q(
+                fsp.u_n, fsp.u_dot_n, 
+                ela.K(fsp.u_n, rpam.parameters["exponent"]), ela.mu(fsp.u_n, rpam.parameters["exponent"]), 
+                ela.K_dot(fsp.u_n, fsp.u_dot_n, ela.mu(fsp.u_n, rpam.parameters["exponent"])), ela.mu_dot(fsp.u_n, fsp.u_dot_n, ela.mu(fsp.u_n, rpam.parameters["exponent"]))
+                )[i, j] \
+              * (fsp.nu_u_dot[i].dx(j)) * rmsh.dx
+

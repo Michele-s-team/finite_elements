@@ -1979,8 +1979,6 @@ def read_from_h5_file(mesh_path):
         mesh = read_mesh(mesh_path_with_slash + "line_mesh.h5")
         cf = read_mesh_components(mesh, mesh.topology().dim(), mesh_path_with_slash + "line_mesh.h5", "cf")
 
-        print('1d mesh')
-
         result = mesh, cf
 
     else:
@@ -2335,7 +2333,7 @@ Input values:
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional: 
-        - 'additional_metadata': some additional data that will be written appended to mesh_metadata.csv. It is None by default. 
+        - 'additional_metadata' (None): some additional data that will be written appended to mesh_metadata.csv. It is None by default. 
 '''
 
 def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory, output_directory,
@@ -2360,8 +2358,10 @@ def generate_square_polygon_mesh(polygon_coordinates, mesh_parameters_directory,
     # write into metadata the file format wich which the mesh will be written
     metadata = parameters.copy()
     metadata['file_format'] = 'xdmf'
+    metadata['polygon_coordinates'] = [[float(coordinate[0]), float(coordinate[1])] for coordinate in polygon_coordinates]
 
     if additional_metadata is not None:
+        
         metadata.update(additional_metadata)
 
     # generate the mesh
@@ -2470,10 +2470,11 @@ Input values:
         - 'mesh_parameters_directory': the path of the file 'mesh_parameters.csv' where the mesh parameters are located
         - 'output_directory': the path where the mesh will be stored 
     * Optional: 
-        - 'epsilon': the tolerance with which distances are evaluated
-'''
+        - 'epsilon' (const.epsilon): the tolerance with which distances are evaluated
+        - 'additional_metadata' (None): some additional data that will be written appended to mesh_metadata.csv. It is None by default. '''
 def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory, output_directory,
-                                    epsilon = const.epsilon):
+                                    epsilon = const.epsilon,
+                                    additional_metadata=None):
     
 
     # remove the output directory it it already exists, and create it from scratch
@@ -2554,6 +2555,7 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
 
     # if the shape derives from a parametric form, write N and the parametric function
     if parameters['shape_format'] == 'parametric':
+
         mesh_0_metadata['shape_parametric_form'] = parameters['shape_parametric_form']
         mesh_0_metadata['N'] = parameters['N']
         
@@ -2590,7 +2592,11 @@ def generate_square_shape_line_mesh(shape_coordinates, mesh_parameters_directory
     mesh_1_metadata['file_format'] = 'h5'
 
 
-
+    if additional_metadata is not None:
+        
+        mesh_metadata.update(additional_metadata)
+        mesh_0_metadata.update(additional_metadata)
+        mesh_1_metadata.update(additional_metadata)
 
     # A) generate mesh A (square with circle)
 
@@ -2953,7 +2959,7 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
                     sf_sub_meshes.append(cf_sub_mesh_1d)
                     mf_sub_meshes.append(vf_sub_mesh_1d)
 
-                print(f'Sub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
+                print(f'\tSub_mesh {p} has dimension {sub_meshes[p].topology().dim()}')
 
             print('... done.')
 
@@ -2966,8 +2972,6 @@ def read_sub_meshes(mesh, sf, mesh_medatada, input_directory):
 
     else:
         # did not find sub_meshes -> return None for all fields
-
-        print(f'Did not find sub_meshes')
 
         sub_meshes = None
         sf_sub_meshes = None 

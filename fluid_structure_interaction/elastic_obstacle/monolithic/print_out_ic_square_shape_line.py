@@ -19,7 +19,7 @@ vp = importlib.import_module(swi.vp)
 i, j, k, l, m, n = ufl.indices(6)
 
 
-# this function prints out the residuals of BCs
+# this function prints out the residuals of ICs
 def print_ics(step):
 
     fi.writer_ics.writerows([{
