@@ -2,6 +2,7 @@ from fenics import *
 import importlib
 
 import mesh.load as lmsh
+import mesh.utils as msh
 import parameters.read.solution as rpam
 import switch_problem as swi
 
@@ -21,8 +22,8 @@ the variables for the problem are
 
 #1 define elements 
 
-D_mu = FiniteElement('DG', triangle, rpam.parameters['function_space_degree'])
-D_grad_u = TensorElement('DG', triangle, rpam.parameters['function_space_degree'])
+D_mu = FiniteElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])
+D_grad_u = TensorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])
 
 element = MixedElement([D_mu, D_grad_u])
 
