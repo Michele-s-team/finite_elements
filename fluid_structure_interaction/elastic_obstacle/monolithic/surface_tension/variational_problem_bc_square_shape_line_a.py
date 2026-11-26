@@ -306,24 +306,6 @@ F_u_n = msh.ufl_conditional_form(
 # 2.2.2 u_dot_n
 
 
-
-
-'''
-ela.Q_s(u, u_dot, rpam.parameters['exponent']) = (ela.F_dot(u_dot)[k, j] * ela.S(u, ela.K(u, rpam.parameters['exponent']), ela.mu(u, rpam.parameters['exponent']))[j, i] + ela.F(u)[k, j] * ela.S_dot(u, u_dot, ela.K(u, rpam.parameters['exponent']), ela.K_dot(u, u_dot, rpam.parameters['exponent']), ela.mu(u, rpam.parameters['exponent']), ela.mu_dot(u, u_dot, rpam.parameters['exponent']))[j, i])
-
-
-Q_here(u, u_dot )  = (ela.F_dot(u_dot)[k, j] * ela.S(u, ela.K(u, rpam.parameters['exponent']), ela.mu(u, rpam.parameters['exponent']))[j, i] \
-        + ela.F(u)[k, j] * ela.S_dot(u,
-                                    u_dot,
-                                    ela.K(u, rpam.parameters['exponent']),
-                                    ela.K_dot(u, u_dot, rpam.parameters['exponent']),
-                                    ela.mu(u, rpam.parameters['exponent']),
-                                    ela.mu_dot(u, u_dot, rpam.parameters['exponent']))[j, i])
-
-                                    Q_here(u, u_dot ) = ela.Q_s(u, u_dot, rpam.parameters['exponent'])
-
-                                    '''
-
 F_u_dot_n = msh.ufl_conditional_form(
                                         rmsh.lmsh.mesh[0],
                                         rmsh.sf[0], 
