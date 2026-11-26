@@ -91,12 +91,13 @@ def mu(u, exponent):
 
 '''
 time derivative of the coefficient mu
+
 Input values:
-- 'u': displacement vector field
-- 'u_dot': displacement vector field
-- 'exponent': the exponent in 'mu(u, exponent)'
+    - 'u': displacement vector field
+    - 'u_dot': time deriviative of displacement vector field
+    - 'exponent': the exponent in 'mu(u, exponent)'
 Return values:
-- dmudt
+    - dmudt
 '''
 
 def mu_dot(u, u_dot, exponent):
@@ -227,6 +228,21 @@ def Q(u, u_dot, K, mu, K_dot, mu_dot):
     return as_tensor(
         (F_dot(u_dot)[k, j] * S(u, K, mu)[j, i] + F(u)[k, j] * S_dot(u, u_dot, K, K_dot, mu, mu_dot)[j, i]), 
     (k, i))
+
+'''
+tensor `Q` with substituted elastic moduli
+
+Input values: 
+    - 'u': displacement vector field
+    - 'u_dot': displacement vector field
+    - 'exponent': the exponent in 'K(u, exponent)', 'mu(u, exponent)', 'K_dot(u, u_dot, exponent)' and 'mu_dot(u, u_dot, exponent)'
+Return values: 
+    - `Q(u, u_dot, K(u, exponent), mu(u, exponent), K_dot(u, u_dot, exponent), mu_dot(u, u_dot, exponent))`
+'''
+
+def Q_s(u, u_dot, exponent):
+
+    return Q(u, u_dot, K(u, exponent), mu(u, exponent), K_dot(u, u_dot, exponent), mu_dot(u, u_dot, exponent))
 
 '''
 tensor C in 'Notes "Kanensky legcture notes"' 
