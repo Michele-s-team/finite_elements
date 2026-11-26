@@ -244,6 +244,7 @@ def Q_s(u, u_dot, exponent):
 
     return Q(u, u_dot, K(u, exponent), mu(u, exponent), K_dot(u, u_dot, exponent), mu_dot(u, u_dot, exponent))
 
+
 '''
 tensor C in 'Notes "Kanensky legcture notes"' 
 
