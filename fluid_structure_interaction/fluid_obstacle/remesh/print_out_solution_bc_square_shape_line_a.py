@@ -48,13 +48,13 @@ def print_remesh(step):
     }])
     remesh_csvfile.flush()
 
-def print_data(step,  mesh_quality):
+def print_data(step):
 
     data_writer.writerows([{ \
         data_fieldnames[0]: \
             step, 
         data_fieldnames[1]: \
-            mesh_quality, 
+            msh_qu.quality, 
     }])
     data_csvfile.flush()
 
