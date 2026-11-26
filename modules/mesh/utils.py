@@ -4616,3 +4616,40 @@ def object_map(object_type, model):
 
 
     return map
+
+
+'''
+evaluate whether remeshing should be done and return the result as a boolean variable
+
+Input values:
+    - `parameters`: a Pandas dataframe containing the solution parameters, it mus include either `remesh_stride` if remeshing is supposed to take place at equidistant steps, or `mesh_quality_threshold` if remeshing is supposed to take place when mesh quality drops below a threshold. If none of the two arguments is in `parameters`, an error is thrown. 
+    - `step`: the time-iteration step, it will be used if `parameters` contains `remesh_stride`
+    - `mesh_quality`: mesh_quality, it will be used if `parameters` contains `mesh_quality_threshold`
+Return values: 
+    - `do_remesh`: It is `True` if remeshing must be done, `False` otherwise
+'''
+
+def remesh(parameters, step, mesh_quality):
+
+    do_remesh = None
+
+    if ('remesh_stride' not in parameters) and ('mesh_quality_threshold' not in parameters):
+        # `parameters` does not contain `remesh_stride` nor `mesh_quality_threshold` -> stop here
+ 
+        print(f'{col.Fore.RED}Error!! Neither "remesh_stride" nor "mesh_quality_threshold" are in "paramters".{col.Fore.RESET}')
+        sys.exit(1)
+
+    else:
+
+        # evaluate whether remeshing should be done and write the result in `do_remesh`
+        if 'remesh_stride' in parameters:
+            # `parameters` constains `remesh_stride` -> do remesh every `parameters['remesh_stride]`
+
+            do_remesh = (step % parameters['remesh_stride'] == 0)
+
+        elif 'mesh_quality_threshold' in parameters: 
+            # `parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `parameters['mesh_quality_threshold]`
+
+            do_remesh = (mesh_quality < parameters['mesh_quality_threshold'])
+
+    return do_remesh
