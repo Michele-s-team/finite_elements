@@ -33,15 +33,15 @@ all fields are defined from a mixed function space
 #1 define elements 
 
 #1.1 fluid 
-D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), 2)
-D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh), 1)
+D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), 2)
+D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), 1)
 
 #1.2 elastic body and mesh
-D_u = VectorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
-D_u_dot = VectorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_dot_function_space_degree'])
+D_u = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
+D_u_dot = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_dot_function_space_degree'])
 
-D_mu = FiniteElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
-D_grad_u = TensorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
+D_mu = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
+D_grad_u = TensorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
 
 
 element = MixedElement([D_v_n, D_sigma_n, D_u, D_u_dot, D_mu, D_grad_u])

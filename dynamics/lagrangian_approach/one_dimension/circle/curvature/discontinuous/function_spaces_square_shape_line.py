@@ -22,8 +22,8 @@ the variables for the problem are
 
 #1 define elements 
 
-D_mu = FiniteElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])
-D_grad_u = TensorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['function_space_degree'])
+D_mu = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['function_space_degree'])
+D_grad_u = TensorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['function_space_degree'])
 
 element = MixedElement([D_mu, D_grad_u])
 

@@ -40,8 +40,8 @@ R_omega_n = FiniteElement('Real', msh.element_geometry(lmsh.mesh[0]), 0)
 
 #1.2 fluid 
 
-D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), 2)
-D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh), 1)
+D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), 2)
+D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), 1)
 
 
 #1.3 domain

@@ -40,19 +40,19 @@ the variables for the problem are
 #1 define elements 
 
 #1.1 fluid 
-D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), 2)
-D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh), 1)
+D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), 2)
+D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), 1)
 
 #1.2 mesh
-D_u_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
-D_u_dot_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_dot_function_space_degree'])
+D_u_n = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
+D_u_dot_n = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_dot_function_space_degree'])
 
 #1.3 concentration
-D_c_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['c_function_space_degree'])
+D_c_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['c_function_space_degree'])
 
 # 1.4 surface tension
-D_mu_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
-D_grad_u_n = TensorElement('DG', msh.element_geometry(lmsh.mesh), rpam.parameters['u_function_space_degree'])
+D_mu_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
+D_grad_u_n = TensorElement('DG', msh.element_geometry(lmsh.mesh[0]), rpam.parameters['u_function_space_degree'])
 
 
 
