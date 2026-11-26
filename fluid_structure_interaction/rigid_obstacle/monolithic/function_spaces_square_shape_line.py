@@ -1,6 +1,5 @@
 from fenics import *
 import importlib
-import sys
 
 import mesh.load as lmsh
 import mesh.utils as msh
@@ -41,8 +40,8 @@ R_omega_n = FiniteElement('Real', msh.element_geometry(lmsh.mesh[0]), 0)
 
 #1.2 fluid 
 
-D_v_n = VectorElement('DG', triangle, 2)
-D_sigma_n = FiniteElement('DG', triangle, 1)
+D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh[0]), 2)
+D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh[0]), 1)
 
 
 #1.3 domain

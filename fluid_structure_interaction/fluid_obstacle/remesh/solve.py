@@ -31,6 +31,7 @@ sys.path.append(module_path)
 import constants.utils as const
 import function as fu
 import input_output as io
+import mesh_quality as msh_qu
 import mesh.utils as msh
 import parameters.read.solution as rpam
 import runtime_arguments as rarg
@@ -483,22 +484,10 @@ for n in range(rpam.parameters['N']):
 
     mesh_0_0_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0][0], fsp.u_n_di))
     mesh_0_1_quality = msh.custom_mesh_quality(msh.deform_mesh(rmsh.lmsh.sub_meshes[0][1], fsp.u_n_sq))
-    mesh_quality = min(mesh_0_0_quality, mesh_0_1_quality)
+    msh_qu.quality = min(mesh_0_0_quality, mesh_0_1_quality)
 
 
-    # evaluate whether remeshing should be done and write the result in `do_remesh`
-    if 'remesh_stride' in rpam.parameters:
-        # `rpam.parameters` constains `remesh_stride` -> do remesh every `rpam.parameters['remesh_stride]`
-
-        do_remesh = (step % rpam.parameters['remesh_stride'] == 0)
-
-    elif 'mesh_quality_threshold' in rpam.parameters: 
-        # `rpam.parameters` constains `mesh_quality_threshold` -> do remesh when mesh quality drops below `rpam.parameters['mesh_quality_threshold]`
-
-        do_remesh = (mesh_quality < rpam.parameters['mesh_quality_threshold'])
-
-
-    if do_remesh:
+    if msh.remesh(rpam.parameters, step, msh_qu.quality):
 
         #remesh 
 
@@ -838,7 +827,7 @@ for n in range(rpam.parameters['N']):
 
         #8. call print_remesh to print out the remeshing info
 
-        pr_sol.print_remesh(step, mesh_quality)
+        pr_sol.print_remesh(step)
 
 
         #9 clean up
@@ -921,7 +910,7 @@ for n in range(rpam.parameters['N']):
         msh.generate_square_shape_line_mesh(shape_coordinates, os.path.join(rarg.args.input_directory, '../'), os.path.join(solpath.snapshots_path, 'mesh', f'n_{step}'))
 
     # print mesh quality at each step
-    pr_sol.print_data(step, mesh_quality)
+    pr_sol.print_data(step)
 
     print("\t%.2f %%" % (100.0 * (t / rpam.parameters['T'])), flush=True)
 

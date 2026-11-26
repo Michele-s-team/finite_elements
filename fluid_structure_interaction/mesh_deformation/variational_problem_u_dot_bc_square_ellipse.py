@@ -23,7 +23,7 @@ i, j, k = ufl.indices(3)
 class u_dot_in_expression(UserExpression):
     def eval(self, values, x):
         x_minus_focus = np.subtract(x, rmsh.focus[:2])
-        displacement_dot = rpam.psi_dot * np.dot(cal.dRddtheta(rpam.psi), x_minus_focus)
+        displacement_dot = rpam.psi_dot * np.dot(cal.dRdtheta(rpam.psi), x_minus_focus)
 
         values[0] = displacement_dot[0]
         values[1] = displacement_dot[1]

@@ -3,11 +3,10 @@ from fenics import *
 import csv
 import importlib
 
-import physics.elasticity as ela
-import files as fi
 import function_spaces as fsp
 import input_output as io
 import mesh.load as lmsh
+import mesh_quality as msh_qu
 import mesh.utils as msh
 import os
 import parameters.read.solution as rpam
@@ -39,23 +38,23 @@ data_writer = csv.DictWriter(data_csvfile, fieldnames=data_fieldnames)
 data_writer.writeheader()
 
 
-def print_remesh(step,  mesh_quality_before_remesh):
+def print_remesh(step):
 
     remesh_writer.writerows([{ \
         remesh_fieldnames[0]: \
             step, 
         remesh_fieldnames[1]: \
-            mesh_quality_before_remesh, 
+            msh_qu.quality, 
     }])
     remesh_csvfile.flush()
 
-def print_data(step,  mesh_quality):
+def print_data(step):
 
     data_writer.writerows([{ \
         data_fieldnames[0]: \
             step, 
         data_fieldnames[1]: \
-            mesh_quality, 
+            msh_qu.quality, 
     }])
     data_csvfile.flush()
 

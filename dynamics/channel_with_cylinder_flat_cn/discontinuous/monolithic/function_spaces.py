@@ -8,10 +8,11 @@ The fields are
 from fenics import *
 
 import mesh.load as lmsh
+import mesh.utils as msh
 
 # 1. function spaces
-D_v_n = VectorElement('DG', triangle, 2)
-D_sigma_n = FiniteElement('DG', triangle, 1)
+D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), 2)
+D_sigma_n = FiniteElement('DG', msh.element_geometry(lmsh.mesh), 1)
 
 element = MixedElement([D_v_n, D_sigma_n])
 

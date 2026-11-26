@@ -17,11 +17,12 @@ The fields are
 from fenics import *
 
 import mesh.load as lmsh
+import mesh.utils as msh
 
 
-D_v_ = VectorElement('DG', triangle, 2)
-D_phi = FiniteElement('DG', triangle, 1)
-D_v_n = VectorElement('DG', triangle, 2)
+D_v_ = VectorElement('DG', msh.element_geometry(lmsh.mesh), 2)
+D_phi = FiniteElement('DG', msh.element_geometry(lmsh.mesh), 1)
+D_v_n = VectorElement('DG', msh.element_geometry(lmsh.mesh), 2)
 
 element = MixedElement([D_v_, D_phi, D_v_n])
 
