@@ -839,7 +839,7 @@ for n in range(rpam.parameters['N']):
 
         #8. call print_remesh to print out the remeshing info
 
-        pr_sol.print_remesh(step, msh_qu.quality)
+        pr_sol.print_remesh(step)
 
 
         #9 clean up
