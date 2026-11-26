@@ -9,7 +9,7 @@ Provides standalone helpers for:
   - Surface integrals over planar regions: rectangles, disks, rings,
     ellipses, polygons (surface_integral_*).
   - 3D surface/volume integrals over spheres, balls, and boxes.
-  - Rotations and coordinate transforms (R, R_z, dRddtheta,
+  - Rotations and coordinate transforms (R, R_z, dRdtheta,
     polar_to_cartesian, rotation_translation).
   - Geometric tests and queries (point_on_line, point_on_segment,
     point_in_box, line_on_axis, line_is_radial, mirror_point_line,
@@ -835,7 +835,7 @@ Input values:
 Return values: 
     - dR(theta)/ dtheta
 '''
-def dRddtheta(theta):
+def dRdtheta(theta):
     return np.array([[-np.sin(theta), -np.cos(theta)], [np.cos(theta), -np.sin(theta)]])
 
 

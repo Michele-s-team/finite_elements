@@ -66,7 +66,7 @@ class u_dot_shape_expression(UserExpression):
     def eval(self, values, x):
 
         x_minus_focus = np.subtract(x, rmsh.parameters['c'])
-        displacement_dot = fsp.omega_n * np.dot(cal.dRddtheta(fsp.theta_n - rmsh.parameters['phi']), x_minus_focus)
+        displacement_dot = fsp.omega_n * np.dot(cal.dRdtheta(fsp.theta_n - rmsh.parameters['phi']), x_minus_focus)
 
         values[0] = displacement_dot[0]
         values[1] = displacement_dot[1]
