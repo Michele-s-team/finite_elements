@@ -1,2 +1,2 @@
 rho,mu,v_l,T,num_steps,M,exponent,I,theta_0,omega_0,remesh_stride,print_out_stride,u_function_space_degree,u_dot_function_space_degree,alpha,alpha_shape,print_out_digits,n_hold,n_ramp,code,problem,notes
-1e3,1e-3,0,1,100,1e2,3,3e-1,0,0,10,1,1,1,1e3,1e2,3,0,0,~/Documents/finite_elements/fluid_structure_interaction/rigid_obstacle/monolithic/solve.py ,square_shape_line,run on abacus
+1e3,1e-3,0,1,100000,1e2,3,3e-1,0,0,10,1,1,1,1e3,1e2,3,0,0,~/Documents/finite_elements/fluid_structure_interaction/rigid_obstacle/monolithic/solve.py ,square_shape_line,run on abacus
